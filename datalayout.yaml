@@ -1,0 +1,9 @@
+---
+
+DummyData:
+  Number   : int
+
+ReferencingData:
+  DummyData : DummyDataHandle
+#  Number : int
+

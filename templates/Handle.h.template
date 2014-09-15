@@ -1,0 +1,38 @@
+#ifndef ${name}HANDLE_H
+#define ${name}HANDLE_H
+$includes
+#include <vector>
+//forward declaration of $name container
+class ${name}Collection;
+
+namespace albers {
+  class Registry;
+}
+
+class ${name}Handle {
+
+  friend ${name}Collection;
+
+public:
+
+ ${name}Handle(){};
+
+$getter_declarations
+$setter_declarations
+
+  bool isAvailable() const; // precheck whether the pointee actually exists
+  void prepareForWrite(const albers::Registry*);  // use m_container to set m_containerID properly
+  void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
+
+private:
+  
+  ${name}Handle(int index, int containerID,  std::vector<${name}>* container);
+  int m_index; 
+  int m_containerID;
+  mutable std::vector<${name}>* m_container; //! transient
+  albers::Registry* m_registry; //! transient
+//  bool _retrieveData();
+  
+};
+
+#endif

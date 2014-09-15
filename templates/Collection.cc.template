@@ -1,0 +1,45 @@
+#include "${name}Collection.h"
+
+${name}Collection::${name}Collection() : m_data(new ${name}Vector() ){
+}
+
+${name}Handle ${name}Collection::get(int index) const{
+  return m_handles[index];
+}
+
+${name}Handle ${name}Collection::create(){
+    m_data->emplace_back(${name}());
+    int index = m_data->size()-1;
+    m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
+    return m_handles.back();
+}
+
+void ${name}Collection::clear(){
+  m_data->clear();
+  m_handles.clear(); 
+
+}
+
+void ${name}Collection::prepareForWrite(const albers::Registry* registry){
+$prepareforwritingbody
+}
+
+void ${name}Collection::prepareAfterRead(albers::Registry* registry){
+  m_handles.clear();
+  int index = 0;
+  for (auto& data : *m_data){
+    $prepareafterreadbody
+    m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
+    ++index;
+  }
+}
+
+
+void ${name}Collection::setPODsAddress(const void* address){
+  m_data = (${name}Vector*)address;
+}
+
+
+const ${name}Handle ${name}CollectionIterator::operator* () const {
+  return m_collection->get(m_index);
+}

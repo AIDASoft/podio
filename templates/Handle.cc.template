@@ -1,0 +1,36 @@
+// albers specific includes
+#include "albers/Registry.h"
+#include "albers/Reader.h"
+
+// datamodel specific includes
+#include "${name}.h"
+#include "${name}Collection.h"
+
+$getters
+$setters
+
+bool  ${name}Handle::isAvailable() const {
+  if (m_container != nullptr) {
+    return true;
+  } else if (m_registry != nullptr){
+    m_registry->getPODAddressFromID(m_containerID,m_container);
+    return true;
+  }
+  return false;
+}
+
+void ${name}Handle::prepareForWrite(const albers::Registry* registry){
+  m_containerID = registry->getIDFromPODAddress(m_container);
+}
+
+void ${name}Handle::prepareAfterRead(albers::Registry* registry){
+  m_registry = registry;
+}
+
+
+${name}Handle::${name}Handle(int index, int containerID, std::vector<${name}>* container) :
+  m_index(index),
+  m_containerID(containerID),
+  m_container(container)
+{}
+
