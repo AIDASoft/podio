@@ -1,23 +1,13 @@
-include_directories(${CMAKE_SOURCE_DIR}/include
-                    ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
-)
+cmake_minimum_required(VERSION 2.8)
 
-file(GLOB sources datamodel/*.cc)
-file(GLOB headers datamodel/*h)
+project(albers)
 
-list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
-ROOT_GENERATE_DICTIONARY(ExampleDict ${headers} LINKDEF datamodel/LinkDef.h )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -DDROP_CGAL -std=c++11 -Wall -Wextra -Wpedantic -Wno-unused-variable -Wno-unused-parameter")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 
-add_library(DataModelExample SHARED ${sources} ${headers} ExampleDict.cxx)
-target_link_libraries(DataModelExample albers ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES})
+# Declare ROOT dependency
+find_package(ROOT COMPONENTS EG Eve GenVector Hist Physics Matrix Graf RIO Tree Gpad RGL MathCore)
+include(${ROOT_USE_FILE})
 
-file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
-
-foreach( sourcefile ${executables} ) 
-  string( REPLACE ".cpp" "" name ${sourcefile} ) 
-  add_executable( ${name} ${sourcefile} ) 
-  target_link_libraries( ${name} DataModelExample ) 
-  install(TARGETS ${name} DESTINATION examples) 
-endforeach( sourcefile ${executables} ) 
-
-install(TARGETS DataModelExample DESTINATION examples)
+add_subdirectory(src)
+add_subdirectory(examples)
