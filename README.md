@@ -8,15 +8,19 @@ export PATH=/afs/cern.ch/sw/lcg/contrib/CMake/2.8.9/Linux-i386/bin:${PATH}
 source /afs/cern.ch/sw/lcg/contrib/gcc/4.8.1/x86_64-slc6/setup.sh 
 source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.20/x86_64-slc6-gcc48-opt/root/bin/thisroot.sh
 
-after setting up a separate build area, the build can be triggered w/
-cmake -DCMAKE_INSTALL_PREFIX=<destination> <path_to_sources>
-make 
+Set up separate build and install areas:
+mkdir build
+cd build 
+cmake -DCMAKE_INSTALL_PREFIX=../install ..
+make -j 4 
 make install
 
 either one uses the examples from the build area or from the install area
 for using from the install area one has to set the LD_LIBRARY_PATH to point to
 <destination>/examples
 <destination>/lib
+So do:
+export LD_LIBRARY_PATH=../install/examples:../install/libs:$LD_LIBRARY_PATH
 
 The examples are for creating a file "example.root"
 write
