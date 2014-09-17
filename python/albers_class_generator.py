@@ -38,10 +38,14 @@ class ClassGenerator(object):
     self.verbose=verbose
     self.buildin_types = ["int","float","double","unsigned int"]
     self.created_classes = []
+    self.requested_classes = []
 
   def process(self):
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
+    for name in content.iterkeys():
+      self.requested_classes.append(name)
+      self.requested_classes.append("%sHandle" %name)
     for name, components in content.iteritems():
       self.create_class(name, components)
       self.create_class_handle(name, components)
@@ -109,7 +113,7 @@ class ClassGenerator(object):
     for klass in components.itervalues():
       if klass in self.buildin_types:
         pass
-      elif klass in self.created_classes:
+      elif klass in self.requested_classes:
         includes += '#include "%s.h"' %klass
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass)) 
@@ -138,10 +142,10 @@ class ClassGenerator(object):
     for klass in components.itervalues():
       if klass in self.buildin_types:
         pass
-      elif klass in self.created_classes:
+      elif klass in self.requested_classes:
         includes += '#include "%s.h"' %klass
       else:
-        raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
+        raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
     getters = ""
     setters = ""
