@@ -24,6 +24,7 @@ int main(){
 
   // populate the first collection
   DummyDataCollection& coll = store.create<DummyDataCollection>("DummyData");
+  std::cout<<"DummyData collection ID: "<<coll.
   DummyDataHandle d1 = coll.create();
   d1.setNumber(42);
   DummyDataHandle d2 = coll.create();

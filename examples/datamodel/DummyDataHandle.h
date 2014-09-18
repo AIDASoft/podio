@@ -17,7 +17,8 @@ class DummyDataHandle {
 public:
 
  DummyDataHandle(){};
-
+ 
+  // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
   const int& Number() const;
 
   void setNumber(int value);
@@ -28,7 +29,7 @@ public:
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
 private:
-  
+  // COLIN: seems containerID means nothing here anyway->remove? 
   DummyDataHandle(int index, int containerID,  std::vector<DummyData>* container);
   int m_index; 
   int m_containerID;

@@ -8,14 +8,14 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 
-#pragma link C++ class ParticleRef+;
-#pragma link C++ class std::vector<ParticleRef>+;
-#pragma link C++ class ParticleRefHandle+;
-#pragma link C++ class ParticleRefCollection+;
-#pragma link C++ class Particle+;
-#pragma link C++ class std::vector<Particle>+;
-#pragma link C++ class ParticleHandle+;
-#pragma link C++ class ParticleCollection+;
+#pragma link C++ class DummyData+;
+#pragma link C++ class std::vector<DummyData>+;
+#pragma link C++ class DummyDataHandle+;
+#pragma link C++ class DummyDataCollection+;
+#pragma link C++ class ReferencingData+;
+#pragma link C++ class std::vector<ReferencingData>+;
+#pragma link C++ class ReferencingDataHandle+;
+#pragma link C++ class ReferencingDataCollection+;
 
 
 #pragma link C++ class albers::CollectionBase+;
