@@ -19,6 +19,7 @@ namespace albers {
   }
 
   bool EventStore::doGet(const std::string& name, CollectionBase*& collection) const {
+    // COLIN: I was expecting the registry to be used here. 
     auto result = std::find_if(begin(m_collections), end(m_collections),
                                [name](const CollPair& item)->bool { return name==item.first; }
 			      );
@@ -37,8 +38,10 @@ namespace albers {
         return true;
       }
     } else {
+      //COLIN: not sure collection is set to the nullptr in this case, see EventStore.h
       return false;
     }
+    //COLIN: not needed?
     return false;
   }
 

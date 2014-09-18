@@ -16,7 +16,7 @@
 #include "albers/Writer.h"
 
 int main(){
-  gSystem->Load("libDataModelExample.so"); 
+  gSystem->Load("libDataModelExample.so");
 
   albers::Registry   registry;
   albers::EventStore store(&registry);
@@ -24,6 +24,7 @@ int main(){
 
   // populate the first collection
   DummyDataCollection& coll = store.create<DummyDataCollection>("DummyData");
+  std::cout<<"DummyData collection ID: "<<coll.
   DummyDataHandle d1 = coll.create();
   d1.setNumber(42);
   DummyDataHandle d2 = coll.create();
@@ -50,6 +51,7 @@ int main(){
 
   // and now for the writing
   // TODO: do that at a different time w/o coll pointer
+  // COLIN: the tree branching is done in these functions. I was expecting it to be done before filling the tree. Couldn't the EventStore deal with this instead of the user? But that probably introduces a dependency we could do without.
   writer.registerForWrite("DummyData", coll);
   writer.registerForWrite("ReferencingData", coll2);
   writer.writeEvent();
