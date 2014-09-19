@@ -13,7 +13,7 @@ It is used to create new collections, and to access existing ones.
 When accessing a collection that is not yet in the event store,
 the event store makes use of a Reader to read the collection.
 
-COLIN: Why a separate Registry class? The registry is designed to be written to disk, while eventstore is runtime
+COLIN: Why a separate Registry class?
  **/
 
 namespace albers {
@@ -41,7 +41,7 @@ namespace albers {
     template<typename T>
       bool get(const std::string& name, T*& collection);
 
-    /// returns the collection container. COLIN: shouldn't it return a const ref? yes
+    /// returns the collection container. COLIN: shouldn't it return a const ref?
     CollContainer& get_content();
 
     /// clears all collections. COLIN: choose a different name?
@@ -75,6 +75,7 @@ template<typename T>
 bool EventStore::get(const std::string& name, T*& collection){
   CollectionBase* tmp;
   doGet(name, tmp);
+
   // a dynamic_cast is used because doGet anyway accesses a container
   // of CollectionBase* -> no need to template deeper code
   collection = dynamic_cast<T*>(tmp);
