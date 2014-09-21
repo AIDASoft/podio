@@ -31,28 +31,30 @@ class Reader {
     ~Reader();
     void openFile(const std::string& filename);
     void closeFile(){};
+
+    // COLIN : unused?
     void readEvent();
-    
+
     template<typename T>
     bool getCollection(const std::string& name, T*& collection);
 
     void* getBuffer(const int collectionID);
 
-    //  private: 
+    //  private:
     void getRegistry();
     CollectionBase* readCollection(const std::string& name);
 
     typedef std::pair<CollectionBase*, std::string> Input;
-    std::vector<Input> m_inputs;   
+    std::vector<Input> m_inputs;
 
     Registry* m_registry;
     TFile* m_file;
     TTree* m_eventTree;
 };
 
-template<typename T>  
+template<typename T>
 bool Reader::getCollection(const std::string& name, T*& collection){
-  collection = dynamic_cast<T*>(readCollection(name));  
+  collection = dynamic_cast<T*>(readCollection(name));
   if (collection != nullptr) {
     return true;
   } else {
