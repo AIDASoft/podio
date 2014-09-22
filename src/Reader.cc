@@ -19,6 +19,7 @@ namespace albers {
   }
 
   void Reader::getRegistry(){
+    // COLIN: worried about what happens if this function is called twice.
     m_registry = new Registry();
     TTree* metadatatree = (TTree*)m_file->Get("metadata");
     metadatatree->SetBranchAddress("Registry",&m_registry);
@@ -32,13 +33,13 @@ namespace albers {
 			  [name](Reader::Input t){ return t.second == name;});
     if (p != end(m_inputs)){
       return p->first;
-    } 
+    }
     TBranch* branch = m_eventTree->GetBranch(name.c_str());
     auto PODname= branch->GetClassName();
     TClass* theClass = gROOT->GetClass(PODname);
     void* buffer = theClass->New();
     //now create the transient collections
-    // some workaround until gcc supports regex properly: 
+    // some workaround until gcc supports regex properly:
     auto PODnameString = std::string(PODname);
     auto start = PODnameString.find("<");
     auto end   = PODnameString.find(">");
@@ -56,7 +57,7 @@ namespace albers {
     collection->prepareAfterRead(m_registry);
     return collection;
   }
-    
+
   void Reader::openFile(const std::string& filename){
     m_file = new TFile(filename.c_str(),"READ","data file");
     m_eventTree = (TTree*) m_file->Get("events");

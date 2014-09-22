@@ -14,6 +14,10 @@ transient collections and all the buffers
 in memory. If some collection/buffer is missing, 
 it may ask the Reader for help depending on whether
 the lookup is 'lazy' or not.
+
+COLIN: when getting a collection, it is in fact the EventStore that asks the Reader for help, not the Registry. Are the lines above referring to something else?
+
+COLIN: it seems the registry also keeps track of the collection IDs, which might play a role in the Writer.
 */
 
 #include <iostream>

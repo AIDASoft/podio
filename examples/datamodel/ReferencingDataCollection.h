@@ -1,3 +1,5 @@
+//AUTOMATICALLY GENERATED - DO NOT EDIT
+
 #ifndef ReferencingDataCollection_H
 #define  ReferencingDataCollection_H
 
@@ -36,6 +38,10 @@ class ReferencingDataCollectionIterator {
     const ReferencingDataCollection* m_collection;
 };
 
+/**
+A Collection is identified by an ID.
+*/
+
 class ReferencingDataCollection : public albers::CollectionBase {
 
 public:
@@ -46,12 +52,18 @@ public:
   ~ReferencingDataCollection(){};
 
   void clear();
+  //COLIN: why not returning reference instead of a copy? 
+  /// Append a new object to the collection, and return a Handle to this object. 
   ReferencingDataHandle create();
+
+  /// Returns a Handle to the object at position index in the collection
   ReferencingDataHandle get(int index) const;
 
+  /// Currently does nothing
   void prepareForWrite(const albers::Registry* registry);
   void prepareAfterRead(albers::Registry* registry);
   void setPODsAddress(const void* address);
+  // COLIN: I don't see where setID is called, nor where m_collectionID is accessed outside this class. Tested that this function can be commented
   void setID(int ID){m_collectionID = ID;};
 
   // support for the iterator protocol
@@ -65,6 +77,7 @@ public:
   void* _getRawBuffer(){ return (void*)&m_data;};
   std::vector<ReferencingData>* _getBuffer(){ return m_data;};
 private:
+  // COLIN: uninitialized? in fact it seems the Registy is responsible for handling POD addresses
   int m_collectionID;
   ReferencingDataVector* m_data;
   ReferencingDataHandleVector m_handles;
