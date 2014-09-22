@@ -1,7 +1,7 @@
 //AUTOMATICALLY GENERATED - DO NOT EDIT
 
-#ifndef ParticleCollection_H
-#define  ParticleCollection_H
+#ifndef LorentzVectorCollection_H
+#define  LorentzVectorCollection_H
 
 #include <string>
 #include <vector>
@@ -11,52 +11,52 @@
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
-#include "Particle.h"
-#include "ParticleHandle.h"
+#include "LorentzVector.h"
+#include "LorentzVectorHandle.h"
 
-typedef std::vector<Particle> ParticleVector;
-typedef std::vector<ParticleHandle> ParticleHandleVector;
+typedef std::vector<LorentzVector> LorentzVectorVector;
+typedef std::vector<LorentzVectorHandle> LorentzVectorHandleVector;
 
-class ParticleCollectionIterator {
+class LorentzVectorCollectionIterator {
 
   public:
-    ParticleCollectionIterator(int index, const ParticleCollection* collection) : m_index(index), m_collection(collection) {}
+    LorentzVectorCollectionIterator(int index, const LorentzVectorCollection* collection) : m_index(index), m_collection(collection) {}
 
-    bool operator!=(const ParticleCollectionIterator& x) const {
+    bool operator!=(const LorentzVectorCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
 
-    const ParticleHandle operator*() const;
+    const LorentzVectorHandle operator*() const;
 
-    const ParticleCollectionIterator& operator++() const {
+    const LorentzVectorCollectionIterator& operator++() const {
       ++m_index;
       return *this;
     }
 
   private:
     mutable int m_index;
-    const ParticleCollection* m_collection;
+    const LorentzVectorCollection* m_collection;
 };
 
 /**
 A Collection is identified by an ID.
 */
 
-class ParticleCollection : public albers::CollectionBase {
+class LorentzVectorCollection : public albers::CollectionBase {
 
 public:
-  typedef const ParticleCollectionIterator const_iterator;
+  typedef const LorentzVectorCollectionIterator const_iterator;
 
-  ParticleCollection();
-//  ParticleCollection(ParticleVector* data, int collectionID);
-  ~ParticleCollection(){};
+  LorentzVectorCollection();
+//  LorentzVectorCollection(LorentzVectorVector* data, int collectionID);
+  ~LorentzVectorCollection(){};
 
   void clear();
   /// Append a new object to the collection, and return a Handle to this object.
-  ParticleHandle& create();
+  LorentzVectorHandle& create();
 
   /// Returns a Handle to the object at position index in the collection
-  const ParticleHandle& get(int index) const;
+  const LorentzVectorHandle& get(int index) const;
 
   /// Currently does nothing
   void prepareForWrite(const albers::Registry* registry);
@@ -74,11 +74,11 @@ public:
   }
 
   void* _getRawBuffer(){ return (void*)&m_data;};
-  std::vector<Particle>* _getBuffer(){ return m_data;};
+  std::vector<LorentzVector>* _getBuffer(){ return m_data;};
 private:
   unsigned m_collectionID;
-  ParticleVector* m_data;
-  ParticleHandleVector m_handles;
+  LorentzVectorVector* m_data;
+  LorentzVectorHandleVector m_handles;
 
 };
 

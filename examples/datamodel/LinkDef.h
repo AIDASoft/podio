@@ -8,14 +8,26 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 
-#pragma link C++ class DummyData+;
-#pragma link C++ class std::vector<DummyData>+;
-#pragma link C++ class DummyDataHandle+;
-#pragma link C++ class DummyDataCollection+;
-#pragma link C++ class ReferencingData+;
-#pragma link C++ class std::vector<ReferencingData>+;
-#pragma link C++ class ReferencingDataHandle+;
-#pragma link C++ class ReferencingDataCollection+;
+#pragma link C++ class JetParticle+;
+#pragma link C++ class std::vector<JetParticle>+;
+#pragma link C++ class JetParticleHandle+;
+#pragma link C++ class JetParticleCollection+;
+#pragma link C++ class Particle+;
+#pragma link C++ class std::vector<Particle>+;
+#pragma link C++ class ParticleHandle+;
+#pragma link C++ class ParticleCollection+;
+#pragma link C++ class LorentzVector+;
+#pragma link C++ class std::vector<LorentzVector>+;
+#pragma link C++ class LorentzVectorHandle+;
+#pragma link C++ class LorentzVectorCollection+;
+#pragma link C++ class EventInfo+;
+#pragma link C++ class std::vector<EventInfo>+;
+#pragma link C++ class EventInfoHandle+;
+#pragma link C++ class EventInfoCollection+;
+#pragma link C++ class Jet+;
+#pragma link C++ class std::vector<Jet>+;
+#pragma link C++ class JetHandle+;
+#pragma link C++ class JetCollection+;
 
 
 #pragma link C++ class albers::CollectionBase+;
