@@ -2,6 +2,7 @@
 #define Particle_H
 #include "LorentzVectorHandle.h"
 
+
 class ParticleCollection;
 
 class Particle {

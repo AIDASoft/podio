@@ -2,6 +2,7 @@
 #define ParticleHANDLE_H
 #include "Particle.h"
 #include "LorentzVectorHandle.h"
+
 #include <vector>
 //forward declaration of Particle container
 class ParticleCollection;
