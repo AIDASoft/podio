@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-// albers specific includes 
+// albers specific includes
 #include "albers/Registry.h"
 #include "albers/CollectionBase.h"
 
@@ -25,9 +25,9 @@ class ReferencingDataCollectionIterator {
     bool operator!=(const ReferencingDataCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
-         
+
     const ReferencingDataHandle operator*() const;
-         
+
     const ReferencingDataCollectionIterator& operator++() const {
       ++m_index;
       return *this;
@@ -52,8 +52,8 @@ public:
   ~ReferencingDataCollection(){};
 
   void clear();
-  //COLIN: why not returning reference instead of a copy? 
-  /// Append a new object to the collection, and return a Handle to this object. 
+  //COLIN: why not returning reference instead of a copy?
+  /// Append a new object to the collection, and return a Handle to this object.
   ReferencingDataHandle create();
 
   /// Returns a Handle to the object at position index in the collection
@@ -64,13 +64,13 @@ public:
   void prepareAfterRead(albers::Registry* registry);
   void setPODsAddress(const void* address);
   // COLIN: I don't see where setID is called, nor where m_collectionID is accessed outside this class. Tested that this function can be commented
-  void setID(int ID){m_collectionID = ID;};
+  void setID(unsigned ID){m_collectionID = ID;};
 
   // support for the iterator protocol
   const const_iterator begin() const {
     return const_iterator(0, this);
   }
-  const	const_iterator end() const { 
+  const	const_iterator end() const {
     return const_iterator(m_handles.size(), this);
   }
 
@@ -78,7 +78,7 @@ public:
   std::vector<ReferencingData>* _getBuffer(){ return m_data;};
 private:
   // COLIN: uninitialized? in fact it seems the Registy is responsible for handling POD addresses
-  int m_collectionID;
+  unsigned m_collectionID;
   ReferencingDataVector* m_data;
   ReferencingDataHandleVector m_handles;
 

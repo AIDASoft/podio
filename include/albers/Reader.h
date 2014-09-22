@@ -38,7 +38,7 @@ class Reader {
     template<typename T>
     bool getCollection(const std::string& name, T*& collection);
 
-    void* getBuffer(const int collectionID);
+    void* getBuffer(const unsigned collectionID);
 
     //  private:
     void getRegistry();

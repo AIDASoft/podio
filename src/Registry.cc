@@ -4,7 +4,7 @@
 
 namespace albers {
 
-  void Registry::doGetPODAddressFromID(int ID, void*& address) const {
+  void Registry::doGetPODAddressFromID(unsigned ID, void*& address) const {
     auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
     if (result == end(m_collectionIDs)){
       address = nullptr;
