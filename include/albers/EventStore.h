@@ -45,7 +45,7 @@ namespace albers {
     void next();
 
     /// set the reader
-    void setReader(Reader* reader){m_reader = reader;};
+    void setReader(Reader* reader);
 
   private:
     // methods

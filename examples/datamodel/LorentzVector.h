@@ -1,4 +1,4 @@
-#ifndef LorentzVector_H 
+#ifndef LorentzVector_H
 #define LorentzVector_H
 
 
@@ -8,6 +8,7 @@ class LorentzVector {
   friend LorentzVectorCollection;
 
 public:
+  // COLIN code generator must respect the naming scheme
   const float& Phi() const { return m_Phi;};
   const float& Eta() const { return m_Eta;};
   const float& Mass() const { return m_Mass;};

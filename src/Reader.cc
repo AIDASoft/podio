@@ -18,7 +18,7 @@ namespace albers {
     return buffer;
   }
 
-  void Reader::getRegistry(){
+  void Reader::readRegistry(){
     // COLIN: worried about what happens if this function is called twice.
     m_registry = new Registry();
     TTree* metadatatree = (TTree*)m_file->Get("metadata");
@@ -61,7 +61,7 @@ namespace albers {
   void Reader::openFile(const std::string& filename){
     m_file = new TFile(filename.c_str(),"READ","data file");
     m_eventTree = (TTree*) m_file->Get("events");
-    getRegistry();
+    readRegistry();
   }
 
   void Reader::readEvent(){

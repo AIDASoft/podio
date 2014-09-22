@@ -1,6 +1,7 @@
-#include "DummyData.h"
-#include "DummyDataCollection.h"
-#include "ReferencingDataCollection.h"
+#include "Particle.h"
+#include "ParticleCollection.h"
+#include "LorentzVector.h"
+#include "LorentzVectorCollection.h"
 
 #include "TBranch.h"
 #include "TFile.h"
@@ -22,40 +23,29 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
-  // populate the first collection
-  DummyDataCollection& coll = store.create<DummyDataCollection>("DummyData");
-  DummyDataHandle d1 = coll.create();
-  d1.setNumber(42);
-  DummyDataHandle d2 = coll.create();
-  d2.setNumber(23);
+  // populate a particle collection
+  // LorentzVector part
+  LorentzVectorCollection& lvcoll = store.create<LorentzVectorCollection>("ParticleP4");
+  LorentzVectorHandle lv1 = lvcoll.create();
+  lv1.setPhi(0.);
+  lv1.setEta(1.);
+  lv1.setMass(125.);
+  lv1.setPt(50.);
 
-  // populate the second collection
-  ReferencingDataCollection& coll2 = store.create<ReferencingDataCollection>("ReferencingData");
-  ReferencingDataHandle rd1 = coll2.create();
-  ReferencingDataHandle rd2 = coll2.create();
-
-  // Let's set a few references between the two collections
-  rd1.setDummyData(d2);
-  rd2.setDummyData(d1);
-
-  // print out for checking
-  std::cout << "Printing ref collection:" << std::endl;
-  for(const auto& ref : coll2){
-    if (ref.DummyData().isAvailable()) {
-      std::cout << "  The Referenced object has the number " << ref.DummyData().Number() << std::endl;
-    } else {
-      std::cout << "  Referenced object not present!" << std::endl;
-    }
-  }
+  // particle part
+  ParticleCollection& partcoll = store.create<ParticleCollection>("Particle");
+  ParticleHandle p1 = partcoll.create();
+  p1.setID(25);
+  p1.setP4(lv1);
 
   // and now for the writing
   // TODO: do that at a different time w/o coll pointer
   // COLIN: the tree branching is done in these functions. I was expecting it to be done before filling the tree. Couldn't the EventStore deal with this instead of the user? But that probably introduces a dependency we could do without.
-  writer.registerForWrite("DummyData", coll);
-  writer.registerForWrite("ReferencingData", coll2);
+  writer.registerForWrite("ParticleP4", lvcoll);
+  writer.registerForWrite("Particle", partcoll);
   writer.writeEvent();
   writer.finish();
-  std::cout << "Wrote example.root with two collections (DummyData/Referencing Data)" << std::endl;
+  std::cout << "Wrote example.root with two collections" << std::endl;
 
   return 0;
 }
