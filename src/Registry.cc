@@ -12,6 +12,13 @@ namespace albers {
       auto index = result - m_collectionIDs.begin();
       address = m_addresses[index];
       if (address == nullptr){
+	std::cout<<"adress is NULL!"<<std::endl;
+	// for (unsigned i=0; i<m_collectionIDs.size(); ++i) {
+	//   std::cout<<"coll "<<i<<" "<<m_collectionIDs[i]<<std::endl;
+	//   std::cout<<"coll "<<i<<" "<<m_names[i]<<std::endl;
+	//   std::cout<<"coll "<<i<<" "<<m_addresses[i]<<std::endl;
+	// }
+	// this is needed to set the address of handles embedded in other objects
 	std::cout << "On demand reading of container with ID " << ID << std::endl;
         address = m_reader->getBuffer(ID);
       }

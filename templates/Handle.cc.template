@@ -12,10 +12,11 @@ $setters
 bool  ${name}Handle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
-  } else if (m_registry != nullptr){
-    m_registry->getPODAddressFromID(m_containerID,m_container);
-    return true;
   }
+//  else if (m_registry != nullptr){
+//    m_registry->getPODAddressFromID(m_containerID,m_container);
+//    return true;
+//  }
   return false;
 }
 
@@ -25,6 +26,7 @@ void ${name}Handle::prepareForWrite(const albers::Registry* registry){
 
 void ${name}Handle::prepareAfterRead(albers::Registry* registry){
   m_registry = registry;
+  m_registry->getPODAddressFromID(m_containerID,m_container);
 }
 
 
@@ -33,4 +35,3 @@ ${name}Handle::${name}Handle(int index, int containerID, std::vector<${name}>* c
   m_containerID(containerID),
   m_container(container)
 {}
-

@@ -14,10 +14,11 @@
 bool  ReferencingDataHandle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
-  } else if (m_registry != nullptr){
-    m_registry->getPODAddressFromID(m_containerID,m_container);
-    return true;
   }
+//  else if (m_registry != nullptr){
+//    m_registry->getPODAddressFromID(m_containerID,m_container);
+//    return true;
+//  }
   return false;
 }
 
@@ -27,6 +28,7 @@ void ReferencingDataHandle::prepareForWrite(const albers::Registry* registry){
 
 void ReferencingDataHandle::prepareAfterRead(albers::Registry* registry){
   m_registry = registry;
+  m_registry->getPODAddressFromID(m_containerID,m_container);
 }
 
 
@@ -35,4 +37,3 @@ ReferencingDataHandle::ReferencingDataHandle(int index, int containerID, std::ve
   m_containerID(containerID),
   m_container(container)
 {}
-

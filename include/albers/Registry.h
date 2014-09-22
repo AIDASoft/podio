@@ -31,7 +31,7 @@ namespace albers {
   public:
 
   Registry():
-    m_addresses(), m_collectionIDs(), m_names(), m_reader()
+    m_addresses(), m_collectionIDs(), m_names()
   {};
 
     // get the pod address but don't do anything else
