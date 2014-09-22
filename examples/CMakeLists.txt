@@ -6,12 +6,6 @@ include_directories(
 file(GLOB sources datamodel/*.cc)
 file(GLOB headers datamodel/*.h)
 
-message( ${CMAKE_CURRENT_SOURCE_DIR}/datamodel ${headers})
-#foreach(header ${headers})
-#   get_filename_component(rhead ${header} NAME)
-#   message( ${rhead} )
-# endforeach()
-
 list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
 message(DICTIONARY ${headers})
 ROOT_GENERATE_DICTIONARY(ExampleDict ${headers} LINKDEF LinkDef.h )
