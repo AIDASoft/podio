@@ -1,13 +1,13 @@
 #include "DummyDataCollection.h"
 
-DummyDataCollection::DummyDataCollection() : m_data(new DummyDataVector() ){
+DummyDataCollection::DummyDataCollection() : m_collectionID(0), m_data(new DummyDataVector() ){
 }
 
-DummyDataHandle DummyDataCollection::get(int index) const{
+const DummyDataHandle& DummyDataCollection::get(int index) const{
   return m_handles[index];
 }
 
-DummyDataHandle DummyDataCollection::create(){
+DummyDataHandle& DummyDataCollection::create(){
     m_data->emplace_back(DummyData());
     int index = m_data->size()-1;
     m_handles.emplace_back(DummyDataHandle(index,m_collectionID, m_data));
@@ -16,7 +16,7 @@ DummyDataHandle DummyDataCollection::create(){
 
 void DummyDataCollection::clear(){
   m_data->clear();
-  m_handles.clear(); 
+  m_handles.clear();
 
 }
 

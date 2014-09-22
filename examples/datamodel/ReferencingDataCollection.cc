@@ -1,13 +1,13 @@
 #include "ReferencingDataCollection.h"
 
-ReferencingDataCollection::ReferencingDataCollection() : m_data(new ReferencingDataVector() ){
+ReferencingDataCollection::ReferencingDataCollection() : m_collectionID(0), m_data(new ReferencingDataVector() ){
 }
 
-ReferencingDataHandle ReferencingDataCollection::get(int index) const{
+const ReferencingDataHandle& ReferencingDataCollection::get(int index) const{
   return m_handles[index];
 }
 
-ReferencingDataHandle ReferencingDataCollection::create(){
+ReferencingDataHandle& ReferencingDataCollection::create(){
     m_data->emplace_back(ReferencingData());
     int index = m_data->size()-1;
     m_handles.emplace_back(ReferencingDataHandle(index,m_collectionID, m_data));
@@ -16,7 +16,7 @@ ReferencingDataHandle ReferencingDataCollection::create(){
 
 void ReferencingDataCollection::clear(){
   m_data->clear();
-  m_handles.clear(); 
+  m_handles.clear();
 
 }
 

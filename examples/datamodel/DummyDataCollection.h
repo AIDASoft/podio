@@ -52,18 +52,17 @@ public:
   ~DummyDataCollection(){};
 
   void clear();
-  //COLIN: why not returning reference instead of a copy?
   /// Append a new object to the collection, and return a Handle to this object.
-  DummyDataHandle create();
+  DummyDataHandle& create();
 
   /// Returns a Handle to the object at position index in the collection
-  DummyDataHandle get(int index) const;
+  const DummyDataHandle& get(int index) const;
 
   /// Currently does nothing
   void prepareForWrite(const albers::Registry* registry);
   void prepareAfterRead(albers::Registry* registry);
   void setPODsAddress(const void* address);
-  // COLIN: I don't see where setID is called, nor where m_collectionID is accessed outside this class. Tested that this function can be commented
+
   void setID(unsigned ID){m_collectionID = ID;};
 
   // support for the iterator protocol
@@ -77,7 +76,6 @@ public:
   void* _getRawBuffer(){ return (void*)&m_data;};
   std::vector<DummyData>* _getBuffer(){ return m_data;};
 private:
-  // COLIN: uninitialized? in fact it seems the Registy is responsible for handling POD addresses
   unsigned m_collectionID;
   DummyDataVector* m_data;
   DummyDataHandleVector m_handles;

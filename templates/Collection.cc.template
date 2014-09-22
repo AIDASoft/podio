@@ -1,13 +1,13 @@
 #include "${name}Collection.h"
 
-${name}Collection::${name}Collection() : m_data(new ${name}Vector() ){
+${name}Collection::${name}Collection() : m_collectionID(0), m_data(new ${name}Vector() ){
 }
 
-${name}Handle ${name}Collection::get(int index) const{
+const ${name}Handle& ${name}Collection::get(int index) const{
   return m_handles[index];
 }
 
-${name}Handle ${name}Collection::create(){
+${name}Handle& ${name}Collection::create(){
     m_data->emplace_back(${name}());
     int index = m_data->size()-1;
     m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
@@ -16,7 +16,7 @@ ${name}Handle ${name}Collection::create(){
 
 void ${name}Collection::clear(){
   m_data->clear();
-  m_handles.clear(); 
+  m_handles.clear();
 
 }
 
