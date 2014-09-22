@@ -1,0 +1,13 @@
+---
+
+Particle:
+  Px : float
+  Py : float
+  Pz : float
+  Energy : float
+  Charge : int
+
+ParticleRef:
+  Particle : ParticleHandle
+
+
