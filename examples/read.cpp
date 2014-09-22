@@ -14,7 +14,7 @@
 #include "albers/Registry.h"
 
 int main(){
-  gSystem->Load("libDataModelExample.so"); 
+  gSystem->Load("libDataModelExample.so");
   albers::Reader reader;
   albers::EventStore store(nullptr);
   store.setReader(&reader);
@@ -25,12 +25,8 @@ int main(){
   if (refsPresent){
     std::cout << "Printing ref collection:" << std::endl;
     for(const auto& ref : *refs){
-      if (ref.DummyData().isAvailable()) {
-        std::cout << "  The Referenced object has the number " << ref.DummyData().Number() << std::endl;
-      } else {
-	std::cout << "  Referenced object not present!" << std::endl;
-      }
-   
+      std::cout << "  The Referenced object has the number "
+	        << ref.DummyData().Number() << std::endl;
     }
   }
 

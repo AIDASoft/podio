@@ -10,7 +10,7 @@
 
 namespace albers {
 
-  void* Reader::getBuffer(const int collectionID) {
+  void* Reader::getBuffer(const unsigned collectionID) {
     void* buffer;
     auto name = m_registry->getNameFromID(collectionID);
     readCollection(name);

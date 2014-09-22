@@ -14,10 +14,11 @@
 bool  DummyDataHandle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
-  } else if (m_registry != nullptr){
-    m_registry->getPODAddressFromID(m_containerID,m_container);
-    return true;
   }
+//  else if (m_registry != nullptr){
+//    m_registry->getPODAddressFromID(m_containerID,m_container);
+//    return true;
+//  }
   return false;
 }
 
@@ -27,6 +28,7 @@ void DummyDataHandle::prepareForWrite(const albers::Registry* registry){
 
 void DummyDataHandle::prepareAfterRead(albers::Registry* registry){
   m_registry = registry;
+  m_registry->getPODAddressFromID(m_containerID,m_container);
 }
 
 
@@ -35,4 +37,3 @@ DummyDataHandle::DummyDataHandle(int index, int containerID, std::vector<DummyDa
   m_containerID(containerID),
   m_container(container)
 {}
-
