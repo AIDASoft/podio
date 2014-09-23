@@ -2,6 +2,7 @@
 #define ReferencingDataHANDLE_H
 #include "ReferencingData.h"
 #include "DummyDataHandle.h"
+
 #include <vector>
 //forward declaration of ReferencingData container
 class ReferencingDataCollection;

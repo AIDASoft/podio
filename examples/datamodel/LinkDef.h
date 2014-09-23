@@ -8,6 +8,8 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 
+#pragma link C++ class LorentzVector+;
+#pragma link C++ class std::vector<LorentzVector>+;
 #pragma link C++ class JetParticle+;
 #pragma link C++ class std::vector<JetParticle>+;
 #pragma link C++ class JetParticleHandle+;
@@ -16,10 +18,6 @@
 #pragma link C++ class std::vector<Particle>+;
 #pragma link C++ class ParticleHandle+;
 #pragma link C++ class ParticleCollection+;
-#pragma link C++ class LorentzVector+;
-#pragma link C++ class std::vector<LorentzVector>+;
-#pragma link C++ class LorentzVectorHandle+;
-#pragma link C++ class LorentzVectorCollection+;
 #pragma link C++ class EventInfo+;
 #pragma link C++ class std::vector<EventInfo>+;
 #pragma link C++ class EventInfoHandle+;

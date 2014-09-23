@@ -1,13 +1,14 @@
 ---
 
-Particle:
-  Px : float
-  Py : float
-  Pz : float
-  Energy : float
-  Charge : int
+datatypes:
+  Particle:
+    Px : float
+    Py : float
+    Pz : float
+    Energy : float
+    Charge : int
 
-ParticleRef:
-  Particle : ParticleHandle
+  ParticleRef:
+    Particle : ParticleHandle
 
 

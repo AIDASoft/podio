@@ -30,7 +30,7 @@ void processEvent(albers::EventStore& store) {
   if (particles_available){
     std::cout << "Printing Particle collection:" << std::endl;
     for(const auto& ref : *refs){
-      std::cout << "particle: " << ref.ID() << " " << ref.P4().Mass() << std::endl;
+      std::cout << "particle: " << ref.ID() << " " << ref.P4().Mass << std::endl;
     }
   }
 }

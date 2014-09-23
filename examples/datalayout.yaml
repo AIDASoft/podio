@@ -1,9 +1,9 @@
 ---
+datatypes:
+  DummyData:
+    Number   : int
 
-DummyData:
-  Number   : int
+  ReferencingData:
+    DummyData : DummyDataHandle
 
-ReferencingData:
-  DummyData : DummyDataHandle
-#  Number : int
 

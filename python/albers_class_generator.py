@@ -40,9 +40,28 @@ class ClassGenerator(object):
     self.created_classes = []
     self.requested_classes = []
 
+  def validate_yaml(self,content):
+    pass
+
   def process(self):
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
+    self.validate_yaml(content)
+    if content.has_key("components"):
+      self.process_components(content["components"])
+    if content.has_key("datatypes"):
+      self.process_datatypes(content["datatypes"])
+    self.create_linkDef()
+    self.print_report()
+
+  def process_components(self,content):
+    """ """
+    for name in content.iterkeys():
+      self.requested_classes.append(name)
+    for name, components in content.iteritems():
+      self.create_component(name, components)
+
+  def process_datatypes(self,content):
     for name in content.iterkeys():
       self.requested_classes.append(name)
       self.requested_classes.append("%sHandle" %name)
@@ -50,8 +69,6 @@ class ClassGenerator(object):
       self.create_class(name, components)
       self.create_class_handle(name, components)
       self.create_collection(name, components)
-    self.create_linkDef()
-    self.print_report()
 
   def print_report(self):
     if self.verbose:
@@ -177,6 +194,25 @@ class ClassGenerator(object):
     self.fill_templates("Collection",substitutions)
     self.created_classes.append("%sCollection"%classname)
 
+  def create_component(self, classname, components):
+    """ Create a component class to be used within the data types
+        Components can only contain simple data types and no user 
+        defined ones
+    """
+    for klass in components.itervalues():
+      if klass in self.buildin_types:
+        pass
+      else:
+        raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(classname, klass))
+    members = ""
+    for name, klass in components.iteritems():
+      members+= "  %s %s;\n" %(klass, name)
+    substitutions = {"members"  : members,
+                     "name"     : classname
+    }
+    self.fill_templates("Component",substitutions)
+    self.created_classes.append(classname)
+
   def write_file(self, name,content):
     fullname = os.path.join(self.install_dir,name)
     open(fullname, "w").write(content)
@@ -185,6 +221,9 @@ class ClassGenerator(object):
     # "POD" denotes the real class;
     # only headers and the FN should not contain POD
     if category == "POD":
+      FN = ""
+      endings = ("h")
+    elif category == "Component":
       FN = ""
       endings = ("h")
     else:

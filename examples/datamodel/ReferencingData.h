@@ -2,6 +2,7 @@
 #define ReferencingData_H
 #include "DummyDataHandle.h"
 
+
 class ReferencingDataCollection;
 
 class ReferencingData {

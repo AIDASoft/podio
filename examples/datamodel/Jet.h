@@ -1,6 +1,6 @@
 #ifndef Jet_H 
 #define Jet_H
-#include "LorentzVectorHandle.h"
+#include "LorentzVector.h"
 
 
 class JetCollection;
@@ -9,13 +9,13 @@ class Jet {
   friend JetCollection;
 
 public:
-  const LorentzVectorHandle& P4() const { return m_P4;};
+  const LorentzVector& P4() const { return m_P4;};
 
-  void setP4(LorentzVectorHandle& value){ m_P4 = value;};
+  void setP4(LorentzVector& value){ m_P4 = value;};
 
 
 private:
-  LorentzVectorHandle m_P4;
+  LorentzVector m_P4;
 
 };
 

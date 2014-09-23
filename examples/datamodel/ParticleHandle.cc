@@ -7,10 +7,10 @@
 #include "ParticleCollection.h"
 
   const int& ParticleHandle::ID() const { return m_container->at(m_index).ID();}
-  const LorentzVectorHandle& ParticleHandle::P4() const { return m_container->at(m_index).P4();}
+  const LorentzVector& ParticleHandle::P4() const { return m_container->at(m_index).P4();}
 
   void ParticleHandle::setID(int value){ m_container->at(m_index).setID(value);}
-  void ParticleHandle::setP4(LorentzVectorHandle value){ m_container->at(m_index).setP4(value);}
+  void ParticleHandle::setP4(LorentzVector value){ m_container->at(m_index).setP4(value);}
 
 
 bool  ParticleHandle::isAvailable() const {

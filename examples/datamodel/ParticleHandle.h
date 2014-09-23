@@ -1,7 +1,7 @@
 #ifndef ParticleHANDLE_H
 #define ParticleHANDLE_H
 #include "Particle.h"
-#include "LorentzVectorHandle.h"
+#include "LorentzVector.h"
 
 #include <vector>
 //forward declaration of Particle container
@@ -21,10 +21,10 @@ public:
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
   const int& ID() const;
-  const LorentzVectorHandle& P4() const;
+  const LorentzVector& P4() const;
 
   void setID(int value);
-  void setP4(LorentzVectorHandle value);
+  void setP4(LorentzVector value);
 
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?
