@@ -6,9 +6,9 @@
 #include "DummyData.h"
 #include "DummyDataCollection.h"
 
-  const int& DummyDataHandle::Number() const { return m_container->at(m_index).Number();}
+  const int& DummyDataHandle::Number() const { return m_container->at(m_index).Number;}
 
-  void DummyDataHandle::setNumber(int value){ m_container->at(m_index).setNumber(value);}
+  void DummyDataHandle::setNumber(int value){ m_container->at(m_index).Number = value;}
 
 
 bool  DummyDataHandle::isAvailable() const {

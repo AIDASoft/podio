@@ -6,11 +6,11 @@
 #include "JetParticle.h"
 #include "JetParticleCollection.h"
 
-  const JetHandle& JetParticleHandle::Jet() const { return m_container->at(m_index).Jet();}
-  const ParticleHandle& JetParticleHandle::Particle() const { return m_container->at(m_index).Particle();}
+  const JetHandle& JetParticleHandle::Jet() const { return m_container->at(m_index).Jet;}
+  const ParticleHandle& JetParticleHandle::Particle() const { return m_container->at(m_index).Particle;}
 
-  void JetParticleHandle::setJet(JetHandle value){ m_container->at(m_index).setJet(value);}
-  void JetParticleHandle::setParticle(ParticleHandle value){ m_container->at(m_index).setParticle(value);}
+  void JetParticleHandle::setJet(JetHandle value){ m_container->at(m_index).Jet = value;}
+  void JetParticleHandle::setParticle(ParticleHandle value){ m_container->at(m_index).Particle = value;}
 
 
 bool  JetParticleHandle::isAvailable() const {

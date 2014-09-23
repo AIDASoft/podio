@@ -6,9 +6,9 @@
 #include "ParticleRef.h"
 #include "ParticleRefCollection.h"
 
-  const ParticleHandle& ParticleRefHandle::Particle() const { return m_container->at(m_index).Particle();}
+  const ParticleHandle& ParticleRefHandle::Particle() const { return m_container->at(m_index).Particle;}
 
-  void ParticleRefHandle::setParticle(ParticleHandle value){ m_container->at(m_index).setParticle(value);}
+  void ParticleRefHandle::setParticle(ParticleHandle value){ m_container->at(m_index).Particle = value;}
 
 
 bool  ParticleRefHandle::isAvailable() const {

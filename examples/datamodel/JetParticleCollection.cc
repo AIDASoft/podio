@@ -22,8 +22,8 @@ void JetParticleCollection::clear(){
 
 void JetParticleCollection::prepareForWrite(const albers::Registry* registry){
   for(auto& data : *m_data){
-     data.m_Particle.prepareForWrite(registry);
-    data.m_Particle.prepareForWrite(registry);
+     data.Particle.prepareForWrite(registry);
+    data.Particle.prepareForWrite(registry);
   }
 }
 
@@ -31,8 +31,8 @@ void JetParticleCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
   for (auto& data : *m_data){
-    data.m_Particle.prepareAfterRead(registry);
-data.m_Particle.prepareAfterRead(registry);
+    data.Particle.prepareAfterRead(registry);
+data.Particle.prepareAfterRead(registry);
 
     m_handles.emplace_back(JetParticleHandle(index,m_collectionID, m_data));
     ++index;
