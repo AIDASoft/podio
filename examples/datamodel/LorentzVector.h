@@ -9,6 +9,7 @@ class LorentzVector {
 
 public:
   // COLIN code generator must respect the naming scheme
+  // COLIN weird to return a const & for int, floats, etc. strings should be returned as const char*
   const float& Phi() const { return m_Phi;};
   const float& Eta() const { return m_Eta;};
   const float& Mass() const { return m_Mass;};
