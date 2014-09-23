@@ -66,6 +66,9 @@ namespace albers {
 
     std::vector<std::string>& names(){ return m_names;};
 
+    /// Prints collection information COLIN: to be implemented
+    // void print() const;
+
   private:
     void doGetPODAddressFromID(unsigned ID, void*& address) const;
     std::vector<void*>  m_addresses;
