@@ -40,8 +40,11 @@ class Reader {
 
     void* getBuffer(const unsigned collectionID);
 
+    Registry* getRegistry() {return m_registry;}
+
+    // COLIN: some of the stuff below should be private
     //  private:
-    void getRegistry();
+    void readRegistry();
     CollectionBase* readCollection(const std::string& name);
 
     typedef std::pair<CollectionBase*, std::string> Input;

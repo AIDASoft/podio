@@ -1,13 +1,13 @@
 #include "ParticleCollection.h"
 
-ParticleCollection::ParticleCollection() : m_data(new ParticleVector() ){
+ParticleCollection::ParticleCollection() : m_collectionID(0), m_data(new ParticleVector() ){
 }
 
-ParticleHandle ParticleCollection::get(int index) const{
+const ParticleHandle& ParticleCollection::get(int index) const{
   return m_handles[index];
 }
 
-ParticleHandle ParticleCollection::create(){
+ParticleHandle& ParticleCollection::create(){
     m_data->emplace_back(Particle());
     int index = m_data->size()-1;
     m_handles.emplace_back(ParticleHandle(index,m_collectionID, m_data));
@@ -16,19 +16,22 @@ ParticleHandle ParticleCollection::create(){
 
 void ParticleCollection::clear(){
   m_data->clear();
-  m_handles.clear(); 
+  m_handles.clear();
 
 }
 
 void ParticleCollection::prepareForWrite(const albers::Registry* registry){
-
+  for(auto& data : *m_data){
+     data.m_P4.prepareForWrite(registry);
+  }
 }
 
 void ParticleCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
   for (auto& data : *m_data){
-    
+    data.m_P4.prepareAfterRead(registry);
+
     m_handles.emplace_back(ParticleHandle(index,m_collectionID, m_data));
     ++index;
   }

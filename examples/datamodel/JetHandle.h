@@ -1,29 +1,27 @@
-#ifndef ParticleHANDLE_H
-#define ParticleHANDLE_H
-#include "Particle.h"
+#ifndef JetHANDLE_H
+#define JetHANDLE_H
+#include "Jet.h"
 #include "LorentzVectorHandle.h"
 
 #include <vector>
-//forward declaration of Particle container
-class ParticleCollection;
+//forward declaration of Jet container
+class JetCollection;
 
 namespace albers {
   class Registry;
 }
 
-class ParticleHandle {
+class JetHandle {
 
-  friend ParticleCollection;
+  friend JetCollection;
 
 public:
 
- ParticleHandle(){};
+ JetHandle(){};
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
-  const int& ID() const;
   const LorentzVectorHandle& P4() const;
 
-  void setID(int value);
   void setP4(LorentzVectorHandle value);
 
 
@@ -33,11 +31,11 @@ public:
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
 private:
-  ParticleHandle(int index, int containerID,  std::vector<Particle>* container);
+  JetHandle(int index, int containerID,  std::vector<Jet>* container);
   int m_index;
   int m_containerID;
   // COLIN: after reading, the transient m_container address must be taken from the registry using the persistent m_containerID and set. This seems to happen in isAvailable... why not in prepareAfterRead?
-  mutable std::vector<Particle>* m_container; //! transient
+  mutable std::vector<Jet>* m_container; //! transient
   albers::Registry* m_registry; //! transient
 //  bool _retrieveData();
 

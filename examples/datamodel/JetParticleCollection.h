@@ -1,7 +1,7 @@
 //AUTOMATICALLY GENERATED - DO NOT EDIT
 
-#ifndef ParticleCollection_H
-#define  ParticleCollection_H
+#ifndef JetParticleCollection_H
+#define  JetParticleCollection_H
 
 #include <string>
 #include <vector>
@@ -11,52 +11,52 @@
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
-#include "Particle.h"
-#include "ParticleHandle.h"
+#include "JetParticle.h"
+#include "JetParticleHandle.h"
 
-typedef std::vector<Particle> ParticleVector;
-typedef std::vector<ParticleHandle> ParticleHandleVector;
+typedef std::vector<JetParticle> JetParticleVector;
+typedef std::vector<JetParticleHandle> JetParticleHandleVector;
 
-class ParticleCollectionIterator {
+class JetParticleCollectionIterator {
 
   public:
-    ParticleCollectionIterator(int index, const ParticleCollection* collection) : m_index(index), m_collection(collection) {}
+    JetParticleCollectionIterator(int index, const JetParticleCollection* collection) : m_index(index), m_collection(collection) {}
 
-    bool operator!=(const ParticleCollectionIterator& x) const {
+    bool operator!=(const JetParticleCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
 
-    const ParticleHandle operator*() const;
+    const JetParticleHandle operator*() const;
 
-    const ParticleCollectionIterator& operator++() const {
+    const JetParticleCollectionIterator& operator++() const {
       ++m_index;
       return *this;
     }
 
   private:
     mutable int m_index;
-    const ParticleCollection* m_collection;
+    const JetParticleCollection* m_collection;
 };
 
 /**
 A Collection is identified by an ID.
 */
 
-class ParticleCollection : public albers::CollectionBase {
+class JetParticleCollection : public albers::CollectionBase {
 
 public:
-  typedef const ParticleCollectionIterator const_iterator;
+  typedef const JetParticleCollectionIterator const_iterator;
 
-  ParticleCollection();
-//  ParticleCollection(ParticleVector* data, int collectionID);
-  ~ParticleCollection(){};
+  JetParticleCollection();
+//  JetParticleCollection(JetParticleVector* data, int collectionID);
+  ~JetParticleCollection(){};
 
   void clear();
   /// Append a new object to the collection, and return a Handle to this object.
-  ParticleHandle& create();
+  JetParticleHandle& create();
 
   /// Returns a Handle to the object at position index in the collection
-  const ParticleHandle& get(int index) const;
+  const JetParticleHandle& get(int index) const;
 
   /// Currently does nothing
   void prepareForWrite(const albers::Registry* registry);
@@ -74,11 +74,11 @@ public:
   }
 
   void* _getRawBuffer(){ return (void*)&m_data;};
-  std::vector<Particle>* _getBuffer(){ return m_data;};
+  std::vector<JetParticle>* _getBuffer(){ return m_data;};
 private:
   unsigned m_collectionID;
-  ParticleVector* m_data;
-  ParticleHandleVector m_handles;
+  JetParticleVector* m_data;
+  JetParticleHandleVector m_handles;
 
 };
 

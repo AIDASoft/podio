@@ -18,8 +18,8 @@ _text_ = """
 
   Used
     %s
-  to create 
-    %s classes 
+  to create
+    %s classes
   in
     %s/
 
@@ -64,7 +64,7 @@ class ClassGenerator(object):
       for i, line in enumerate(figure):
         print
         print line+text.splitlines()[i],
-      print "     'Homage to the Square' - Josef Albers" 
+      print "     'Homage to the Square' - Josef Albers"
       print
 
   def create_linkDef(self):
@@ -72,12 +72,12 @@ class ClassGenerator(object):
       for klass in self.created_classes:
          content += "#pragma link C++ class %s+;\n" %klass
          if not (klass.endswith("Handle") or klass.endswith("Collection")):
-           content += "#pragma link C++ class std::vector<%s>+;\n" %klass 
+           content += "#pragma link C++ class std::vector<%s>+;\n" %klass
       templatefile = os.path.join(self.template_dir,"LinkDef.h.template")
       template = open(templatefile,"r").read()
       content = string.Template(template).substitute({"classes" : content})
       self.write_file("LinkDef.h",content)
-      
+
   def prepare_for_writing_body(self, components):
       handles = []
       for name, klass in components.iteritems():
@@ -86,7 +86,7 @@ class ClassGenerator(object):
       prepareforwriting = ""
       if (len(handles) !=0):
         prepareforwriting = "  for(auto& data : *m_data){\n %s  }"
-        handleupdate = "" 
+        handleupdate = ""
         for handle in handles:
           handleupdate+= "    data.m_%s.prepareForWrite(registry);\n" %name
         prepareforwriting= prepareforwriting % handleupdate
@@ -98,13 +98,13 @@ class ClassGenerator(object):
       for name, klass in components.iteritems():
         if klass.endswith("Handle"):
             handles.append(klass)
-      prepareafterreadbody="" 
+      prepareafterreadbody=""
 #      prepareafterreadbody = "for(auto& data : *m_data){\n %s\n  }"
       for handle in handles:
         prepareafterreadbody+= "data.m_%s.prepareAfterRead(registry);\n" %name
 
       return prepareafterreadbody
-    #TODO: recursive call and support for vectors            
+    #TODO: recursive call and support for vectors
 
   def create_class(self, classname, components):
     # check whether all member types are known
@@ -114,9 +114,9 @@ class ClassGenerator(object):
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
-        includes += '#include "%s.h"' %klass
+        includes += '#include "%s.h"\n' %klass
       else:
-        raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass)) 
+        raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
     members = ""
     getters = ""
     setters = ""
@@ -124,7 +124,7 @@ class ClassGenerator(object):
       members+= "  %s m_%s;\n" %(klass, name)
       getters+= "  const %s& %s() const { return m_%s;};\n" %(klass, name, name)
       setters += "  void set%s(%s& value){ m_%s = value;};\n" %(name, klass, name)
-  
+
     substitutions = {"includes" : includes,
                      "members"  : members,
                      "getters"  : getters,
@@ -143,14 +143,14 @@ class ClassGenerator(object):
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
-        includes += '#include "%s.h"' %klass
+        includes += '#include "%s.h"\n' %klass
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
     getters = ""
     setters = ""
     getter_declarations = ""
-    setter_declarations = "" 
+    setter_declarations = ""
     for name, klass in components.iteritems():
       getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
       getters+= "  const %s& %sHandle::%s() const { return m_container->at(m_index).%s();}\n" %(klass, classname, name, name)
@@ -172,7 +172,7 @@ class ClassGenerator(object):
     prepareafterreadbody = self.prepare_after_read_body(components)
     substitutions = { "name" : classname,
                       "prepareforwritingbody" : prepareforwritingbody,
-                      "prepareafterreadbody" : prepareafterreadbody       
+                      "prepareafterreadbody" : prepareafterreadbody
     }
     self.fill_templates("Collection",substitutions)
     self.created_classes.append("%sCollection"%classname)
@@ -206,9 +206,9 @@ if __name__ == "__main__":
 
 
   usage = """usage: %prog [options] <description.yaml> <targetdir>
-    
+
     Given a <description.yaml>
-    it creates data classes 
+    it creates data classes
     and a LinkDef.h file in
     the specified <targetdir>.
 """

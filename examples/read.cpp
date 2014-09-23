@@ -1,5 +1,4 @@
-#include "DummyDataCollection.h"
-#include "ReferencingDataCollection.h"
+#include "ParticleCollection.h"
 #include "TBranch.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -19,14 +18,14 @@ int main(){
   albers::EventStore store(nullptr);
   store.setReader(&reader);
   reader.openFile("example.root");
-  ReferencingDataCollection* refs(nullptr);
-  bool refsPresent = store.get("ReferencingData",refs);
 
-  if (refsPresent){
-    std::cout << "Printing ref collection:" << std::endl;
+  ParticleCollection* refs(nullptr);
+  bool present = store.get("Particle",refs);
+
+  if (present){
+    std::cout << "Printing Particle collection:" << std::endl;
     for(const auto& ref : *refs){
-      std::cout << "  The Referenced object has the number "
-	        << ref.DummyData().Number() << std::endl;
+      std::cout << "particle: " << ref.ID()<< " " << ref.P4().Mass() << std::endl;
     }
   }
 

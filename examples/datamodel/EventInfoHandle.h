@@ -1,30 +1,27 @@
-#ifndef ParticleHANDLE_H
-#define ParticleHANDLE_H
-#include "Particle.h"
-#include "LorentzVectorHandle.h"
+#ifndef EventInfoHANDLE_H
+#define EventInfoHANDLE_H
+#include "EventInfo.h"
 
 #include <vector>
-//forward declaration of Particle container
-class ParticleCollection;
+//forward declaration of EventInfo container
+class EventInfoCollection;
 
 namespace albers {
   class Registry;
 }
 
-class ParticleHandle {
+class EventInfoHandle {
 
-  friend ParticleCollection;
+  friend EventInfoCollection;
 
 public:
 
- ParticleHandle(){};
+ EventInfoHandle(){};
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
-  const int& ID() const;
-  const LorentzVectorHandle& P4() const;
+  const int& Number() const;
 
-  void setID(int value);
-  void setP4(LorentzVectorHandle value);
+  void setNumber(int value);
 
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?
@@ -33,11 +30,11 @@ public:
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
 private:
-  ParticleHandle(int index, int containerID,  std::vector<Particle>* container);
+  EventInfoHandle(int index, int containerID,  std::vector<EventInfo>* container);
   int m_index;
   int m_containerID;
   // COLIN: after reading, the transient m_container address must be taken from the registry using the persistent m_containerID and set. This seems to happen in isAvailable... why not in prepareAfterRead?
-  mutable std::vector<Particle>* m_container; //! transient
+  mutable std::vector<EventInfo>* m_container; //! transient
   albers::Registry* m_registry; //! transient
 //  bool _retrieveData();
 

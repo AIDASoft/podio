@@ -19,7 +19,7 @@ namespace albers {
   }
 
   bool EventStore::doGet(const std::string& name, CollectionBase*& collection) const {
-    // COLIN: I was expecting the registry to be used here. 
+    // COLIN: I was expecting the registry to be used here.
     auto result = std::find_if(begin(m_collections), end(m_collections),
                                [name](const CollPair& item)->bool { return name==item.first; }
 			      );
@@ -52,5 +52,12 @@ namespace albers {
       coll.second->clear();
     }
   }
+
+  /// set the reader
+  void EventStore::setReader(Reader* reader){
+    m_reader = reader;
+    m_registry = reader->getRegistry();
+  };
+
 
 } // namespace
