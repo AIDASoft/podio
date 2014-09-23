@@ -10,7 +10,7 @@
 
 namespace albers {
 
-  Writer::Writer(const std::string& filename, Registry* registry) : 
+  Writer::Writer(const std::string& filename, Registry* registry) :
     m_filename(filename),
     m_registry(registry)
   {
@@ -26,16 +26,16 @@ namespace albers {
   void Writer::writeEvent(){
     for (auto& coll : m_storedCollections){
       coll->prepareForWrite(m_registry);
-    }    
+    }
     m_datatree->Fill();
-    m_file->Write();
+    // m_file->Write();
   }
 
   void Writer::finish(){
-    // now we want to safe the metadata     
+    // now we want to safe the metadata
     m_metadatatree->Branch("Registry",m_registry);
     m_metadatatree->Fill();
-    m_file->Write(); 
+    m_file->Write();
     m_file->Close();
   }
 
