@@ -28,6 +28,7 @@ class Registry;
 class Reader {
   friend EventStore;
   public:
+    Reader() : m_eventNumber(0) {}
     ~Reader();
     void openFile(const std::string& filename);
     void closeFile(){};
@@ -36,7 +37,8 @@ class Reader {
     void readEvent();
 
     template<typename T>
-    bool getCollection(const std::string& name, T*& collection);
+    bool getCollection(const std::string& name,
+		       T*& collection);
 
     void* getBuffer(const unsigned collectionID);
 
@@ -47,12 +49,20 @@ class Reader {
     void readRegistry();
     CollectionBase* readCollection(const std::string& name);
 
+    /// Returns number of entries in the TTree
+    unsigned getEntries() const;
+
+    ///
+  void endOfEvent() { m_eventNumber++; m_inputs.clear(); }
+
+
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
 
     Registry* m_registry;
     TFile* m_file;
     TTree* m_eventTree;
+    unsigned m_eventNumber;
 };
 
 template<typename T>

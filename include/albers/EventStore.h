@@ -44,6 +44,8 @@ namespace albers {
     /// clears all collections. COLIN: choose a different name?
     void next();
 
+    void endOfEvent();
+
     /// set the reader
     void setReader(Reader* reader);
 

@@ -42,6 +42,9 @@ namespace albers {
     void getPODAddressFromID(unsigned ID, T*&) const;
 
     template<typename T>
+    void getPODAddressFromName(const std::string& name, T*&) const;
+
+    template<typename T>
     unsigned getIDFromPODAddress(T* address) const;
 
     template<typename T>
@@ -66,7 +69,7 @@ namespace albers {
 
     std::vector<std::string>& names(){ return m_names;};
 
-    /// Prints collection information COLIN: to be implemented
+    /// Prints collection informatiCOLIN: to be implemented
     // void print() const;
 
   private:
@@ -93,6 +96,17 @@ void Registry::getPODAddressFromID(unsigned ID, T*& address) const {
   void* tmp;
   doGetPODAddressFromID(ID, tmp);
   address = static_cast<T*>(tmp);
+ }
+
+template<typename T>
+void Registry::getPODAddressFromName(const std::string& name, T*& address) const {
+  auto result = std::find(begin(m_names), end(m_names), name);
+  if (result == end(m_names)){
+    address = nullptr;
+  } else {
+    auto index = result - m_names.begin();
+    address = static_cast<T*>(m_addresses[index]);
+  }
  }
 
 template<typename T>
