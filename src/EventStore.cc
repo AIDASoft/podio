@@ -41,7 +41,6 @@ namespace albers {
       //COLIN: not sure collection is set to the nullptr in this case, see EventStore.h
       return false;
     }
-    //COLIN: not needed?
     return false;
   }
 
@@ -51,6 +50,10 @@ namespace albers {
     for (auto& coll : m_collections){
       coll.second->clear();
     }
+  }
+
+  void EventStore::endOfEvent() {
+    m_collections.clear();
   }
 
   /// set the reader
