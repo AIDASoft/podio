@@ -21,7 +21,7 @@
 
 
 void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer) {
-  if(iEvent % 100 == 0)
+  if(iEvent % 1000 == 0)
     std::cout<<"processing event "<<iEvent<<std::endl;
 
   // fill event information
@@ -46,7 +46,7 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
   LorentzVectorHandle& lv1 = lvcoll->create();
   lv1.setPhi(0.);
   lv1.setEta(1.);
-  lv1.setMass(125.);
+  lv1.setMass(iEvent);
   lv1.setPt(50.);
   // particle part
   ParticleCollection* partcoll = nullptr;
@@ -78,7 +78,7 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
-  unsigned nevents=10000;
+  unsigned nevents=10;
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
 
@@ -97,5 +97,4 @@ int main(){
   }
 
   writer.finish();
-  std::cout << "Wrote example.root with two collections" << std::endl;
 }
