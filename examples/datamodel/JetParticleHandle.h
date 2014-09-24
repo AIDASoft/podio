@@ -5,6 +5,10 @@
 #include "ParticleHandle.h"
 
 #include <vector>
+
+// 
+// author: C. Bernet, B. Hegner
+
 //forward declaration of JetParticle container
 class JetParticleCollection;
 
@@ -18,7 +22,9 @@ class JetParticleHandle {
 
 public:
 
- JetParticleHandle(){};
+JetParticleHandle(){};
+
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  JetParticleHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
   const JetHandle& Jet() const;

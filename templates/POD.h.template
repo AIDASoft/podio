@@ -1,17 +1,13 @@
 #ifndef ${name}_H 
 #define ${name}_H
+
+// $description
+// author: $author
+
 $includes
 
-class ${name}Collection;
-
 class $name {
-  friend ${name}Collection;
-
 public:
-$getters
-$setters
-
-private:
 $members
 };
 

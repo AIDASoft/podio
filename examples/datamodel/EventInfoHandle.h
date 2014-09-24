@@ -3,6 +3,10 @@
 #include "EventInfo.h"
 
 #include <vector>
+
+// 
+// author: C. Bernet, B. Hegner
+
 //forward declaration of EventInfo container
 class EventInfoCollection;
 
@@ -16,7 +20,9 @@ class EventInfoHandle {
 
 public:
 
- EventInfoHandle(){};
+EventInfoHandle(){};
+
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  EventInfoHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
   const int& Number() const;

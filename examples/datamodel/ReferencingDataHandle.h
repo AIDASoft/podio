@@ -4,6 +4,10 @@
 #include "DummyDataHandle.h"
 
 #include <vector>
+
+// ref to dummy data
+// author: C. Bernet, B. Hegner
+
 //forward declaration of ReferencingData container
 class ReferencingDataCollection;
 
@@ -17,7 +21,9 @@ class ReferencingDataHandle {
 
 public:
 
- ReferencingDataHandle(){};
+ReferencingDataHandle(){};
+
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  ReferencingDataHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
   const DummyDataHandle& DummyData() const;

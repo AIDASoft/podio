@@ -3,6 +3,10 @@
 #include "DummyData.h"
 
 #include <vector>
+
+// test data
+// author: C. Bernet, B. Hegner
+
 //forward declaration of DummyData container
 class DummyDataCollection;
 
@@ -16,7 +20,9 @@ class DummyDataHandle {
 
 public:
 
- DummyDataHandle(){};
+DummyDataHandle(){};
+
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  DummyDataHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
   const int& Number() const;

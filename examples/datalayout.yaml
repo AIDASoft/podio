@@ -1,9 +1,19 @@
 ---
-datatypes:
-  DummyData:
-    Number   : int
+datatypes :
+  DummyData :
+    description : "Dummy Data Type"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name : Number
+       type : int
+       description: "test data"
 
-  ReferencingData:
-    DummyData : DummyDataHandle
+  ReferencingData :
+    description : "Dummy Referencing Type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name : DummyData
+       type : DummyDataHandle
+       description: "ref to dummy data"
 
 

@@ -1,14 +1,34 @@
 ---
 
 datatypes:
+  
   Particle:
-    Px : float
-    Py : float
-    Pz : float
-    Energy : float
-    Charge : int
-
+    description : "Naive Particle type"
+    author : "C. Bernet, B. Hegner"
+    members:
+      - name : Px
+        type : float 
+        description : "n"
+      - name : Py
+        type : float
+        description : "n"
+      - name : Pz
+        type : float
+        description : "n"
+      - name : Energy
+        type : float
+        description : "n"
+      - name : Charge
+        type : int
+        description : "n"
+      
   ParticleRef:
-    Particle : ParticleHandle
+     description : "Naive particle reference type"
+     author : "C. Bernet, B. Hegner"
+     members :
+       - name : Particle
+         type : ParticleHandle
+         description : "n"
+
 
 

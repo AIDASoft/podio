@@ -1,12 +1,16 @@
 #ifndef Particle_H 
 #define Particle_H
+
+// 
+// author: C. Bernet, B. Hegner
+
 #include "LorentzVector.h"
 
 
 class Particle {
 public:
-  int ID;
-  LorentzVector P4;
+  LorentzVector P4; // 
+  int ID; // 
 
 };
 
