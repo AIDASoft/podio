@@ -53,7 +53,7 @@ class Reader {
     unsigned getEntries() const;
 
     ///
-  void endOfEvent() { m_eventNumber++; m_inputs.clear(); }
+  void endOfEvent();
 
 
     typedef std::pair<CollectionBase*, std::string> Input;

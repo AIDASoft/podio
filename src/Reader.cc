@@ -78,12 +78,17 @@ namespace albers {
     }
   }
 
-  Reader::~Reader(){
+  Reader::~Reader() {
     // delete all collections
     // at the moment it is done in the EventStore;
     // TODO: who deletes the buffers?
   }
 
+  void Reader::endOfEvent() {
+    m_eventNumber++;
+    m_registry->resetAddresses();
+    m_inputs.clear();
+  }
 
   unsigned Reader::getEntries() const {
     return m_eventTree->GetEntries();
