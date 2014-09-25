@@ -1,9 +1,13 @@
 #ifndef ParticleHANDLE_H
 #define ParticleHANDLE_H
 #include "Particle.h"
-#include "LorentzVectorHandle.h"
+#include "LorentzVector.h"
 
 #include <vector>
+
+// 
+// author: C. Bernet, B. Hegner
+
 //forward declaration of Particle container
 class ParticleCollection;
 
@@ -17,14 +21,16 @@ class ParticleHandle {
 
 public:
 
- ParticleHandle(){};
+ParticleHandle(){};
+
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  ParticleHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
+  const LorentzVector& P4() const;
   const int& ID() const;
-  const LorentzVectorHandle& P4() const;
 
+  void setP4(LorentzVector value);
   void setID(int value);
-  void setP4(LorentzVectorHandle value);
 
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?

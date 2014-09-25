@@ -3,7 +3,6 @@
 #include "Particle.h"
 #include "ParticleCollection.h"
 #include "LorentzVector.h"
-#include "LorentzVectorCollection.h"
 
 #include "TBranch.h"
 #include "TFile.h"
@@ -34,27 +33,15 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
   EventInfoHandle& evinfo = evinfocoll->create();
   evinfo.setNumber(iEvent);
 
-  // populate a particle collection
-  // LorentzVector part
-  LorentzVectorCollection* lvcoll = nullptr;
-  store.get("ParticleP4", lvcoll);
-  if(lvcoll==nullptr) {
-    //COLIN: set up exception in store::get
-    std::cerr<<"collection ParticleP4 does not exist!"<<std::endl;
-    return;
-  }
-  LorentzVectorHandle& lv1 = lvcoll->create();
-  lv1.setPhi(0.);
-  lv1.setEta(1.);
-  lv1.setMass(iEvent);
-  lv1.setPt(50.);
+  LorentzVector lv1;
+  lv1.Phi  = 0;
+  lv1.Eta  = 1 ;
+  lv1.Mass = 125;
+  lv1.Pt   = 50.;
+
   // particle part
   ParticleCollection* partcoll = nullptr;
   store.get("Particle", partcoll);
-  if(lvcoll==nullptr) {
-    std::cerr<<"collection Particle does not exist!"<<std::endl;
-    return;
-  }
   ParticleHandle& p1 = partcoll->create();
   p1.setID(25 + iEvent);
   p1.setP4(lv1);
@@ -82,14 +69,10 @@ int main(){
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
 
-  // particle Lorentz vectors are stored in a separate collection
-  LorentzVectorCollection& lvcoll = store.create<LorentzVectorCollection>("ParticleP4");
-
   // particle part
   ParticleCollection& partcoll = store.create<ParticleCollection>("Particle");
 
   writer.registerForWrite("EventInfo", evinfocoll);
-  writer.registerForWrite("ParticleP4", lvcoll);
   writer.registerForWrite("Particle", partcoll);
 
   for(unsigned i=0; i<nevents; ++i) {

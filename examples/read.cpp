@@ -33,7 +33,7 @@ void processEvent(albers::EventStore& store, bool verbose) {
       std::cout << "particle collection:" << std::endl;
     for(const auto& ref : *refs){
       if(verbose)
-	std::cout << "\tparticle: " << ref.ID() << " " << ref.P4().Mass() << std::endl;
+	std::cout << "particle: " << ref.ID() << " " << ref.P4().Mass << std::endl;
     }
   }
 }

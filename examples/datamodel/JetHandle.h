@@ -1,9 +1,13 @@
 #ifndef JetHANDLE_H
 #define JetHANDLE_H
 #include "Jet.h"
-#include "LorentzVectorHandle.h"
+#include "LorentzVector.h"
 
 #include <vector>
+
+// 
+// author: C. Bernet, B. Hegner
+
 //forward declaration of Jet container
 class JetCollection;
 
@@ -17,12 +21,14 @@ class JetHandle {
 
 public:
 
- JetHandle(){};
+JetHandle(){};
+
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  JetHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
-  const LorentzVectorHandle& P4() const;
+  const LorentzVector& P4() const;
 
-  void setP4(LorentzVectorHandle value);
+  void setP4(LorentzVector value);
 
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?

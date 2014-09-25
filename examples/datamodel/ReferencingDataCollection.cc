@@ -22,7 +22,7 @@ void ReferencingDataCollection::clear(){
 
 void ReferencingDataCollection::prepareForWrite(const albers::Registry* registry){
   for(auto& data : *m_data){
-     data.m_DummyData.prepareForWrite(registry);
+     data.DummyData.prepareForWrite(registry);
   }
 }
 
@@ -30,7 +30,7 @@ void ReferencingDataCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
   for (auto& data : *m_data){
-    data.m_DummyData.prepareAfterRead(registry);
+    data.DummyData.prepareAfterRead(registry);
 
     m_handles.emplace_back(ReferencingDataHandle(index,m_collectionID, m_data));
     ++index;

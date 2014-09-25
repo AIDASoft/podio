@@ -1,20 +1,15 @@
 #ifndef ReferencingData_H 
 #define ReferencingData_H
+
+// ref to dummy data
+// author: C. Bernet, B. Hegner
+
 #include "DummyDataHandle.h"
 
-class ReferencingDataCollection;
 
 class ReferencingData {
-  friend ReferencingDataCollection;
-
 public:
-  const DummyDataHandle& DummyData() const { return m_DummyData;};
-
-  void setDummyData(DummyDataHandle& value){ m_DummyData = value;};
-
-
-private:
-  DummyDataHandle m_DummyData;
+  DummyDataHandle DummyData; //ref to dummy data 
 
 };
 

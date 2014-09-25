@@ -1,22 +1,49 @@
 ---
+components:
+  LorentzVector:
+    Mass : float
+    Pt : float
+    Eta : float
+    Phi : float
 
 # COLIN need to make sure we don't overwrite an existing class.. maybe a specific namespace for the EDM?
-EventInfo:
-  Number   : int
 
-LorentzVector:
-  Mass : float
-  Pt : float
-  Eta : float
-  Phi : float
+datatypes :
 
-Particle:
-  P4 : LorentzVectorHandle
-  ID : int
+  EventInfo :
+    description : "Event Info Data"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name : Number
+       type : int
+       description: ""
 
-Jet:
-  P4 : LorentzVectorHandle
+  Particle :
+    description : "Naive Particle Type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name : P4
+       type : LorentzVector
+       description : ""
+     - name : ID
+       type : int
+       description : ""
 
-JetParticle:
-  Jet : JetHandle
-  Particle : ParticleHandle
+  Jet :
+    description : "Naive Jet Type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name: P4
+       type : LorentzVector
+       description : ""
+
+  JetParticle :
+    description : "Example of referencing jet"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name : Jet
+       type : JetHandle
+       description : ""
+     - name : Particle
+       type : ParticleHandle
+       description : ""

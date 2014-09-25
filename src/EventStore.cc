@@ -60,7 +60,7 @@ namespace albers {
   void EventStore::setReader(Reader* reader){
     m_reader = reader;
     m_registry = reader->getRegistry();
-  };
+  }
 
 
 } // namespace

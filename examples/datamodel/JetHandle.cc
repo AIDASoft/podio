@@ -6,9 +6,9 @@
 #include "Jet.h"
 #include "JetCollection.h"
 
-  const LorentzVectorHandle& JetHandle::P4() const { return m_container->at(m_index).P4();}
+  const LorentzVector& JetHandle::P4() const { return m_container->at(m_index).P4;}
 
-  void JetHandle::setP4(LorentzVectorHandle value){ m_container->at(m_index).setP4(value);}
+  void JetHandle::setP4(LorentzVector value){ m_container->at(m_index).P4 = value;}
 
 
 bool  JetHandle::isAvailable() const {

@@ -1,21 +1,15 @@
 #ifndef Jet_H 
 #define Jet_H
-#include "LorentzVectorHandle.h"
 
+// 
+// author: C. Bernet, B. Hegner
 
-class JetCollection;
+#include "LorentzVector.h"
+
 
 class Jet {
-  friend JetCollection;
-
 public:
-  const LorentzVectorHandle& P4() const { return m_P4;};
-
-  void setP4(LorentzVectorHandle& value){ m_P4 = value;};
-
-
-private:
-  LorentzVectorHandle m_P4;
+  LorentzVector P4; // 
 
 };
 

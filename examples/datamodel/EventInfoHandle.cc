@@ -6,9 +6,9 @@
 #include "EventInfo.h"
 #include "EventInfoCollection.h"
 
-  const int& EventInfoHandle::Number() const { return m_container->at(m_index).Number();}
+  const int& EventInfoHandle::Number() const { return m_container->at(m_index).Number;}
 
-  void EventInfoHandle::setNumber(int value){ m_container->at(m_index).setNumber(value);}
+  void EventInfoHandle::setNumber(int value){ m_container->at(m_index).Number = value;}
 
 
 bool  EventInfoHandle::isAvailable() const {

@@ -40,9 +40,28 @@ class ClassGenerator(object):
     self.created_classes = []
     self.requested_classes = []
 
+  def validate_yaml(self,content):
+    pass
+
   def process(self):
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
+    self.validate_yaml(content)
+    if content.has_key("components"):
+      self.process_components(content["components"])
+    if content.has_key("datatypes"):
+      self.process_datatypes(content["datatypes"])
+    self.create_linkDef()
+    self.print_report()
+
+  def process_components(self,content):
+    """ """
+    for name in content.iterkeys():
+      self.requested_classes.append(name)
+    for name, components in content.iteritems():
+      self.create_component(name, components)
+
+  def process_datatypes(self,content):
     for name in content.iterkeys():
       self.requested_classes.append(name)
       self.requested_classes.append("%sHandle" %name)
@@ -50,8 +69,6 @@ class ClassGenerator(object):
       self.create_class(name, components)
       self.create_class_handle(name, components)
       self.create_collection(name, components)
-    self.create_linkDef()
-    self.print_report()
 
   def print_report(self):
     if self.verbose:
@@ -78,68 +95,80 @@ class ClassGenerator(object):
       content = string.Template(template).substitute({"classes" : content})
       self.write_file("LinkDef.h",content)
 
-  def prepare_for_writing_body(self, components):
+  def prepare_for_writing_body(self, members):
       handles = []
-      for name, klass in components.iteritems():
+      for member in members:
+        name = member["name"]
+        klass = member["type"]
         if klass.endswith("Handle"):
-            handles.append(klass)
+            handles.append(name)
       prepareforwriting = ""
       if (len(handles) !=0):
         prepareforwriting = "  for(auto& data : *m_data){\n %s  }"
         handleupdate = ""
         for handle in handles:
-          handleupdate+= "    data.m_%s.prepareForWrite(registry);\n" %name
+          handleupdate+= "    data.%s.prepareForWrite(registry);\n" %handle
         prepareforwriting= prepareforwriting % handleupdate
       return prepareforwriting
     #TODO: recursive call and support for vectors
 
-  def prepare_after_read_body(self, components):
+  def prepare_after_read_body(self, members):
       handles = []
-      for name, klass in components.iteritems():
+      for member in members:
+        name = member["name"]
+        klass = member["type"]
         if klass.endswith("Handle"):
-            handles.append(klass)
+            handles.append(name)
       prepareafterreadbody=""
 #      prepareafterreadbody = "for(auto& data : *m_data){\n %s\n  }"
       for handle in handles:
-        prepareafterreadbody+= "data.m_%s.prepareAfterRead(registry);\n" %name
+        prepareafterreadbody+= "data.%s.prepareAfterRead(registry);\n" %handle
 
       return prepareafterreadbody
     #TODO: recursive call and support for vectors
 
-  def create_class(self, classname, components):
+  def create_class(self, classname, definition):
     # check whether all member types are known
     # and prepare include directives
     includes = ""
-    for klass in components.itervalues():
+    description = definition["description"]
+    author      = definition["author"]
+    members = definition["members"]
+    for member in members:
+      klass = member["type"]
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
         includes += '#include "%s.h"\n' %klass
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
-    members = ""
-    getters = ""
-    setters = ""
-    for name, klass in components.iteritems():
-      members+= "  %s m_%s;\n" %(klass, name)
-      getters+= "  const %s& %s() const { return m_%s;};\n" %(klass, name, name)
-      setters += "  void set%s(%s& value){ m_%s = value;};\n" %(name, klass, name)
-
+    membersCode = ""
+#    gettersCode = ""
+#    settersCode = ""
+    for member in members:
+      name = member["name"]
+      klass = member["type"]
+      description = member["description"]
+      membersCode+= "  %s %s; //%s \n" %(klass, name, description)
     substitutions = {"includes" : includes,
-                     "members"  : members,
-                     "getters"  : getters,
-                     "setters"  : setters,
-                     "name"     : classname
+                     "members"  : membersCode,
+                     "name"     : classname,
+                     "description" : description,
+                     "author"   : author
     }
     self.fill_templates("POD",substitutions)
     self.created_classes.append(classname)
 
-  def create_class_handle(self, classname, components):
+  def create_class_handle(self, classname, definition):
     # check whether all member types are known
     # and prepare include directives
     includes = ""
     includes += '#include "%s.h"\n' %classname
-    for klass in components.itervalues():
+    description = definition["description"]
+    author      = definition["author"]
+    members = definition["members"]
+    for member in members:
+      klass = member["type"]
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
@@ -151,10 +180,13 @@ class ClassGenerator(object):
     setters = ""
     getter_declarations = ""
     setter_declarations = ""
-    for name, klass in components.iteritems():
+    for member in members:
+      name = member["name"]
+      klass = member["type"]
+      description = member["description"]
       getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
-      getters+= "  const %s& %sHandle::%s() const { return m_container->at(m_index).%s();}\n" %(klass, classname, name, name)
-      setters += "  void %sHandle::set%s(%s value){ m_container->at(m_index).set%s(value);}\n" %(classname, name, klass, name)
+      getters+= "  const %s& %sHandle::%s() const { return m_container->at(m_index).%s;}\n" %(klass, classname, name, name)
+      setters += "  void %sHandle::set%s(%s value){ m_container->at(m_index).%s = value;}\n" %(classname, name, klass, name)
       setter_declarations += "  void set%s(%s value);\n" %(name, klass)
 
     substitutions = {"includes" : includes,
@@ -162,20 +194,42 @@ class ClassGenerator(object):
                      "getter_declarations": getter_declarations,
                      "setters"  : setters,
                      "setter_declarations": setter_declarations,
-                     "name"     : classname
+                     "name"     : classname,
+                     "description" : description,
+                     "author"   : author 
     }
     self.fill_templates("Handle",substitutions)
     self.created_classes.append("%sHandle"%classname)
 
-  def create_collection(self, classname, components):
-    prepareforwritingbody = self.prepare_for_writing_body(components)
-    prepareafterreadbody = self.prepare_after_read_body(components)
+  def create_collection(self, classname, definition):
+    members = definition["members"]
+    prepareforwritingbody = self.prepare_for_writing_body(members)
+    prepareafterreadbody = self.prepare_after_read_body(members)
     substitutions = { "name" : classname,
                       "prepareforwritingbody" : prepareforwritingbody,
                       "prepareafterreadbody" : prepareafterreadbody
     }
     self.fill_templates("Collection",substitutions)
     self.created_classes.append("%sCollection"%classname)
+
+  def create_component(self, classname, components):
+    """ Create a component class to be used within the data types
+        Components can only contain simple data types and no user 
+        defined ones
+    """
+    for klass in components.itervalues():
+      if klass in self.buildin_types:
+        pass
+      else:
+        raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(classname, klass))
+    members = ""
+    for name, klass in components.iteritems():
+      members+= "  %s %s;\n" %(klass, name)
+    substitutions = {"members"  : members,
+                     "name"     : classname
+    }
+    self.fill_templates("Component",substitutions)
+    self.created_classes.append(classname)
 
   def write_file(self, name,content):
     fullname = os.path.join(self.install_dir,name)
@@ -185,6 +239,9 @@ class ClassGenerator(object):
     # "POD" denotes the real class;
     # only headers and the FN should not contain POD
     if category == "POD":
+      FN = ""
+      endings = ("h")
+    elif category == "Component":
       FN = ""
       endings = ("h")
     else:

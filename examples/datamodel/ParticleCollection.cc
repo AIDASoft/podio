@@ -21,17 +21,14 @@ void ParticleCollection::clear(){
 }
 
 void ParticleCollection::prepareForWrite(const albers::Registry* registry){
-  for(auto& data : *m_data){
-     data.m_P4.prepareForWrite(registry);
-  }
+
 }
 
 void ParticleCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
   for (auto& data : *m_data){
-    data.m_P4.prepareAfterRead(registry);
-
+    
     m_handles.emplace_back(ParticleHandle(index,m_collectionID, m_data));
     ++index;
   }
