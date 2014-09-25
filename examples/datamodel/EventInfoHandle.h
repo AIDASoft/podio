@@ -35,6 +35,10 @@ EventInfoHandle(){};
   void prepareForWrite(const albers::Registry*);  // use m_container to set m_containerID properly
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
+  bool operator==(const EventInfoHandle& other) const {
+       return (m_index==other.m_index) && (other.m_containerID==other.m_containerID);
+  }
+
 private:
   EventInfoHandle(int index, int containerID,  std::vector<EventInfo>* container);
   int m_index;
