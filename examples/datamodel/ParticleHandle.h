@@ -5,7 +5,7 @@
 
 #include <vector>
 
-// 
+// Status code
 // author: C. Bernet, B. Hegner
 
 //forward declaration of Particle container
@@ -28,9 +28,11 @@ ParticleHandle(){};
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
   const LorentzVector& P4() const;
   const int& ID() const;
+  const int& Status() const;
 
   void setP4(LorentzVector value);
   void setID(int value);
+  void setStatus(int value);
 
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?

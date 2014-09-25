@@ -1,33 +1,35 @@
-#ifndef EventInfoHANDLE_H
-#define EventInfoHANDLE_H
-#include "EventInfo.h"
+#ifndef MissingEnergyHANDLE_H
+#define MissingEnergyHANDLE_H
+#include "MissingEnergy.h"
 
 #include <vector>
 
-// Event number
+// 
 // author: C. Bernet, B. Hegner
 
-//forward declaration of EventInfo container
-class EventInfoCollection;
+//forward declaration of MissingEnergy container
+class MissingEnergyCollection;
 
 namespace albers {
   class Registry;
 }
 
-class EventInfoHandle {
+class MissingEnergyHandle {
 
-  friend EventInfoCollection;
+  friend MissingEnergyCollection;
 
 public:
 
-EventInfoHandle(){};
+MissingEnergyHandle(){};
 
-//TODO: Proper syntax to use, but ROOT doesn't handle it:  EventInfoHandle() = default;
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  MissingEnergyHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
-  const int& Number() const;
+  const float& Energy() const;
+  const float& Phi() const;
 
-  void setNumber(int value);
+  void setEnergy(float value);
+  void setPhi(float value);
 
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?
@@ -36,11 +38,11 @@ EventInfoHandle(){};
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
 private:
-  EventInfoHandle(int index, int containerID,  std::vector<EventInfo>* container);
+  MissingEnergyHandle(int index, int containerID,  std::vector<MissingEnergy>* container);
   int m_index;
   int m_containerID;
   // COLIN: after reading, the transient m_container address must be taken from the registry using the persistent m_containerID and set. This seems to happen in isAvailable... why not in prepareAfterRead?
-  mutable std::vector<EventInfo>* m_container; //! transient
+  mutable std::vector<MissingEnergy>* m_container; //! transient
   albers::Registry* m_registry; //! transient
 //  bool _retrieveData();
 
