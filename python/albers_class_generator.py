@@ -36,7 +36,7 @@ class ClassGenerator(object):
     self.install_dir = install_dir
     self.template_dir = os.path.join(thisdir,"../templates")
     self.verbose=verbose
-    self.buildin_types = ["int","float","double","unsigned int"]
+    self.buildin_types = ["int","float","double","unsigned int","unsigned"]
     self.created_classes = []
     self.requested_classes = []
 
@@ -150,6 +150,16 @@ class ClassGenerator(object):
       klass = member["type"]
       description = member["description"]
       membersCode+= "  %s %s; //%s \n" %(klass, name, description)
+
+    # now handle the one-to-many relations
+    refvectors = []
+    if definition.has_key("OneToManyRelations"):
+      refvectors = definition["OneToManyRelations"]
+    for refvector in refvectors:
+      name = refvector["name"]
+      membersCode+= "  unsigned int %s_begin; \n" %(name)
+      membersCode+= "  unsigned %s_end; \n" %(name)    
+
     substitutions = {"includes" : includes,
                      "members"  : membersCode,
                      "name"     : classname,
@@ -176,10 +186,26 @@ class ClassGenerator(object):
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
+    # check one-to-many relations for consistency
+    # and prepare include directives
+    refvectors = []
+    if definition.has_key("OneToManyRelations"):
+      includes += "#include <vector>\n"
+      refvectors = definition["OneToManyRelations"]
+      for item in refvectors:
+        klass = item["type"]
+        if klass in self.requested_classes:
+          includes += '#include "%s.h"\n' %klass
+        else:
+          raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname\
+, klass))
+
     getters = ""
     setters = ""
     getter_declarations = ""
     setter_declarations = ""
+
+    # handle standard members
     for member in members:
       name = member["name"]
       klass = member["type"]
@@ -189,6 +215,23 @@ class ClassGenerator(object):
       setters += "  void %sHandle::set%s(%s value){ m_container->at(m_index).%s = value;}\n" %(classname, name, klass, name)
       setter_declarations += "  void set%s(%s value);\n" %(name, klass)
 
+    # handle one-to-many relations
+    references_members = ""
+    references_declarations = ""
+    references = "" 
+    templatefile = os.path.join(self.template_dir,"RefVector.cc.template")
+    references_template = open(templatefile,"r").read()
+    templatefile = os.path.join(self.template_dir,"RefVector.h.template")
+    references_declarations_template = open(templatefile,"r").read() 
+    for refvector in refvectors:
+      substitutions = {"component" : refvector["name"],
+                       "componenttype" : refvector["type"], 
+                       "classname" : classname
+                      }
+      references_declarations += string.Template(references_declarations_template).substitute(substitutions)
+      references += string.Template(references_template).substitute(substitutions)
+      references_members += "std::vector<%sHandle>* m_%s;\n" %(refvector["type"], refvector["name"])
+
     substitutions = {"includes" : includes,
                      "getters"  : getters,
                      "getter_declarations": getter_declarations,
@@ -196,8 +239,11 @@ class ClassGenerator(object):
                      "setter_declarations": setter_declarations,
                      "name"     : classname,
                      "description" : description,
-                     "author"   : author 
-    }
+                     "author"   : author,
+                     "references" : references,
+                     "references_declarations" : references_declarations,
+                     "references_members" : references_members
+                    }
     self.fill_templates("Handle",substitutions)
     self.created_classes.append("%sHandle"%classname)
 
@@ -255,6 +301,9 @@ class ClassGenerator(object):
       filename = "%s%s.%s" %(substitutions["name"],FN,ending)
       self.write_file(filename,content)
 
+
+class YAMLValidator(object):
+  pass
 
 ##########################
 if __name__ == "__main__":

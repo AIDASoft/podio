@@ -1,0 +1,16 @@
+std::vector<${componenttype}Handle>::const_iterator ${classname}Handle::${component}_begin() const {
+  auto ret_value = m_${component}->begin();
+  std::advance(ret_value, m_container->at(m_index).${component}_begin);
+  return ret_value;
+}
+
+std::vector<${componenttype}Handle>::const_iterator ${classname}Handle::${component}_end() const {
+  auto ret_value = m_${component}->begin();
+  std::advance(ret_value, m_container->at(m_index).${component}_end);
+  return ret_value;
+}
+
+void ${classname}Handle::add${component}(${componenttype}Handle& component) {
+  m_${component}->push_back(component);
+  m_container->at(m_index).${component}_end++;
+}

@@ -12,8 +12,11 @@ datatypes :
     description : "Dummy Referencing Type"
     author : "C. Bernet, B. Hegner"
     members :
-     - name : DummyData
+     - name : Dummy
        type : DummyDataHandle
        description: "ref to dummy data"
-
+    OneToManyRelations:
+     - name : Dummies
+       type : DummyData
+       description: "ref to dummy data items"
 

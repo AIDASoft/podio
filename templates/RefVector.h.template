@@ -1,0 +1,3 @@
+  void add${component}(${componenttype}Handle&);
+  std::vector<${componenttype}Handle>::const_iterator ${component}_begin() const;
+  std::vector<${componenttype}Handle>::const_iterator ${component}_end() const;
