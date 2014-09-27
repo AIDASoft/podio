@@ -1,3 +1,3 @@
-  void add${component}(${componenttype}Handle&);
-  std::vector<${componenttype}Handle>::const_iterator ${component}_begin() const;
-  std::vector<${componenttype}Handle>::const_iterator ${component}_end() const;
+  void add${relation}(${relationtype}Handle&);
+  std::vector<${relationtype}Handle>::const_iterator ${relation}_begin() const;
+  std::vector<${relationtype}Handle>::const_iterator ${relation}_end() const;

@@ -40,13 +40,9 @@ class ClassGenerator(object):
     self.created_classes = []
     self.requested_classes = []
 
-  def validate_yaml(self,content):
-    pass
-
   def process(self):
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
-    self.validate_yaml(content)
     if content.has_key("components"):
       self.process_components(content["components"])
     if content.has_key("datatypes"):
@@ -195,7 +191,7 @@ class ClassGenerator(object):
       for item in refvectors:
         klass = item["type"]
         if klass in self.requested_classes:
-          includes += '#include "%s.h"\n' %klass
+          includes += '#include "%sHandle.h"\n' %klass
         else:
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname\
 , klass))
@@ -224,13 +220,13 @@ class ClassGenerator(object):
     templatefile = os.path.join(self.template_dir,"RefVector.h.template")
     references_declarations_template = open(templatefile,"r").read() 
     for refvector in refvectors:
-      substitutions = {"component" : refvector["name"],
-                       "componenttype" : refvector["type"], 
+      substitutions = {"relation" : refvector["name"],
+                       "relationtype" : refvector["type"], 
                        "classname" : classname
                       }
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
       references += string.Template(references_template).substitute(substitutions)
-      references_members += "std::vector<%sHandle>* m_%s;\n" %(refvector["type"], refvector["name"])
+      references_members += "std::vector<%sHandle>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
 
     substitutions = {"includes" : includes,
                      "getters"  : getters,
@@ -240,9 +236,9 @@ class ClassGenerator(object):
                      "name"     : classname,
                      "description" : description,
                      "author"   : author,
-                     "references" : references,
-                     "references_declarations" : references_declarations,
-                     "references_members" : references_members
+                     "relations" : references,
+                     "relation_declarations" : references_declarations,
+                     "relation_members" : references_members
                     }
     self.fill_templates("Handle",substitutions)
     self.created_classes.append("%sHandle"%classname)
@@ -251,9 +247,20 @@ class ClassGenerator(object):
     members = definition["members"]
     prepareforwritingbody = self.prepare_for_writing_body(members)
     prepareafterreadbody = self.prepare_after_read_body(members)
+    # handle one-to-many-relations
+    relations = ""
+    if definition.has_key("OneToManyRelations"):
+      refvectors = definition["OneToManyRelations"]
+      for item in refvectors:
+        name  = item["name"]
+        klass = item["type"] 
+        relations += "std::vector<%sHandle>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
+        relations += "  std::vector<std::vector<%sHandle>*> m_rel_%s_tmp;\n " %(klass, name)
+
     substitutions = { "name" : classname,
                       "prepareforwritingbody" : prepareforwritingbody,
-                      "prepareafterreadbody" : prepareafterreadbody
+                      "prepareafterreadbody" : prepareafterreadbody,
+                      "relations"           : relations
     }
     self.fill_templates("Collection",substitutions)
     self.created_classes.append("%sCollection"%classname)

@@ -8,7 +8,7 @@
 
 $getters
 $setters
-$references
+$relations
 
 bool  ${name}Handle::isAvailable() const {
   if (m_container != nullptr) {

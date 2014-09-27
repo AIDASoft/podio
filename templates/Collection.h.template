@@ -81,7 +81,8 @@ private:
   unsigned m_collectionID;
   ${name}Vector* m_data;
   ${name}HandleVector m_handles;
-
+  // members to handle 1-to-N-relations
+  ${relations}
 };
 
 #endif

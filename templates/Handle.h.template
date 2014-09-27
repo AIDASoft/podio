@@ -25,7 +25,7 @@ ${name}Handle(){};
 
 $getter_declarations
 $setter_declarations
-$references_declarations
+$relation_declarations
 
   bool isAvailable() const; // precheck whether the pointee actually exists
   void prepareForWrite(const albers::Registry*);  // use m_container to set m_containerID properly
@@ -38,8 +38,8 @@ private:
   mutable std::vector<${name}>* m_container; //! transient
   albers::Registry* m_registry; //! transient
 //  bool _retrieveData();
-  // members to support 1-N relations
-  ${references_members}
+  // members to support 1-to-N relations
+  ${relation_members}
 
 };
 
