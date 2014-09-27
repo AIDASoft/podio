@@ -43,3 +43,8 @@ void ${name}Collection::setPODsAddress(const void* address){
 const ${name}Handle ${name}CollectionIterator::operator* () const {
   return m_collection->get(m_index);
 }
+
+//std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections() {
+//}
+
+
