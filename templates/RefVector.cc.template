@@ -6,8 +6,8 @@ std::vector<${relationtype}Handle>::const_iterator ${classname}Handle::${relatio
 
 std::vector<${relationtype}Handle>::const_iterator ${classname}Handle::${relation}_end() const {
   auto ret_value = m_${relation}->begin();
-  std::advance(ret_value, m_container->at(m_index).${relation}_end);
-  return ret_value;
+  std::advance(ret_value, m_container->at(m_index).${relation}_end-1);
+  return ++ret_value;
 }
 
 void ${classname}Handle::add${relation}(${relationtype}Handle& component) {
