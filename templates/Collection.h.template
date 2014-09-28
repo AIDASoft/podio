@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 
 // albers specific includes
 #include "albers/Registry.h"
@@ -15,7 +16,7 @@
 #include "${name}Handle.h"
 
 typedef std::vector<${name}> ${name}Vector;
-typedef std::vector<${name}Handle> ${name}HandleVector;
+typedef std::deque<${name}Handle> ${name}HandleContainer;
 
 class ${name}CollectionIterator {
 
@@ -80,7 +81,7 @@ public:
 private:
   unsigned m_collectionID;
   ${name}Vector* m_data;
-  ${name}HandleVector m_handles;
+  ${name}HandleContainer m_handles;
   // members to handle 1-to-N-relations
   ${relations}
 };
