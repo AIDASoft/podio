@@ -3,6 +3,9 @@
 #include "JetCollection.h"
 #include "JetParticleAssociationCollection.h"
 
+// Utility functions
+#include "JetUtils.h"
+
 #include "TBranch.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -15,7 +18,6 @@
 #include "albers/EventStore.h"
 #include "albers/Reader.h"
 #include "albers/Registry.h"
-
 
 void processEvent(albers::EventStore& store, bool verbose) {
 
@@ -48,19 +50,18 @@ void processEvent(albers::EventStore& store, bool verbose) {
   if (jets_available){
     JetParticleAssociationCollection* jprefs(nullptr);
     bool assoc_available = store.get("JetParticleAssociation",jprefs);
-    if(verbose)
+    if(verbose) {
       std::cout << "jet collection:" << std::endl;
+    }
     for(const auto& jet : *jrefs){
+      std::vector<ParticleHandle> jparticles = utils::associatedParticles(jet,
+									  *jprefs);
       if(verbose) {
-	std::cout << "\tjet: " << jet.P4().Pt << std::endl;
+	std::cout << "\tjet: pt=" << jet.P4().Pt << " npart="<<jparticles.size()<<std::endl;
 	if(assoc_available) {
-	  for(const auto& assoc : *jprefs){
-	    if(assoc.Jet().isAvailable() && assoc.Particle().isAvailable()) {
-	      if(assoc.Jet() == jet) {
-		std::cout<<"\t\tassoc jet "<<assoc.Jet().P4().Pt<<std::endl;
-	       	std::cout<<"\t\tassoc particle "<<assoc.Particle().ID()<<std::endl;
-	      }
-	    }
+	  for(const auto& part : jparticles) {
+	    if(part.isAvailable())
+	      std::cout<<"\t\tassociated particle "<<part.ID()<<" "<<part.P4().Pt<<std::endl;
 	  }
 	}
       }

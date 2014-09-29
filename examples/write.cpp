@@ -8,7 +8,9 @@
 #include "LorentzVector.h"
 
 // Utility functions
-#include "Vector.h"
+#include "VectorUtils.h"
+
+#include "TLorentzVector.h"
 
 #include "TBranch.h"
 #include "TFile.h"
