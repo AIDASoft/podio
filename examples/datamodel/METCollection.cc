@@ -43,3 +43,9 @@ void METCollection::setPODsAddress(const void* address){
 const METHandle METCollectionIterator::operator* () const {
   return m_collection->get(m_index);
 }
+
+void METCollection::print() const {
+  std::cout<<"collection "<<m_collectionID
+           <<", buf "<<m_data
+           <<", nhandles "<<m_handles.size()<<std::endl;
+}

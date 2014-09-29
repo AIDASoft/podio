@@ -1,10 +1,11 @@
 include_directories(
 	${CMAKE_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
+        ${CMAKE_CURRENT_SOURCE_DIR}/utilities
 )
 
-file(GLOB sources datamodel/*.cc)
-file(GLOB headers datamodel/*.h)
+file(GLOB sources datamodel/*.cc utilities/*.cc)
+file(GLOB headers datamodel/*.h utilities/*.h)
 
 list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
 message(DICTIONARY ${headers})

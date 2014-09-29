@@ -48,3 +48,9 @@ void ParticleAssociationCollection::setPODsAddress(const void* address){
 const ParticleAssociationHandle ParticleAssociationCollectionIterator::operator* () const {
   return m_collection->get(m_index);
 }
+
+void ParticleAssociationCollection::print() const {
+  std::cout<<"collection "<<m_collectionID
+           <<", buf "<<m_data
+           <<", nhandles "<<m_handles.size()<<std::endl;
+}

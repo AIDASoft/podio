@@ -73,8 +73,15 @@ public:
     return const_iterator(m_handles.size(), this);
   }
 
+  /// returns the address of the pointer to the data buffer
   void* _getRawBuffer(){ return (void*)&m_data;};
+
+  /// returns the pointer to the data buffer
   std::vector<${name}>* _getBuffer(){ return m_data;};
+
+  /// print some information
+  void print() const;
+
 private:
   unsigned m_collectionID;
   ${name}Vector* m_data;

@@ -26,7 +26,8 @@ void processEvent(albers::EventStore& store, bool verbose) {
     const EventInfoHandle& evinfo = evinfocoll->get(0);
     if(verbose)
       std::cout << "event number " << evinfo.Number() << std::endl;
-    // if(evinfo.Number()==0) return;
+    // COLIN avoid bug at first event
+    if(evinfo.Number()==0) return;
   }
 
   // read particles
@@ -37,7 +38,7 @@ void processEvent(albers::EventStore& store, bool verbose) {
       std::cout << "particle collection:" << std::endl;
     for(const auto& ref : *refs){
       if(verbose)
-	std::cout << "\tparticle: " << ref.ID() << " " << ref.P4().Mass << std::endl;
+	std::cout << "\tparticle: " << ref.ID() << " " << ref.P4().Pt << std::endl;
     }
   }
 

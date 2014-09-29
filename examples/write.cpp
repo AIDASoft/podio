@@ -1,3 +1,4 @@
+// Data model
 #include "EventInfo.h"
 #include "EventInfoCollection.h"
 #include "Particle.h"
@@ -5,6 +6,9 @@
 #include "JetCollection.h"
 #include "JetParticleAssociationCollection.h"
 #include "LorentzVector.h"
+
+// Utility functions
+#include "Vector.h"
 
 #include "TBranch.h"
 #include "TFile.h"
@@ -56,12 +60,12 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
   // a jet
   JetCollection* jetcoll = nullptr;
   store.get("Jet", jetcoll);
-  LorentzVector lv1 = p1.P4(); // setting it to p1 P4 for now
-  //COLIN: damn, we need a LorentzVector with functions, that's too painful.
-  // lv1 += p1.P4();
-  // lv1 += p2.P4();
+  // convert LorentzVector PODs to TLorentzVector to benefit
+  // from the functionalities of this class (here, summation)
+  TLorentzVector lv1 = utils::lvFromPOD(p1.P4()) + utils::lvFromPOD(p2.P4());
   JetHandle& jet = jetcoll->create();
-  jet.setP4(lv1);
+  // convert the lorentz vector back to a POD for storage
+  jet.setP4( utils::lvToPOD(lv1));
 
   // and the jet-particle associations
   JetParticleAssociationCollection* jetpartcoll = nullptr;
