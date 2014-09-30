@@ -39,3 +39,13 @@ ParticleAssociationHandle::ParticleAssociationHandle(int index, int containerID,
   m_containerID(containerID),
   m_container(container)
 {}
+
+
+bool operator< (const ParticleAssociationHandle& p1, const ParticleAssociationHandle& p2 ) {
+  if( p1.m_containerID == p2.m_containerID ) {
+    return p1.m_index < p2.m_index;
+  }
+  else {
+    return p1.m_containerID < p2.m_containerID;
+  }
+}

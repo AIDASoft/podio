@@ -35,3 +35,13 @@ ${name}Handle::${name}Handle(int index, int containerID, std::vector<${name}>* c
   m_containerID(containerID),
   m_container(container)
 {}
+
+
+bool operator< (const ${name}Handle& p1, const ${name}Handle& p2 ) {
+  if( p1.m_containerID == p2.m_containerID ) {
+    return p1.m_index < p2.m_index;
+  }
+  else {
+    return p1.m_containerID < p2.m_containerID;
+  }
+}

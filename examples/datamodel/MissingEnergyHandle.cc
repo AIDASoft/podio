@@ -39,3 +39,13 @@ MissingEnergyHandle::MissingEnergyHandle(int index, int containerID, std::vector
   m_containerID(containerID),
   m_container(container)
 {}
+
+
+bool operator< (const MissingEnergyHandle& p1, const MissingEnergyHandle& p2 ) {
+  if( p1.m_containerID == p2.m_containerID ) {
+    return p1.m_index < p2.m_index;
+  }
+  else {
+    return p1.m_containerID < p2.m_containerID;
+  }
+}

@@ -36,9 +36,14 @@ JetHandle(){};
   void prepareForWrite(const albers::Registry*);  // use m_container to set m_containerID properly
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
+  /// equality operator (true if both the index and the container ID are equal)
   bool operator==(const JetHandle& other) const {
        return (m_index==other.m_index) && (other.m_containerID==other.m_containerID);
   }
+
+  /// less comparison operator, so that Handles can be e.g. stored in sets.
+  friend bool operator< (const JetHandle& p1,
+			 const JetHandle& p2 );
 
 private:
   JetHandle(int index, int containerID,  std::vector<Jet>* container);

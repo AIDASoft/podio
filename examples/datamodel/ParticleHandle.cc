@@ -41,3 +41,13 @@ ParticleHandle::ParticleHandle(int index, int containerID, std::vector<Particle>
   m_containerID(containerID),
   m_container(container)
 {}
+
+
+bool operator< (const ParticleHandle& p1, const ParticleHandle& p2 ) {
+  if( p1.m_containerID == p2.m_containerID ) {
+    return p1.m_index < p2.m_index;
+  }
+  else {
+    return p1.m_containerID < p2.m_containerID;
+  }
+}

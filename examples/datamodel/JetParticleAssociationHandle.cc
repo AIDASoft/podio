@@ -39,3 +39,13 @@ JetParticleAssociationHandle::JetParticleAssociationHandle(int index, int contai
   m_containerID(containerID),
   m_container(container)
 {}
+
+
+bool operator< (const JetParticleAssociationHandle& p1, const JetParticleAssociationHandle& p2 ) {
+  if( p1.m_containerID == p2.m_containerID ) {
+    return p1.m_index < p2.m_index;
+  }
+  else {
+    return p1.m_containerID < p2.m_containerID;
+  }
+}

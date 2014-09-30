@@ -12,7 +12,19 @@ namespace utils {
   /// Converts a TLorentzVector to a LorentzVector POD
   LorentzVector lvToPOD(const TLorentzVector& tlv);
 
+  /// difference eta1-eta2
+  float deltaEta(const LorentzVector& lv1, const LorentzVector& lv2);
 
+  /// difference phi1-phi2
+  float deltaEta(const LorentzVector& lv1, const LorentzVector& lv2);
+
+  /// dR2.
+  ///
+  /// Faster than deltaR because no call to sqrt
+  float deltaR2(const LorentzVector& lv1, const LorentzVector& lv2);
+
+  /// dR
+  float deltaR(const LorentzVector& lv1, const LorentzVector& lv2);
 }
 
 #endif
