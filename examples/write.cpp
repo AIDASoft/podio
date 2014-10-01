@@ -10,13 +10,14 @@
 // Utility functions
 #include "VectorUtils.h"
 
+// ROOT
 #include "TLorentzVector.h"
-
 #include "TBranch.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TSystem.h"
 
+// STL
 #include <iostream>
 #include <vector>
 
@@ -25,6 +26,8 @@
 #include "albers/Registry.h"
 #include "albers/Writer.h"
 
+// testing tools
+#include "DummyGenerator.h"
 
 ParticleHandle& createParticle(int ID, float eta, float phi, float mass, float pt, ParticleCollection* coll) {
   LorentzVector lv1;
@@ -39,9 +42,11 @@ ParticleHandle& createParticle(int ID, float eta, float phi, float mass, float p
   return p1;
 }
 
-void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer) {
+void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer, DummyGenerator& generator) {
   if(iEvent % 1000 == 0)
     std::cout<<"processing event "<<iEvent<<std::endl;
+
+  generator.generate();
 
   // fill event information
   EventInfoCollection* evinfocoll = nullptr;
@@ -99,6 +104,8 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
+  DummyGenerator generator(2, 10, store, writer);
+
   unsigned nevents=10;
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
@@ -118,7 +125,7 @@ int main(){
   writer.registerForWrite("JetParticleAssociation", jetpartcoll);
 
   for(unsigned i=0; i<nevents; ++i) {
-    processEvent(i, store, writer);
+    processEvent(i, store, writer, generator);
   }
 
   writer.finish();
