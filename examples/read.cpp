@@ -32,17 +32,19 @@ void processEvent(albers::EventStore& store, bool verbose) {
     if(evinfo.Number()==0) return;
   }
 
-  // read particles
-  ParticleCollection* refs(nullptr);
-  bool particles_available = store.get("GenParticle",refs);
-  if (particles_available){
-    if(verbose)
-      std::cout << "particle collection:" << std::endl;
-    for(const auto& ref : *refs){
-      if(verbose)
-	std::cout << "\tparticle: " << ref.ID() << " " << ref.P4().Pt << std::endl;
-    }
-  }
+  // the following is commented out to test on-demand reading through Jet-Particle association,
+  // see below
+  // // read particles
+  // ParticleCollection* refs(nullptr);
+  // bool particles_available = store.get("GenParticle",refs);
+  // if (particles_available){
+  //   if(verbose)
+  //     std::cout << "particle collection:" << std::endl;
+  //   for(const auto& ref : *refs){
+  //     if(verbose)
+  // 	std::cout << "\tparticle: " << ref.ID() << " " << ref.P4().Pt << std::endl;
+  //   }
+  // }
 
   // read particles
   JetCollection* jrefs(nullptr);
