@@ -5,12 +5,17 @@
 
 // Utility functions
 #include "JetUtils.h"
+#include "VectorUtils.h"
 
+// ROOT
 #include "TBranch.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TSystem.h"
 #include "TROOT.h"
+#include "TLorentzVector.h"
+
+// STL
 #include <vector>
 #include <iostream>
 
@@ -29,7 +34,10 @@ void processEvent(albers::EventStore& store, bool verbose) {
     if(verbose)
       std::cout << "event number " << evinfo.Number() << std::endl;
     // COLIN avoid bug at first event
-    if(evinfo.Number()==0) return;
+    if(evinfo.Number()==0) {
+      std::cerr<<"skipping bugged first event"<<std::endl;
+      return;
+    }
   }
 
   // the following is commented out to test on-demand reading through Jet-Particle association,
@@ -59,7 +67,9 @@ void processEvent(albers::EventStore& store, bool verbose) {
       std::vector<ParticleHandle> jparticles = utils::associatedParticles(jet,
 									  *jprefs);
       if(verbose) {
-	std::cout << "\tjet: pt=" << jet.P4().Pt << " npart="<<jparticles.size()<<std::endl;
+	TLorentzVector lv = utils::lvFromPOD(jet.P4());
+	std::cout << "\tjet: E=" << lv.E() << " "<<lv.Eta()<<" "<<lv.Phi()
+		  <<" npart="<<jparticles.size()<<std::endl;
 	if(assoc_available) {
 	  for(const auto& part : jparticles) {
 	    if(part.isAvailable())

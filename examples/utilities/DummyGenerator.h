@@ -9,21 +9,23 @@ namespace albers {
 }
 
 class ParticleHandle;
+class TLorentzVector;
+class TVector3;
 
 class DummyGenerator {
   /// COLIN need verbose flag.
 
 public:
-  DummyGenerator(unsigned njets, int npart,
-		 albers::EventStore& store);
+  /// npart : number of particles per jet
+  DummyGenerator(int npart, albers::EventStore& store);
   void generate();
 
 private:
   /// generate a jet
-  void generate_jet();
+  void generate_jet(float energy, const TVector3& direction);
 
   /// generate a particle
-  ParticleHandle generate_particle();
+  ParticleHandle generate_particle(const TLorentzVector* lv = nullptr);
 
   /// number of jets
   unsigned m_njets;
@@ -32,7 +34,7 @@ private:
   std::default_random_engine m_engine;
 
   /// energy in jet center of mass
-  std::lognormal_distribution<float> m_pstar;
+  std::normal_distribution<float> m_pstar;
 
   /// phi in jet center of mass
   std::uniform_real_distribution<float> m_phi;

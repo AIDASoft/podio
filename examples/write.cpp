@@ -65,7 +65,7 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
-  DummyGenerator generator(2, 10, store);
+  DummyGenerator generator(10, store);
 
   unsigned nevents=10;
 
