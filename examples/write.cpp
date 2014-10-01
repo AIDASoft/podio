@@ -1,14 +1,23 @@
+// Data model
 #include "EventInfo.h"
 #include "EventInfoCollection.h"
 #include "Particle.h"
 #include "ParticleCollection.h"
+#include "JetCollection.h"
+#include "JetParticleAssociationCollection.h"
 #include "LorentzVector.h"
 
+// Utility functions
+#include "VectorUtils.h"
+
+// ROOT
+#include "TLorentzVector.h"
 #include "TBranch.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TSystem.h"
 
+// STL
 #include <iostream>
 #include <vector>
 
@@ -17,11 +26,27 @@
 #include "albers/Registry.h"
 #include "albers/Writer.h"
 
+// testing tools
+#include "DummyGenerator.h"
 
+ParticleHandle& createParticle(int ID, float eta, float phi, float mass, float pt, ParticleCollection* coll) {
+  LorentzVector lv1;
+  lv1.Phi  = phi;
+  lv1.Eta  = eta;
+  lv1.Mass = mass;
+  lv1.Pt   = pt;
 
-void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer) {
+  ParticleHandle& p1 = coll->create();
+  p1.setID(ID);
+  p1.setP4(lv1);
+  return p1;
+}
+
+void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer, DummyGenerator& generator) {
   if(iEvent % 1000 == 0)
     std::cout<<"processing event "<<iEvent<<std::endl;
+
+  generator.generate();
 
   // fill event information
   EventInfoCollection* evinfocoll = nullptr;
@@ -33,18 +58,32 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
   EventInfoHandle& evinfo = evinfocoll->create();
   evinfo.setNumber(iEvent);
 
-  LorentzVector lv1;
-  lv1.Phi  = 0;
-  lv1.Eta  = 1 ;
-  lv1.Mass = 125;
-  lv1.Pt   = 50.;
-
-  // particle part
+  // particles
   ParticleCollection* partcoll = nullptr;
   store.get("Particle", partcoll);
-  ParticleHandle& p1 = partcoll->create();
-  p1.setID(25 + iEvent);
-  p1.setP4(lv1);
+  ParticleHandle& p1 = createParticle(22, 1, 2, 0, 50, partcoll);
+  ParticleHandle& p2 = createParticle(211, 1.2, 2.2, 0.135, 40, partcoll);
+
+  // a jet
+  JetCollection* jetcoll = nullptr;
+  store.get("Jet", jetcoll);
+  // convert LorentzVector PODs to TLorentzVector to benefit
+  // from the functionalities of this class (here, summation)
+  TLorentzVector lv1 = utils::lvFromPOD(p1.P4()) + utils::lvFromPOD(p2.P4());
+  JetHandle& jet = jetcoll->create();
+  // convert the lorentz vector back to a POD for storage
+  jet.setP4( utils::lvToPOD(lv1));
+
+  // and the jet-particle associations
+  JetParticleAssociationCollection* jetpartcoll = nullptr;
+  store.get("JetParticleAssociation", jetpartcoll);
+  JetParticleAssociationHandle& assoc1 = jetpartcoll->create();
+  assoc1.setJet(jet);
+  assoc1.setParticle(p1);
+  JetParticleAssociationHandle& assoc2 = jetpartcoll->create();
+  assoc2.setJet(jet);
+  assoc2.setParticle(p2);
+
 
   // and now for the writing
   // TODO: do that at a different time w/o coll pointer
@@ -65,18 +104,33 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
+  DummyGenerator generator(2, 10, store);
+
   unsigned nevents=10;
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
 
-  // particle part
+  // particle collection
   ParticleCollection& partcoll = store.create<ParticleCollection>("Particle");
 
-  writer.registerForWrite("EventInfo", evinfocoll);
-  writer.registerForWrite("Particle", partcoll);
+  // jet collection
+  JetCollection& jetcoll = store.create<JetCollection>("Jet");
+
+  // jet-particle association collection
+  JetParticleAssociationCollection& jetpartcoll = store.create<JetParticleAssociationCollection>("JetParticleAssociation");
+
+  writer.registerForWrite<EventInfoCollection>("EventInfo");
+  writer.registerForWrite<ParticleCollection>("Particle");
+  writer.registerForWrite<JetCollection>("Jet");
+  writer.registerForWrite<JetParticleAssociationCollection>("JetParticleAssociation");
+
+  // collections from the dummy generator
+  writer.registerForWrite<ParticleCollection>("GenParticle");
+  writer.registerForWrite<JetCollection>("GenJet");
+  writer.registerForWrite<JetParticleAssociationCollection>("GenJetParticle");
 
   for(unsigned i=0; i<nevents; ++i) {
-    processEvent(i, store, writer);
+    processEvent(i, store, writer, generator);
   }
 
   writer.finish();

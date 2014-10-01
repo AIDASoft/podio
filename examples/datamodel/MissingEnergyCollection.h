@@ -1,7 +1,7 @@
 //AUTOMATICALLY GENERATED - DO NOT EDIT
 
-#ifndef ParticleCollection_H
-#define  ParticleCollection_H
+#ifndef MissingEnergyCollection_H
+#define  MissingEnergyCollection_H
 
 #include <string>
 #include <vector>
@@ -11,52 +11,52 @@
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
-#include "Particle.h"
-#include "ParticleHandle.h"
+#include "MissingEnergy.h"
+#include "MissingEnergyHandle.h"
 
-typedef std::vector<Particle> ParticleVector;
-typedef std::vector<ParticleHandle> ParticleHandleVector;
+typedef std::vector<MissingEnergy> MissingEnergyVector;
+typedef std::vector<MissingEnergyHandle> MissingEnergyHandleVector;
 
-class ParticleCollectionIterator {
+class MissingEnergyCollectionIterator {
 
   public:
-    ParticleCollectionIterator(int index, const ParticleCollection* collection) : m_index(index), m_collection(collection) {}
+    MissingEnergyCollectionIterator(int index, const MissingEnergyCollection* collection) : m_index(index), m_collection(collection) {}
 
-    bool operator!=(const ParticleCollectionIterator& x) const {
+    bool operator!=(const MissingEnergyCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
 
-    const ParticleHandle operator*() const;
+    const MissingEnergyHandle operator*() const;
 
-    const ParticleCollectionIterator& operator++() const {
+    const MissingEnergyCollectionIterator& operator++() const {
       ++m_index;
       return *this;
     }
 
   private:
     mutable int m_index;
-    const ParticleCollection* m_collection;
+    const MissingEnergyCollection* m_collection;
 };
 
 /**
 A Collection is identified by an ID.
 */
 
-class ParticleCollection : public albers::CollectionBase {
+class MissingEnergyCollection : public albers::CollectionBase {
 
 public:
-  typedef const ParticleCollectionIterator const_iterator;
+  typedef const MissingEnergyCollectionIterator const_iterator;
 
-  ParticleCollection();
-//  ParticleCollection(ParticleVector* data, int collectionID);
-  ~ParticleCollection(){};
+  MissingEnergyCollection();
+//  MissingEnergyCollection(MissingEnergyVector* data, int collectionID);
+  ~MissingEnergyCollection(){};
 
   void clear();
   /// Append a new object to the collection, and return a Handle to this object.
-  ParticleHandle& create();
+  MissingEnergyHandle& create();
 
   /// Returns a Handle to the object at position index in the collection
-  const ParticleHandle& get(int index) const;
+  const MissingEnergyHandle& get(int index) const;
 
   /// Currently does nothing
   void prepareForWrite(const albers::Registry* registry);
@@ -77,15 +77,15 @@ public:
   void* _getRawBuffer(){ return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
-  std::vector<Particle>* _getBuffer(){ return m_data;};
+  std::vector<MissingEnergy>* _getBuffer(){ return m_data;};
 
   /// print some information
   void print() const;
 
 private:
   unsigned m_collectionID;
-  ParticleVector* m_data;
-  ParticleHandleVector m_handles;
+  MissingEnergyVector* m_data;
+  MissingEnergyHandleVector m_handles;
 
 };
 

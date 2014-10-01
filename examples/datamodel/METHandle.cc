@@ -3,13 +3,17 @@
 #include "albers/Reader.h"
 
 // datamodel specific includes
-#include "${name}.h"
-#include "${name}Collection.h"
+#include "MET.h"
+#include "METCollection.h"
 
-$getters
-$setters
+  const float& METHandle::Pt() const { return m_container->at(m_index).Pt;}
+  const float& METHandle::Phi() const { return m_container->at(m_index).Phi;}
 
-bool  ${name}Handle::isAvailable() const {
+  void METHandle::setPt(float value){ m_container->at(m_index).Pt = value;}
+  void METHandle::setPhi(float value){ m_container->at(m_index).Phi = value;}
+
+
+bool  METHandle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
   }
@@ -20,24 +24,24 @@ bool  ${name}Handle::isAvailable() const {
   return false;
 }
 
-void ${name}Handle::prepareForWrite(const albers::Registry* registry){
+void METHandle::prepareForWrite(const albers::Registry* registry){
   m_containerID = registry->getIDFromPODAddress(m_container);
 }
 
-void ${name}Handle::prepareAfterRead(albers::Registry* registry){
+void METHandle::prepareAfterRead(albers::Registry* registry){
   m_registry = registry;
   m_registry->getPODAddressFromID(m_containerID,m_container);
 }
 
 
-${name}Handle::${name}Handle(int index, int containerID, std::vector<${name}>* container) :
+METHandle::METHandle(int index, int containerID, std::vector<MET>* container) :
   m_index(index),
   m_containerID(containerID),
   m_container(container)
 {}
 
 
-bool operator< (const ${name}Handle& p1, const ${name}Handle& p2 ) {
+bool operator< (const METHandle& p1, const METHandle& p2 ) {
   if( p1.m_containerID == p2.m_containerID ) {
     return p1.m_index < p2.m_index;
   }

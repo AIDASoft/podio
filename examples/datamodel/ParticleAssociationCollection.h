@@ -1,7 +1,7 @@
 //AUTOMATICALLY GENERATED - DO NOT EDIT
 
-#ifndef ParticleCollection_H
-#define  ParticleCollection_H
+#ifndef ParticleAssociationCollection_H
+#define  ParticleAssociationCollection_H
 
 #include <string>
 #include <vector>
@@ -11,52 +11,52 @@
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
-#include "Particle.h"
-#include "ParticleHandle.h"
+#include "ParticleAssociation.h"
+#include "ParticleAssociationHandle.h"
 
-typedef std::vector<Particle> ParticleVector;
-typedef std::vector<ParticleHandle> ParticleHandleVector;
+typedef std::vector<ParticleAssociation> ParticleAssociationVector;
+typedef std::vector<ParticleAssociationHandle> ParticleAssociationHandleVector;
 
-class ParticleCollectionIterator {
+class ParticleAssociationCollectionIterator {
 
   public:
-    ParticleCollectionIterator(int index, const ParticleCollection* collection) : m_index(index), m_collection(collection) {}
+    ParticleAssociationCollectionIterator(int index, const ParticleAssociationCollection* collection) : m_index(index), m_collection(collection) {}
 
-    bool operator!=(const ParticleCollectionIterator& x) const {
+    bool operator!=(const ParticleAssociationCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
 
-    const ParticleHandle operator*() const;
+    const ParticleAssociationHandle operator*() const;
 
-    const ParticleCollectionIterator& operator++() const {
+    const ParticleAssociationCollectionIterator& operator++() const {
       ++m_index;
       return *this;
     }
 
   private:
     mutable int m_index;
-    const ParticleCollection* m_collection;
+    const ParticleAssociationCollection* m_collection;
 };
 
 /**
 A Collection is identified by an ID.
 */
 
-class ParticleCollection : public albers::CollectionBase {
+class ParticleAssociationCollection : public albers::CollectionBase {
 
 public:
-  typedef const ParticleCollectionIterator const_iterator;
+  typedef const ParticleAssociationCollectionIterator const_iterator;
 
-  ParticleCollection();
-//  ParticleCollection(ParticleVector* data, int collectionID);
-  ~ParticleCollection(){};
+  ParticleAssociationCollection();
+//  ParticleAssociationCollection(ParticleAssociationVector* data, int collectionID);
+  ~ParticleAssociationCollection(){};
 
   void clear();
   /// Append a new object to the collection, and return a Handle to this object.
-  ParticleHandle& create();
+  ParticleAssociationHandle& create();
 
   /// Returns a Handle to the object at position index in the collection
-  const ParticleHandle& get(int index) const;
+  const ParticleAssociationHandle& get(int index) const;
 
   /// Currently does nothing
   void prepareForWrite(const albers::Registry* registry);
@@ -77,15 +77,15 @@ public:
   void* _getRawBuffer(){ return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
-  std::vector<Particle>* _getBuffer(){ return m_data;};
+  std::vector<ParticleAssociation>* _getBuffer(){ return m_data;};
 
   /// print some information
   void print() const;
 
 private:
   unsigned m_collectionID;
-  ParticleVector* m_data;
-  ParticleHandleVector m_handles;
+  ParticleAssociationVector* m_data;
+  ParticleAssociationHandleVector m_handles;
 
 };
 

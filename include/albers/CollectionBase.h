@@ -14,6 +14,7 @@ namespace albers {
     virtual void* _getRawBuffer() = 0;
     virtual ~CollectionBase(){};
     virtual void clear() = 0 ;
+    virtual void print() const = 0;
   };
 
 } // namespace

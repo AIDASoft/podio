@@ -1,14 +1,18 @@
 ---
 components:
+# A component is a POD designed to be embedded in another POD,
+# see the Particle or Jet PODs.
+# Components cannot be stored in a collection
+
   LorentzVector:
     Mass : float
     Pt : float
     Eta : float
     Phi : float
 
-# COLIN need to make sure we don't overwrite an existing class.. maybe a specific namespace for the EDM?
 
 datatypes :
+# Datatypes are components that can be stored in a Collection
 
   EventInfo :
     description : "Event Info Data"
@@ -16,34 +20,70 @@ datatypes :
     members :
      - name : Number
        type : int
-       description: ""
+       description: "Event number"
 
   Particle :
-    description : "Naive Particle Type"
+    description : "Naive Particle Type, used for reconstructed and generated particles"
     author : "C. Bernet, B. Hegner"
     members :
      - name : P4
        type : LorentzVector
-       description : ""
+       description : "Four momentum."
      - name : ID
        type : int
-       description : ""
+       description : "Particle type identification code"
+     - name : Status
+       type : int
+       description : "Status code"
+
+  ParticleAssociation:
+    description : "Particle association, used e.g. for the mother-daughter relationship of gen particles, and for linking reconstructed particles and the corresponding generated particles."
+    author : "C. Bernet, B. Hegner"
+    members :
+      - name : First
+        type : ParticleHandle
+        description : "Reference to the first particle"
+      - name : Second
+        type : ParticleHandle
+        description : "Reference to the second particle"
 
   Jet :
-    description : "Naive Jet Type"
+    description : "Naive jet type"
     author : "C. Bernet, B. Hegner"
     members :
      - name: P4
        type : LorentzVector
        description : ""
 
-  JetParticle :
+  JetParticleAssociation :
     description : "Example of referencing jet"
     author : "C. Bernet, B. Hegner"
     members :
      - name : Jet
        type : JetHandle
-       description : ""
+       description : "Reference to the jet"
      - name : Particle
        type : ParticleHandle
+       description : "Reference to the particle"
+
+  MET:
+    description : "Naive MET type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name: Pt
+       type : float
+       description : ""
+     - name: Phi
+       type : float
+       description : ""
+
+  MissingEnergy:
+    description : "Naive missing energy type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name: Energy
+       type : float
+       description : ""
+     - name: Phi
+       type : float
        description : ""

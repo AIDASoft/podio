@@ -1,31 +1,36 @@
-#ifndef ${name}HANDLE_H
-#define ${name}HANDLE_H
-$includes
+#ifndef METHANDLE_H
+#define METHANDLE_H
+#include "MET.h"
+
 #include <vector>
 
-// $description
-// author: $author
+// 
+// author: C. Bernet, B. Hegner
 
-//forward declaration of $name container
-class ${name}Collection;
+//forward declaration of MET container
+class METCollection;
 
 namespace albers {
   class Registry;
 }
 
-class ${name}Handle {
+class METHandle {
 
-  friend ${name}Collection;
+  friend METCollection;
 
 public:
 
-${name}Handle(){};
+METHandle(){};
 
-//TODO: Proper syntax to use, but ROOT doesn't handle it:  ${name}Handle() = default;
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  METHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
-$getter_declarations
-$setter_declarations
+  const float& Pt() const;
+  const float& Phi() const;
+
+  void setPt(float value);
+  void setPhi(float value);
+
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?
   bool isAvailable() const; // precheck whether the pointee actually exists
@@ -33,20 +38,20 @@ $setter_declarations
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
   /// equality operator (true if both the index and the container ID are equal)
-  bool operator==(const ${name}Handle& other) const {
+  bool operator==(const METHandle& other) const {
        return (m_index==other.m_index) && (other.m_containerID==other.m_containerID);
   }
 
   /// less comparison operator, so that Handles can be e.g. stored in sets.
-  friend bool operator< (const ${name}Handle& p1,
-			 const ${name}Handle& p2 );
+  friend bool operator< (const METHandle& p1,
+			 const METHandle& p2 );
 
 private:
-  ${name}Handle(int index, int containerID,  std::vector<${name}>* container);
+  METHandle(int index, int containerID,  std::vector<MET>* container);
   int m_index;
   int m_containerID;
   // COLIN: after reading, the transient m_container address must be taken from the registry using the persistent m_containerID and set. This seems to happen in isAvailable... why not in prepareAfterRead?
-  mutable std::vector<${name}>* m_container; //! transient
+  mutable std::vector<MET>* m_container; //! transient
   albers::Registry* m_registry; //! transient
 //  bool _retrieveData();
 

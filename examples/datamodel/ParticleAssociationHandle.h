@@ -1,31 +1,38 @@
-#ifndef ${name}HANDLE_H
-#define ${name}HANDLE_H
-$includes
+#ifndef ParticleAssociationHANDLE_H
+#define ParticleAssociationHANDLE_H
+#include "ParticleAssociation.h"
+#include "ParticleHandle.h"
+#include "ParticleHandle.h"
+
 #include <vector>
 
-// $description
-// author: $author
+// Reference to the second particle
+// author: C. Bernet, B. Hegner
 
-//forward declaration of $name container
-class ${name}Collection;
+//forward declaration of ParticleAssociation container
+class ParticleAssociationCollection;
 
 namespace albers {
   class Registry;
 }
 
-class ${name}Handle {
+class ParticleAssociationHandle {
 
-  friend ${name}Collection;
+  friend ParticleAssociationCollection;
 
 public:
 
-${name}Handle(){};
+ParticleAssociationHandle(){};
 
-//TODO: Proper syntax to use, but ROOT doesn't handle it:  ${name}Handle() = default;
+//TODO: Proper syntax to use, but ROOT doesn't handle it:  ParticleAssociationHandle() = default;
 
   // COLIN: too painful to call each setter one by one, and unsafe. remove setters and use a parameter list in the constructor? or an init function2222
-$getter_declarations
-$setter_declarations
+  const ParticleHandle& First() const;
+  const ParticleHandle& Second() const;
+
+  void setFirst(ParticleHandle value);
+  void setSecond(ParticleHandle value);
+
 
   // COLIN: I'd make that a true const method, and would set m_container in prepareAFterRead. What if the user doesn't call that?
   bool isAvailable() const; // precheck whether the pointee actually exists
@@ -33,20 +40,20 @@ $setter_declarations
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
   /// equality operator (true if both the index and the container ID are equal)
-  bool operator==(const ${name}Handle& other) const {
+  bool operator==(const ParticleAssociationHandle& other) const {
        return (m_index==other.m_index) && (other.m_containerID==other.m_containerID);
   }
 
   /// less comparison operator, so that Handles can be e.g. stored in sets.
-  friend bool operator< (const ${name}Handle& p1,
-			 const ${name}Handle& p2 );
+  friend bool operator< (const ParticleAssociationHandle& p1,
+			 const ParticleAssociationHandle& p2 );
 
 private:
-  ${name}Handle(int index, int containerID,  std::vector<${name}>* container);
+  ParticleAssociationHandle(int index, int containerID,  std::vector<ParticleAssociation>* container);
   int m_index;
   int m_containerID;
   // COLIN: after reading, the transient m_container address must be taken from the registry using the persistent m_containerID and set. This seems to happen in isAvailable... why not in prepareAfterRead?
-  mutable std::vector<${name}>* m_container; //! transient
+  mutable std::vector<ParticleAssociation>* m_container; //! transient
   albers::Registry* m_registry; //! transient
 //  bool _retrieveData();
 
