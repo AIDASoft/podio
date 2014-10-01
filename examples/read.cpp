@@ -34,7 +34,7 @@ void processEvent(albers::EventStore& store, bool verbose) {
 
   // read particles
   ParticleCollection* refs(nullptr);
-  bool particles_available = store.get("Particle",refs);
+  bool particles_available = store.get("GenParticle",refs);
   if (particles_available){
     if(verbose)
       std::cout << "particle collection:" << std::endl;
@@ -46,10 +46,10 @@ void processEvent(albers::EventStore& store, bool verbose) {
 
   // read particles
   JetCollection* jrefs(nullptr);
-  bool jets_available = store.get("Jet",jrefs);
+  bool jets_available = store.get("GenJet",jrefs);
   if (jets_available){
     JetParticleAssociationCollection* jprefs(nullptr);
-    bool assoc_available = store.get("JetParticleAssociation",jprefs);
+    bool assoc_available = store.get("GenJetParticle",jprefs);
     if(verbose) {
       std::cout << "jet collection:" << std::endl;
     }
