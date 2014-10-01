@@ -13,7 +13,7 @@ namespace albers {
       address = m_addresses[index];
       if (address == nullptr){
 	// this is needed to set the address of handles embedded in other objects
-	// std::cout << "On demand reading of container with ID " << ID << std::endl;
+	std::cout << "On demand reading of container with ID " << ID << std::endl;
         address = m_reader->getBuffer(ID);
       }
     }
