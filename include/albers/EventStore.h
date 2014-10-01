@@ -66,7 +66,7 @@ T& EventStore::create(const std::string& name) {
   // TODO: add check for existence
   T* coll = new T();
   m_collections.emplace_back(std::make_pair(name,coll));
-  m_registry->registerPOD(coll->_getBuffer(),name);
+  m_registry->registerPOD(coll, name);
   return *coll;
 }
 

@@ -14,10 +14,8 @@ class DummyGenerator {
   /// COLIN need verbose flag.
 
 public:
-  /// COLIN not good to pass the writer to DummyGenerator. need to change writer interface not to need collection reference, and then this parameter can be removed
   DummyGenerator(unsigned njets, int npart,
-		 albers::EventStore& store,
-		 albers::Writer& writer);
+		 albers::EventStore& store);
   void generate();
 
 private:

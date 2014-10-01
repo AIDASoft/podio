@@ -104,7 +104,7 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
-  DummyGenerator generator(2, 10, store, writer);
+  DummyGenerator generator(2, 10, store);
 
   unsigned nevents=10;
 
@@ -119,10 +119,15 @@ int main(){
   // jet-particle association collection
   JetParticleAssociationCollection& jetpartcoll = store.create<JetParticleAssociationCollection>("JetParticleAssociation");
 
-  writer.registerForWrite("EventInfo", evinfocoll);
-  writer.registerForWrite("Particle", partcoll);
-  writer.registerForWrite("Jet", jetcoll);
-  writer.registerForWrite("JetParticleAssociation", jetpartcoll);
+  writer.registerForWrite<EventInfoCollection>("EventInfo");
+  writer.registerForWrite<ParticleCollection>("Particle");
+  writer.registerForWrite<JetCollection>("Jet");
+  writer.registerForWrite<JetParticleAssociationCollection>("JetParticleAssociation");
+
+  // collections from the dummy generator
+  writer.registerForWrite<ParticleCollection>("GenParticle");
+  writer.registerForWrite<JetCollection>("GenJet");
+  writer.registerForWrite<JetParticleAssociationCollection>("GenJetParticle");
 
   for(unsigned i=0; i<nevents; ++i) {
     processEvent(i, store, writer, generator);

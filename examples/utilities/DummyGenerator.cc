@@ -15,8 +15,7 @@
 
 
 DummyGenerator::DummyGenerator(unsigned njets, int npart,
-			       albers::EventStore& store,
-			       albers::Writer& writer) :
+			       albers::EventStore& store) :
   m_njets(njets),
   m_pstar(0., 0.25),
   m_phi(-M_PI, M_PI),
@@ -29,10 +28,6 @@ DummyGenerator::DummyGenerator(unsigned njets, int npart,
   auto& coll1 = m_store.create<ParticleCollection>("GenParticle");
   auto& coll2 = m_store.create<JetCollection>("GenJet");
   auto& coll3 = m_store.create<JetParticleAssociationCollection>("GenJetParticle");
-
-  writer.registerForWrite("GenParticle", coll1);
-  writer.registerForWrite("GenJet", coll2);
-  writer.registerForWrite("GenJetParticle", coll3);
 }
 
 
