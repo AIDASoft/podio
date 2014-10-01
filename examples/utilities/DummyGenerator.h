@@ -18,14 +18,20 @@ class DummyGenerator {
 public:
   /// npart : number of particles per jet
   DummyGenerator(int npart, albers::EventStore& store);
+
+  /// generate an event. the products are stored in the event store
   void generate();
+
+  /// set number of events to print
+  void setNPrint(unsigned nprint) {m_nprint = nprint;}
+
 
 private:
   /// generate a jet
   void generate_jet(float energy, const TVector3& direction);
 
   /// generate a particle
-  ParticleHandle generate_particle(const TLorentzVector* lv = nullptr);
+  std::pair<bool, ParticleHandle*> generate_particle(const TLorentzVector* lv = nullptr);
 
   /// number of jets
   unsigned m_njets;
@@ -52,6 +58,9 @@ private:
   std::vector<float> m_ptypeprob;
 
   albers::EventStore& m_store;
+
+  unsigned m_nprint;
+  unsigned m_ievt;
 };
 
 #endif

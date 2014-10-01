@@ -66,8 +66,9 @@ int main(){
   albers::Writer     writer("example.root", &registry);
 
   DummyGenerator generator(10, store);
+  generator.setNPrint(1000);
 
-  unsigned nevents=10;
+  unsigned nevents=100000;
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
 
