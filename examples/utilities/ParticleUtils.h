@@ -2,6 +2,7 @@
 #define UTILS_PARTICLE_H
 
 #include <vector>
+#include <iostream>
 
 class ParticleHandle;
 class LorentzVector;
@@ -17,7 +18,8 @@ namespace utils {
   /// returns the ParticleHandles from ps that are in a cone around lv.
   std::vector<ParticleHandle> inCone(const LorentzVector& lv,
 				     const std::vector<ParticleHandle>& ps,
-				     float deltaRMax);
+				     float deltaRMax,
+				     float exclusion=1e-5);
 
   /// returns the scalar sum pT of the particles in ps
   float sumPt(const std::vector<ParticleHandle>& ps);
@@ -25,6 +27,9 @@ namespace utils {
   /// returns the scalar sum p of the particles in ps
   float sumP(const std::vector<ParticleHandle>& ps);
 
+
 }
+
+std::ostream& operator<<(std::ostream& out, const ParticleHandle& ptc);
 
 #endif
