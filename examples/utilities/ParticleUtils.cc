@@ -37,12 +37,14 @@ namespace utils {
 
   std::vector<ParticleHandle> inCone(const LorentzVector& lv,
 				     const std::vector<ParticleHandle>& ps,
-				     float deltaRMax) {
+				     float deltaRMax,
+				     float exclusion ) {
     float dR2Max = deltaRMax*deltaRMax;
+    float exc2 = exclusion*exclusion;
     std::vector<ParticleHandle> results;
     for(const auto& particle : ps) {
       float dR2 = deltaR2(lv, particle.P4());
-      if( dR2 <= dR2Max ) {
+      if( dR2>exc2 && dR2 <= dR2Max ) {
 	results.emplace_back(particle);
       }
     }

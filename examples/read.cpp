@@ -88,16 +88,38 @@ void processEvent(albers::EventStore& store, bool verbose,
   ParticleCollection* ptcs(nullptr);
   bool particles_available = store.get("GenParticle",ptcs);
   if (particles_available){
+    std::vector<ParticleHandle> muons;
     if(verbose)
       std::cout << "particle collection:" << std::endl;
     for(const auto& ref : *ptcs){
       if(verbose)
 	std::cout<<"\t"<<ref<<std::endl;
+      if( ref.ID() == 4 )
+	muons.push_back(ref);
     }
+    // listing particles that are not used in a jet
     const std::vector<ParticleHandle>& particles = ptcs->getHandles();
     std::vector<ParticleHandle> unused = utils::unused(particles, injets);
     if(verbose)
       std::cout<<"unused particles: "<<unused.size()<<"/"<<particles.size()<<" "<<injets.size()<<std::endl;
+
+    // computing isolation for first muon
+    if(not muons.empty()) {
+      const ParticleHandle& muon = muons[0];
+      float dRMax = 0.5;
+      const std::vector<ParticleHandle> incone = utils::inCone( muon.P4(),
+								particles,
+								dRMax);
+      float sumpt = utils::sumPt(incone);
+      if( verbose ) {
+	std::cout<<"muon: "<<muon<<" sumpt "<<sumpt<<std::endl;
+	std::cout<<"\tparticles in cone:"<<std::endl;
+      }
+      for(const auto& ptc : incone) {
+	if( verbose )
+	  std::cout<<"\t"<<ptc<<std::endl;
+      }
+    }
   }
 }
 
