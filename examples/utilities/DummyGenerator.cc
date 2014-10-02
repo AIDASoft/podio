@@ -37,8 +37,10 @@ DummyGenerator::DummyGenerator(int npart,
 
 
 void DummyGenerator::generate() {
+
   generate_jet(200., TVector3(1,0,0) );
   generate_jet(200., TVector3(-1,0,0) );
+
   // add 50 particles of underlying event
   for(unsigned i=0; i<50; ++i) {
     bool success = false;
@@ -47,6 +49,12 @@ void DummyGenerator::generate() {
       success = result.first;
     }
   }
+
+  // add a muon
+  TLorentzVector p4;
+  p4.SetPtEtaPhiM(20, 2, 0.3, 0.105);
+  generate_particle( &p4, 4);
+
   m_ievt++;
 }
 
@@ -87,7 +95,8 @@ void DummyGenerator::generate_jet(float energy, const TVector3& direction) {
   }
 
   // last particle is created to allow vector momentum conservation in jet com frame
-  auto result = generate_particle(&p4star);
+  TLorentzVector opposite(-p4star.Vect(), p4star.E());
+  auto result = generate_particle(&opposite);
   ParticleHandle& ptc = *(result.second);
   TLorentzVector final = utils::lvFromPOD( ptc.P4() );
   p4star += final;
@@ -111,24 +120,27 @@ void DummyGenerator::generate_jet(float energy, const TVector3& direction) {
   jet.setP4( utils::lvToPOD(jetlv) );
 }
 
-std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorentzVector* lv) {
+std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorentzVector* lv, unsigned itype) {
 
   // particle type and mass
-  float ftype = m_uniform(m_engine);
-  unsigned itype = -1;
-  for(unsigned i=0; i<m_ptypeprob.size(); ++i) {
-    if(ftype<=m_ptypeprob[i]) {
-      itype = i;
-      break;
+  if (itype==-1) {
+    float ftype = m_uniform(m_engine);
+    for(unsigned i=0; i<m_ptypeprob.size(); ++i) {
+      if(ftype<=m_ptypeprob[i]) {
+	itype = i;
+	break;
+      }
     }
+    assert(itype < m_ptypeprob.size());
   }
-  assert(itype < m_ptypeprob.size());
   float mass = 0.;
   switch(itype) {
   case 1:
     mass = 0.135; break;
   case 3:
     mass = 0.497; break;
+  case 4:
+    mass = 0.105; break;
   default: break;
   }
 
@@ -156,8 +168,8 @@ std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorent
   else{
     float pmag = lv->Vect().Mag();
     float energy = sqrt(pmag*pmag + mass*mass);
-    TLorentzVector opposite( -lv->Px(), -lv->Py(), -lv->Pz(), energy);
-    lvpod = utils::lvToPOD(opposite);
+    TLorentzVector p4( lv->Px(), lv->Py(), lv->Pz(), energy);
+    lvpod = utils::lvToPOD(p4);
   }
   int id = itype;
 

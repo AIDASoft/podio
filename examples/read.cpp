@@ -76,7 +76,7 @@ void processEvent(albers::EventStore& store, bool verbose,
 	for(const auto& part : jparticles) {
 	  if(part.isAvailable()) {
 	    if(verbose)
-	      std::cout<<"\t\tassociated particle "<<part.ID()<<" "<<part.P4().Pt<<std::endl;
+	      std::cout<<"\t\tassociated "<<part<<std::endl;
 	    injets.push_back(part);
 	  }
 	}
@@ -92,7 +92,7 @@ void processEvent(albers::EventStore& store, bool verbose,
       std::cout << "particle collection:" << std::endl;
     for(const auto& ref : *ptcs){
       if(verbose)
-  	std::cout << "\tparticle: " << ref.ID() << " " << ref.P4().Pt << std::endl;
+	std::cout<<"\t"<<ref<<std::endl;
     }
     const std::vector<ParticleHandle>& particles = ptcs->getHandles();
     std::vector<ParticleHandle> unused = utils::unused(particles, injets);

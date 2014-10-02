@@ -70,3 +70,12 @@ namespace utils {
 
 
 } // namespace
+
+std::ostream& operator<<(std::ostream& out, const ParticleHandle& ptc) {
+  if(not out) return out;
+  out<<"particle ID "<<ptc.ID()
+     <<" pt "<<ptc.P4().Pt
+     <<" eta "<<ptc.P4().Eta
+     <<" phi "<<ptc.P4().Phi;
+  return out;
+}

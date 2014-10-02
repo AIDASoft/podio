@@ -2,6 +2,7 @@
 #define UTILS_PARTICLE_H
 
 #include <vector>
+#include <iostream>
 
 class ParticleHandle;
 class LorentzVector;
@@ -25,6 +26,9 @@ namespace utils {
   /// returns the scalar sum p of the particles in ps
   float sumP(const std::vector<ParticleHandle>& ps);
 
+
 }
+
+std::ostream& operator<<(std::ostream& out, const ParticleHandle& ptc);
 
 #endif
