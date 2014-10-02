@@ -20,7 +20,7 @@ DummyGenerator::DummyGenerator(int npart,
 			       albers::EventStore& store) :
   m_njets(2), // not used
   m_engine(0xdeadbeef),
-  m_pstar(0., 0.25),
+  m_pstar(0., 0.3),
   m_phi(-M_PI, M_PI),
   m_theta(0, M_PI),
   m_npart(npart),
@@ -39,6 +39,14 @@ DummyGenerator::DummyGenerator(int npart,
 void DummyGenerator::generate() {
   generate_jet(200., TVector3(1,0,0) );
   generate_jet(200., TVector3(-1,0,0) );
+  // add 50 particles of underlying event
+  for(unsigned i=0; i<50; ++i) {
+    bool success = false;
+    while (not success) {
+      auto result = generate_particle();
+      success = result.first;
+    }
+  }
   m_ievt++;
 }
 
@@ -109,7 +117,7 @@ std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorent
   float ftype = m_uniform(m_engine);
   unsigned itype = -1;
   for(unsigned i=0; i<m_ptypeprob.size(); ++i) {
-    if(ftype<m_ptypeprob[i]) {
+    if(ftype<=m_ptypeprob[i]) {
       itype = i;
       break;
     }
@@ -132,7 +140,7 @@ std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorent
     if(fabs(etastar)>5.)
       return std::make_pair<bool, ParticleHandle*>(false, nullptr);
     float ptstar = -1;
-    while(ptstar<0 || ptstar>0.5) {
+    while(ptstar<0.1 || ptstar>1) { // truncated gaussian to avoid numerical issues
       ptstar = m_pstar(m_engine);
     }
 

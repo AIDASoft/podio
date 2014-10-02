@@ -27,6 +27,8 @@ void JetCollection::prepareForWrite(const albers::Registry* registry){
 void JetCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
+  // fix. otherwise, m_collectionID == 0..
+  m_collectionID = registry->getIDFromPODAddress( _getBuffer() );
   for (auto& data : *m_data){
     
     m_handles.emplace_back(JetHandle(index,m_collectionID, m_data));
