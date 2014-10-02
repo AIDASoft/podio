@@ -73,8 +73,8 @@ namespace albers {
 
     std::vector<std::string>& names(){ return m_names;};
 
-    /// Prints collection informatiCOLIN: to be implemented
-    // void print() const;
+    /// Prints collection information
+    void print() const;
 
   private:
     void doGetPODAddressFromID(unsigned ID, void*& address) const;
@@ -161,6 +161,7 @@ unsigned Registry::registerPOD(T* collection, const std::string& name){
       m_collections.emplace_back(collection);
       ID = hash(name);
       m_collectionIDs.emplace_back( ID );
+      collection->setID(ID);
    } else {
     auto index = result - m_addresses.begin();
     ID = m_collectionIDs[index];

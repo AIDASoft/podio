@@ -66,11 +66,11 @@ int main(){
   albers::Writer     writer("example.root", &registry);
 
   DummyGenerator generator(10, store);
+  generator.setNPrint(10);
 
-  unsigned nevents=10;
+  unsigned nevents=10000;
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
-
 
   writer.registerForWrite<EventInfoCollection>("EventInfo");
 

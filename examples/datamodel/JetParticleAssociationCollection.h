@@ -74,10 +74,13 @@ public:
   }
 
   /// returns the address of the pointer to the data buffer
-  void* _getRawBuffer(){ return (void*)&m_data;};
+  void* _getRawBuffer() { return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
-  std::vector<JetParticleAssociation>* _getBuffer(){ return m_data;};
+  std::vector<JetParticleAssociation>* _getBuffer() { return m_data;};
+
+  /// returns the vector of Handles
+  const JetParticleAssociationHandleVector& getHandles() { return m_handles; }
 
   /// print some information
   void print() const;

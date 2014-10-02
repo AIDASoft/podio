@@ -27,6 +27,8 @@ $prepareforwritingbody
 void ${name}Collection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
+  // fix. otherwise, m_collectionID == 0..
+  m_collectionID = registry->getIDFromPODAddress( _getBuffer() );
   for (auto& data : *m_data){
     $prepareafterreadbody
     m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));

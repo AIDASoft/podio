@@ -27,6 +27,8 @@ void EventInfoCollection::prepareForWrite(const albers::Registry* registry){
 void EventInfoCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
+  // fix. otherwise, m_collectionID == 0..
+  m_collectionID = registry->getIDFromPODAddress( _getBuffer() );
   for (auto& data : *m_data){
     
     m_handles.emplace_back(EventInfoHandle(index,m_collectionID, m_data));

@@ -30,6 +30,8 @@ void JetParticleAssociationCollection::prepareForWrite(const albers::Registry* r
 void JetParticleAssociationCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
+  // fix. otherwise, m_collectionID == 0..
+  m_collectionID = registry->getIDFromPODAddress( _getBuffer() );
   for (auto& data : *m_data){
     data.Jet.prepareAfterRead(registry);
 data.Particle.prepareAfterRead(registry);

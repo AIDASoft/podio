@@ -8,6 +8,7 @@
 #include "TLorentzVector.h"
 #include <set>
 #include <iterator>
+#include <iostream>
 
 namespace utils {
 
@@ -18,8 +19,15 @@ namespace utils {
     std::set<ParticleHandle> p2set;
     std::copy( p2s.begin(), p2s.end(),
 	       std::inserter( p2set, p2set.end() ) );
+    //    std::cout<<"set"<<std::endl;
+    // for(const auto& particle : p2set) {
+    //  std::cout<<particle.containerID()<<" "<<particle.index()<<std::endl;
+    // }
+    // std::cout<<"particles"<<std::endl;
     for(const auto& particle : p1s) {
+      // std::cout<<particle.containerID()<<" "<<particle.index()<<std::endl;
       if( p2set.find(particle) == p2set.end() ) {
+	// std::cout<<"not found"<<std::endl;
 	results.push_back(particle);
       }
     }
