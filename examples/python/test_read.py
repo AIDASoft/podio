@@ -32,7 +32,7 @@ registry = Registry(meta)
 events = Events(tree)
 for index, event in enumerate(events):
     if index > 10: break
-    print index, event.EventInfo[0].Number
+    print index, event.EventInfo.back().Number
 
 
 #for index, event in enumerate(tree):
