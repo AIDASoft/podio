@@ -49,9 +49,9 @@ namespace albers {
     /// set the reader
     void setReader(Reader* reader);
 
-  private:
-    // methods
     bool doGet(const std::string& name, CollectionBase*& collection) const;
+
+  private:
     // members
     mutable CollContainer m_collections;
     Reader* m_reader;
