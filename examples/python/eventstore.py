@@ -9,9 +9,12 @@ def iterator(self):
     for entry in xrange(entries):
         yield self.get(entry)
 
-def addIterator(obj):
-    obj.__class__.__iter__ = iterator
-    return obj 
+def len(self):
+    return self._getBuffer().size()
+        
+def getitem(self, key):
+    return self.get(key)
+
 
 class EventStore(object):
     '''Interface to events in an albers root file.
@@ -39,8 +42,13 @@ class EventStore(object):
            name: name of the collection in the albers root file.
         '''
         coll = self.store.get(name)
-        collection = addIterator(coll)
-        return collection
+        # adding iterator generator to be able to loop on the collection
+        coll.__class__.__iter__ = iterator
+        # adding length function
+        coll.__class__.__len__ = len
+        # enabling the use of [] notation on the collection
+        coll.__class__.__getitem__ = getitem
+        return coll
 
     def __getattr__(self, name):
         '''missing attributes are taken from self.store'''
