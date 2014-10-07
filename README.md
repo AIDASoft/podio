@@ -1,33 +1,67 @@
-albers
-======
+# albers
 
-To build and install this package, do (on lxplus):
+## Preparing the environment 
 
-Preparing the environment - CMake, gcc, ROOT
+### On lxplus
 
-    export PATH=/afs/cern.ch/sw/lcg/contrib/CMake/2.8.9/Linux-i386/bin:${PATH}
-    source /afs/cern.ch/sw/lcg/contrib/gcc/4.8.1/x86_64-slc6/setup.sh
-    source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.20/x86_64-slc6-gcc48-opt/root/bin/thisroot.sh
+To build and install this package, do:
 
-after setting up a separate build area, the build can be triggered w/
+    source init.sh
 
-    cmake -DCMAKE_INSTALL_PREFIX=<destination> <path_to_sources>
-    make
-    make install
+### On Mac OS
 
-either one uses the examples from the build area or from the install area
-for using from the install area one has to set the LD_LIBRARY_PATH to point to
+Assuming the path to your version of ROOT is <root_path>, do: 
 
-    <destination>/examples
-    <destination>/lib
+    source <root_path>/bin/thisroot.sh
+
+Set up python. We advise to use the version of python that comes with Mac OS. This version should be 2.7.X
+
+    python --version
+    > Python 2.7.5
+
+Check that the yaml python module is available 
+
+    python 
+    >>> import yaml
+    
+If the import goes fine (no message), you're all set. If not, you need to install yaml. For that, you need to:
+
+1- install the C++ yaml library, which is used by the python module. The easiest way to do that is to use homebrew (install homebrew if you don't have it yet)
+
+    brew install libyaml
+
+2- install the python yaml module (first install pip if you don't have it yet)
+
+    pip install yaml 
+    
+Check that you can now import the yaml module in python. 
+
+Finally, set your environment:
+
+    source init_macos.sh
+
+
+## Compiling
+
+after setting up a separate build and install area, the build can be triggered w/
+
+    mkdir build
+    mkdir install
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=../install ..
+    make -j 4 install 
+
+## Running
 
 The examples are for creating a file "example.root"
 
-    write
+    ../install/examples/write
 
 And reading it again
 
-    read
+    ../install/examples/read
+
+## Modifying the data model 
 
 if you want to invoke the data model creator use python/albers_class_generator.py
 and look into examples/datalayout.yaml for inspiration
