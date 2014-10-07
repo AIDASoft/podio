@@ -20,6 +20,9 @@ class PyEventStore {
 
   /// signify end of event
   void endOfEvent();
+  
+  /// get number of entries in the tree
+  unsigned getEntries() const;
 
  private:
   albers::EventStore* m_store; 
