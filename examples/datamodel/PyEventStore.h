@@ -21,6 +21,9 @@ class PyEventStore {
   /// signify end of event
   void endOfEvent();
   
+  /// go to a given event
+  void goToEvent(unsigned ievent);
+
   /// get number of entries in the tree
   unsigned getEntries() const;
 

@@ -11,10 +11,13 @@ class EventStoreTestCase(unittest.TestCase):
         
     def test_eventloop(self):
         self.assertTrue( self.store.getEntries() >= 0 )
+        self.assertEqual( self.store.getEntries(), len(self.store) )
         for iev, event in enumerate(self.store):
             self.assertTrue( True )
             if iev>5:
                 break
+        event0 = self.store[0]
+        self.assertEqual( event0.__class__, self.store.__class__)
 
     def test_collections(self):
         particles = self.store.get("GenParticle")
