@@ -27,12 +27,16 @@ class EventStore(object):
         for i, p in islice(enumerate(particles), 0, 5):
             print "particle ", i, p.ID(), p.P4().Pt
     '''
-    def __init__(self, filename):
+    def __init__(self, filename, treename=None):
         '''Create an event list from the albers root file.
 
         Parameters:
            filename: path to the root file
+           treename: not used at the moment
         '''
+        # COLIN what to do with chains? 
+        if hasattr(filename, '__getitem__'):
+            filename = filename[0] 
         self.store = PyEventStore(filename)
 
     def get(self, name):
@@ -61,6 +65,13 @@ class EventStore(object):
             yield self
             self.endOfEvent()
 
+    def __getitem__(self, evnum):
+        self.goToEvent( evnum )
+        return self
+            
+    def __len__(self):
+        return self.store.getEntries()
+            
 if __name__ == "__main__":
     
     import sys

@@ -94,4 +94,11 @@ namespace albers {
     return m_eventTree->GetEntries();
   }
 
+  void Reader::goToEvent(unsigned evnum) { 
+    m_eventNumber = evnum; 
+    m_registry->resetAddresses();
+    m_inputs.clear();    
+  }
+
+
 } //namespace

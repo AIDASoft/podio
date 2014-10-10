@@ -22,6 +22,11 @@ void PyEventStore::endOfEvent() {
   m_reader->endOfEvent();
 }
 
+void PyEventStore::goToEvent(unsigned ievent) {
+  m_store->endOfEvent();
+  m_reader->goToEvent(ievent);
+}
+
 unsigned PyEventStore::getEntries() const { 
   return m_reader->getEntries();
 }
