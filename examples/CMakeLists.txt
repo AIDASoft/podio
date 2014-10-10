@@ -27,3 +27,4 @@ foreach( sourcefile ${executables} )
 endforeach( sourcefile ${executables} )
 
 install(TARGETS DataModelExample DESTINATION examples)
+install(FILES python/eventstore.py DESTINATION examples)
