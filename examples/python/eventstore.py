@@ -1,5 +1,5 @@
 from ROOT import gSystem
-gSystem.Load("libDatamodelExample")
+gSystem.Load("libDataModelExample")
 from ROOT import ParticleCollection
 from ROOT import PyEventStore
 
