@@ -25,6 +25,7 @@ COLIN: it seems the registry also keeps track of the collection IDs, which might
 namespace albers {
 
   class Reader;
+  class CollectionBase;
 
   class Registry{
 
@@ -43,6 +44,9 @@ namespace albers {
 
     template<typename T>
     void getPODAddressFromName(const std::string& name, T*&) const;
+
+    template<typename T>
+    void getCollectionFromName(const std::string& name, T*&) const;
 
     template<typename T>
     unsigned getIDFromPODAddress(T* address) const;
@@ -69,12 +73,13 @@ namespace albers {
 
     std::vector<std::string>& names(){ return m_names;};
 
-    /// Prints collection informatiCOLIN: to be implemented
-    // void print() const;
+    /// Prints collection information
+    void print() const;
 
   private:
     void doGetPODAddressFromID(unsigned ID, void*& address) const;
     std::vector<void*>  m_addresses;
+    std::vector<CollectionBase*>  m_collections;
     std::vector<unsigned>    m_collectionIDs;
     std::vector<std::string> m_names;
     Reader*                  m_reader; //! transient
@@ -96,7 +101,7 @@ void Registry::getPODAddressFromID(unsigned ID, T*& address) const {
   void* tmp;
   doGetPODAddressFromID(ID, tmp);
   address = static_cast<T*>(tmp);
- }
+}
 
 template<typename T>
 void Registry::getPODAddressFromName(const std::string& name, T*& address) const {
@@ -107,7 +112,18 @@ void Registry::getPODAddressFromName(const std::string& name, T*& address) const
     auto index = result - m_names.begin();
     address = static_cast<T*>(m_addresses[index]);
   }
- }
+}
+
+template<typename T>
+void Registry::getCollectionFromName(const std::string& name, T*& collection) const {
+  auto result = std::find(begin(m_names), end(m_names), name);
+  if (result == end(m_names)){
+    collection = nullptr;
+  } else {
+    auto index = result - m_names.begin();
+    collection = static_cast<T*>(m_collections[index]);
+  }
+}
 
 template<typename T>
 unsigned Registry::getIDFromPODAddress(T* address) const {
@@ -134,16 +150,18 @@ void Registry::setPODAddress(const std::string& name, T* address){
 }
 
 template<typename T>
-unsigned Registry::registerPOD(T* address, const std::string& name){
-  auto bare_address = static_cast<void*>(address);
+unsigned Registry::registerPOD(T* collection, const std::string& name){
+  auto bare_address = static_cast<void*>(collection->_getBuffer());
   auto result = std::find(begin(m_addresses), end(m_addresses), bare_address);
   unsigned ID = 0;
   if (result == m_addresses.end()) {
       std::hash<std::string> hash;
       m_addresses.emplace_back(bare_address);
       m_names.emplace_back(name);
+      m_collections.emplace_back(collection);
       ID = hash(name);
       m_collectionIDs.emplace_back( ID );
+      collection->setID(ID);
    } else {
     auto index = result - m_addresses.begin();
     ID = m_collectionIDs[index];

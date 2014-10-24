@@ -1,16 +1,25 @@
+// Data model
 #include "EventInfo.h"
 #include "EventInfoCollection.h"
 #include "Particle.h"
 #include "ParticleCollection.h"
+#include "JetCollection.h"
+#include "JetParticleAssociationCollection.h"
 #include "LorentzVector.h"
 #include "Jet.h"
 #include "JetCollection.h"
 
+// Utility functions
+#include "VectorUtils.h"
+
+// ROOT
+#include "TLorentzVector.h"
 #include "TBranch.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TSystem.h"
 
+// STL
 #include <iostream>
 #include <vector>
 
@@ -19,11 +28,15 @@
 #include "albers/Registry.h"
 #include "albers/Writer.h"
 
+// testing tools
+#include "DummyGenerator.h"
 
 
-void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer) {
+void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer, DummyGenerator& generator) {
   if(iEvent % 1000 == 0)
     std::cout<<"processing event "<<iEvent<<std::endl;
+
+  generator.generate();
 
   // fill event information
   EventInfoCollection* evinfocoll = nullptr;
@@ -34,33 +47,6 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
   }
   EventInfoHandle& evinfo = evinfocoll->create();
   evinfo.setNumber(iEvent);
-
-  LorentzVector lv1;
-  lv1.Phi  = 0;
-  lv1.Eta  = 1 ;
-  lv1.Mass = 125;
-  lv1.Pt   = 50.;
-
-  // particle part
-  ParticleCollection* partcoll = nullptr;
-  store.get("Particle", partcoll);
-  ParticleHandle& p1 = partcoll->create();
-  p1.setID(25 + iEvent);
-  p1.setP4(lv1);
-  ParticleHandle& p2 = partcoll->create();
-  p2.setID(42 + iEvent);
-  p2.setP4(lv1);
-
-  // jet part
-  JetCollection* jetcoll = nullptr;
-  store.get("Jet", jetcoll);
-  JetHandle& j1 = jetcoll->create();
-  j1.setP4(lv1);
-  j1.addparticles(p1);
-  j1.addparticles(p2);   
-  for(auto i = j1.particles_begin(), e = j1.particles_end(); i!=e;++i){
-    std::cout << "  component pt: " << i->P4().Pt << std::endl;
-  }
 
   // and now for the writing
   // TODO: do that at a different time w/o coll pointer
@@ -88,12 +74,15 @@ int main(){
   ParticleCollection& partcoll = store.create<ParticleCollection>("Particle");
   JetCollection& jetcoll = store.create<JetCollection>("Jet");
 
-  writer.registerForWrite("EventInfo", evinfocoll);
-  writer.registerForWrite("Particle", partcoll);
-  writer.registerForWrite("Jet", jetcoll);
+  writer.registerForWrite<EventInfoCollection>("EventInfo");
+
+  // collections from the dummy generator
+  writer.registerForWrite<ParticleCollection>("GenParticle");
+  writer.registerForWrite<JetCollection>("GenJet");
+  writer.registerForWrite<JetParticleAssociationCollection>("GenJetParticle");
 
   for(unsigned i=0; i<nevents; ++i) {
-    processEvent(i, store, writer);
+    processEvent(i, store, writer, generator);
   }
 
   writer.finish();

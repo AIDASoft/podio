@@ -24,6 +24,7 @@ namespace albers {
 
   private:
     CollRegistry m_referencingCollections;
+    virtual void print() const = 0;
   };
 
 } // namespace

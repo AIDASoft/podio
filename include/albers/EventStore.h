@@ -49,9 +49,9 @@ namespace albers {
     /// set the reader
     void setReader(Reader* reader);
 
-  private:
-    // methods
     bool doGet(const std::string& name, CollectionBase*& collection) const;
+
+  private:
     // members
     mutable CollContainer m_collections;
     Reader* m_reader;
@@ -66,14 +66,7 @@ T& EventStore::create(const std::string& name) {
   // TODO: add check for existence
   T* coll = new T();
   m_collections.emplace_back(std::make_pair(name,coll));
-  m_registry->registerPOD(coll->_getBuffer(),name);
-  // then create the auxiliary collections
-  for (auto aux : coll->referenceCollections()) {
-    aux.first += name;
-      m_collections.push_back(aux);  
-      // registering the pod would be useful
-      // and who creates the collections?
-  }
+  m_registry->registerPOD(coll, name);
   return *coll;
 }
 

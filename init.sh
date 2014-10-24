@@ -4,3 +4,4 @@ source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.20/x86_64-slc6-gcc48-opt/root/
 
 export ALBERS=$PWD/install
 export LD_LIBRARY_PATH=$ALBERS/examples:$ALBERS/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$ALBERS/examples:$PYTHONPATH

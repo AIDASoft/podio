@@ -52,9 +52,11 @@ class Reader {
     /// Returns number of entries in the TTree
     unsigned getEntries() const;
 
-    ///
-  void endOfEvent();
+    /// Preparing to read next event
+    void endOfEvent();
 
+    /// Preparing to read a given event
+    void goToEvent(unsigned evnum);
 
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
