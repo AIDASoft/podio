@@ -120,10 +120,10 @@ void DummyGenerator::generate_jet(float energy, const TVector3& direction) {
   jet.setP4( utils::lvToPOD(jetlv) );
 }
 
-std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorentzVector* lv, unsigned itype) {
+std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorentzVector* lv, int itype) {
 
   // particle type and mass
-  if (itype==-1) {
+  if (itype == -1) {
     float ftype = m_uniform(m_engine);
     for(unsigned i=0; i<m_ptypeprob.size(); ++i) {
       if(ftype<=m_ptypeprob[i]) {
@@ -131,7 +131,6 @@ std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorent
 	break;
       }
     }
-    assert(itype < m_ptypeprob.size());
   }
   float mass = 0.;
   switch(itype) {
