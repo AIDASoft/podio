@@ -31,7 +31,7 @@ private:
   void generate_jet(float energy, const TVector3& direction);
 
   /// generate a particle
-  std::pair<bool, ParticleHandle*> generate_particle(const TLorentzVector* lv = nullptr, unsigned type=-1);
+  std::pair<bool, ParticleHandle*> generate_particle(const TLorentzVector* lv = nullptr, int type=-1);
 
   /// number of jets
   unsigned m_njets;

@@ -7,7 +7,7 @@ namespace albers {
   class CollectionBase;
   class EventStore; 
   class Reader; 
-};
+}
 
 class PyEventStore {
 

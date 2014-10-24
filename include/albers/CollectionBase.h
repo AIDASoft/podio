@@ -20,10 +20,10 @@ namespace albers {
     virtual void* _getRawBuffer() = 0;
     virtual ~CollectionBase(){};
     virtual void clear() = 0 ;
-    virtual CollRegistry& referenceCollections() { return m_referencingCollections; };
+    //    virtual CollRegistry& referenceCollections() { return m_referencingCollections; };
 
   private:
-    CollRegistry m_referencingCollections;
+    //    CollRegistry m_referencingCollections;
     virtual void print() const = 0;
   };
 
