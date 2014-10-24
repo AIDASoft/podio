@@ -93,9 +93,6 @@ void processEvent(albers::EventStore& store, bool verbose,
       std::cout << "particle collection:" << std::endl;
     for(const auto& ref : *ptcs){
       if(verbose)
-<<<<<<< HEAD
-	std::cout << "  particle: " << ref.ID() << " " << ref.P4().Mass << std::endl;
-=======
 	std::cout<<"\t"<<ref<<std::endl;
       if( ref.ID() == 4 )
 	muons.push_back(ref);
@@ -122,26 +119,10 @@ void processEvent(albers::EventStore& store, bool verbose,
 	if( verbose )
 	  std::cout<<"\t"<<ptc<<std::endl;
       }
->>>>>>> 173d125186a08c8afb9ad713cb7e46cb50bf4c3f
     }
   }
-
-  // read jets                                                                              
-  JetCollection* jets(nullptr);
-  bool jets_available = store.get("Jet",jets);
-  if (jets_available){
-    if(verbose)
-      std::cout << "jet collection:" << std::endl;
-    for(const auto& jet : *jets){
-      if(verbose) {
-        std::cout << "  jet pt: " << jet.P4().Pt << std::endl;
-        for(auto i = jet.particles_begin(), e = jet.particles_end(); i!=e;++i){
-	  std::cout << "  component pt" << i->P4().Pt << std::endl;
-        }
-      }
-  }
- }
 }
+
 
 int main(){
   gSystem->Load("libDataModelExample.so");

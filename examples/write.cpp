@@ -6,8 +6,6 @@
 #include "JetCollection.h"
 #include "JetParticleAssociationCollection.h"
 #include "LorentzVector.h"
-#include "Jet.h"
-#include "JetCollection.h"
 
 // Utility functions
 #include "VectorUtils.h"
@@ -50,6 +48,7 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
 
   // and now for the writing
   // TODO: do that at a different time w/o coll pointer
+  // COLIN: calling writeEvent should not be left up to the user.
   writer.writeEvent();
   store.next();
 
@@ -66,13 +65,12 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
+  DummyGenerator generator(10, store);
+  generator.setNPrint(10);
+
   unsigned nevents=10000;
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
-
-  // particle part
-  ParticleCollection& partcoll = store.create<ParticleCollection>("Particle");
-  JetCollection& jetcoll = store.create<JetCollection>("Jet");
 
   writer.registerForWrite<EventInfoCollection>("EventInfo");
 
