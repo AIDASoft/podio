@@ -3,6 +3,8 @@
 #include "Particle.h"
 #include "ParticleCollection.h"
 #include "LorentzVector.h"
+#include "Jet.h"
+#include "JetCollection.h"
 
 #include "TBranch.h"
 #include "TFile.h"
@@ -45,10 +47,23 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
   ParticleHandle& p1 = partcoll->create();
   p1.setID(25 + iEvent);
   p1.setP4(lv1);
+  ParticleHandle& p2 = partcoll->create();
+  p2.setID(42 + iEvent);
+  p2.setP4(lv1);
+
+  // jet part
+  JetCollection* jetcoll = nullptr;
+  store.get("Jet", jetcoll);
+  JetHandle& j1 = jetcoll->create();
+  j1.setP4(lv1);
+  j1.addparticles(p1);
+  j1.addparticles(p2);   
+  for(auto i = j1.particles_begin(), e = j1.particles_end(); i!=e;++i){
+    std::cout << "  component pt: " << i->P4().Pt << std::endl;
+  }
 
   // and now for the writing
   // TODO: do that at a different time w/o coll pointer
-  // COLIN: calling writeEvent should not be left up to the user.
   writer.writeEvent();
   store.next();
 
@@ -65,15 +80,17 @@ int main(){
   albers::EventStore store(&registry);
   albers::Writer     writer("example.root", &registry);
 
-  unsigned nevents=10;
+  unsigned nevents=10000;
 
   EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
 
   // particle part
   ParticleCollection& partcoll = store.create<ParticleCollection>("Particle");
+  JetCollection& jetcoll = store.create<JetCollection>("Jet");
 
   writer.registerForWrite("EventInfo", evinfocoll);
   writer.registerForWrite("Particle", partcoll);
+  writer.registerForWrite("Jet", jetcoll);
 
   for(unsigned i=0; i<nevents; ++i) {
     processEvent(i, store, writer);

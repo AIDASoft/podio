@@ -31,9 +31,10 @@ _text_ = """
 
 class ClassGenerator(object):
 
-  def __init__(self,yamlfile, install_dir, verbose = True):
+  def __init__(self,yamlfile, install_dir, package_name, verbose = True):
     self.yamlfile = yamlfile
     self.install_dir = install_dir
+    self.package_name =package_name
     self.template_dir = os.path.join(thisdir,"../templates")
     self.verbose=verbose
     self.buildin_types = ["int","float","double","unsigned int","unsigned"]
@@ -135,7 +136,7 @@ class ClassGenerator(object):
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
-        includes += '#include "%s.h"\n' %klass
+        includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
     membersCode = ""
@@ -160,7 +161,8 @@ class ClassGenerator(object):
                      "members"  : membersCode,
                      "name"     : classname,
                      "description" : description,
-                     "author"   : author
+                     "author"   : author,
+                     "package_name" : self.package_name 
     }
     self.fill_templates("POD",substitutions)
     self.created_classes.append(classname)
@@ -169,7 +171,7 @@ class ClassGenerator(object):
     # check whether all member types are known
     # and prepare include directives
     includes = ""
-    includes += '#include "%s.h"\n' %classname
+    includes += '#include "%s/%s.h"\n' %(self.package_name,classname)
     description = definition["description"]
     author      = definition["author"]
     members = definition["members"]
@@ -178,7 +180,7 @@ class ClassGenerator(object):
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
-        includes += '#include "%s.h"\n' %klass
+        includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
@@ -222,7 +224,8 @@ class ClassGenerator(object):
     for refvector in refvectors:
       substitutions = {"relation" : refvector["name"],
                        "relationtype" : refvector["type"], 
-                       "classname" : classname
+                       "classname" : classname,
+                       "package_name" : self.package_name
                       }
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
       references += string.Template(references_template).substitute(substitutions)
@@ -238,7 +241,8 @@ class ClassGenerator(object):
                      "author"   : author,
                      "relations" : references,
                      "relation_declarations" : references_declarations,
-                     "relation_members" : references_members
+                     "relation_members" : references_members,
+                     "package_name" : self.package_name
                     }
     self.fill_templates("Handle",substitutions)
     self.created_classes.append("%sHandle"%classname)
@@ -249,18 +253,35 @@ class ClassGenerator(object):
     prepareafterreadbody = self.prepare_after_read_body(members)
     # handle one-to-many-relations
     relations = ""
+    create_relations = ""
+    clear_relations  = ""
     if definition.has_key("OneToManyRelations"):
       refvectors = definition["OneToManyRelations"]
       for item in refvectors:
         name  = item["name"]
         klass = item["type"] 
+        # members
         relations += "std::vector<%sHandle>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
         relations += "  std::vector<std::vector<%sHandle>*> m_rel_%s_tmp;\n " %(klass, name)
+        # relation handling in ::create
+        create_relations += "  auto %s_tmp = new std::vector<%sHandle>();\n" %(name, klass)
+        create_relations += "  m_rel_%s_tmp.push_back(%s_tmp);\n" %(name,name)
+        create_relations += "  tmp_handle.m_%s = %s_tmp;\n" %(name, name) 
+        # relation handling in ::clear
+        clear_relations += "  for (auto& pointer : m_rel_%s_tmp) {delete pointer;}\n" %(name)
+        clear_relations += "  m_rel_%s_tmp.clear();\n" %(name)
+        clear_relations += "  m_rel_%s->clear();\n" %(name) 
+        # relation handling in ::prepareForWrite
+
+        # relation handling in ::prepareAfterRead
 
     substitutions = { "name" : classname,
                       "prepareforwritingbody" : prepareforwritingbody,
                       "prepareafterreadbody" : prepareafterreadbody,
-                      "relations"           : relations
+                      "relations"           : relations,
+                      "create_relations" : create_relations,
+                      "clear_relations"  : clear_relations,
+                      "package_name" : self.package_name
     }
     self.fill_templates("Collection",substitutions)
     self.created_classes.append("%sCollection"%classname)
@@ -279,13 +300,18 @@ class ClassGenerator(object):
     for name, klass in components.iteritems():
       members+= "  %s %s;\n" %(klass, name)
     substitutions = {"members"  : members,
-                     "name"     : classname
+                     "name"     : classname,
+                     "package_name" : self.package_name
     }
     self.fill_templates("Component",substitutions)
     self.created_classes.append(classname)
 
   def write_file(self, name,content):
-    fullname = os.path.join(self.install_dir,name)
+    #dispatch headers to header dir, the rest to /src
+    if name.endswith("h"):
+      fullname = os.path.join(self.install_dir,self.package_name,name)
+    else:
+      fullname = os.path.join(self.install_dir,"src",name)
     open(fullname, "w").write(content)
 
   def fill_templates(self, category,substitutions):
@@ -318,12 +344,14 @@ if __name__ == "__main__":
   from optparse import OptionParser
 
 
-  usage = """usage: %prog [options] <description.yaml> <targetdir>
+  usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename>
 
     Given a <description.yaml>
     it creates data classes
     and a LinkDef.h file in
-    the specified <targetdir>.
+    the specified <targetdir>:
+      <packagename>/*.h
+      src/*.cc
 """
   parser = OptionParser(usage)
   parser.add_option("-q", "--quiet",
@@ -331,8 +359,8 @@ if __name__ == "__main__":
                     help="Don't write a report to screen")
   (options, args) = parser.parse_args()
 
-  if len(args) != 2:
+  if len(args) != 3:
       parser.error("incorrect number of arguments")
 
-  gen = ClassGenerator(args[0], args[1], verbose = options.verbose)
+  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
   gen.process()

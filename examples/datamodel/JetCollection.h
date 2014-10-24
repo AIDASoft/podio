@@ -73,13 +73,18 @@ public:
     return const_iterator(m_handles.size(), this);
   }
 
+//  std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections();
+
   void* _getRawBuffer(){ return (void*)&m_data;};
   std::vector<Jet>* _getBuffer(){ return m_data;};
 private:
   unsigned m_collectionID;
   JetVector* m_data;
   JetHandleVector m_handles;
-
+  // members to handle 1-to-N-relations
+  std::vector<ParticleHandle>* m_rel_particles; //relation buffer for r/w
+  std::vector<std::vector<ParticleHandle>*> m_rel_particles_tmp;
+ 
 };
 
 #endif

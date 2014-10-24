@@ -32,14 +32,15 @@ namespace albers {
     TFile* m_file;
     TTree* m_datatree;
     TTree* m_metadatatree;
-    std::vector<CollectionBase*> m_storedCollections;
+    std::vector<CollectionBase*> m_storedCollections; // preserving the order is important!
   
   };
 
 template<typename T>
   void Writer::registerForWrite(const std::string& name, T& coll){
     m_datatree->Branch(name.c_str(), coll._getBuffer());
-    m_storedCollections.emplace_back(&coll);  
+    m_storedCollections.emplace_back(&coll);
+    // TODO: register the aux collections as well!
   }
 
 } //namespace

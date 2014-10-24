@@ -8,10 +8,12 @@ const EventInfoHandle& EventInfoCollection::get(int index) const{
 }
 
 EventInfoHandle& EventInfoCollection::create(){
-    m_data->emplace_back(EventInfo());
-    int index = m_data->size()-1;
-    m_handles.emplace_back(EventInfoHandle(index,m_collectionID, m_data));
-    return m_handles.back();
+  m_data->emplace_back(EventInfo());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(EventInfoHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
 }
 
 void EventInfoCollection::clear(){
@@ -43,3 +45,8 @@ void EventInfoCollection::setPODsAddress(const void* address){
 const EventInfoHandle EventInfoCollectionIterator::operator* () const {
   return m_collection->get(m_index);
 }
+
+//std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections() {
+//}
+
+

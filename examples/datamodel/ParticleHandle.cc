@@ -6,11 +6,13 @@
 #include "Particle.h"
 #include "ParticleCollection.h"
 
-  const LorentzVector& ParticleHandle::P4() const { return m_container->at(m_index).P4;}
+  const LorentzVector& ParticleHandle::P4() const { 
+return m_container->at(m_index).P4;}
   const int& ParticleHandle::ID() const { return m_container->at(m_index).ID;}
 
   void ParticleHandle::setP4(LorentzVector value){ m_container->at(m_index).P4 = value;}
   void ParticleHandle::setID(int value){ m_container->at(m_index).ID = value;}
+
 
 
 bool  ParticleHandle::isAvailable() const {

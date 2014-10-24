@@ -1,5 +1,6 @@
 #include "ParticleCollection.h"
 #include "EventInfoCollection.h"
+#include "JetCollection.h"
 #include "TBranch.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -33,11 +34,26 @@ void processEvent(albers::EventStore& store, bool verbose) {
       std::cout << "particle collection:" << std::endl;
     for(const auto& ref : *refs){
       if(verbose)
-	std::cout << "particle: " << ref.ID() << " " << ref.P4().Mass << std::endl;
+	std::cout << "  particle: " << ref.ID() << " " << ref.P4().Mass << std::endl;
     }
   }
-}
 
+  // read jets                                                                              
+  JetCollection* jets(nullptr);
+  bool jets_available = store.get("Jet",jets);
+  if (jets_available){
+    if(verbose)
+      std::cout << "jet collection:" << std::endl;
+    for(const auto& jet : *jets){
+      if(verbose) {
+        std::cout << "  jet pt: " << jet.P4().Pt << std::endl;
+        for(auto i = jet.particles_begin(), e = jet.particles_end(); i!=e;++i){
+	  std::cout << "  component pt" << i->P4().Pt << std::endl;
+        }
+      }
+  }
+ }
+}
 
 int main(){
   gSystem->Load("libDataModelExample.so");

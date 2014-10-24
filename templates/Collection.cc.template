@@ -1,4 +1,4 @@
-#include "${name}Collection.h"
+#include "${package_name}/${name}Collection.h"
 
 ${name}Collection::${name}Collection() : m_collectionID(0), m_data(new ${name}Vector() ){
 }
@@ -8,16 +8,18 @@ const ${name}Handle& ${name}Collection::get(int index) const{
 }
 
 ${name}Handle& ${name}Collection::create(){
-    m_data->emplace_back(${name}());
-    int index = m_data->size()-1;
-    m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
-    return m_handles.back();
+  m_data->emplace_back(${name}());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+${create_relations}
+  return tmp_handle;
 }
 
 void ${name}Collection::clear(){
   m_data->clear();
   m_handles.clear();
-
+${clear_relations}
 }
 
 void ${name}Collection::prepareForWrite(const albers::Registry* registry){

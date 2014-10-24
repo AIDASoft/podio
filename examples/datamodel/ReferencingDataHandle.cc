@@ -6,9 +6,26 @@
 #include "ReferencingData.h"
 #include "ReferencingDataCollection.h"
 
-  const DummyDataHandle& ReferencingDataHandle::DummyData() const { return m_container->at(m_index).DummyData;}
+  const DummyDataHandle& ReferencingDataHandle::Dummy() const { return m_container->at(m_index).Dummy;}
 
-  void ReferencingDataHandle::setDummyData(DummyDataHandle value){ m_container->at(m_index).DummyData = value;}
+  void ReferencingDataHandle::setDummy(DummyDataHandle value){ m_container->at(m_index).Dummy = value;}
+
+std::vector<DummyDataHandle>::const_iterator ReferencingDataHandle::Dummies_begin() const {
+  auto ret_value = m_Dummies->begin();
+  std::advance(ret_value, m_container->at(m_index).Dummies_begin);
+  return ret_value;
+}
+
+std::vector<DummyDataHandle>::const_iterator ReferencingDataHandle::Dummies_end() const {
+  auto ret_value = m_Dummies->begin();
+  std::advance(ret_value, m_container->at(m_index).Dummies_end);
+  return ret_value;
+}
+
+void ReferencingDataHandle::addDummies(DummyDataHandle& component) {
+  m_Dummies->push_back(component);
+  m_container->at(m_index).Dummies_end++;
+}
 
 
 bool  ReferencingDataHandle::isAvailable() const {

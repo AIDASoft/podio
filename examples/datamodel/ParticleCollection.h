@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 
 // albers specific includes
 #include "albers/Registry.h"
@@ -15,7 +16,7 @@
 #include "ParticleHandle.h"
 
 typedef std::vector<Particle> ParticleVector;
-typedef std::vector<ParticleHandle> ParticleHandleVector;
+typedef std::deque<ParticleHandle> ParticleHandleVector;
 
 class ParticleCollectionIterator {
 
@@ -73,13 +74,16 @@ public:
     return const_iterator(m_handles.size(), this);
   }
 
+//  std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections();
+
   void* _getRawBuffer(){ return (void*)&m_data;};
   std::vector<Particle>* _getBuffer(){ return m_data;};
 private:
   unsigned m_collectionID;
   ParticleVector* m_data;
   ParticleHandleVector m_handles;
-
+  // members to handle 1-to-N-relations
+  
 };
 
 #endif

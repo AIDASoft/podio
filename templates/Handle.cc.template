@@ -3,8 +3,8 @@
 #include "albers/Reader.h"
 
 // datamodel specific includes
-#include "${name}.h"
-#include "${name}Collection.h"
+#include "${package_name}/${name}.h"
+#include "${package_name}/${name}Collection.h"
 
 $getters
 $setters

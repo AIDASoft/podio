@@ -12,8 +12,8 @@
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
-#include "${name}.h"
-#include "${name}Handle.h"
+#include "${package_name}/${name}.h"
+#include "${package_name}/${name}Handle.h"
 
 typedef std::vector<${name}> ${name}Vector;
 typedef std::deque<${name}Handle> ${name}HandleContainer;

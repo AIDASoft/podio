@@ -73,13 +73,16 @@ public:
     return const_iterator(m_handles.size(), this);
   }
 
+//  std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections();
+
   void* _getRawBuffer(){ return (void*)&m_data;};
   std::vector<EventInfo>* _getBuffer(){ return m_data;};
 private:
   unsigned m_collectionID;
   EventInfoVector* m_data;
   EventInfoHandleVector m_handles;
-
+  // members to handle 1-to-N-relations
+  
 };
 
 #endif

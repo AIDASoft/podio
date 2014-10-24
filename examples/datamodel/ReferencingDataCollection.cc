@@ -22,7 +22,7 @@ void ReferencingDataCollection::clear(){
 
 void ReferencingDataCollection::prepareForWrite(const albers::Registry* registry){
   for(auto& data : *m_data){
-     data.DummyData.prepareForWrite(registry);
+     data.Dummy.prepareForWrite(registry);
   }
 }
 
@@ -30,7 +30,7 @@ void ReferencingDataCollection::prepareAfterRead(albers::Registry* registry){
   m_handles.clear();
   int index = 0;
   for (auto& data : *m_data){
-    data.DummyData.prepareAfterRead(registry);
+    data.Dummy.prepareAfterRead(registry);
 
     m_handles.emplace_back(ReferencingDataHandle(index,m_collectionID, m_data));
     ++index;
@@ -46,3 +46,8 @@ void ReferencingDataCollection::setPODsAddress(const void* address){
 const ReferencingDataHandle ReferencingDataCollectionIterator::operator* () const {
   return m_collection->get(m_index);
 }
+
+//std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections() {
+//}
+
+

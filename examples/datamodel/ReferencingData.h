@@ -9,7 +9,9 @@
 
 class ReferencingData {
 public:
-  DummyDataHandle DummyData; //ref to dummy data 
+  DummyDataHandle Dummy; //ref to dummy data 
+  unsigned int Dummies_begin; 
+  unsigned Dummies_end; 
 
 };
 

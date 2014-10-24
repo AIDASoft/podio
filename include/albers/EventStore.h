@@ -67,6 +67,13 @@ T& EventStore::create(const std::string& name) {
   T* coll = new T();
   m_collections.emplace_back(std::make_pair(name,coll));
   m_registry->registerPOD(coll->_getBuffer(),name);
+  // then create the auxiliary collections
+  for (auto aux : coll->referenceCollections()) {
+    aux.first += name;
+      m_collections.push_back(aux);  
+      // registering the pod would be useful
+      // and who creates the collections?
+  }
   return *coll;
 }
 

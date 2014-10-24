@@ -10,6 +10,8 @@
 class Jet {
 public:
   LorentzVector P4; // 
+  unsigned int particles_begin; 
+  unsigned particles_end; 
 
 };
 
