@@ -8,12 +8,10 @@ const JetParticleHandle& JetParticleCollection::get(int index) const{
 }
 
 JetParticleHandle& JetParticleCollection::create(){
-  m_data->emplace_back(JetParticle());
-  int index = m_data->size()-1;
-  m_handles.emplace_back(JetParticleHandle(index,m_collectionID, m_data));
-  auto& tmp_handle = m_handles.back();
-
-  return tmp_handle;
+    m_data->emplace_back(JetParticle());
+    int index = m_data->size()-1;
+    m_handles.emplace_back(JetParticleHandle(index,m_collectionID, m_data));
+    return m_handles.back();
 }
 
 void JetParticleCollection::clear(){
@@ -50,8 +48,3 @@ void JetParticleCollection::setPODsAddress(const void* address){
 const JetParticleHandle JetParticleCollectionIterator::operator* () const {
   return m_collection->get(m_index);
 }
-
-//std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections() {
-//}
-
-

@@ -11,7 +11,6 @@
   void DummyDataHandle::setNumber(int value){ m_container->at(m_index).Number = value;}
 
 
-
 bool  DummyDataHandle::isAvailable() const {
   if (m_container != nullptr) {
     return true;

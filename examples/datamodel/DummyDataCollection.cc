@@ -43,8 +43,3 @@ void DummyDataCollection::setPODsAddress(const void* address){
 const DummyDataHandle DummyDataCollectionIterator::operator* () const {
   return m_collection->get(m_index);
 }
-
-//std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections() {
-//}
-
-
