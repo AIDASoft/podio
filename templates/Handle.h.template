@@ -15,7 +15,7 @@ namespace albers {
 
 class ${name}Handle {
 
-  friend ${name}Collection;
+  friend class ${name}Collection;
 
 public:
 
