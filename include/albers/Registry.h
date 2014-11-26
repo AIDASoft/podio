@@ -79,7 +79,7 @@ namespace albers {
   private:
     void doGetPODAddressFromID(unsigned ID, void*& address) const;
     std::vector<void*>  m_addresses;
-    std::vector<CollectionBase*>  m_collections;
+    std::vector<albers::CollectionBase*>  m_collections;
     std::vector<unsigned>    m_collectionIDs;
     std::vector<std::string> m_names;
     Reader*                  m_reader; //! transient

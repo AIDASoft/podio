@@ -1,7 +1,7 @@
 //AUTOMATICALLY GENERATED - DO NOT EDIT
 
-#ifndef ${name}Collection_H
-#define  ${name}Collection_H
+#ifndef EventInfoCollection_H
+#define  EventInfoCollection_H
 
 #include <string>
 #include <vector>
@@ -12,52 +12,52 @@
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
-#include "${package_name}/${name}.h"
-#include "${package_name}/${name}Handle.h"
+#include "datamodel/EventInfo.h"
+#include "datamodel/EventInfoHandle.h"
 
-typedef std::vector<${name}> ${name}Vector;
-typedef std::deque<${name}Handle> ${name}HandleContainer;
+typedef std::vector<EventInfo> EventInfoVector;
+typedef std::deque<EventInfoHandle> EventInfoHandleContainer;
 
-class ${name}CollectionIterator {
+class EventInfoCollectionIterator {
 
   public:
-    ${name}CollectionIterator(int index, const ${name}Collection* collection) : m_index(index), m_collection(collection) {}
+    EventInfoCollectionIterator(int index, const EventInfoCollection* collection) : m_index(index), m_collection(collection) {}
 
-    bool operator!=(const ${name}CollectionIterator& x) const {
+    bool operator!=(const EventInfoCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
 
-    const ${name}Handle operator*() const;
+    const EventInfoHandle operator*() const;
 
-    const ${name}CollectionIterator& operator++() const {
+    const EventInfoCollectionIterator& operator++() const {
       ++m_index;
       return *this;
     }
 
   private:
     mutable int m_index;
-    const ${name}Collection* m_collection;
+    const EventInfoCollection* m_collection;
 };
 
 /**
 A Collection is identified by an ID.
 */
 
-class ${name}Collection : public albers::CollectionBase {
+class EventInfoCollection : public albers::CollectionBase {
 
 public:
-  typedef const ${name}CollectionIterator const_iterator;
+  typedef const EventInfoCollectionIterator const_iterator;
 
-  ${name}Collection();
-//  ${name}Collection(${name}Vector* data, int collectionID);
-  ~${name}Collection(){};
+  EventInfoCollection();
+//  EventInfoCollection(EventInfoVector* data, int collectionID);
+  ~EventInfoCollection(){};
 
   void clear();
   /// Append a new object to the collection, and return a Handle to this object.
-  ${name}Handle& create();
+  EventInfoHandle& create();
 
   /// Returns a Handle to the object at position index in the collection
-  const ${name}Handle& get(int index) const;
+  const EventInfoHandle& get(int index) const;
 
   /// Currently does nothing
   void prepareForWrite(const albers::Registry* registry);
@@ -80,10 +80,10 @@ public:
   void* _getRawBuffer() { return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
-  std::vector<${name}>* _getBuffer() { return m_data;};
+  std::vector<EventInfo>* _getBuffer() { return m_data;};
 
   /// returns the collection of Handles
-  const ${name}HandleContainer& getHandles() { return m_handles; }
+  const EventInfoHandleContainer& getHandles() { return m_handles; }
 
   /// print some information
   void print() const;
@@ -91,10 +91,10 @@ public:
 
 private:
   unsigned m_collectionID;
-  ${name}Vector* m_data;
-  ${name}HandleContainer m_handles;
+  EventInfoVector* m_data;
+  EventInfoHandleContainer m_handles;
   // members to handle 1-to-N-relations
-  ${relations}
+  
 };
 
 #endif

@@ -1,16 +1,17 @@
 include_directories(
 	${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
+        ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/datamodel
+        ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/
         ${CMAKE_CURRENT_SOURCE_DIR}/utilities
 )
 
-file(GLOB sources datamodel/*.cc)
-file(GLOB headers datamodel/*.h)
+file(GLOB sources datamodel/src/*.cc)
+file(GLOB headers datamodel/datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
 
-list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
+list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/datamodel/LinkDef.h )
 message(DICTIONARY ${headers})
 ROOT_GENERATE_DICTIONARY(ExampleDict ${headers} LINKDEF LinkDef.h )
 
