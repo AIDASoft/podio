@@ -1,0 +1,226 @@
+---
+components:
+# A component is a POD designed to be embedded in another POD,
+# see the Particle or Jet PODs.
+# Components cannot be stored in a collection
+
+  LorentzVector:
+    Mass : float
+    Pt : float
+    Eta : float
+    Phi : float
+
+  Point:
+    x : float 
+    y : float 
+    z : float
+
+  BareHit:
+    cellid : unsigned
+    energy : float
+    time : float 
+    bits : unsigned
+
+  BareCluster:
+    energy : float
+    time : float
+    # position : Point
+    bits : unsigned
+    
+ 
+datatypes :
+# Datatypes are components that can be stored in a Collection
+
+  EventInfo :
+    description : "Event Info Data"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name : Number
+       type : int
+       description: "Event number"
+
+  Particle :
+    description : "Naive Particle Type, used for reconstructed and generated particles"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name : P4
+       type : LorentzVector
+       description : "Four momentum."
+     - name : ID
+       type : int
+       description : "Particle type identification code"
+     - name : Status
+       type : int
+       description : "Status code"
+
+  ParticleAssociation:
+    description : "Particle association, used e.g. for the mother-daughter relationship of gen particles, and for linking reconstructed particles and the corresponding generated particles."
+    author : "C. Bernet, B. Hegner"
+    members :
+      - name : First
+        type : ParticleHandle
+        description : "Reference to the first particle"
+      - name : Second
+        type : ParticleHandle
+        description : "Reference to the second particle"
+
+  Jet :
+    description : "Naive jet type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name: P4
+       type : LorentzVector
+       description : ""
+#    OneToManyRelations:
+#     - name: particles
+#       type: Particle
+#       description: "Particles making up this jet"
+
+  JetParticleAssociation :
+    description : "Example of referencing jet"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name : Jet
+       type : JetHandle
+       description : "Reference to the jet"
+     - name : Particle
+       type : ParticleHandle
+       description : "Reference to the particle"
+
+  MET:
+    description : "Naive MET type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name: Pt
+       type : float
+       description : ""
+     - name: Phi
+       type : float
+       description : ""
+
+  MissingEnergy:
+    description : "Naive missing energy type"
+    author : "C. Bernet, B. Hegner"
+    members :
+     - name: Energy
+       type : float
+       description : ""
+     - name: Phi
+       type : float
+       description : ""
+
+
+  TrackHit:
+    description : "A tracker hit"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: barehit
+       type: BareHit
+       description : "contains basic hit information"
+
+  TrackCluster:
+    description : "A track cluster, made of TrackHits"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: barecluster
+       type: BareCluster
+       description : "contains basic cluster information"
+
+  TrackClusterHitsAssociation:
+    description : "Association between a track cluster and a track hit"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: cluster
+       type: TrackCluster
+       description: "cluster handle"
+     - name: hit
+       type: TrackHit
+       description: "hit handle"
+
+  Track:
+    description: "Track reconstructed from clusters in the inner tracker"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: chi2
+       type: float
+       description: "chi2 returned by the track fit"
+     - name: ndf
+       type: unsigned
+       description: "Number of degrees of freedom of the track fit"
+     - name: bits
+       type: unsigned
+       description: "Stores flags."
+
+  TrackClusterAssociation:
+    description: "Association between a track and a track cluster"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: track
+       type: Track
+       description: "The track."
+     - name: cluster
+       type: TrackCluster
+       description: "The cluster."
+
+  TrackState:
+    description: "Track state at a given point on the track."
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: location
+       type: float
+       description: "Location on the track. (Radius??)"
+     - name: omega
+       type: float
+       description: "Track curvature in cm."
+     - name: d0
+       type: float
+       description: "Transverse impact parameter"
+     - name: z0
+       type: float
+       description: "Longitudinal impact parameter"
+#     - name: cov
+#       type: ??? Need a matrix type
+#       description: "Covariance matrix."
+
+  TrackStateAssociation:
+    description: "Association between a track and a track state."
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: track
+       type: Track
+       description: "The track."
+     - name: state
+       type: TrackState
+       description: "The track state."
+
+
+  Vertex:
+    description: "Vertex reconstructed from tracks"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: chi2
+       type: float
+       description: "chi2 returned by the vertex fit"
+     - name: ndf
+       type: unsigned
+       description: "Number of degrees of freedom of the vertex fit"
+     - name: position
+       type: Point
+       description: "Vertex position in cm"
+     - name: bits
+       type: unsigned
+       description: "Stores flags."
+
+  VertexTrackAssociation:
+    description: "Association between a track and a vertex, with a weight"
+    author : "C. Bernet, B. Hegner"
+    members:
+     - name: track
+       type: Track
+       description: "The track."
+     - name: vertex
+       type: Vertex
+       description: "The vertex."
+     - name: weight
+       type: float
+       description: "Weight of the track in the vertex."
