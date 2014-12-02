@@ -10,22 +10,6 @@
 
   void JetHandle::setP4(LorentzVector value){ m_container->at(m_index).P4 = value;}
 
-std::vector<ParticleHandle>::const_iterator JetHandle::particles_begin() const {
-  auto ret_value = m_particles->begin();
-  std::advance(ret_value, m_container->at(m_index).particles_begin);
-  return ret_value;
-}
-
-std::vector<ParticleHandle>::const_iterator JetHandle::particles_end() const {
-  auto ret_value = m_particles->begin();
-  std::advance(ret_value, m_container->at(m_index).particles_end-1);
-  return ++ret_value;
-}
-
-void JetHandle::addparticles(ParticleHandle& component) {
-  m_particles->push_back(component);
-  m_container->at(m_index).particles_end++;
-}
 
 
 bool  JetHandle::isAvailable() const {

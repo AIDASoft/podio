@@ -16,7 +16,7 @@
 #include "datamodel/METHandle.h"
 
 typedef std::vector<MET> METVector;
-typedef std::deque<METHandle> METHandleContainer;
+typedef std::vector<METHandle> METHandleContainer;
 
 class METCollectionIterator {
 

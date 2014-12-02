@@ -5,7 +5,7 @@
 
 #include <string>
 #include <vector>
-#include <deque>
+#include <vector>
 
 // albers specific includes
 #include "albers/Registry.h"
@@ -16,7 +16,7 @@
 #include "datamodel/ReferencingDataHandle.h"
 
 typedef std::vector<ReferencingData> ReferencingDataVector;
-typedef std::deque<ReferencingDataHandle> ReferencingDataHandleContainer;
+typedef std::vector<ReferencingDataHandle> ReferencingDataHandleContainer;
 
 class ReferencingDataCollectionIterator {
 

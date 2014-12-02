@@ -16,7 +16,7 @@
 #include "${package_name}/${name}Handle.h"
 
 typedef std::vector<${name}> ${name}Vector;
-typedef std::deque<${name}Handle> ${name}HandleContainer;
+typedef std::vector<${name}Handle> ${name}HandleContainer;
 
 class ${name}CollectionIterator {
 

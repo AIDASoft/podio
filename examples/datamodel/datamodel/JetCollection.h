@@ -16,7 +16,7 @@
 #include "datamodel/JetHandle.h"
 
 typedef std::vector<Jet> JetVector;
-typedef std::deque<JetHandle> JetHandleContainer;
+typedef std::vector<JetHandle> JetHandleContainer;
 
 class JetCollectionIterator {
 
@@ -94,9 +94,7 @@ private:
   JetVector* m_data;
   JetHandleContainer m_handles;
   // members to handle 1-to-N-relations
-  std::vector<ParticleHandle>* m_rel_particles; //relation buffer for r/w
-  std::vector<std::vector<ParticleHandle>*> m_rel_particles_tmp;
- 
+  
 };
 
 #endif

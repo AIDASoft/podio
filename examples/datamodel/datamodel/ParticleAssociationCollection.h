@@ -16,7 +16,7 @@
 #include "datamodel/ParticleAssociationHandle.h"
 
 typedef std::vector<ParticleAssociation> ParticleAssociationVector;
-typedef std::deque<ParticleAssociationHandle> ParticleAssociationHandleContainer;
+typedef std::vector<ParticleAssociationHandle> ParticleAssociationHandleContainer;
 
 class ParticleAssociationCollectionIterator {
 

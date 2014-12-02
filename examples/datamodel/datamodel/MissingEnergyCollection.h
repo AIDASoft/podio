@@ -16,7 +16,7 @@
 #include "datamodel/MissingEnergyHandle.h"
 
 typedef std::vector<MissingEnergy> MissingEnergyVector;
-typedef std::deque<MissingEnergyHandle> MissingEnergyHandleContainer;
+typedef std::vector<MissingEnergyHandle> MissingEnergyHandleContainer;
 
 class MissingEnergyCollectionIterator {
 

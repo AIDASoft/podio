@@ -16,7 +16,7 @@
 #include "datamodel/ParticleHandle.h"
 
 typedef std::vector<Particle> ParticleVector;
-typedef std::deque<ParticleHandle> ParticleHandleContainer;
+typedef std::vector<ParticleHandle> ParticleHandleContainer;
 
 class ParticleCollectionIterator {
 

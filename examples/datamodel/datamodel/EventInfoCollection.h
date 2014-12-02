@@ -16,7 +16,7 @@
 #include "datamodel/EventInfoHandle.h"
 
 typedef std::vector<EventInfo> EventInfoVector;
-typedef std::deque<EventInfoHandle> EventInfoHandleContainer;
+typedef std::vector<EventInfoHandle> EventInfoHandleContainer;
 
 class EventInfoCollectionIterator {
 

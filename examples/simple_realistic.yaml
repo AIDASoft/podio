@@ -54,10 +54,10 @@ datatypes :
      - name: P4
        type : LorentzVector
        description : ""
-    OneToManyRelations:
-     - name: particles
-       type: Particle
-       description: "Particles making up this jet"
+#    OneToManyRelations:
+#     - name: particles
+#       type: Particle
+#       description: "Particles making up this jet"
 
   JetParticleAssociation :
     description : "Example of referencing jet"

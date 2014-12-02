@@ -2,8 +2,6 @@
 #define JetHANDLE_H
 #include "datamodel/Jet.h"
 #include "datamodel/LorentzVector.h"
-#include <vector>
-#include "ParticleHandle.h"
 
 #include <vector>
 
@@ -31,9 +29,6 @@ JetHandle(){};
 
   void setP4(LorentzVector value);
 
-  void addparticles(ParticleHandle&);
-  std::vector<ParticleHandle>::const_iterator particles_begin() const;
-  std::vector<ParticleHandle>::const_iterator particles_end() const;
 
 
   bool isAvailable() const; // precheck whether the pointee actually exists
@@ -57,8 +52,7 @@ private:
   albers::Registry* m_registry; //! transient
 //  bool _retrieveData();
   // members to support 1-to-N relations
-  std::vector<ParticleHandle>* m_particles; //! transient 
-
+  
 
 };
 

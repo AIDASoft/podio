@@ -12,9 +12,6 @@ JetHandle& JetCollection::create(){
   int index = m_data->size()-1;
   m_handles.emplace_back(JetHandle(index,m_collectionID, m_data));
   auto& tmp_handle = m_handles.back();
-  auto particles_tmp = new std::vector<ParticleHandle>();
-  m_rel_particles_tmp.push_back(particles_tmp);
-  tmp_handle.m_particles = particles_tmp;
 
   return tmp_handle;
 }
@@ -22,9 +19,6 @@ JetHandle& JetCollection::create(){
 void JetCollection::clear(){
   m_data->clear();
   m_handles.clear();
-  for (auto& pointer : m_rel_particles_tmp) {delete pointer;}
-  m_rel_particles_tmp.clear();
-  m_rel_particles->clear();
 
 }
 

@@ -5,7 +5,7 @@
 
 #include <string>
 #include <vector>
-#include <deque>
+#include <vector>
 
 // albers specific includes
 #include "albers/Registry.h"
@@ -16,7 +16,7 @@
 #include "datamodel/DummyDataHandle.h"
 
 typedef std::vector<DummyData> DummyDataVector;
-typedef std::deque<DummyDataHandle> DummyDataHandleContainer;
+typedef std::vector<DummyDataHandle> DummyDataHandleContainer;
 
 class DummyDataCollectionIterator {
 

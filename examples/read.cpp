@@ -56,7 +56,7 @@ void processEvent(albers::EventStore& store, bool verbose,
   // read jets
   JetCollection* jrefs(nullptr);
   bool jets_available = store.get("GenJet",jrefs);
-  std::deque<ParticleHandle> injets;
+  std::vector<ParticleHandle> injets;
 
   if (jets_available){
     JetParticleAssociationCollection* jprefs(nullptr);
@@ -98,8 +98,8 @@ void processEvent(albers::EventStore& store, bool verbose,
 	muons.push_back(ref);
     }
     // listing particles that are not used in a jet
-    const std::deque<ParticleHandle>& particles = ptcs->getHandles();
-    std::deque<ParticleHandle> unused = utils::unused(particles, injets);
+    const std::vector<ParticleHandle>& particles = ptcs->getHandles();
+    std::vector<ParticleHandle> unused = utils::unused(particles, injets);
     if(verbose)
       std::cout<<"unused particles: "<<unused.size()<<"/"<<particles.size()<<" "<<injets.size()<<std::endl;
 
@@ -107,7 +107,7 @@ void processEvent(albers::EventStore& store, bool verbose,
     if(not muons.empty()) {
       const ParticleHandle& muon = muons[0];
       float dRMax = 0.5;
-      const std::deque<ParticleHandle> incone = utils::inCone( muon.P4(),
+      const std::vector<ParticleHandle> incone = utils::inCone( muon.P4(),
 								particles,
 								dRMax);
       float sumpt = utils::sumPt(incone);

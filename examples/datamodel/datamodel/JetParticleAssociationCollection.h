@@ -16,7 +16,7 @@
 #include "datamodel/JetParticleAssociationHandle.h"
 
 typedef std::vector<JetParticleAssociation> JetParticleAssociationVector;
-typedef std::deque<JetParticleAssociationHandle> JetParticleAssociationHandleContainer;
+typedef std::vector<JetParticleAssociationHandle> JetParticleAssociationHandleContainer;
 
 class JetParticleAssociationCollectionIterator {
 
