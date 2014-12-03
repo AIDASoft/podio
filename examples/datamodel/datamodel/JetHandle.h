@@ -1,11 +1,11 @@
 #ifndef JetHANDLE_H
 #define JetHANDLE_H
 #include "datamodel/Jet.h"
-#include "datamodel/LorentzVector.h"
+#include "datamodel/BareJet.h"
 
 #include <vector>
 
-// 
+// Basic jet information.
 // author: C. Bernet, B. Hegner
 
 //forward declaration of Jet container
@@ -25,9 +25,9 @@ JetHandle(){};
 
 //TODO: Proper syntax to use, but ROOT doesn't handle it:  JetHandle() = default;
 
-  const LorentzVector& P4() const;
+  const BareJet& Core() const;
 
-  void setP4(LorentzVector value);
+  void setCore(BareJet value);
 
 
 

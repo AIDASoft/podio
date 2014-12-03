@@ -6,9 +6,9 @@
 #include "datamodel/Jet.h"
 #include "datamodel/JetCollection.h"
 
-  const LorentzVector& JetHandle::P4() const { return m_container->at(m_index).P4;}
+  const BareJet& JetHandle::Core() const { return m_container->at(m_index).Core;}
 
-  void JetHandle::setP4(LorentzVector value){ m_container->at(m_index).P4 = value;}
+  void JetHandle::setCore(BareJet value){ m_container->at(m_index).Core = value;}
 
 
 

@@ -30,12 +30,12 @@ components:
   BareParticle:
     Type: int
     Status: unsigned
-    # vertex: Point
-    # p4: LorentzVector
+    Vertex: Point
+    P4: LorentzVector
     Bits: unsigned
 
   BareJet:
-    # p4: LorentzVector
+    P4: LorentzVector
     Area: float
     Bits: unsigned
 
@@ -105,16 +105,16 @@ datatypes :
        type: MCParticleHandle
        description: "The daughter."
     
-  ParticleAssociation:
-    description : "Particle association, used e.g. for the mother-daughter relationship of gen particles, and for linking reconstructed particles and the corresponding generated particles."
+  ParticleMCAssociation:
+    description : "Association between a Particle and a MCParticle, used to keep track of the correspondance between MC and reconstruted particles"
     author : "C. Bernet, B. Hegner"
     members :
-      - name : First
+      - name : Rec
         type : ParticleHandle
-        description : "Reference to the first particle"
-      - name : Second
-        type : ParticleHandle
-        description : "Reference to the second particle"
+        description : "Reference to the reconstructed particle"
+      - name : Sim
+        type : MCParticleHandle
+        description : "Reference to the Monte-Carlo particle"
 
   Jet :
     description : "Reconstructed jet."
@@ -307,7 +307,7 @@ datatypes :
     members:
      - name: Location
        type: float
-       description: "Location on the track. (Radius??)"
+       description: "Location on the track. (Radius?)"
      - name: Omega
        type: float
        description: "Track curvature in cm."

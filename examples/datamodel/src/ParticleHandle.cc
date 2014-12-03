@@ -6,13 +6,9 @@
 #include "datamodel/Particle.h"
 #include "datamodel/ParticleCollection.h"
 
-  const LorentzVector& ParticleHandle::P4() const { return m_container->at(m_index).P4;}
-  const int& ParticleHandle::ID() const { return m_container->at(m_index).ID;}
-  const int& ParticleHandle::Status() const { return m_container->at(m_index).Status;}
+  const BareParticle& ParticleHandle::Core() const { return m_container->at(m_index).Core;}
 
-  void ParticleHandle::setP4(LorentzVector value){ m_container->at(m_index).P4 = value;}
-  void ParticleHandle::setID(int value){ m_container->at(m_index).ID = value;}
-  void ParticleHandle::setStatus(int value){ m_container->at(m_index).Status = value;}
+  void ParticleHandle::setCore(BareParticle value){ m_container->at(m_index).Core = value;}
 
 
 

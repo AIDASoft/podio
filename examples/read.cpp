@@ -68,7 +68,7 @@ void processEvent(albers::EventStore& store, bool verbose,
     for(const auto& jet : *jrefs){
       std::vector<ParticleHandle> jparticles = utils::associatedParticles(jet,
 									  *jprefs);
-      TLorentzVector lv = utils::lvFromPOD(jet.P4());
+      TLorentzVector lv = utils::lvFromPOD(jet.Core().P4);
       if(verbose)
 	std::cout << "\tjet: E=" << lv.E() << " "<<lv.Eta()<<" "<<lv.Phi()
 		  <<" npart="<<jparticles.size()<<std::endl;
@@ -94,7 +94,7 @@ void processEvent(albers::EventStore& store, bool verbose,
     for(const auto& ref : *ptcs){
       if(verbose)
 	std::cout<<"\t"<<ref<<std::endl;
-      if( ref.ID() == 4 )
+      if( ref.Core().Type == 4 )
 	muons.push_back(ref);
     }
     // listing particles that are not used in a jet
@@ -107,7 +107,7 @@ void processEvent(albers::EventStore& store, bool verbose,
     if(not muons.empty()) {
       const ParticleHandle& muon = muons[0];
       float dRMax = 0.5;
-      const std::vector<ParticleHandle> incone = utils::inCone( muon.P4(),
+      const std::vector<ParticleHandle> incone = utils::inCone( muon.Core().P4,
 								particles,
 								dRMax);
       float sumpt = utils::sumPt(incone);

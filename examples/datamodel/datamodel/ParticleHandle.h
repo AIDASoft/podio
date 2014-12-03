@@ -1,11 +1,11 @@
 #ifndef ParticleHANDLE_H
 #define ParticleHANDLE_H
 #include "datamodel/Particle.h"
-#include "datamodel/LorentzVector.h"
+#include "datamodel/BareParticle.h"
 
 #include <vector>
 
-// Status code
+// Contains basic particle information.
 // author: C. Bernet, B. Hegner
 
 //forward declaration of Particle container
@@ -25,13 +25,9 @@ ParticleHandle(){};
 
 //TODO: Proper syntax to use, but ROOT doesn't handle it:  ParticleHandle() = default;
 
-  const LorentzVector& P4() const;
-  const int& ID() const;
-  const int& Status() const;
+  const BareParticle& Core() const;
 
-  void setP4(LorentzVector value);
-  void setID(int value);
-  void setStatus(int value);
+  void setCore(BareParticle value);
 
 
 
