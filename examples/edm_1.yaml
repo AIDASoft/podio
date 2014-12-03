@@ -11,33 +11,33 @@ components:
     Phi : float
 
   Point:
-    x : float 
-    y : float 
-    z : float
+    X : float 
+    Y : float 
+    Z : float
 
   BareHit:
-    cellid : unsigned
-    energy : float
-    time : float 
-    bits : unsigned
+    Cellid : unsigned
+    Energy : float
+    Time : float 
+    Bits : unsigned
 
   BareCluster:
-    energy : float
-    time : float
-    # position : Point
-    bits : unsigned
+    Energy : float
+    Time : float
+    position : Point
+    Bits : unsigned
     
   BareParticle:
-    type: int
-    status: unsigned
+    Type: int
+    Status: unsigned
     # vertex: Point
     # p4: LorentzVector
-    bits: unsigned
+    Bits: unsigned
 
   BareJet:
     # p4: LorentzVector
-    area: float
-    bits: unsigned
+    Area: float
+    Bits: unsigned
 
 datatypes :
 # Datatypes are components that can be stored in a Collection
@@ -54,10 +54,10 @@ datatypes :
     description : "Reconstructed particle"
     author : "C. Bernet, B. Hegner"
     members :
-     - name : core
+     - name : Core
        type : BareParticle
        description : "Contains basic particle information."
-#     - name : cov
+#     - name : Cov
 #       type : ???
 #       description : "covariance matrix"
 
@@ -65,10 +65,10 @@ datatypes :
     description: "Association between a Particle and a Track."
     author : "C. Bernet, B. Hegner"
     members:
-     - name: particle
+     - name: Particle
        type: ParticleHandle
        description: "The particle"
-     - name: track
+     - name: Track
        type: TrackHandle
        description: "The track"
 
@@ -76,10 +76,10 @@ datatypes :
     description: "Association between a Particle and a Cluster."
     author : "C. Bernet, B. Hegner"
     members:
-     - name: particle
+     - name: Particle
        type: ParticleHandle
        description: "The particle"
-     - name: cluster
+     - name: Cluster
        type: CaloClusterHandle
        description: "The cluster"
 
@@ -87,10 +87,10 @@ datatypes :
     description: "Monte-Carlo Particle, either generated or simulated."
     author : "C. Bernet, B. Hegner"
     members:
-     - name: core
+     - name: Core
        type: BareParticle
        description: "Basic particle information."
-     - name: endvertex
+     - name: Endvertex
        type: Point
        description: "Position of the decay."
 
@@ -98,10 +98,10 @@ datatypes :
     description: "Directed association between two MCParticles, for parentship."
     author : "C. Bernet, B. Hegner"
     members:
-     - name: mother
+     - name: Mother
        type: MCParticleHandle
        description: "The mother."
-     - name: daughter
+     - name: Daughter
        type: MCParticleHandle
        description: "The daughter."
     
@@ -120,11 +120,11 @@ datatypes :
     description : "Reconstructed jet."
     author : "C. Bernet, B. Hegner"
     members :
-     - name: core
+     - name: Core
        type : BareJet
        description : "Basic jet information."
 #    OneToManyRelations:
-#     - name: particles
+#     - name: Particles
 #       type: Particle
 #       description: "Particles making up this jet"
 
@@ -132,10 +132,10 @@ datatypes :
     description : "Association between a Jet and a Particle. Used to keep track of jet constituents"
     author : "C. Bernet, B. Hegner"
     members :
-     - name : jet
+     - name : Jet
        type : JetHandle
        description : "Reference to the jet"
-     - name : particle
+     - name : Particle
        type : ParticleHandle
        description : "Reference to the particle"
 
@@ -143,7 +143,7 @@ datatypes :
     description : "Generated jet."
     author : "C. Bernet, B. Hegner"
     members :
-     - name: core
+     - name: Core
        type : BareJet
        description : "Basic jet information."
 
@@ -151,10 +151,10 @@ datatypes :
     description : "Association between a GenJet and a MCParticle. Used to keep track of jet constituents"
     author : "C. Bernet, B. Hegner"
     members :
-     - name : jet
+     - name : Jet
        type : GenJetHandle
        description : "Reference to the gen jet"
-     - name : particle
+     - name : Particle
        type : MCParticleHandle
        description : "Reference to the mc particle"
   
@@ -185,7 +185,7 @@ datatypes :
     description : "A tracker hit"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: core
+     - name: Core
        type: BareHit
        description : "contains basic hit information"
 
@@ -193,7 +193,7 @@ datatypes :
     description : "A calorimeter hit"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: core
+     - name: Core
        type: BareHit
        description : "contains basic hit information"
 
@@ -201,7 +201,7 @@ datatypes :
     description : "A simulated calorimeter hit"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: core
+     - name: Core
        type: BareHit
        description : "contains basic hit information"
 
@@ -209,13 +209,13 @@ datatypes :
     description: "Association between a SimCaloHit and a particle that contributed to the hit."
     author : "C. Bernet, B. Hegner"
     members:
-     - name: hit
+     - name: Hit
        type: SimCaloHitHandle
        description: "The hit."
-     - name: particle
+     - name: Particle
        type: MCParticleHandle
        description: "The particle."
-     - name: fraction
+     - name: Fraction
        type: float
        description: "Fraction of the particle energy used in the hit."
 
@@ -223,10 +223,10 @@ datatypes :
     description: "Association between a CaloHit and the corresponding SimCaloHit"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: rec
+     - name: Rec
        type: CaloHitHandle
        description: "The reconstruted hit."
-     - name: sim
+     - name: Sim
        type: SimCaloHitHandle
        description: "The simulated hit."
 
@@ -234,7 +234,7 @@ datatypes :
     description : "A track cluster, made of TrackHits"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: core
+     - name: Core
        type: BareCluster
        description : "contains basic cluster information"
 
@@ -242,7 +242,7 @@ datatypes :
     description : "A calo cluster, made of CaloHits"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: core
+     - name: Core
        type: BareCluster
        description : "contains basic cluster information"
 
@@ -250,7 +250,7 @@ datatypes :
     description : "A simulated calo cluster, made of SimCaloHits"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: core
+     - name: Core
        type: BareCluster
        description: "contains basic cluster information."
 
@@ -258,10 +258,10 @@ datatypes :
     description: "Association between a simulated calo cluster and a simulated hit. Used to keep track of the hits used to build a given cluster"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: cluster
+     - name: Cluster
        type: SimCaloClusterHandle
        description: "The cluster"
-     - name: hit
+     - name: Hit
        type: SimCaloHitHandle
        description: "The hit"
 
@@ -269,10 +269,10 @@ datatypes :
     description : "Association between a track cluster and a track hit"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: cluster
+     - name: Cluster
        type: TrackClusterHandle
        description: "cluster handle"
-     - name: hit
+     - name: Hit
        type: TrackHitHandle
        description: "hit handle"
 
@@ -280,13 +280,13 @@ datatypes :
     description: "Track reconstructed from clusters in the inner tracker"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: chi2
+     - name: Chi2
        type: float
        description: "chi2 returned by the track fit"
-     - name: ndf
+     - name: Ndf
        type: unsigned
        description: "Number of degrees of freedom of the track fit"
-     - name: bits
+     - name: Bits
        type: unsigned
        description: "Stores flags."
 
@@ -294,10 +294,10 @@ datatypes :
     description: "Association between a track and a track cluster"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: track
+     - name: Track
        type: TrackHandle
        description: "The track."
-     - name: cluster
+     - name: Cluster
        type: TrackClusterHandle
        description: "The cluster."
 
@@ -305,16 +305,16 @@ datatypes :
     description: "Track state at a given point on the track."
     author : "C. Bernet, B. Hegner"
     members:
-     - name: location
+     - name: Location
        type: float
        description: "Location on the track. (Radius??)"
-     - name: omega
+     - name: Omega
        type: float
        description: "Track curvature in cm."
-     - name: d0
+     - name: D0
        type: float
        description: "Transverse impact parameter"
-     - name: z0
+     - name: Z0
        type: float
        description: "Longitudinal impact parameter"
 #     - name: cov
@@ -325,10 +325,10 @@ datatypes :
     description: "Association between a track and a track state."
     author : "C. Bernet, B. Hegner"
     members:
-     - name: track
+     - name: Track
        type: TrackHandle
        description: "The track."
-     - name: state
+     - name: State
        type: TrackStateHandle
        description: "The track state."
 
@@ -337,16 +337,16 @@ datatypes :
     description: "Vertex reconstructed from tracks"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: chi2
+     - name: Chi2
        type: float
        description: "chi2 returned by the vertex fit"
-     - name: ndf
+     - name: Ndf
        type: unsigned
        description: "Number of degrees of freedom of the vertex fit"
-     - name: position
+     - name: Position
        type: Point
        description: "Vertex position in cm"
-     - name: bits
+     - name: Bits
        type: unsigned
        description: "Stores flags."
 
@@ -354,12 +354,12 @@ datatypes :
     description: "Association between a track and a vertex, with a weight"
     author : "C. Bernet, B. Hegner"
     members:
-     - name: track
+     - name: Track
        type: TrackHandle
        description: "The track."
-     - name: vertex
+     - name: Vertex
        type: VertexHandle
        description: "The vertex."
-     - name: weight
+     - name: Weight
        type: float
        description: "Weight of the track in the vertex."
