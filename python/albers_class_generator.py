@@ -232,10 +232,10 @@ class ClassGenerator(object):
       references_members += "std::vector<%sHandle>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
 
     substitutions = {"includes" : includes,
-                     "getters"  : getters,
-                     "getter_declarations": getter_declarations,
-                     "setters"  : setters,
-                     "setter_declarations": setter_declarations,
+#                     "getters"  : getters,
+#                     "getter_declarations": getter_declarations,
+#                     "setters"  : setters,
+#                     "setter_declarations": setter_declarations,
                      "name"     : classname,
                      "description" : description,
                      "author"   : author,

@@ -22,19 +22,15 @@ class ParticleAssociationHandle {
 
 public:
 
-ParticleAssociationHandle(){};
+  ParticleAssociationHandle(){};
 
 //TODO: Proper syntax to use, but ROOT doesn't handle it:  ParticleAssociationHandle() = default;
-
-  const ParticleHandle& First() const;
-  const ParticleHandle& Second() const;
-
-  void setFirst(ParticleHandle value);
-  void setSecond(ParticleHandle value);
 
 
 
   bool isAvailable() const; // precheck whether the pointee actually exists
+  const ParticleAssociation& const_product() const {return m_container->at(m_index);}
+  ParticleAssociation& product() {return m_container->at(m_index);}
   void prepareForWrite(const albers::Registry*);  // use m_container to set m_containerID properly
   void prepareAfterRead(albers::Registry*);   // use m_containerID to set m_container properly
 
@@ -53,7 +49,7 @@ private:
   int m_containerID;
   mutable std::vector<ParticleAssociation>* m_container; //! transient
   albers::Registry* m_registry; //! transient
-//  bool _retrieveData();
+  //  bool _retrieveData();
   // members to support 1-to-N relations
   
 

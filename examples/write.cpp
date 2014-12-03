@@ -44,7 +44,7 @@ void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& wr
     return;
   }
   EventInfoHandle& evinfo = evinfocoll->create();
-  evinfo.setNumber(iEvent);
+  evinfo.mod().Number = iEvent;
 
   // and now for the writing
   // TODO: do that at a different time w/o coll pointer

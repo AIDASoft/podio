@@ -6,20 +6,12 @@
 #include "datamodel/CaloHit.h"
 #include "datamodel/CaloHitCollection.h"
 
-  const BareHit& CaloHitHandle::Core() const { return m_container->at(m_index).Core;}
-
-  void CaloHitHandle::setCore(BareHit value){ m_container->at(m_index).Core = value;}
-
 
 
 bool  CaloHitHandle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
   }
-//  else if (m_registry != nullptr){
-//    m_registry->getPODAddressFromID(m_containerID,m_container);
-//    return true;
-//  }
   return false;
 }
 

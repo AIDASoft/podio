@@ -16,9 +16,10 @@ namespace utils {
       return result;
       // COLIN should throw an exception
     }
-    for(const auto& assoc : associations){
-      if( assoc.Jet() == jet ) {
-	result.emplace_back(assoc.Particle());
+    for(const auto& assoch : associations){
+      const JetParticleAssociation& assoc = assoch.read();
+      if( assoc.Jet == jet ) {
+	result.emplace_back(assoc.Particle);
       }
     }
     return result;

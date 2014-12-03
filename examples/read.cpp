@@ -32,11 +32,12 @@ void processEvent(albers::EventStore& store, bool verbose,
   EventInfoCollection* evinfocoll(nullptr);
   bool evinfo_available = store.get("EventInfo",evinfocoll);
   if(evinfo_available) {
-    const EventInfoHandle& evinfo = evinfocoll->get(0);
+    const EventInfoHandle& evinfoHandle = evinfocoll->get(0);
+    const EventInfo& evinfo = evinfoHandle.read();
     if(verbose)
-      std::cout << "event number " << evinfo.Number() << std::endl;
+      std::cout << "event number " << evinfo.Number << std::endl;
     // COLIN avoid bug at first event
-    if(evinfo.Number()==0) {
+    if(evinfo.Number==0) {
       std::cerr<<"skipping bugged first event"<<std::endl;
       return;
     }
@@ -68,7 +69,7 @@ void processEvent(albers::EventStore& store, bool verbose,
     for(const auto& jet : *jrefs){
       std::vector<ParticleHandle> jparticles = utils::associatedParticles(jet,
 									  *jprefs);
-      TLorentzVector lv = utils::lvFromPOD(jet.Core().P4);
+      TLorentzVector lv = utils::lvFromPOD(jet.read().Core.P4);
       if(verbose)
 	std::cout << "\tjet: E=" << lv.E() << " "<<lv.Eta()<<" "<<lv.Phi()
 		  <<" npart="<<jparticles.size()<<std::endl;
@@ -91,11 +92,11 @@ void processEvent(albers::EventStore& store, bool verbose,
     std::vector<ParticleHandle> muons;
     if(verbose)
       std::cout << "particle collection:" << std::endl;
-    for(const auto& ref : *ptcs){
+    for(const auto& ptc : *ptcs){
       if(verbose)
-	std::cout<<"\t"<<ref<<std::endl;
-      if( ref.Core().Type == 4 )
-	muons.push_back(ref);
+	std::cout<<"\t"<<ptc<<std::endl;
+      if( ptc.read().Core.Type == 4 )
+	muons.push_back(ptc);
     }
     // listing particles that are not used in a jet
     const std::vector<ParticleHandle>& particles = ptcs->getHandles();
@@ -107,7 +108,7 @@ void processEvent(albers::EventStore& store, bool verbose,
     if(not muons.empty()) {
       const ParticleHandle& muon = muons[0];
       float dRMax = 0.5;
-      const std::vector<ParticleHandle> incone = utils::inCone( muon.Core().P4,
+      const std::vector<ParticleHandle> incone = utils::inCone( muon.read().Core.P4,
 								particles,
 								dRMax);
       float sumpt = utils::sumPt(incone);

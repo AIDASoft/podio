@@ -6,18 +6,12 @@
 #include "${package_name}/${name}.h"
 #include "${package_name}/${name}Collection.h"
 
-$getters
-$setters
 $relations
 
 bool  ${name}Handle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
   }
-//  else if (m_registry != nullptr){
-//    m_registry->getPODAddressFromID(m_containerID,m_container);
-//    return true;
-//  }
   return false;
 }
 

@@ -43,7 +43,7 @@ namespace utils {
     float exc2 = exclusion*exclusion;
     std::vector<ParticleHandle> results;
     for(const auto& particle : ps) {
-      float dR2 = deltaR2(lv, particle.Core().P4);
+      float dR2 = deltaR2(lv, particle.read().Core.P4);
       if( dR2>exc2 && dR2 <= dR2Max ) {
 	results.emplace_back(particle);
       }
@@ -55,7 +55,7 @@ namespace utils {
   float sumPt(const std::vector<ParticleHandle>& ps) {
     float result = 0;
     for(const auto& particle : ps) {
-      result += particle.Core().P4.Pt;
+      result += particle.read().Core.P4.Pt;
     }
     return result;
   }
@@ -64,7 +64,7 @@ namespace utils {
   float sumP(const std::vector<ParticleHandle>& ps) {
     float result = 0;
     for(const auto& particle : ps) {
-      TLorentzVector lv = lvFromPOD( particle.Core().P4 );
+      TLorentzVector lv = lvFromPOD( particle.read().Core.P4 );
       result += lv.Vect().Mag();
     }
     return result;
@@ -75,9 +75,10 @@ namespace utils {
 
 std::ostream& operator<<(std::ostream& out, const ParticleHandle& ptc) {
   if(not out) return out;
-  out<<"particle ID "<<ptc.Core().Type
-     <<" pt "<<ptc.Core().P4.Pt
-     <<" eta "<<ptc.Core().P4.Eta
-     <<" phi "<<ptc.Core().P4.Phi;
+  const BareParticle& pcore = ptc.read().Core; 
+  out<<"particle ID "<<pcore.Type
+     <<" pt "<<pcore.P4.Pt
+     <<" eta "<<pcore.P4.Eta
+     <<" phi "<<pcore.P4.Phi;
   return out;
 }

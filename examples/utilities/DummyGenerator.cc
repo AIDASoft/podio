@@ -84,10 +84,10 @@ void DummyGenerator::generate_jet(float energy, const TVector3& direction) {
 	continue;
       else {
 	ParticleHandle& ptc = *(result.second);
-	p4star += utils::lvFromPOD( ptc.Core().P4 );
+	p4star += utils::lvFromPOD( ptc.read().Core.P4 );
 	JetParticleAssociationHandle& assoc = acoll->create();
-	assoc.setJet(jet);
-	assoc.setParticle(ptc);
+	assoc.mod().Jet = jet;
+	assoc.mod().Particle = ptc;
 	particles.push_back(ptc);
 	success = true;
       }
@@ -98,11 +98,11 @@ void DummyGenerator::generate_jet(float energy, const TVector3& direction) {
   TLorentzVector opposite(-p4star.Vect(), p4star.E());
   auto result = generate_particle(&opposite);
   ParticleHandle& ptc = *(result.second);
-  TLorentzVector final = utils::lvFromPOD( ptc.Core().P4 );
+  TLorentzVector final = utils::lvFromPOD( ptc.read().Core.P4 );
   p4star += final;
   JetParticleAssociationHandle& assoc = acoll->create();
-  assoc.setJet(jet);
-  assoc.setParticle(ptc);
+  assoc.mod().Jet = jet;
+  assoc.mod().Particle = ptc;
   particles.push_back(ptc);
 
   // now boosting all particles to lab frame
@@ -112,16 +112,16 @@ void DummyGenerator::generate_jet(float energy, const TVector3& direction) {
   TVector3 boost(direction);
   boost *= static_cast<double>(beta);
   for(ParticleHandle& ptc : particles) {
-    TLorentzVector lv = utils::lvFromPOD( ptc.Core().P4 );
+    TLorentzVector lv = utils::lvFromPOD( ptc.read().Core.P4 );
     lv.Boost( boost );
-    BareParticle core = ptc.Core();
-    core.P4 = utils::lvToPOD(lv);
-    ptc.setCore(core);
+    // BareParticle core = ptc.Core();
+    ptc.mod().Core.P4 = utils::lvToPOD(lv);
+    // ptc.setCore(core);
     jetlv += lv;
   }
-  BareJet core = jet.Core();
-  core.P4 = utils::lvToPOD(jetlv);
-  jet.setCore( core );
+  // BareJet core = jet.Core();
+  jet.mod().Core.P4 = utils::lvToPOD(jetlv);
+  // jet.setCore( core );
 }
 
 std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorentzVector* lv, int itype) {
@@ -179,14 +179,14 @@ std::pair<bool, ParticleHandle*> DummyGenerator::generate_particle(const TLorent
   ParticleCollection* pcoll = nullptr;
   m_store.get("GenParticle", pcoll);
   ParticleHandle& ptc = pcoll->create();
-  BareParticle core = ptc.Core();
-  core.Type = id; 
-  core.P4 = lvpod;
-  ptc.setCore(core);
+  // BareParticle core = ptc.Core();
+  ptc.mod().Core.Type = id; 
+  ptc.mod().Core.P4 = lvpod;
+  // ptc.setCore(core);
 
   if(m_ievt<m_nprint) {
-    TLorentzVector lv = utils::lvFromPOD(ptc.Core().P4);
-    std::cout<<"\tparticle "<<ptc.Core().Type<<" "<<lv.Eta()<<" "<<lv.Phi()<<" "<<lv.Pt()<<" "<<lv.E()<<std::endl;
+    TLorentzVector lv = utils::lvFromPOD(ptc.read().Core.P4);
+    std::cout<<"\tparticle "<<ptc.read().Core.Type<<" "<<lv.Eta()<<" "<<lv.Phi()<<" "<<lv.Pt()<<" "<<lv.E()<<std::endl;
   }
 
   return std::make_pair<bool, ParticleHandle*>(true, &ptc);
