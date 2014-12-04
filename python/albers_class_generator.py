@@ -232,10 +232,10 @@ class ClassGenerator(object):
       references_members += "std::vector<%sHandle>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
 
     substitutions = {"includes" : includes,
-                     "getters"  : getters,
-                     "getter_declarations": getter_declarations,
-                     "setters"  : setters,
-                     "setter_declarations": setter_declarations,
+#                     "getters"  : getters,
+#                     "getter_declarations": getter_declarations,
+#                     "setters"  : setters,
+#                     "setter_declarations": setter_declarations,
                      "name"     : classname,
                      "description" : description,
                      "author"   : author,
@@ -291,18 +291,22 @@ class ClassGenerator(object):
         Components can only contain simple data types and no user 
         defined ones
     """
+    includes = ""
     for klass in components.itervalues():
       if klass in self.buildin_types:
         pass
+      elif klass in self.requested_classes:
+        includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
       else:
         raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(classname, klass))
     members = ""
     for name, klass in components.iteritems():
       members+= "  %s %s;\n" %(klass, name)
-    substitutions = {"members"  : members,
-                     "name"     : classname,
-                     "package_name" : self.package_name
-    }
+    substitutions = { "includes" : includes,
+                      "members"  : members,
+                      "name"     : classname,
+                      "package_name" : self.package_name
+                      }
     self.fill_templates("Component",substitutions)
     self.created_classes.append(classname)
 

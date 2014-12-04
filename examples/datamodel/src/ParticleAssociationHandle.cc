@@ -6,22 +6,12 @@
 #include "datamodel/ParticleAssociation.h"
 #include "datamodel/ParticleAssociationCollection.h"
 
-  const ParticleHandle& ParticleAssociationHandle::First() const { return m_container->at(m_index).First;}
-  const ParticleHandle& ParticleAssociationHandle::Second() const { return m_container->at(m_index).Second;}
-
-  void ParticleAssociationHandle::setFirst(ParticleHandle value){ m_container->at(m_index).First = value;}
-  void ParticleAssociationHandle::setSecond(ParticleHandle value){ m_container->at(m_index).Second = value;}
-
 
 
 bool  ParticleAssociationHandle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
   }
-//  else if (m_registry != nullptr){
-//    m_registry->getPODAddressFromID(m_containerID,m_container);
-//    return true;
-//  }
   return false;
 }
 

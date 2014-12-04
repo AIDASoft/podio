@@ -6,20 +6,12 @@
 #include "datamodel/Jet.h"
 #include "datamodel/JetCollection.h"
 
-  const LorentzVector& JetHandle::P4() const { return m_container->at(m_index).P4;}
-
-  void JetHandle::setP4(LorentzVector value){ m_container->at(m_index).P4 = value;}
-
 
 
 bool  JetHandle::isAvailable() const {
   if (m_container != nullptr) {
     return true;
   }
-//  else if (m_registry != nullptr){
-//    m_registry->getPODAddressFromID(m_containerID,m_container);
-//    return true;
-//  }
   return false;
 }
 
