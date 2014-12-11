@@ -7,7 +7,7 @@ const ParticleHandle& ParticleCollection::get(int index) const{
   return m_handles[index];
 }
 
-ParticleHandle& ParticleCollection::create(){
+ParticleHandle& ParticleCollection::create() {
   m_data->emplace_back(Particle());
   int index = m_data->size()-1;
   m_handles.emplace_back(ParticleHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ ParticleHandle& ParticleCollection::create(){
 
   return tmp_handle;
 }
+
+ParticleHandle& ParticleCollection::insert(const ParticleHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(ParticleHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void ParticleCollection::clear(){
   m_data->clear();

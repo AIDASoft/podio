@@ -7,7 +7,7 @@ const CaloClusterHandle& CaloClusterCollection::get(int index) const{
   return m_handles[index];
 }
 
-CaloClusterHandle& CaloClusterCollection::create(){
+CaloClusterHandle& CaloClusterCollection::create() {
   m_data->emplace_back(CaloCluster());
   int index = m_data->size()-1;
   m_handles.emplace_back(CaloClusterHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ CaloClusterHandle& CaloClusterCollection::create(){
 
   return tmp_handle;
 }
+
+CaloClusterHandle& CaloClusterCollection::insert(const CaloClusterHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(CaloClusterHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void CaloClusterCollection::clear(){
   m_data->clear();

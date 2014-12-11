@@ -7,7 +7,7 @@ const MissingEnergyHandle& MissingEnergyCollection::get(int index) const{
   return m_handles[index];
 }
 
-MissingEnergyHandle& MissingEnergyCollection::create(){
+MissingEnergyHandle& MissingEnergyCollection::create() {
   m_data->emplace_back(MissingEnergy());
   int index = m_data->size()-1;
   m_handles.emplace_back(MissingEnergyHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ MissingEnergyHandle& MissingEnergyCollection::create(){
 
   return tmp_handle;
 }
+
+MissingEnergyHandle& MissingEnergyCollection::insert(const MissingEnergyHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(MissingEnergyHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void MissingEnergyCollection::clear(){
   m_data->clear();

@@ -7,7 +7,7 @@ const MCParticleAssociationHandle& MCParticleAssociationCollection::get(int inde
   return m_handles[index];
 }
 
-MCParticleAssociationHandle& MCParticleAssociationCollection::create(){
+MCParticleAssociationHandle& MCParticleAssociationCollection::create() {
   m_data->emplace_back(MCParticleAssociation());
   int index = m_data->size()-1;
   m_handles.emplace_back(MCParticleAssociationHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ MCParticleAssociationHandle& MCParticleAssociationCollection::create(){
 
   return tmp_handle;
 }
+
+MCParticleAssociationHandle& MCParticleAssociationCollection::insert(const MCParticleAssociationHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(MCParticleAssociationHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void MCParticleAssociationCollection::clear(){
   m_data->clear();

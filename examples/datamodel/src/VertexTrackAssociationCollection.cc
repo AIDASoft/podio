@@ -7,7 +7,7 @@ const VertexTrackAssociationHandle& VertexTrackAssociationCollection::get(int in
   return m_handles[index];
 }
 
-VertexTrackAssociationHandle& VertexTrackAssociationCollection::create(){
+VertexTrackAssociationHandle& VertexTrackAssociationCollection::create() {
   m_data->emplace_back(VertexTrackAssociation());
   int index = m_data->size()-1;
   m_handles.emplace_back(VertexTrackAssociationHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ VertexTrackAssociationHandle& VertexTrackAssociationCollection::create(){
 
   return tmp_handle;
 }
+
+VertexTrackAssociationHandle& VertexTrackAssociationCollection::insert(const VertexTrackAssociationHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(VertexTrackAssociationHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void VertexTrackAssociationCollection::clear(){
   m_data->clear();

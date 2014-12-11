@@ -53,9 +53,14 @@ public:
   ~JetCollection(){};
 
   void clear();
+
   /// Append a new object to the collection, and return a Handle to this object.
   JetHandle& create();
 
+  /// Insert an existing handle into the collection. 
+  /// In this operation, the data pointed by the handle is copied.
+  JetHandle& insert(const JetHandle& origin);  
+  
   /// Returns a Handle to the object at position index in the collection
   const JetHandle& get(int index) const;
 

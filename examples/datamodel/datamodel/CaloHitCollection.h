@@ -53,9 +53,14 @@ public:
   ~CaloHitCollection(){};
 
   void clear();
+
   /// Append a new object to the collection, and return a Handle to this object.
   CaloHitHandle& create();
 
+  /// Insert an existing handle into the collection. 
+  /// In this operation, the data pointed by the handle is copied.
+  CaloHitHandle& insert(const CaloHitHandle& origin);  
+  
   /// Returns a Handle to the object at position index in the collection
   const CaloHitHandle& get(int index) const;
 

@@ -53,9 +53,14 @@ public:
   ~ParticleMCAssociationCollection(){};
 
   void clear();
+
   /// Append a new object to the collection, and return a Handle to this object.
   ParticleMCAssociationHandle& create();
 
+  /// Insert an existing handle into the collection. 
+  /// In this operation, the data pointed by the handle is copied.
+  ParticleMCAssociationHandle& insert(const ParticleMCAssociationHandle& origin);  
+  
   /// Returns a Handle to the object at position index in the collection
   const ParticleMCAssociationHandle& get(int index) const;
 

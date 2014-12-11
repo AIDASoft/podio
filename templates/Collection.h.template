@@ -53,9 +53,14 @@ public:
   ~${name}Collection(){};
 
   void clear();
+
   /// Append a new object to the collection, and return a Handle to this object.
   ${name}Handle& create();
 
+  /// Insert an existing handle into the collection. 
+  /// In this operation, the data pointed by the handle is copied.
+  ${name}Handle& insert(const ${name}Handle& origin);  
+  
   /// Returns a Handle to the object at position index in the collection
   const ${name}Handle& get(int index) const;
 

@@ -53,9 +53,14 @@ public:
   ~METCollection(){};
 
   void clear();
+
   /// Append a new object to the collection, and return a Handle to this object.
   METHandle& create();
 
+  /// Insert an existing handle into the collection. 
+  /// In this operation, the data pointed by the handle is copied.
+  METHandle& insert(const METHandle& origin);  
+  
   /// Returns a Handle to the object at position index in the collection
   const METHandle& get(int index) const;
 
