@@ -7,7 +7,7 @@ const GenJetParticleAssociationHandle& GenJetParticleAssociationCollection::get(
   return m_handles[index];
 }
 
-GenJetParticleAssociationHandle& GenJetParticleAssociationCollection::create(){
+GenJetParticleAssociationHandle& GenJetParticleAssociationCollection::create() {
   m_data->emplace_back(GenJetParticleAssociation());
   int index = m_data->size()-1;
   m_handles.emplace_back(GenJetParticleAssociationHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ GenJetParticleAssociationHandle& GenJetParticleAssociationCollection::create(){
 
   return tmp_handle;
 }
+
+GenJetParticleAssociationHandle& GenJetParticleAssociationCollection::insert(const GenJetParticleAssociationHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(GenJetParticleAssociationHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void GenJetParticleAssociationCollection::clear(){
   m_data->clear();

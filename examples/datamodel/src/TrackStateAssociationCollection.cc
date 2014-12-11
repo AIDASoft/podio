@@ -7,7 +7,7 @@ const TrackStateAssociationHandle& TrackStateAssociationCollection::get(int inde
   return m_handles[index];
 }
 
-TrackStateAssociationHandle& TrackStateAssociationCollection::create(){
+TrackStateAssociationHandle& TrackStateAssociationCollection::create() {
   m_data->emplace_back(TrackStateAssociation());
   int index = m_data->size()-1;
   m_handles.emplace_back(TrackStateAssociationHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ TrackStateAssociationHandle& TrackStateAssociationCollection::create(){
 
   return tmp_handle;
 }
+
+TrackStateAssociationHandle& TrackStateAssociationCollection::insert(const TrackStateAssociationHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(TrackStateAssociationHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void TrackStateAssociationCollection::clear(){
   m_data->clear();

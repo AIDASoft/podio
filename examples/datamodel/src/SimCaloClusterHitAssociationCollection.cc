@@ -7,7 +7,7 @@ const SimCaloClusterHitAssociationHandle& SimCaloClusterHitAssociationCollection
   return m_handles[index];
 }
 
-SimCaloClusterHitAssociationHandle& SimCaloClusterHitAssociationCollection::create(){
+SimCaloClusterHitAssociationHandle& SimCaloClusterHitAssociationCollection::create() {
   m_data->emplace_back(SimCaloClusterHitAssociation());
   int index = m_data->size()-1;
   m_handles.emplace_back(SimCaloClusterHitAssociationHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ SimCaloClusterHitAssociationHandle& SimCaloClusterHitAssociationCollection::crea
 
   return tmp_handle;
 }
+
+SimCaloClusterHitAssociationHandle& SimCaloClusterHitAssociationCollection::insert(const SimCaloClusterHitAssociationHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(SimCaloClusterHitAssociationHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void SimCaloClusterHitAssociationCollection::clear(){
   m_data->clear();

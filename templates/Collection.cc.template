@@ -7,7 +7,7 @@ const ${name}Handle& ${name}Collection::get(int index) const{
   return m_handles[index];
 }
 
-${name}Handle& ${name}Collection::create(){
+${name}Handle& ${name}Collection::create() {
   m_data->emplace_back(${name}());
   int index = m_data->size()-1;
   m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ ${name}Handle& ${name}Collection::create(){
 ${create_relations}
   return tmp_handle;
 }
+
+${name}Handle& ${name}Collection::insert(const ${name}Handle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+${create_relations}
+  return tmp_handle;
+}  
 
 void ${name}Collection::clear(){
   m_data->clear();

@@ -7,7 +7,7 @@ const CaloHitHandle& CaloHitCollection::get(int index) const{
   return m_handles[index];
 }
 
-CaloHitHandle& CaloHitCollection::create(){
+CaloHitHandle& CaloHitCollection::create() {
   m_data->emplace_back(CaloHit());
   int index = m_data->size()-1;
   m_handles.emplace_back(CaloHitHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ CaloHitHandle& CaloHitCollection::create(){
 
   return tmp_handle;
 }
+
+CaloHitHandle& CaloHitCollection::insert(const CaloHitHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(CaloHitHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void CaloHitCollection::clear(){
   m_data->clear();

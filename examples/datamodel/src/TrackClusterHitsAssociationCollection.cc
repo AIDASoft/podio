@@ -7,7 +7,7 @@ const TrackClusterHitsAssociationHandle& TrackClusterHitsAssociationCollection::
   return m_handles[index];
 }
 
-TrackClusterHitsAssociationHandle& TrackClusterHitsAssociationCollection::create(){
+TrackClusterHitsAssociationHandle& TrackClusterHitsAssociationCollection::create() {
   m_data->emplace_back(TrackClusterHitsAssociation());
   int index = m_data->size()-1;
   m_handles.emplace_back(TrackClusterHitsAssociationHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ TrackClusterHitsAssociationHandle& TrackClusterHitsAssociationCollection::create
 
   return tmp_handle;
 }
+
+TrackClusterHitsAssociationHandle& TrackClusterHitsAssociationCollection::insert(const TrackClusterHitsAssociationHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(TrackClusterHitsAssociationHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void TrackClusterHitsAssociationCollection::clear(){
   m_data->clear();

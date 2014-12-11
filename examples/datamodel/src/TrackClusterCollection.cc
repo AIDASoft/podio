@@ -7,7 +7,7 @@ const TrackClusterHandle& TrackClusterCollection::get(int index) const{
   return m_handles[index];
 }
 
-TrackClusterHandle& TrackClusterCollection::create(){
+TrackClusterHandle& TrackClusterCollection::create() {
   m_data->emplace_back(TrackCluster());
   int index = m_data->size()-1;
   m_handles.emplace_back(TrackClusterHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ TrackClusterHandle& TrackClusterCollection::create(){
 
   return tmp_handle;
 }
+
+TrackClusterHandle& TrackClusterCollection::insert(const TrackClusterHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(TrackClusterHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void TrackClusterCollection::clear(){
   m_data->clear();

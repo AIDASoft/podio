@@ -53,9 +53,14 @@ public:
   ~SimCaloClusterCollection(){};
 
   void clear();
+
   /// Append a new object to the collection, and return a Handle to this object.
   SimCaloClusterHandle& create();
 
+  /// Insert an existing handle into the collection. 
+  /// In this operation, the data pointed by the handle is copied.
+  SimCaloClusterHandle& insert(const SimCaloClusterHandle& origin);  
+  
   /// Returns a Handle to the object at position index in the collection
   const SimCaloClusterHandle& get(int index) const;
 

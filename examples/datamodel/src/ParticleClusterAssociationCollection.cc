@@ -7,7 +7,7 @@ const ParticleClusterAssociationHandle& ParticleClusterAssociationCollection::ge
   return m_handles[index];
 }
 
-ParticleClusterAssociationHandle& ParticleClusterAssociationCollection::create(){
+ParticleClusterAssociationHandle& ParticleClusterAssociationCollection::create() {
   m_data->emplace_back(ParticleClusterAssociation());
   int index = m_data->size()-1;
   m_handles.emplace_back(ParticleClusterAssociationHandle(index,m_collectionID, m_data));
@@ -15,6 +15,15 @@ ParticleClusterAssociationHandle& ParticleClusterAssociationCollection::create()
 
   return tmp_handle;
 }
+
+ParticleClusterAssociationHandle& ParticleClusterAssociationCollection::insert(const ParticleClusterAssociationHandle& origin) {
+  m_data->emplace_back(origin.read());
+  int index = m_data->size()-1;
+  m_handles.emplace_back(ParticleClusterAssociationHandle(index,m_collectionID, m_data));
+  auto& tmp_handle = m_handles.back();
+
+  return tmp_handle;
+}  
 
 void ParticleClusterAssociationCollection::clear(){
   m_data->clear();
