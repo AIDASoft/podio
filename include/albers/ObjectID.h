@@ -3,12 +3,6 @@
 
 namespace albers {
 
-/**
-* A pure virtual member.
-* @see testMe()
-* @param c1 the first argument.
-* @param c2 the second argument.
-*/
 class ObjectID {
 
 public:
@@ -17,7 +11,7 @@ public:
 
   static const int untracked = -1;
   static const int invalid   = -2;
-  static const int transient = -3;
+  //static const int transient = -3;
 
 };
 

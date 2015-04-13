@@ -1,6 +1,5 @@
 <lcgdict>
     <selection>
-        <class name="PythonEventStore"/>
         <class name="albers::Registry">
             <field name="m_reader" transient="true"/>
             <field name="m_collections" transient="true"/>

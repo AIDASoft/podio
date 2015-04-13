@@ -55,8 +55,6 @@ namespace albers {
     void setCollectionProvider(ICollectionProvider* provider) {m_collectionProvider = provider;};
     ICollectionProvider* collectionProvider(){return m_collectionProvider;};
 
-    //std::vector<std::string>& names(){ return m_names;};
-
     /// Prints collection information
     void print() const;
 

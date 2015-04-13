@@ -58,7 +58,8 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
   (*m_data)[i].Clusters_end+=index;
   index = (*m_data)[index].Clusters_end;
   for(auto it : (*m_rel_Clusters_tmp[i])) {
-    //TODO: check validity of objects
+    if (it.getObjectID().index == albers::ObjectID::untracked)
+      throw std::runtime_error("Trying to persistify untracked object");
     (*m_refCollections)[0]->emplace_back(it.getObjectID());
     m_rel_Clusters->push_back(it);
   }

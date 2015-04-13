@@ -41,24 +41,6 @@ void test_basic(){
   std::cout << "    Success: " << success << std::endl;
 }
 
-void test_looping(){
-  std::cout << "*** Test looping ***" << std::endl;
-  bool success = true;
-  albers::Registry registry;
-  auto store = albers::EventStore(&registry);
-  auto& coll  = store.create<ExampleHitCollection>("name");
-  auto hit1 = coll.create(0.,0.,0.,0.);
-  auto hit2 = coll.create(1.,1.,1.,1.);
-  for(auto i = coll.begin(), end = coll.end(); i != end; ++i) {
-    auto energy = i->energy();
-  }
-  for(int i = 0, end = coll.size(); i != end; ++i) {
-    auto energy = coll[i].energy();
-  }
-  if ((coll[0].energy() != 0) || (coll[1].energy() != 1)) success = false;
-  std::cout << "    Success: " << success << std::endl;
-}
-
 void test_clearing() {
   std::cout << "*** Test clearing ***" << std::endl;
   bool success = true;
@@ -87,6 +69,44 @@ void test_cloning() {
 
 }
 
+void test_invalid_refs() {
+  std::cout << "*** Test invalid refs ***" << std::endl;
+  bool success = false;
+  albers::Registry registry;
+  auto store = albers::EventStore(&registry);
+  auto& hits  = store.create<ExampleHitCollection>("hits");
+  auto hit1 = hits.create(0.,0.,0.,0.);
+  auto hit2 = ExampleHit();
+  auto& clusters  = store.create<ExampleClusterCollection>("clusters");
+  auto  cluster  = clusters.create();
+  cluster.addHits(hit1);
+  cluster.addHits(hit2);
+  try {
+    clusters.prepareForWrite(); //should fail!
+  } catch (std::runtime_error){
+    success = true;
+  }
+  std::cout << "    Success: " << success << std::endl;
+}
+
+void test_looping(){
+  std::cout << "*** Test looping ***" << std::endl;
+  bool success = true;
+  albers::Registry registry;
+  auto store = albers::EventStore(&registry);
+  auto& coll  = store.create<ExampleHitCollection>("name");
+  auto hit1 = coll.create(0.,0.,0.,0.);
+  auto hit2 = coll.create(1.,1.,1.,1.);
+  for(auto i = coll.begin(), end = coll.end(); i != end; ++i) {
+    auto energy = i->energy();
+  }
+  for(int i = 0, end = coll.size(); i != end; ++i) {
+    auto energy = coll[i].energy();
+  }
+  if ((coll[0].energy() != 0) || (coll[1].energy() != 1)) success = false;
+  std::cout << "    Success: " << success << std::endl;
+}
+
 void test_notebook() {
   bool success = true;
   std::cout << "*** Test notebook ***" << std::endl;
@@ -102,6 +122,13 @@ void test_notebook() {
     if(double(index) != energy) success = false;
     ++index;
   }
+  std::cout << "    Success: " << success << std::endl;
+}
+
+void test_POD(){
+  std::cout << "*** Test PODness ***" << std::endl;
+  bool success = true;
+  if (std::is_pod<ExampleClusterData>() != true) success = false;
   std::cout << "    Success: " << success << std::endl;
 }
 
@@ -139,23 +166,17 @@ void test_write_buffer() {
   std::cout << "    Success: " << success << std::endl;
 }
 
-void test_POD(){
-  std::cout << "*** Test PODness ***" << std::endl;
-  bool success = true;
-  if (std::is_pod<ExampleClusterData>() != true) success = false;
-  std::cout << "    Success: " << success << std::endl;
-}
-
 int main(){
 
-  test_POD();
+  test_autodelete();
   test_basic();
-  test_looping();
   test_clearing();
   test_cloning();
+  test_invalid_refs();
+  test_looping();
   test_notebook();
+  test_POD();
   test_referencing();
-  test_autodelete();
   test_write_buffer();
 
 }

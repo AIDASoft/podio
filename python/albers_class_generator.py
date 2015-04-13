@@ -290,7 +290,8 @@ class ClassGenerator(object):
   (*m_data)[i].%s_end+=index;
   index = (*m_data)[index].%s_end;
   for(auto it : (*m_rel_%s_tmp[i])) {
-    //TODO: check validity of objects
+    if (it.getObjectID().index == albers::ObjectID::untracked)
+      throw std::runtime_error("Trying to persistify untracked object");
     (*m_refCollections)[%s]->emplace_back(it.getObjectID());
     m_rel_%s->push_back(it);
   }""" %(name,name,name,name,counter,name)

@@ -4,7 +4,7 @@
 // std includes
 #include <atomic>
 
-// datamodel specific includes
+// data model specific includes
 #include "albers/ObjectID.h"
 #include "EventInfoData.h"
 
@@ -18,8 +18,8 @@ public:
   ~EventInfoEntry();
   void increaseRefCount() {
     if (id.index == albers::ObjectID::untracked) ++ref_counter;
-  }
-;
+  };
+
   int decreaseRefCount(){
     return  ( (id.index == albers::ObjectID::untracked) ? --ref_counter : 1 );
   }; // returns current count
