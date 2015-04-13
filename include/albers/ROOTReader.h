@@ -36,21 +36,18 @@ class ROOTReader : ICollectionProvider {
     void openFile(const std::string& filename);
     void closeFile(){};
 
-    // COLIN : unused?
+    /// Read all collections requested
     void readEvent();
 
+    /// get collection of name/type; returns true if successfull 
     template<typename T>
     bool getCollection(const std::string& name,
            T*& collection);
 
     void* getBuffer(const unsigned collectionID);
 
+    /// Read registry from ROOT file
     Registry* getRegistry() {return m_registry;}
-
-    // COLIN: some of the stuff below should be private
-    //  private:
-    void readRegistry();
-    CollectionBase* readCollection(const std::string& name);
 
     /// Returns number of entries in the TTree
     unsigned getEntries() const;
@@ -64,6 +61,14 @@ class ROOTReader : ICollectionProvider {
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
 
+  private:
+    /// Read registry from ROOT file
+    void readRegistry();
+
+    /// Implementation for collection reading
+    CollectionBase* readCollection(const std::string& name);
+
+  private:
     Registry* m_registry;
     TFile* m_file;
     TTree* m_eventTree;
