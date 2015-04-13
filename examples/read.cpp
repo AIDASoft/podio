@@ -61,7 +61,7 @@ int main(){
       verbose = false;
     std::cout <<""<<std::endl;
     processEvent(store, true, reader);
-    store.endOfEvent();
+    store.clear();
     reader.endOfEvent();
   }
   return 0;

@@ -31,7 +31,7 @@ namespace albers {
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
         [name](ROOTReader::Input t){ return t.second == name;});
     if (p != end(m_inputs)){
-      // std::cout<<"collection already there"<<std::endl;
+      std::cout<<"collection already there"<<std::endl;
       return p->first;
     }
     auto branch = m_eventTree->GetBranch(name.c_str());

@@ -41,18 +41,20 @@ namespace albers {
     return false;
   }
 
-
-  void EventStore::next(){
+  void EventStore::clearCollections(){
     for (auto& coll : m_collections){
       coll.second->clear();
     }
   }
 
-  void EventStore::endOfEvent() {
+  void EventStore::clear(){
+    for (auto& coll : m_collections){
+      coll.second->clear();
+      delete coll.second;
+    }
     m_collections.clear();
   }
 
-  /// set the reader
   void EventStore::setReader(ROOTReader* reader){
     m_reader = reader;
     m_registry = reader->getRegistry();

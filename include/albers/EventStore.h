@@ -36,20 +36,22 @@ namespace albers {
 
     /// create a new collection
     template<typename T>
-      T& create(const std::string& name);
+    T& create(const std::string& name);
 
     /// access a collection. returns true if successfull
     template<typename T>
-      bool get(const std::string& name, const T*& collection);
+    bool get(const std::string& name, const T*& collection);
 
-    /// clears all collections. COLIN: choose a different name?
-    void next();
+    /// empties collections.
+    void clearCollections();
 
-    void endOfEvent();
+    /// clears itself; deletes collections
+    void clear();
 
-    /// set the reader
+    /// set the reader and retrieve the registry from it
     void setReader(ROOTReader* reader);
 
+    /// get the collection of given name; returns true if successfull
     bool doGet(const std::string& name, CollectionBase*& collection) const;
 
   private:

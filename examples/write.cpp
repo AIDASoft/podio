@@ -14,7 +14,7 @@
 #include "albers/ROOTWriter.h"
 
 int main(){
-  
+
   std::cout<<"start processing"<<std::endl;
 
   albers::Registry   registry;
@@ -55,7 +55,7 @@ int main(){
     }
 
     writer.writeEvent();
-    store.next();
+    store.clearCollections();
   }
 
   writer.finish();
