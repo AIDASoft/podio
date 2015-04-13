@@ -39,11 +39,12 @@ class ROOTReader : ICollectionProvider {
     /// Read all collections requested
     void readEvent();
 
-    /// get collection of name/type; returns true if successfull 
+    /// get collection of name/type; returns true if successfull
     template<typename T>
     bool getCollection(const std::string& name,
            T*& collection);
 
+    /// Implement getBuffer from ICollectionProvider
     void* getBuffer(const unsigned collectionID);
 
     /// Read registry from ROOT file
@@ -58,9 +59,6 @@ class ROOTReader : ICollectionProvider {
     /// Preparing to read a given event
     void goToEvent(unsigned evnum);
 
-    typedef std::pair<CollectionBase*, std::string> Input;
-    std::vector<Input> m_inputs;
-
   private:
     /// Read registry from ROOT file
     void readRegistry();
@@ -69,6 +67,8 @@ class ROOTReader : ICollectionProvider {
     CollectionBase* readCollection(const std::string& name);
 
   private:
+    typedef std::pair<CollectionBase*, std::string> Input;
+    std::vector<Input> m_inputs;
     Registry* m_registry;
     TFile* m_file;
     TTree* m_eventTree;
