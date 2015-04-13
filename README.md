@@ -63,7 +63,7 @@ And reading it again
 
 There is a rudimentary test in
 
-   ../install/examples/test
+    ../install/examples/test
 
 ## Modifying the data model 
 
