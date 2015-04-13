@@ -42,12 +42,6 @@ namespace albers {
     template<typename T>
     void getCollectionFromName(const std::string& name, T*&) const;
 
-    template<typename T>
-    void setDataAddress(int ID, T* address);
-
-    template<typename T>
-    void setDataAddress(const std::string& name, T* address);
-
     template<typename Coll, typename Data>
     void setCollectionAddresses(const std::string& name, Coll* collAddress, Data* dataAddress);
 
@@ -113,24 +107,6 @@ void Registry::getCollectionFromID(int ID, T*& collection) const {
   auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
   auto index = result - m_collectionIDs.begin();
   collection = static_cast<T*>(m_collections[index]); //TODO: buggy!!!
-}
-
-template<typename T>
-void Registry::setDataAddress(int ID, T* address){
-  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
-  auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
-  auto index = result - m_collectionIDs.begin();
-  auto bare_address = static_cast<void*>(address);
-  m_addresses[index] = bare_address;
-}
-
-template<typename T>
-void Registry::setDataAddress(const std::string& name, T* address){
-  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
-  auto result = std::find(begin(m_names), end(m_names), name);
-  auto index = result - m_names.begin();
-  auto bare_address = static_cast<void*>(address);
-  m_addresses[index] = bare_address;
 }
 
 template<typename Coll, typename Data>
