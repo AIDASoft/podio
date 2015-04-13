@@ -14,10 +14,6 @@ namespace albers {
   class CollectionBase;
   class Registry;
 
-
-
-
-
   class ROOTWriter {
 
   public:
