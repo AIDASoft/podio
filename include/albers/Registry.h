@@ -45,12 +45,7 @@ namespace albers {
     template<typename Coll, typename Data>
     void setCollectionAddresses(const std::string& name, Coll* collAddress, Data* dataAddress);
 
-    std::string getNameFromID(int ID) const {
-      //std::lock_guard<std::recursive_mutex> lock(m_mutex);
-      auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
-      auto index = result - m_collectionIDs.begin();
-      return m_names[index];
-    };
+    const std::string getNameFromID(int ID) const;
 
     template<typename T>
     unsigned registerData(T* address, const std::string& name); // returns the ID
@@ -60,7 +55,7 @@ namespace albers {
     void setCollectionProvider(ICollectionProvider* provider) {m_collectionProvider = provider;};
     ICollectionProvider* collectionProvider(){return m_collectionProvider;};
 
-    std::vector<std::string>& names(){ return m_names;};
+    //std::vector<std::string>& names(){ return m_names;};
 
     /// Prints collection information
     void print() const;
