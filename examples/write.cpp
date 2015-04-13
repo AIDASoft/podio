@@ -1,21 +1,8 @@
 // Data model
-#include "EventInfo.h"
 #include "EventInfoCollection.h"
-#include "Particle.h"
-#include "ParticleCollection.h"
-#include "JetCollection.h"
-#include "JetParticleAssociationCollection.h"
-#include "LorentzVector.h"
-
-// Utility functions
-#include "VectorUtils.h"
-
-// ROOT
-#include "TLorentzVector.h"
-#include "TBranch.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TSystem.h"
+#include "ExampleHitCollection.h"
+#include "ExampleClusterCollection.h"
+#include "ExampleReferencingTypeCollection.h"
 
 // STL
 #include <iostream>
@@ -24,63 +11,51 @@
 // albers specific includes
 #include "albers/EventStore.h"
 #include "albers/Registry.h"
-#include "albers/Writer.h"
-
-// testing tools
-#include "DummyGenerator.h"
-
-
-void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer, DummyGenerator& generator) {
-  if(iEvent % 1000 == 0)
-    std::cout<<"processing event "<<iEvent<<std::endl;
-
-  generator.generate();
-
-  // fill event information
-  EventInfoCollection* evinfocoll = nullptr;
-  store.get("EventInfo", evinfocoll);
-  if(evinfocoll==nullptr) {
-    std::cerr<<"collection EventInfo does not exist!"<<std::endl;
-    return;
-  }
-  EventInfoHandle& evinfo = evinfocoll->create();
-  evinfo.setNumber(iEvent);
-
-  // and now for the writing
-  // TODO: do that at a different time w/o coll pointer
-  // COLIN: calling writeEvent should not be left up to the user.
-  writer.writeEvent();
-  store.next();
-
-  return;
-}
-
+#include "albers/ROOTWriter.h"
 
 int main(){
-  gSystem->Load("libDataModelExample.so");
-
+  
   std::cout<<"start processing"<<std::endl;
 
   albers::Registry   registry;
   albers::EventStore store(&registry);
-  albers::Writer     writer("example.root", &registry);
+  albers::ROOTWriter writer("example.root", &registry);
 
-  DummyGenerator generator(10, store);
-  generator.setNPrint(10);
+  auto& info     = store.create<EventInfoCollection>("info");
+  auto& hits     = store.create<ExampleHitCollection>("hits");
+  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+  auto& refs     = store.create<ExampleReferencingTypeCollection>("refs");
+
+  writer.registerForWrite<EventInfoCollection>("info");
+  writer.registerForWrite<ExampleHitCollection>("hits");
+  writer.registerForWrite<ExampleClusterCollection>("clusters");
+  writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
 
   unsigned nevents=10000;
 
-  EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
-
-  writer.registerForWrite<EventInfoCollection>("EventInfo");
-
-  // collections from the dummy generator
-  writer.registerForWrite<ParticleCollection>("GenParticle");
-  writer.registerForWrite<JetCollection>("GenJet");
-  writer.registerForWrite<JetParticleAssociationCollection>("GenJetParticle");
-
   for(unsigned i=0; i<nevents; ++i) {
-    processEvent(i, store, writer, generator);
+    if(i % 1000 == 0) {
+      std::cout << "processing event " << i << std::endl;
+    }
+
+    // open a scope for the reference counting
+    {
+      auto item1 = info.create();
+      item1.Number(i);
+      auto hit1 = hits.create(0.,0.,0.,23.+i);
+      auto hit2 = hits.create(1.,0.,0.,12.+i);
+      auto cluster  = clusters.create();
+
+      cluster.addHits(hit1);
+      cluster.addHits(hit2);
+      cluster.energy(hit1.energy()+hit2.energy());
+
+      auto newref  = refs.create();
+      newref.addClusters(cluster);
+    }
+
+    writer.writeEvent();
+    store.next();
   }
 
   writer.finish();

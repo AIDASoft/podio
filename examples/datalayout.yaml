@@ -1,22 +1,47 @@
 ---
 datatypes :
-  DummyData :
-    description : "Dummy Data Type"
-    author : "C. Bernet, B. Hegner"
-    members:
+
+  EventInfo:
+    description : "Event info"
+    author : "B. Hegner"
+    members :
      - name : Number
        type : int
-       description: "test data"
+       description: "event number"
 
-  ReferencingData :
-    description : "Dummy Referencing Type"
-    author : "C. Bernet, B. Hegner"
-    members :
-     - name : Dummy
-       type : DummyDataHandle
-       description: "ref to dummy data"
+  ExampleHit :
+    description : "Example Hit"
+    author : "B. Hegner"
+    members:
+     - name : x
+       type : double
+       description: "x-coordinate"
+     - name : y
+       type : double
+       description: "y-coordinate"
+     - name : z
+       type : double
+       description: "z-coordinate"
+     - name : energy
+       type : double
+       description : "measured energy deposit"
+
+  ExampleCluster :
+    description : "Cluster"
+    author : "B. Hegner"
+    members:
+      - name : energy
+        type : double
+        description : "cluster energy"
     OneToManyRelations:
-     - name : Dummies
-       type : DummyData
-       description: "ref to dummy data items"
+     - name : Hits
+       type : ExampleHit
+       description: "hits contained in the cluster"
 
+  ExampleReferencingType :
+    description : "Referencing Type"
+    author : "B. Hegner"
+    OneToManyRelations:
+     - name : Clusters
+       type : ExampleCluster
+       description: "some refs to Clusters"

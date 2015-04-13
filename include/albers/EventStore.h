@@ -3,10 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <type_traits>
+
 // albers specific includes
 #include "albers/Registry.h"
 
 /**
+This is an *example* event store
+
 The event store holds the object collections.
 
 It is used to create new collections, and to access existing ones.
@@ -18,16 +22,13 @@ the event store makes use of a Reader to read the collection.
 namespace albers {
 
   class CollectionBase;
-  class Reader;
-  class Writer;
+  class ROOTReader;
 
   class EventStore {
 
   public:
     /// Collection entry. Each collection is identified by a name
     typedef std::pair<std::string, CollectionBase*> CollPair;
-
-    /// Collection container. COLIN: why not a hash_map?
     typedef std::vector<CollPair> CollContainer;
 
     EventStore(Registry* registry);
@@ -37,9 +38,9 @@ namespace albers {
     template<typename T>
       T& create(const std::string& name);
 
-    /// access a collection. returns true if suc
+    /// access a collection. returns true if successfull
     template<typename T>
-      bool get(const std::string& name, T*& collection);
+      bool get(const std::string& name, const T*& collection);
 
     /// clears all collections. COLIN: choose a different name?
     void next();
@@ -47,37 +48,37 @@ namespace albers {
     void endOfEvent();
 
     /// set the reader
-    void setReader(Reader* reader);
+    void setReader(ROOTReader* reader);
 
     bool doGet(const std::string& name, CollectionBase*& collection) const;
 
   private:
     // members
     mutable CollContainer m_collections;
-    Reader* m_reader;
-    /// not used at the moment
-    Writer* m_writer;
+    ROOTReader* m_reader;
     Registry* m_registry;
   };
 
 
 template<typename T>
 T& EventStore::create(const std::string& name) {
+  static_assert(std::is_base_of<CollectionBase,T>::value,
+    "DataStore only accepts types inheriting from CollectionBase");
   // TODO: add check for existence
   T* coll = new T();
-  m_collections.emplace_back(std::make_pair(name,coll));
-  m_registry->registerPOD(coll, name);
+  m_collections.push_back({name,coll});
+  auto id = m_registry->registerData(coll, name);
+  coll->setID(id);
   return *coll;
 }
 
 template<typename T>
-bool EventStore::get(const std::string& name, T*& collection){
-  CollectionBase* tmp;
+bool EventStore::get(const std::string& name, const T*& collection){
+  static_assert(std::is_base_of<CollectionBase,T>::value,
+                "DataStore only contains types inheriting from CollectionBase");
+  CollectionBase* tmp(0);
   doGet(name, tmp);
-
-  // a dynamic_cast is used because doGet anyway accesses a container
-  // of CollectionBase* -> no need to template deeper code
-  collection = dynamic_cast<T*>(tmp);
+  collection = static_cast<T*>(tmp);
   if (collection != nullptr) { return true;}
   return false;
 }

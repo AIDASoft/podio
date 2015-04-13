@@ -5,37 +5,38 @@
 
 #include <string>
 #include <vector>
+#include <deque>
+#include <array>
 
 // albers specific includes
 #include "albers/Registry.h"
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
+#include "EventInfoData.h"
 #include "EventInfo.h"
-#include "EventInfoHandle.h"
+#include "EventInfoEntry.h"
 
-typedef std::vector<EventInfo> EventInfoVector;
-typedef std::vector<EventInfoHandle> EventInfoHandleVector;
+typedef std::vector<EventInfoData> EventInfoDataContainer;
+typedef std::deque<EventInfoEntry*> EventInfoEntryPointerContainer;
 
 class EventInfoCollectionIterator {
 
   public:
-    EventInfoCollectionIterator(int index, const EventInfoCollection* collection) : m_index(index), m_collection(collection) {}
+    EventInfoCollectionIterator(int index, const EventInfoEntryPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
     bool operator!=(const EventInfoCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
 
-    const EventInfoHandle operator*() const;
-
-    const EventInfoCollectionIterator& operator++() const {
-      ++m_index;
-      return *this;
-    }
+    const EventInfo operator*() const;
+    const EventInfo* operator->() const;
+    const EventInfoCollectionIterator& operator++() const;
 
   private:
     mutable int m_index;
-    const EventInfoCollection* m_collection;
+    mutable EventInfo m_object;
+    const EventInfoEntryPointerContainer* m_collection;
 };
 
 /**
@@ -48,48 +49,80 @@ public:
   typedef const EventInfoCollectionIterator const_iterator;
 
   EventInfoCollection();
+//  EventInfoCollection(const EventInfoCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  EventInfoCollection(EventInfoVector* data, int collectionID);
   ~EventInfoCollection(){};
 
   void clear();
-  /// Append a new object to the collection, and return a Handle to this object.
-  EventInfoHandle& create();
+  /// Append a new object to the collection, and return this object.
+  EventInfo create();
 
-  /// Returns a Handle to the object at position index in the collection
-  const EventInfoHandle& get(int index) const;
+  /// Append a new object to the collection, and return this object.
+  /// Initialized with the parameters given
+  template<typename... Args>
+  EventInfo create(Args&&... args);
+  int size() const;
 
-  /// Currently does nothing
-  void prepareForWrite(const albers::Registry* registry);
-  void prepareAfterRead(albers::Registry* registry);
-  void setPODsAddress(const void* address);
+  /// Returns the object of given index
+  const EventInfo operator[](int index) const;
+
+  /// Append object to the collection
+  void push_back(EventInfo object);
+
+  void prepareForWrite();
+  void prepareAfterRead();
+  void setBuffer(void* address);
+  bool setReferences(albers::Registry* registry);
+
+  albers::CollRefCollection* referenceCollections() { return m_refCollections;};
 
   void setID(unsigned ID){m_collectionID = ID;};
 
   // support for the iterator protocol
   const const_iterator begin() const {
-    return const_iterator(0, this);
+    return const_iterator(0, &m_entries);
   }
   const	const_iterator end() const {
-    return const_iterator(m_handles.size(), this);
+    return const_iterator(m_entries.size(), &m_entries);
   }
 
   /// returns the address of the pointer to the data buffer
-  void* _getRawBuffer() { return (void*)&m_data;};
+  void* getBufferAddress() { return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
-  std::vector<EventInfo>* _getBuffer() { return m_data;};
+  std::vector<EventInfoData>* _getBuffer() { return m_data;};
 
-  /// returns the vector of Handles
-  const EventInfoHandleVector& getHandles() { return m_handles; }
+     template<size_t arraysize>  
+  const std::array<int,arraysize> Number() const;
 
-  /// print some information
-  void print() const;
 
 private:
-  unsigned m_collectionID;
-  EventInfoVector* m_data;
-  EventInfoHandleVector m_handles;
-
+  int m_collectionID;
+  EventInfoEntryPointerContainer m_entries;
+  // members to handle 1-to-N-relations
+  
+  // members to handle streaming
+  albers::CollRefCollection* m_refCollections;
+  EventInfoDataContainer* m_data;
 };
+
+template<typename... Args>
+EventInfo  EventInfoCollection::create(Args&&... args){
+  int size = m_entries.size();
+  auto entry = new EventInfoEntry({size,m_collectionID},{args...});
+  m_entries.push_back(entry);
+  return EventInfo(entry);
+}
+
+template<size_t arraysize>
+const std::array<int,arraysize> EventInfoCollection::Number() const {
+  std::array<int,arraysize> tmp;
+  auto valid_size = std::min(arraysize,m_entries.size());
+  for (unsigned i = 0; i<valid_size; ++i){
+    tmp[i] = m_entries[i]->data.Number;
+ }
+ return tmp;
+}
+
 
 #endif

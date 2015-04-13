@@ -61,6 +61,10 @@ And reading it again
 
     ../install/examples/read
 
+There is a rudimentary test in
+
+   ../install/examples/test
+
 ## Modifying the data model 
 
 if you want to invoke the data model creator use python/albers_class_generator.py

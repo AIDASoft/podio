@@ -1,0 +1,15 @@
+<lcgdict>
+    <selection>
+        <class name="albers::Registry">
+            <field name="m_reader" transient="true"/>
+            <field name="m_collections" transient="true"/>
+            <field name="m_mutex" transient="true"/>
+            <field name="m_collectionProvider" transient="true"/>
+        </class>
+        <class name="albers::ObjectID"/>
+        <class name="vector<albers::ObjectID>"/>
+
+$classes
+
+    </selection>
+</lcgdict>

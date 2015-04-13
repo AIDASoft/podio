@@ -1,0 +1,112 @@
+<lcgdict>
+    <selection>
+        <class name="PythonEventStore"/>
+        <class name="albers::Registry">
+            <field name="m_reader" transient="true"/>
+            <field name="m_collections" transient="true"/>
+            <field name="m_mutex" transient="true"/>
+            <field name="m_collectionProvider" transient="true"/>
+        </class>
+        <class name="albers::ObjectID"/>
+        <class name="vector<albers::ObjectID>"/>
+
+          <class name="std::vector<ExampleReferencingTypeData>" />
+
+          <class name="ExampleReferencingTypeData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleReferencingType>" />
+
+          <class name="ExampleReferencingType">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleReferencingTypeCollection>" />
+
+          <class name="ExampleReferencingTypeCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleReferencingTypeEntry>" />
+
+          <class name="ExampleReferencingTypeEntry">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<EventInfoData>" />
+
+          <class name="EventInfoData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<EventInfo>" />
+
+          <class name="EventInfo">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<EventInfoCollection>" />
+
+          <class name="EventInfoCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<EventInfoEntry>" />
+
+          <class name="EventInfoEntry">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleClusterData>" />
+
+          <class name="ExampleClusterData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleCluster>" />
+
+          <class name="ExampleCluster">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleClusterCollection>" />
+
+          <class name="ExampleClusterCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleClusterEntry>" />
+
+          <class name="ExampleClusterEntry">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleHitData>" />
+
+          <class name="ExampleHitData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleHit>" />
+
+          <class name="ExampleHit">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleHitCollection>" />
+
+          <class name="ExampleHitCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleHitEntry>" />
+
+          <class name="ExampleHitEntry">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+
+
+    </selection>
+</lcgdict>

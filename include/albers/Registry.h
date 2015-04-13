@@ -5,6 +5,8 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <mutex>
+#include <iostream>
 
 // albers specific includes
 
@@ -12,19 +14,14 @@
 The Registry knows about the position of
 transient collections and all the buffers
 in memory. If some collection/buffer is missing,
-it may ask the Reader for help depending on whether
-the lookup is 'lazy' or not.
+it may ask the ICollectionProvider for help depending
+on whether the lookup is 'lazy' or not.
 
-COLIN: when getting a collection, it is in fact the EventStore that asks the Reader for help, not the Registry. Are the lines above referring to something else?
-
-COLIN: it seems the registry also keeps track of the collection IDs, which might play a role in the Writer.
 */
-
-#include <iostream>
 
 namespace albers {
 
-  class Reader;
+  class ICollectionProvider;
   class CollectionBase;
 
   class Registry{
@@ -35,41 +32,39 @@ namespace albers {
     m_addresses(), m_collectionIDs(), m_names()
   {};
 
-    // get the pod address but don't do anything else
+    // get the Data address but don't do anything else
     template<typename T>
-    void lazyGetPODAddressFromID(unsigned ID, T*&) const;
+    void lazyGetDataAddressFromID(int ID, T*&) const;
 
     template<typename T>
-    void getPODAddressFromID(unsigned ID, T*&) const;
-
-    template<typename T>
-    void getPODAddressFromName(const std::string& name, T*&) const;
+    void getCollectionFromID(int ID, T*&) const;
 
     template<typename T>
     void getCollectionFromName(const std::string& name, T*&) const;
 
     template<typename T>
-    unsigned getIDFromPODAddress(T* address) const;
+    void setDataAddress(int ID, T* address);
 
     template<typename T>
-    void setPODAddress(unsigned ID, T* address);
+    void setDataAddress(const std::string& name, T* address);
 
-    template<typename T>
-    void setPODAddress(const std::string& name, T* address);
+    template<typename Coll, typename Data>
+    void setCollectionAddresses(const std::string& name, Coll* collAddress, Data* dataAddress);
 
-    std::string getNameFromID(unsigned ID) const {
+    std::string getNameFromID(int ID) const {
+      //std::lock_guard<std::recursive_mutex> lock(m_mutex);
       auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
       auto index = result - m_collectionIDs.begin();
       return m_names[index];
     };
 
     template<typename T>
-    unsigned registerPOD(T* address, const std::string& name); // returns the ID
+    unsigned registerData(T* address, const std::string& name); // returns the ID
 
     void resetAddresses(){std::fill(m_addresses.begin(), m_addresses.end(), nullptr);};
 
-    void setReader(Reader* reader) {m_reader = reader;};
-    Reader* reader(){return m_reader;};
+    void setCollectionProvider(ICollectionProvider* provider) {m_collectionProvider = provider;};
+    ICollectionProvider* collectionProvider(){return m_collectionProvider;};
 
     std::vector<std::string>& names(){ return m_names;};
 
@@ -77,16 +72,18 @@ namespace albers {
     void print() const;
 
   private:
-    void doGetPODAddressFromID(unsigned ID, void*& address) const;
-    std::vector<void*>  m_addresses;
+    void doGetDataAddressFromID(int ID, void*& address) const;
+    std::vector<void*>            m_addresses;
     std::vector<CollectionBase*>  m_collections;
-    std::vector<unsigned>    m_collectionIDs;
-    std::vector<std::string> m_names;
-    Reader*                  m_reader; //! transient
+    std::vector<int>              m_collectionIDs;
+    std::vector<std::string>      m_names;
+    ICollectionProvider*          m_collectionProvider;
+    //mutable std::recursive_mutex   m_mutex;
   };
 
 template<typename T>
-  void Registry::lazyGetPODAddressFromID(unsigned ID, T*& address) const {
+void Registry::lazyGetDataAddressFromID(int ID, T*& address) const {
+  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
   auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
   if (result == end(m_collectionIDs)){
     address = nullptr;
@@ -97,25 +94,8 @@ template<typename T>
 }
 
 template<typename T>
-void Registry::getPODAddressFromID(unsigned ID, T*& address) const {
-  void* tmp;
-  doGetPODAddressFromID(ID, tmp);
-  address = static_cast<T*>(tmp);
-}
-
-template<typename T>
-void Registry::getPODAddressFromName(const std::string& name, T*& address) const {
-  auto result = std::find(begin(m_names), end(m_names), name);
-  if (result == end(m_names)){
-    address = nullptr;
-  } else {
-    auto index = result - m_names.begin();
-    address = static_cast<T*>(m_addresses[index]);
-  }
-}
-
-template<typename T>
 void Registry::getCollectionFromName(const std::string& name, T*& collection) const {
+  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
   auto result = std::find(begin(m_names), end(m_names), name);
   if (result == end(m_names)){
     collection = nullptr;
@@ -126,40 +106,58 @@ void Registry::getCollectionFromName(const std::string& name, T*& collection) co
 }
 
 template<typename T>
-unsigned Registry::getIDFromPODAddress(T* address) const {
-  auto bare_address = static_cast<void*>(address);
-  auto result = std::find(begin(m_addresses), end(m_addresses), bare_address);
-  auto index = result - m_addresses.begin();
-  return m_collectionIDs[index];
+void Registry::getCollectionFromID(int ID, T*& collection) const {
+  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
+  void* tmp;
+  doGetDataAddressFromID(ID, tmp);
+  auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
+  auto index = result - m_collectionIDs.begin();
+  collection = static_cast<T*>(m_collections[index]); //TODO: buggy!!!
 }
 
 template<typename T>
-void Registry::setPODAddress(unsigned ID, T* address){
+void Registry::setDataAddress(int ID, T* address){
+  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
   auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
   auto index = result - m_collectionIDs.begin();
   auto bare_address = static_cast<void*>(address);
-  m_addresses[index] = bare_address;;
+  m_addresses[index] = bare_address;
 }
 
 template<typename T>
-void Registry::setPODAddress(const std::string& name, T* address){
+void Registry::setDataAddress(const std::string& name, T* address){
+  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
   auto result = std::find(begin(m_names), end(m_names), name);
   auto index = result - m_names.begin();
   auto bare_address = static_cast<void*>(address);
-  m_addresses[index] = bare_address;;
+  m_addresses[index] = bare_address;
+}
+
+template<typename Coll, typename Data>
+void Registry::setCollectionAddresses(const std::string& name, Coll* collAddress, Data* dataAddress) {
+  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
+  auto result = std::find(begin(m_names), end(m_names), name);
+  auto index = result - m_names.begin();
+  auto bare_address = static_cast<void*>(dataAddress);
+  m_addresses[index] = bare_address;
+  if (int(m_collections.size()) < index+1) {
+    m_collections.resize(index+1);
+  }
+  m_collections[index] = static_cast<CollectionBase*>(collAddress);
 }
 
 template<typename T>
-unsigned Registry::registerPOD(T* collection, const std::string& name){
+unsigned Registry::registerData(T* collection, const std::string& name){
+  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
   auto bare_address = static_cast<void*>(collection->_getBuffer());
   auto result = std::find(begin(m_addresses), end(m_addresses), bare_address);
-  unsigned ID = 0;
+  int ID = 0;
   if (result == m_addresses.end()) {
-      std::hash<std::string> hash;
+      //TODO: find a proper hashing function fitting in an int.
       m_addresses.emplace_back(bare_address);
       m_names.emplace_back(name);
       m_collections.emplace_back(collection);
-      ID = hash(name);
+      ID = m_names.size();
       m_collectionIDs.emplace_back( ID );
       collection->setID(ID);
    } else {

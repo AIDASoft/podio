@@ -1,0 +1,51 @@
+// albers specific includes
+#include "albers/Registry.h"
+
+// datamodel specific includes
+#include "${name}Entry.h"
+#include "${name}Data.h"
+#include "${name}Collection.h"
+
+$getters
+$setters
+$relations
+bool  ${name}::isAvailable() const {
+  if (m_entry != nullptr) {
+    return true;
+  }
+  return false;
+}
+
+const albers::ObjectID ${name}::getObjectID() const {
+  return m_entry->id;
+}
+
+
+${name}::${name}(${name}Entry* entry) : m_entry(entry){
+  if(m_entry != nullptr)
+    m_entry->increaseRefCount();
+}
+
+${name}& ${name}::operator=(const ${name}& other){
+  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0) {
+    std::cout << "deleting free-floating ${name} at " << m_entry << std::endl;
+    delete m_entry;
+  }
+  m_entry = other.m_entry;
+  return *this;
+}
+
+${name}::~${name}(){
+  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0 ){
+    std::cout << "deleting free-floating ${name} at " << m_entry << std::endl;
+    delete m_entry;
+   }
+}
+
+//bool operator< (const ${name}& p1, const ${name}& p2 ) {
+//  if( p1.m_containerID == p2.m_containerID ) {
+//    return p1.m_index < p2.m_index;
+//  } else {
+//    return p1.m_containerID < p2.m_containerID;
+//  }
+//}

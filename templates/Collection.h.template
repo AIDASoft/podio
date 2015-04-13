@@ -6,37 +6,37 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <array>
 
 // albers specific includes
 #include "albers/Registry.h"
 #include "albers/CollectionBase.h"
 
 // datamodel specific includes
-#include "${package_name}/${name}.h"
-#include "${package_name}/${name}Handle.h"
+#include "${name}Data.h"
+#include "${name}.h"
+#include "${name}Entry.h"
 
-typedef std::vector<${name}> ${name}Vector;
-typedef std::deque<${name}Handle> ${name}HandleContainer;
+typedef std::vector<${name}Data> ${name}DataContainer;
+typedef std::deque<${name}Entry*> ${name}EntryPointerContainer;
 
 class ${name}CollectionIterator {
 
   public:
-    ${name}CollectionIterator(int index, const ${name}Collection* collection) : m_index(index), m_collection(collection) {}
+    ${name}CollectionIterator(int index, const ${name}EntryPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
     bool operator!=(const ${name}CollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
     }
 
-    const ${name}Handle operator*() const;
-
-    const ${name}CollectionIterator& operator++() const {
-      ++m_index;
-      return *this;
-    }
+    const ${name} operator*() const;
+    const ${name}* operator->() const;
+    const ${name}CollectionIterator& operator++() const;
 
   private:
     mutable int m_index;
-    const ${name}Collection* m_collection;
+    mutable ${name} m_object;
+    const ${name}EntryPointerContainer* m_collection;
 };
 
 /**
@@ -49,55 +49,69 @@ public:
   typedef const ${name}CollectionIterator const_iterator;
 
   ${name}Collection();
+//  ${name}Collection(const ${name}Collection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ${name}Collection(${name}Vector* data, int collectionID);
   ~${name}Collection(){};
 
   void clear();
-  /// Append a new object to the collection, and return a Handle to this object.
-  ${name}Handle& create();
+  /// Append a new object to the collection, and return this object.
+  ${name} create();
 
-  /// Returns a Handle to the object at position index in the collection
-  const ${name}Handle& get(int index) const;
+  /// Append a new object to the collection, and return this object.
+  /// Initialized with the parameters given
+  template<typename... Args>
+  ${name} create(Args&&... args);
+  int size() const;
 
-  /// Currently does nothing
-  void prepareForWrite(const albers::Registry* registry);
-  void prepareAfterRead(albers::Registry* registry);
-  void setPODsAddress(const void* address);
+  /// Returns the object of given index
+  const ${name} operator[](int index) const;
+
+  /// Append object to the collection
+  void push_back(${name} object);
+
+  void prepareForWrite();
+  void prepareAfterRead();
+  void setBuffer(void* address);
+  bool setReferences(albers::Registry* registry);
+
+  albers::CollRefCollection* referenceCollections() { return m_refCollections;};
 
   void setID(unsigned ID){m_collectionID = ID;};
 
   // support for the iterator protocol
   const const_iterator begin() const {
-    return const_iterator(0, this);
+    return const_iterator(0, &m_entries);
   }
   const	const_iterator end() const {
-    return const_iterator(m_handles.size(), this);
+    return const_iterator(m_entries.size(), &m_entries);
   }
 
-//  std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections();
-
-  void* _getRawBuffer(){ return (void*)&m_data;};
-  std::vector<${name}>* _getBuffer(){ return m_data;};
-
   /// returns the address of the pointer to the data buffer
-  void* _getRawBuffer() { return (void*)&m_data;};
+  void* getBufferAddress() { return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
-  std::vector<${name}>* _getBuffer() { return m_data;};
+  std::vector<${name}Data>* _getBuffer() { return m_data;};
 
-  /// returns the vector of Handles
-  const ${name}HandleVector& getHandles() { return m_handles; }
-
-  /// print some information
-  void print() const;
-
+   ${vectorized_access_declaration}
 
 private:
-  unsigned m_collectionID;
-  ${name}Vector* m_data;
-  ${name}HandleContainer m_handles;
+  int m_collectionID;
+  ${name}EntryPointerContainer m_entries;
   // members to handle 1-to-N-relations
   ${relations}
+  // members to handle streaming
+  albers::CollRefCollection* m_refCollections;
+  ${name}DataContainer* m_data;
 };
+
+template<typename... Args>
+${name}  ${name}Collection::create(Args&&... args){
+  int size = m_entries.size();
+  auto entry = new ${name}Entry({size,m_collectionID},{args...});
+  m_entries.push_back(entry);
+  return ${name}(entry);
+}
+
+${vectorized_access_implementation}
 
 #endif

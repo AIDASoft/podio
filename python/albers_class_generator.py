@@ -48,7 +48,7 @@ class ClassGenerator(object):
       self.process_components(content["components"])
     if content.has_key("datatypes"):
       self.process_datatypes(content["datatypes"])
-    self.create_linkDef()
+    self.create_selection_xml()
     self.print_report()
 
   def process_components(self,content):
@@ -61,11 +61,14 @@ class ClassGenerator(object):
   def process_datatypes(self,content):
     for name in content.iterkeys():
       self.requested_classes.append(name)
-      self.requested_classes.append("%sHandle" %name)
+      self.requested_classes.append("%sData" %name)
     for name, components in content.iteritems():
+      if not components.has_key("members"):
+        components["members"] = []
+      self.create_data(name, components)
       self.create_class(name, components)
-      self.create_class_handle(name, components)
       self.create_collection(name, components)
+      self.create_entry(name, components)
 
   def print_report(self):
     if self.verbose:
@@ -81,16 +84,21 @@ class ClassGenerator(object):
       print "     'Homage to the Square' - Josef Albers"
       print
 
-  def create_linkDef(self):
+  def create_selection_xml(self):
       content = ""
       for klass in self.created_classes:
-         content += "#pragma link C++ class %s+;\n" %klass
-         if not (klass.endswith("Handle") or klass.endswith("Collection")):
-           content += "#pragma link C++ class std::vector<%s>+;\n" %klass
-      templatefile = os.path.join(self.template_dir,"LinkDef.h.template")
+        #if not klass.endswith("Collection") or klass.endswith("Data"):
+          content += '          <class name="std::vector<%s>" />\n' %klass
+          content += """
+          <class name="%s">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>\n""" %klass
+
+      templatefile = os.path.join(self.template_dir,"selection.xml.template")
       template = open(templatefile,"r").read()
       content = string.Template(template).substitute({"classes" : content})
-      self.write_file("LinkDef.h",content)
+      self.write_file("selection.xml",content)
 
   def prepare_for_writing_body(self, members):
       handles = []
@@ -107,24 +115,8 @@ class ClassGenerator(object):
           handleupdate+= "    data.%s.prepareForWrite(registry);\n" %handle
         prepareforwriting= prepareforwriting % handleupdate
       return prepareforwriting
-    #TODO: recursive call and support for vectors
 
-  def prepare_after_read_body(self, members):
-      handles = []
-      for member in members:
-        name = member["name"]
-        klass = member["type"]
-        if klass.endswith("Handle"):
-            handles.append(name)
-      prepareafterreadbody=""
-#      prepareafterreadbody = "for(auto& data : *m_data){\n %s\n  }"
-      for handle in handles:
-        prepareafterreadbody+= "data.%s.prepareAfterRead(registry);\n" %handle
-
-      return prepareafterreadbody
-    #TODO: recursive call and support for vectors
-
-  def create_class(self, classname, definition):
+  def create_data(self, classname, definition):
     # check whether all member types are known
     # and prepare include directives
     includes = ""
@@ -136,12 +128,11 @@ class ClassGenerator(object):
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
-        includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
+    #    includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
+        includes += '#include "%s.h"\n' %(klass)
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
     membersCode = ""
-#    gettersCode = ""
-#    settersCode = ""
     for member in members:
       name = member["name"]
       klass = member["type"]
@@ -155,23 +146,24 @@ class ClassGenerator(object):
     for refvector in refvectors:
       name = refvector["name"]
       membersCode+= "  unsigned int %s_begin; \n" %(name)
-      membersCode+= "  unsigned %s_end; \n" %(name)    
+      membersCode+= "  unsigned int %s_end; \n" %(name)
 
     substitutions = {"includes" : includes,
                      "members"  : membersCode,
                      "name"     : classname,
                      "description" : description,
                      "author"   : author,
-                     "package_name" : self.package_name 
+                     "package_name" : self.package_name
     }
-    self.fill_templates("POD",substitutions)
-    self.created_classes.append(classname)
+    self.fill_templates("Data",substitutions)
+    self.created_classes.append(classname+"Data")
 
-  def create_class_handle(self, classname, definition):
+  def create_class(self, classname, definition):
     # check whether all member types are known
     # and prepare include directives
     includes = ""
-    includes += '#include "%s/%s.h"\n' %(self.package_name,classname)
+    includes += '#include "%s.h"\n' %(classname+"Data")
+    #includes += '#include "%s/%s.h"\n' %(self.package_name,classname+"Data")
     description = definition["description"]
     author      = definition["author"]
     members = definition["members"]
@@ -180,7 +172,8 @@ class ClassGenerator(object):
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
-        includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
+        #includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
+        includes += '#include "%s.h"\n' %(klass)
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
@@ -193,13 +186,13 @@ class ClassGenerator(object):
       for item in refvectors:
         klass = item["type"]
         if klass in self.requested_classes:
-          includes += '#include "%sHandle.h"\n' %klass
+          includes += '#include "%s.h"\n' %klass
         else:
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname\
 , klass))
 
-    getters = ""
-    setters = ""
+    getter_implementations = ""
+    setter_implementations = ""
     getter_declarations = ""
     setter_declarations = ""
 
@@ -209,32 +202,36 @@ class ClassGenerator(object):
       klass = member["type"]
       description = member["description"]
       getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
-      getters+= "  const %s& %sHandle::%s() const { return m_container->at(m_index).%s;}\n" %(klass, classname, name, name)
-      setters += "  void %sHandle::set%s(%s value){ m_container->at(m_index).%s = value;}\n" %(classname, name, klass, name)
-      setter_declarations += "  void set%s(%s value);\n" %(name, klass)
+      getter_implementations+= "const %s& %s::%s() const { return m_entry->data.%s;}\n" %(klass, classname, name, name)
+      if klass in self.buildin_types:
+        setter_declarations += "  void %s(%s value);\n" %(name, klass)
+        setter_implementations += "void %s::%s(%s value){ m_entry->data.%s = value;}\n" %(classname, name, klass, name)
+      else:
+        setter_declarations += "  void %s(class %s value);\n" %(name, klass)
+        setter_implementations += "void %s::%s(class %s value){ m_entry->data.%s = value;}\n" %(classname, name, klass, name)
 
     # handle one-to-many relations
     references_members = ""
     references_declarations = ""
-    references = "" 
+    references = ""
     templatefile = os.path.join(self.template_dir,"RefVector.cc.template")
     references_template = open(templatefile,"r").read()
     templatefile = os.path.join(self.template_dir,"RefVector.h.template")
-    references_declarations_template = open(templatefile,"r").read() 
+    references_declarations_template = open(templatefile,"r").read()
     for refvector in refvectors:
       substitutions = {"relation" : refvector["name"],
-                       "relationtype" : refvector["type"], 
+                       "relationtype" : refvector["type"],
                        "classname" : classname,
                        "package_name" : self.package_name
                       }
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
       references += string.Template(references_template).substitute(substitutions)
-      references_members += "std::vector<%sHandle>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
+      references_members += "std::vector<%s>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
 
     substitutions = {"includes" : includes,
-                     "getters"  : getters,
+                     "getters"  : getter_implementations,
                      "getter_declarations": getter_declarations,
-                     "setters"  : setters,
+                     "setters"  : setter_implementations,
                      "setter_declarations": setter_declarations,
                      "name"     : classname,
                      "description" : description,
@@ -244,51 +241,91 @@ class ClassGenerator(object):
                      "relation_members" : references_members,
                      "package_name" : self.package_name
                     }
-    self.fill_templates("Handle",substitutions)
-    self.created_classes.append("%sHandle"%classname)
+    self.fill_templates("Object",substitutions)
+    self.created_classes.append(classname)
 
   def create_collection(self, classname, definition):
     members = definition["members"]
+    constructorbody = ""
+    prepareforwritinghead = ""
     prepareforwritingbody = self.prepare_for_writing_body(members)
-    prepareafterreadbody = self.prepare_after_read_body(members)
+    vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(classname,members)
+    setreferences = ""
+    prepareafterread = ""
     # handle one-to-many-relations
+    includes = ""
+    initializers = ""
     relations = ""
     create_relations = ""
     clear_relations  = ""
     if definition.has_key("OneToManyRelations"):
       refvectors = definition["OneToManyRelations"]
-      for item in refvectors:
+      # member initialization
+      constructorbody += "  m_refCollections = new albers::CollRefCollection();\n"
+      clear_relations += "  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }\n"
+      for counter, item in enumerate(refvectors):
         name  = item["name"]
-        klass = item["type"] 
+        klass = item["type"]
+        # includes
+        includes += '#include "%sCollection.h" \n' %(klass)
         # members
-        relations += "std::vector<%sHandle>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
-        relations += "  std::vector<std::vector<%sHandle>*> m_rel_%s_tmp;\n " %(klass, name)
+        relations += "std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
+        relations += "  std::vector<std::vector<%s>*> m_rel_%s_tmp;\n " %(klass, name)
         # relation handling in ::create
-        create_relations += "  auto %s_tmp = new std::vector<%sHandle>();\n" %(name, klass)
+        create_relations += "  auto %s_tmp = new std::vector<%s>();\n" %(name, klass)
         create_relations += "  m_rel_%s_tmp.push_back(%s_tmp);\n" %(name,name)
-        create_relations += "  tmp_handle.m_%s = %s_tmp;\n" %(name, name) 
+        create_relations += "  entry->m_%s = %s_tmp;\n" %(name, name)
         # relation handling in ::clear
-        clear_relations += "  for (auto& pointer : m_rel_%s_tmp) {delete pointer;}\n" %(name)
+        clear_relations += "  // clear relations to %s. Make sure to unlink() the reference data as they may be gone already\n" %(name)
+        clear_relations += "  for (auto& pointer : m_rel_%s_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}\n" %(name)
         clear_relations += "  m_rel_%s_tmp.clear();\n" %(name)
-        clear_relations += "  m_rel_%s->clear();\n" %(name) 
+        clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
+        clear_relations += "  m_rel_%s->clear();\n" %(name)
+        # constructor calls
+        initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
+        constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
         # relation handling in ::prepareForWrite
-
+        prepareforwritingbody +="""
+  (*m_data)[i].%s_begin=index;
+  (*m_data)[i].%s_end+=index;
+  index = (*m_data)[index].%s_end;
+  for(auto it : (*m_rel_%s_tmp[i])) {
+    //TODO: check validity of objects
+    (*m_refCollections)[%s]->emplace_back(it.getObjectID());
+    m_rel_%s->push_back(it);
+  }""" %(name,name,name,name,counter,name)
         # relation handling in ::prepareAfterRead
+        setreferences += """
+  for(unsigned int i=0, size=(*m_refCollections)[%s]->size();i!=size;++i ) {
+    auto id = (*(*m_refCollections)[0])[i];
+    %sCollection* tmp_coll = nullptr;
+    registry->getCollectionFromID(id.collectionID,tmp_coll);
+    auto tmp = (*tmp_coll)[id.index];
+    m_rel_%s->emplace_back(tmp);
+  }""" %(counter,klass,name)
+        prepareafterread += "    entry->m_%s = m_rel_%s;" %(name, name)
 
     substitutions = { "name" : classname,
+                      "constructorbody" : constructorbody,
+                      "prepareforwritinghead" : prepareforwritinghead,
                       "prepareforwritingbody" : prepareforwritingbody,
-                      "prepareafterreadbody" : prepareafterreadbody,
+                      "setreferences" : setreferences,
+                      "prepareafterread" : prepareafterread,
+                      "includes" : includes,
+                      "initializers" : initializers,
                       "relations"           : relations,
                       "create_relations" : create_relations,
                       "clear_relations"  : clear_relations,
-                      "package_name" : self.package_name
+                      "package_name" : self.package_name,
+                      "vectorized_access_declaration" : vectorized_access_decl,
+                      "vectorized_access_implementation" : vectorized_access_impl
     }
     self.fill_templates("Collection",substitutions)
     self.created_classes.append("%sCollection"%classname)
 
   def create_component(self, classname, components):
     """ Create a component class to be used within the data types
-        Components can only contain simple data types and no user 
+        Components can only contain simple data types and no user
         defined ones
     """
     for klass in components.itervalues():
@@ -306,23 +343,70 @@ class ClassGenerator(object):
     self.fill_templates("Component",substitutions)
     self.created_classes.append(classname)
 
+  def create_entry(self, classname, definition):
+    """ Create an entry class containing all information
+        relevant for a given object.
+    """
+    relations = ""
+    includes = ""
+    if definition.has_key("OneToManyRelations"):
+      refvectors = definition["OneToManyRelations"]
+    else:
+      refvectors = []
+    for item in refvectors:
+      name  = item["name"]
+      klass = item["type"]
+      relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
+      includes += '#include "%s.h"\n' %(klass)
+    substitutions = { "name" : classname,
+                      "includes" : includes,
+                      "relations" : relations
+    }
+    self.fill_templates("Entry",substitutions)
+    self.created_classes.append(classname+"Entry")
+
+  def prepare_vectorized_access(self, classname,members ):
+    implementation = ""
+    declaration = ""
+    templatefile = os.path.join(self.template_dir,"CollectionReturnArray.cc.template")
+    template = open(templatefile,"r").read()
+    for member in members:
+      name = member["name"]
+      klass = member["type"]
+      substitutions = { "classname" : classname,
+                       "member"    : name,
+                       "type"      : klass
+                       }
+      implementation += string.Template(template).substitute(substitutions)
+      declaration += "  template<size_t arraysize>  \n  const std::array<%s,arraysize> %s() const;\n" %(klass, name)
+    return declaration, implementation
+
+
+
   def write_file(self, name,content):
     #dispatch headers to header dir, the rest to /src
-    if name.endswith("h"):
-      fullname = os.path.join(self.install_dir,self.package_name,name)
-    else:
-      fullname = os.path.join(self.install_dir,"src",name)
+    fullname = os.path.join(self.install_dir,self.package_name,name)
+    #if name.endswith("h"):
+    #  fullname = os.path.join(self.install_dir,self.package_name,name)
+    #else:
+    #  fullname = os.path.join(self.install_dir,"src",name)
     open(fullname, "w").write(content)
 
   def fill_templates(self, category,substitutions):
-    # "POD" denotes the real class;
-    # only headers and the FN should not contain POD
-    if category == "POD":
-      FN = ""
+    # "Data" denotes the real class;
+    # only headers and the FN should not contain Data
+    if category == "Data":
+      FN = "Data"
       endings = ("h")
+    elif category == "Entry":
+      FN = "Entry"
+      endings = ("h","cc")
     elif category == "Component":
       FN = ""
       endings = ("h")
+    elif category == "Object":
+      FN = ""
+      endings = ("h","cc")
     else:
       FN = category
       endings = ("h","cc")

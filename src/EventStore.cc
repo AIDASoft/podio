@@ -1,6 +1,6 @@
 
 // albers specific includes
-#include "albers/Reader.h"
+#include "albers/ROOTReader.h"
 #include "albers/CollectionBase.h"
 #include "albers/EventStore.h"
 
@@ -8,7 +8,6 @@ namespace albers {
 
   EventStore::EventStore(Registry* registry) :
     m_reader(nullptr),
-    m_writer(nullptr),
     m_registry(registry)
   {}
 
@@ -19,11 +18,9 @@ namespace albers {
   }
 
   bool EventStore::doGet(const std::string& name, CollectionBase*& collection) const {
-    // COLIN: I was expecting the registry to be used here.
     auto result = std::find_if(begin(m_collections), end(m_collections),
                                [name](const CollPair& item)->bool { return name==item.first; }
-			      );
-
+    );
     if (result != end(m_collections)){
       auto tmp = result->second;
       if (tmp != nullptr){
@@ -32,13 +29,13 @@ namespace albers {
       }
     } else if (m_reader != nullptr) {
       auto tmp = m_reader->readCollection(name);
+      tmp->setReferences(m_registry);
       if (tmp != nullptr){
         m_collections.emplace_back(std::make_pair(name,tmp));
-	collection = tmp;
+        collection = tmp;
         return true;
       }
     } else {
-      //COLIN: not sure collection is set to the nullptr in this case, see EventStore.h
       return false;
     }
     return false;
@@ -46,7 +43,6 @@ namespace albers {
 
 
   void EventStore::next(){
-    //    if (m_writer != nullptr) m_writer->write();
     for (auto& coll : m_collections){
       coll.second->clear();
     }
@@ -57,7 +53,7 @@ namespace albers {
   }
 
   /// set the reader
-  void EventStore::setReader(Reader* reader){
+  void EventStore::setReader(ROOTReader* reader){
     m_reader = reader;
     m_registry = reader->getRegistry();
   }

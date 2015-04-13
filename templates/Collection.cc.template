@@ -1,60 +1,94 @@
-#include "${package_name}/${name}Collection.h"
+// standard includes
+#include <stdexcept>
+${includes}
 
-${name}Collection::${name}Collection() : m_collectionID(0), m_data(new ${name}Vector() ){
+#include "${name}Collection.h"
+
+${name}Collection::${name}Collection() : m_collectionID(0), m_entries() ${initializers},m_refCollections(nullptr), m_data(new ${name}DataContainer() ) {
+  ${constructorbody}
 }
 
-const ${name}Handle& ${name}Collection::get(int index) const{
-  return m_handles[index];
+const ${name} ${name}Collection::operator[](int index) const {
+  return ${name}(m_entries[index]);
 }
 
-${name}Handle& ${name}Collection::create(){
-  m_data->emplace_back(${name}());
-  int index = m_data->size()-1;
-  m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
-  auto& tmp_handle = m_handles.back();
+int  ${name}Collection::size() const {
+  return m_entries.size();
+}
+
+${name} ${name}Collection::create(){
+  auto entry = new ${name}Entry();
+  m_entries.emplace_back(entry);
 ${create_relations}
-  return tmp_handle;
+  entry->id = {int(m_entries.size()-1),m_collectionID};
+  return ${name}(entry);
 }
 
 void ${name}Collection::clear(){
   m_data->clear();
-  m_handles.clear();
+  for (auto& entry : m_entries) { delete entry; }
+  m_entries.clear();
 ${clear_relations}
 }
 
-void ${name}Collection::prepareForWrite(const albers::Registry* registry){
-$prepareforwritingbody
+void ${name}Collection::prepareForWrite(){
+  int index = 0;
+  auto size = m_entries.size();
+  m_data->reserve(size);
+  for (auto& entry : m_entries) {m_data->push_back(entry->data); }
+  if (m_refCollections != nullptr) {
+    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
+  }
+  $prepareforwritinghead
+  for(int i=0, size = m_data->size(); i != size; ++i){
+  $prepareforwritingbody
+  }
+
 }
 
-void ${name}Collection::prepareAfterRead(albers::Registry* registry){
-  m_handles.clear();
+void ${name}Collection::prepareAfterRead(){
   int index = 0;
-  // fix. otherwise, m_collectionID == 0..
-  m_collectionID = registry->getIDFromPODAddress( _getBuffer() );
   for (auto& data : *m_data){
-    $prepareafterreadbody
-    m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
+    auto entry = new ${name}Entry({index,m_collectionID}, data);
+    $prepareafterread
+    m_entries.emplace_back(entry);
     ++index;
   }
 }
 
+bool ${name}Collection::setReferences(albers::Registry* registry){
+  $setreferences
+  return true; //TODO: check success
+}
 
-void ${name}Collection::setPODsAddress(const void* address){
-  m_data = (${name}Vector*)address;
+void ${name}Collection::push_back(${name} object){
+    int size = m_entries.size();
+    auto entry = object.m_entry;
+    if (entry->id.index == albers::ObjectID::untracked) {
+        entry->id = {size,m_collectionID};
+        m_entries.push_back(entry);
+    } else {
+      throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
+
+    }
+}
+
+void ${name}Collection::setBuffer(void* address){
+  m_data = static_cast<${name}DataContainer*>(address);
 }
 
 
-const ${name}Handle ${name}CollectionIterator::operator* () const {
-  return m_collection->get(m_index);
+const ${name} ${name}CollectionIterator::operator* () const {
+  m_object.m_entry = (*m_collection)[m_index];
+  return m_object;
 }
 
-//std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections() {
-//}
-
-
-void ${name}Collection::print() const {
-  std::cout<<"collection "<<m_collectionID
-           <<", buf "<<m_data
-           <<", nhandles "<<m_handles.size()<<std::endl;
+const ${name}* ${name}CollectionIterator::operator-> () const {
+    m_object.m_entry = (*m_collection)[m_index];
+    return &m_object;
 }
 
+const ${name}CollectionIterator& ${name}CollectionIterator::operator++() const {
+  ++m_index;
+ return *this;
+}

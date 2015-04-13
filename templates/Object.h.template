@@ -1,0 +1,55 @@
+#ifndef ${name}_H
+#define ${name}_H
+$includes
+#include <vector>
+#include "albers/ObjectID.h"
+#include <iostream>
+
+// $description
+// author: $author
+
+//forward declaration of $name container
+class ${name}Collection;
+class ${name}CollectionIterator;
+
+#include "${name}Entry.h"
+
+namespace albers {
+  class Registry;
+}
+
+class ${name} {
+
+  friend ${name}Collection;
+  friend ${name}CollectionIterator;
+
+public:
+
+  ${name}() : m_entry(new ${name}Entry()){};
+  ${name}(const ${name}& other) : m_entry(other.m_entry) {m_entry->increaseRefCount();};
+  ${name}& operator=(const ${name}& other);
+  ${name}(${name}Entry* entry);
+  ~${name}();
+
+$getter_declarations
+$setter_declarations
+$relation_declarations
+  bool isAvailable() const; // precheck whether the pointee actually exists
+  void unlink(){m_entry = nullptr;};
+
+  bool operator==(const ${name}& other) const {
+       return (m_entry==other.m_entry);
+  }
+
+  /// less comparison operator, so that objects can be e.g. stored in sets.
+//  friend bool operator< (const ${name}& p1,
+//       const ${name}& p2 );
+
+  const albers::ObjectID getObjectID() const;
+
+private:
+  ${name}Entry* m_entry;
+
+};
+
+#endif

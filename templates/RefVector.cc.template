@@ -1,16 +1,16 @@
-std::vector<${relationtype}Handle>::const_iterator ${classname}Handle::${relation}_begin() const {
-  auto ret_value = m_${relation}->begin();
-  std::advance(ret_value, m_container->at(m_index).${relation}_begin);
+std::vector<${relationtype}>::const_iterator ${classname}::${relation}_begin() const {
+  auto ret_value = m_entry->m_${relation}->begin();
+  std::advance(ret_value, m_entry->data.${relation}_begin);
   return ret_value;
 }
 
-std::vector<${relationtype}Handle>::const_iterator ${classname}Handle::${relation}_end() const {
-  auto ret_value = m_${relation}->begin();
-  std::advance(ret_value, m_container->at(m_index).${relation}_end-1);
+std::vector<${relationtype}>::const_iterator ${classname}::${relation}_end() const {
+  auto ret_value = m_entry->m_${relation}->begin();
+  std::advance(ret_value, m_entry->data.${relation}_end-1);
   return ++ret_value;
 }
 
-void ${classname}Handle::add${relation}(${relationtype}Handle& component) {
-  m_${relation}->push_back(component);
-  m_container->at(m_index).${relation}_end++;
+void ${classname}::add${relation}(${relationtype}& component) {
+  m_entry->m_${relation}->push_back(component);
+  m_entry->data.${relation}_end++;
 }

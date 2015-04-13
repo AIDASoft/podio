@@ -1,12 +1,6 @@
-#include "ParticleCollection.h"
-#include "EventInfoCollection.h"
-#include "JetCollection.h"
-#include "JetParticleAssociationCollection.h"
-
-// Utility functions
-#include "JetUtils.h"
-#include "VectorUtils.h"
-#include "ParticleUtils.h"
+// STL
+#include <vector>
+#include <iostream>
 
 // ROOT
 #include "TBranch.h"
@@ -14,133 +8,59 @@
 #include "TTree.h"
 #include "TSystem.h"
 #include "TROOT.h"
-#include "TLorentzVector.h"
-
-// STL
-#include <vector>
-#include <iostream>
 
 // albers specific includes
 #include "albers/EventStore.h"
-#include "albers/Reader.h"
+#include "albers/ROOTReader.h"
 #include "albers/Registry.h"
 
+// test data model
+#include "ExampleHitCollection.h"
+#include "ExampleClusterCollection.h"
+#include "ExampleReferencingTypeCollection.h"
+
 void processEvent(albers::EventStore& store, bool verbose,
-		  albers::Reader& reader) {
+      albers::ROOTReader& reader) {
 
-  // read event information
-  EventInfoCollection* evinfocoll(nullptr);
-  bool evinfo_available = store.get("EventInfo",evinfocoll);
-  if(evinfo_available) {
-    const EventInfoHandle& evinfo = evinfocoll->get(0);
-    if(verbose)
-      std::cout << "event number " << evinfo.Number() << std::endl;
-    // COLIN avoid bug at first event
-    if(evinfo.Number()==0) {
-      std::cerr<<"skipping bugged first event"<<std::endl;
-      return;
-    }
+  const ExampleClusterCollection* clusters = nullptr;
+  std::cout << "Fetching collection 'clusters'" << std::endl;
+  bool is_available = store.get("clusters",clusters);
+  if(is_available){
+  auto cluster = (*clusters)[0];
+  std::cout << "Cluster has an energy of " << cluster.energy() << std::endl;
+  for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i!=end; ++i){
+    std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
   }
-
-  // the following is commented out to test on-demand reading through Jet-Particle association,
-  // see below
-  // // read particles
-  // ParticleCollection* ptcs(nullptr);
-  // bool particles_available = store.get("GenParticle",ptcs);
-  // if (particles_available){
-  //   for(const auto& part : *ptcs) {
-  //     std::cout<<part.containerID()<<" "<<part.index()<<std::endl;
-  //   }
-  // }
-
-  // read jets
-  JetCollection* jrefs(nullptr);
-  bool jets_available = store.get("GenJet",jrefs);
-  std::vector<ParticleHandle> injets;
-
-  if (jets_available){
-    JetParticleAssociationCollection* jprefs(nullptr);
-    bool assoc_available = store.get("GenJetParticle",jprefs);
-    if(verbose) {
-      reader.getRegistry()->print();
-      std::cout << "jet collection:" << std::endl;
-    }
-    for(const auto& jet : *jrefs){
-      std::vector<ParticleHandle> jparticles = utils::associatedParticles(jet,
-									  *jprefs);
-      TLorentzVector lv = utils::lvFromPOD(jet.P4());
-      if(verbose)
-	std::cout << "\tjet: E=" << lv.E() << " "<<lv.Eta()<<" "<<lv.Phi()
-		  <<" npart="<<jparticles.size()<<std::endl;
-      if(assoc_available) {
-	for(const auto& part : jparticles) {
-	  if(part.isAvailable()) {
-	    if(verbose)
-	      std::cout<<"\t\tassociated "<<part<<std::endl;
-	    injets.push_back(part);
-	  }
-	}
+  const ExampleReferencingTypeCollection* refs = nullptr;
+  std::cout << "Fetching collection 'refs'" << std::endl;
+  is_available = store.get("refs",refs);
+  if(is_available){
+    auto ref = (*refs)[0];
+    for (auto j = ref.Clusters_begin(), end = ref.Clusters_end(); j!=end; ++j){
+      for (auto i = j->Hits_begin(), end = j->Hits_end(); i!=end; ++i){
+        std::cout << "  Referenced object has an energy of " << i->energy() << std::endl;
       }
     }
-  }
-
-  // read particles
-  ParticleCollection* ptcs(nullptr);
-  bool particles_available = store.get("GenParticle",ptcs);
-  if (particles_available){
-    std::vector<ParticleHandle> muons;
-    if(verbose)
-      std::cout << "particle collection:" << std::endl;
-    for(const auto& ref : *ptcs){
-      if(verbose)
-	std::cout<<"\t"<<ref<<std::endl;
-      if( ref.ID() == 4 )
-	muons.push_back(ref);
-    }
-    // listing particles that are not used in a jet
-    const std::vector<ParticleHandle>& particles = ptcs->getHandles();
-    std::vector<ParticleHandle> unused = utils::unused(particles, injets);
-    if(verbose)
-      std::cout<<"unused particles: "<<unused.size()<<"/"<<particles.size()<<" "<<injets.size()<<std::endl;
-
-    // computing isolation for first muon
-    if(not muons.empty()) {
-      const ParticleHandle& muon = muons[0];
-      float dRMax = 0.5;
-      const std::vector<ParticleHandle> incone = utils::inCone( muon.P4(),
-								particles,
-								dRMax);
-      float sumpt = utils::sumPt(incone);
-      if( verbose ) {
-	std::cout<<"muon: "<<muon<<" sumpt "<<sumpt<<std::endl;
-	std::cout<<"\tparticles in cone:"<<std::endl;
-      }
-      for(const auto& ptc : incone) {
-	if( verbose )
-	  std::cout<<"\t"<<ptc<<std::endl;
-      }
-    }
+   }
   }
 }
 
-
 int main(){
-  gSystem->Load("libDataModelExample.so");
-  albers::Reader reader;
+  albers::ROOTReader reader;
   albers::EventStore store(nullptr);
-  store.setReader(&reader);
   reader.openFile("example.root");
+  store.setReader(&reader);
 
   bool verbose = true;
 
-  // unsigned nEvents = 5;
   unsigned nEvents = reader.getEntries();
   for(unsigned i=0; i<nEvents; ++i) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
     if(i>10)
       verbose = false;
-    processEvent(store, verbose, reader);
+    std::cout <<""<<std::endl;
+    processEvent(store, true, reader);
     store.endOfEvent();
     reader.endOfEvent();
   }
