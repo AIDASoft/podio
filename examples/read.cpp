@@ -26,10 +26,11 @@ void processEvent(albers::EventStore& store, bool verbose,
   std::cout << "Fetching collection 'clusters'" << std::endl;
   bool is_available = store.get("clusters",clusters);
   if(is_available){
-  auto cluster = (*clusters)[0];
-  std::cout << "Cluster has an energy of " << cluster.energy() << std::endl;
-  for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i!=end; ++i){
-    std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
+    auto cluster = (*clusters)[0];
+    std::cout << "Cluster has an energy of " << cluster.energy() << std::endl;
+    for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i!=end; ++i){
+      std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
+    }
   }
   const ExampleReferencingTypeCollection* refs = nullptr;
   std::cout << "Fetching collection 'refs'" << std::endl;
@@ -41,7 +42,6 @@ void processEvent(albers::EventStore& store, bool verbose,
         std::cout << "  Referenced object has an energy of " << i->energy() << std::endl;
       }
     }
-   }
   }
 }
 

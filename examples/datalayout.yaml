@@ -45,3 +45,6 @@ datatypes :
      - name : Clusters
        type : ExampleCluster
        description: "some refs to Clusters"
+     - name : Refs
+       type : ExampleReferencingType
+       description : "refs into same type"

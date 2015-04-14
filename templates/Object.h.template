@@ -11,9 +11,9 @@ $includes
 //forward declarations
 class ${name}Collection;
 class ${name}CollectionIterator;
-class ${name}Entry;
+class ${name}Obj;
 
-#include "${name}Entry.h"
+#include "${name}Obj.h"
 
 namespace albers {
   class Registry;
@@ -30,17 +30,17 @@ public:
   ${name}();
   ${name}(const ${name}& other);
   ${name}& operator=(const ${name}& other);
-  ${name}(${name}Entry* entry);
+  ${name}(${name}Obj* obj);
   ~${name}();
 
 $getter_declarations
 $setter_declarations
 $relation_declarations
   bool isAvailable() const; // precheck whether the pointee actually exists
-  void unlink(){m_entry = nullptr;};
+  void unlink(){m_obj = nullptr;};
 
   bool operator==(const ${name}& other) const {
-       return (m_entry==other.m_entry);
+       return (m_obj==other.m_obj);
   }
 
   /// less comparison operator, so that objects can be e.g. stored in sets.
@@ -50,7 +50,7 @@ $relation_declarations
   const albers::ObjectID getObjectID() const;
 
 private:
-  ${name}Entry* m_entry;
+  ${name}Obj* m_obj;
 
 };
 

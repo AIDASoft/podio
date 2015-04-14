@@ -9,15 +9,17 @@
 // measured energy deposit
 // author: B. Hegner
 
-//forward declaration of ExampleHit container
+//forward declarations
 class ExampleHitCollection;
 class ExampleHitCollectionIterator;
+class ExampleHitObj;
 
-#include "ExampleHitEntry.h"
+#include "ExampleHitObj.h"
 
 namespace albers {
   class Registry;
 }
+
 
 class ExampleHit {
 
@@ -26,10 +28,10 @@ class ExampleHit {
 
 public:
 
-  ExampleHit() : m_entry(new ExampleHitEntry()){};
-  ExampleHit(const ExampleHit& other) : m_entry(other.m_entry) {m_entry->increaseRefCount();};
+  ExampleHit();
+  ExampleHit(const ExampleHit& other);
   ExampleHit& operator=(const ExampleHit& other);
-  ExampleHit(ExampleHitEntry* entry);
+  ExampleHit(ExampleHitObj* obj);
   ~ExampleHit();
 
   const double& x() const;
@@ -44,10 +46,10 @@ public:
 
 
   bool isAvailable() const; // precheck whether the pointee actually exists
-  void unlink(){m_entry = nullptr;};
+  void unlink(){m_obj = nullptr;};
 
   bool operator==(const ExampleHit& other) const {
-       return (m_entry==other.m_entry);
+       return (m_obj==other.m_obj);
   }
 
   /// less comparison operator, so that objects can be e.g. stored in sets.
@@ -57,7 +59,7 @@ public:
   const albers::ObjectID getObjectID() const;
 
 private:
-  ExampleHitEntry* m_entry;
+  ExampleHitObj* m_obj;
 
 };
 

@@ -1,24 +1,25 @@
-#ifndef ${name}OBJ_H
-#define ${name}OBJ_H
+#ifndef ExampleClusterOBJ_H
+#define ExampleClusterOBJ_H
 
 // std includes
 #include <atomic>
 
 // data model specific includes
 #include "albers/ObjectID.h"
-#include "${name}Data.h"
+#include "ExampleClusterData.h"
 
-$includes
+#include "ExampleHit.h"
+
 
 // forward declarations
-class ${name};
+class ExampleCluster;
 
-class ${name}Obj {
+class ExampleClusterObj {
 public:
-  ${name}Obj();
-  ${name}Obj(const ${name}Obj&); //TODO: deep copy!
-  ${name}Obj(const albers::ObjectID id, ${name}Data data);
-  ~${name}Obj();
+  ExampleClusterObj();
+  ExampleClusterObj(const ExampleClusterObj&); //TODO: deep copy!
+  ExampleClusterObj(const albers::ObjectID id, ExampleClusterData data);
+  ~ExampleClusterObj();
   void increaseRefCount() {
     if (id.index == albers::ObjectID::untracked) ++ref_counter;
   };
@@ -28,8 +29,9 @@ public:
   }; // returns current count
 
 public:
-  ${name}Data data;
-${relations}
+  ExampleClusterData data;
+  std::vector<ExampleHit>* m_Hits;
+
   albers::ObjectID id;
   std::atomic<int> ref_counter;
 };

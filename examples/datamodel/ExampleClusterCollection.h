@@ -15,15 +15,15 @@
 // datamodel specific includes
 #include "ExampleClusterData.h"
 #include "ExampleCluster.h"
-#include "ExampleClusterEntry.h"
+#include "ExampleClusterObj.h"
 
 typedef std::vector<ExampleClusterData> ExampleClusterDataContainer;
-typedef std::deque<ExampleClusterEntry*> ExampleClusterEntryPointerContainer;
+typedef std::deque<ExampleClusterObj*> ExampleClusterObjPointerContainer;
 
 class ExampleClusterCollectionIterator {
 
   public:
-    ExampleClusterCollectionIterator(int index, const ExampleClusterEntryPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+    ExampleClusterCollectionIterator(int index, const ExampleClusterObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
     bool operator!=(const ExampleClusterCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
@@ -36,7 +36,7 @@ class ExampleClusterCollectionIterator {
   private:
     mutable int m_index;
     mutable ExampleCluster m_object;
-    const ExampleClusterEntryPointerContainer* m_collection;
+    const ExampleClusterObjPointerContainer* m_collection;
 };
 
 /**
@@ -98,7 +98,7 @@ public:
 
 private:
   int m_collectionID;
-  ExampleClusterEntryPointerContainer m_entries;
+  ExampleClusterObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
   std::vector<ExampleHit>* m_rel_Hits; //relation buffer for r/w
   std::vector<std::vector<ExampleHit>*> m_rel_Hits_tmp;
@@ -111,9 +111,9 @@ private:
 template<typename... Args>
 ExampleCluster  ExampleClusterCollection::create(Args&&... args){
   int size = m_entries.size();
-  auto entry = new ExampleClusterEntry({size,m_collectionID},{args...});
-  m_entries.push_back(entry);
-  return ExampleCluster(entry);
+  auto obj = new ExampleClusterObj({size,m_collectionID},{args...});
+  m_entries.push_back(obj);
+  return ExampleCluster(obj);
 }
 
 template<size_t arraysize>

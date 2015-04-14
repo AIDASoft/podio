@@ -67,7 +67,7 @@ class ClassGenerator(object):
       self.create_data(name, components)
       self.create_class(name, components)
       self.create_collection(name, components)
-      self.create_entry(name, components)
+      self.create_obj(name, components)
 
   def print_report(self):
     if self.verbose:
@@ -201,13 +201,13 @@ class ClassGenerator(object):
       klass = member["type"]
       description = member["description"]
       getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
-      getter_implementations+= "const %s& %s::%s() const { return m_entry->data.%s;}\n" %(klass, classname, name, name)
+      getter_implementations+= "const %s& %s::%s() const { return m_obj->data.%s;}\n" %(klass, classname, name, name)
       if klass in self.buildin_types:
         setter_declarations += "  void %s(%s value);\n" %(name, klass)
-        setter_implementations += "void %s::%s(%s value){ m_entry->data.%s = value;}\n" %(classname, name, klass, name)
+        setter_implementations += "void %s::%s(%s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       else:
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
-        setter_implementations += "void %s::%s(class %s value){ m_entry->data.%s = value;}\n" %(classname, name, klass, name)
+        setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
 
     # handle one-to-many relations
     references_members = ""
@@ -279,7 +279,7 @@ class ClassGenerator(object):
         # relation handling in ::create
         create_relations += "  auto %s_tmp = new std::vector<%s>();\n" %(name, klass)
         create_relations += "  m_rel_%s_tmp.push_back(%s_tmp);\n" %(name,name)
-        create_relations += "  entry->m_%s = %s_tmp;\n" %(name, name)
+        create_relations += "  obj->m_%s = %s_tmp;\n" %(name, name)
         # relation handling in ::clear
         clear_relations += "  // clear relations to %s. Make sure to unlink() the reference data as they may be gone already\n" %(name)
         clear_relations += "  for (auto& pointer : m_rel_%s_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}\n" %(name)
@@ -291,7 +291,7 @@ class ClassGenerator(object):
         # relation handling in ::settingReferences
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)
 
-        prepareafterread += "    entry->m_%s = m_rel_%s;" %(name, name)
+        prepareafterread += "    obj->m_%s = m_rel_%s;" %(name, name)
 
     substitutions = { "name" : classname,
                       "constructorbody" : constructorbody,
@@ -331,8 +331,8 @@ class ClassGenerator(object):
     self.fill_templates("Component",substitutions)
     self.created_classes.append(classname)
 
-  def create_entry(self, classname, definition):
-    """ Create an entry class containing all information
+  def create_obj(self, classname, definition):
+    """ Create an obj class containing all information
         relevant for a given object.
     """
     relations = ""
@@ -350,8 +350,8 @@ class ClassGenerator(object):
                       "includes" : includes,
                       "relations" : relations
     }
-    self.fill_templates("Entry",substitutions)
-    self.created_classes.append(classname+"Entry")
+    self.fill_templates("Obj",substitutions)
+    self.created_classes.append(classname+"Obj")
 
   def prepare_vectorized_access(self, classname,members ):
     implementation = ""
@@ -390,8 +390,8 @@ class ClassGenerator(object):
     if category == "Data":
       FN = "Data"
       endings = ("h")
-    elif category == "Entry":
-      FN = "Entry"
+    elif category == "Obj":
+      FN = "Obj"
       endings = ("h","cc")
     elif category == "Component":
       FN = ""

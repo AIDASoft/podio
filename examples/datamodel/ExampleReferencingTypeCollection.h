@@ -15,15 +15,15 @@
 // datamodel specific includes
 #include "ExampleReferencingTypeData.h"
 #include "ExampleReferencingType.h"
-#include "ExampleReferencingTypeEntry.h"
+#include "ExampleReferencingTypeObj.h"
 
 typedef std::vector<ExampleReferencingTypeData> ExampleReferencingTypeDataContainer;
-typedef std::deque<ExampleReferencingTypeEntry*> ExampleReferencingTypeEntryPointerContainer;
+typedef std::deque<ExampleReferencingTypeObj*> ExampleReferencingTypeObjPointerContainer;
 
 class ExampleReferencingTypeCollectionIterator {
 
   public:
-    ExampleReferencingTypeCollectionIterator(int index, const ExampleReferencingTypeEntryPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+    ExampleReferencingTypeCollectionIterator(int index, const ExampleReferencingTypeObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
     bool operator!=(const ExampleReferencingTypeCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
@@ -36,7 +36,7 @@ class ExampleReferencingTypeCollectionIterator {
   private:
     mutable int m_index;
     mutable ExampleReferencingType m_object;
-    const ExampleReferencingTypeEntryPointerContainer* m_collection;
+    const ExampleReferencingTypeObjPointerContainer* m_collection;
 };
 
 /**
@@ -96,10 +96,12 @@ public:
 
 private:
   int m_collectionID;
-  ExampleReferencingTypeEntryPointerContainer m_entries;
+  ExampleReferencingTypeObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
   std::vector<ExampleCluster>* m_rel_Clusters; //relation buffer for r/w
   std::vector<std::vector<ExampleCluster>*> m_rel_Clusters_tmp;
+   std::vector<ExampleReferencingType>* m_rel_Refs; //relation buffer for r/w
+  std::vector<std::vector<ExampleReferencingType>*> m_rel_Refs_tmp;
  
   // members to handle streaming
   albers::CollRefCollection* m_refCollections;
@@ -109,9 +111,9 @@ private:
 template<typename... Args>
 ExampleReferencingType  ExampleReferencingTypeCollection::create(Args&&... args){
   int size = m_entries.size();
-  auto entry = new ExampleReferencingTypeEntry({size,m_collectionID},{args...});
-  m_entries.push_back(entry);
-  return ExampleReferencingType(entry);
+  auto obj = new ExampleReferencingTypeObj({size,m_collectionID},{args...});
+  m_entries.push_back(obj);
+  return ExampleReferencingType(obj);
 }
 
 

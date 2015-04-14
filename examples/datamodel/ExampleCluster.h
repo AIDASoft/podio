@@ -11,15 +11,17 @@
 // cluster energy
 // author: B. Hegner
 
-//forward declaration of ExampleCluster container
+//forward declarations
 class ExampleClusterCollection;
 class ExampleClusterCollectionIterator;
+class ExampleClusterObj;
 
-#include "ExampleClusterEntry.h"
+#include "ExampleClusterObj.h"
 
 namespace albers {
   class Registry;
 }
+
 
 class ExampleCluster {
 
@@ -28,10 +30,10 @@ class ExampleCluster {
 
 public:
 
-  ExampleCluster() : m_entry(new ExampleClusterEntry()){};
-  ExampleCluster(const ExampleCluster& other) : m_entry(other.m_entry) {m_entry->increaseRefCount();};
+  ExampleCluster();
+  ExampleCluster(const ExampleCluster& other);
   ExampleCluster& operator=(const ExampleCluster& other);
-  ExampleCluster(ExampleClusterEntry* entry);
+  ExampleCluster(ExampleClusterObj* obj);
   ~ExampleCluster();
 
   const double& energy() const;
@@ -43,10 +45,10 @@ public:
   std::vector<ExampleHit>::const_iterator Hits_end() const;
 
   bool isAvailable() const; // precheck whether the pointee actually exists
-  void unlink(){m_entry = nullptr;};
+  void unlink(){m_obj = nullptr;};
 
   bool operator==(const ExampleCluster& other) const {
-       return (m_entry==other.m_entry);
+       return (m_obj==other.m_obj);
   }
 
   /// less comparison operator, so that objects can be e.g. stored in sets.
@@ -56,7 +58,7 @@ public:
   const albers::ObjectID getObjectID() const;
 
 private:
-  ExampleClusterEntry* m_entry;
+  ExampleClusterObj* m_obj;
 
 };
 

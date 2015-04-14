@@ -2,49 +2,49 @@
 #include "albers/Registry.h"
 
 // datamodel specific includes
-#include "${name}Entry.h"
+#include "${name}Obj.h"
 #include "${name}Data.h"
 #include "${name}Collection.h"
 
-${name}::${name}() : m_entry(new ${name}Entry()){};
+${name}::${name}() : m_obj(new ${name}Obj()){};
 
-${name}::${name}(const ${name}& other) : m_entry(other.m_entry) {
-  m_entry->increaseRefCount();
+${name}::${name}(const ${name}& other) : m_obj(other.m_obj) {
+  m_obj->increaseRefCount();
 };
 
 $getters
 $setters
 $relations
 bool  ${name}::isAvailable() const {
-  if (m_entry != nullptr) {
+  if (m_obj != nullptr) {
     return true;
   }
   return false;
 }
 
 const albers::ObjectID ${name}::getObjectID() const {
-  return m_entry->id;
+  return m_obj->id;
 }
 
 
-${name}::${name}(${name}Entry* entry) : m_entry(entry){
-  if(m_entry != nullptr)
-    m_entry->increaseRefCount();
+${name}::${name}(${name}Obj* obj) : m_obj(obj){
+  if(m_obj != nullptr)
+    m_obj->increaseRefCount();
 }
 
 ${name}& ${name}::operator=(const ${name}& other){
-  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating ${name} at " << m_entry << std::endl;
-    delete m_entry;
+  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
+    std::cout << "deleting free-floating ${name} at " << m_obj << std::endl;
+    delete m_obj;
   }
-  m_entry = other.m_entry;
+  m_obj = other.m_obj;
   return *this;
 }
 
 ${name}::~${name}(){
-  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating ${name} at " << m_entry << std::endl;
-    delete m_entry;
+  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
+    std::cout << "deleting free-floating ${name} at " << m_obj << std::endl;
+    delete m_obj;
    }
 }
 

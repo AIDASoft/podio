@@ -1,5 +1,5 @@
-#ifndef ExampleReferencingTypeENTRY_H
-#define ExampleReferencingTypeENTRY_H
+#ifndef ExampleReferencingTypeOBJ_H
+#define ExampleReferencingTypeOBJ_H
 
 // std includes
 #include <atomic>
@@ -9,14 +9,18 @@
 #include "ExampleReferencingTypeData.h"
 
 #include "ExampleCluster.h"
+#include "ExampleReferencingType.h"
 
 
-class ExampleReferencingTypeEntry {
+// forward declarations
+class ExampleReferencingType;
+
+class ExampleReferencingTypeObj {
 public:
-  ExampleReferencingTypeEntry();
-  ExampleReferencingTypeEntry(const ExampleReferencingTypeEntry&); //TODO: deep copy!
-  ExampleReferencingTypeEntry(const albers::ObjectID id, ExampleReferencingTypeData data);
-  ~ExampleReferencingTypeEntry();
+  ExampleReferencingTypeObj();
+  ExampleReferencingTypeObj(const ExampleReferencingTypeObj&); //TODO: deep copy!
+  ExampleReferencingTypeObj(const albers::ObjectID id, ExampleReferencingTypeData data);
+  ~ExampleReferencingTypeObj();
   void increaseRefCount() {
     if (id.index == albers::ObjectID::untracked) ++ref_counter;
   };
@@ -28,6 +32,7 @@ public:
 public:
   ExampleReferencingTypeData data;
   std::vector<ExampleCluster>* m_Clusters;
+  std::vector<ExampleReferencingType>* m_Refs;
 
   albers::ObjectID id;
   std::atomic<int> ref_counter;

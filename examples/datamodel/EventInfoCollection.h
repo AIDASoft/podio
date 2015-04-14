@@ -15,15 +15,15 @@
 // datamodel specific includes
 #include "EventInfoData.h"
 #include "EventInfo.h"
-#include "EventInfoEntry.h"
+#include "EventInfoObj.h"
 
 typedef std::vector<EventInfoData> EventInfoDataContainer;
-typedef std::deque<EventInfoEntry*> EventInfoEntryPointerContainer;
+typedef std::deque<EventInfoObj*> EventInfoObjPointerContainer;
 
 class EventInfoCollectionIterator {
 
   public:
-    EventInfoCollectionIterator(int index, const EventInfoEntryPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+    EventInfoCollectionIterator(int index, const EventInfoObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
     bool operator!=(const EventInfoCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
@@ -36,7 +36,7 @@ class EventInfoCollectionIterator {
   private:
     mutable int m_index;
     mutable EventInfo m_object;
-    const EventInfoEntryPointerContainer* m_collection;
+    const EventInfoObjPointerContainer* m_collection;
 };
 
 /**
@@ -98,9 +98,9 @@ public:
 
 private:
   int m_collectionID;
-  EventInfoEntryPointerContainer m_entries;
+  EventInfoObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  
+
   // members to handle streaming
   albers::CollRefCollection* m_refCollections;
   EventInfoDataContainer* m_data;
@@ -109,9 +109,9 @@ private:
 template<typename... Args>
 EventInfo  EventInfoCollection::create(Args&&... args){
   int size = m_entries.size();
-  auto entry = new EventInfoEntry({size,m_collectionID},{args...});
-  m_entries.push_back(entry);
-  return EventInfo(entry);
+  auto obj = new EventInfoObj({size,m_collectionID},{args...});
+  m_entries.push_back(obj);
+  return EventInfo(obj);
 }
 
 template<size_t arraysize>

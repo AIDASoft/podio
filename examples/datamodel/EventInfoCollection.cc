@@ -17,16 +17,16 @@ int  EventInfoCollection::size() const {
 }
 
 EventInfo EventInfoCollection::create(){
-  auto entry = new EventInfoEntry();
-  m_entries.emplace_back(entry);
+  auto obj = new EventInfoObj();
+  m_entries.emplace_back(obj);
 
-  entry->id = {int(m_entries.size()-1),m_collectionID};
-  return EventInfo(entry);
+  obj->id = {int(m_entries.size()-1),m_collectionID};
+  return EventInfo(obj);
 }
 
 void EventInfoCollection::clear(){
   m_data->clear();
-  for (auto& entry : m_entries) { delete entry; }
+  for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
 
 }
@@ -35,7 +35,7 @@ void EventInfoCollection::prepareForWrite(){
   int index = 0;
   auto size = m_entries.size();
   m_data->reserve(size);
-  for (auto& entry : m_entries) {m_data->push_back(entry->data); }
+  for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   if (m_refCollections != nullptr) {
     for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   }
@@ -49,24 +49,24 @@ void EventInfoCollection::prepareForWrite(){
 void EventInfoCollection::prepareAfterRead(){
   int index = 0;
   for (auto& data : *m_data){
-    auto entry = new EventInfoEntry({index,m_collectionID}, data);
+    auto obj = new EventInfoObj({index,m_collectionID}, data);
     
-    m_entries.emplace_back(entry);
+    m_entries.emplace_back(obj);
     ++index;
   }
 }
 
 bool EventInfoCollection::setReferences(albers::Registry* registry){
-  
+
   return true; //TODO: check success
 }
 
 void EventInfoCollection::push_back(EventInfo object){
     int size = m_entries.size();
-    auto entry = object.m_entry;
-    if (entry->id.index == albers::ObjectID::untracked) {
-        entry->id = {size,m_collectionID};
-        m_entries.push_back(entry);
+    auto obj = object.m_obj;
+    if (obj->id.index == albers::ObjectID::untracked) {
+        obj->id = {size,m_collectionID};
+        m_entries.push_back(obj);
     } else {
       throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
 
@@ -79,12 +79,12 @@ void EventInfoCollection::setBuffer(void* address){
 
 
 const EventInfo EventInfoCollectionIterator::operator* () const {
-  m_object.m_entry = (*m_collection)[m_index];
+  m_object.m_obj = (*m_collection)[m_index];
   return m_object;
 }
 
 const EventInfo* EventInfoCollectionIterator::operator-> () const {
-    m_object.m_entry = (*m_collection)[m_index];
+    m_object.m_obj = (*m_collection)[m_index];
     return &m_object;
 }
 

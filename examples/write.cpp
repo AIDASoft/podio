@@ -25,11 +25,13 @@ int main(){
   auto& hits     = store.create<ExampleHitCollection>("hits");
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
   auto& refs     = store.create<ExampleReferencingTypeCollection>("refs");
+  auto& refs2     = store.create<ExampleReferencingTypeCollection>("refs2");
 
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleHitCollection>("hits");
   writer.registerForWrite<ExampleClusterCollection>("clusters");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
+  writer.registerForWrite<ExampleReferencingTypeCollection>("refs2");
 
   unsigned nevents=10000;
 
@@ -50,8 +52,10 @@ int main(){
       cluster.addHits(hit2);
       cluster.energy(hit1.energy()+hit2.energy());
 
-      auto newref  = refs.create();
-      newref.addClusters(cluster);
+      auto ref  = refs.create();
+      auto ref2 = refs2.create();
+      ref.addClusters(cluster);
+      ref.addRefs(ref2);
     }
 
     writer.writeEvent();

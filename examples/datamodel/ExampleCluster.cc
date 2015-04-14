@@ -2,61 +2,67 @@
 #include "albers/Registry.h"
 
 // datamodel specific includes
-#include "ExampleClusterEntry.h"
+#include "ExampleClusterObj.h"
 #include "ExampleClusterData.h"
 #include "ExampleClusterCollection.h"
 
-const double& ExampleCluster::energy() const { return m_entry->data.energy;}
+ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){};
 
-void ExampleCluster::energy(double value){ m_entry->data.energy = value;}
+ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj) {
+  m_obj->increaseRefCount();
+};
+
+const double& ExampleCluster::energy() const { return m_obj->data.energy;}
+
+void ExampleCluster::energy(double value){ m_obj->data.energy = value;}
 
 std::vector<ExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
-  auto ret_value = m_entry->m_Hits->begin();
-  std::advance(ret_value, m_entry->data.Hits_begin);
+  auto ret_value = m_obj->m_Hits->begin();
+  std::advance(ret_value, m_obj->data.Hits_begin);
   return ret_value;
 }
 
 std::vector<ExampleHit>::const_iterator ExampleCluster::Hits_end() const {
-  auto ret_value = m_entry->m_Hits->begin();
-  std::advance(ret_value, m_entry->data.Hits_end-1);
+  auto ret_value = m_obj->m_Hits->begin();
+  std::advance(ret_value, m_obj->data.Hits_end-1);
   return ++ret_value;
 }
 
 void ExampleCluster::addHits(ExampleHit& component) {
-  m_entry->m_Hits->push_back(component);
-  m_entry->data.Hits_end++;
+  m_obj->m_Hits->push_back(component);
+  m_obj->data.Hits_end++;
 }
 
 bool  ExampleCluster::isAvailable() const {
-  if (m_entry != nullptr) {
+  if (m_obj != nullptr) {
     return true;
   }
   return false;
 }
 
 const albers::ObjectID ExampleCluster::getObjectID() const {
-  return m_entry->id;
+  return m_obj->id;
 }
 
 
-ExampleCluster::ExampleCluster(ExampleClusterEntry* entry) : m_entry(entry){
-  if(m_entry != nullptr)
-    m_entry->increaseRefCount();
+ExampleCluster::ExampleCluster(ExampleClusterObj* obj) : m_obj(obj){
+  if(m_obj != nullptr)
+    m_obj->increaseRefCount();
 }
 
 ExampleCluster& ExampleCluster::operator=(const ExampleCluster& other){
-  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating ExampleCluster at " << m_entry << std::endl;
-    delete m_entry;
+  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
+    std::cout << "deleting free-floating ExampleCluster at " << m_obj << std::endl;
+    delete m_obj;
   }
-  m_entry = other.m_entry;
+  m_obj = other.m_obj;
   return *this;
 }
 
 ExampleCluster::~ExampleCluster(){
-  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating ExampleCluster at " << m_entry << std::endl;
-    delete m_entry;
+  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
+    std::cout << "deleting free-floating ExampleCluster at " << m_obj << std::endl;
+    delete m_obj;
    }
 }
 

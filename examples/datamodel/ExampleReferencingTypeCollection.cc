@@ -1,12 +1,14 @@
 // standard includes
 #include <stdexcept>
 #include "ExampleClusterCollection.h" 
+#include "ExampleReferencingTypeCollection.h" 
 
 
 #include "ExampleReferencingTypeCollection.h"
 
-ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_collectionID(0), m_entries() ,m_rel_Clusters(new std::vector<ExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleReferencingTypeDataContainer() ) {
+ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_collectionID(0), m_entries() ,m_rel_Clusters(new std::vector<ExampleCluster>()),m_rel_Refs(new std::vector<ExampleReferencingType>()),m_refCollections(nullptr), m_data(new ExampleReferencingTypeDataContainer() ) {
     m_refCollections = new albers::CollRefCollection();
+  m_refCollections->push_back(new std::vector<albers::ObjectID>());
   m_refCollections->push_back(new std::vector<albers::ObjectID>());
 
 }
@@ -20,19 +22,22 @@ int  ExampleReferencingTypeCollection::size() const {
 }
 
 ExampleReferencingType ExampleReferencingTypeCollection::create(){
-  auto entry = new ExampleReferencingTypeEntry();
-  m_entries.emplace_back(entry);
+  auto obj = new ExampleReferencingTypeObj();
+  m_entries.emplace_back(obj);
   auto Clusters_tmp = new std::vector<ExampleCluster>();
   m_rel_Clusters_tmp.push_back(Clusters_tmp);
-  entry->m_Clusters = Clusters_tmp;
+  obj->m_Clusters = Clusters_tmp;
+  auto Refs_tmp = new std::vector<ExampleReferencingType>();
+  m_rel_Refs_tmp.push_back(Refs_tmp);
+  obj->m_Refs = Refs_tmp;
 
-  entry->id = {int(m_entries.size()-1),m_collectionID};
-  return ExampleReferencingType(entry);
+  obj->id = {int(m_entries.size()-1),m_collectionID};
+  return ExampleReferencingType(obj);
 }
 
 void ExampleReferencingTypeCollection::clear(){
   m_data->clear();
-  for (auto& entry : m_entries) { delete entry; }
+  for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
   for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   // clear relations to Clusters. Make sure to unlink() the reference data as they may be gone already
@@ -40,6 +45,11 @@ void ExampleReferencingTypeCollection::clear(){
   m_rel_Clusters_tmp.clear();
   for (auto& item : (*m_rel_Clusters)) {item.unlink(); }
   m_rel_Clusters->clear();
+  // clear relations to Refs. Make sure to unlink() the reference data as they may be gone already
+  for (auto& pointer : m_rel_Refs_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}
+  m_rel_Refs_tmp.clear();
+  for (auto& item : (*m_rel_Refs)) {item.unlink(); }
+  m_rel_Refs->clear();
 
 }
 
@@ -47,22 +57,31 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
   int index = 0;
   auto size = m_entries.size();
   m_data->reserve(size);
-  for (auto& entry : m_entries) {m_data->push_back(entry->data); }
+  for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   if (m_refCollections != nullptr) {
     for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   }
   
   for(int i=0, size = m_data->size(); i != size; ++i){
-  
-  (*m_data)[i].Clusters_begin=index;
-  (*m_data)[i].Clusters_end+=index;
-  index = (*m_data)[index].Clusters_end;
-  for(auto it : (*m_rel_Clusters_tmp[i])) {
-    if (it.getObjectID().index == albers::ObjectID::untracked)
-      throw std::runtime_error("Trying to persistify untracked object");
-    (*m_refCollections)[0]->emplace_back(it.getObjectID());
-    m_rel_Clusters->push_back(it);
-  }
+     (*m_data)[i].Clusters_begin=index;
+   (*m_data)[i].Clusters_end+=index;
+   index = (*m_data)[index].Clusters_end;
+   for(auto it : (*m_rel_Clusters_tmp[i])) {
+     if (it.getObjectID().index == albers::ObjectID::untracked)
+       throw std::runtime_error("Trying to persistify untracked object");
+     (*m_refCollections)[0]->emplace_back(it.getObjectID());
+     m_rel_Clusters->push_back(it);
+   }
+   (*m_data)[i].Refs_begin=index;
+   (*m_data)[i].Refs_end+=index;
+   index = (*m_data)[index].Refs_end;
+   for(auto it : (*m_rel_Refs_tmp[i])) {
+     if (it.getObjectID().index == albers::ObjectID::untracked)
+       throw std::runtime_error("Trying to persistify untracked object");
+     (*m_refCollections)[1]->emplace_back(it.getObjectID());
+     m_rel_Refs->push_back(it);
+   }
+
   }
 
 }
@@ -70,15 +89,14 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
 void ExampleReferencingTypeCollection::prepareAfterRead(){
   int index = 0;
   for (auto& data : *m_data){
-    auto entry = new ExampleReferencingTypeEntry({index,m_collectionID}, data);
-        entry->m_Clusters = m_rel_Clusters;
-    m_entries.emplace_back(entry);
+    auto obj = new ExampleReferencingTypeObj({index,m_collectionID}, data);
+        obj->m_Clusters = m_rel_Clusters;    obj->m_Refs = m_rel_Refs;
+    m_entries.emplace_back(obj);
     ++index;
   }
 }
 
 bool ExampleReferencingTypeCollection::setReferences(albers::Registry* registry){
-  
   for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
     ExampleClusterCollection* tmp_coll = nullptr;
@@ -86,15 +104,23 @@ bool ExampleReferencingTypeCollection::setReferences(albers::Registry* registry)
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Clusters->emplace_back(tmp);
   }
+  for(unsigned int i=0, size=(*m_refCollections)[1]->size();i!=size;++i ) {
+    auto id = (*(*m_refCollections)[1])[i];
+    ExampleReferencingTypeCollection* tmp_coll = nullptr;
+    registry->getCollectionFromID(id.collectionID,tmp_coll);
+    auto tmp = (*tmp_coll)[id.index];
+    m_rel_Refs->emplace_back(tmp);
+  }
+
   return true; //TODO: check success
 }
 
 void ExampleReferencingTypeCollection::push_back(ExampleReferencingType object){
     int size = m_entries.size();
-    auto entry = object.m_entry;
-    if (entry->id.index == albers::ObjectID::untracked) {
-        entry->id = {size,m_collectionID};
-        m_entries.push_back(entry);
+    auto obj = object.m_obj;
+    if (obj->id.index == albers::ObjectID::untracked) {
+        obj->id = {size,m_collectionID};
+        m_entries.push_back(obj);
     } else {
       throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
 
@@ -107,12 +133,12 @@ void ExampleReferencingTypeCollection::setBuffer(void* address){
 
 
 const ExampleReferencingType ExampleReferencingTypeCollectionIterator::operator* () const {
-  m_object.m_entry = (*m_collection)[m_index];
+  m_object.m_obj = (*m_collection)[m_index];
   return m_object;
 }
 
 const ExampleReferencingType* ExampleReferencingTypeCollectionIterator::operator-> () const {
-    m_object.m_entry = (*m_collection)[m_index];
+    m_object.m_obj = (*m_collection)[m_index];
     return &m_object;
 }
 

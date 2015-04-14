@@ -15,15 +15,15 @@
 // datamodel specific includes
 #include "${name}Data.h"
 #include "${name}.h"
-#include "${name}Entry.h"
+#include "${name}Obj.h"
 
 typedef std::vector<${name}Data> ${name}DataContainer;
-typedef std::deque<${name}Entry*> ${name}EntryPointerContainer;
+typedef std::deque<${name}Obj*> ${name}ObjPointerContainer;
 
 class ${name}CollectionIterator {
 
   public:
-    ${name}CollectionIterator(int index, const ${name}EntryPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+    ${name}CollectionIterator(int index, const ${name}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
     bool operator!=(const ${name}CollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
@@ -36,7 +36,7 @@ class ${name}CollectionIterator {
   private:
     mutable int m_index;
     mutable ${name} m_object;
-    const ${name}EntryPointerContainer* m_collection;
+    const ${name}ObjPointerContainer* m_collection;
 };
 
 /**
@@ -96,7 +96,7 @@ public:
 
 private:
   int m_collectionID;
-  ${name}EntryPointerContainer m_entries;
+  ${name}ObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
 ${relations}
   // members to handle streaming
@@ -107,9 +107,9 @@ ${relations}
 template<typename... Args>
 ${name}  ${name}Collection::create(Args&&... args){
   int size = m_entries.size();
-  auto entry = new ${name}Entry({size,m_collectionID},{args...});
-  m_entries.push_back(entry);
-  return ${name}(entry);
+  auto obj = new ${name}Obj({size,m_collectionID},{args...});
+  m_entries.push_back(obj);
+  return ${name}(obj);
 }
 
 ${vectorized_access_implementation}

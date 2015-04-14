@@ -1,21 +1,24 @@
-#ifndef ExampleHitENTRY_H
-#define ExampleHitENTRY_H
+#ifndef EventInfoOBJ_H
+#define EventInfoOBJ_H
 
 // std includes
 #include <atomic>
 
 // data model specific includes
 #include "albers/ObjectID.h"
-#include "ExampleHitData.h"
+#include "EventInfoData.h"
 
 
 
-class ExampleHitEntry {
+// forward declarations
+class EventInfo;
+
+class EventInfoObj {
 public:
-  ExampleHitEntry();
-  ExampleHitEntry(const ExampleHitEntry&); //TODO: deep copy!
-  ExampleHitEntry(const albers::ObjectID id, ExampleHitData data);
-  ~ExampleHitEntry();
+  EventInfoObj();
+  EventInfoObj(const EventInfoObj&); //TODO: deep copy!
+  EventInfoObj(const albers::ObjectID id, EventInfoData data);
+  ~EventInfoObj();
   void increaseRefCount() {
     if (id.index == albers::ObjectID::untracked) ++ref_counter;
   };
@@ -25,7 +28,7 @@ public:
   }; // returns current count
 
 public:
-  ExampleHitData data;
+  EventInfoData data;
 
   albers::ObjectID id;
   std::atomic<int> ref_counter;

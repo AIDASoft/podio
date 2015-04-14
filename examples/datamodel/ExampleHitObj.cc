@@ -1,21 +1,21 @@
-#include "ExampleHitEntry.h"
+#include "ExampleHitObj.h"
 
-ExampleHitEntry::ExampleHitEntry() :
+ExampleHitObj::ExampleHitObj() :
     data(),
     id{albers::ObjectID::untracked,albers::ObjectID::untracked},
     ref_counter(1) { }
 
-ExampleHitEntry::ExampleHitEntry(const albers::ObjectID id, ExampleHitData data) :
+ExampleHitObj::ExampleHitObj(const albers::ObjectID id, ExampleHitData data) :
     data(data),
     id(id),
     ref_counter(-1) { }
 
-ExampleHitEntry::ExampleHitEntry(const ExampleHitEntry& other) :
+ExampleHitObj::ExampleHitObj(const ExampleHitObj& other) :
     data(),
     id{albers::ObjectID::untracked,albers::ObjectID::untracked},
     ref_counter(0) { }
 
-ExampleHitEntry::~ExampleHitEntry() {
+ExampleHitObj::~ExampleHitObj() {
 
 
 }

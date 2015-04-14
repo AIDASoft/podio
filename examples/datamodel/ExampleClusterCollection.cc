@@ -20,19 +20,19 @@ int  ExampleClusterCollection::size() const {
 }
 
 ExampleCluster ExampleClusterCollection::create(){
-  auto entry = new ExampleClusterEntry();
-  m_entries.emplace_back(entry);
+  auto obj = new ExampleClusterObj();
+  m_entries.emplace_back(obj);
   auto Hits_tmp = new std::vector<ExampleHit>();
   m_rel_Hits_tmp.push_back(Hits_tmp);
-  entry->m_Hits = Hits_tmp;
+  obj->m_Hits = Hits_tmp;
 
-  entry->id = {int(m_entries.size()-1),m_collectionID};
-  return ExampleCluster(entry);
+  obj->id = {int(m_entries.size()-1),m_collectionID};
+  return ExampleCluster(obj);
 }
 
 void ExampleClusterCollection::clear(){
   m_data->clear();
-  for (auto& entry : m_entries) { delete entry; }
+  for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
   for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   // clear relations to Hits. Make sure to unlink() the reference data as they may be gone already
@@ -47,22 +47,22 @@ void ExampleClusterCollection::prepareForWrite(){
   int index = 0;
   auto size = m_entries.size();
   m_data->reserve(size);
-  for (auto& entry : m_entries) {m_data->push_back(entry->data); }
+  for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   if (m_refCollections != nullptr) {
     for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   }
   
   for(int i=0, size = m_data->size(); i != size; ++i){
-  
-  (*m_data)[i].Hits_begin=index;
-  (*m_data)[i].Hits_end+=index;
-  index = (*m_data)[index].Hits_end;
-  for(auto it : (*m_rel_Hits_tmp[i])) {
-    if (it.getObjectID().index == albers::ObjectID::untracked)
-      throw std::runtime_error("Trying to persistify untracked object");
-    (*m_refCollections)[0]->emplace_back(it.getObjectID());
-    m_rel_Hits->push_back(it);
-  }
+     (*m_data)[i].Hits_begin=index;
+   (*m_data)[i].Hits_end+=index;
+   index = (*m_data)[index].Hits_end;
+   for(auto it : (*m_rel_Hits_tmp[i])) {
+     if (it.getObjectID().index == albers::ObjectID::untracked)
+       throw std::runtime_error("Trying to persistify untracked object");
+     (*m_refCollections)[0]->emplace_back(it.getObjectID());
+     m_rel_Hits->push_back(it);
+   }
+
   }
 
 }
@@ -70,15 +70,14 @@ void ExampleClusterCollection::prepareForWrite(){
 void ExampleClusterCollection::prepareAfterRead(){
   int index = 0;
   for (auto& data : *m_data){
-    auto entry = new ExampleClusterEntry({index,m_collectionID}, data);
-        entry->m_Hits = m_rel_Hits;
-    m_entries.emplace_back(entry);
+    auto obj = new ExampleClusterObj({index,m_collectionID}, data);
+        obj->m_Hits = m_rel_Hits;
+    m_entries.emplace_back(obj);
     ++index;
   }
 }
 
 bool ExampleClusterCollection::setReferences(albers::Registry* registry){
-  
   for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
     ExampleHitCollection* tmp_coll = nullptr;
@@ -86,15 +85,16 @@ bool ExampleClusterCollection::setReferences(albers::Registry* registry){
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Hits->emplace_back(tmp);
   }
+
   return true; //TODO: check success
 }
 
 void ExampleClusterCollection::push_back(ExampleCluster object){
     int size = m_entries.size();
-    auto entry = object.m_entry;
-    if (entry->id.index == albers::ObjectID::untracked) {
-        entry->id = {size,m_collectionID};
-        m_entries.push_back(entry);
+    auto obj = object.m_obj;
+    if (obj->id.index == albers::ObjectID::untracked) {
+        obj->id = {size,m_collectionID};
+        m_entries.push_back(obj);
     } else {
       throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
 
@@ -107,12 +107,12 @@ void ExampleClusterCollection::setBuffer(void* address){
 
 
 const ExampleCluster ExampleClusterCollectionIterator::operator* () const {
-  m_object.m_entry = (*m_collection)[m_index];
+  m_object.m_obj = (*m_collection)[m_index];
   return m_object;
 }
 
 const ExampleCluster* ExampleClusterCollectionIterator::operator-> () const {
-    m_object.m_entry = (*m_collection)[m_index];
+    m_object.m_obj = (*m_collection)[m_index];
     return &m_object;
 }
 

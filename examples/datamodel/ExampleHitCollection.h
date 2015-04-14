@@ -15,15 +15,15 @@
 // datamodel specific includes
 #include "ExampleHitData.h"
 #include "ExampleHit.h"
-#include "ExampleHitEntry.h"
+#include "ExampleHitObj.h"
 
 typedef std::vector<ExampleHitData> ExampleHitDataContainer;
-typedef std::deque<ExampleHitEntry*> ExampleHitEntryPointerContainer;
+typedef std::deque<ExampleHitObj*> ExampleHitObjPointerContainer;
 
 class ExampleHitCollectionIterator {
 
   public:
-    ExampleHitCollectionIterator(int index, const ExampleHitEntryPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+    ExampleHitCollectionIterator(int index, const ExampleHitObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
     bool operator!=(const ExampleHitCollectionIterator& x) const {
       return m_index != x.m_index; //TODO: may not be complete
@@ -36,7 +36,7 @@ class ExampleHitCollectionIterator {
   private:
     mutable int m_index;
     mutable ExampleHit m_object;
-    const ExampleHitEntryPointerContainer* m_collection;
+    const ExampleHitObjPointerContainer* m_collection;
 };
 
 /**
@@ -104,9 +104,9 @@ public:
 
 private:
   int m_collectionID;
-  ExampleHitEntryPointerContainer m_entries;
+  ExampleHitObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  
+
   // members to handle streaming
   albers::CollRefCollection* m_refCollections;
   ExampleHitDataContainer* m_data;
@@ -115,9 +115,9 @@ private:
 template<typename... Args>
 ExampleHit  ExampleHitCollection::create(Args&&... args){
   int size = m_entries.size();
-  auto entry = new ExampleHitEntry({size,m_collectionID},{args...});
-  m_entries.push_back(entry);
-  return ExampleHit(entry);
+  auto obj = new ExampleHitObj({size,m_collectionID},{args...});
+  m_entries.push_back(obj);
+  return ExampleHit(obj);
 }
 
 template<size_t arraysize>

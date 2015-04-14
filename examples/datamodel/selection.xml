@@ -27,9 +27,9 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<ExampleReferencingTypeEntry>" />
+          <class name="std::vector<ExampleReferencingTypeObj>" />
 
-          <class name="ExampleReferencingTypeEntry">
+          <class name="ExampleReferencingTypeObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
@@ -51,9 +51,9 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<EventInfoEntry>" />
+          <class name="std::vector<EventInfoObj>" />
 
-          <class name="EventInfoEntry">
+          <class name="EventInfoObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
@@ -75,9 +75,9 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<ExampleClusterEntry>" />
+          <class name="std::vector<ExampleClusterObj>" />
 
-          <class name="ExampleClusterEntry">
+          <class name="ExampleClusterObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
@@ -99,9 +99,9 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<ExampleHitEntry>" />
+          <class name="std::vector<ExampleHitObj>" />
 
-          <class name="ExampleHitEntry">
+          <class name="ExampleHitObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>

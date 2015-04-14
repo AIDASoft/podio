@@ -2,45 +2,51 @@
 #include "albers/Registry.h"
 
 // datamodel specific includes
-#include "EventInfoEntry.h"
+#include "EventInfoObj.h"
 #include "EventInfoData.h"
 #include "EventInfoCollection.h"
 
-const int& EventInfo::Number() const { return m_entry->data.Number;}
+EventInfo::EventInfo() : m_obj(new EventInfoObj()){};
 
-void EventInfo::Number(int value){ m_entry->data.Number = value;}
+EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
+  m_obj->increaseRefCount();
+};
+
+const int& EventInfo::Number() const { return m_obj->data.Number;}
+
+void EventInfo::Number(int value){ m_obj->data.Number = value;}
 
 
 bool  EventInfo::isAvailable() const {
-  if (m_entry != nullptr) {
+  if (m_obj != nullptr) {
     return true;
   }
   return false;
 }
 
 const albers::ObjectID EventInfo::getObjectID() const {
-  return m_entry->id;
+  return m_obj->id;
 }
 
 
-EventInfo::EventInfo(EventInfoEntry* entry) : m_entry(entry){
-  if(m_entry != nullptr)
-    m_entry->increaseRefCount();
+EventInfo::EventInfo(EventInfoObj* obj) : m_obj(obj){
+  if(m_obj != nullptr)
+    m_obj->increaseRefCount();
 }
 
 EventInfo& EventInfo::operator=(const EventInfo& other){
-  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating EventInfo at " << m_entry << std::endl;
-    delete m_entry;
+  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
+    std::cout << "deleting free-floating EventInfo at " << m_obj << std::endl;
+    delete m_obj;
   }
-  m_entry = other.m_entry;
+  m_obj = other.m_obj;
   return *this;
 }
 
 EventInfo::~EventInfo(){
-  if ( m_entry != nullptr && m_entry->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating EventInfo at " << m_entry << std::endl;
-    delete m_entry;
+  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
+    std::cout << "deleting free-floating EventInfo at " << m_obj << std::endl;
+    delete m_obj;
    }
 }
 

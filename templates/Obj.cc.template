@@ -1,21 +1,21 @@
-#include "${name}Entry.h"
+#include "${name}Obj.h"
 
-${name}Entry::${name}Entry() :
+${name}Obj::${name}Obj() :
     data(),
     id{albers::ObjectID::untracked,albers::ObjectID::untracked},
     ref_counter(1) { }
 
-${name}Entry::${name}Entry(const albers::ObjectID id, ${name}Data data) :
+${name}Obj::${name}Obj(const albers::ObjectID id, ${name}Data data) :
     data(data),
     id(id),
     ref_counter(-1) { }
 
-${name}Entry::${name}Entry(const ${name}Entry& other) :
+${name}Obj::${name}Obj(const ${name}Obj& other) :
     data(),
     id{albers::ObjectID::untracked,albers::ObjectID::untracked},
     ref_counter(0) { }
 
-${name}Entry::~${name}Entry() {
+${name}Obj::~${name}Obj() {
 
 
 }

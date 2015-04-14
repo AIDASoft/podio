@@ -9,15 +9,17 @@
 // event number
 // author: B. Hegner
 
-//forward declaration of EventInfo container
+//forward declarations
 class EventInfoCollection;
 class EventInfoCollectionIterator;
+class EventInfoObj;
 
-#include "EventInfoEntry.h"
+#include "EventInfoObj.h"
 
 namespace albers {
   class Registry;
 }
+
 
 class EventInfo {
 
@@ -26,10 +28,10 @@ class EventInfo {
 
 public:
 
-  EventInfo() : m_entry(new EventInfoEntry()){};
-  EventInfo(const EventInfo& other) : m_entry(other.m_entry) {m_entry->increaseRefCount();};
+  EventInfo();
+  EventInfo(const EventInfo& other);
   EventInfo& operator=(const EventInfo& other);
-  EventInfo(EventInfoEntry* entry);
+  EventInfo(EventInfoObj* obj);
   ~EventInfo();
 
   const int& Number() const;
@@ -38,10 +40,10 @@ public:
 
 
   bool isAvailable() const; // precheck whether the pointee actually exists
-  void unlink(){m_entry = nullptr;};
+  void unlink(){m_obj = nullptr;};
 
   bool operator==(const EventInfo& other) const {
-       return (m_entry==other.m_entry);
+       return (m_obj==other.m_obj);
   }
 
   /// less comparison operator, so that objects can be e.g. stored in sets.
@@ -51,7 +53,7 @@ public:
   const albers::ObjectID getObjectID() const;
 
 private:
-  EventInfoEntry* m_entry;
+  EventInfoObj* m_obj;
 
 };
 
