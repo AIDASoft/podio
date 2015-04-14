@@ -295,15 +295,12 @@ class ClassGenerator(object):
     (*m_refCollections)[%s]->emplace_back(it.getObjectID());
     m_rel_%s->push_back(it);
   }""" %(name,name,name,name,counter,name)
-        # relation handling in ::prepareAfterRead
-        setreferences += """
-  for(unsigned int i=0, size=(*m_refCollections)[%s]->size();i!=size;++i ) {
-    auto id = (*(*m_refCollections)[0])[i];
-    %sCollection* tmp_coll = nullptr;
-    registry->getCollectionFromID(id.collectionID,tmp_coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_%s->emplace_back(tmp);
-  }""" %(counter,klass,name)
+        # relation handling in ::settingReferences
+        substitutions = { "counter" : counter,
+                          "class" : klass,
+                          "name"  : name
+        }
+        setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)
         prepareafterread += "    entry->m_%s = m_rel_%s;" %(name, name)
 
     substitutions = { "name" : classname,
@@ -392,6 +389,14 @@ class ClassGenerator(object):
     #else:
     #  fullname = os.path.join(self.install_dir,"src",name)
     open(fullname, "w").write(content)
+
+  def evaluate_template(self, filename, substitutions):
+      """ reads in a given template, evaluates it
+          and returns result
+      """
+      templatefile = os.path.join(self.template_dir,filename)
+      template = open(templatefile,"r").read()
+      return string.Template(template).substitute(substitutions)
 
   def fill_templates(self, category,substitutions):
     # "Data" denotes the real class;

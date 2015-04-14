@@ -57,7 +57,7 @@ void ${name}Collection::prepareAfterRead(){
 }
 
 bool ${name}Collection::setReferences(albers::Registry* registry){
-  $setreferences
+$setreferences
   return true; //TODO: check success
 }
 
