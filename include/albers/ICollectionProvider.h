@@ -3,13 +3,13 @@
 
 namespace albers {
 
-class CollectionBase;
+  class CollectionBase;
 
-class ICollectionProvider {
+  class ICollectionProvider {
   public:
     virtual ~ICollectionProvider(){};
     virtual bool get(int collectionID, CollectionBase*& collection) const = 0;
-};
+  };
 
 } // namespace
 

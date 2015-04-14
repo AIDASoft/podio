@@ -37,7 +37,7 @@ namespace albers {
     auto dataClassString = std::string(dataClassName);
     auto start = dataClassString.find("<");
     auto end   = dataClassString.find(">");
-    //getting "TypeCollection" out of vector<TypeData>
+    //getting "TypeCollection" out of "vector<TypeData>"
     auto classname = dataClassString.substr(start+1, end-start-5);
     auto collectionClassName = classname+"Collection";
     auto collectionClass = gROOT->GetClass(collectionClassName.c_str());
@@ -57,6 +57,8 @@ namespace albers {
         branch->GetEntry(m_eventNumber);
       }
     }
+    auto id = m_table->collectionID(name);
+    collection->setID(id);
     collection->prepareAfterRead();
     return collection;
   }

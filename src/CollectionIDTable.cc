@@ -11,6 +11,14 @@ namespace albers {
     return m_names[index];
   }
 
+  int CollectionIDTable::collectionID(const std::string& name) const {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    auto result = std::find(begin(m_names), end(m_names), name);
+    auto index = result - m_names.begin();
+    return m_collectionIDs[index];
+  }
+
+
   void CollectionIDTable::print() const {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     std::cout<<"CollectionIDTable"<<std::endl;

@@ -8,7 +8,7 @@
 #include "albers/ObjectID.h"
 
 namespace albers {
-  // forward declarations  
+  // forward declarations
   class ObjectID;
   class ICollectionProvider;
   class CollectionBase;
@@ -29,6 +29,7 @@ namespace albers {
     //virtual void  read(CollectionBuffer& buffer) = 0;
     virtual void  prepareAfterRead() = 0;
     virtual bool  setReferences(const ICollectionProvider* collectionProvider) = 0;
+    virtual void  setID(unsigned id) = 0;
     virtual void  setBuffer(void*) = 0;
     virtual void* getBufferAddress() = 0;
     virtual ~CollectionBase(){};
