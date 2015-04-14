@@ -10,7 +10,6 @@ file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
 list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
-MESSAGE(${headers})
 REFLEX_GENERATE_DICTIONARY(DataModelEx ${headers} SELECTION datamodel/selection.xml)
 
 add_library(DataModelExample SHARED ${sources} ${sources_utils} ${headers} ${headers_utils} DataModelEx)

@@ -98,7 +98,7 @@ private:
   int m_collectionID;
   ${name}EntryPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  ${relations}
+${relations}
   // members to handle streaming
   albers::CollRefCollection* m_refCollections;
   ${name}DataContainer* m_data;

@@ -265,11 +265,17 @@ class ClassGenerator(object):
       for counter, item in enumerate(refvectors):
         name  = item["name"]
         klass = item["type"]
+        substitutions = { "counter" : counter,
+                          "class" : klass,
+                          "name"  : name }
         # includes
         includes += '#include "%sCollection.h" \n' %(klass)
         # members
-        relations += "std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
+        relations += "  std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
         relations += "  std::vector<std::vector<%s>*> m_rel_%s_tmp;\n " %(klass, name)
+        # constructor calls
+        initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
+        constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
         # relation handling in ::create
         create_relations += "  auto %s_tmp = new std::vector<%s>();\n" %(name, klass)
         create_relations += "  m_rel_%s_tmp.push_back(%s_tmp);\n" %(name,name)
@@ -280,20 +286,11 @@ class ClassGenerator(object):
         clear_relations += "  m_rel_%s_tmp.clear();\n" %(name)
         clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
         clear_relations += "  m_rel_%s->clear();\n" %(name)
-        # constructor calls
-        initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
-        constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
         # relation handling in ::prepareForWrite
-        substitutions = { "counter" : counter,
-                          "name"  : name
-        }
         prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template",substitutions)
         # relation handling in ::settingReferences
-        substitutions = { "counter" : counter,
-                          "class" : klass,
-                          "name"  : name
-        }
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)
+
         prepareafterread += "    entry->m_%s = m_rel_%s;" %(name, name)
 
     substitutions = { "name" : classname,
