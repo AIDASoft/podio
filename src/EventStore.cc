@@ -6,9 +6,8 @@
 
 namespace albers {
 
-  EventStore::EventStore(Registry* registry) :
+  EventStore::EventStore() :
     m_reader(nullptr),
-    m_registry(registry),
     m_table(new CollectionIDTable())
   {}
 
@@ -16,6 +15,11 @@ namespace albers {
     for (auto& coll : m_collections){
       delete coll.second;
     }
+  }
+
+  bool EventStore::get(int id ,CollectionBase*& collection) const{
+    auto name = m_table->name(id);
+    return doGet(name, collection);
   }
 
   bool EventStore::doGet(const std::string& name, CollectionBase*& collection) const {
@@ -30,7 +34,7 @@ namespace albers {
       }
     } else if (m_reader != nullptr) {
       auto tmp = m_reader->readCollection(name);
-      tmp->setReferences(m_registry);
+      tmp->setReferences(this);
       if (tmp != nullptr){
         m_collections.emplace_back(std::make_pair(name,tmp));
         collection = tmp;
@@ -58,7 +62,6 @@ namespace albers {
 
   void EventStore::setReader(ROOTReader* reader){
     m_reader = reader;
-    m_registry = reader->getRegistry();
     setCollectionIDTable(reader->getCollectionIDTable());
   }
 

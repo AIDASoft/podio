@@ -56,7 +56,7 @@ void ${name}Collection::prepareAfterRead(){
   }
 }
 
-bool ${name}Collection::setReferences(albers::Registry* registry){
+bool ${name}Collection::setReferences(const albers::ICollectionProvider* collectionProvider){
 $setreferences
   return true; //TODO: check success
 }

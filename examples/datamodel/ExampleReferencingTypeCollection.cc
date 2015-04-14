@@ -96,18 +96,20 @@ void ExampleReferencingTypeCollection::prepareAfterRead(){
   }
 }
 
-bool ExampleReferencingTypeCollection::setReferences(albers::Registry* registry){
+bool ExampleReferencingTypeCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
-    ExampleClusterCollection* tmp_coll = nullptr;
-    registry->getCollectionFromID(id.collectionID,tmp_coll);
+    CollectionBase* coll = nullptr;
+    collectionProvider->get(id.collectionID,coll);
+    ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Clusters->emplace_back(tmp);
   }
   for(unsigned int i=0, size=(*m_refCollections)[1]->size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[1])[i];
-    ExampleReferencingTypeCollection* tmp_coll = nullptr;
-    registry->getCollectionFromID(id.collectionID,tmp_coll);
+    CollectionBase* coll = nullptr;
+    collectionProvider->get(id.collectionID,coll);
+    ExampleReferencingTypeCollection* tmp_coll = static_cast<ExampleReferencingTypeCollection*>(coll);
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Refs->emplace_back(tmp);
   }

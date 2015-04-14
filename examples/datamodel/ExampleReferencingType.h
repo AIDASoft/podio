@@ -7,7 +7,6 @@
 
 #include <vector>
 #include "albers/ObjectID.h"
-#include <iostream>
 
 // Referencing Type
 // author: B. Hegner
@@ -18,11 +17,6 @@ class ExampleReferencingTypeCollectionIterator;
 class ExampleReferencingTypeObj;
 
 #include "ExampleReferencingTypeObj.h"
-
-namespace albers {
-  class Registry;
-}
-
 
 class ExampleReferencingType {
 

@@ -1,10 +1,8 @@
-// albers specific includes
-#include "albers/Registry.h"
-
 // datamodel specific includes
 #include "ExampleHitObj.h"
 #include "ExampleHitData.h"
 #include "ExampleHitCollection.h"
+#include <iostream>
 
 ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){};
 

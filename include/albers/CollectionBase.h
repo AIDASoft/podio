@@ -6,11 +6,11 @@
 #include <vector>
 
 #include "albers/ObjectID.h"
-// forward declarations
 
 namespace albers {
+  // forward declarations  
   class ObjectID;
-  class Registry;
+  class ICollectionProvider;
   class CollectionBase;
 
   typedef std::vector<std::pair<std::string,albers::CollectionBase*>> CollRegistry;
@@ -28,7 +28,7 @@ namespace albers {
     //virtual void  write(CollectionBuffer& buffer) = 0;
     //virtual void  read(CollectionBuffer& buffer) = 0;
     virtual void  prepareAfterRead() = 0;
-    virtual bool  setReferences(Registry* buffer) = 0;
+    virtual bool  setReferences(const ICollectionProvider* collectionProvider) = 0;
     virtual void  setBuffer(void*) = 0;
     virtual void* getBufferAddress() = 0;
     virtual ~CollectionBase(){};

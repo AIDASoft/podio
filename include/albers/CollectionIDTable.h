@@ -1,14 +1,9 @@
 #ifndef COLLECTIONIDTABLE_H
 #define COLLECTIONIDTABLE_H
 
-#include <algorithm>
-#include <functional>
 #include <string>
 #include <vector>
 #include <mutex>
-#include <iostream>
-
-// albers specific includes
 
 namespace albers {
 

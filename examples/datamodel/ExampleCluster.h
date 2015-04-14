@@ -6,7 +6,6 @@
 
 #include <vector>
 #include "albers/ObjectID.h"
-#include <iostream>
 
 // cluster energy
 // author: B. Hegner
@@ -17,11 +16,6 @@ class ExampleClusterCollectionIterator;
 class ExampleClusterObj;
 
 #include "ExampleClusterObj.h"
-
-namespace albers {
-  class Registry;
-}
-
 
 class ExampleCluster {
 

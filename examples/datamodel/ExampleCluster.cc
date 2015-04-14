@@ -1,10 +1,8 @@
-// albers specific includes
-#include "albers/Registry.h"
-
 // datamodel specific includes
 #include "ExampleClusterObj.h"
 #include "ExampleClusterData.h"
 #include "ExampleClusterCollection.h"
+#include <iostream>
 
 ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){};
 

@@ -1,10 +1,8 @@
-// albers specific includes
-#include "albers/Registry.h"
-
 // datamodel specific includes
 #include "${name}Obj.h"
 #include "${name}Data.h"
 #include "${name}Collection.h"
+#include <iostream>
 
 ${name}::${name}() : m_obj(new ${name}Obj()){};
 

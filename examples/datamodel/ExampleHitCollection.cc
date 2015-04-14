@@ -56,7 +56,7 @@ void ExampleHitCollection::prepareAfterRead(){
   }
 }
 
-bool ExampleHitCollection::setReferences(albers::Registry* registry){
+bool ExampleHitCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
 
   return true; //TODO: check success
 }

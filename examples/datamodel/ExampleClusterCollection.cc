@@ -77,11 +77,12 @@ void ExampleClusterCollection::prepareAfterRead(){
   }
 }
 
-bool ExampleClusterCollection::setReferences(albers::Registry* registry){
+bool ExampleClusterCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
-    ExampleHitCollection* tmp_coll = nullptr;
-    registry->getCollectionFromID(id.collectionID,tmp_coll);
+    CollectionBase* coll = nullptr;
+    collectionProvider->get(id.collectionID,coll);
+    ExampleHitCollection* tmp_coll = static_cast<ExampleHitCollection*>(coll);
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Hits->emplace_back(tmp);
   }

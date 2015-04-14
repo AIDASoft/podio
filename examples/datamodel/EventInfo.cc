@@ -1,10 +1,8 @@
-// albers specific includes
-#include "albers/Registry.h"
-
 // datamodel specific includes
 #include "EventInfoObj.h"
 #include "EventInfoData.h"
 #include "EventInfoCollection.h"
+#include <iostream>
 
 EventInfo::EventInfo() : m_obj(new EventInfoObj()){};
 

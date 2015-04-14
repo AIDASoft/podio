@@ -10,16 +10,14 @@
 
 // albers specific includes
 #include "albers/EventStore.h"
-#include "albers/Registry.h"
 #include "albers/ROOTWriter.h"
 
 int main(){
 
   std::cout<<"start processing"<<std::endl;
 
-  albers::Registry   registry;
-  albers::EventStore store(&registry);
-  albers::ROOTWriter writer("example.root", &registry, &store);
+  auto store = albers::EventStore();
+  auto writer = albers::ROOTWriter("example.root", &store);
 
   auto& info     = store.create<EventInfoCollection>("info");
   auto& hits     = store.create<ExampleHitCollection>("hits");

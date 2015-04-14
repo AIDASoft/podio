@@ -6,14 +6,12 @@
 // albers specific includes
 #include "albers/CollectionBase.h"
 #include "albers/EventStore.h"
-#include "albers/Registry.h"
 #include "albers/ROOTWriter.h"
 
 namespace albers {
 
-  ROOTWriter::ROOTWriter(const std::string& filename, Registry* registry, EventStore* store) :
+  ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),
-    m_registry(registry),
     m_store(store),
     m_file(new TFile(filename.c_str(),"RECREATE","data file")),
     m_datatree(new TTree("events","Events tree")),
@@ -33,7 +31,6 @@ namespace albers {
 
   void ROOTWriter::finish(){
     // now we want to safe the metadata
-    m_metadatatree->Branch("Registry",m_registry);
     m_metadatatree->Branch("CollectionIDs",m_store->getCollectionIDTable());
     m_metadatatree->Fill();
     m_file->Write();

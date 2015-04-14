@@ -5,27 +5,10 @@
 
 // albers specific includes
 #include "albers/ROOTReader.h"
-#include "albers/Registry.h"
 #include "albers/CollectionIDTable.h"
 #include "albers/CollectionBase.h"
 
 namespace albers {
-
-  void* ROOTReader::getBuffer(const unsigned collectionID) {
-    void* buffer = nullptr;
-    auto name = m_table->name(collectionID);
-    readCollection(name);
-    m_registry->lazyGetDataAddressFromID(collectionID, buffer);
-    return buffer;
-  }
-
-  void ROOTReader::readRegistry(){
-    m_registry = new Registry();
-    auto metadatatree = static_cast<TTree*>(m_file->Get("metadata"));
-    metadatatree->SetBranchAddress("Registry",&m_registry);
-    metadatatree->GetEntry(0);
-    m_registry->setCollectionProvider(this);
-  }
 
   void ROOTReader::readCollectionIDTable(){
     m_table = new CollectionIDTable();
@@ -63,10 +46,7 @@ namespace albers {
     // connect buffer, collection and branch
     collection->setBuffer(buffer);
     branch->SetAddress(collection->getBufferAddress());
-    //branch->SetAddress(buffer);
     m_inputs.emplace_back(std::make_pair(collection,name));
-    // let the registry know about what happened
-    m_registry->setCollectionAddresses(name,collection,buffer);
     branch->GetEntry(m_eventNumber);
     // load the collections containing references
     auto refCollections = collection->referenceCollections();
@@ -84,7 +64,6 @@ namespace albers {
   void ROOTReader::openFile(const std::string& filename){
     m_file = new TFile(filename.c_str(),"READ","data file");
     m_eventTree = static_cast<TTree*>( m_file->Get("events") );
-    readRegistry();
     readCollectionIDTable();
   }
 
@@ -95,10 +74,10 @@ namespace albers {
       inputs.first->prepareAfterRead();
     }
     // ...then clean-up the references between them
-    for(auto inputs : m_inputs){
-      inputs.first->setReferences(m_registry);
+//    for(auto inputs : m_inputs){
+  //    inputs.first->setReferences(m_registry);
 
-    }
+  //  }
   }
 
   ROOTReader::~ROOTReader() {
@@ -109,7 +88,6 @@ namespace albers {
 
   void ROOTReader::endOfEvent() {
     ++m_eventNumber;
-    m_registry->resetAddresses();
     m_inputs.clear();
   }
 
@@ -119,7 +97,6 @@ namespace albers {
 
   void ROOTReader::goToEvent(unsigned eventNumber) {
     m_eventNumber = eventNumber;
-    m_registry->resetAddresses();
     m_inputs.clear();
   }
 

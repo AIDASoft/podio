@@ -12,7 +12,6 @@
 // albers specific includes
 #include "albers/EventStore.h"
 #include "albers/ROOTReader.h"
-#include "albers/Registry.h"
 
 // test data model
 #include "ExampleHitCollection.h"
@@ -46,8 +45,8 @@ void processEvent(albers::EventStore& store, bool verbose,
 }
 
 int main(){
-  albers::ROOTReader reader;
-  albers::EventStore store(nullptr);
+  auto reader = albers::ROOTReader();
+  auto store = albers::EventStore();
   reader.openFile("example.root");
   store.setReader(&reader);
 

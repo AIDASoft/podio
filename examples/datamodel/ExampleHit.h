@@ -4,7 +4,6 @@
 
 #include <vector>
 #include "albers/ObjectID.h"
-#include <iostream>
 
 // measured energy deposit
 // author: B. Hegner
@@ -15,11 +14,6 @@ class ExampleHitCollectionIterator;
 class ExampleHitObj;
 
 #include "ExampleHitObj.h"
-
-namespace albers {
-  class Registry;
-}
-
 
 class ExampleHit {
 

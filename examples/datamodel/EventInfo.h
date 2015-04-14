@@ -4,7 +4,6 @@
 
 #include <vector>
 #include "albers/ObjectID.h"
-#include <iostream>
 
 // event number
 // author: B. Hegner
@@ -15,11 +14,6 @@ class EventInfoCollectionIterator;
 class EventInfoObj;
 
 #include "EventInfoObj.h"
-
-namespace albers {
-  class Registry;
-}
-
 
 class EventInfo {
 

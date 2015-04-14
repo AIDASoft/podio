@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 // ROOT specific includes
 #include "TTree.h"
@@ -18,7 +19,7 @@ namespace albers {
   class ROOTWriter {
 
   public:
-    ROOTWriter(const std::string& filename, Registry* registry, EventStore* store);
+    ROOTWriter(const std::string& filename, EventStore* store);
     ~ROOTWriter();
 
     template<typename T>
@@ -29,7 +30,6 @@ namespace albers {
   private:
     // members
     std::string m_filename;
-    Registry* m_registry;
     EventStore* m_store;
     TFile* m_file;
     TTree* m_datatree;

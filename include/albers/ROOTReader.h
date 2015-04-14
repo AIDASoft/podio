@@ -17,7 +17,6 @@ class TTree;
 
 This class has the function to read available data from disk
 and to prepare collections and buffers.
-Once data are there it lets the Registry know.
 
  */
 
@@ -29,10 +28,10 @@ class CollectionBase;
 class Registry;
 class CollectionIDTable;
 
-class ROOTReader : ICollectionProvider {
+class ROOTReader {
   friend EventStore;
   public:
-    ROOTReader() : m_registry(nullptr), m_eventNumber(0) {}
+    ROOTReader() : m_eventNumber(0) {}
     ~ROOTReader();
     void openFile(const std::string& filename);
     void closeFile(){};
@@ -42,14 +41,7 @@ class ROOTReader : ICollectionProvider {
 
     /// get collection of name/type; returns true if successfull
     template<typename T>
-    bool getCollection(const std::string& name,
-           T*& collection);
-
-    /// Implement getBuffer from ICollectionProvider
-    void* getBuffer(const unsigned collectionID);
-
-    /// Read registry from ROOT file
-    Registry* getRegistry() {return m_registry;}
+    bool getCollection(const std::string& name, T*& collection);
 
     /// Read CollectionIDTable from ROOT file
     CollectionIDTable* getCollectionIDTable() {return m_table;}
@@ -64,8 +56,6 @@ class ROOTReader : ICollectionProvider {
     void goToEvent(unsigned evnum);
 
   private:
-    /// Read registry from ROOT file
-    void readRegistry();
 
     void readCollectionIDTable();
 
@@ -75,7 +65,6 @@ class ROOTReader : ICollectionProvider {
   private:
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
-    Registry* m_registry;
     CollectionIDTable* m_table;
     TFile* m_file;
     TTree* m_eventTree;

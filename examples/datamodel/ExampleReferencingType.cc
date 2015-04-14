@@ -1,10 +1,8 @@
-// albers specific includes
-#include "albers/Registry.h"
-
 // datamodel specific includes
 #include "ExampleReferencingTypeObj.h"
 #include "ExampleReferencingTypeData.h"
 #include "ExampleReferencingTypeCollection.h"
+#include <iostream>
 
 ExampleReferencingType::ExampleReferencingType() : m_obj(new ExampleReferencingTypeObj()){};
 

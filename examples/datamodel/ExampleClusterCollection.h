@@ -9,7 +9,7 @@
 #include <array>
 
 // albers specific includes
-#include "albers/Registry.h"
+#include "albers/ICollectionProvider.h"
 #include "albers/CollectionBase.h"
 #include "albers/CollectionIDTable.h"
 
@@ -73,7 +73,7 @@ public:
   void prepareForWrite();
   void prepareAfterRead();
   void setBuffer(void* address);
-  bool setReferences(albers::Registry* registry);
+  bool setReferences(const albers::ICollectionProvider* collectionProvider);
 
   albers::CollRefCollection* referenceCollections() { return m_refCollections;};
 

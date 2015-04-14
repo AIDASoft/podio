@@ -6,8 +6,8 @@
 #include <type_traits>
 
 // albers specific includes
-#include "albers/Registry.h"
 #include "albers/CollectionIDTable.h"
+#include "albers/ICollectionProvider.h"
 
 /**
 This is an *example* event store
@@ -25,23 +25,26 @@ namespace albers {
   class CollectionBase;
   class ROOTReader;
 
-  class EventStore {
+  class EventStore : public ICollectionProvider {
 
   public:
     /// Collection entry. Each collection is identified by a name
     typedef std::pair<std::string, CollectionBase*> CollPair;
     typedef std::vector<CollPair> CollContainer;
 
-    EventStore(Registry* registry);
+    EventStore();
     ~EventStore();
 
     /// create a new collection
     template<typename T>
     T& create(const std::string& name);
 
-    /// access a collection. returns true if successfull
+    /// access a collection by name. returns true if successful
     template<typename T>
     bool get(const std::string& name, const T*& collection);
+
+    /// access a collection by ID. returns true if successful
+    bool get(int id ,CollectionBase*& coll) const;
 
     /// empties collections.
     void clearCollections();
@@ -49,22 +52,21 @@ namespace albers {
     /// clears itself; deletes collections
     void clear();
 
-    /// set the reader and retrieve the registry from it
+    /// set the reader
     void setReader(ROOTReader* reader);
 
     CollectionIDTable* getCollectionIDTable(){return m_table;};
 
+  private:
+
     /// get the collection of given name; returns true if successfull
     bool doGet(const std::string& name, CollectionBase*& collection) const;
 
-  private:
-
     void setCollectionIDTable(CollectionIDTable* table){if (m_table!=nullptr) delete m_table; m_table=table;};
-    
+
     // members
     mutable CollContainer m_collections;
     ROOTReader* m_reader;
-    Registry* m_registry;
     CollectionIDTable* m_table;
   };
 
@@ -76,7 +78,6 @@ T& EventStore::create(const std::string& name) {
   // TODO: add check for existence
   T* coll = new T();
   m_collections.push_back({name,coll});
-  m_registry->registerData(coll, name);
   auto id = m_table->add(name);
   coll->setID(id);
   return *coll;

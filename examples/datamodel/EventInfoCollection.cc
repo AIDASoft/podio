@@ -56,7 +56,7 @@ void EventInfoCollection::prepareAfterRead(){
   }
 }
 
-bool EventInfoCollection::setReferences(albers::Registry* registry){
+bool EventInfoCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
 
   return true; //TODO: check success
 }
