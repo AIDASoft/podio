@@ -27,6 +27,7 @@ namespace albers {
 class EventStore;
 class CollectionBase;
 class Registry;
+class CollectionIDTable;
 
 class ROOTReader : ICollectionProvider {
   friend EventStore;
@@ -50,6 +51,9 @@ class ROOTReader : ICollectionProvider {
     /// Read registry from ROOT file
     Registry* getRegistry() {return m_registry;}
 
+    /// Read CollectionIDTable from ROOT file
+    CollectionIDTable* getCollectionIDTable() {return m_table;}
+
     /// Returns number of entries in the TTree
     unsigned getEntries() const;
 
@@ -63,6 +67,8 @@ class ROOTReader : ICollectionProvider {
     /// Read registry from ROOT file
     void readRegistry();
 
+    void readCollectionIDTable();
+
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name);
 
@@ -70,6 +76,7 @@ class ROOTReader : ICollectionProvider {
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
     Registry* m_registry;
+    CollectionIDTable* m_table;
     TFile* m_file;
     TTree* m_eventTree;
     unsigned m_eventNumber;

@@ -6,13 +6,14 @@
 // albers specific includes
 #include "albers/ROOTReader.h"
 #include "albers/Registry.h"
+#include "albers/CollectionIDTable.h"
 #include "albers/CollectionBase.h"
 
 namespace albers {
 
   void* ROOTReader::getBuffer(const unsigned collectionID) {
     void* buffer = nullptr;
-    auto name = m_registry->getNameFromID(collectionID);
+    auto name = m_table->name(collectionID);
     readCollection(name);
     m_registry->lazyGetDataAddressFromID(collectionID, buffer);
     return buffer;
@@ -22,8 +23,15 @@ namespace albers {
     m_registry = new Registry();
     auto metadatatree = static_cast<TTree*>(m_file->Get("metadata"));
     metadatatree->SetBranchAddress("Registry",&m_registry);
-    metadatatree->GetEntry();
+    metadatatree->GetEntry(0);
     m_registry->setCollectionProvider(this);
+  }
+
+  void ROOTReader::readCollectionIDTable(){
+    m_table = new CollectionIDTable();
+    auto metadatatree = static_cast<TTree*>(m_file->Get("metadata"));
+    metadatatree->SetBranchAddress("CollectionIDs",&m_table);
+    metadatatree->GetEntry(0);
   }
 
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
@@ -77,6 +85,7 @@ namespace albers {
     m_file = new TFile(filename.c_str(),"READ","data file");
     m_eventTree = static_cast<TTree*>( m_file->Get("events") );
     readRegistry();
+    readCollectionIDTable();
   }
 
   void ROOTReader::readEvent(){

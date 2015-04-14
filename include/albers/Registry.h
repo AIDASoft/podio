@@ -39,13 +39,8 @@ namespace albers {
     template<typename T>
     void getCollectionFromID(int ID, T*&) const;
 
-    template<typename T>
-    void getCollectionFromName(const std::string& name, T*&) const;
-
     template<typename Coll, typename Data>
     void setCollectionAddresses(const std::string& name, Coll* collAddress, Data* dataAddress);
-
-    const std::string getNameFromID(int ID) const;
 
     template<typename T>
     unsigned registerData(T* address, const std::string& name); // returns the ID
@@ -77,18 +72,6 @@ void Registry::lazyGetDataAddressFromID(int ID, T*& address) const {
   } else {
     auto index = result - m_collectionIDs.begin();
     address = static_cast<T*>(m_addresses[index]);
-  }
-}
-
-template<typename T>
-void Registry::getCollectionFromName(const std::string& name, T*& collection) const {
-  //std::lock_guard<std::recursive_mutex> lock(m_mutex);
-  auto result = std::find(begin(m_names), end(m_names), name);
-  if (result == end(m_names)){
-    collection = nullptr;
-  } else {
-    auto index = result - m_names.begin();
-    collection = static_cast<T*>(m_collections[index]);
   }
 }
 

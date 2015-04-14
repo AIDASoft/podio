@@ -7,6 +7,7 @@
 
 // albers specific includes
 #include "albers/Registry.h"
+#include "albers/CollectionIDTable.h"
 
 /**
 This is an *example* event store
@@ -51,14 +52,20 @@ namespace albers {
     /// set the reader and retrieve the registry from it
     void setReader(ROOTReader* reader);
 
+    CollectionIDTable* getCollectionIDTable(){return m_table;};
+
     /// get the collection of given name; returns true if successfull
     bool doGet(const std::string& name, CollectionBase*& collection) const;
 
   private:
+
+    void setCollectionIDTable(CollectionIDTable* table){if (m_table!=nullptr) delete m_table; m_table=table;};
+    
     // members
     mutable CollContainer m_collections;
     ROOTReader* m_reader;
     Registry* m_registry;
+    CollectionIDTable* m_table;
   };
 
 
@@ -69,7 +76,8 @@ T& EventStore::create(const std::string& name) {
   // TODO: add check for existence
   T* coll = new T();
   m_collections.push_back({name,coll});
-  auto id = m_registry->registerData(coll, name);
+  m_registry->registerData(coll, name);
+  auto id = m_table->add(name);
   coll->setID(id);
   return *coll;
 }

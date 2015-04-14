@@ -11,6 +11,7 @@
 // albers specific includes
 #include "albers/Registry.h"
 #include "albers/CollectionBase.h"
+#include "albers/CollectionIDTable.h"
 
 // datamodel specific includes
 #include "ExampleClusterData.h"

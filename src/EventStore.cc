@@ -8,7 +8,8 @@ namespace albers {
 
   EventStore::EventStore(Registry* registry) :
     m_reader(nullptr),
-    m_registry(registry)
+    m_registry(registry),
+    m_table(new CollectionIDTable())
   {}
 
   EventStore::~EventStore(){
@@ -58,6 +59,7 @@ namespace albers {
   void EventStore::setReader(ROOTReader* reader){
     m_reader = reader;
     m_registry = reader->getRegistry();
+    setCollectionIDTable(reader->getCollectionIDTable());
   }
 
 

@@ -19,7 +19,7 @@ int main(){
 
   albers::Registry   registry;
   albers::EventStore store(&registry);
-  albers::ROOTWriter writer("example.root", &registry);
+  albers::ROOTWriter writer("example.root", &registry, &store);
 
   auto& info     = store.create<EventInfoCollection>("info");
   auto& hits     = store.create<ExampleHitCollection>("hits");

@@ -13,11 +13,12 @@ class TFile;
 namespace albers {
   class CollectionBase;
   class Registry;
+  class EventStore;
 
   class ROOTWriter {
 
   public:
-    ROOTWriter(const std::string& filename, Registry* registry);
+    ROOTWriter(const std::string& filename, Registry* registry, EventStore* store);
     ~ROOTWriter();
 
     template<typename T>
@@ -29,6 +30,7 @@ namespace albers {
     // members
     std::string m_filename;
     Registry* m_registry;
+    EventStore* m_store;
     TFile* m_file;
     TTree* m_datatree;
     TTree* m_metadatatree;
@@ -38,8 +40,10 @@ namespace albers {
 
 template<typename T>
   void ROOTWriter::registerForWrite(const std::string& name){
-    T* coll = nullptr;
-    m_registry->getCollectionFromName(name, coll);
+    const T* tmp_coll(nullptr);
+    m_store->get(name, tmp_coll);
+    T* coll = const_cast<T*>(tmp_coll);
+
     if(coll==nullptr) {
       std::cerr<<"no such collection to write, throw exception."<<std::endl;
     }
