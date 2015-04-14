@@ -52,7 +52,6 @@ class ClassGenerator(object):
     self.print_report()
 
   def process_components(self,content):
-    """ """
     for name in content.iterkeys():
       self.requested_classes.append(name)
     for name, components in content.iteritems():
@@ -285,16 +284,10 @@ class ClassGenerator(object):
         initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
         constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
         # relation handling in ::prepareForWrite
-        prepareforwritingbody +="""
-  (*m_data)[i].%s_begin=index;
-  (*m_data)[i].%s_end+=index;
-  index = (*m_data)[index].%s_end;
-  for(auto it : (*m_rel_%s_tmp[i])) {
-    if (it.getObjectID().index == albers::ObjectID::untracked)
-      throw std::runtime_error("Trying to persistify untracked object");
-    (*m_refCollections)[%s]->emplace_back(it.getObjectID());
-    m_rel_%s->push_back(it);
-  }""" %(name,name,name,name,counter,name)
+        substitutions = { "counter" : counter,
+                          "name"  : name
+        }
+        prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template",substitutions)
         # relation handling in ::settingReferences
         substitutions = { "counter" : counter,
                           "class" : klass,
@@ -366,8 +359,6 @@ class ClassGenerator(object):
   def prepare_vectorized_access(self, classname,members ):
     implementation = ""
     declaration = ""
-    templatefile = os.path.join(self.template_dir,"CollectionReturnArray.cc.template")
-    template = open(templatefile,"r").read()
     for member in members:
       name = member["name"]
       klass = member["type"]
@@ -375,11 +366,9 @@ class ClassGenerator(object):
                        "member"    : name,
                        "type"      : klass
                        }
-      implementation += string.Template(template).substitute(substitutions)
+      implementation += self.evaluate_template("CollectionReturnArray.cc.template", substitutions)
       declaration += "  template<size_t arraysize>  \n  const std::array<%s,arraysize> %s() const;\n" %(klass, name)
     return declaration, implementation
-
-
 
   def write_file(self, name,content):
     #dispatch headers to header dir, the rest to /src
