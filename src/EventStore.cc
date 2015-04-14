@@ -17,12 +17,24 @@ namespace albers {
     }
   }
 
-  bool EventStore::get(int id ,CollectionBase*& collection) const{
-    auto name = m_table->name(id);
-    return doGet(name, collection);
+  bool EventStore::get(int id, CollectionBase*& collection) const{
+    auto val = m_retrievedIDs.insert(id);
+    bool success = false;
+    if (val.second == true){
+      // collection not yet retrieved in recursive-call
+      auto name = m_table->name(id);
+      success = doGet(name, collection,true);
+    } else {
+      // collection already requested in recursive call
+      // do not set the references to break collection dependency-cycle
+      auto name = m_table->name(id);
+      success = doGet(name, collection,false);
+    }
+    m_retrievedIDs.erase(id);
+    return success;
   }
 
-  bool EventStore::doGet(const std::string& name, CollectionBase*& collection) const {
+  bool EventStore::doGet(const std::string& name, CollectionBase*& collection, bool setReferences) const {
     auto result = std::find_if(begin(m_collections), end(m_collections),
                                [name](const CollPair& item)->bool { return name==item.first; }
     );
@@ -34,12 +46,18 @@ namespace albers {
       }
     } else if (m_reader != nullptr) {
       auto tmp = m_reader->readCollection(name);
-      tmp->setReferences(this);
-      if (tmp != nullptr){
-        m_collections.emplace_back(std::make_pair(name,tmp));
-        collection = tmp;
-        return true;
+      if (setReferences == true) {
+        tmp->setReferences(this);
+        if (tmp != nullptr){
+          // check again whether collection exists
+          // it may have been created on-demand already
+          if (collectionRegistered(name) == false) {
+            m_collections.emplace_back(std::make_pair(name,tmp));
+          }
+        }
       }
+      collection = tmp;
+      if (tmp != nullptr) return true;
     } else {
       return false;
     }
@@ -58,6 +76,13 @@ namespace albers {
       delete coll.second;
     }
     m_collections.clear();
+  }
+
+  bool EventStore::collectionRegistered(const std::string& name) const {
+    auto result = std::find_if(begin(m_collections), end(m_collections),
+                               [name](const CollPair& item)->bool { return name==item.first; }
+    );
+    return (result != end(m_collections));
   }
 
   void EventStore::setReader(ROOTReader* reader){

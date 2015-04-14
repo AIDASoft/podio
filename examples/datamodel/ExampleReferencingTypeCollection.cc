@@ -37,8 +37,6 @@ ExampleReferencingType ExampleReferencingTypeCollection::create(){
 
 void ExampleReferencingTypeCollection::clear(){
   m_data->clear();
-  for (auto& obj : m_entries) { delete obj; }
-  m_entries.clear();
   for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   // clear relations to Clusters. Make sure to unlink() the reference data as they may be gone already
   for (auto& pointer : m_rel_Clusters_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}
@@ -51,6 +49,8 @@ void ExampleReferencingTypeCollection::clear(){
   for (auto& item : (*m_rel_Refs)) {item.unlink(); }
   m_rel_Refs->clear();
 
+  for (auto& obj : m_entries) { delete obj; }
+  m_entries.clear();
 }
 
 void ExampleReferencingTypeCollection::prepareForWrite(){

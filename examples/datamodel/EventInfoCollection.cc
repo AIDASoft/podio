@@ -26,9 +26,9 @@ EventInfo EventInfoCollection::create(){
 
 void EventInfoCollection::clear(){
   m_data->clear();
+
   for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
-
 }
 
 void EventInfoCollection::prepareForWrite(){

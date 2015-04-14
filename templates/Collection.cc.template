@@ -26,9 +26,9 @@ ${create_relations}
 
 void ${name}Collection::clear(){
   m_data->clear();
+${clear_relations}
   for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
-${clear_relations}
 }
 
 void ${name}Collection::prepareForWrite(){

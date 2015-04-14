@@ -32,8 +32,6 @@ ExampleCluster ExampleClusterCollection::create(){
 
 void ExampleClusterCollection::clear(){
   m_data->clear();
-  for (auto& obj : m_entries) { delete obj; }
-  m_entries.clear();
   for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   // clear relations to Hits. Make sure to unlink() the reference data as they may be gone already
   for (auto& pointer : m_rel_Hits_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}
@@ -41,6 +39,8 @@ void ExampleClusterCollection::clear(){
   for (auto& item : (*m_rel_Hits)) {item.unlink(); }
   m_rel_Hits->clear();
 
+  for (auto& obj : m_entries) { delete obj; }
+  m_entries.clear();
 }
 
 void ExampleClusterCollection::prepareForWrite(){

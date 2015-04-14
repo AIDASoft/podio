@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <type_traits>
+#include <set>
 
 // albers specific includes
 #include "albers/CollectionIDTable.h"
@@ -44,7 +45,7 @@ namespace albers {
     bool get(const std::string& name, const T*& collection);
 
     /// access a collection by ID. returns true if successful
-    bool get(int id ,CollectionBase*& coll) const;
+    bool get(int id, CollectionBase*& coll) const;
 
     /// empties collections.
     void clearCollections();
@@ -60,11 +61,13 @@ namespace albers {
   private:
 
     /// get the collection of given name; returns true if successfull
-    bool doGet(const std::string& name, CollectionBase*& collection) const;
-
+    bool doGet(const std::string& name, CollectionBase*& collection, bool setReferences = true) const;
+    /// check if a collection of given name already exists
+    bool collectionRegistered(const std::string& name) const;
     void setCollectionIDTable(CollectionIDTable* table){if (m_table!=nullptr) delete m_table; m_table=table;};
 
     // members
+    mutable std::set<int> m_retrievedIDs;
     mutable CollContainer m_collections;
     ROOTReader* m_reader;
     CollectionIDTable* m_table;

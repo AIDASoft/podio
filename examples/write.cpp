@@ -54,6 +54,9 @@ int main(){
       auto ref2 = refs2.create();
       ref.addClusters(cluster);
       ref.addRefs(ref2);
+
+      auto cyclic = refs.create();
+      cyclic.addRefs(cyclic);
     }
 
     writer.writeEvent();

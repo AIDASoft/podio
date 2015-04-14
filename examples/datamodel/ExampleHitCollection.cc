@@ -26,9 +26,9 @@ ExampleHit ExampleHitCollection::create(){
 
 void ExampleHitCollection::clear(){
   m_data->clear();
+
   for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
-
 }
 
 void ExampleHitCollection::prepareForWrite(){
