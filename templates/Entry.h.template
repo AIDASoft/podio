@@ -10,6 +10,9 @@
 
 $includes
 
+// forward declarations
+class ${name};
+
 class ${name}Entry {
 public:
   ${name}Entry();

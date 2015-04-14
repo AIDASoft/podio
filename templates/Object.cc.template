@@ -6,6 +6,12 @@
 #include "${name}Data.h"
 #include "${name}Collection.h"
 
+${name}::${name}() : m_entry(new ${name}Entry()){};
+
+${name}::${name}(const ${name}& other) : m_entry(other.m_entry) {
+  m_entry->increaseRefCount();
+};
+
 $getters
 $setters
 $relations

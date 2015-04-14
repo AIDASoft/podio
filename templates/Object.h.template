@@ -8,15 +8,17 @@ $includes
 // $description
 // author: $author
 
-//forward declaration of $name container
+//forward declarations
 class ${name}Collection;
 class ${name}CollectionIterator;
+class ${name}Entry;
 
 #include "${name}Entry.h"
 
 namespace albers {
   class Registry;
 }
+
 
 class ${name} {
 
@@ -25,8 +27,8 @@ class ${name} {
 
 public:
 
-  ${name}() : m_entry(new ${name}Entry()){};
-  ${name}(const ${name}& other) : m_entry(other.m_entry) {m_entry->increaseRefCount();};
+  ${name}();
+  ${name}(const ${name}& other);
   ${name}& operator=(const ${name}& other);
   ${name}(${name}Entry* entry);
   ~${name}();
