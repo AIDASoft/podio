@@ -2,13 +2,6 @@
 #include <vector>
 #include <iostream>
 
-// ROOT
-#include "TBranch.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TSystem.h"
-#include "TROOT.h"
-
 // albers specific includes
 #include "albers/EventStore.h"
 #include "albers/ROOTReader.h"
