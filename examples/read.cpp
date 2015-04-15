@@ -56,8 +56,6 @@ int main(){
   for(unsigned i=0; i<nEvents; ++i) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
-    if(i>10)
-      verbose = false;
     std::cout <<""<<std::endl;
     processEvent(store, true, reader);
     store.clear();
