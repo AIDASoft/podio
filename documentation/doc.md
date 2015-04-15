@@ -108,7 +108,7 @@ The following sections give some more technical details and explanations for the
 ## Layout of Objects
 The data model is based on four different kind of objects:
  1. User visible (physics) classes (e.g. `Hit`). These act as transparent references to the underlying data.
- 2. A transient object knowing about all data for a certain physics object, including inter-object references.
+ 2. A transient object knowing about all data for a certain physics object, including inter-object references (e.g. `HitObject`).
  3. A plain-old-data (POD) type holding the persistent object information (e.g. `HitData`)
  4. A user-visible collection containing the physics objects (e.g. `HitCollection`)
 
