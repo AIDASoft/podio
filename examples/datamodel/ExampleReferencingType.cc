@@ -8,7 +8,7 @@ ExampleReferencingType::ExampleReferencingType() : m_obj(new ExampleReferencingT
 
 ExampleReferencingType::ExampleReferencingType(const ExampleReferencingType& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
-};
+}
 
 
 

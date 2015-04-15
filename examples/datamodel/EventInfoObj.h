@@ -31,6 +31,8 @@ public:
   EventInfoData data;
 
   albers::ObjectID id;
+  
+private:
   std::atomic<int> ref_counter;
 };
 

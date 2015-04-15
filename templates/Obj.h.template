@@ -31,6 +31,8 @@ public:
   ${name}Data data;
 ${relations}
   albers::ObjectID id;
+  
+private:
   std::atomic<int> ref_counter;
 };
 

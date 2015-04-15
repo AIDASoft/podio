@@ -22,10 +22,15 @@ class ExampleHit {
 
 public:
 
+  /// default constructor
   ExampleHit();
+  /// copy constructor
   ExampleHit(const ExampleHit& other);
+  /// copy-assignment operator
   ExampleHit& operator=(const ExampleHit& other);
+  /// constructor from existing ExampleHitObj
   ExampleHit(ExampleHitObj* obj);
+  /// destructor
   ~ExampleHit();
 
   const double& x() const;
@@ -39,14 +44,16 @@ public:
   void energy(double value);
 
 
-  bool isAvailable() const; // precheck whether the pointee actually exists
+  /// check whether the object is actually available
+  bool isAvailable() const;
+  /// disconnect from ExampleHitObj instance
   void unlink(){m_obj = nullptr;};
 
   bool operator==(const ExampleHit& other) const {
        return (m_obj==other.m_obj);
   }
 
-  /// less comparison operator, so that objects can be e.g. stored in sets.
+// less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleHit& p1,
 //       const ExampleHit& p2 );
 

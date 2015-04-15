@@ -21,23 +21,30 @@ class ${name} {
 
 public:
 
+  /// default constructor
   ${name}();
+  /// copy constructor
   ${name}(const ${name}& other);
+  /// copy-assignment operator
   ${name}& operator=(const ${name}& other);
+  /// constructor from existing ${name}Obj
   ${name}(${name}Obj* obj);
+  /// destructor
   ~${name}();
 
 $getter_declarations
 $setter_declarations
 $relation_declarations
-  bool isAvailable() const; // precheck whether the pointee actually exists
+  /// check whether the object is actually available
+  bool isAvailable() const;
+  /// disconnect from ${name}Obj instance
   void unlink(){m_obj = nullptr;};
 
   bool operator==(const ${name}& other) const {
        return (m_obj==other.m_obj);
   }
 
-  /// less comparison operator, so that objects can be e.g. stored in sets.
+// less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ${name}& p1,
 //       const ${name}& p2 );
 

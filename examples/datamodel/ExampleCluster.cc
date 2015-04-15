@@ -8,7 +8,7 @@ ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){};
 
 ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
-};
+}
 
 const double& ExampleCluster::energy() const { return m_obj->data.energy;}
 

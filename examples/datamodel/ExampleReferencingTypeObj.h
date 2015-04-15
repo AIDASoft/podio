@@ -35,6 +35,8 @@ public:
   std::vector<ExampleReferencingType>* m_Refs;
 
   albers::ObjectID id;
+  
+private:
   std::atomic<int> ref_counter;
 };
 

@@ -8,7 +8,7 @@ ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){};
 
 ExampleHit::ExampleHit(const ExampleHit& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
-};
+}
 
 const double& ExampleHit::x() const { return m_obj->data.x;}
 const double& ExampleHit::y() const { return m_obj->data.y;}

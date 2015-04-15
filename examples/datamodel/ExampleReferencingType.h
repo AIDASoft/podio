@@ -25,10 +25,15 @@ class ExampleReferencingType {
 
 public:
 
+  /// default constructor
   ExampleReferencingType();
+  /// copy constructor
   ExampleReferencingType(const ExampleReferencingType& other);
+  /// copy-assignment operator
   ExampleReferencingType& operator=(const ExampleReferencingType& other);
+  /// constructor from existing ExampleReferencingTypeObj
   ExampleReferencingType(ExampleReferencingTypeObj* obj);
+  /// destructor
   ~ExampleReferencingType();
 
 
@@ -40,14 +45,16 @@ public:
   std::vector<ExampleReferencingType>::const_iterator Refs_begin() const;
   std::vector<ExampleReferencingType>::const_iterator Refs_end() const;
 
-  bool isAvailable() const; // precheck whether the pointee actually exists
+  /// check whether the object is actually available
+  bool isAvailable() const;
+  /// disconnect from ExampleReferencingTypeObj instance
   void unlink(){m_obj = nullptr;};
 
   bool operator==(const ExampleReferencingType& other) const {
        return (m_obj==other.m_obj);
   }
 
-  /// less comparison operator, so that objects can be e.g. stored in sets.
+// less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleReferencingType& p1,
 //       const ExampleReferencingType& p2 );
 

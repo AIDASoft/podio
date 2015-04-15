@@ -24,10 +24,15 @@ class ExampleCluster {
 
 public:
 
+  /// default constructor
   ExampleCluster();
+  /// copy constructor
   ExampleCluster(const ExampleCluster& other);
+  /// copy-assignment operator
   ExampleCluster& operator=(const ExampleCluster& other);
+  /// constructor from existing ExampleClusterObj
   ExampleCluster(ExampleClusterObj* obj);
+  /// destructor
   ~ExampleCluster();
 
   const double& energy() const;
@@ -38,14 +43,16 @@ public:
   std::vector<ExampleHit>::const_iterator Hits_begin() const;
   std::vector<ExampleHit>::const_iterator Hits_end() const;
 
-  bool isAvailable() const; // precheck whether the pointee actually exists
+  /// check whether the object is actually available
+  bool isAvailable() const;
+  /// disconnect from ExampleClusterObj instance
   void unlink(){m_obj = nullptr;};
 
   bool operator==(const ExampleCluster& other) const {
        return (m_obj==other.m_obj);
   }
 
-  /// less comparison operator, so that objects can be e.g. stored in sets.
+// less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleCluster& p1,
 //       const ExampleCluster& p2 );
 

@@ -22,10 +22,15 @@ class EventInfo {
 
 public:
 
+  /// default constructor
   EventInfo();
+  /// copy constructor
   EventInfo(const EventInfo& other);
+  /// copy-assignment operator
   EventInfo& operator=(const EventInfo& other);
+  /// constructor from existing EventInfoObj
   EventInfo(EventInfoObj* obj);
+  /// destructor
   ~EventInfo();
 
   const int& Number() const;
@@ -33,14 +38,16 @@ public:
   void Number(int value);
 
 
-  bool isAvailable() const; // precheck whether the pointee actually exists
+  /// check whether the object is actually available
+  bool isAvailable() const;
+  /// disconnect from EventInfoObj instance
   void unlink(){m_obj = nullptr;};
 
   bool operator==(const EventInfo& other) const {
        return (m_obj==other.m_obj);
   }
 
-  /// less comparison operator, so that objects can be e.g. stored in sets.
+// less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const EventInfo& p1,
 //       const EventInfo& p2 );
 

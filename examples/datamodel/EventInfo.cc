@@ -8,7 +8,7 @@ EventInfo::EventInfo() : m_obj(new EventInfoObj()){};
 
 EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
-};
+}
 
 const int& EventInfo::Number() const { return m_obj->data.Number;}
 

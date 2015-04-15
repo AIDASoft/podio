@@ -136,7 +136,7 @@ class ClassGenerator(object):
       name = member["name"]
       klass = member["type"]
       description = member["description"]
-      membersCode+= "  %s %s; //%s \n" %(klass, name, description)
+      membersCode+= "  %s %s; ///%s \n" %(klass, name, description)
 
     # now handle the one-to-many relations
     refvectors = []

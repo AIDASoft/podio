@@ -33,6 +33,8 @@ public:
   std::vector<ExampleHit>* m_Hits;
 
   albers::ObjectID id;
+  
+private:
   std::atomic<int> ref_counter;
 };
 

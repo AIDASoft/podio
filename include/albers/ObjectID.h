@@ -6,11 +6,11 @@ namespace albers {
 class ObjectID {
 
 public:
-  int index;
-  int collectionID;
+  int index; /// index in collection
+  int collectionID; /// ID if the collection
 
-  static const int untracked = -1;
-  static const int invalid   = -2;
+  static const int untracked = -1; /// not part of a collection
+  static const int invalid   = -2; /// invalid or non-available object
   //static const int transient = -3;
 
 };

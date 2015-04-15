@@ -7,7 +7,9 @@ namespace albers {
 
   class ICollectionProvider {
   public:
+    /// destructor
     virtual ~ICollectionProvider(){};
+    /// access a collection by ID. returns true if successful
     virtual bool get(int collectionID, CollectionBase*& collection) const = 0;
   };
 

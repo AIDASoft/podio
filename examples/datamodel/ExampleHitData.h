@@ -8,10 +8,10 @@
 
 class ExampleHitData {
 public:
-  double x; //x-coordinate 
-  double y; //y-coordinate 
-  double z; //z-coordinate 
-  double energy; //measured energy deposit 
+  double x; ///x-coordinate 
+  double y; ///y-coordinate 
+  double z; ///z-coordinate 
+  double energy; ///measured energy deposit 
 
 };
 
