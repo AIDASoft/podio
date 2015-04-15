@@ -23,7 +23,7 @@ int main(){
   auto& hits     = store.create<ExampleHitCollection>("hits");
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
   auto& refs     = store.create<ExampleReferencingTypeCollection>("refs");
-  auto& refs2     = store.create<ExampleReferencingTypeCollection>("refs2");
+  auto& refs2    = store.create<ExampleReferencingTypeCollection>("refs2");
 
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleHitCollection>("hits");
