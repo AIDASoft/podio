@@ -22,9 +22,7 @@ int  ExampleClusterCollection::size() const {
 ExampleCluster ExampleClusterCollection::create(){
   auto obj = new ExampleClusterObj();
   m_entries.emplace_back(obj);
-  auto Hits_tmp = new std::vector<ExampleHit>();
-  m_rel_Hits_tmp.push_back(Hits_tmp);
-  obj->m_Hits = Hits_tmp;
+  m_rel_Hits_tmp.push_back(obj->m_Hits);
 
   obj->id = {int(m_entries.size()-1),m_collectionID};
   return ExampleCluster(obj);

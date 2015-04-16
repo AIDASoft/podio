@@ -24,12 +24,8 @@ int  ExampleReferencingTypeCollection::size() const {
 ExampleReferencingType ExampleReferencingTypeCollection::create(){
   auto obj = new ExampleReferencingTypeObj();
   m_entries.emplace_back(obj);
-  auto Clusters_tmp = new std::vector<ExampleCluster>();
-  m_rel_Clusters_tmp.push_back(Clusters_tmp);
-  obj->m_Clusters = Clusters_tmp;
-  auto Refs_tmp = new std::vector<ExampleReferencingType>();
-  m_rel_Refs_tmp.push_back(Refs_tmp);
-  obj->m_Refs = Refs_tmp;
+  m_rel_Clusters_tmp.push_back(obj->m_Clusters);
+  m_rel_Refs_tmp.push_back(obj->m_Refs);
 
   obj->id = {int(m_entries.size()-1),m_collectionID};
   return ExampleReferencingType(obj);

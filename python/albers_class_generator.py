@@ -277,9 +277,7 @@ class ClassGenerator(object):
         initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
         constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
         # relation handling in ::create
-        create_relations += "  auto %s_tmp = new std::vector<%s>();\n" %(name, klass)
-        create_relations += "  m_rel_%s_tmp.push_back(%s_tmp);\n" %(name,name)
-        create_relations += "  obj->m_%s = %s_tmp;\n" %(name, name)
+        create_relations += "  m_rel_%s_tmp.push_back(obj->m_%s);\n" %(name,name)
         # relation handling in ::clear
         clear_relations += "  // clear relations to %s. Make sure to unlink() the reference data as they may be gone already\n" %(name)
         clear_relations += "  for (auto& pointer : m_rel_%s_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}\n" %(name)
