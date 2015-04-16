@@ -4,7 +4,10 @@
 #include "${name}Collection.h"
 #include <iostream>
 
-${name}::${name}() : m_obj(new ${name}Obj()){};
+${name}::${name}() : m_obj(new ${name}Obj()){
+ m_obj->increaseRefCount();
+
+};
 
 ${name}::${name}(const ${name}& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();

@@ -4,7 +4,10 @@
 #include "EventInfoCollection.h"
 #include <iostream>
 
-EventInfo::EventInfo() : m_obj(new EventInfoObj()){};
+EventInfo::EventInfo() : m_obj(new EventInfoObj()){
+ m_obj->increaseRefCount();
+
+};
 
 EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();

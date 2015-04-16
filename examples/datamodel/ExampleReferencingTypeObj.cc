@@ -1,13 +1,13 @@
 #include "ExampleReferencingTypeObj.h"
 
 ExampleReferencingTypeObj::ExampleReferencingTypeObj() :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
     data()
     ,m_Clusters(new std::vector<ExampleCluster>()),m_Refs(new std::vector<ExampleReferencingType>())
     { }
 
 ExampleReferencingTypeObj::ExampleReferencingTypeObj(const albers::ObjectID id, ExampleReferencingTypeData data) :
-    ObjBase{id,-1},
+    ObjBase{id,0},
     data(data)
     { }
 

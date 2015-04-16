@@ -1,19 +1,19 @@
 #include "${name}Obj.h"
 
 ${name}Obj::${name}Obj() :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
-    data()
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data()
     ${initialize_relations}
     { }
 
 ${name}Obj::${name}Obj(const albers::ObjectID id, ${name}Data data) :
-    ObjBase{id,-1},
+    ObjBase{id,0},
     data(data)
     { }
 
 ${name}Obj::${name}Obj(const ${name}Obj& other) :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data(other.data)
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data(other.data)
     ${deepcopy_relations}
     { }
 

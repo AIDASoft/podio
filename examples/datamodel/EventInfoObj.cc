@@ -1,13 +1,13 @@
 #include "EventInfoObj.h"
 
 EventInfoObj::EventInfoObj() :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
     data()
     
     { }
 
 EventInfoObj::EventInfoObj(const albers::ObjectID id, EventInfoData data) :
-    ObjBase{id,-1},
+    ObjBase{id,0},
     data(data)
     { }
 

@@ -4,7 +4,10 @@
 #include "ExampleHitCollection.h"
 #include <iostream>
 
-ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){};
+ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){
+ m_obj->increaseRefCount();
+
+};
 
 ExampleHit::ExampleHit(const ExampleHit& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();

@@ -4,7 +4,10 @@
 #include "ExampleReferencingTypeCollection.h"
 #include <iostream>
 
-ExampleReferencingType::ExampleReferencingType() : m_obj(new ExampleReferencingTypeObj()){};
+ExampleReferencingType::ExampleReferencingType() : m_obj(new ExampleReferencingTypeObj()){
+ m_obj->increaseRefCount();
+
+};
 
 ExampleReferencingType::ExampleReferencingType(const ExampleReferencingType& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();

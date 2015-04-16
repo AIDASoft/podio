@@ -4,7 +4,10 @@
 #include "ExampleClusterCollection.h"
 #include <iostream>
 
-ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){};
+ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){
+ m_obj->increaseRefCount();
+
+};
 
 ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
