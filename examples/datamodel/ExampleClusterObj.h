@@ -3,6 +3,7 @@
 
 // std includes
 #include <atomic>
+#include <iostream>
 
 // data model specific includes
 #include "albers/ObjectID.h"
@@ -25,7 +26,13 @@ public:
   };
 
   int decreaseRefCount(){
-    return  ( (id.index == albers::ObjectID::untracked) ? --ref_counter : 1 );
+    if (id.index != albers::ObjectID::untracked){ return 1;};
+    if (--ref_counter == 0) {
+      std::cout << "deleting free-floating ExampleCluster at " << this << std::endl;
+      delete this;
+    }
+    return 0;
+    //return  ( (id.index == albers::ObjectID::untracked) ? --ref_counter : 1 );
   }; // returns current count
 
 public:
@@ -33,7 +40,7 @@ public:
   std::vector<ExampleHit>* m_Hits;
 
   albers::ObjectID id;
-  
+
 private:
   std::atomic<int> ref_counter;
 };

@@ -30,19 +30,13 @@ ${name}::${name}(${name}Obj* obj) : m_obj(obj){
 }
 
 ${name}& ${name}::operator=(const ${name}& other){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating ${name} at " << m_obj << std::endl;
-    delete m_obj;
-  }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
   m_obj = other.m_obj;
   return *this;
 }
 
 ${name}::~${name}(){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating ${name} at " << m_obj << std::endl;
-    delete m_obj;
-   }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
 }
 
 //bool operator< (const ${name}& p1, const ${name}& p2 ) {

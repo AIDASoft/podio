@@ -62,19 +62,13 @@ ExampleReferencingType::ExampleReferencingType(ExampleReferencingTypeObj* obj) :
 }
 
 ExampleReferencingType& ExampleReferencingType::operator=(const ExampleReferencingType& other){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating ExampleReferencingType at " << m_obj << std::endl;
-    delete m_obj;
-  }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
   m_obj = other.m_obj;
   return *this;
 }
 
 ExampleReferencingType::~ExampleReferencingType(){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating ExampleReferencingType at " << m_obj << std::endl;
-    delete m_obj;
-   }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
 }
 
 //bool operator< (const ExampleReferencingType& p1, const ExampleReferencingType& p2 ) {

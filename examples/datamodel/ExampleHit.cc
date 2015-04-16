@@ -30,19 +30,13 @@ ExampleHit::ExampleHit(ExampleHitObj* obj) : m_obj(obj){
 }
 
 ExampleHit& ExampleHit::operator=(const ExampleHit& other){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating ExampleHit at " << m_obj << std::endl;
-    delete m_obj;
-  }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
   m_obj = other.m_obj;
   return *this;
 }
 
 ExampleHit::~ExampleHit(){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating ExampleHit at " << m_obj << std::endl;
-    delete m_obj;
-   }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
 }
 
 //bool operator< (const ExampleHit& p1, const ExampleHit& p2 ) {

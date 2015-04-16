@@ -46,19 +46,13 @@ ExampleCluster::ExampleCluster(ExampleClusterObj* obj) : m_obj(obj){
 }
 
 ExampleCluster& ExampleCluster::operator=(const ExampleCluster& other){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating ExampleCluster at " << m_obj << std::endl;
-    delete m_obj;
-  }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
   m_obj = other.m_obj;
   return *this;
 }
 
 ExampleCluster::~ExampleCluster(){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating ExampleCluster at " << m_obj << std::endl;
-    delete m_obj;
-   }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
 }
 
 //bool operator< (const ExampleCluster& p1, const ExampleCluster& p2 ) {

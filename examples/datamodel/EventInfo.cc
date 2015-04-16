@@ -30,19 +30,13 @@ EventInfo::EventInfo(EventInfoObj* obj) : m_obj(obj){
 }
 
 EventInfo& EventInfo::operator=(const EventInfo& other){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0) {
-    std::cout << "deleting free-floating EventInfo at " << m_obj << std::endl;
-    delete m_obj;
-  }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
   m_obj = other.m_obj;
   return *this;
 }
 
 EventInfo::~EventInfo(){
-  if ( m_obj != nullptr && m_obj->decreaseRefCount()==0 ){
-    std::cout << "deleting free-floating EventInfo at " << m_obj << std::endl;
-    delete m_obj;
-   }
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
 }
 
 //bool operator< (const EventInfo& p1, const EventInfo& p2 ) {
