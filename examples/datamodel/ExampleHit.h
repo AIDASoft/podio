@@ -30,6 +30,8 @@ public:
   ExampleHit& operator=(const ExampleHit& other);
   /// constructor from existing ExampleHitObj
   ExampleHit(ExampleHitObj* obj);
+  /// support cloning (deep-copy)
+  ExampleHit clone() const;
   /// destructor
   ~ExampleHit();
 

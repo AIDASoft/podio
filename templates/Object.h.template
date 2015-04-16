@@ -29,6 +29,8 @@ public:
   ${name}& operator=(const ${name}& other);
   /// constructor from existing ${name}Obj
   ${name}(${name}Obj* obj);
+  /// support cloning (deep-copy)
+  ${name} clone() const;
   /// destructor
   ~${name}();
 

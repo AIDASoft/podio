@@ -17,8 +17,12 @@ class ExampleCluster;
 
 class ExampleClusterObj : public albers::ObjBase {
 public:
+  /// constructor
   ExampleClusterObj();
-  ExampleClusterObj(const ExampleClusterObj&); //TODO: deep copy!
+  /// copy constructor (does a deep-copy of relation containers)
+  ExampleClusterObj(const ExampleClusterObj&);
+  /// constructor from ObjectID and ExampleClusterData
+  /// does not initialize the internal relation containers
   ExampleClusterObj(const albers::ObjectID id, ExampleClusterData data);
   virtual ~ExampleClusterObj();
 

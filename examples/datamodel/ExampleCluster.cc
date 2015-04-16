@@ -10,6 +10,25 @@ ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj)
   m_obj->increaseRefCount();
 }
 
+ExampleCluster& ExampleCluster::operator=(const ExampleCluster& other){
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  m_obj = other.m_obj;
+  return *this;
+}
+
+ExampleCluster::ExampleCluster(ExampleClusterObj* obj) : m_obj(obj){
+  if(m_obj != nullptr)
+    m_obj->increaseRefCount();
+}
+
+ExampleCluster ExampleCluster::clone() const {
+  return {new ExampleClusterObj(*m_obj)};
+}
+
+ExampleCluster::~ExampleCluster(){
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+}
+
 
 std::vector<ExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
   auto ret_value = m_obj->m_Hits->begin();
@@ -39,21 +58,6 @@ const albers::ObjectID ExampleCluster::getObjectID() const {
   return m_obj->id;
 }
 
-
-ExampleCluster::ExampleCluster(ExampleClusterObj* obj) : m_obj(obj){
-  if(m_obj != nullptr)
-    m_obj->increaseRefCount();
-}
-
-ExampleCluster& ExampleCluster::operator=(const ExampleCluster& other){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
-  m_obj = other.m_obj;
-  return *this;
-}
-
-ExampleCluster::~ExampleCluster(){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
-}
 
 //bool operator< (const ExampleCluster& p1, const ExampleCluster& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

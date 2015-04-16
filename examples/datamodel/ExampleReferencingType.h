@@ -33,6 +33,8 @@ public:
   ExampleReferencingType& operator=(const ExampleReferencingType& other);
   /// constructor from existing ExampleReferencingTypeObj
   ExampleReferencingType(ExampleReferencingTypeObj* obj);
+  /// support cloning (deep-copy)
+  ExampleReferencingType clone() const;
   /// destructor
   ~ExampleReferencingType();
 

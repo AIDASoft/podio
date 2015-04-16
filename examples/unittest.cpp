@@ -60,8 +60,20 @@ void test_clearing() {
 
 void test_cloning() {
   std::cout << "*** Test cloning ***" << std::endl;
-  std::cout << "    TODO " << std::endl;
+  bool success = true;
+  auto hit = ExampleHit();
+  hit.energy(30);
+  auto hit2 = hit.clone();
+  hit2.energy(20);
+  if (hit.energy() == hit2.energy()) success = false;
 
+  auto cluster  = ExampleCluster();
+  cluster.addHits(hit);
+  auto cluster2 = cluster.clone();
+  cluster.addHits(hit2);
+
+  std::cout << "    Success: " << success << std::endl;
+  std::cout << "Should now delete 4 objects" << std::endl;
 }
 
 void test_invalid_refs() {

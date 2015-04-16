@@ -30,6 +30,8 @@ public:
   EventInfo& operator=(const EventInfo& other);
   /// constructor from existing EventInfoObj
   EventInfo(EventInfoObj* obj);
+  /// support cloning (deep-copy)
+  EventInfo clone() const;
   /// destructor
   ~EventInfo();
 

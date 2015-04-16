@@ -10,6 +10,25 @@ EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
 }
 
+EventInfo& EventInfo::operator=(const EventInfo& other){
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  m_obj = other.m_obj;
+  return *this;
+}
+
+EventInfo::EventInfo(EventInfoObj* obj) : m_obj(obj){
+  if(m_obj != nullptr)
+    m_obj->increaseRefCount();
+}
+
+EventInfo EventInfo::clone() const {
+  return {new EventInfoObj(*m_obj)};
+}
+
+EventInfo::~EventInfo(){
+  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+}
+
 
 
 bool  EventInfo::isAvailable() const {
@@ -23,21 +42,6 @@ const albers::ObjectID EventInfo::getObjectID() const {
   return m_obj->id;
 }
 
-
-EventInfo::EventInfo(EventInfoObj* obj) : m_obj(obj){
-  if(m_obj != nullptr)
-    m_obj->increaseRefCount();
-}
-
-EventInfo& EventInfo::operator=(const EventInfo& other){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
-  m_obj = other.m_obj;
-  return *this;
-}
-
-EventInfo::~EventInfo(){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
-}
 
 //bool operator< (const EventInfo& p1, const EventInfo& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

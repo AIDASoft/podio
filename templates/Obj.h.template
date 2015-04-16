@@ -16,8 +16,12 @@ class ${name};
 
 class ${name}Obj : public albers::ObjBase {
 public:
+  /// constructor
   ${name}Obj();
-  ${name}Obj(const ${name}Obj&); //TODO: deep copy!
+  /// copy constructor (does a deep-copy of relation containers)
+  ${name}Obj(const ${name}Obj&);
+  /// constructor from ObjectID and ${name}Data
+  /// does not initialize the internal relation containers
   ${name}Obj(const albers::ObjectID id, ${name}Data data);
   virtual ~${name}Obj();
 

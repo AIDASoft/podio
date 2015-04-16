@@ -32,6 +32,8 @@ public:
   ExampleCluster& operator=(const ExampleCluster& other);
   /// constructor from existing ExampleClusterObj
   ExampleCluster(ExampleClusterObj* obj);
+  /// support cloning (deep-copy)
+  ExampleCluster clone() const;
   /// destructor
   ~ExampleCluster();
 

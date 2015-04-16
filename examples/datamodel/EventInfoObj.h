@@ -16,8 +16,12 @@ class EventInfo;
 
 class EventInfoObj : public albers::ObjBase {
 public:
+  /// constructor
   EventInfoObj();
-  EventInfoObj(const EventInfoObj&); //TODO: deep copy!
+  /// copy constructor (does a deep-copy of relation containers)
+  EventInfoObj(const EventInfoObj&);
+  /// constructor from ObjectID and EventInfoData
+  /// does not initialize the internal relation containers
   EventInfoObj(const albers::ObjectID id, EventInfoData data);
   virtual ~EventInfoObj();
 

@@ -18,8 +18,12 @@ class ExampleReferencingType;
 
 class ExampleReferencingTypeObj : public albers::ObjBase {
 public:
+  /// constructor
   ExampleReferencingTypeObj();
-  ExampleReferencingTypeObj(const ExampleReferencingTypeObj&); //TODO: deep copy!
+  /// copy constructor (does a deep-copy of relation containers)
+  ExampleReferencingTypeObj(const ExampleReferencingTypeObj&);
+  /// constructor from ObjectID and ExampleReferencingTypeData
+  /// does not initialize the internal relation containers
   ExampleReferencingTypeObj(const albers::ObjectID id, ExampleReferencingTypeData data);
   virtual ~ExampleReferencingTypeObj();
 

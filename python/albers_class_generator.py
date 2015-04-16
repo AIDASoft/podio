@@ -337,7 +337,9 @@ class ClassGenerator(object):
     """
     relations = ""
     includes = ""
-    deletereferences = ""
+    initialize_relations = ""
+    deepcopy_relations = ""
+    delete_relations = ""
     if definition.has_key("OneToManyRelations"):
       refvectors = definition["OneToManyRelations"]
     else:
@@ -347,11 +349,15 @@ class ClassGenerator(object):
       klass = item["type"]
       relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
       includes += '#include "%s.h"\n' %(klass)
-      deletereferences += "delete m_%s;\n" %(name)
+      initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klass)
+      deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
+      delete_relations += "delete m_%s;\n" %(name)
     substitutions = { "name" : classname,
                       "includes" : includes,
                       "relations" : relations,
-                      "deletereferences" : deletereferences
+                      "initialize_relations" : initialize_relations,
+                      "deepcopy_relations" : deepcopy_relations,
+                      "delete_relations" : delete_relations
     }
     self.fill_templates("Obj",substitutions)
     self.created_classes.append(classname+"Obj")

@@ -16,8 +16,12 @@ class ExampleHit;
 
 class ExampleHitObj : public albers::ObjBase {
 public:
+  /// constructor
   ExampleHitObj();
-  ExampleHitObj(const ExampleHitObj&); //TODO: deep copy!
+  /// copy constructor (does a deep-copy of relation containers)
+  ExampleHitObj(const ExampleHitObj&);
+  /// constructor from ObjectID and ExampleHitData
+  /// does not initialize the internal relation containers
   ExampleHitObj(const albers::ObjectID id, ExampleHitData data);
   virtual ~ExampleHitObj();
 

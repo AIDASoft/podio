@@ -3,6 +3,7 @@
 ${name}Obj::${name}Obj() :
     ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
     data()
+    ${initialize_relations}
     { }
 
 ${name}Obj::${name}Obj(const albers::ObjectID id, ${name}Data data) :
@@ -12,11 +13,12 @@ ${name}Obj::${name}Obj(const albers::ObjectID id, ${name}Data data) :
 
 ${name}Obj::${name}Obj(const ${name}Obj& other) :
     ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data()
+    data(other.data)
+    ${deepcopy_relations}
     { }
 
 ${name}Obj::~${name}Obj() {
   if (id.index == albers::ObjectID::untracked) {
-${deletereferences}
+${delete_relations}
   }
 }
