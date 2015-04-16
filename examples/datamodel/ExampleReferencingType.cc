@@ -11,7 +11,6 @@ ExampleReferencingType::ExampleReferencingType(const ExampleReferencingType& oth
 }
 
 
-
 std::vector<ExampleCluster>::const_iterator ExampleReferencingType::Clusters_begin() const {
   auto ret_value = m_obj->m_Clusters->begin();
   std::advance(ret_value, m_obj->data.Clusters_begin);

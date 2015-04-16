@@ -200,11 +200,11 @@ class ClassGenerator(object):
       name = member["name"]
       klass = member["type"]
       description = member["description"]
-      getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
-      getter_implementations+= "const %s& %s::%s() const { return m_obj->data.%s;}\n" %(klass, classname, name, name)
+      getter_declarations+= "  const %s& %s() const { return m_obj->data.%s; };\n" %(klass, name, name)
+      #getter_implementations+= "const %s& %s::%s() const { return m_obj->data.%s;}\n" %(klass, classname, name, name)
       if klass in self.buildin_types:
-        setter_declarations += "  void %s(%s value);\n" %(name, klass)
-        setter_implementations += "void %s::%s(%s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
+        setter_declarations += "  void %s(%s value) { m_obj->data.%s = value; };\n" %(name, klass, name)
+        #setter_implementations += "void %s::%s(%s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       else:
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
@@ -228,7 +228,7 @@ class ClassGenerator(object):
       references_members += "std::vector<%s>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
 
     substitutions = {"includes" : includes,
-                     "getters"  : getter_implementations,
+                     #"getters"  : getter_implementations,
                      "getter_declarations": getter_declarations,
                      "setters"  : setter_implementations,
                      "setter_declarations": setter_declarations,

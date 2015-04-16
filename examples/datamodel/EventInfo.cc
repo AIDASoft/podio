@@ -10,9 +10,6 @@ EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
 }
 
-const int& EventInfo::Number() const { return m_obj->data.Number;}
-
-void EventInfo::Number(int value){ m_obj->data.Number = value;}
 
 
 bool  EventInfo::isAvailable() const {

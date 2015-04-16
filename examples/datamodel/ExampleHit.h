@@ -33,15 +33,15 @@ public:
   /// destructor
   ~ExampleHit();
 
-  const double& x() const;
-  const double& y() const;
-  const double& z() const;
-  const double& energy() const;
+  const double& x() const { return m_obj->data.x; };
+  const double& y() const { return m_obj->data.y; };
+  const double& z() const { return m_obj->data.z; };
+  const double& energy() const { return m_obj->data.energy; };
 
-  void x(double value);
-  void y(double value);
-  void z(double value);
-  void energy(double value);
+  void x(double value) { m_obj->data.x = value; };
+  void y(double value) { m_obj->data.y = value; };
+  void z(double value) { m_obj->data.z = value; };
+  void energy(double value) { m_obj->data.energy = value; };
 
 
   /// check whether the object is actually available

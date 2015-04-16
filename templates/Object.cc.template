@@ -10,7 +10,6 @@ ${name}::${name}(const ${name}& other) : m_obj(other.m_obj) {
   m_obj->increaseRefCount();
 }
 
-$getters
 $setters
 $relations
 bool  ${name}::isAvailable() const {

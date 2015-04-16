@@ -35,9 +35,9 @@ public:
   /// destructor
   ~ExampleCluster();
 
-  const double& energy() const;
+  const double& energy() const { return m_obj->data.energy; };
 
-  void energy(double value);
+  void energy(double value) { m_obj->data.energy = value; };
 
   void addHits(ExampleHit&);
   std::vector<ExampleHit>::const_iterator Hits_begin() const;

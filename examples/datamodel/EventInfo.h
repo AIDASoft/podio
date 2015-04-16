@@ -33,9 +33,9 @@ public:
   /// destructor
   ~EventInfo();
 
-  const int& Number() const;
+  const int& Number() const { return m_obj->data.Number; };
 
-  void Number(int value);
+  void Number(int value) { m_obj->data.Number = value; };
 
 
   /// check whether the object is actually available

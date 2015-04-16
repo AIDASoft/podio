@@ -10,9 +10,6 @@ ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj)
   m_obj->increaseRefCount();
 }
 
-const double& ExampleCluster::energy() const { return m_obj->data.energy;}
-
-void ExampleCluster::energy(double value){ m_obj->data.energy = value;}
 
 std::vector<ExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
   auto ret_value = m_obj->m_Hits->begin();
