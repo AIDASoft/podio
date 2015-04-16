@@ -16,6 +16,7 @@ ExampleHitObj::ExampleHitObj(const ExampleHitObj& other) :
     { }
 
 ExampleHitObj::~ExampleHitObj() {
+  if (id.index == albers::ObjectID::untracked) {
 
-
+  }
 }

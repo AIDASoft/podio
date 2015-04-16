@@ -337,6 +337,7 @@ class ClassGenerator(object):
     """
     relations = ""
     includes = ""
+    deletereferences = ""
     if definition.has_key("OneToManyRelations"):
       refvectors = definition["OneToManyRelations"]
     else:
@@ -346,9 +347,11 @@ class ClassGenerator(object):
       klass = item["type"]
       relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
       includes += '#include "%s.h"\n' %(klass)
+      deletereferences += "delete m_%s;\n" %(name)
     substitutions = { "name" : classname,
                       "includes" : includes,
-                      "relations" : relations
+                      "relations" : relations,
+                      "deletereferences" : deletereferences
     }
     self.fill_templates("Obj",substitutions)
     self.created_classes.append(classname+"Obj")

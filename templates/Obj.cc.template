@@ -16,6 +16,7 @@ ${name}Obj::${name}Obj(const ${name}Obj& other) :
     { }
 
 ${name}Obj::~${name}Obj() {
-
-
+  if (id.index == albers::ObjectID::untracked) {
+${deletereferences}
+  }
 }

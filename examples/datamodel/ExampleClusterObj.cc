@@ -16,6 +16,8 @@ ExampleClusterObj::ExampleClusterObj(const ExampleClusterObj& other) :
     { }
 
 ExampleClusterObj::~ExampleClusterObj() {
+  if (id.index == albers::ObjectID::untracked) {
+delete m_Hits;
 
-
+  }
 }

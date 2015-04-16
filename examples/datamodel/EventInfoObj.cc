@@ -16,6 +16,7 @@ EventInfoObj::EventInfoObj(const EventInfoObj& other) :
     { }
 
 EventInfoObj::~EventInfoObj() {
+  if (id.index == albers::ObjectID::untracked) {
 
-
+  }
 }

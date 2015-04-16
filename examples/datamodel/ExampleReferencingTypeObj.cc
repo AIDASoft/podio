@@ -16,6 +16,9 @@ ExampleReferencingTypeObj::ExampleReferencingTypeObj(const ExampleReferencingTyp
     { }
 
 ExampleReferencingTypeObj::~ExampleReferencingTypeObj() {
+  if (id.index == albers::ObjectID::untracked) {
+delete m_Clusters;
+delete m_Refs;
 
-
+  }
 }
