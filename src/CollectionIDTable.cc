@@ -1,5 +1,6 @@
 // albers specific includes
 #include "albers/CollectionIDTable.h"
+#include <algorithm>
 #include <iostream>
 
 namespace albers {
