@@ -1,19 +1,19 @@
 #include "ExampleReferencingTypeObj.h"
 
 ExampleReferencingTypeObj::ExampleReferencingTypeObj() :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(1) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
+    data()
+    { }
 
 ExampleReferencingTypeObj::ExampleReferencingTypeObj(const albers::ObjectID id, ExampleReferencingTypeData data) :
-    data(data),
-    id(id),
-    ref_counter(-1) { }
+    ObjBase{id,-1},
+    data(data)
+    { }
 
 ExampleReferencingTypeObj::ExampleReferencingTypeObj(const ExampleReferencingTypeObj& other) :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(0) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
+    data()
+    { }
 
 ExampleReferencingTypeObj::~ExampleReferencingTypeObj() {
 

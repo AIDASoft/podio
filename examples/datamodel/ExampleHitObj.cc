@@ -1,19 +1,19 @@
 #include "ExampleHitObj.h"
 
 ExampleHitObj::ExampleHitObj() :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(1) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
+    data()
+    { }
 
 ExampleHitObj::ExampleHitObj(const albers::ObjectID id, ExampleHitData data) :
-    data(data),
-    id(id),
-    ref_counter(-1) { }
+    ObjBase{id,-1},
+    data(data)
+    { }
 
 ExampleHitObj::ExampleHitObj(const ExampleHitObj& other) :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(0) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
+    data()
+    { }
 
 ExampleHitObj::~ExampleHitObj() {
 

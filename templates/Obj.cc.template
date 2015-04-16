@@ -1,19 +1,19 @@
 #include "${name}Obj.h"
 
 ${name}Obj::${name}Obj() :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(1) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
+    data()
+    { }
 
 ${name}Obj::${name}Obj(const albers::ObjectID id, ${name}Data data) :
-    data(data),
-    id(id),
-    ref_counter(-1) { }
+    ObjBase{id,-1},
+    data(data)
+    { }
 
 ${name}Obj::${name}Obj(const ${name}Obj& other) :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(0) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
+    data()
+    { }
 
 ${name}Obj::~${name}Obj() {
 

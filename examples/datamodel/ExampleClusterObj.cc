@@ -1,19 +1,19 @@
 #include "ExampleClusterObj.h"
 
 ExampleClusterObj::ExampleClusterObj() :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(1) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
+    data()
+    { }
 
 ExampleClusterObj::ExampleClusterObj(const albers::ObjectID id, ExampleClusterData data) :
-    data(data),
-    id(id),
-    ref_counter(-1) { }
+    ObjBase{id,-1},
+    data(data)
+    { }
 
 ExampleClusterObj::ExampleClusterObj(const ExampleClusterObj& other) :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(0) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
+    data()
+    { }
 
 ExampleClusterObj::~ExampleClusterObj() {
 

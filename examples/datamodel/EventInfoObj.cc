@@ -1,19 +1,19 @@
 #include "EventInfoObj.h"
 
 EventInfoObj::EventInfoObj() :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(1) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},1},
+    data()
+    { }
 
 EventInfoObj::EventInfoObj(const albers::ObjectID id, EventInfoData data) :
-    data(data),
-    id(id),
-    ref_counter(-1) { }
+    ObjBase{id,-1},
+    data(data)
+    { }
 
 EventInfoObj::EventInfoObj(const EventInfoObj& other) :
-    data(),
-    id{albers::ObjectID::untracked,albers::ObjectID::untracked},
-    ref_counter(0) { }
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
+    data()
+    { }
 
 EventInfoObj::~EventInfoObj() {
 
