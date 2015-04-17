@@ -34,6 +34,8 @@ void test_basic(){
   // Retrieving
   const ExampleHitCollection* coll2(nullptr);
   bool success = store.get("name",coll2);
+  const ExampleHitCollection* coll3(nullptr);
+  if (store.get("wrongName",coll3) != false) success = false;
   std::cout << "    Success: " << success << std::endl;
 }
 
