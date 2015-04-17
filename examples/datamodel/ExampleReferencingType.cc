@@ -5,23 +5,23 @@
 #include <iostream>
 
 ExampleReferencingType::ExampleReferencingType() : m_obj(new ExampleReferencingTypeObj()){
- m_obj->increaseRefCount();
+ m_obj->acquire();
 
 };
 
 ExampleReferencingType::ExampleReferencingType(const ExampleReferencingType& other) : m_obj(other.m_obj) {
-  m_obj->increaseRefCount();
+  m_obj->acquire();
 }
 
 ExampleReferencingType& ExampleReferencingType::operator=(const ExampleReferencingType& other){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
   m_obj = other.m_obj;
   return *this;
 }
 
 ExampleReferencingType::ExampleReferencingType(ExampleReferencingTypeObj* obj) : m_obj(obj){
   if(m_obj != nullptr)
-    m_obj->increaseRefCount();
+    m_obj->acquire();
 }
 
 ExampleReferencingType ExampleReferencingType::clone() const {
@@ -29,7 +29,7 @@ ExampleReferencingType ExampleReferencingType::clone() const {
 }
 
 ExampleReferencingType::~ExampleReferencingType(){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
 }
 
 

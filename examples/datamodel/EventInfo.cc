@@ -5,23 +5,23 @@
 #include <iostream>
 
 EventInfo::EventInfo() : m_obj(new EventInfoObj()){
- m_obj->increaseRefCount();
+ m_obj->acquire();
 
 };
 
 EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
-  m_obj->increaseRefCount();
+  m_obj->acquire();
 }
 
 EventInfo& EventInfo::operator=(const EventInfo& other){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
   m_obj = other.m_obj;
   return *this;
 }
 
 EventInfo::EventInfo(EventInfoObj* obj) : m_obj(obj){
   if(m_obj != nullptr)
-    m_obj->increaseRefCount();
+    m_obj->acquire();
 }
 
 EventInfo EventInfo::clone() const {
@@ -29,7 +29,7 @@ EventInfo EventInfo::clone() const {
 }
 
 EventInfo::~EventInfo(){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
 }
 
 

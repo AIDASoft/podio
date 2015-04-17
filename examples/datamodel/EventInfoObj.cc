@@ -1,8 +1,8 @@
 #include "EventInfoObj.h"
 
 EventInfoObj::EventInfoObj() :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data()
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data()
     
     { }
 
@@ -12,8 +12,8 @@ EventInfoObj::EventInfoObj(const albers::ObjectID id, EventInfoData data) :
     { }
 
 EventInfoObj::EventInfoObj(const EventInfoObj& other) :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data(other.data)
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data(other.data)
     
     { }
 

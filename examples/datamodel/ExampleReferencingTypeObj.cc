@@ -1,8 +1,8 @@
 #include "ExampleReferencingTypeObj.h"
 
 ExampleReferencingTypeObj::ExampleReferencingTypeObj() :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data()
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data()
     ,m_Clusters(new std::vector<ExampleCluster>()),m_Refs(new std::vector<ExampleReferencingType>())
     { }
 
@@ -12,8 +12,8 @@ ExampleReferencingTypeObj::ExampleReferencingTypeObj(const albers::ObjectID id, 
     { }
 
 ExampleReferencingTypeObj::ExampleReferencingTypeObj(const ExampleReferencingTypeObj& other) :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data(other.data)
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data(other.data)
     ,m_Clusters(new std::vector<ExampleCluster>(*(other.m_Clusters))),m_Refs(new std::vector<ExampleReferencingType>(*(other.m_Refs)))
     { }
 

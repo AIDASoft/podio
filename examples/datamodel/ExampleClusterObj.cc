@@ -1,8 +1,8 @@
 #include "ExampleClusterObj.h"
 
 ExampleClusterObj::ExampleClusterObj() :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data()
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data()
     ,m_Hits(new std::vector<ExampleHit>())
     { }
 
@@ -12,8 +12,8 @@ ExampleClusterObj::ExampleClusterObj(const albers::ObjectID id, ExampleClusterDa
     { }
 
 ExampleClusterObj::ExampleClusterObj(const ExampleClusterObj& other) :
-    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0},
-    data(other.data)
+    ObjBase{{albers::ObjectID::untracked,albers::ObjectID::untracked},0}
+    ,data(other.data)
     ,m_Hits(new std::vector<ExampleHit>(*(other.m_Hits)))
     { }
 

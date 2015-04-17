@@ -5,23 +5,23 @@
 #include <iostream>
 
 ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){
- m_obj->increaseRefCount();
+ m_obj->acquire();
 
 };
 
 ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj) {
-  m_obj->increaseRefCount();
+  m_obj->acquire();
 }
 
 ExampleCluster& ExampleCluster::operator=(const ExampleCluster& other){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
   m_obj = other.m_obj;
   return *this;
 }
 
 ExampleCluster::ExampleCluster(ExampleClusterObj* obj) : m_obj(obj){
   if(m_obj != nullptr)
-    m_obj->increaseRefCount();
+    m_obj->acquire();
 }
 
 ExampleCluster ExampleCluster::clone() const {
@@ -29,7 +29,7 @@ ExampleCluster ExampleCluster::clone() const {
 }
 
 ExampleCluster::~ExampleCluster(){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
 }
 
 

@@ -5,23 +5,23 @@
 #include <iostream>
 
 ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){
- m_obj->increaseRefCount();
+ m_obj->acquire();
 
 };
 
 ExampleHit::ExampleHit(const ExampleHit& other) : m_obj(other.m_obj) {
-  m_obj->increaseRefCount();
+  m_obj->acquire();
 }
 
 ExampleHit& ExampleHit::operator=(const ExampleHit& other){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
   m_obj = other.m_obj;
   return *this;
 }
 
 ExampleHit::ExampleHit(ExampleHitObj* obj) : m_obj(obj){
   if(m_obj != nullptr)
-    m_obj->increaseRefCount();
+    m_obj->acquire();
 }
 
 ExampleHit ExampleHit::clone() const {
@@ -29,7 +29,7 @@ ExampleHit ExampleHit::clone() const {
 }
 
 ExampleHit::~ExampleHit(){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
 }
 
 

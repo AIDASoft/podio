@@ -5,23 +5,23 @@
 #include <iostream>
 
 ${name}::${name}() : m_obj(new ${name}Obj()){
- m_obj->increaseRefCount();
+ m_obj->acquire();
 
 };
 
 ${name}::${name}(const ${name}& other) : m_obj(other.m_obj) {
-  m_obj->increaseRefCount();
+  m_obj->acquire();
 }
 
 ${name}& ${name}::operator=(const ${name}& other){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
   m_obj = other.m_obj;
   return *this;
 }
 
 ${name}::${name}(${name}Obj* obj) : m_obj(obj){
   if(m_obj != nullptr)
-    m_obj->increaseRefCount();
+    m_obj->acquire();
 }
 
 ${name} ${name}::clone() const {
@@ -29,7 +29,7 @@ ${name} ${name}::clone() const {
 }
 
 ${name}::~${name}(){
-  if ( m_obj != nullptr) m_obj->decreaseRefCount();
+  if ( m_obj != nullptr) m_obj->release();
 }
 
 $setters
