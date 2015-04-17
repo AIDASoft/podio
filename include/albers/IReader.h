@@ -22,9 +22,8 @@ class CollectionIDTable;
 class IReader {
   public:
     virtual ~IReader(){};
-    virtual bool getCollection(const std::string& name, CollectionBase*& collection) = 0;
+    virtual CollectionBase* readCollection(const std::string& name) = 0;
     virtual CollectionIDTable* getCollectionIDTable() {return nullptr;};
-    virtual void* getBuffer(const unsigned collectionID) = 0;
 };
 
 } // namespace

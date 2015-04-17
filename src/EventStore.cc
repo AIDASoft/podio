@@ -1,6 +1,6 @@
 
 // albers specific includes
-#include "albers/ROOTReader.h"
+#include "albers/IReader.h"
 #include "albers/CollectionBase.h"
 #include "albers/EventStore.h"
 
@@ -85,7 +85,7 @@ namespace albers {
     return (result != end(m_collections));
   }
 
-  void EventStore::setReader(ROOTReader* reader){
+  void EventStore::setReader(IReader* reader){
     m_reader = reader;
     setCollectionIDTable(reader->getCollectionIDTable());
   }

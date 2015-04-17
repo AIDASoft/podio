@@ -24,7 +24,7 @@ the event store makes use of a Reader to read the collection.
 namespace albers {
 
   class CollectionBase;
-  class ROOTReader;
+  class IReader;
 
   class EventStore : public ICollectionProvider {
 
@@ -54,7 +54,7 @@ namespace albers {
     void clear();
 
     /// set the reader
-    void setReader(ROOTReader* reader);
+    void setReader(IReader* reader);
 
     CollectionIDTable* getCollectionIDTable(){return m_table;};
 
@@ -69,7 +69,7 @@ namespace albers {
     // members
     mutable std::set<int> m_retrievedIDs;
     mutable CollContainer m_collections;
-    ROOTReader* m_reader;
+    IReader* m_reader;
     CollectionIDTable* m_table;
   };
 

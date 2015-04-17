@@ -12,7 +12,7 @@ class TTree;
 #include <iostream>
 
 #include "albers/ICollectionProvider.h"
-
+#include "albers/IReader.h"
 /*
 
 This class has the function to read available data from disk
@@ -28,7 +28,7 @@ class CollectionBase;
 class Registry;
 class CollectionIDTable;
 
-class ROOTReader {
+class ROOTReader : public IReader {
   friend EventStore;
   public:
     ROOTReader() : m_eventNumber(0) {}
