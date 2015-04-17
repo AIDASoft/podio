@@ -22,8 +22,11 @@ class CollectionIDTable;
 class IReader {
   public:
     virtual ~IReader(){};
+    /// Read Collection of given name
     virtual CollectionBase* readCollection(const std::string& name) = 0;
-    virtual CollectionIDTable* getCollectionIDTable() {return nullptr;};
+    /// Get CollectionIDTable of read-in data
+    virtual CollectionIDTable* getCollectionIDTable() = 0;
+    //TODO: decide on smart-pointers for passing of objects
 };
 
 } // namespace
