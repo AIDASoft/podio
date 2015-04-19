@@ -1,0 +1,456 @@
+---
+
+# LCIO test description
+
+components:
+
+  ThreeVector:
+    x : float
+    y : float
+    z : float
+
+  ThreeVectorError:
+  # dirty hack for now
+    xx : float
+    xy : float
+    xz : float
+    yx : float
+    yy : float
+    yz : float
+    zx : float
+    zy : float
+    zz : float
+
+  DirectionError:
+    v1 : float
+    v2 : float
+    v3 : float
+
+
+datatypes :
+
+  # LCIO RawCalorimeterHit
+  RawCalorimeterHit:
+    description: "LCIO raw calorimeter hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : amplitude
+        type : int
+        description : "The amplitude of the hit in ADC counts."
+      - name : timeStamp
+        type : int
+        description : "The time stamp for the hit."
+
+  # LCIO CalorimeterHit
+  #   Changes w.r.t. to original:
+  #     o position is of type "Position"
+  #     o no collection specific information implemented for now
+  CalorimeterHit:
+    description: "LCIO calorimeter hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : energy
+        type : float
+        description : "The energy of the hit in [GeV]."
+      - name : time
+        type : float
+        description : "The time of the hit in [ns]."
+      - name : position
+        type : ThreeVector
+        description : "The position of the hit in world coordinates."
+      - name : type
+        type : int
+        description : "The type of the hit"
+    OneToOneRelations:
+      - name : rawHit
+        type : RawCalorimeterHit
+        description: "The RawCalorimeterHit."
+
+  # LCIO cluster
+  #   Changes w.r.t. to original:
+  #     o std::bitset< 32 > _type not yet mapped
+  #     o Position, PositionError and DirectionError are structs and not arrays
+  #     o no collection specific information implemented for now
+  #     o ParticleIDs are not implemented
+  #     o cluster weight not properly implemented
+  Cluster:
+    description: "LCIO cluster"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : energy
+        type : float
+        description : "Energy of the cluster." #B.H.: I believe in GeV?
+      - name : position
+        type : ThreeVector
+        description : "Position of the cluster."
+      - name : positionError
+        type : ThreeVectorError
+        description: "Covariance matrix of the position (6 Parameters)"
+      - name : theta
+        type : float
+        description : "Intrinsic direction of cluster at position: Theta."
+      - name : phi
+        type : float
+        description: "Intrinsic direction of cluster at position: Phi."
+      - name : directionError
+        type : DirectionError
+        description: "Covariance matrix of the direction (3 Parameters)"
+    VectorMembers:
+      - name : shape
+        type : float
+        description : "Shape parameters"
+      - name : weight
+        type : float
+        description : "weight of a particular cluster"
+      - name : subdetectorEnergies
+        type : float
+        description : "A vector that holds the energy observed in a particular subdetector."
+    ManyToManyRelations:
+      - name : clusters
+        type : Cluster
+        description : "The clusters that have been combined to this cluster."
+      - name : hits
+        type : CalorimeterHit
+        description : "The hits that have been combined to this cluster."
+
+
+  # LCIO MCParticle
+  #   Changes w.r.t. to original:
+  #     o std::bitset< 32 > 	_simstatus not yet implemented
+  MCParticle:
+    description: "LCIO MC Particle"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : pdg
+        type : int
+        description : "The PDG code of the particle."
+      - name : genstatus
+        type : int
+        description : "The status for particles as defined by the generator."
+      - name : vertex
+        type : ThreeVector
+        description : "The production vertex of the particle in [mm]."
+      - name : charge
+        type : float
+        description : "The particle's charge."
+      - name : mass
+        type : float
+        description : "The mass of the particle in [GeV]"
+      - name : time
+        type : float
+        description : "The creation time of the particle in [ns] wrt. the event, e.g. for preassigned decays or decays in flight from the simulator."
+      - name : endpoint
+        type : ThreeVector
+        description : "The endpoint of the particle in [mm]"
+      - name : endpointSet
+        type : bool
+        description : "Whether the endpoint has been set"
+      - name : momentum
+        type : ThreeVector
+        description : "The particle's 3-momentum at the production vertex in [GeV]"
+    ManyToManyRelations:
+      - name : parents
+        type : MCParticle
+        description : "The parents of this particle."
+      - name : daughters
+        type : MCParticle
+        description : "The daughters this particle."
+
+  # LCIO ReconstructedParticle
+  #   Changes w.r.t. to original:
+  #
+  ReconstructedParticle:
+    description: "LCIO Reconstructed Particle"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : type
+        type : int
+        description : "Type of reconstructed particle."
+      - name : energy
+        type : float
+        description : "Energy of the reconstructed particle"
+      - name : momentum
+        type : ThreeVector
+        description : "The reconstructed particle's 3-momentum"
+      - name : charge
+        type : float
+        description : "The particle's charge."
+      - name : mass
+        type : float
+        description : "The mass of the particle in [GeV]"
+    OneToOneRelations:
+      - name : vertex
+        type : Vertex
+        description : "The start vertex associated to this particle."
+    ManyToManyRelations:
+      - name : clusters
+        type : Cluster
+        description : "The clusters combined to this particle."
+      - name : tracks
+        type : Track
+        description : "The tracks combined to this particle"
+      - name : particles
+        type : ReconstructedParticle
+        description : "The particles combined to this particle"
+
+#EVENT::FloatVec 	_cov
+#float 	_reference [3]
+#EVENT::ParticleID * 	_pidUsed
+#float 	_goodnessOfPID
+#EVENT::ParticleIDVec 	_pid
+
+  # LCIO SimCalorimeterHit
+  #   Changes w.r.t. to original:
+  #     o MCParticleContribution has to become its own collection
+  SimCalorimeterHit:
+    description: "LCIO simulated calorimeter hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : energy
+        type : float
+        description : "The energy of the hit in [GeV]."
+      - name : time
+        type : float
+        description : "The time of the hit in [ns]."
+      - name : position
+        type : ThreeVector
+        description : "The position of the hit in world coordinates."
+
+
+  # LCIO SimTrackerHit
+  #   Changes w.r.t. to original:
+  #     o member float _p [3] not implemented yet
+  SimTrackerHit:
+    description: "LCIO simulated tracker hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : position
+        type : ThreeVector
+        description : "The position of the hit in world coordinates."
+      - name : time
+        type : float
+        description : "The time of the hit in [ns]."
+      - name : pathLength
+        type : float
+        description : "path length"
+      - name : EDep
+        type : float
+        description : "EDep"
+    OneToOneRelations:
+      - name : particle
+        type : MCParticle
+        description : "The MCParticle that caused the hit."
+
+
+  # LCIO TPCHit - omitted since marked as deprecated.
+
+  # LCIO Track
+  #   Changes w.r.t. to original:
+  #     o not yet implemented std::bitset< 32 > 	_type
+  #       EVENT::TrackStateVec  _trackStates
+  Track:
+    description: "LCIO reconstructed track"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - name : chi2
+        type : float
+        description : ""
+      - name : ndf
+        type : int
+        description : "Number of degrees of freedom of the track fit."
+      - name : dEdx
+        type : float
+        description : "dEdx of the track."
+      - name : dEdxError
+        type : float
+        description : "Error of dEdx."
+      - name : radiusOfInnermostHit
+        type : float
+        description : "The radius of the innermost hit that has been used in the track fit."
+    VectorMembers:
+      - name : subdetectorHitNumbers
+        type : int
+        description : "The number of hits in particular subdetectors"
+    ManyToManyRelations:
+      - name : clusters
+        type : Track
+        description : "The tracks that have been combined to this track."
+      - name : hits
+        type : TrackerHit
+        description : "The hits that have been combined to this track."
+
+  # LCIO TrackerData
+  TrackerData:
+      description: "LCIO tracker data"
+      author : "F.Gaede, B. Hegner"
+      members:
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : time
+        type : int
+        description : "The time of the hit."
+      VectorMembers:
+        - name : charge
+          type : float
+          description : "The corrected (calibrated) FADC spectrum."
+
+  # LCIO TrackerHit
+  #   Changes w.r.t. to original:
+  #     o no specialisation for the different kind of geometries possible
+  TrackerHit:
+      description : "LCIO tracker hit"
+      author : "F.Gaede, B. Hegner"
+      members :
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : time
+        type : int
+        description : "The time of the hit."
+      - name : EDep
+        type : float
+        description : "EDep"
+      - name : EDepError
+        type : float
+        description : "error on EDep"
+      - name : position
+        type : ThreeVector
+        description : ""
+      VectorMembers:
+        - name : charge
+          type : float
+          description : "The calibrated ADC values"
+
+#int 	_type
+#EVENT::FloatVec 	_cov
+#int 	_quality
+#EVENT::LCObjectVec 	_rawHits
+
+  # LCIO TrackerPulse
+  TrackerPulse:
+    description : "LCIO tracker pulse"
+    author : "F. Gaede, B. Hegner"
+    members:
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : time
+        type : float
+        description : "The time of the pulse."
+      - name : charge
+        type : float
+        description : "The integrated charge of the pulse"
+
+#int 	_quality
+#EVENT::FloatVec 	_cov
+#EVENT::TrackerData * 	_corrData
+
+  # LCIO TrackerRawData
+  TrackerData:
+      description: "LCIO tracker raw data"
+      author : "F.Gaede, B. Hegner"
+      members:
+      - name : cellID0
+        type : int
+        description : "The detector specific (geometrical) cell id."
+      - name : cellID1
+        type : int
+        description : "The second detector specific (geometrical) cell id."
+      - name : time
+        type : int
+        description : "Returns a time measurement associated with the adc values."
+      VectorMembers:
+        - name : charge
+          type : short
+          description : "The actual FADC spectrum."
+
+  # LCIO TrackState
+  #   Changes w.r.t. to original:
+  #     o reference point is a struct, not a float[3]
+  #     o still missing: EVENT::FloatVec 	_covMatrix _ -> size 15?
+  TrackerData:
+      description: "LCIO track state"
+      author : "F.Gaede, B. Hegner"
+      members:
+        - name : location
+          type : int
+          description : "The location of the track state."
+        - name : d0
+          type : float
+          description : "Impact parameter of the track in (r-phi)."
+        - name : phi
+          type : float
+          description : "Phi of the track at the reference point."
+        - name : omega
+          type : float
+          description : "Omega is the signed curvature of the track in [1/mm]."
+        - name : z0
+          type : float
+          description : "Impact parameter of the track in (r-z)."
+        - name : tanLambda
+          type : float
+          description : "Lambda is the dip angle of the track in r-z at the reference point."
+        - name : tanLambda
+          type : ThreeVector
+          description : "Reference point of the track parameters"
+
+  # LCIO Vertex
+  #   Changes w.r.t. to original:
+  #     o Position is a struct and not a float[3]
+  #     o type not implemented - shouldn't store strings IMHO
+  #     o not yet implemented: EVENT::FloatVec 	_cov
+  #     o not yet implemented: EVENT::FloatVec 	_par
+  Vertex:
+      description: "LCIO vertex"
+      author : "F.Gaede, B. Hegner"
+      members:
+        - name : primary
+          type : int
+          description : "Whether it is the primary vertex of the event"
+        - name : chi2
+          type : float
+          description : "Chi squared of the vertex fit."
+        - name : probability
+          type : float
+          description : "Probability of the vertex fit."
+        - name : position
+          type : ThreeVector
+          description : "Position of the vertex."
+      OneToOneRelations:
+        - name : particle
+          type : ReconstructedParticle
+          description : "Reconstructed Particle associated to the Vertex."
