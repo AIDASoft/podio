@@ -138,6 +138,15 @@ class ClassGenerator(object):
       description = member["description"]
       membersCode+= "  %s %s; ///%s \n" %(klass, name, description)
 
+    # now handle the vector-members
+    vectormembers = []
+    if definition.has_key("VectorMembers"):
+      vectormembers = definition["VectorMembers"]
+    for vectormember in vectormembers:
+      name = vectormember["name"]
+      membersCode+= "  unsigned int %s_begin; \n" %(name)
+      membersCode+= "  unsigned int %s_end; \n" %(name)
+
     # now handle the one-to-many relations
     refvectors = []
     if definition.has_key("OneToManyRelations"):
@@ -208,6 +217,10 @@ class ClassGenerator(object):
       else:
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
+
+    # handle vector members
+    vectormembers_members = ""
+
 
     # handle one-to-many relations
     references_members = ""
