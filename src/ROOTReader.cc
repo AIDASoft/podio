@@ -27,11 +27,11 @@ namespace albers {
     auto branch = m_eventTree->GetBranch(name.c_str());
     if (branch == nullptr) return nullptr;
     CollectionBase* collection = nullptr;
-    auto dataClassName= branch->GetClassName();
+    auto dataClassName = branch->GetClassName();
     auto theClass = gROOT->GetClass(dataClassName);
     if (theClass == nullptr) return nullptr;
     void* buffer = theClass->New();
-    //now create the transient collections
+    // now create the transient collections
     // some workaround until gcc supports regex properly:
     auto dataClassString = std::string(dataClassName);
     auto start = dataClassString.find("<");
