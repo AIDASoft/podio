@@ -1,0 +1,6 @@
+  for(unsigned int i=0, size=m_obj->size();i!=size;++i )) {
+    auto id = (*(*m_refCollections)[${counter}])[i];
+    CollectionBase* coll = nullptr;
+    collectionProvider->get(id.collectionID,coll);
+    obj->m_rel_${name} = (*coll)[id.index];
+  }
