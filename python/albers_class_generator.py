@@ -41,13 +41,34 @@ class ClassGenerator(object):
     self.created_classes = []
     self.requested_classes = []
 
+  def load_data_definitions(self):
+    stream = open(self.yamlfile, "r")
+    content = yaml.load(stream)      
+    datatypes = {}
+    if content.has_key("datatypes"):
+      for klassname, value in content["datatypes"].iteritems():
+        datatype = {}
+        datatype["description"] = value["description"]
+        datatype["author"] = value["author"]
+        for category in ("members","VectorMembers","OneToOneRelations","OneToManyRelations"):
+          definitions = []
+          if value.has_key(category):
+            for definition in value[category]:
+              klass, name = definition.split()[:2]
+              comment = definition.split("//")[1]
+              definitions.append({"name": name, "type": klass, "description" : comment})
+            datatype[category] = definitions
+        datatypes[klassname] = datatype
+    print datatypes
+    self.datatypes = datatypes
+
   def process(self):
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
     if content.has_key("components"):
       self.process_components(content["components"])
-    if content.has_key("datatypes"):
-      self.process_datatypes(content["datatypes"])
+    self.load_data_definitions()
+    self.process_datatypes(self.datatypes)
     self.create_selection_xml()
     self.print_report()
 
@@ -196,8 +217,7 @@ class ClassGenerator(object):
         if klass in self.requested_classes:
           includes += '#include "%s.h"\n' %klass
         else:
-          raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname\
-, klass))
+          raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
     getter_implementations = ""
     setter_implementations = ""
@@ -221,11 +241,20 @@ class ClassGenerator(object):
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       # set up aignature
       constructor_signature += "%s %s," %(klass, name)
-      # constructor 
+      # constructor
       constructor_body += "  m_obj->data.%s = %s;" %(name, name)
-      
+
     # handle vector members
-    vectormembers_members = ""
+    vectormembers = []
+    if definition.has_key("VectorMembers"):
+      includes += "#include <vector>\n"
+      vectormembers = definition["VectorMembers"]
+    for item in vectormembers:
+      klass = item["type"]
+      if klass not in self.buildin_types:
+        raise Exception("'%s' declares a non-allowed vector member of type '%s'!" %(classname, klass))
+      else :
+        refvectors += definition["VectorMembers"]
 
     # handle constructor from values
     constructor_signature = constructor_signature.rstrip(",")
@@ -234,11 +263,11 @@ class ClassGenerator(object):
        constructor_declaration = ""
     else:
       substitutions = { "name" : classname,
-                         "constructor" : constructor_body, 
+                         "constructor" : constructor_body,
                          "signature" : constructor_signature
-      }        
+      }
       constructor_implementation = self.evaluate_template("Object.constructor.cc.template",substitutions)
-      constructor_declaration = "  %s(%s);\n" %(classname, constructor_signature) 
+      constructor_declaration = "  %s(%s);\n" %(classname, constructor_signature)
 
     # handle one-to-many relations
     references_members = ""
@@ -271,6 +300,7 @@ class ClassGenerator(object):
                      "relations" : references,
                      "relation_declarations" : references_declarations,
                      "relation_members" : references_members,
+                     ""
                      "package_name" : self.package_name
                     }
     self.fill_templates("Object",substitutions)
@@ -291,8 +321,19 @@ class ClassGenerator(object):
     create_relations = ""
     clear_relations  = ""
     push_back_relations = ""
-    if definition.has_key("OneToManyRelations"):
-      refvectors = definition["OneToManyRelations"]
+    prepareafterread_refmembers = ""
+    prepareforwriting_refmembers = ""
+    nOfRefvectors = 0
+    if definition.has_key("OneToManyRelations") or definition.has_key("OneToOneRelations"):
+      if definition.has_key("OneToManyRelations"):
+        refvectors = definition["OneToManyRelations"]
+      else:
+        refvectors = []
+      if definition.has_key("OneToOneRelations"):
+        refmembers = definition["OneToOneRelations"]
+      else:
+        refmembers = []
+      nOfRefVectors = len(refvectors)
       # member initialization
       constructorbody += "  m_refCollections = new albers::CollRefCollection();\n"
       clear_relations += "  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }\n"
@@ -324,13 +365,30 @@ class ClassGenerator(object):
         prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template",substitutions)
         # relation handling in ::settingReferences
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)
-
         prepareafterread += "    obj->m_%s = m_rel_%s;" %(name, name)
-
+      for counter, item in enumerate(refmembers):
+        name  = item["name"]
+        klass = item["type"]
+        substitutions = { "counter" : counter+nOfRefVectors,
+                          "class" : klass,
+                          "name"  : name }
+        # members
+        relations += "  std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
+        # constructor calls
+        initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
+        constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
+        # relation handling in ::clear
+        clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
+        clear_relations += "  m_rel_%s->clear();\n" %(name)
+        # relation handling in ::prepareForWrite
+        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {(*m_refCollections)[%s]->emplace_back(obj->m_%s.getObjectID());};\n" %(counter+nOfRefVectors,name)
+        # relation handling in ::settingReferences
+        prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
     substitutions = { "name" : classname,
                       "constructorbody" : constructorbody,
                       "prepareforwritinghead" : prepareforwritinghead,
                       "prepareforwritingbody" : prepareforwritingbody,
+                      "prepareforwriting_refmembers" : prepareforwriting_refmembers,
                       "setreferences" : setreferences,
                       "prepareafterread" : prepareafterread,
                       "includes" : includes,
@@ -379,11 +437,24 @@ class ClassGenerator(object):
       refvectors = definition["OneToManyRelations"]
     else:
       refvectors = []
+    if definition.has_key("VectorMembers"):
+      refvectors+= definition["VectorMembers"]
+    if definition.has_key("OneToOneRelations"):
+      singleRelations = definition["OneToOneRelations"]
+      for item in singleRelations:
+        name  = item["name"]
+        klass = item["type"]
+        relations+= "  %s m_%s;\n" %(klass, name)
+        if klass not in self.buildin_types:
+          includes += '#include "%s.h"\n' %(klass)
+    if len(refvectors) !=0:
+      includes += "#include <vector>\n"
     for item in refvectors:
       name  = item["name"]
       klass = item["type"]
       relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
-      includes += '#include "%s.h"\n' %(klass)
+      if klass not in self.buildin_types:
+        includes += '#include "%s.h"\n' %(klass)
       initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klass)
       deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
       delete_relations += "delete m_%s;\n" %(name)

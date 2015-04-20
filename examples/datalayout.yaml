@@ -5,46 +5,40 @@ datatypes :
     description : "Event info"
     author : "B. Hegner"
     members :
-     - name : Number
-       type : int
-       description: "event number"
+     - int Number // event number
 
   ExampleHit :
     description : "Example Hit"
     author : "B. Hegner"
     members:
-     - name : x
-       type : double
-       description: "x-coordinate"
-     - name : y
-       type : double
-       description: "y-coordinate"
-     - name : z
-       type : double
-       description: "z-coordinate"
-     - name : energy
-       type : double
-       description : "measured energy deposit"
+     - double x      // x-coordinate
+     - double y      // y-coordinate
+     - double z      // z-coordinate
+     - double energy // measured energy deposit
 
   ExampleCluster :
     description : "Cluster"
     author : "B. Hegner"
     members:
-      - name : energy
-        type : double
-        description : "cluster energy"
+      - double energy // cluster energy
     OneToManyRelations:
-     - name : Hits
-       type : ExampleHit
-       description: "hits contained in the cluster"
+     - ExampleHit Hits // hits contained in the cluster
 
   ExampleReferencingType :
     description : "Referencing Type"
     author : "B. Hegner"
     OneToManyRelations:
-     - name : Clusters
-       type : ExampleCluster
-       description: "some refs to Clusters"
-     - name : Refs
-       type : ExampleReferencingType
-       description : "refs into same type"
+     - ExampleCluster         Clusters  // some refs to Clusters
+     - ExampleReferencingType Refs      // refs into same type
+
+#  ExampleWithVectorMember :
+#    description : "Type with a vector member"
+#    author : "Benedikt Hegner"
+#    VectorMembers:
+#     - int count // various ADC counts
+
+  ExampleWithOneRelation :
+    description : "Type with one relation member"
+    author : "Benedikt Hegner"
+    OneToOneRelations:
+     - ExampleCluster cluster // a particular cluster
