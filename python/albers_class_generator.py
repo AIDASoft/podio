@@ -290,6 +290,7 @@ class ClassGenerator(object):
     relations = ""
     create_relations = ""
     clear_relations  = ""
+    push_back_relations = ""
     if definition.has_key("OneToManyRelations"):
       refvectors = definition["OneToManyRelations"]
       # member initialization
@@ -317,6 +318,8 @@ class ClassGenerator(object):
         clear_relations += "  m_rel_%s_tmp.clear();\n" %(name)
         clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
         clear_relations += "  m_rel_%s->clear();\n" %(name)
+        # relation handling in push_back
+        push_back_relations += "  m_rel_%s_tmp.push_back(obj->m_%s);\n" %(name,name)
         # relation handling in ::prepareForWrite
         prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template",substitutions)
         # relation handling in ::settingReferences
@@ -335,6 +338,7 @@ class ClassGenerator(object):
                       "relations"           : relations,
                       "create_relations" : create_relations,
                       "clear_relations"  : clear_relations,
+                      "push_back_relations" : push_back_relations,
                       "package_name" : self.package_name,
                       "vectorized_access_declaration" : vectorized_access_decl,
                       "vectorized_access_implementation" : vectorized_access_impl
