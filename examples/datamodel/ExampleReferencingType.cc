@@ -6,8 +6,9 @@
 
 ExampleReferencingType::ExampleReferencingType() : m_obj(new ExampleReferencingTypeObj()){
  m_obj->acquire();
-
 };
+
+
 
 ExampleReferencingType::ExampleReferencingType(const ExampleReferencingType& other) : m_obj(other.m_obj) {
   m_obj->acquire();

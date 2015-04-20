@@ -24,6 +24,8 @@ public:
 
   /// default constructor
   EventInfo();
+    EventInfo(int Number);
+
   /// copy constructor
   EventInfo(const EventInfo& other);
   /// copy-assignment operator

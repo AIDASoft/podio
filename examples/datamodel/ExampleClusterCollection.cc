@@ -94,6 +94,8 @@ void ExampleClusterCollection::push_back(ExampleCluster object){
     if (obj->id.index == albers::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
+          m_rel_Hits_tmp.push_back(obj->m_Hits);
+
     } else {
       throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
 

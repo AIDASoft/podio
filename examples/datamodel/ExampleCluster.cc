@@ -6,7 +6,11 @@
 
 ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){
  m_obj->acquire();
+};
 
+ExampleCluster::ExampleCluster(double energy) : m_obj(new ExampleClusterObj()){
+ m_obj->acquire();
+   m_obj->data.energy = energy;
 };
 
 ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj) {

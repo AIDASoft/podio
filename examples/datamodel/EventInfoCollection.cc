@@ -67,6 +67,7 @@ void EventInfoCollection::push_back(EventInfo object){
     if (obj->id.index == albers::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
+        
     } else {
       throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
 

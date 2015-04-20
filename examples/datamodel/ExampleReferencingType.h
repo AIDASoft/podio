@@ -27,6 +27,7 @@ public:
 
   /// default constructor
   ExampleReferencingType();
+  
   /// copy constructor
   ExampleReferencingType(const ExampleReferencingType& other);
   /// copy-assignment operator

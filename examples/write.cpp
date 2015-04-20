@@ -40,11 +40,18 @@ int main(){
 
     // open a scope for the reference counting
     {
-      auto item1 = info.create();
+      auto item1 = EventInfo();
       item1.Number(i);
-      auto hit1 = hits.create(0.,0.,0.,23.+i);
-      auto hit2 = hits.create(1.,0.,0.,12.+i);
-      auto cluster  = clusters.create();
+      info.push_back(item1);
+      auto hit1 = ExampleHit(0.,0.,0.,23.+i);
+      auto hit2 = ExampleHit(1.,0.,0.,12.+i);
+
+      hits.push_back(hit1);
+      hits.push_back(hit2);
+
+      auto cluster  = ExampleCluster();
+
+      clusters.push_back(cluster);
 
       cluster.addHits(hit1);
       cluster.addHits(hit2);

@@ -26,6 +26,8 @@ public:
 
   /// default constructor
   ExampleCluster();
+    ExampleCluster(double energy);
+
   /// copy constructor
   ExampleCluster(const ExampleCluster& other);
   /// copy-assignment operator

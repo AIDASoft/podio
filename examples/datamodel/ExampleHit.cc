@@ -6,7 +6,11 @@
 
 ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){
  m_obj->acquire();
+};
 
+ExampleHit::ExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()){
+ m_obj->acquire();
+   m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
 };
 
 ExampleHit::ExampleHit(const ExampleHit& other) : m_obj(other.m_obj) {

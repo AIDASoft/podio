@@ -24,6 +24,8 @@ public:
 
   /// default constructor
   ExampleHit();
+    ExampleHit(double x,double y,double z,double energy);
+
   /// copy constructor
   ExampleHit(const ExampleHit& other);
   /// copy-assignment operator

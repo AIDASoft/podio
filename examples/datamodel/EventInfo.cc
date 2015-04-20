@@ -6,7 +6,11 @@
 
 EventInfo::EventInfo() : m_obj(new EventInfoObj()){
  m_obj->acquire();
+};
 
+EventInfo::EventInfo(int Number) : m_obj(new EventInfoObj()){
+ m_obj->acquire();
+   m_obj->data.Number = Number;
 };
 
 EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
