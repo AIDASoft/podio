@@ -4,6 +4,13 @@ include_directories(
 #        ${CMAKE_CURRENT_SOURCE_DIR}/utilities
 )
 
+foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
+  string(TOUPPER ${_conf} _conf )
+  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
+  set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
+  set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
+endforeach()
+
 file(GLOB sources datamodel/*.cc)
 file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
@@ -12,7 +19,7 @@ file(GLOB headers_utils utilities/*.h)
 list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
 REFLEX_GENERATE_DICTIONARY(DataModelEx ${headers} SELECTION datamodel/selection.xml)
 
-add_library(DataModelExample SHARED ${sources} ${sources_utils} ${headers} ${headers_utils} DataModelEx)
+add_library(DataModelExample SHARED ${sources} ${sources_utils} ${headers} ${headers_utils} DataModelEx.cxx)
 target_link_libraries(DataModelExample albers)
 
 file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
