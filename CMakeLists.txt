@@ -7,6 +7,7 @@ find_package(ROOT REQUIRED COMPONENTS RIO Tree)
 include(${ROOT_USE_FILE})
 
 add_definitions(-Wno-unused-variable -Wno-unused-parameter)
+#add_definitions(-Wpadded)
 
 #--temporary fix of inconsistency in ROOT CMake macros
 set(ROOT_genreflex_cmd ${ROOT_genreflex_CMD})

@@ -38,40 +38,34 @@ int main(){
       std::cout << "processing event " << i << std::endl;
     }
 
-    // open a scope for the reference counting
-    {
-      auto item1 = EventInfo();
-      item1.Number(i);
-      info.push_back(item1);
-      auto hit1 = ExampleHit(0.,0.,0.,23.+i);
-      auto hit2 = ExampleHit(1.,0.,0.,12.+i);
+    auto item1 = EventInfo();
+    item1.Number(i);
+    info.push_back(item1);
+    auto hit1 = ExampleHit(0.,0.,0.,23.+i);
+    auto hit2 = ExampleHit(1.,0.,0.,12.+i);
 
-      hits.push_back(hit1);
-      hits.push_back(hit2);
+    hits.push_back(hit1);
+    hits.push_back(hit2);
 
-      auto cluster  = ExampleCluster();
+    auto cluster  = ExampleCluster();
+    cluster.addHits(hit1);
+    cluster.addHits(hit2);
+    cluster.energy(hit1.energy()+hit2.energy());
 
-      clusters.push_back(cluster);
+    clusters.push_back(cluster);
 
-      cluster.addHits(hit1);
-      cluster.addHits(hit2);
-      cluster.energy(hit1.energy()+hit2.energy());
+    auto ref = ExampleReferencingType();
+    refs.push_back(ref);
 
-      auto ref = ExampleReferencingType();
-      refs.push_back(ref);
+    auto ref2 = ExampleReferencingType();
+    refs2.push_back(ref2);
 
-      auto ref2 = ExampleReferencingType();
-      refs2.push_back(ref2);
+    ref.addClusters(cluster);
+    ref.addRefs(ref2);
 
-      ref.addClusters(cluster);
-      ref.addRefs(ref2);
-
-     
-      auto cyclic = ExampleReferencingType();
-      cyclic.addRefs(cyclic);
-      refs.push_back(cyclic);
-
-    }
+    auto cyclic = ExampleReferencingType();
+    cyclic.addRefs(cyclic);
+    refs.push_back(cyclic);
 
     writer.writeEvent();
     store.clearCollections();
