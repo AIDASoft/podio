@@ -23,6 +23,7 @@ public:
 
   /// default constructor
   ${name}();
+  ${constructor_declaration}
   /// copy constructor
   ${name}(const ${name}& other);
   /// copy-assignment operator

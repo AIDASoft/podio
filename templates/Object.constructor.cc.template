@@ -1,0 +1,4 @@
+${name}::${name}(${signature}) : m_obj(new ${name}Obj()){
+ m_obj->acquire();
+ ${constructor}
+};

@@ -6,8 +6,9 @@
 
 ${name}::${name}() : m_obj(new ${name}Obj()){
  m_obj->acquire();
-
 };
+
+${constructor_implementation}
 
 ${name}::${name}(const ${name}& other) : m_obj(other.m_obj) {
   m_obj->acquire();

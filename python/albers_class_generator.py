@@ -203,6 +203,8 @@ class ClassGenerator(object):
     setter_implementations = ""
     getter_declarations = ""
     setter_declarations = ""
+    constructor_signature = ""
+    constructor_body = ""
 
     # handle standard members
     for member in members:
@@ -217,10 +219,26 @@ class ClassGenerator(object):
       else:
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
-
+      # set up aignature
+      constructor_signature += "%s %s," %(klass, name)
+      # constructor 
+      constructor_body += "  m_obj->data.%s = %s;" %(name, name)
+      
     # handle vector members
     vectormembers_members = ""
 
+    # handle constructor from values
+    constructor_signature = constructor_signature.rstrip(",")
+    if constructor_signature == "":
+       constructor_implementation = ""
+       constructor_declaration = ""
+    else:
+      substitutions = { "name" : classname,
+                         "constructor" : constructor_body, 
+                         "signature" : constructor_signature
+      }        
+      constructor_implementation = self.evaluate_template("Object.constructor.cc.template",substitutions)
+      constructor_declaration = "  %s(%s);\n" %(classname, constructor_signature) 
 
     # handle one-to-many relations
     references_members = ""
@@ -245,6 +263,8 @@ class ClassGenerator(object):
                      "getter_declarations": getter_declarations,
                      "setters"  : setter_implementations,
                      "setter_declarations": setter_declarations,
+                     "constructor_declaration" : constructor_declaration,
+                     "constructor_implementation" : constructor_implementation,
                      "name"     : classname,
                      "description" : description,
                      "author"   : author,
