@@ -57,13 +57,20 @@ int main(){
       cluster.addHits(hit2);
       cluster.energy(hit1.energy()+hit2.energy());
 
-      auto ref  = refs.create();
-      auto ref2 = refs2.create();
+      auto ref = ExampleReferencingType();
+      refs.push_back(ref);
+
+      auto ref2 = ExampleReferencingType();
+      refs2.push_back(ref2);
+
       ref.addClusters(cluster);
       ref.addRefs(ref2);
 
-      auto cyclic = refs.create();
+     
+      auto cyclic = ExampleReferencingType();
       cyclic.addRefs(cyclic);
+      refs.push_back(cyclic);
+
     }
 
     writer.writeEvent();
