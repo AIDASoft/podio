@@ -4,6 +4,7 @@ import string
 import sys
 import pickle
 import yaml
+from albers_config_reader import AlbersConfigReader
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
 _text_ = """
@@ -40,38 +41,10 @@ class ClassGenerator(object):
     self.buildin_types = ["int","float","double","unsigned int","unsigned"]
     self.created_classes = []
     self.requested_classes = []
-
-  @staticmethod
-  def check_class(klass):
-    # check whether it is an array
-    if "[" in klass:
-      theType = klass.split("[")[0]
-      number  = klass.split("[")[1].split("]")[0]
-      # transform it into std::array
-      klass = "std::array<%s,%s>" %(theType, number);
-    return klass
-
+    self.reader = AlbersConfigReader(yamlfile)
 
   def load_data_definitions(self):
-    stream = open(self.yamlfile, "r")
-    content = yaml.load(stream)
-    datatypes = {}
-    if content.has_key("datatypes"):
-      for klassname, value in content["datatypes"].iteritems():
-        datatype = {}
-        datatype["description"] = value["description"]
-        datatype["author"] = value["author"]
-        for category in ("members","VectorMembers","OneToOneRelations","OneToManyRelations"):
-          definitions = []
-          if value.has_key(category):
-            for definition in value[category]:
-              klass, name = definition.split()[:2]
-              klass = self.check_class(klass)
-              comment = definition.split("//")[1]
-              definitions.append({"name": name, "type": klass, "description" : comment})
-            datatype[category] = definitions
-        datatypes[klassname] = datatype
-    self.datatypes = datatypes
+    self.datatypes = self.reader.read()
 
   def process(self):
     stream = open(self.yamlfile, "r")
@@ -94,8 +67,6 @@ class ClassGenerator(object):
       self.requested_classes.append(name)
       self.requested_classes.append("%sData" %name)
     for name, components in content.iteritems():
-      if not components.has_key("members"):
-        components["members"] = []
       self.create_data(name, components)
       self.create_class(name, components)
       self.create_collection(name, components)
@@ -174,18 +145,14 @@ class ClassGenerator(object):
       membersCode+= "  %s %s; ///%s \n" %(klass, name, description)
 
     # now handle the vector-members
-    vectormembers = []
-    if definition.has_key("VectorMembers"):
-      vectormembers = definition["VectorMembers"]
+    vectormembers = definition["VectorMembers"]
     for vectormember in vectormembers:
       name = vectormember["name"]
       membersCode+= "  unsigned int %s_begin; \n" %(name)
       membersCode+= "  unsigned int %s_end; \n" %(name)
 
     # now handle the one-to-many relations
-    refvectors = []
-    if definition.has_key("OneToManyRelations"):
-      refvectors = definition["OneToManyRelations"]
+    refvectors = definition["OneToManyRelations"]
     for refvector in refvectors:
       name = refvector["name"]
       membersCode+= "  unsigned int %s_begin; \n" %(name)
@@ -223,28 +190,25 @@ class ClassGenerator(object):
         raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
     # check on-to-one relations and prepare include directives
-    oneToOneRelations = []
-    if definition.has_key("OneToOneRelations"):
-      oneToOneRelations = definition["OneToOneRelations"]
-      for member in oneToOneRelations:
-        klass = member["type"]
-        if klass in self.requested_classes:
-          includes += '#include "%s.h"\n' %(klass)
+    oneToOneRelations = definition["OneToOneRelations"]
+    for member in oneToOneRelations:
+      klass = member["type"]
+      if klass in self.requested_classes:
+        includes += '#include "%s.h"\n' %(klass)
 
     # check one-to-many relations for consistency
     # and prepare include directives
-    refvectors = []
-    if definition.has_key("OneToManyRelations"):
+    refvectors = definition["OneToManyRelations"]
+    if len(refvectors) != 0:
       includes += "#include <vector>\n"
-      refvectors = definition["OneToManyRelations"]
-      for item in refvectors:
-        klass = item["type"]
-        if klass in self.requested_classes:
-          includes += '#include "%s.h"\n' %klass
-        elif "std::array" in klass:
-          includes += "#include <array>\n"
-        else:
-          raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
+    for item in refvectors:
+      klass = item["type"]
+      if klass in self.requested_classes:
+        includes += '#include "%s.h"\n' %klass
+      elif "std::array" in klass:
+        includes += "#include <array>\n"
+      else:
+        raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
     getter_implementations = ""
     setter_implementations = ""
@@ -278,10 +242,9 @@ class ClassGenerator(object):
         setter_declarations += "  void %s(%s value) { m_obj->m_%s = value; };\n" %(name, klass, name)
         getter_declarations+= "  const %s& %s() const { return m_obj->m_%s; };\n" %(klass, name, name)
     # handle vector members
-    vectormembers = []
-    if definition.has_key("VectorMembers"):
+    vectormembers = definition["VectorMembers"]
+    if len(vectormembers) != 0:
       includes += "#include <vector>\n"
-      vectormembers = definition["VectorMembers"]
     for item in vectormembers:
       klass = item["type"]
       if klass not in self.buildin_types:
@@ -356,17 +319,12 @@ class ClassGenerator(object):
     push_back_relations = ""
     prepareafterread_refmembers = ""
     prepareforwriting_refmembers = ""
-    nOfRefvectors = 0
-    if definition.has_key("OneToManyRelations") or definition.has_key("OneToOneRelations"):
-      if definition.has_key("OneToManyRelations"):
-        refvectors = definition["OneToManyRelations"]
-      else:
-        refvectors = []
-      if definition.has_key("OneToOneRelations"):
-        refmembers = definition["OneToOneRelations"]
-      else:
-        refmembers = []
-      nOfRefVectors = len(refvectors)
+
+    refmembers = definition["OneToOneRelations"]
+    refvectors = definition["OneToManyRelations"]
+    nOfRefVectors = len(refvectors)
+    nOfRefMembers = len(refmembers)
+    if nOfRefVectors + nOfRefMembers > 0:
       # member initialization
       constructorbody += "  m_refCollections = new albers::CollRefCollection();\n"
       clear_relations += "  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }\n"
@@ -469,20 +427,15 @@ class ClassGenerator(object):
     initialize_relations = ""
     deepcopy_relations = ""
     delete_relations = ""
-    if definition.has_key("OneToManyRelations"):
-      refvectors = definition["OneToManyRelations"]
-    else:
-      refvectors = []
-    if definition.has_key("VectorMembers"):
-      refvectors+= definition["VectorMembers"]
-    if definition.has_key("OneToOneRelations"):
-      singleRelations = definition["OneToOneRelations"]
-      for item in singleRelations:
-        name  = item["name"]
-        klass = item["type"]
-        relations+= "  %s m_%s;\n" %(klass, name)
-        if klass not in self.buildin_types:
-          includes += '#include "%s.h"\n' %(klass)
+    refvectors = definition["OneToManyRelations"]
+    refvectors+= definition["VectorMembers"]
+    singleRelations = definition["OneToOneRelations"]
+    for item in singleRelations:
+      name  = item["name"]
+      klass = item["type"]
+      relations+= "  %s m_%s;\n" %(klass, name)
+      if klass not in self.buildin_types:
+        includes += '#include "%s.h"\n' %(klass)
     if len(refvectors) !=0:
       includes += "#include <vector>\n"
     for item in refvectors:
@@ -566,7 +519,6 @@ class ClassGenerator(object):
 if __name__ == "__main__":
 
   from optparse import OptionParser
-
 
   usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename>
 
