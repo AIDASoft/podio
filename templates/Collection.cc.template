@@ -58,6 +58,7 @@ void ${name}Collection::prepareAfterRead(){
 
 bool ${name}Collection::setReferences(const albers::ICollectionProvider* collectionProvider){
 $setreferences
+${prepareafterread_refmembers}
   return true; //TODO: check success
 }
 

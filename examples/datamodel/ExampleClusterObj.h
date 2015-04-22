@@ -9,6 +9,7 @@
 #include "albers/ObjBase.h"
 #include "ExampleClusterData.h"
 
+#include <vector>
 #include "ExampleHit.h"
 
 

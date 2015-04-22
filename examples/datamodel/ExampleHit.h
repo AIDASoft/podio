@@ -5,7 +5,7 @@
 #include <vector>
 #include "albers/ObjectID.h"
 
-// measured energy deposit
+//  measured energy deposit
 // author: B. Hegner
 
 //forward declarations

@@ -6,6 +6,30 @@
         <class name="albers::ObjectID"/>
         <class name="vector<albers::ObjectID>"/>
 
+          <class name="std::vector<ExampleWithOneRelationData>" />
+
+          <class name="ExampleWithOneRelationData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithOneRelation>" />
+
+          <class name="ExampleWithOneRelation">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithOneRelationCollection>" />
+
+          <class name="ExampleWithOneRelationCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithOneRelationObj>" />
+
+          <class name="ExampleWithOneRelationObj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<ExampleReferencingTypeData>" />
 
           <class name="ExampleReferencingTypeData">

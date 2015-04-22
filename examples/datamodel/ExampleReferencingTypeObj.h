@@ -9,6 +9,7 @@
 #include "albers/ObjBase.h"
 #include "ExampleReferencingTypeData.h"
 
+#include <vector>
 #include "ExampleCluster.h"
 #include "ExampleReferencingType.h"
 

@@ -43,7 +43,7 @@ void ExampleHitCollection::prepareForWrite(){
   for(int i=0, size = m_data->size(); i != size; ++i){
   
   }
-
+  
 }
 
 void ExampleHitCollection::prepareAfterRead(){
@@ -57,6 +57,7 @@ void ExampleHitCollection::prepareAfterRead(){
 }
 
 bool ExampleHitCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
+
 
   return true; //TODO: check success
 }

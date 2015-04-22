@@ -43,7 +43,7 @@ void EventInfoCollection::prepareForWrite(){
   for(int i=0, size = m_data->size(); i != size; ++i){
   
   }
-
+  
 }
 
 void EventInfoCollection::prepareAfterRead(){
@@ -57,6 +57,7 @@ void EventInfoCollection::prepareAfterRead(){
 }
 
 bool EventInfoCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
+
 
   return true; //TODO: check success
 }

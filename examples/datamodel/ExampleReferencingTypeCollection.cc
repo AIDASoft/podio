@@ -79,7 +79,7 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
    }
 
   }
-
+  
 }
 
 void ExampleReferencingTypeCollection::prepareAfterRead(){
@@ -109,6 +109,7 @@ bool ExampleReferencingTypeCollection::setReferences(const albers::ICollectionPr
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Refs->emplace_back(tmp);
   }
+
 
   return true; //TODO: check success
 }

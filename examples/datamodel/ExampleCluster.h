@@ -7,7 +7,7 @@
 #include <vector>
 #include "albers/ObjectID.h"
 
-// cluster energy
+//  cluster energy
 // author: B. Hegner
 
 //forward declarations

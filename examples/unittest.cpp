@@ -9,6 +9,8 @@
 #include "EventInfoCollection.h"
 #include "ExampleClusterCollection.h"
 #include "ExampleHitCollection.h"
+#include "ExampleWithOneRelation.h"
+#include "ExampleWithOneRelationCollection.h"
 
 void test_autodelete() {
   std::cout << "*** Test autodelete ***" << std::endl;
@@ -18,9 +20,9 @@ void test_autodelete() {
   auto hit3 = EventInfo();
   auto& coll  = store.create<EventInfoCollection>("info");
   coll.push_back(hit1);
-  std::cout << "Should delete one object now:" << std::endl;
+  //std::cout << "Should delete one object now:" << std::endl;
   hit3 = hit2;
-  std::cout << "Should delete one object now:" << std::endl;
+  //std::cout << "Should delete one object now:" << std::endl;
 }
 
 void test_basic(){
@@ -75,7 +77,7 @@ void test_cloning() {
   cluster.addHits(hit2);
 
   std::cout << "    Success: " << success << std::endl;
-  std::cout << "Should now delete 4 objects" << std::endl;
+  //std::cout << "Should now delete 4 objects" << std::endl;
 }
 
 void test_invalid_refs() {
@@ -131,6 +133,19 @@ void test_notebook() {
   std::cout << "    Success: " << success << std::endl;
 }
 
+void test_OneToOneRelations(){
+  std::cout << "*** Test OneToOneRelations ***" << std::endl;
+  bool success = true;
+  auto store = albers::EventStore();
+  auto& clusters  = store.create<ExampleClusterCollection>("clusters");
+  auto cluster = ExampleCluster();
+  auto rel = ExampleWithOneRelation();
+  //std::cout << "Should now delete 1 object" << std::endl;
+  rel.cluster(cluster);
+  std::cout << "    Success: " << success << std::endl;
+  //std::cout << "Should now delete 2 objects" << std::endl;
+}
+
 void test_POD(){
   std::cout << "*** Test PODness ***" << std::endl;
   bool success = true;
@@ -179,6 +194,7 @@ int main(){
   test_invalid_refs();
   test_looping();
   test_notebook();
+  test_OneToOneRelations();
   test_POD();
   test_referencing();
   test_write_buffer();

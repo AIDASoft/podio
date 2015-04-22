@@ -62,7 +62,7 @@ void ExampleClusterCollection::prepareForWrite(){
    }
 
   }
-
+  
 }
 
 void ExampleClusterCollection::prepareAfterRead(){
@@ -84,6 +84,7 @@ bool ExampleClusterCollection::setReferences(const albers::ICollectionProvider* 
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Hits->emplace_back(tmp);
   }
+
 
   return true; //TODO: check success
 }

@@ -5,7 +5,7 @@
 #include <vector>
 #include "albers/ObjectID.h"
 
-// event number
+//  event number
 // author: B. Hegner
 
 //forward declarations

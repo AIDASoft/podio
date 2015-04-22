@@ -10,6 +10,7 @@
 #include "ExampleHitCollection.h"
 #include "ExampleClusterCollection.h"
 #include "ExampleReferencingTypeCollection.h"
+#include "ExampleWithOneRelationCollection.h"
 
 void processEvent(albers::EventStore& store, bool verbose,
       albers::ROOTReader& reader) {
@@ -34,6 +35,12 @@ void processEvent(albers::EventStore& store, bool verbose,
         std::cout << "  Referenced object has an energy of " << i->energy() << std::endl;
       }
     }
+  }
+  const ExampleWithOneRelationCollection* rels = nullptr;
+  std::cout << "Fetching collection 'OneRelation'" << std::endl;
+  is_available = store.get("OneRelation",rels);
+  if(is_available) {
+    std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
   }
 }
 

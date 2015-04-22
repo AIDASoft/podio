@@ -222,6 +222,15 @@ class ClassGenerator(object):
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
+    # check on-to-one relations and prepare include directives
+    oneToOneRelations = []
+    if definition.has_key("OneToOneRelations"):
+      oneToOneRelations = definition["OneToOneRelations"]
+      for member in oneToOneRelations:
+        klass = member["type"]
+        if klass in self.requested_classes:
+          includes += '#include "%s.h"\n' %(klass)
+
     # check one-to-many relations for consistency
     # and prepare include directives
     refvectors = []
@@ -262,6 +271,12 @@ class ClassGenerator(object):
       # constructor
       constructor_body += "  m_obj->data.%s = %s;" %(name, name)
 
+    # one-to-one relations
+    for member in oneToOneRelations:
+        name = member["name"]
+        klass = member["type"]
+        setter_declarations += "  void %s(%s value) { m_obj->m_%s = value; };\n" %(name, klass, name)
+        getter_declarations+= "  const %s& %s() const { return m_obj->m_%s; };\n" %(klass, name, name)
     # handle vector members
     vectormembers = []
     if definition.has_key("VectorMembers"):
@@ -281,8 +296,8 @@ class ClassGenerator(object):
        constructor_declaration = ""
     else:
       substitutions = { "name" : classname,
-                         "constructor" : constructor_body,
-                         "signature" : constructor_signature
+                        "constructor" : constructor_body,
+                        "signature" : constructor_signature
       }
       constructor_implementation = self.evaluate_template("Object.constructor.cc.template",substitutions)
       constructor_declaration = "  %s(%s);\n" %(classname, constructor_signature)
@@ -390,6 +405,8 @@ class ClassGenerator(object):
         substitutions = { "counter" : counter+nOfRefVectors,
                           "class" : klass,
                           "name"  : name }
+        # includes
+        includes += '#include "%sCollection.h" \n' %(klass)
         # members
         relations += "  std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
         # constructor calls
@@ -409,6 +426,7 @@ class ClassGenerator(object):
                       "prepareforwriting_refmembers" : prepareforwriting_refmembers,
                       "setreferences" : setreferences,
                       "prepareafterread" : prepareafterread,
+                      "prepareafterread_refmembers" : prepareafterread_refmembers,
                       "includes" : includes,
                       "initializers" : initializers,
                       "relations"           : relations,
@@ -543,9 +561,6 @@ class ClassGenerator(object):
       filename = "%s%s.%s" %(substitutions["name"],FN,ending)
       self.write_file(filename,content)
 
-
-class YAMLValidator(object):
-  pass
 
 ##########################
 if __name__ == "__main__":

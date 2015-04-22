@@ -3,6 +3,7 @@
 #include "ExampleHitCollection.h"
 #include "ExampleClusterCollection.h"
 #include "ExampleReferencingTypeCollection.h"
+#include "ExampleWithOneRelationCollection.h"
 
 // STL
 #include <iostream>
@@ -24,12 +25,14 @@ int main(){
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
   auto& refs     = store.create<ExampleReferencingTypeCollection>("refs");
   auto& refs2    = store.create<ExampleReferencingTypeCollection>("refs2");
+  auto& oneRels  = store.create<ExampleWithOneRelationCollection>("OneRelation");
 
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleHitCollection>("hits");
   writer.registerForWrite<ExampleClusterCollection>("clusters");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs2");
+  writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
 
   unsigned nevents=10000;
 
@@ -66,6 +69,10 @@ int main(){
     auto cyclic = ExampleReferencingType();
     cyclic.addRefs(cyclic);
     refs.push_back(cyclic);
+
+    auto oneRel = ExampleWithOneRelation();
+    oneRel.cluster(cluster);
+    oneRels.push_back(oneRel);
 
     writer.writeEvent();
     store.clearCollections();
