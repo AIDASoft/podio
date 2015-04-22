@@ -102,22 +102,6 @@ class ClassGenerator(object):
       content = string.Template(template).substitute({"classes" : content})
       self.write_file("selection.xml",content)
 
-  def prepare_for_writing_body(self, members):
-      handles = []
-      for member in members:
-        name = member["name"]
-        klass = member["type"]
-        if klass.endswith("Handle"):
-            handles.append(name)
-      prepareforwriting = ""
-      if (len(handles) !=0):
-        prepareforwriting = "  for(auto& data : *m_data){\n %s  }"
-        handleupdate = ""
-        for handle in handles:
-          handleupdate+= "    data.%s.prepareForWrite(registry);\n" %handle
-        prepareforwriting= prepareforwriting % handleupdate
-      return prepareforwriting
-
   def create_data(self, classname, definition):
     # check whether all member types are known
     # and prepare include directives
@@ -306,7 +290,7 @@ class ClassGenerator(object):
     members = definition["members"]
     constructorbody = ""
     prepareforwritinghead = ""
-    prepareforwritingbody = self.prepare_for_writing_body(members)
+    prepareforwritingbody = ""
     vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(classname,members)
     setreferences = ""
     prepareafterread = ""
