@@ -119,6 +119,8 @@ class ClassGenerator(object):
       elif "std::array" in klass:
           includes += "#include <array>\n"
           self.created_classes.append(klass)
+      elif "vector" in klass:
+          includes += "#include <vector>\n"
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
     membersCode = ""
@@ -170,6 +172,8 @@ class ClassGenerator(object):
         includes += '#include "%s.h"\n' %(klass)
       elif "std::array" in klass:
         includes += "#include <array>\n"
+      elif "vector" in klass:
+        includes += "#include <vector>\n"
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
 
@@ -207,6 +211,7 @@ class ClassGenerator(object):
       klass = member["type"]
       description = member["description"]
       getter_declarations+= "  const %s& %s() const { return m_obj->data.%s; };\n" %(klass, name, name)
+      getter_declarations+= "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)
       #getter_implementations+= "const %s& %s::%s() const { return m_obj->data.%s;}\n" %(klass, classname, name, name)
       if klass in self.buildin_types:
         setter_declarations += "  void %s(%s value) { m_obj->data.%s = value; };\n" %(name, klass, name)
@@ -233,8 +238,6 @@ class ClassGenerator(object):
       klass = item["type"]
       if klass not in self.buildin_types:
         raise Exception("'%s' declares a non-allowed vector member of type '%s'!" %(classname, klass))
-      else :
-        refvectors += definition["VectorMembers"]
 
     # handle constructor from values
     constructor_signature = constructor_signature.rstrip(",")
@@ -257,7 +260,7 @@ class ClassGenerator(object):
     references_template = open(templatefile,"r").read()
     templatefile = os.path.join(self.template_dir,"RefVector.h.template")
     references_declarations_template = open(templatefile,"r").read()
-    for refvector in refvectors:
+    for refvector in refvectors+definition["VectorMembers"]:
       substitutions = {"relation" : refvector["name"],
                        "relationtype" : refvector["type"],
                        "classname" : classname,
@@ -412,7 +415,6 @@ class ClassGenerator(object):
     deepcopy_relations = ""
     delete_relations = ""
     refvectors = definition["OneToManyRelations"]
-    refvectors+= definition["VectorMembers"]
     singleRelations = definition["OneToOneRelations"]
     for item in singleRelations:
       name  = item["name"]
@@ -420,9 +422,9 @@ class ClassGenerator(object):
       relations+= "  %s m_%s;\n" %(klass, name)
       if klass not in self.buildin_types:
         includes += '#include "%s.h"\n' %(klass)
-    if len(refvectors) !=0:
+    if len(refvectors+definition["VectorMembers"]) !=0:
       includes += "#include <vector>\n"
-    for item in refvectors:
+    for item in refvectors+definition["VectorMembers"]:
       name  = item["name"]
       klass = item["type"]
       relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
