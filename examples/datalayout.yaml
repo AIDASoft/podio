@@ -31,11 +31,11 @@ datatypes :
      - ExampleCluster         Clusters  // some refs to Clusters
      - ExampleReferencingType Refs      // refs into same type
 
-#  ExampleWithVectorMember :
-#    description : "Type with a vector member"
-#    author : "Benedikt Hegner"
-#    VectorMembers:
-#     - int count // various ADC counts
+  ExampleWithVectorMember :
+    description : "Type with a vector member"
+    author : "B. Hegner"
+    members:
+     - std::vector<int> count // various ADC counts
 
   ExampleWithOneRelation :
     description : "Type with one relation member"

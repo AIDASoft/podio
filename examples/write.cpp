@@ -4,7 +4,7 @@
 #include "ExampleClusterCollection.h"
 #include "ExampleReferencingTypeCollection.h"
 #include "ExampleWithOneRelationCollection.h"
-
+#include "ExampleWithVectorMemberCollection.h"
 // STL
 #include <iostream>
 #include <vector>
@@ -26,13 +26,14 @@ int main(){
   auto& refs     = store.create<ExampleReferencingTypeCollection>("refs");
   auto& refs2    = store.create<ExampleReferencingTypeCollection>("refs2");
   auto& oneRels  = store.create<ExampleWithOneRelationCollection>("OneRelation");
-
+  auto& vecs     = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleHitCollection>("hits");
   writer.registerForWrite<ExampleClusterCollection>("clusters");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs2");
   writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
+  writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
 
   unsigned nevents=10000;
 
@@ -73,6 +74,11 @@ int main(){
     auto oneRel = ExampleWithOneRelation();
     oneRel.cluster(cluster);
     oneRels.push_back(oneRel);
+
+    auto vec = ExampleWithVectorMember();
+    vec.count().push_back(23);
+    vec.count().push_back(24);
+    vecs.push_back(vec);
 
     writer.writeEvent();
     store.clearCollections();

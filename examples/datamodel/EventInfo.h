@@ -38,6 +38,7 @@ public:
   ~EventInfo();
 
   const int& Number() const { return m_obj->data.Number; };
+  int& Number() { return m_obj->data.Number; };
 
   void Number(int value) { m_obj->data.Number = value; };
 

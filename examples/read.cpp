@@ -11,6 +11,7 @@
 #include "ExampleClusterCollection.h"
 #include "ExampleReferencingTypeCollection.h"
 #include "ExampleWithOneRelationCollection.h"
+#include "ExampleWithVectorMemberCollection.h"
 
 void processEvent(albers::EventStore& store, bool verbose,
       albers::ROOTReader& reader) {
@@ -41,6 +42,16 @@ void processEvent(albers::EventStore& store, bool verbose,
   is_available = store.get("OneRelation",rels);
   if(is_available) {
     std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
+  }
+  const ExampleWithVectorMemberCollection* vecs = nullptr;
+  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
+  is_available = store.get("WithVectorMember",vecs);
+  if(is_available) {
+    auto item = (*vecs)[0];
+    std::cout << (*vecs).size() << std::endl;
+    for (auto c = item.count().begin(), end = item.count().end(); c!=end; ++c){
+      std::cout << "  Counter value " << (*c) << std::endl;
+    }
   }
 }
 

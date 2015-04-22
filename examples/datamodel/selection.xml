@@ -6,27 +6,27 @@
         <class name="albers::ObjectID"/>
         <class name="vector<albers::ObjectID>"/>
 
-          <class name="std::vector<ExampleWithOneRelationData>" />
+          <class name="std::vector<EventInfoData>" />
 
-          <class name="ExampleWithOneRelationData">
+          <class name="EventInfoData">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<ExampleWithOneRelation>" />
+          <class name="std::vector<EventInfo>" />
 
-          <class name="ExampleWithOneRelation">
+          <class name="EventInfo">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<ExampleWithOneRelationCollection>" />
+          <class name="std::vector<EventInfoCollection>" />
 
-          <class name="ExampleWithOneRelationCollection">
+          <class name="EventInfoCollection">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<ExampleWithOneRelationObj>" />
+          <class name="std::vector<EventInfoObj>" />
 
-          <class name="ExampleWithOneRelationObj">
+          <class name="EventInfoObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
@@ -54,27 +54,75 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<EventInfoData>" />
+          <class name="std::vector<ExampleHitData>" />
 
-          <class name="EventInfoData">
+          <class name="ExampleHitData">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<EventInfo>" />
+          <class name="std::vector<ExampleHit>" />
 
-          <class name="EventInfo">
+          <class name="ExampleHit">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<EventInfoCollection>" />
+          <class name="std::vector<ExampleHitCollection>" />
 
-          <class name="EventInfoCollection">
+          <class name="ExampleHitCollection">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<EventInfoObj>" />
+          <class name="std::vector<ExampleHitObj>" />
 
-          <class name="EventInfoObj">
+          <class name="ExampleHitObj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithOneRelationData>" />
+
+          <class name="ExampleWithOneRelationData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithOneRelation>" />
+
+          <class name="ExampleWithOneRelation">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithOneRelationCollection>" />
+
+          <class name="ExampleWithOneRelationCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithOneRelationObj>" />
+
+          <class name="ExampleWithOneRelationObj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithVectorMemberData>" />
+
+          <class name="ExampleWithVectorMemberData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithVectorMember>" />
+
+          <class name="ExampleWithVectorMember">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithVectorMemberCollection>" />
+
+          <class name="ExampleWithVectorMemberCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithVectorMemberObj>" />
+
+          <class name="ExampleWithVectorMemberObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
@@ -99,30 +147,6 @@
           <class name="std::vector<ExampleClusterObj>" />
 
           <class name="ExampleClusterObj">
-            <field name="m_registry" transient="true"/>
-            <field name="m_container" transient="true"/>
-          </class>
-          <class name="std::vector<ExampleHitData>" />
-
-          <class name="ExampleHitData">
-            <field name="m_registry" transient="true"/>
-            <field name="m_container" transient="true"/>
-          </class>
-          <class name="std::vector<ExampleHit>" />
-
-          <class name="ExampleHit">
-            <field name="m_registry" transient="true"/>
-            <field name="m_container" transient="true"/>
-          </class>
-          <class name="std::vector<ExampleHitCollection>" />
-
-          <class name="ExampleHitCollection">
-            <field name="m_registry" transient="true"/>
-            <field name="m_container" transient="true"/>
-          </class>
-          <class name="std::vector<ExampleHitObj>" />
-
-          <class name="ExampleHitObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>

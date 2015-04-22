@@ -40,6 +40,7 @@ public:
   ~ExampleCluster();
 
   const double& energy() const { return m_obj->data.energy; };
+  double& energy() { return m_obj->data.energy; };
 
   void energy(double value) { m_obj->data.energy = value; };
 

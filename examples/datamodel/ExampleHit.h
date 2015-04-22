@@ -38,9 +38,13 @@ public:
   ~ExampleHit();
 
   const double& x() const { return m_obj->data.x; };
+  double& x() { return m_obj->data.x; };
   const double& y() const { return m_obj->data.y; };
+  double& y() { return m_obj->data.y; };
   const double& z() const { return m_obj->data.z; };
+  double& z() { return m_obj->data.z; };
   const double& energy() const { return m_obj->data.energy; };
+  double& energy() { return m_obj->data.energy; };
 
   void x(double value) { m_obj->data.x = value; };
   void y(double value) { m_obj->data.y = value; };
