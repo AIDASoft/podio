@@ -1,5 +1,6 @@
 <lcgdict>
     <selection>
+    <class name="albers::CollectionBase"/>
     <class name="albers::CollectionIDTable">
         <field name="m_mutex" transient="true"/>
     </class>
