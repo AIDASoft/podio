@@ -74,7 +74,7 @@ bool  ExampleReferencingType::isAvailable() const {
   return false;
 }
 
-const albers::ObjectID ExampleReferencingType::getObjectID() const {
+const podio::ObjectID ExampleReferencingType::getObjectID() const {
   return m_obj->id;
 }
 

@@ -2,8 +2,8 @@
 #define ALBERS_PYTHONEVENTSTORE_H
 
 
-#include "albers/EventStore.h"
-#include "albers/ROOTReader.h"
+#include "podio/EventStore.h"
+#include "podio/ROOTReader.h"
 
 class PythonEventStore {
 public:
@@ -11,7 +11,7 @@ public:
   PythonEventStore(const char* filename);
 
   /// access a collection.
-  albers::CollectionBase* get(const char* name);
+  podio::CollectionBase* get(const char* name);
 
   /// signify end of event
   void endOfEvent();
@@ -23,8 +23,8 @@ public:
   unsigned getEntries() const;
 
  private:
-  albers::ROOTReader m_reader;
-  albers::EventStore m_store;
+  podio::ROOTReader m_reader;
+  podio::EventStore m_store;
 };
 
 #endif

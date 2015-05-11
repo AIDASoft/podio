@@ -6,8 +6,8 @@
 #include "ExampleWithOneRelationCollection.h"
 
 ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collectionID(0), m_entries() ,m_rel_cluster(new std::vector<ExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
-    m_refCollections = new albers::CollRefCollection();
-  m_refCollections->push_back(new std::vector<albers::ObjectID>());
+    m_refCollections = new podio::CollRefCollection();
+  m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
 }
 
@@ -63,7 +63,7 @@ void ExampleWithOneRelationCollection::prepareAfterRead(){
   }
 }
 
-bool ExampleWithOneRelationCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
+bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
 
   for(unsigned int i=0, size=m_entries.size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
@@ -79,7 +79,7 @@ bool ExampleWithOneRelationCollection::setReferences(const albers::ICollectionPr
 void ExampleWithOneRelationCollection::push_back(ExampleWithOneRelation object){
     int size = m_entries.size();
     auto obj = object.m_obj;
-    if (obj->id.index == albers::ObjectID::untracked) {
+    if (obj->id.index == podio::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
         

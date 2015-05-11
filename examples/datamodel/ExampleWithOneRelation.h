@@ -4,7 +4,7 @@
 #include "ExampleCluster.h"
 
 #include <vector>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
 // Type with one relation member
 // author: Benedikt Hegner
@@ -55,7 +55,7 @@ public:
 //  friend bool operator< (const ExampleWithOneRelation& p1,
 //       const ExampleWithOneRelation& p2 );
 
-  const albers::ObjectID getObjectID() const;
+  const podio::ObjectID getObjectID() const;
 
 private:
   ExampleWithOneRelationObj* m_obj;

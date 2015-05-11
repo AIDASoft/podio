@@ -3,12 +3,12 @@
 #include "TTree.h"
 #include "TROOT.h"
 
-// albers specific includes
-#include "albers/ROOTReader.h"
-#include "albers/CollectionIDTable.h"
-#include "albers/CollectionBase.h"
+// podio specific includes
+#include "podio/ROOTReader.h"
+#include "podio/CollectionIDTable.h"
+#include "podio/CollectionBase.h"
 
-namespace albers {
+namespace podio {
 
   void ROOTReader::readCollectionIDTable(){
     m_table = new CollectionIDTable();

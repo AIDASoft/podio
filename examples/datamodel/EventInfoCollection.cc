@@ -56,7 +56,7 @@ void EventInfoCollection::prepareAfterRead(){
   }
 }
 
-bool EventInfoCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
+bool EventInfoCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
 
 
   return true; //TODO: check success
@@ -65,7 +65,7 @@ bool EventInfoCollection::setReferences(const albers::ICollectionProvider* colle
 void EventInfoCollection::push_back(EventInfo object){
     int size = m_entries.size();
     auto obj = object.m_obj;
-    if (obj->id.index == albers::ObjectID::untracked) {
+    if (obj->id.index == podio::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
         

@@ -6,7 +6,7 @@
 #include <iostream>
 
 // data model specific includes
-#include "albers/ObjBase.h"
+#include "podio/ObjBase.h"
 #include "ExampleHitData.h"
 
 
@@ -14,7 +14,7 @@
 // forward declarations
 class ExampleHit;
 
-class ExampleHitObj : public albers::ObjBase {
+class ExampleHitObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleHitObj();
@@ -22,7 +22,7 @@ public:
   ExampleHitObj(const ExampleHitObj&);
   /// constructor from ObjectID and ExampleHitData
   /// does not initialize the internal relation containers
-  ExampleHitObj(const albers::ObjectID id, ExampleHitData data);
+  ExampleHitObj(const podio::ObjectID id, ExampleHitData data);
   virtual ~ExampleHitObj();
 
 public:

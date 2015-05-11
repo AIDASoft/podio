@@ -9,16 +9,16 @@
 #include <iostream>
 #include <vector>
 
-// albers specific includes
-#include "albers/EventStore.h"
-#include "albers/ROOTWriter.h"
+// podio specific includes
+#include "podio/EventStore.h"
+#include "podio/ROOTWriter.h"
 
 int main(){
 
   std::cout<<"start processing"<<std::endl;
 
-  auto store = albers::EventStore();
-  auto writer = albers::ROOTWriter("example.root", &store);
+  auto store = podio::EventStore();
+  auto writer = podio::ROOTWriter("example.root", &store);
 
   auto& info     = store.create<EventInfoCollection>("info");
   auto& hits     = store.create<ExampleHitCollection>("hits");

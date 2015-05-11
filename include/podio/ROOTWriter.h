@@ -11,7 +11,7 @@
 // forward declarations
 class TFile;
 
-namespace albers {
+namespace podio {
   class CollectionBase;
   class Registry;
   class EventStore;

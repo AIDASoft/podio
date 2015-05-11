@@ -2,7 +2,7 @@
 #define ${name}_H
 $includes
 #include <vector>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
 // $description
 // author: $author
@@ -51,7 +51,7 @@ $relation_declarations
 //  friend bool operator< (const ${name}& p1,
 //       const ${name}& p2 );
 
-  const albers::ObjectID getObjectID() const;
+  const podio::ObjectID getObjectID() const;
 
 private:
   ${name}Obj* m_obj;

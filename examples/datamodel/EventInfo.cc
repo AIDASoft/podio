@@ -45,7 +45,7 @@ bool  EventInfo::isAvailable() const {
   return false;
 }
 
-const albers::ObjectID EventInfo::getObjectID() const {
+const podio::ObjectID EventInfo::getObjectID() const {
   return m_obj->id;
 }
 

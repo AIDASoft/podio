@@ -5,16 +5,16 @@
 #include <utility>
 #include <vector>
 
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
-namespace albers {
+namespace podio {
   // forward declarations
   class ObjectID;
   class ICollectionProvider;
   class CollectionBase;
 
-  typedef std::vector<std::pair<std::string,albers::CollectionBase*>> CollRegistry;
-  typedef std::vector<std::vector<albers::ObjectID>*> CollRefCollection;
+  typedef std::vector<std::pair<std::string,podio::CollectionBase*>> CollRegistry;
+  typedef std::vector<std::vector<podio::ObjectID>*> CollRefCollection;
 
   //class CollectionBuffer {
   //public:

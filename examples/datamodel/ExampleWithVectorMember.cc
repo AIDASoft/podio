@@ -46,7 +46,7 @@ bool  ExampleWithVectorMember::isAvailable() const {
   return false;
 }
 
-const albers::ObjectID ExampleWithVectorMember::getObjectID() const {
+const podio::ObjectID ExampleWithVectorMember::getObjectID() const {
   return m_obj->id;
 }
 

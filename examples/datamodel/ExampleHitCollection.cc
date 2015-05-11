@@ -56,7 +56,7 @@ void ExampleHitCollection::prepareAfterRead(){
   }
 }
 
-bool ExampleHitCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
+bool ExampleHitCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
 
 
   return true; //TODO: check success
@@ -65,7 +65,7 @@ bool ExampleHitCollection::setReferences(const albers::ICollectionProvider* coll
 void ExampleHitCollection::push_back(ExampleHit object){
     int size = m_entries.size();
     auto obj = object.m_obj;
-    if (obj->id.index == albers::ObjectID::untracked) {
+    if (obj->id.index == podio::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
         

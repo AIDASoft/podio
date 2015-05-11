@@ -6,7 +6,7 @@
 #include <iostream>
 
 // data model specific includes
-#include "albers/ObjBase.h"
+#include "podio/ObjBase.h"
 #include "ExampleWithVectorMemberData.h"
 
 
@@ -14,7 +14,7 @@
 // forward declarations
 class ExampleWithVectorMember;
 
-class ExampleWithVectorMemberObj : public albers::ObjBase {
+class ExampleWithVectorMemberObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleWithVectorMemberObj();
@@ -22,7 +22,7 @@ public:
   ExampleWithVectorMemberObj(const ExampleWithVectorMemberObj&);
   /// constructor from ObjectID and ExampleWithVectorMemberData
   /// does not initialize the internal relation containers
-  ExampleWithVectorMemberObj(const albers::ObjectID id, ExampleWithVectorMemberData data);
+  ExampleWithVectorMemberObj(const podio::ObjectID id, ExampleWithVectorMemberData data);
   virtual ~ExampleWithVectorMemberObj();
 
 public:

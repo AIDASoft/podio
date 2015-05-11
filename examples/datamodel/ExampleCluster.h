@@ -5,7 +5,7 @@
 #include "ExampleHit.h"
 
 #include <vector>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
 //  cluster energy
 // author: B. Hegner
@@ -61,7 +61,7 @@ public:
 //  friend bool operator< (const ExampleCluster& p1,
 //       const ExampleCluster& p2 );
 
-  const albers::ObjectID getObjectID() const;
+  const podio::ObjectID getObjectID() const;
 
 private:
   ExampleClusterObj* m_obj;

@@ -56,7 +56,7 @@ void ${name}Collection::prepareAfterRead(){
   }
 }
 
-bool ${name}Collection::setReferences(const albers::ICollectionProvider* collectionProvider){
+bool ${name}Collection::setReferences(const podio::ICollectionProvider* collectionProvider){
 $setreferences
 ${prepareafterread_refmembers}
   return true; //TODO: check success
@@ -65,7 +65,7 @@ ${prepareafterread_refmembers}
 void ${name}Collection::push_back(${name} object){
     int size = m_entries.size();
     auto obj = object.m_obj;
-    if (obj->id.index == albers::ObjectID::untracked) {
+    if (obj->id.index == podio::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
         ${push_back_relations}

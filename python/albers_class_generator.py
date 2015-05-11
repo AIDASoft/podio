@@ -4,7 +4,7 @@ import string
 import sys
 import pickle
 import yaml
-from albers_config_reader import AlbersConfigReader
+from podio_config_reader import AlbersConfigReader
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
 _text_ = """
@@ -313,7 +313,7 @@ class ClassGenerator(object):
     nOfRefMembers = len(refmembers)
     if nOfRefVectors + nOfRefMembers > 0:
       # member initialization
-      constructorbody += "  m_refCollections = new albers::CollRefCollection();\n"
+      constructorbody += "  m_refCollections = new podio::CollRefCollection();\n"
       clear_relations += "  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }\n"
       for counter, item in enumerate(refvectors):
         name  = item["name"]
@@ -328,7 +328,7 @@ class ClassGenerator(object):
         relations += "  std::vector<std::vector<%s>*> m_rel_%s_tmp;\n " %(klass, name)
         # constructor calls
         initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
-        constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
+        constructorbody += "  m_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::create
         create_relations += "  m_rel_%s_tmp.push_back(obj->m_%s);\n" %(name,name)
         # relation handling in ::clear
@@ -356,7 +356,7 @@ class ClassGenerator(object):
         relations += "  std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
         # constructor calls
         initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
-        constructorbody += "  m_refCollections->push_back(new std::vector<albers::ObjectID>());\n"
+        constructorbody += "  m_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::clear
         clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
         clear_relations += "  m_rel_%s->clear();\n" %(name)

@@ -6,7 +6,7 @@
 #include "ExampleReferencingType.h"
 
 #include <vector>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
 // Referencing Type
 // author: B. Hegner
@@ -61,7 +61,7 @@ public:
 //  friend bool operator< (const ExampleReferencingType& p1,
 //       const ExampleReferencingType& p2 );
 
-  const albers::ObjectID getObjectID() const;
+  const podio::ObjectID getObjectID() const;
 
 private:
   ExampleReferencingTypeObj* m_obj;

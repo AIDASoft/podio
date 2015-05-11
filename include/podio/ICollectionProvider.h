@@ -1,7 +1,7 @@
 #ifndef ICOLLECTIONPROVIDER_H
 #define ICOLLECTIONPROVIDER_H
 
-namespace albers {
+namespace podio {
 
   class CollectionBase;
 

@@ -6,9 +6,9 @@
 #include <type_traits>
 #include <set>
 
-// albers specific includes
-#include "albers/CollectionIDTable.h"
-#include "albers/ICollectionProvider.h"
+// podio specific includes
+#include "podio/CollectionIDTable.h"
+#include "podio/ICollectionProvider.h"
 
 /**
 This is an *example* event store
@@ -21,7 +21,7 @@ the event store makes use of a Reader to read the collection.
 
 **/
 
-namespace albers {
+namespace podio {
 
   class CollectionBase;
   class IReader;
@@ -76,7 +76,7 @@ namespace albers {
 
 template<typename T>
 T& EventStore::create(const std::string& name) {
-  static_assert(std::is_base_of<albers::CollectionBase,T>::value,
+  static_assert(std::is_base_of<podio::CollectionBase,T>::value,
     "DataStore only accepts types inheriting from CollectionBase");
   // TODO: add check for existence
   T* coll = new T();
@@ -88,7 +88,7 @@ T& EventStore::create(const std::string& name) {
 
 template<typename T>
 bool EventStore::get(const std::string& name, const T*& collection){
-  //  static_assert(std::is_base_of<albers::CollectionBase,T>::value,
+  //  static_assert(std::is_base_of<podio::CollectionBase,T>::value,
   //              "DataStore only contains types inheriting from CollectionBase");
   CollectionBase* tmp(0);
   doGet(name, tmp);

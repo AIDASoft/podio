@@ -42,7 +42,7 @@ bool  ${name}::isAvailable() const {
   return false;
 }
 
-const albers::ObjectID ${name}::getObjectID() const {
+const podio::ObjectID ${name}::getObjectID() const {
   return m_obj->id;
 }
 

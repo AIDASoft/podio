@@ -11,8 +11,8 @@ class TTree;
 
 #include <iostream>
 
-#include "albers/ICollectionProvider.h"
-#include "albers/IReader.h"
+#include "podio/ICollectionProvider.h"
+#include "podio/IReader.h"
 /*
 
 This class has the function to read available data from disk
@@ -21,7 +21,7 @@ and to prepare collections and buffers.
  */
 
 
-namespace albers {
+namespace podio {
 
 class EventStore;
 class CollectionBase;

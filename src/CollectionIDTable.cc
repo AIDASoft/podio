@@ -1,9 +1,9 @@
-// albers specific includes
-#include "albers/CollectionIDTable.h"
+// podio specific includes
+#include "podio/CollectionIDTable.h"
 #include <algorithm>
 #include <iostream>
 
-namespace albers {
+namespace podio {
 
   const std::string CollectionIDTable::name(int ID) const {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);

@@ -1,4 +1,4 @@
-#include "albers/PythonEventStore.h"
+#include "podio/PythonEventStore.h"
 
 PythonEventStore::PythonEventStore(const char* name) :
   m_reader(),
@@ -7,10 +7,10 @@ PythonEventStore::PythonEventStore(const char* name) :
   m_store.setReader(&m_reader);
 }
 
-albers::CollectionBase* PythonEventStore::get(const char* name) {
-  const albers::CollectionBase* coll(nullptr);
+podio::CollectionBase* PythonEventStore::get(const char* name) {
+  const podio::CollectionBase* coll(nullptr);
   m_store.get(name, coll);
-  return const_cast<albers::CollectionBase*>(coll);
+  return const_cast<podio::CollectionBase*>(coll);
 }
 
 void PythonEventStore::endOfEvent() {

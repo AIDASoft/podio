@@ -2,9 +2,9 @@
 #include <vector>
 #include <iostream>
 
-// albers specific includes
-#include "albers/EventStore.h"
-#include "albers/ROOTReader.h"
+// podio specific includes
+#include "podio/EventStore.h"
+#include "podio/ROOTReader.h"
 
 // test data model
 #include "ExampleHitCollection.h"
@@ -13,8 +13,8 @@
 #include "ExampleWithOneRelationCollection.h"
 #include "ExampleWithVectorMemberCollection.h"
 
-void processEvent(albers::EventStore& store, bool verbose,
-      albers::ROOTReader& reader) {
+void processEvent(podio::EventStore& store, bool verbose,
+      podio::ROOTReader& reader) {
 
   const ExampleClusterCollection* clusters = nullptr;
   std::cout << "Fetching collection 'clusters'" << std::endl;
@@ -56,8 +56,8 @@ void processEvent(albers::EventStore& store, bool verbose,
 }
 
 int main(){
-  auto reader = albers::ROOTReader();
-  auto store = albers::EventStore();
+  auto reader = podio::ROOTReader();
+  auto store = podio::EventStore();
   reader.openFile("example.root");
   store.setReader(&reader);
 

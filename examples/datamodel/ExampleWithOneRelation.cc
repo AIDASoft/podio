@@ -42,7 +42,7 @@ bool  ExampleWithOneRelation::isAvailable() const {
   return false;
 }
 
-const albers::ObjectID ExampleWithOneRelation::getObjectID() const {
+const podio::ObjectID ExampleWithOneRelation::getObjectID() const {
   return m_obj->id;
 }
 

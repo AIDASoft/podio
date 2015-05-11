@@ -6,7 +6,7 @@
 #include <iostream>
 
 // data model specific includes
-#include "albers/ObjBase.h"
+#include "podio/ObjBase.h"
 #include "ExampleReferencingTypeData.h"
 
 #include <vector>
@@ -17,7 +17,7 @@
 // forward declarations
 class ExampleReferencingType;
 
-class ExampleReferencingTypeObj : public albers::ObjBase {
+class ExampleReferencingTypeObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleReferencingTypeObj();
@@ -25,7 +25,7 @@ public:
   ExampleReferencingTypeObj(const ExampleReferencingTypeObj&);
   /// constructor from ObjectID and ExampleReferencingTypeData
   /// does not initialize the internal relation containers
-  ExampleReferencingTypeObj(const albers::ObjectID id, ExampleReferencingTypeData data);
+  ExampleReferencingTypeObj(const podio::ObjectID id, ExampleReferencingTypeData data);
   virtual ~ExampleReferencingTypeObj();
 
 public:

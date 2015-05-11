@@ -3,9 +3,9 @@
 
 #include <atomic>
 #include <iostream>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
-namespace albers {
+namespace podio {
 
   class ObjBase {
   public:
@@ -16,13 +16,13 @@ namespace albers {
     /// checks whether object is "untracked" by a collection
     /// if yes, increases reference count
     void acquire() {
-      if (id.index == albers::ObjectID::untracked) ++ref_counter;
+      if (id.index == podio::ObjectID::untracked) ++ref_counter;
     };
 
     /// checks whether object is "untracked" by a collection
     /// if yes, decrease reference count and delete itself if count===0
     int release(){
-      if (id.index != albers::ObjectID::untracked){ return 1;};
+      if (id.index != podio::ObjectID::untracked){ return 1;};
       if (--ref_counter == 0) {
         //std::cout << "deleting free-floating object at " << this << std::endl;
         delete this;
@@ -35,7 +35,7 @@ namespace albers {
 
   public:
     /// ID of the object
-    albers::ObjectID id;
+    podio::ObjectID id;
 
   private:
     /// reference counter

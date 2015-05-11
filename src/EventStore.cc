@@ -1,10 +1,10 @@
 
-// albers specific includes
-#include "albers/IReader.h"
-#include "albers/CollectionBase.h"
-#include "albers/EventStore.h"
+// podio specific includes
+#include "podio/IReader.h"
+#include "podio/CollectionBase.h"
+#include "podio/EventStore.h"
 
-namespace albers {
+namespace podio {
 
   EventStore::EventStore() :
     m_reader(nullptr),

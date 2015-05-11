@@ -6,8 +6,8 @@
 #include "ExampleClusterCollection.h"
 
 ExampleClusterCollection::ExampleClusterCollection() : m_collectionID(0), m_entries() ,m_rel_Hits(new std::vector<ExampleHit>()),m_refCollections(nullptr), m_data(new ExampleClusterDataContainer() ) {
-    m_refCollections = new albers::CollRefCollection();
-  m_refCollections->push_back(new std::vector<albers::ObjectID>());
+    m_refCollections = new podio::CollRefCollection();
+  m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
 }
 
@@ -55,7 +55,7 @@ void ExampleClusterCollection::prepareForWrite(){
    (*m_data)[i].Hits_end+=index;
    index = (*m_data)[index].Hits_end;
    for(auto it : (*m_rel_Hits_tmp[i])) {
-     if (it.getObjectID().index == albers::ObjectID::untracked)
+     if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
      (*m_refCollections)[0]->emplace_back(it.getObjectID());
      m_rel_Hits->push_back(it);
@@ -75,7 +75,7 @@ void ExampleClusterCollection::prepareAfterRead(){
   }
 }
 
-bool ExampleClusterCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
+bool ExampleClusterCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
     CollectionBase* coll = nullptr;
@@ -92,7 +92,7 @@ bool ExampleClusterCollection::setReferences(const albers::ICollectionProvider* 
 void ExampleClusterCollection::push_back(ExampleCluster object){
     int size = m_entries.size();
     auto obj = object.m_obj;
-    if (obj->id.index == albers::ObjectID::untracked) {
+    if (obj->id.index == podio::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
           m_rel_Hits_tmp.push_back(obj->m_Hits);

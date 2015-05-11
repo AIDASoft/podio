@@ -3,12 +3,12 @@
 #include "TFile.h"
 #include "TTree.h"
 
-// albers specific includes
-#include "albers/CollectionBase.h"
-#include "albers/EventStore.h"
-#include "albers/ROOTWriter.h"
+// podio specific includes
+#include "podio/CollectionBase.h"
+#include "podio/EventStore.h"
+#include "podio/ROOTWriter.h"
 
-namespace albers {
+namespace podio {
 
   ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),

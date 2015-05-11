@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(albers)
+project(podio)
 
 # Declare ROOT dependency
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})

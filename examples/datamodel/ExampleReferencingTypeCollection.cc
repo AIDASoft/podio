@@ -7,9 +7,9 @@
 #include "ExampleReferencingTypeCollection.h"
 
 ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_collectionID(0), m_entries() ,m_rel_Clusters(new std::vector<ExampleCluster>()),m_rel_Refs(new std::vector<ExampleReferencingType>()),m_refCollections(nullptr), m_data(new ExampleReferencingTypeDataContainer() ) {
-    m_refCollections = new albers::CollRefCollection();
-  m_refCollections->push_back(new std::vector<albers::ObjectID>());
-  m_refCollections->push_back(new std::vector<albers::ObjectID>());
+    m_refCollections = new podio::CollRefCollection();
+  m_refCollections->push_back(new std::vector<podio::ObjectID>());
+  m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
 }
 
@@ -63,7 +63,7 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
    (*m_data)[i].Clusters_end+=index;
    index = (*m_data)[index].Clusters_end;
    for(auto it : (*m_rel_Clusters_tmp[i])) {
-     if (it.getObjectID().index == albers::ObjectID::untracked)
+     if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
      (*m_refCollections)[0]->emplace_back(it.getObjectID());
      m_rel_Clusters->push_back(it);
@@ -72,7 +72,7 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
    (*m_data)[i].Refs_end+=index;
    index = (*m_data)[index].Refs_end;
    for(auto it : (*m_rel_Refs_tmp[i])) {
-     if (it.getObjectID().index == albers::ObjectID::untracked)
+     if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
      (*m_refCollections)[1]->emplace_back(it.getObjectID());
      m_rel_Refs->push_back(it);
@@ -92,7 +92,7 @@ void ExampleReferencingTypeCollection::prepareAfterRead(){
   }
 }
 
-bool ExampleReferencingTypeCollection::setReferences(const albers::ICollectionProvider* collectionProvider){
+bool ExampleReferencingTypeCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
     CollectionBase* coll = nullptr;
@@ -117,7 +117,7 @@ bool ExampleReferencingTypeCollection::setReferences(const albers::ICollectionPr
 void ExampleReferencingTypeCollection::push_back(ExampleReferencingType object){
     int size = m_entries.size();
     auto obj = object.m_obj;
-    if (obj->id.index == albers::ObjectID::untracked) {
+    if (obj->id.index == podio::ObjectID::untracked) {
         obj->id = {size,m_collectionID};
         m_entries.push_back(obj);
           m_rel_Clusters_tmp.push_back(obj->m_Clusters);

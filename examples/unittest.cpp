@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-// albers specific includes
-#include "albers/EventStore.h"
+// podio specific includes
+#include "podio/EventStore.h"
 
 // Test data types
 #include "EventInfoCollection.h"
@@ -14,7 +14,7 @@
 
 void test_autodelete() {
   std::cout << "*** Test autodelete ***" << std::endl;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto hit1 = EventInfo();
   auto hit2 = EventInfo();
   auto hit3 = EventInfo();
@@ -27,7 +27,7 @@ void test_autodelete() {
 
 void test_basic(){
   std::cout << "*** Test basics ***" << std::endl;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   // Adding
   auto& collection = store.create<ExampleHitCollection>("name");
   auto hit1 = collection.create(0.,0.,0.,0.); //initialize w/ value
@@ -44,7 +44,7 @@ void test_basic(){
 void test_clearing() {
   std::cout << "*** Test clearing ***" << std::endl;
   bool success = true;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
   auto nevents = unsigned(1000);
@@ -83,7 +83,7 @@ void test_cloning() {
 void test_invalid_refs() {
   std::cout << "*** Test invalid refs ***" << std::endl;
   bool success = false;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto hit1 = hits.create(0.,0.,0.,0.);
   auto hit2 = ExampleHit();
@@ -102,7 +102,7 @@ void test_invalid_refs() {
 void test_looping(){
   std::cout << "*** Test looping ***" << std::endl;
   bool success = true;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("name");
   auto hit1 = coll.create(0.,0.,0.,0.);
   auto hit2 = coll.create(1.,1.,1.,1.);
@@ -119,7 +119,7 @@ void test_looping(){
 void test_notebook() {
   bool success = true;
   std::cout << "*** Test notebook ***" << std::endl;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   for(unsigned i=0; i<12; ++i){
     auto hit = hits.create(0.,0.,0.,double(i));
@@ -136,7 +136,7 @@ void test_notebook() {
 void test_OneToOneRelations(){
   std::cout << "*** Test OneToOneRelations ***" << std::endl;
   bool success = true;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
   auto cluster = ExampleCluster();
   auto rel = ExampleWithOneRelation();
@@ -156,7 +156,7 @@ void test_POD(){
 void test_referencing(){
   std::cout << "*** Test referencing ***" << std::endl;
   bool success = true;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto hit1 = hits.create(0.,0.,0.,0.);
   auto hit2 = hits.create(1.,1.,1.,1.);
@@ -175,7 +175,7 @@ void test_referencing(){
 void test_write_buffer() {
   std::cout << "*** Test write buffer ***" << std::endl;
   bool success = true;
-  auto store = albers::EventStore();
+  auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("data");
   auto hit1 = coll.create(0.,0.,0.,0.);
   auto hit2 = coll.create(1.,1.,1.,1.);

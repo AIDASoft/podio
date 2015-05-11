@@ -14,7 +14,7 @@ and to prepare collections and buffers.
 
  */
 
-namespace albers {
+namespace podio {
 
 class CollectionBase;
 class CollectionIDTable;

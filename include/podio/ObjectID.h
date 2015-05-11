@@ -1,7 +1,7 @@
 #ifndef OBJECTID_H
 #define OBJECTID_H
 
-namespace albers {
+namespace podio {
 
 class ObjectID {
 

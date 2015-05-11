@@ -6,7 +6,7 @@
 #include <iostream>
 
 // data model specific includes
-#include "albers/ObjBase.h"
+#include "podio/ObjBase.h"
 #include "ExampleClusterData.h"
 
 #include <vector>
@@ -16,7 +16,7 @@
 // forward declarations
 class ExampleCluster;
 
-class ExampleClusterObj : public albers::ObjBase {
+class ExampleClusterObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleClusterObj();
@@ -24,7 +24,7 @@ public:
   ExampleClusterObj(const ExampleClusterObj&);
   /// constructor from ObjectID and ExampleClusterData
   /// does not initialize the internal relation containers
-  ExampleClusterObj(const albers::ObjectID id, ExampleClusterData data);
+  ExampleClusterObj(const podio::ObjectID id, ExampleClusterData data);
   virtual ~ExampleClusterObj();
 
 public:

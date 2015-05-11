@@ -5,7 +5,7 @@
 #include <vector>
 #include <mutex>
 
-namespace albers {
+namespace podio {
 
   class CollectionIDTable{
 

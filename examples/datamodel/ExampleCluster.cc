@@ -61,7 +61,7 @@ bool  ExampleCluster::isAvailable() const {
   return false;
 }
 
-const albers::ObjectID ExampleCluster::getObjectID() const {
+const podio::ObjectID ExampleCluster::getObjectID() const {
   return m_obj->id;
 }
 

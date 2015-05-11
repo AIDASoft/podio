@@ -1,4 +1,4 @@
-# albers
+# podio
 
 ## Preparing the environment 
 
@@ -67,5 +67,5 @@ There is a rudimentary test in
 
 ## Modifying the data model 
 
-if you want to invoke the data model creator use python/albers_class_generator.py
+if you want to invoke the data model creator use python/podio_class_generator.py
 and look into examples/datalayout.yaml for inspiration

@@ -8,10 +8,10 @@
 #include <deque>
 #include <array>
 
-// albers specific includes
-#include "albers/ICollectionProvider.h"
-#include "albers/CollectionBase.h"
-#include "albers/CollectionIDTable.h"
+// podio specific includes
+#include "podio/ICollectionProvider.h"
+#include "podio/CollectionBase.h"
+#include "podio/CollectionIDTable.h"
 
 // datamodel specific includes
 #include "ExampleWithOneRelationData.h"
@@ -44,7 +44,7 @@ class ExampleWithOneRelationCollectionIterator {
 A Collection is identified by an ID.
 */
 
-class ExampleWithOneRelationCollection : public albers::CollectionBase {
+class ExampleWithOneRelationCollection : public podio::CollectionBase {
 
 public:
   typedef const ExampleWithOneRelationCollectionIterator const_iterator;
@@ -73,9 +73,9 @@ public:
   void prepareForWrite();
   void prepareAfterRead();
   void setBuffer(void* address);
-  bool setReferences(const albers::ICollectionProvider* collectionProvider);
+  bool setReferences(const podio::ICollectionProvider* collectionProvider);
 
-  albers::CollRefCollection* referenceCollections() { return m_refCollections;};
+  podio::CollRefCollection* referenceCollections() { return m_refCollections;};
 
   void setID(unsigned ID){m_collectionID = ID;};
 
@@ -102,7 +102,7 @@ private:
   std::vector<ExampleCluster>* m_rel_cluster; //relation buffer for r/w
 
   // members to handle streaming
-  albers::CollRefCollection* m_refCollections;
+  podio::CollRefCollection* m_refCollections;
   ExampleWithOneRelationDataContainer* m_data;
 };
 

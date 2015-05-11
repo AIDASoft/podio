@@ -1,10 +1,10 @@
 <lcgdict>
     <selection>
-    <class name="albers::CollectionIDTable">
+    <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>
     </class>
-        <class name="albers::ObjectID"/>
-        <class name="vector<albers::ObjectID>"/>
+        <class name="podio::ObjectID"/>
+        <class name="vector<podio::ObjectID>"/>
 
           <class name="std::vector<EventInfoData>" />
 

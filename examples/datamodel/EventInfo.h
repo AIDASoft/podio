@@ -3,7 +3,7 @@
 #include "EventInfoData.h"
 
 #include <vector>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
 //  event number
 // author: B. Hegner
@@ -56,7 +56,7 @@ public:
 //  friend bool operator< (const EventInfo& p1,
 //       const EventInfo& p2 );
 
-  const albers::ObjectID getObjectID() const;
+  const podio::ObjectID getObjectID() const;
 
 private:
   EventInfoObj* m_obj;

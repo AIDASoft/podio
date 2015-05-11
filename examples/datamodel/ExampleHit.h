@@ -3,7 +3,7 @@
 #include "ExampleHitData.h"
 
 #include <vector>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
 //  measured energy deposit
 // author: B. Hegner
@@ -65,7 +65,7 @@ public:
 //  friend bool operator< (const ExampleHit& p1,
 //       const ExampleHit& p2 );
 
-  const albers::ObjectID getObjectID() const;
+  const podio::ObjectID getObjectID() const;
 
 private:
   ExampleHitObj* m_obj;

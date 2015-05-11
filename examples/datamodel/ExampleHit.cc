@@ -45,7 +45,7 @@ bool  ExampleHit::isAvailable() const {
   return false;
 }
 
-const albers::ObjectID ExampleHit::getObjectID() const {
+const podio::ObjectID ExampleHit::getObjectID() const {
   return m_obj->id;
 }
 

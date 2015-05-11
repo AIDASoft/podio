@@ -1,11 +1,11 @@
 <lcgdict>
     <selection>
-    <class name="albers::CollectionBase"/>
-    <class name="albers::CollectionIDTable">
+    <class name="podio::CollectionBase"/>
+    <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>
     </class>
-        <class name="albers::ObjectID"/>
-        <class name="vector<albers::ObjectID>"/>
+        <class name="podio::ObjectID"/>
+        <class name="vector<podio::ObjectID>"/>
 
 $classes
 

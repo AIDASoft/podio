@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <vector>
-#include "albers/ObjectID.h"
+#include "podio/ObjectID.h"
 
 //  various ADC counts
 // author: B. Hegner
@@ -57,7 +57,7 @@ public:
 //  friend bool operator< (const ExampleWithVectorMember& p1,
 //       const ExampleWithVectorMember& p2 );
 
-  const albers::ObjectID getObjectID() const;
+  const podio::ObjectID getObjectID() const;
 
 private:
   ExampleWithVectorMemberObj* m_obj;
