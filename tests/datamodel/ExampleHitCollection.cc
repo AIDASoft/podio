@@ -62,7 +62,7 @@ bool ExampleHitCollection::setReferences(const podio::ICollectionProvider* colle
   return true; //TODO: check success
 }
 
-void ExampleHitCollection::push_back(ExampleHit object){
+void ExampleHitCollection::push_back(ConstExampleHit object){
     int size = m_entries.size();
     auto obj = object.m_obj;
     if (obj->id.index == podio::ObjectID::untracked) {
@@ -70,7 +70,7 @@ void ExampleHitCollection::push_back(ExampleHit object){
         m_entries.push_back(obj);
         
     } else {
-      throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
+      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
 
     }
 }

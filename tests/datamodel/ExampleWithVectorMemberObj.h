@@ -9,10 +9,13 @@
 #include "podio/ObjBase.h"
 #include "ExampleWithVectorMemberData.h"
 
+#include <vector>
 
 
 // forward declarations
 class ExampleWithVectorMember;
+class ConstExampleWithVectorMember;
+
 
 class ExampleWithVectorMemberObj : public podio::ObjBase {
 public:
@@ -27,6 +30,7 @@ public:
 
 public:
   ExampleWithVectorMemberData data;
+  std::vector<int>* m_count;
 
 
 };

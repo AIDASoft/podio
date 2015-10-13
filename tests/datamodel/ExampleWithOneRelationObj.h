@@ -9,11 +9,13 @@
 #include "podio/ObjBase.h"
 #include "ExampleWithOneRelationData.h"
 
-#include "ExampleCluster.h"
 
 
 // forward declarations
 class ExampleWithOneRelation;
+class ConstExampleWithOneRelation;
+class ConstExampleCluster;
+
 
 class ExampleWithOneRelationObj : public podio::ObjBase {
 public:
@@ -28,7 +30,7 @@ public:
 
 public:
   ExampleWithOneRelationData data;
-  ExampleCluster m_cluster;
+  ConstExampleCluster* m_cluster;
 
 
 };

@@ -1,5 +1,5 @@
-#ifndef ExampleReferencingType_H
-#define ExampleReferencingType_H
+#ifndef ConstExampleReferencingType_H
+#define ConstExampleReferencingType_H
 #include "ExampleReferencingTypeData.h"
 #include <vector>
 #include "ExampleCluster.h"
@@ -14,45 +14,38 @@
 //forward declarations
 class ExampleReferencingTypeCollection;
 class ExampleReferencingTypeCollectionIterator;
-class ConstExampleReferencingType;
 
 
-#include "ExampleReferencingTypeConst.h"
 #include "ExampleReferencingTypeObj.h"
 
-class ExampleReferencingType {
+class ConstExampleReferencingType {
 
+  friend ExampleReferencingType;
   friend ExampleReferencingTypeCollection;
   friend ExampleReferencingTypeCollectionIterator;
-  friend ConstExampleReferencingType;
 
 public:
 
   /// default constructor
-  ExampleReferencingType();
+  ConstExampleReferencingType();
   
   /// constructor from existing ExampleReferencingTypeObj
-  ExampleReferencingType(ExampleReferencingTypeObj* obj);
+  ConstExampleReferencingType(ExampleReferencingTypeObj* obj);
   /// copy constructor
-  ExampleReferencingType(const ExampleReferencingType& other);
+  ConstExampleReferencingType(const ConstExampleReferencingType& other);
   /// copy-assignment operator
-  ExampleReferencingType& operator=(const ExampleReferencingType& other);
+  ConstExampleReferencingType& operator=(const ConstExampleReferencingType& other);
   /// support cloning (deep-copy)
-  ExampleReferencingType clone() const;
+  ConstExampleReferencingType clone() const;
   /// destructor
-  ~ExampleReferencingType();
+  ~ConstExampleReferencingType();
 
-  /// conversion to const object
-  operator ConstExampleReferencingType () const;
 
 public:
 
 
-
-  void addClusters(ConstExampleCluster);
   std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
-  void addRefs(ConstExampleReferencingType);
   std::vector<ConstExampleReferencingType>::const_iterator Refs_begin() const;
   std::vector<ConstExampleReferencingType>::const_iterator Refs_end() const;
 
@@ -61,11 +54,11 @@ public:
   /// disconnect from ExampleReferencingTypeObj instance
   void unlink(){m_obj = nullptr;};
 
-  bool operator==(const ExampleReferencingType& other) const {
+  bool operator==(const ConstExampleReferencingType& other) const {
        return (m_obj==other.m_obj);
   }
 
-  bool operator==(const ConstExampleReferencingType& other) const;
+  bool operator==(const ExampleReferencingType& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleReferencingType& p1,

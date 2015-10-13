@@ -6,58 +6,55 @@
 #include "ExampleHitCollection.h"
 #include <iostream>
 
-ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){
+ConstExampleHit::ConstExampleHit() : m_obj(new ExampleHitObj()){
  m_obj->acquire();
 };
 
-ExampleHit::ExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()){
+ConstExampleHit::ConstExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()){
  m_obj->acquire();
    m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
 };
 
-ExampleHit::ExampleHit(const ExampleHit& other) : m_obj(other.m_obj) {
+
+ConstExampleHit::ConstExampleHit(const ConstExampleHit& other) : m_obj(other.m_obj) {
   m_obj->acquire();
 }
 
-ExampleHit& ExampleHit::operator=(const ExampleHit& other) {
+ConstExampleHit& ConstExampleHit::operator=(const ConstExampleHit& other) {
   if ( m_obj != nullptr) m_obj->release();
   m_obj = other.m_obj;
   return *this;
 }
 
-ExampleHit::ExampleHit(ExampleHitObj* obj) : m_obj(obj){
+ConstExampleHit::ConstExampleHit(ExampleHitObj* obj) : m_obj(obj){
   if(m_obj != nullptr)
     m_obj->acquire();
 }
 
-ExampleHit ExampleHit::clone() const {
+ConstExampleHit ConstExampleHit::clone() const {
   return {new ExampleHitObj(*m_obj)};
 }
 
-ExampleHit::~ExampleHit(){
+ConstExampleHit::~ConstExampleHit(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleHit::operator ConstExampleHit() const {return ConstExampleHit(m_obj);};
 
 
-
-
-bool  ExampleHit::isAvailable() const {
+bool  ConstExampleHit::isAvailable() const {
   if (m_obj != nullptr) {
     return true;
   }
   return false;
 }
 
-const podio::ObjectID ExampleHit::getObjectID() const {
+const podio::ObjectID ConstExampleHit::getObjectID() const {
   return m_obj->id;
 }
 
-bool ExampleHit::operator==(const ConstExampleHit& other) const {
+bool ConstExampleHit::operator==(const ExampleHit& other) const {
      return (m_obj==other.m_obj);
 }
-
 
 //bool operator< (const ExampleHit& p1, const ExampleHit& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

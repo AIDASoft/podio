@@ -5,7 +5,7 @@
 
 #include "ExampleWithOneRelationCollection.h"
 
-ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collectionID(0), m_entries() ,m_rel_cluster(new std::vector<ExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
+ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collectionID(0), m_entries() ,m_rel_cluster(new std::vector<ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
@@ -49,7 +49,7 @@ void ExampleWithOneRelationCollection::prepareForWrite(){
   for(int i=0, size = m_data->size(); i != size; ++i){
   
   }
-    for (auto& obj : m_entries) {(*m_refCollections)[0]->emplace_back(obj->m_cluster.getObjectID());};
+    for (auto& obj : m_entries) {(*m_refCollections)[0]->emplace_back(obj->m_cluster->getObjectID());};
 
 }
 
@@ -70,13 +70,13 @@ bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionPro
     CollectionBase* coll = nullptr;
     collectionProvider->get(id.collectionID,coll);
     ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
-    m_entries[i]->m_cluster = (*tmp_coll)[id.index];
+    m_entries[i]->m_cluster = new ConstExampleCluster((*tmp_coll)[id.index]);
   }
 
   return true; //TODO: check success
 }
 
-void ExampleWithOneRelationCollection::push_back(ExampleWithOneRelation object){
+void ExampleWithOneRelationCollection::push_back(ConstExampleWithOneRelation object){
     int size = m_entries.size();
     auto obj = object.m_obj;
     if (obj->id.index == podio::ObjectID::untracked) {
@@ -84,7 +84,7 @@ void ExampleWithOneRelationCollection::push_back(ExampleWithOneRelation object){
         m_entries.push_back(obj);
         
     } else {
-      throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
+      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
 
     }
 }

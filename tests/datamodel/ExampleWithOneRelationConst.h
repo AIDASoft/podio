@@ -1,5 +1,5 @@
-#ifndef ExampleWithOneRelation_H
-#define ExampleWithOneRelation_H
+#ifndef ConstExampleWithOneRelation_H
+#define ConstExampleWithOneRelation_H
 #include "ExampleWithOneRelationData.h"
 
 #include <vector>
@@ -11,44 +11,38 @@
 //forward declarations
 class ExampleWithOneRelationCollection;
 class ExampleWithOneRelationCollectionIterator;
-class ConstExampleWithOneRelation;
 class ExampleCluster;
 class ConstExampleCluster;
 
 
-#include "ExampleWithOneRelationConst.h"
 #include "ExampleWithOneRelationObj.h"
 
-class ExampleWithOneRelation {
+class ConstExampleWithOneRelation {
 
+  friend ExampleWithOneRelation;
   friend ExampleWithOneRelationCollection;
   friend ExampleWithOneRelationCollectionIterator;
-  friend ConstExampleWithOneRelation;
 
 public:
 
   /// default constructor
-  ExampleWithOneRelation();
+  ConstExampleWithOneRelation();
   
   /// constructor from existing ExampleWithOneRelationObj
-  ExampleWithOneRelation(ExampleWithOneRelationObj* obj);
+  ConstExampleWithOneRelation(ExampleWithOneRelationObj* obj);
   /// copy constructor
-  ExampleWithOneRelation(const ExampleWithOneRelation& other);
+  ConstExampleWithOneRelation(const ConstExampleWithOneRelation& other);
   /// copy-assignment operator
-  ExampleWithOneRelation& operator=(const ExampleWithOneRelation& other);
+  ConstExampleWithOneRelation& operator=(const ConstExampleWithOneRelation& other);
   /// support cloning (deep-copy)
-  ExampleWithOneRelation clone() const;
+  ConstExampleWithOneRelation clone() const;
   /// destructor
-  ~ExampleWithOneRelation();
+  ~ConstExampleWithOneRelation();
 
-  /// conversion to const object
-  operator ConstExampleWithOneRelation () const;
 
 public:
 
   const ConstExampleCluster cluster();
-
-  void cluster(ConstExampleCluster value);
 
 
   /// check whether the object is actually available
@@ -56,11 +50,11 @@ public:
   /// disconnect from ExampleWithOneRelationObj instance
   void unlink(){m_obj = nullptr;};
 
-  bool operator==(const ExampleWithOneRelation& other) const {
+  bool operator==(const ConstExampleWithOneRelation& other) const {
        return (m_obj==other.m_obj);
   }
 
-  bool operator==(const ConstExampleWithOneRelation& other) const;
+  bool operator==(const ExampleWithOneRelation& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithOneRelation& p1,

@@ -1,5 +1,5 @@
-#ifndef EventInfo_H
-#define EventInfo_H
+#ifndef ConstEventInfo_H
+#define ConstEventInfo_H
 #include "EventInfoData.h"
 
 #include <vector>
@@ -11,43 +11,37 @@
 //forward declarations
 class EventInfoCollection;
 class EventInfoCollectionIterator;
-class ConstEventInfo;
 
 
-#include "EventInfoConst.h"
 #include "EventInfoObj.h"
 
-class EventInfo {
+class ConstEventInfo {
 
+  friend EventInfo;
   friend EventInfoCollection;
   friend EventInfoCollectionIterator;
-  friend ConstEventInfo;
 
 public:
 
   /// default constructor
-  EventInfo();
-    EventInfo(int Number);
+  ConstEventInfo();
+  ConstEventInfo(int Number);
 
   /// constructor from existing EventInfoObj
-  EventInfo(EventInfoObj* obj);
+  ConstEventInfo(EventInfoObj* obj);
   /// copy constructor
-  EventInfo(const EventInfo& other);
+  ConstEventInfo(const ConstEventInfo& other);
   /// copy-assignment operator
-  EventInfo& operator=(const EventInfo& other);
+  ConstEventInfo& operator=(const ConstEventInfo& other);
   /// support cloning (deep-copy)
-  EventInfo clone() const;
+  ConstEventInfo clone() const;
   /// destructor
-  ~EventInfo();
+  ~ConstEventInfo();
 
-  /// conversion to const object
-  operator ConstEventInfo () const;
 
 public:
 
   const int& Number() const { return m_obj->data.Number; };
-
-  void Number(int value) { m_obj->data.Number = value; };
 
 
   /// check whether the object is actually available
@@ -55,11 +49,11 @@ public:
   /// disconnect from EventInfoObj instance
   void unlink(){m_obj = nullptr;};
 
-  bool operator==(const EventInfo& other) const {
+  bool operator==(const ConstEventInfo& other) const {
        return (m_obj==other.m_obj);
   }
 
-  bool operator==(const ConstEventInfo& other) const;
+  bool operator==(const EventInfo& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const EventInfo& p1,

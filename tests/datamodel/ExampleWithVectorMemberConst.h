@@ -1,5 +1,5 @@
-#ifndef ExampleWithVectorMember_H
-#define ExampleWithVectorMember_H
+#ifndef ConstExampleWithVectorMember_H
+#define ConstExampleWithVectorMember_H
 #include "ExampleWithVectorMemberData.h"
 #include <vector>
 
@@ -12,42 +12,36 @@
 //forward declarations
 class ExampleWithVectorMemberCollection;
 class ExampleWithVectorMemberCollectionIterator;
-class ConstExampleWithVectorMember;
 
 
-#include "ExampleWithVectorMemberConst.h"
 #include "ExampleWithVectorMemberObj.h"
 
-class ExampleWithVectorMember {
+class ConstExampleWithVectorMember {
 
+  friend ExampleWithVectorMember;
   friend ExampleWithVectorMemberCollection;
   friend ExampleWithVectorMemberCollectionIterator;
-  friend ConstExampleWithVectorMember;
 
 public:
 
   /// default constructor
-  ExampleWithVectorMember();
+  ConstExampleWithVectorMember();
   
   /// constructor from existing ExampleWithVectorMemberObj
-  ExampleWithVectorMember(ExampleWithVectorMemberObj* obj);
+  ConstExampleWithVectorMember(ExampleWithVectorMemberObj* obj);
   /// copy constructor
-  ExampleWithVectorMember(const ExampleWithVectorMember& other);
+  ConstExampleWithVectorMember(const ConstExampleWithVectorMember& other);
   /// copy-assignment operator
-  ExampleWithVectorMember& operator=(const ExampleWithVectorMember& other);
+  ConstExampleWithVectorMember& operator=(const ConstExampleWithVectorMember& other);
   /// support cloning (deep-copy)
-  ExampleWithVectorMember clone() const;
+  ConstExampleWithVectorMember clone() const;
   /// destructor
-  ~ExampleWithVectorMember();
+  ~ConstExampleWithVectorMember();
 
-  /// conversion to const object
-  operator ConstExampleWithVectorMember () const;
 
 public:
 
 
-
-  void addcount(int);
   std::vector<int>::const_iterator count_begin() const;
   std::vector<int>::const_iterator count_end() const;
 
@@ -56,11 +50,11 @@ public:
   /// disconnect from ExampleWithVectorMemberObj instance
   void unlink(){m_obj = nullptr;};
 
-  bool operator==(const ExampleWithVectorMember& other) const {
+  bool operator==(const ConstExampleWithVectorMember& other) const {
        return (m_obj==other.m_obj);
   }
 
-  bool operator==(const ConstExampleWithVectorMember& other) const;
+  bool operator==(const ExampleWithVectorMember& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithVectorMember& p1,

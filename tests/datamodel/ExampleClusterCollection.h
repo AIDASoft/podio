@@ -68,7 +68,7 @@ public:
   const ExampleCluster operator[](int index) const;
 
   /// Append object to the collection
-  void push_back(ExampleCluster object);
+  void push_back(ConstExampleCluster object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -101,8 +101,8 @@ private:
   int m_collectionID;
   ExampleClusterObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<ExampleHit>* m_rel_Hits; //relation buffer for r/w
-  std::vector<std::vector<ExampleHit>*> m_rel_Hits_tmp;
+  std::vector<ConstExampleHit>* m_rel_Hits; //relation buffer for r/w
+  std::vector<std::vector<ConstExampleHit>*> m_rel_Hits_tmp;
  
   // members to handle streaming
   podio::CollRefCollection* m_refCollections;

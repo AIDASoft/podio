@@ -1,5 +1,5 @@
-#ifndef ExampleHit_H
-#define ExampleHit_H
+#ifndef ConstExampleHit_H
+#define ConstExampleHit_H
 #include "ExampleHitData.h"
 
 #include <vector>
@@ -11,37 +11,33 @@
 //forward declarations
 class ExampleHitCollection;
 class ExampleHitCollectionIterator;
-class ConstExampleHit;
 
 
-#include "ExampleHitConst.h"
 #include "ExampleHitObj.h"
 
-class ExampleHit {
+class ConstExampleHit {
 
+  friend ExampleHit;
   friend ExampleHitCollection;
   friend ExampleHitCollectionIterator;
-  friend ConstExampleHit;
 
 public:
 
   /// default constructor
-  ExampleHit();
-    ExampleHit(double x,double y,double z,double energy);
+  ConstExampleHit();
+  ConstExampleHit(double x,double y,double z,double energy);
 
   /// constructor from existing ExampleHitObj
-  ExampleHit(ExampleHitObj* obj);
+  ConstExampleHit(ExampleHitObj* obj);
   /// copy constructor
-  ExampleHit(const ExampleHit& other);
+  ConstExampleHit(const ConstExampleHit& other);
   /// copy-assignment operator
-  ExampleHit& operator=(const ExampleHit& other);
+  ConstExampleHit& operator=(const ConstExampleHit& other);
   /// support cloning (deep-copy)
-  ExampleHit clone() const;
+  ConstExampleHit clone() const;
   /// destructor
-  ~ExampleHit();
+  ~ConstExampleHit();
 
-  /// conversion to const object
-  operator ConstExampleHit () const;
 
 public:
 
@@ -50,22 +46,17 @@ public:
   const double& z() const { return m_obj->data.z; };
   const double& energy() const { return m_obj->data.energy; };
 
-  void x(double value) { m_obj->data.x = value; };
-  void y(double value) { m_obj->data.y = value; };
-  void z(double value) { m_obj->data.z = value; };
-  void energy(double value) { m_obj->data.energy = value; };
-
 
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleHitObj instance
   void unlink(){m_obj = nullptr;};
 
-  bool operator==(const ExampleHit& other) const {
+  bool operator==(const ConstExampleHit& other) const {
        return (m_obj==other.m_obj);
   }
 
-  bool operator==(const ConstExampleHit& other) const;
+  bool operator==(const ExampleHit& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleHit& p1,

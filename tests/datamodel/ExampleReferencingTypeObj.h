@@ -11,11 +11,12 @@
 
 #include <vector>
 #include "ExampleCluster.h"
-#include "ExampleReferencingType.h"
 
 
 // forward declarations
 class ExampleReferencingType;
+class ConstExampleReferencingType;
+
 
 class ExampleReferencingTypeObj : public podio::ObjBase {
 public:
@@ -30,8 +31,8 @@ public:
 
 public:
   ExampleReferencingTypeData data;
-  std::vector<ExampleCluster>* m_Clusters;
-  std::vector<ExampleReferencingType>* m_Refs;
+  std::vector<ConstExampleCluster>* m_Clusters;
+  std::vector<ConstExampleReferencingType>* m_Refs;
 
 
 };

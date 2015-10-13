@@ -5,7 +5,7 @@
 
 #include "ExampleClusterCollection.h"
 
-ExampleClusterCollection::ExampleClusterCollection() : m_collectionID(0), m_entries() ,m_rel_Hits(new std::vector<ExampleHit>()),m_refCollections(nullptr), m_data(new ExampleClusterDataContainer() ) {
+ExampleClusterCollection::ExampleClusterCollection() : m_collectionID(0), m_entries() ,m_rel_Hits(new std::vector<ConstExampleHit>()),m_refCollections(nullptr), m_data(new ExampleClusterDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
@@ -89,7 +89,7 @@ bool ExampleClusterCollection::setReferences(const podio::ICollectionProvider* c
   return true; //TODO: check success
 }
 
-void ExampleClusterCollection::push_back(ExampleCluster object){
+void ExampleClusterCollection::push_back(ConstExampleCluster object){
     int size = m_entries.size();
     auto obj = object.m_obj;
     if (obj->id.index == podio::ObjectID::untracked) {
@@ -98,7 +98,7 @@ void ExampleClusterCollection::push_back(ExampleCluster object){
           m_rel_Hits_tmp.push_back(obj->m_Hits);
 
     } else {
-      throw std::invalid_argument( "Cannot add an object to collection that is already owned by another collection." );
+      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
 
     }
 }

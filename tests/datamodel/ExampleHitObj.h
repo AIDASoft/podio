@@ -13,6 +13,8 @@
 
 // forward declarations
 class ExampleHit;
+class ConstExampleHit;
+
 
 class ExampleHitObj : public podio::ObjBase {
 public:

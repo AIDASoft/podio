@@ -1,5 +1,6 @@
 <lcgdict>
     <selection>
+    <class name="podio::CollectionBase"/>
     <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>
     </class>
@@ -15,6 +16,12 @@
           <class name="std::vector<EventInfo>" />
 
           <class name="EventInfo">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstEventInfo>" />
+
+          <class name="ConstEventInfo">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
@@ -42,6 +49,12 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<ConstExampleReferencingType>" />
+
+          <class name="ConstExampleReferencingType">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<ExampleReferencingTypeCollection>" />
 
           <class name="ExampleReferencingTypeCollection">
@@ -63,6 +76,12 @@
           <class name="std::vector<ExampleHit>" />
 
           <class name="ExampleHit">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstExampleHit>" />
+
+          <class name="ConstExampleHit">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
@@ -90,6 +109,12 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<ConstExampleWithOneRelation>" />
+
+          <class name="ConstExampleWithOneRelation">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<ExampleWithOneRelationCollection>" />
 
           <class name="ExampleWithOneRelationCollection">
@@ -114,6 +139,12 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<ConstExampleWithVectorMember>" />
+
+          <class name="ConstExampleWithVectorMember">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<ExampleWithVectorMemberCollection>" />
 
           <class name="ExampleWithVectorMemberCollection">
@@ -135,6 +166,12 @@
           <class name="std::vector<ExampleCluster>" />
 
           <class name="ExampleCluster">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstExampleCluster>" />
+
+          <class name="ConstExampleCluster">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>

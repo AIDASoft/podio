@@ -68,7 +68,7 @@ public:
   const ExampleWithVectorMember operator[](int index) const;
 
   /// Append object to the collection
-  void push_back(ExampleWithVectorMember object);
+  void push_back(ConstExampleWithVectorMember object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -93,9 +93,7 @@ public:
   /// returns the pointer to the data buffer
   std::vector<ExampleWithVectorMemberData>* _getBuffer() { return m_data;};
 
-     template<size_t arraysize>  
-  const std::array<std::vector<int>,arraysize> count() const;
-
+   
 
 private:
   int m_collectionID;
@@ -115,15 +113,6 @@ ExampleWithVectorMember  ExampleWithVectorMemberCollection::create(Args&&... arg
   return ExampleWithVectorMember(obj);
 }
 
-template<size_t arraysize>
-const std::array<std::vector<int>,arraysize> ExampleWithVectorMemberCollection::count() const {
-  std::array<std::vector<int>,arraysize> tmp;
-  auto valid_size = std::min(arraysize,m_entries.size());
-  for (unsigned i = 0; i<valid_size; ++i){
-    tmp[i] = m_entries[i]->data.count;
- }
- return tmp;
-}
 
 
 #endif

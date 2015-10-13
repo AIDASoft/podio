@@ -126,8 +126,6 @@ TEST(podio,notebook) {
 
 TEST(podio,OneToOneRelations) {
   bool success = true;
-  auto store = podio::EventStore();
-  auto& clusters  = store.create<ExampleClusterCollection>("clusters");
   auto cluster = ExampleCluster();
   auto rel = ExampleWithOneRelation();
   rel.cluster(cluster);
@@ -135,9 +133,11 @@ TEST(podio,OneToOneRelations) {
 }
 
 TEST(podio,podness) {
-  bool success = true;
-  if (std::is_pod<ExampleClusterData>() != true) success = false;
-  EXPECT_EQ(true, success);
+  EXPECT_EQ(true, std::is_pod<ExampleClusterData>());
+  EXPECT_EQ(true, std::is_pod<ExampleHitData>());
+  EXPECT_EQ(true, std::is_pod<ExampleWithOneRelationData>());
+  // just to be sure the test does what it is supposed to do
+  EXPECT_EQ(false, std::is_pod<ExampleClusterObj>());
 }
 
 TEST(podio,referencing) {
@@ -171,9 +171,12 @@ TEST(podio, write_buffer) {
 }
 
 TEST(podio, equality) {
-  auto example = ExampleWithOneRelation();
   auto cluster = ExampleCluster();
-  //TODO
+  auto rel = ExampleWithOneRelation();
+  rel.cluster(cluster);
+  auto returned_cluster = rel.cluster();
+  EXPECT_EQ(cluster,returned_cluster);
+  EXPECT_EQ(returned_cluster,cluster);
 }
 
 int main(int argc, char **argv) {

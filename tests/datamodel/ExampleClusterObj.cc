@@ -1,9 +1,10 @@
 #include "ExampleClusterObj.h"
 
+
 ExampleClusterObj::ExampleClusterObj() :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     ,data()
-    ,m_Hits(new std::vector<ExampleHit>())
+    ,m_Hits(new std::vector<ConstExampleHit>())
     { }
 
 ExampleClusterObj::ExampleClusterObj(const podio::ObjectID id, ExampleClusterData data) :
@@ -14,7 +15,7 @@ ExampleClusterObj::ExampleClusterObj(const podio::ObjectID id, ExampleClusterDat
 ExampleClusterObj::ExampleClusterObj(const ExampleClusterObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     ,data(other.data)
-    ,m_Hits(new std::vector<ExampleHit>(*(other.m_Hits)))
+    ,m_Hits(new std::vector<ConstExampleHit>(*(other.m_Hits)))
     { }
 
 ExampleClusterObj::~ExampleClusterObj() {

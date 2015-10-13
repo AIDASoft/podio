@@ -68,7 +68,7 @@ public:
   const ExampleReferencingType operator[](int index) const;
 
   /// Append object to the collection
-  void push_back(ExampleReferencingType object);
+  void push_back(ConstExampleReferencingType object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -99,10 +99,10 @@ private:
   int m_collectionID;
   ExampleReferencingTypeObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<ExampleCluster>* m_rel_Clusters; //relation buffer for r/w
-  std::vector<std::vector<ExampleCluster>*> m_rel_Clusters_tmp;
-   std::vector<ExampleReferencingType>* m_rel_Refs; //relation buffer for r/w
-  std::vector<std::vector<ExampleReferencingType>*> m_rel_Refs_tmp;
+  std::vector<ConstExampleCluster>* m_rel_Clusters; //relation buffer for r/w
+  std::vector<std::vector<ConstExampleCluster>*> m_rel_Clusters_tmp;
+   std::vector<ConstExampleReferencingType>* m_rel_Refs; //relation buffer for r/w
+  std::vector<std::vector<ConstExampleReferencingType>*> m_rel_Refs_tmp;
  
   // members to handle streaming
   podio::CollRefCollection* m_refCollections;

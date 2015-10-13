@@ -52,12 +52,12 @@ void processEvent(podio::EventStore& store, bool verbose,
 //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
   is_available = store.get("WithVectorMember",vecs);
   if(is_available) {
-    auto item = (*vecs)[0];
+//    auto item = (*vecs)[0];
 //    std::cout << (*vecs).size() << std::endl;
-    for (auto c = item.count().begin(), end = item.count().end(); c!=end; ++c){
-      //std::cout << "  Counter value " << (*c) << std::endl;
-      glob++;
-    }
+//    for (auto c = item.count_begin(), end = item.count_end(); c!=end; ++c){
+//      std::cout << "  Counter value " << (*c) << std::endl;
+//      glob++;
+//    }
   }
 }
 

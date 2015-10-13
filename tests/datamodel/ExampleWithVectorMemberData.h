@@ -1,15 +1,15 @@
 #ifndef ExampleWithVectorMemberDATA_H
 #define ExampleWithVectorMemberDATA_H
 
-//  various ADC counts
+// Type with a vector member
 // author: B. Hegner
 
-#include <vector>
 
 
 class ExampleWithVectorMemberData {
 public:
-  std::vector<int> count; /// various ADC counts 
+  unsigned int count_begin; 
+  unsigned int count_end; 
 
 };
 

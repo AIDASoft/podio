@@ -35,7 +35,7 @@ int main(){
   writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
 
-  unsigned nevents=100;
+  unsigned nevents=2000;
 
   for(unsigned i=0; i<nevents; ++i) {
     if(i % 1000 == 0) {
@@ -76,8 +76,8 @@ int main(){
     oneRels.push_back(oneRel);
 
     auto vec = ExampleWithVectorMember();
-    vec.count().push_back(23);
-    vec.count().push_back(24);
+    vec.addcount(23);
+    vec.addcount(24);
     vecs.push_back(vec);
 
     writer.writeEvent();

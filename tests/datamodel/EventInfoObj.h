@@ -13,6 +13,8 @@
 
 // forward declarations
 class EventInfo;
+class ConstEventInfo;
+
 
 class EventInfoObj : public podio::ObjBase {
 public:

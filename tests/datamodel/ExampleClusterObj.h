@@ -15,6 +15,8 @@
 
 // forward declarations
 class ExampleCluster;
+class ConstExampleCluster;
+
 
 class ExampleClusterObj : public podio::ObjBase {
 public:
@@ -29,7 +31,7 @@ public:
 
 public:
   ExampleClusterData data;
-  std::vector<ExampleHit>* m_Hits;
+  std::vector<ConstExampleHit>* m_Hits;
 
 
 };

@@ -68,7 +68,7 @@ public:
   const EventInfo operator[](int index) const;
 
   /// Append object to the collection
-  void push_back(EventInfo object);
+  void push_back(ConstEventInfo object);
 
   void prepareForWrite();
   void prepareAfterRead();

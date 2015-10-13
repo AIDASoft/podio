@@ -2,43 +2,43 @@
 datatypes :
 
   EventInfo:
-    description : "Event info"
-    author : "B. Hegner"
-    members :
+    Description : "Event info"
+    Author : "B. Hegner"
+    Members :
      - int Number // event number
 
   ExampleHit :
-    description : "Example Hit"
-    author : "B. Hegner"
-    members:
+    Description : "Example Hit"
+    Author : "B. Hegner"
+    Members:
      - double x      // x-coordinate
      - double y      // y-coordinate
      - double z      // z-coordinate
      - double energy // measured energy deposit
 
   ExampleCluster :
-    description : "Cluster"
-    author : "B. Hegner"
-    members:
+    Description : "Cluster"
+    Author : "B. Hegner"
+    Members:
       - double energy // cluster energy
     OneToManyRelations:
      - ExampleHit Hits // hits contained in the cluster
 
   ExampleReferencingType :
-    description : "Referencing Type"
-    author : "B. Hegner"
+    Description : "Referencing Type"
+    Author : "B. Hegner"
     OneToManyRelations:
      - ExampleCluster         Clusters  // some refs to Clusters
      - ExampleReferencingType Refs      // refs into same type
 
   ExampleWithVectorMember :
-    description : "Type with a vector member"
-    author : "B. Hegner"
-    members:
-     - std::vector<int> count // various ADC counts
+    Description : "Type with a vector member"
+    Author : "B. Hegner"
+    VectorMembers:
+     - int count // various ADC counts
 
   ExampleWithOneRelation :
-    description : "Type with one relation member"
-    author : "Benedikt Hegner"
+    Description : "Type with one relation member"
+    Author : "Benedikt Hegner"
     OneToOneRelations:
      - ExampleCluster cluster // a particular cluster

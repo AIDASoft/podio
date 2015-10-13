@@ -1,5 +1,5 @@
-#ifndef ExampleCluster_H
-#define ExampleCluster_H
+#ifndef ConstExampleCluster_H
+#define ConstExampleCluster_H
 #include "ExampleClusterData.h"
 #include <vector>
 #include "ExampleHit.h"
@@ -13,45 +13,38 @@
 //forward declarations
 class ExampleClusterCollection;
 class ExampleClusterCollectionIterator;
-class ConstExampleCluster;
 
 
-#include "ExampleClusterConst.h"
 #include "ExampleClusterObj.h"
 
-class ExampleCluster {
+class ConstExampleCluster {
 
+  friend ExampleCluster;
   friend ExampleClusterCollection;
   friend ExampleClusterCollectionIterator;
-  friend ConstExampleCluster;
 
 public:
 
   /// default constructor
-  ExampleCluster();
-    ExampleCluster(double energy);
+  ConstExampleCluster();
+  ConstExampleCluster(double energy);
 
   /// constructor from existing ExampleClusterObj
-  ExampleCluster(ExampleClusterObj* obj);
+  ConstExampleCluster(ExampleClusterObj* obj);
   /// copy constructor
-  ExampleCluster(const ExampleCluster& other);
+  ConstExampleCluster(const ConstExampleCluster& other);
   /// copy-assignment operator
-  ExampleCluster& operator=(const ExampleCluster& other);
+  ConstExampleCluster& operator=(const ConstExampleCluster& other);
   /// support cloning (deep-copy)
-  ExampleCluster clone() const;
+  ConstExampleCluster clone() const;
   /// destructor
-  ~ExampleCluster();
+  ~ConstExampleCluster();
 
-  /// conversion to const object
-  operator ConstExampleCluster () const;
 
 public:
 
   const double& energy() const { return m_obj->data.energy; };
 
-  void energy(double value) { m_obj->data.energy = value; };
-
-  void addHits(ConstExampleHit);
   std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
   std::vector<ConstExampleHit>::const_iterator Hits_end() const;
 
@@ -60,11 +53,11 @@ public:
   /// disconnect from ExampleClusterObj instance
   void unlink(){m_obj = nullptr;};
 
-  bool operator==(const ExampleCluster& other) const {
+  bool operator==(const ConstExampleCluster& other) const {
        return (m_obj==other.m_obj);
   }
 
-  bool operator==(const ConstExampleCluster& other) const;
+  bool operator==(const ExampleCluster& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleCluster& p1,

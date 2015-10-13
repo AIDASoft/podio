@@ -1,5 +1,6 @@
 #include "EventInfoObj.h"
 
+
 EventInfoObj::EventInfoObj() :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     ,data()

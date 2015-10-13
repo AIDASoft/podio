@@ -68,7 +68,7 @@ public:
   const ExampleHit operator[](int index) const;
 
   /// Append object to the collection
-  void push_back(ExampleHit object);
+  void push_back(ConstExampleHit object);
 
   void prepareForWrite();
   void prepareAfterRead();
