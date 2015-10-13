@@ -4,7 +4,7 @@ import string
 import sys
 import pickle
 import yaml
-from podio_config_reader import AlbersConfigReader
+from podio_config_reader import PodioConfigReader
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
 _text_ = """
@@ -14,8 +14,8 @@ _text_ = """
 
 
 
-  ALBERS Data Model
-  =================
+  PODIO Data Model
+  ================
 
   Used
     %s
@@ -41,7 +41,8 @@ class ClassGenerator(object):
     self.buildin_types = ["int","float","double","unsigned int","unsigned","short","bool"]
     self.created_classes = []
     self.requested_classes = []
-    self.reader = AlbersConfigReader(yamlfile)
+    self.reader = PodioConfigReader(yamlfile)
+    self.warnings = []
 
   def load_data_definitions(self):
     self.datatypes = self.reader.read()
@@ -86,6 +87,10 @@ class ClassGenerator(object):
       print "     'Homage to the Square' - Josef Albers"
       print
 
+  def get_template(self,filename):
+      templatefile = os.path.join(self.template_dir,filename)
+      return open(templatefile,"r").read()
+
   def create_selection_xml(self):
       content = ""
       for klass in self.created_classes:
@@ -106,11 +111,12 @@ class ClassGenerator(object):
     # check whether all member types are known
     # and prepare include directives
     includes = ""
-    description = definition["description"]
-    author      = definition["author"]
-    members = definition["members"]
+    description = definition["Description"]
+    author      = definition["Author"]
+    members = definition["Members"]
     for member in members:
       klass = member["type"]
+      name  = member["type"]
       if klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
@@ -121,6 +127,9 @@ class ClassGenerator(object):
           self.created_classes.append(klass)
       elif "vector" in klass:
           includes += "#include <vector>\n"
+          self.warnings.append("%s defines a vector member %s, that spoils the PODness" %(classname, klass))
+      elif "[" in klass:
+          pass #support for arrays
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
     membersCode = ""
@@ -155,14 +164,24 @@ class ClassGenerator(object):
     self.created_classes.append(classname+"Data")
 
   def create_class(self, classname, definition):
+    includes = ""
+    includes_cc = ""
+    forward_declarations = ""
+    getter_implementations = ""
+    setter_implementations = ""
+    getter_declarations = ""
+    setter_declarations = ""
+    constructor_signature = ""
+    constructor_body = ""
+    ConstGetter_implementations = ""
+
     # check whether all member types are known
     # and prepare include directives
-    includes = ""
     includes += '#include "%s.h"\n' %(classname+"Data")
     #includes += '#include "%s/%s.h"\n' %(self.package_name,classname+"Data")
-    description = definition["description"]
-    author      = definition["author"]
-    members = definition["members"]
+    description = definition["Description"]
+    author      = definition["Author"]
+    members = definition["Members"]
     for member in members:
       klass = member["type"]
       if klass in self.buildin_types:
@@ -182,7 +201,9 @@ class ClassGenerator(object):
     for member in oneToOneRelations:
       klass = member["type"]
       if klass in self.requested_classes:
-        includes += '#include "%s.h"\n' %(klass)
+        forward_declarations += "class %s;\n" %(klass)
+        forward_declarations += "class Const%s;\n" %(klass)
+        includes_cc += '#include "%s.h"\n' %(klass)
 
     # check one-to-many relations for consistency
     # and prepare include directives
@@ -198,28 +219,19 @@ class ClassGenerator(object):
       else:
         raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
-    getter_implementations = ""
-    setter_implementations = ""
-    getter_declarations = ""
-    setter_declarations = ""
-    constructor_signature = ""
-    constructor_body = ""
-
     # handle standard members
     for member in members:
       name = member["name"]
       klass = member["type"]
       description = member["description"]
       getter_declarations+= "  const %s& %s() const { return m_obj->data.%s; };\n" %(klass, name, name)
-      getter_declarations+= "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)
-      #getter_implementations+= "const %s& %s::%s() const { return m_obj->data.%s;}\n" %(klass, classname, name, name)
+#      getter_declarations+= "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)
       if klass in self.buildin_types:
         setter_declarations += "  void %s(%s value) { m_obj->data.%s = value; };\n" %(name, klass, name)
-        #setter_implementations += "void %s::%s(%s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       else:
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
-      # set up aignature
+      # set up signature
       constructor_signature += "%s %s," %(klass, name)
       # constructor
       constructor_body += "  m_obj->data.%s = %s;" %(name, name)
@@ -228,8 +240,12 @@ class ClassGenerator(object):
     for member in oneToOneRelations:
         name = member["name"]
         klass = member["type"]
-        setter_declarations += "  void %s(%s value) { m_obj->m_%s = value; };\n" %(name, klass, name)
-        getter_declarations+= "  const %s& %s() const { return m_obj->m_%s; };\n" %(klass, name, name)
+        setter_declarations += "  void %s(Const%s value);\n" %(name, klass)
+        setter_implementations += "void %s::%s(Const%s value) { m_obj->m_%s = new Const%s(value); };\n" %(classname,name, klass, name,klass)
+        getter_declarations += "  const Const%s %s();\n" %(klass, name)
+        getter_implementations += "  const Const%s %s::%s() { return Const%s(*(m_obj->m_%s));};\n" %(klass, classname, name, klass, name)
+        ConstGetter_implementations += "  const Const%s Const%s::%s() { return Const%s(*(m_obj->m_%s));};\n" %(klass, classname, name, klass, name)
+
     # handle vector members
     vectormembers = definition["VectorMembers"]
     if len(vectormembers) != 0:
@@ -244,6 +260,8 @@ class ClassGenerator(object):
     if constructor_signature == "":
        constructor_implementation = ""
        constructor_declaration = ""
+       ConstConstructor_declaration = ""
+       ConstConstructor_implementation = ""
     else:
       substitutions = { "name" : classname,
                         "constructor" : constructor_body,
@@ -251,27 +269,41 @@ class ClassGenerator(object):
       }
       constructor_implementation = self.evaluate_template("Object.constructor.cc.template",substitutions)
       constructor_declaration = "  %s(%s);\n" %(classname, constructor_signature)
+      ConstConstructor_implementation = self.evaluate_template("ConstObject.constructor.cc.template",substitutions)
+      ConstConstructor_declaration = "Const%s(%s);\n" %(classname, constructor_signature)
+      print ConstConstructor_declaration
 
     # handle one-to-many relations
     references_members = ""
     references_declarations = ""
     references = ""
-    templatefile = os.path.join(self.template_dir,"RefVector.cc.template")
-    references_template = open(templatefile,"r").read()
-    templatefile = os.path.join(self.template_dir,"RefVector.h.template")
-    references_declarations_template = open(templatefile,"r").read()
+    ConstReferences_declarations = ""
+    ConstReferences = ""
+    references_template = self.get_template("RefVector.cc.template")
+    references_declarations_template = self.get_template("RefVector.h.template")
+    ConstReferences_declarations_template = self.get_template("ConstRefVector.h.template")
+    ConstReferences_template = self.get_template("ConstRefVector.cc.template")
+
     for refvector in refvectors+definition["VectorMembers"]:
+      relationtype = refvector["type"]
+      if relationtype not in self.buildin_types:
+          relationtype = "Const"+relationtype
       substitutions = {"relation" : refvector["name"],
-                       "relationtype" : refvector["type"],
+                       "relationtype" : relationtype,
                        "classname" : classname,
                        "package_name" : self.package_name
                       }
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
       references += string.Template(references_template).substitute(substitutions)
       references_members += "std::vector<%s>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
+      ConstReferences_declarations += string.Template(ConstReferences_declarations_template).substitute(substitutions)
+      ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
+
 
     substitutions = {"includes" : includes,
-                     #"getters"  : getter_implementations,
+                     "includes_cc" : includes_cc,
+                     "forward_declarations" : forward_declarations,
+                     "getters"  : getter_implementations,
                      "getter_declarations": getter_declarations,
                      "setters"  : setter_implementations,
                      "setter_declarations": setter_declarations,
@@ -289,15 +321,24 @@ class ClassGenerator(object):
     self.fill_templates("Object",substitutions)
     self.created_classes.append(classname)
 
+
+    substitutions["constructor_declaration"] = ConstConstructor_declaration
+    substitutions["constructor_implementation"] = ConstConstructor_implementation
+    substitutions["relation_declarations"] = ConstReferences_declarations
+    substitutions["relations"] = ConstReferences
+    substitutions["getters"]   = ConstGetter_implementations
+
+    self.fill_templates("ConstObject", substitutions)
+    self.created_classes.append("Const%s" %classname)
+
   def create_collection(self, classname, definition):
-    members = definition["members"]
+    members = definition["Members"]
     constructorbody = ""
     prepareforwritinghead = ""
     prepareforwritingbody = ""
     vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(classname,members)
     setreferences = ""
     prepareafterread = ""
-    # handle one-to-many-relations
     includes = ""
     initializers = ""
     relations = ""
@@ -324,10 +365,10 @@ class ClassGenerator(object):
         # includes
         includes += '#include "%sCollection.h" \n' %(klass)
         # members
-        relations += "  std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
-        relations += "  std::vector<std::vector<%s>*> m_rel_%s_tmp;\n " %(klass, name)
+        relations += "  std::vector<Const%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
+        relations += "  std::vector<std::vector<Const%s>*> m_rel_%s_tmp;\n " %(klass, name)
         # constructor calls
-        initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
+        initializers += ",m_rel_%s(new std::vector<Const%s>())" %(name, klass)
         constructorbody += "  m_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::create
         create_relations += "  m_rel_%s_tmp.push_back(obj->m_%s);\n" %(name,name)
@@ -353,15 +394,15 @@ class ClassGenerator(object):
         # includes
         includes += '#include "%sCollection.h" \n' %(klass)
         # members
-        relations += "  std::vector<%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
+        relations += "  std::vector<Const%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
         # constructor calls
-        initializers += ",m_rel_%s(new std::vector<%s>())" %(name, klass)
+        initializers += ",m_rel_%s(new std::vector<Const%s>())" %(name, klass)
         constructorbody += "  m_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::clear
         clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
         clear_relations += "  m_rel_%s->clear();\n" %(name)
         # relation handling in ::prepareForWrite
-        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {(*m_refCollections)[%s]->emplace_back(obj->m_%s.getObjectID());};\n" %(counter+nOfRefVectors,name)
+        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {(*m_refCollections)[%s]->emplace_back(obj->m_%s->getObjectID());};\n" %(counter+nOfRefVectors,name)
         # relation handling in ::settingReferences
         prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
     substitutions = { "name" : classname,
@@ -411,30 +452,49 @@ class ClassGenerator(object):
     """
     relations = ""
     includes = ""
+    includes_cc = ""
+    forward_declarations = ""
     initialize_relations = ""
     deepcopy_relations = ""
     delete_relations = ""
     refvectors = definition["OneToManyRelations"]
     singleRelations = definition["OneToOneRelations"]
+    # do includes and forward declarations for
+    # oneToOneRelations and do proper cleanups
     for item in singleRelations:
       name  = item["name"]
       klass = item["type"]
-      relations+= "  %s m_%s;\n" %(klass, name)
+      relations+= "  Const%s* m_%s;\n" %(klass, name)
       if klass not in self.buildin_types:
-        includes += '#include "%s.h"\n' %(klass)
+        if klass != classname:
+          forward_declarations += 'class Const%s;\n' %(klass)
+          includes_cc += '#include "%sConst.h"\n' %(klass)
+        delete_relations+="delete m_%s;\n" %name
+
     if len(refvectors+definition["VectorMembers"]) !=0:
       includes += "#include <vector>\n"
+
     for item in refvectors+definition["VectorMembers"]:
       name  = item["name"]
       klass = item["type"]
-      relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
       if klass not in self.buildin_types:
-        includes += '#include "%s.h"\n' %(klass)
-      initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klass)
-      deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
+        relations += "  std::vector<Const%s>* m_%s;\n" %(klass, name)
+        initialize_relations += ",m_%s(new std::vector<Const%s>())" %(name,klass)
+        deepcopy_relations += ",m_%s(new std::vector<Const%s>(*(other.m_%s)))" %(name,klass,name)
+        if klass == classname:
+          includes_cc += '#include "%s.h"\n' %(klass)
+        else:
+          includes += '#include "%s.h"\n' %(klass)
+      else:
+          relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
+          initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klass)
+          deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
+
       delete_relations += "delete m_%s;\n" %(name)
     substitutions = { "name" : classname,
                       "includes" : includes,
+                      "includes_cc" : includes_cc,
+                      "forward_declarations" : forward_declarations,
                       "relations" : relations,
                       "initialize_relations" : initialize_relations,
                       "deepcopy_relations" : deepcopy_relations,
@@ -477,6 +537,7 @@ class ClassGenerator(object):
   def fill_templates(self, category,substitutions):
     # "Data" denotes the real class;
     # only headers and the FN should not contain Data
+    print category
     if category == "Data":
       FN = "Data"
       endings = ("h")
@@ -489,6 +550,9 @@ class ClassGenerator(object):
     elif category == "Object":
       FN = ""
       endings = ("h","cc")
+    elif category == "ConstObject":
+      FN = "Const"
+      endings = ("h","cc")
     else:
       FN = category
       endings = ("h","cc")
@@ -499,6 +563,7 @@ class ClassGenerator(object):
       content = string.Template(template).substitute(substitutions)
       filename = "%s%s.%s" %(substitutions["name"],FN,ending)
       self.write_file(filename,content)
+      print filename
 
 
 ##########################
@@ -526,3 +591,5 @@ if __name__ == "__main__":
 
   gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
   gen.process()
+  for warning in gen.warnings:
+      print warning

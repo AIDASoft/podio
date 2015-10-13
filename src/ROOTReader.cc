@@ -24,23 +24,37 @@ namespace podio {
     if (p != end(m_inputs)){
       return p->first;
     }
+    // get the branches in the ROOT file
     auto branch = m_eventTree->GetBranch(name.c_str());
     if (branch == nullptr) return nullptr;
-    CollectionBase* collection = nullptr;
-    auto dataClassName = branch->GetClassName();
-    auto theClass = gROOT->GetClass(dataClassName);
-    if (theClass == nullptr) return nullptr;
+
+    // look for involved classes
+    TClass* theClass(nullptr);
+    TClass* collectionClass(nullptr);
+    auto result = m_storedClasses.find(name);
+    if (result != m_storedClasses.end()) {
+      theClass = result->second.first;
+      collectionClass = result->second.second;
+    } else {
+      auto dataClassName = branch->GetClassName();
+      theClass = gROOT->GetClass(dataClassName);
+      if (theClass == nullptr) return nullptr;
+      // now create the transient collections
+      // some workaround until gcc supports regex properly:
+      auto dataClassString = std::string(dataClassName);
+      auto start = dataClassString.find("<");
+      auto end   = dataClassString.find(">");
+      //getting "TypeCollection" out of "vector<TypeData>"
+      auto classname = dataClassString.substr(start+1, end-start-5);
+      auto collectionClassName = classname+"Collection";
+      collectionClass = gROOT->GetClass(collectionClassName.c_str());
+      if (collectionClass == nullptr) return nullptr;
+      // cache classes found for future usage
+      m_storedClasses[name] = std::pair<TClass*,TClass*>(theClass, collectionClass);
+    }
+    // now create buffers and collections
     void* buffer = theClass->New();
-    // now create the transient collections
-    // some workaround until gcc supports regex properly:
-    auto dataClassString = std::string(dataClassName);
-    auto start = dataClassString.find("<");
-    auto end   = dataClassString.find(">");
-    //getting "TypeCollection" out of "vector<TypeData>"
-    auto classname = dataClassString.substr(start+1, end-start-5);
-    auto collectionClassName = classname+"Collection";
-    auto collectionClass = gROOT->GetClass(collectionClassName.c_str());
-    if (collectionClass == nullptr) return nullptr;
+    CollectionBase* collection = nullptr;
     collection = static_cast<CollectionBase*>(collectionClass->New());
     // connect buffer, collection and branch
     collection->setBuffer(buffer);

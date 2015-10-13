@@ -1,5 +1,5 @@
-#ifndef ${name}_H
-#define ${name}_H
+#ifndef Const${name}_H
+#define Const${name}_H
 $includes
 #include <vector>
 #include "podio/ObjectID.h"
@@ -10,52 +10,47 @@ $includes
 //forward declarations
 class ${name}Collection;
 class ${name}CollectionIterator;
-class Const${name};
 $forward_declarations
 
-#include "${name}Const.h"
 #include "${name}Obj.h"
 
-class ${name} {
+class Const${name} {
 
+  friend ${name};
   friend ${name}Collection;
   friend ${name}CollectionIterator;
-  friend Const${name};
 
 public:
 
   /// default constructor
-  ${name}();
+  Const${name}();
   ${constructor_declaration}
   /// constructor from existing ${name}Obj
-  ${name}(${name}Obj* obj);
+  Const${name}(${name}Obj* obj);
   /// copy constructor
-  ${name}(const ${name}& other);
+  Const${name}(const Const${name}& other);
   /// copy-assignment operator
-  ${name}& operator=(const ${name}& other);
+  Const${name}& operator=(const Const${name}& other);
   /// support cloning (deep-copy)
-  ${name} clone() const;
+  Const${name} clone() const;
   /// destructor
-  ~${name}();
+  ~Const${name}();
 
-  /// conversion to const object
-  operator Const${name} () const;
 
 public:
 
 $getter_declarations
-$setter_declarations
 $relation_declarations
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ${name}Obj instance
   void unlink(){m_obj = nullptr;};
 
-  bool operator==(const ${name}& other) const {
+  bool operator==(const Const${name}& other) const {
        return (m_obj==other.m_obj);
   }
 
-  bool operator==(const Const${name}& other) const;
+  bool operator==(const ${name}& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ${name}& p1,

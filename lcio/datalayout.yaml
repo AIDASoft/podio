@@ -185,7 +185,7 @@ datatypes :
     OneToOneRelations:
       - TrackerData corrData // ...
 
-    # LCIO TrackerRawData
+  # LCIO TrackerRawData
   TrackerData:
     description: "LCIO tracker raw data"
     author : "F.Gaede, B. Hegner"

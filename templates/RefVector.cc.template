@@ -10,7 +10,7 @@ std::vector<${relationtype}>::const_iterator ${classname}::${relation}_end() con
   return ++ret_value;
 }
 
-void ${classname}::add${relation}(${relationtype}& component) {
+void ${classname}::add${relation}(${relationtype} component) {
   m_obj->m_${relation}->push_back(component);
   m_obj->data.${relation}_end++;
 }

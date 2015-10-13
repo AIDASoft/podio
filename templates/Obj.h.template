@@ -13,6 +13,8 @@ $includes
 
 // forward declarations
 class ${name};
+class Const${name};
+$forward_declarations
 
 class ${name}Obj : public podio::ObjBase {
 public:

@@ -3,5 +3,5 @@
     CollectionBase* coll = nullptr;
     collectionProvider->get(id.collectionID,coll);
     ${class}Collection* tmp_coll = static_cast<${class}Collection*>(coll);
-    m_entries[i]->m_${name} = (*tmp_coll)[id.index];
+    m_entries[i]->m_${name} = new Const${class}((*tmp_coll)[id.index]);
   }

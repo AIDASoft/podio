@@ -142,6 +142,10 @@ Using this definition, four classes will be created: `EventInfo`, `EventInfoData
       ...
     }
 
+### Defining members and transient members
+
+The library supports both the usage of (persistent) members and transient members via the following syntax:
+
 ### Definition of references between objects:
 to be written
 

@@ -2,10 +2,12 @@
 #define ROOTREADER_H
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <vector>
 
 // forward declarations
+class TClass;
 class TFile;
 class TTree;
 
@@ -18,7 +20,7 @@ class TTree;
 This class has the function to read available data from disk
 and to prepare collections and buffers.
 
- */
+*/
 
 
 namespace podio {
@@ -65,6 +67,7 @@ class ROOTReader : public IReader {
   private:
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
+    std::map<std::string, std::pair<TClass*,TClass*> > m_storedClasses;
     CollectionIDTable* m_table;
     TFile* m_file;
     TTree* m_eventTree;

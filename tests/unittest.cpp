@@ -2,6 +2,9 @@
 #include <iostream>
 #include <vector>
 
+// gtest
+#include "gtest/gtest.h"
+
 // podio specific includes
 #include "podio/EventStore.h"
 
@@ -12,21 +15,17 @@
 #include "ExampleWithOneRelation.h"
 #include "ExampleWithOneRelationCollection.h"
 
-void test_autodelete() {
-  std::cout << "*** Test autodelete ***" << std::endl;
+TEST(podio, AutoDelete) {
   auto store = podio::EventStore();
   auto hit1 = EventInfo();
   auto hit2 = EventInfo();
   auto hit3 = EventInfo();
   auto& coll  = store.create<EventInfoCollection>("info");
   coll.push_back(hit1);
-  //std::cout << "Should delete one object now:" << std::endl;
   hit3 = hit2;
-  //std::cout << "Should delete one object now:" << std::endl;
 }
 
-void test_basic(){
-  std::cout << "*** Test basics ***" << std::endl;
+TEST(podio, Basics) {
   auto store = podio::EventStore();
   // Adding
   auto& collection = store.create<ExampleHitCollection>("name");
@@ -38,11 +37,10 @@ void test_basic(){
   bool success = store.get("name",coll2);
   const ExampleHitCollection* coll3(nullptr);
   if (store.get("wrongName",coll3) != false) success = false;
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_clearing() {
-  std::cout << "*** Test clearing ***" << std::endl;
+TEST(podio, Clearing){
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -59,29 +57,24 @@ void test_clearing() {
   }
   hits.clear();
   if (hits.size() != 0 ) success = false;
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_cloning() {
-  std::cout << "*** Test cloning ***" << std::endl;
+TEST(podio, cloning){
   bool success = true;
   auto hit = ExampleHit();
   hit.energy(30);
   auto hit2 = hit.clone();
   hit2.energy(20);
   if (hit.energy() == hit2.energy()) success = false;
-
   auto cluster  = ExampleCluster();
   cluster.addHits(hit);
   auto cluster2 = cluster.clone();
   cluster.addHits(hit2);
-
-  std::cout << "    Success: " << success << std::endl;
-  //std::cout << "Should now delete 4 objects" << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_invalid_refs() {
-  std::cout << "*** Test invalid refs ***" << std::endl;
+TEST(podio, invalid_refs) {
   bool success = false;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -96,11 +89,10 @@ void test_invalid_refs() {
   } catch (std::runtime_error){
     success = true;
   }
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_looping(){
-  std::cout << "*** Test looping ***" << std::endl;
+TEST(podio,looping) {
   bool success = true;
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("name");
@@ -113,12 +105,11 @@ void test_looping(){
     auto energy = coll[i].energy();
   }
   if ((coll[0].energy() != 0) || (coll[1].energy() != 1)) success = false;
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_notebook() {
+TEST(podio,notebook) {
   bool success = true;
-  std::cout << "*** Test notebook ***" << std::endl;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   for(unsigned i=0; i<12; ++i){
@@ -130,31 +121,26 @@ void test_notebook() {
     if(double(index) != energy) success = false;
     ++index;
   }
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_OneToOneRelations(){
-  std::cout << "*** Test OneToOneRelations ***" << std::endl;
+TEST(podio,OneToOneRelations) {
   bool success = true;
   auto store = podio::EventStore();
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
   auto cluster = ExampleCluster();
   auto rel = ExampleWithOneRelation();
-  //std::cout << "Should now delete 1 object" << std::endl;
   rel.cluster(cluster);
-  std::cout << "    Success: " << success << std::endl;
-  //std::cout << "Should now delete 2 objects" << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_POD(){
-  std::cout << "*** Test PODness ***" << std::endl;
+TEST(podio,podness) {
   bool success = true;
   if (std::is_pod<ExampleClusterData>() != true) success = false;
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_referencing(){
-  std::cout << "*** Test referencing ***" << std::endl;
+TEST(podio,referencing) {
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -169,11 +155,10 @@ void test_referencing(){
     if( i->energy() != index) success = false;
     ++index;
   }
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-void test_write_buffer() {
-  std::cout << "*** Test write buffer ***" << std::endl;
+TEST(podio, write_buffer) {
   bool success = true;
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("data");
@@ -182,21 +167,16 @@ void test_write_buffer() {
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
   auto cluster  = clusters.create();
   clusters.prepareForWrite();
-  std::cout << "    Success: " << success << std::endl;
+  EXPECT_EQ(true, success);
 }
 
-int main(){
+TEST(podio, equality) {
+  auto example = ExampleWithOneRelation();
+  auto cluster = ExampleCluster();
+  //TODO
+}
 
-  test_autodelete();
-  test_basic();
-  test_clearing();
-  test_cloning();
-  test_invalid_refs();
-  test_looping();
-  test_notebook();
-  test_OneToOneRelations();
-  test_POD();
-  test_referencing();
-  test_write_buffer();
-
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

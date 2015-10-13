@@ -35,7 +35,7 @@ int main(){
   writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
 
-  unsigned nevents=10000;
+  unsigned nevents=100;
 
   for(unsigned i=0; i<nevents; ++i) {
     if(i % 1000 == 0) {

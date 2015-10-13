@@ -12,7 +12,7 @@
 This class has the function to read available data from disk
 and to prepare collections and buffers.
 
- */
+*/
 
 namespace podio {
 

@@ -1,6 +1,6 @@
 import yaml
 
-class AlbersConfigReader(object):
+class PodioConfigReader(object):
 
   def __init__(self,yamlfile):
     self.yamlfile = yamlfile
@@ -12,7 +12,7 @@ class AlbersConfigReader(object):
       theType = klass.split("[")[0]
       number  = klass.split("[")[1].split("]")[0]
       # transform it into std::array
-      klass = "std::array<%s,%s>" %(theType, number);
+      #klass = "std::array<%s,%s>" %(theType, number);
     return klass
 
   def read(self):
@@ -22,9 +22,9 @@ class AlbersConfigReader(object):
     if content.has_key("datatypes"):
       for klassname, value in content["datatypes"].iteritems():
         datatype = {}
-        datatype["description"] = value["description"]
-        datatype["author"] = value["author"]
-        for category in ("members","VectorMembers","OneToOneRelations","OneToManyRelations"):
+        datatype["Description"] = value["Description"]
+        datatype["Author"] = value["Author"]
+        for category in ("Members","VectorMembers","OneToOneRelations","OneToManyRelations","TransientMembers"):
           definitions = []
           if value.has_key(category):
             for definition in value[category]:
