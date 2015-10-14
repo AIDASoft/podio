@@ -45,5 +45,6 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
         DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 #--- project specific subdirectories -------------------------------------------
+add_subdirectory(python)
 add_subdirectory(src)
 add_subdirectory(tests)
