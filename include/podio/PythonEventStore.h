@@ -5,6 +5,8 @@
 #include "podio/EventStore.h"
 #include "podio/ROOTReader.h"
 
+namespace podio {
+
 class PythonEventStore {
 public:
   /// constructor from filename
@@ -26,5 +28,7 @@ public:
   podio::ROOTReader m_reader;
   podio::EventStore m_store;
 };
+
+}
 
 #endif
