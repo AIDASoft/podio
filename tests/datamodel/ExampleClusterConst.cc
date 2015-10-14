@@ -52,6 +52,17 @@ std::vector<ConstExampleHit>::const_iterator ConstExampleCluster::Hits_end() con
   return ++ret_value;
 }
 
+unsigned int ConstExampleCluster::Hits_size() const {
+  return (m_obj->data.Hits_end-m_obj->data.Hits_begin);
+}
+
+ConstExampleHit ConstExampleCluster::Hits(unsigned int index) const {
+  if (Hits_size() > index) {
+    return m_obj->m_Hits->at(m_obj->data.Hits_begin+index);
+}
+  else throw std::out_of_range ("index out of bounds for existing references");
+}
+
 bool  ConstExampleCluster::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

@@ -56,6 +56,17 @@ void ExampleWithVectorMember::addcount(int component) {
   m_obj->data.count_end++;
 }
 
+unsigned int ExampleWithVectorMember::count_size() const {
+  return (m_obj->data.count_end-m_obj->data.count_begin);
+}
+
+int ExampleWithVectorMember::count(unsigned int index) const {
+  if (count_size() > index) {
+    return m_obj->m_count->at(m_obj->data.count_begin+index);
+}
+  else throw std::out_of_range ("index out of bounds for existing references");
+}
+
 bool  ExampleWithVectorMember::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

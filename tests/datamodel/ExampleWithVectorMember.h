@@ -48,6 +48,8 @@ public:
 
 
   void addcount(int);
+  unsigned int count_size() const;
+  int count(unsigned int) const;
   std::vector<int>::const_iterator count_begin() const;
   std::vector<int>::const_iterator count_end() const;
 

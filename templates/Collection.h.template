@@ -65,8 +65,9 @@ public:
   int size() const;
 
   /// Returns the object of given index
-  const ${name} operator[](int index) const;
-  const ${name} at(int index) const;
+  const ${name} operator[](unsigned int index) const;
+  /// Returns the object of given index
+  const ${name} at(unsigned int index) const;
 
 
   /// Append object to the collection

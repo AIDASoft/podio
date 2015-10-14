@@ -8,8 +8,12 @@ ExampleHitCollection::ExampleHitCollection() : m_collectionID(0), m_entries() ,m
   
 }
 
-const ExampleHit ExampleHitCollection::operator[](int index) const {
+const ExampleHit ExampleHitCollection::operator[](unsigned int index) const {
   return ExampleHit(m_entries[index]);
+}
+
+const ExampleHit ExampleHitCollection::at(unsigned int index) const {
+  return ExampleHit(m_entries.at(index));
 }
 
 int  ExampleHitCollection::size() const {

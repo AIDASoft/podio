@@ -1,0 +1,10 @@
+<lcgdict>
+    <selection>
+    <class name="podio::CollectionBase"/>
+    <class name="podio::CollectionIDTable">
+        <field name="m_mutex" transient="true"/>
+    </class>
+    <class name="podio::PythonEventStore">
+    </class>
+    </selection>
+</lcgdict>

@@ -45,6 +45,8 @@ public:
 
   const double& energy() const { return m_obj->data.energy; };
 
+  unsigned int Hits_size() const;
+  ConstExampleHit Hits(unsigned int) const;
   std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
   std::vector<ConstExampleHit>::const_iterator Hits_end() const;
 

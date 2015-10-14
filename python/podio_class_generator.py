@@ -129,7 +129,7 @@ class ClassGenerator(object):
           includes += "#include <vector>\n"
           self.warnings.append("%s defines a vector member %s, that spoils the PODness" %(classname, klass))
       elif "[" in klass:
-          pass #support for arrays
+          raise Exception("'%s' defines an array type. Array types are not supported yet." %(classname, klass))
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
     membersCode = ""

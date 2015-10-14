@@ -13,8 +13,12 @@ ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_collect
 
 }
 
-const ExampleReferencingType ExampleReferencingTypeCollection::operator[](int index) const {
+const ExampleReferencingType ExampleReferencingTypeCollection::operator[](unsigned int index) const {
   return ExampleReferencingType(m_entries[index]);
+}
+
+const ExampleReferencingType ExampleReferencingTypeCollection::at(unsigned int index) const {
+  return ExampleReferencingType(m_entries.at(index));
 }
 
 int  ExampleReferencingTypeCollection::size() const {

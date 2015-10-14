@@ -11,8 +11,12 @@ ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collect
 
 }
 
-const ExampleWithOneRelation ExampleWithOneRelationCollection::operator[](int index) const {
+const ExampleWithOneRelation ExampleWithOneRelationCollection::operator[](unsigned int index) const {
   return ExampleWithOneRelation(m_entries[index]);
+}
+
+const ExampleWithOneRelation ExampleWithOneRelationCollection::at(unsigned int index) const {
+  return ExampleWithOneRelation(m_entries.at(index));
 }
 
 int  ExampleWithOneRelationCollection::size() const {

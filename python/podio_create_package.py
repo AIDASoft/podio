@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# This script creates a data model project according to the following
+# This script creates a data model package according to the following
 # structure:
 #
 # CMakeLists.txt

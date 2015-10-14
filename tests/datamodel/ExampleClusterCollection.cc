@@ -11,8 +11,12 @@ ExampleClusterCollection::ExampleClusterCollection() : m_collectionID(0), m_entr
 
 }
 
-const ExampleCluster ExampleClusterCollection::operator[](int index) const {
+const ExampleCluster ExampleClusterCollection::operator[](unsigned int index) const {
   return ExampleCluster(m_entries[index]);
+}
+
+const ExampleCluster ExampleClusterCollection::at(unsigned int index) const {
+  return ExampleCluster(m_entries.at(index));
 }
 
 int  ExampleClusterCollection::size() const {

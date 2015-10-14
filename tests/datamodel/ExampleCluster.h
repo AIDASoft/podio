@@ -52,6 +52,8 @@ public:
   void energy(double value) { m_obj->data.energy = value; };
 
   void addHits(ConstExampleHit);
+  unsigned int Hits_size() const;
+  ConstExampleHit Hits(unsigned int) const;
   std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
   std::vector<ConstExampleHit>::const_iterator Hits_end() const;
 

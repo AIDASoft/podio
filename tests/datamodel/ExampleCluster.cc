@@ -59,6 +59,17 @@ void ExampleCluster::addHits(ConstExampleHit component) {
   m_obj->data.Hits_end++;
 }
 
+unsigned int ExampleCluster::Hits_size() const {
+  return (m_obj->data.Hits_end-m_obj->data.Hits_begin);
+}
+
+ConstExampleHit ExampleCluster::Hits(unsigned int index) const {
+  if (Hits_size() > index) {
+    return m_obj->m_Hits->at(m_obj->data.Hits_begin+index);
+}
+  else throw std::out_of_range ("index out of bounds for existing references");
+}
+
 bool  ExampleCluster::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

@@ -8,11 +8,11 @@ ${name}Collection::${name}Collection() : m_collectionID(0), m_entries() ${initia
   ${constructorbody}
 }
 
-const ${name} ${name}Collection::operator[](int index) const {
+const ${name} ${name}Collection::operator[](unsigned int index) const {
   return ${name}(m_entries[index]);
 }
 
-const ${name} ${name}Collection::at(int index) const {
+const ${name} ${name}Collection::at(unsigned int index) const {
   return ${name}(m_entries.at(index));
 }
 

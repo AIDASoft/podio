@@ -65,7 +65,10 @@ public:
   int size() const;
 
   /// Returns the object of given index
-  const ExampleReferencingType operator[](int index) const;
+  const ExampleReferencingType operator[](unsigned int index) const;
+  /// Returns the object of given index
+  const ExampleReferencingType at(unsigned int index) const;
+
 
   /// Append object to the collection
   void push_back(ConstExampleReferencingType object);

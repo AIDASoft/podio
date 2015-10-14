@@ -8,8 +8,12 @@ ExampleWithVectorMemberCollection::ExampleWithVectorMemberCollection() : m_colle
   
 }
 
-const ExampleWithVectorMember ExampleWithVectorMemberCollection::operator[](int index) const {
+const ExampleWithVectorMember ExampleWithVectorMemberCollection::operator[](unsigned int index) const {
   return ExampleWithVectorMember(m_entries[index]);
+}
+
+const ExampleWithVectorMember ExampleWithVectorMemberCollection::at(unsigned int index) const {
+  return ExampleWithVectorMember(m_entries.at(index));
 }
 
 int  ExampleWithVectorMemberCollection::size() const {

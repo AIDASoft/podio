@@ -65,7 +65,10 @@ public:
   int size() const;
 
   /// Returns the object of given index
-  const ExampleHit operator[](int index) const;
+  const ExampleHit operator[](unsigned int index) const;
+  /// Returns the object of given index
+  const ExampleHit at(unsigned int index) const;
+
 
   /// Append object to the collection
   void push_back(ConstExampleHit object);

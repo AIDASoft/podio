@@ -65,7 +65,10 @@ public:
   int size() const;
 
   /// Returns the object of given index
-  const ExampleWithOneRelation operator[](int index) const;
+  const ExampleWithOneRelation operator[](unsigned int index) const;
+  /// Returns the object of given index
+  const ExampleWithOneRelation at(unsigned int index) const;
+
 
   /// Append object to the collection
   void push_back(ConstExampleWithOneRelation object);

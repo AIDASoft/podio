@@ -8,8 +8,12 @@ EventInfoCollection::EventInfoCollection() : m_collectionID(0), m_entries() ,m_r
   
 }
 
-const EventInfo EventInfoCollection::operator[](int index) const {
+const EventInfo EventInfoCollection::operator[](unsigned int index) const {
   return EventInfo(m_entries[index]);
+}
+
+const EventInfo EventInfoCollection::at(unsigned int index) const {
+  return EventInfo(m_entries.at(index));
 }
 
 int  EventInfoCollection::size() const {

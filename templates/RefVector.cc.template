@@ -14,3 +14,14 @@ void ${classname}::add${relation}(${relationtype} component) {
   m_obj->m_${relation}->push_back(component);
   m_obj->data.${relation}_end++;
 }
+
+unsigned int ${classname}::${relation}_size() const {
+  return (m_obj->data.${relation}_end-m_obj->data.${relation}_begin);
+}
+
+${relationtype} ${classname}::${relation}(unsigned int index) const {
+  if (${relation}_size() > index) {
+    return m_obj->m_${relation}->at(m_obj->data.${relation}_begin+index);
+}
+  else throw std::out_of_range ("index out of bounds for existing references");
+}

@@ -48,6 +48,17 @@ std::vector<int>::const_iterator ConstExampleWithVectorMember::count_end() const
   return ++ret_value;
 }
 
+unsigned int ConstExampleWithVectorMember::count_size() const {
+  return (m_obj->data.count_end-m_obj->data.count_begin);
+}
+
+int ConstExampleWithVectorMember::count(unsigned int index) const {
+  if (count_size() > index) {
+    return m_obj->m_count->at(m_obj->data.count_begin+index);
+}
+  else throw std::out_of_range ("index out of bounds for existing references");
+}
+
 bool  ConstExampleWithVectorMember::isAvailable() const {
   if (m_obj != nullptr) {
     return true;
