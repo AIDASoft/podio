@@ -12,6 +12,10 @@ const ${name} ${name}Collection::operator[](int index) const {
   return ${name}(m_entries[index]);
 }
 
+const ${name} ${name}Collection::at(int index) const {
+  return ${name}(m_entries.at(index));
+}
+
 int  ${name}Collection::size() const {
   return m_entries.size();
 }
