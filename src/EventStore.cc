@@ -47,8 +47,8 @@ namespace podio {
     } else if (m_reader != nullptr) {
       auto tmp = m_reader->readCollection(name);
       if (setReferences == true) {
-        tmp->setReferences(this);
         if (tmp != nullptr){
+          tmp->setReferences(this);
           // check again whether collection exists
           // it may have been created on-demand already
           if (collectionRegistered(name) == false) {

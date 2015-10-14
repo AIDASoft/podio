@@ -13,27 +13,39 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
+
+file(GLOB pcms ${CMAKE_CURRENT_BINARY_DIR}/*.pcm ${CMAKE_CURRENT_BINARY_DIR}/*.rootmap)
 file(GLOB sources datamodel/*.cc)
 file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
-list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
-REFLEX_GENERATE_DICTIONARY(DataModelEx ${headers} SELECTION datamodel/selection.xml)
+#list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
 
-add_library(DataModelExample SHARED ${sources} ${sources_utils} ${headers} ${headers_utils} DataModelEx.cxx)
-target_link_libraries(DataModelExample podio )
+add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
+target_link_libraries(TestDataModel podio )
+install(TARGETS TestDataModel DESTINATION tests)
+
+REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION datamodel/selection.xml)
+add_library(TestDataModelDict SHARED TestDataModel.cxx)
+target_link_libraries(TestDataModelDict TestDataModel podio )
+install(TARGETS TestDataModelDict DESTINATION tests)
+install(FILES ${pcms} DESTINATION tests)
 
 file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
 foreach( sourcefile ${executables} )
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
-  target_link_libraries( ${name} DataModelExample ${GTEST_LIBRARIES})
-  install(TARGETS ${name} DESTINATION examples)
+  target_link_libraries( ${name} TestDataModel ${GTEST_LIBRARIES})
+  install(TARGETS ${name} DESTINATION tests)
 endforeach( sourcefile ${executables} )
+
 
 #--- Adding tests --------------------------------------------------------------
 add_test(NAME write COMMAND write)
 add_test(NAME read COMMAND read DEPENDS write)
 add_test(NAME unittest COMMAND unittest)
+
+add_test(NAME read_python COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/read.py)
+set_property(TEST read_python PROPERTY ENVIRONMENT PYTHONPATH=${CMAKE_INSTALL_PREFIX}/lib:$ENV{PYTHONPATH})
