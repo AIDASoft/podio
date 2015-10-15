@@ -98,6 +98,8 @@ public:
 
      template<size_t arraysize>  
   const std::array<int,arraysize> Number() const;
+  template<size_t arraysize>  
+  const std::array<SimpleStruct,arraysize> simple() const;
 
 
 private:
@@ -124,6 +126,15 @@ const std::array<int,arraysize> EventInfoCollection::Number() const {
   auto valid_size = std::min(arraysize,m_entries.size());
   for (unsigned i = 0; i<valid_size; ++i){
     tmp[i] = m_entries[i]->data.Number;
+ }
+ return tmp;
+}
+template<size_t arraysize>
+const std::array<SimpleStruct,arraysize> EventInfoCollection::simple() const {
+  std::array<SimpleStruct,arraysize> tmp;
+  auto valid_size = std::min(arraysize,m_entries.size());
+  for (unsigned i = 0; i<valid_size; ++i){
+    tmp[i] = m_entries[i]->data.simple;
  }
  return tmp;
 }

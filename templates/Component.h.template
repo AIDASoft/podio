@@ -1,4 +1,4 @@
-#ifndef ${name}_H 
+#ifndef ${name}_H
 #define ${name}_H
 
 class $name {

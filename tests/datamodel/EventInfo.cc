@@ -10,9 +10,9 @@ EventInfo::EventInfo() : m_obj(new EventInfoObj()){
  m_obj->acquire();
 };
 
-EventInfo::EventInfo(int Number) : m_obj(new EventInfoObj()){
+EventInfo::EventInfo(int Number,SimpleStruct simple) : m_obj(new EventInfoObj()){
  m_obj->acquire();
-   m_obj->data.Number = Number;
+   m_obj->data.Number = Number;  m_obj->data.simple = simple;
 };
 
 EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
@@ -41,6 +41,7 @@ EventInfo::~EventInfo(){
 EventInfo::operator ConstEventInfo() const {return ConstEventInfo(m_obj);};
 
 
+void EventInfo::simple(class SimpleStruct value){ m_obj->data.simple = value;}
 
 
 bool  EventInfo::isAvailable() const {

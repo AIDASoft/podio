@@ -6,5 +6,7 @@
     </class>
     <class name="podio::PythonEventStore">
     </class>
+    <class name="podio::ObjectID"/>
+    <class name="vector<podio::ObjectID>"/>
     </selection>
 </lcgdict>

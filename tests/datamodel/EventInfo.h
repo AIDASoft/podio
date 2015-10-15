@@ -1,11 +1,12 @@
 #ifndef EventInfo_H
 #define EventInfo_H
 #include "EventInfoData.h"
+#include "SimpleStruct.h"
 
 #include <vector>
 #include "podio/ObjectID.h"
 
-//  event number
+//  a simple struct
 // author: B. Hegner
 
 //forward declarations
@@ -27,7 +28,7 @@ public:
 
   /// default constructor
   EventInfo();
-    EventInfo(int Number);
+    EventInfo(int Number,SimpleStruct simple);
 
   /// constructor from existing EventInfoObj
   EventInfo(EventInfoObj* obj);
@@ -46,8 +47,11 @@ public:
 public:
 
   const int& Number() const { return m_obj->data.Number; };
+  const SimpleStruct& simple() const { return m_obj->data.simple; };
 
   void Number(int value) { m_obj->data.Number = value; };
+  SimpleStruct& simple() { return m_obj->data.simple; };
+  void simple(class SimpleStruct value);
 
 
   /// check whether the object is actually available

@@ -74,6 +74,12 @@ TEST(podio, cloning){
   EXPECT_EQ(true, success);
 }
 
+TEST(podio, component){
+  auto info = EventInfo();
+  info.simple().x = 3;
+
+}
+
 TEST(podio, invalid_refs) {
   bool success = false;
   auto store = podio::EventStore();

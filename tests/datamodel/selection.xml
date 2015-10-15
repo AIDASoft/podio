@@ -1,12 +1,12 @@
 <lcgdict>
     <selection>
-    <class name="podio::CollectionBase"/>
-    <class name="podio::CollectionIDTable">
-        <field name="m_mutex" transient="true"/>
-    </class>
-        <class name="podio::ObjectID"/>
-        <class name="vector<podio::ObjectID>"/>
 
+          <class name="std::vector<SimpleStruct>" />
+
+          <class name="SimpleStruct">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<EventInfoData>" />
 
           <class name="EventInfoData">

@@ -1,4 +1,10 @@
 ---
+components :
+  SimpleStruct:
+    x : int
+    y : int
+    z : int
+
 datatypes :
 
   EventInfo:
@@ -6,6 +12,7 @@ datatypes :
     Author : "B. Hegner"
     Members :
      - int Number // event number
+     - SimpleStruct simple // a simple struct
 
   ExampleHit :
     Description : "Example Hit"

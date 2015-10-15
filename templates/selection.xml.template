@@ -1,11 +1,5 @@
 <lcgdict>
     <selection>
-    <class name="podio::CollectionBase"/>
-    <class name="podio::CollectionIDTable">
-        <field name="m_mutex" transient="true"/>
-    </class>
-        <class name="podio::ObjectID"/>
-        <class name="vector<podio::ObjectID>"/>
 
 $classes
 
