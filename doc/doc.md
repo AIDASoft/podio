@@ -41,6 +41,14 @@ The references can be accessed via iterators on the referencing objects
       std::cout << i->energy() << std::endl;
     }
 
+or via direct accessors
+
+    auto size = cluster.Hits_size();
+    auto hit  = cluster.Hits(<aNumber>);
+
+If asking for an entry outside bounds, a std::out_of_range exception is thrown.
+
+
 ### Object retrieval
 
 Collections can be retrieved explicitly:
@@ -61,7 +69,7 @@ Looping through collections is supported in two ways. Via iterators:
 and via direct object access:
 
     for(int i = 0, end = hits.size(), i != end, ++i){
-      std::cout << hit[i].energy();
+      std::cout << hit[i].energy() << std::endl;
     }
 
 
@@ -98,7 +106,7 @@ Please note that a `put` method for collections is not foreseen.
 
 #### Python Interface
 
-to be written
+The class `EventStore` provides all the necessary (read) access to event files.
 
 
 # Technical Details
@@ -113,42 +121,6 @@ The data model is based on four different kind of objects:
  4. A user-visible collection containing the physics objects (e.g. `HitCollection`)
 
 More details to be written.
-
-
-## Definition of custom Data Models
-This package allows the definition of data types using a simple syntax. This is to ease the creation of optimised data formats. Here an excerpt from "datamodel.yaml" for a simple class, just containing one member of the type `int`.
-
-    datatypes :
-      EventInfo :
-        description : "My first data type"
-        author : "It's me"
-        members :
-        - name : Number
-          type : int
-          description: "event number"
-
-Using this definition, four classes will be created: `EventInfo`, `EventInfoData`, `EventInfoEntry` and `EventInfoCollection`. These have the following signature:
-
-    class EventInfoData {
-      public:
-        int Number;
-    }
-
-    class EventInfo {
-      public:
-      ...
-        int Number() const;
-        void Number(int);
-      ...
-    }
-
-### Defining members and transient members
-
-The library supports both the usage of (persistent) members and transient members via the following syntax:
-
-### Definition of references between objects:
-to be written
-
 
 ## Thread-safety and multi-store support
 The design avoids the usage of globals and statics. Thus multiple instances of the EventStore and Registry can trivially co-exist.
