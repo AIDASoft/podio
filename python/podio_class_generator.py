@@ -229,6 +229,7 @@ class ClassGenerator(object):
       if klass in self.buildin_types:
         setter_declarations += "  void %s(%s value) { m_obj->data.%s = value; };\n" %(name, klass, name)
       else:
+        setter_declarations += "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)  # getting non-const reference is conceptually a setter
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       # set up signature
