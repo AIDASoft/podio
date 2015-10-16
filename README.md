@@ -55,17 +55,17 @@ after setting up a separate build and install area, the build can be triggered w
 
 The examples are for creating a file "example.root"
 
-    ../install/examples/write
+    ../install/tests/write
 
 And reading it again
 
-    ../install/examples/read
+    ../install/tests/read
 
 There is a rudimentary test in
 
-    ../install/examples/test
+    ../install/tests/test
 
 ## Modifying the data model 
 
 if you want to invoke the data model creator use python/podio_class_generator.py
-and look into examples/datalayout.yaml for inspiration
+and look into tests/datalayout.yaml for inspiration
