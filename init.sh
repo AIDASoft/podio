@@ -3,6 +3,6 @@ source /afs/cern.ch/sw/lcg/contrib/gcc/4.8.1/x86_64-slc6/setup.sh
 source /afs/cern.ch/sw/lcg/app/releases/ROOT/6.02.08/x86_64-slc6-gcc48-opt/root/bin/thisroot.sh
 export CMAKE_PREFIX_PATH=/afs/cern.ch/sw/lcg/releases/gtest/1.7.0-4f83b/x86_64-slc6-gcc48-opt/
 
-export PODIOHOME=$PWD/install
-export LD_LIBRARY_PATH=$PODIO/examples:$PODIOHOME/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=$PODIOHOME/examples:$PYTHONPATH
+export PODIO=$PWD/install
+export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$PODIO/tests:$PYTHONPATH
