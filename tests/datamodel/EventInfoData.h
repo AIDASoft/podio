@@ -1,16 +1,14 @@
 #ifndef EventInfoDATA_H
 #define EventInfoDATA_H
 
-//  a simple struct
+//  event number
 // author: B. Hegner
 
-#include "SimpleStruct.h"
 
 
 class EventInfoData {
 public:
   int Number; /// event number 
-  SimpleStruct simple; /// a simple struct 
 
 };
 

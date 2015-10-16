@@ -7,6 +7,12 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<NotSoSimpleStruct>" />
+
+          <class name="NotSoSimpleStruct">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<EventInfoData>" />
 
           <class name="EventInfoData">
@@ -34,6 +40,36 @@
           <class name="std::vector<EventInfoObj>" />
 
           <class name="EventInfoObj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithComponentData>" />
+
+          <class name="ExampleWithComponentData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithComponent>" />
+
+          <class name="ExampleWithComponent">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstExampleWithComponent>" />
+
+          <class name="ConstExampleWithComponent">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithComponentCollection>" />
+
+          <class name="ExampleWithComponentCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithComponentObj>" />
+
+          <class name="ExampleWithComponentObj">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>

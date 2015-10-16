@@ -51,6 +51,7 @@ class ClassGenerator(object):
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
     if content.has_key("components"):
+      self.components = content["components"]
       self.process_components(content["components"])
     self.load_data_definitions()
     self.process_datatypes(self.datatypes)
@@ -432,16 +433,20 @@ class ClassGenerator(object):
         defined ones
     """
     for klass in components.itervalues():
-      if klass in self.buildin_types:
+      if klass in self.buildin_types or self.components.has_key(klass):
         pass
       else:
         raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(classname, klass))
+    includes = ""
     members = ""
     for name, klass in components.iteritems():
       members+= "  %s %s;\n" %(klass, name)
-    substitutions = {"members"  : members,
-                     "name"     : classname,
-                     "package_name" : self.package_name
+      if self.components.has_key(klass):
+          includes+= '#include "%s.h"\n' %(klass)
+    substitutions = { "includes" : includes,
+                      "members"  : members,
+                      "name"     : classname,
+                      "package_name" : self.package_name
     }
     self.fill_templates("Component",substitutions)
     self.created_classes.append(classname)

@@ -10,9 +10,9 @@ ConstEventInfo::ConstEventInfo() : m_obj(new EventInfoObj()){
  m_obj->acquire();
 };
 
-ConstEventInfo::ConstEventInfo(int Number,SimpleStruct simple) : m_obj(new EventInfoObj()){
+ConstEventInfo::ConstEventInfo(int Number) : m_obj(new EventInfoObj()){
  m_obj->acquire();
-   m_obj->data.Number = Number;  m_obj->data.simple = simple;
+   m_obj->data.Number = Number;
 };
 
 

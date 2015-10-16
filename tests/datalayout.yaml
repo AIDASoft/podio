@@ -5,6 +5,9 @@ components :
     y : int
     z : int
 
+  NotSoSimpleStruct:
+    data : SimpleStruct
+
 datatypes :
 
   EventInfo:
@@ -12,7 +15,6 @@ datatypes :
     Author : "B. Hegner"
     Members :
      - int Number // event number
-     - SimpleStruct simple // a simple struct
 
   ExampleHit :
     Description : "Example Hit"
@@ -49,3 +51,9 @@ datatypes :
     Author : "Benedikt Hegner"
     OneToOneRelations:
      - ExampleCluster cluster // a particular cluster
+
+  ExampleWithComponent :
+    Description : "Type with one component"
+    Author : "Bendikt Hegner"
+    Members :
+     - NotSoSimpleStruct component // a component

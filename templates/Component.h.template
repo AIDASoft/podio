@@ -1,5 +1,6 @@
 #ifndef ${name}_H
 #define ${name}_H
+$includes
 
 class $name {
 public:

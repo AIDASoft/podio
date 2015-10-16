@@ -12,6 +12,7 @@
 #include "EventInfoCollection.h"
 #include "ExampleClusterCollection.h"
 #include "ExampleHitCollection.h"
+#include "ExampleWithComponent.h"
 #include "ExampleWithOneRelation.h"
 #include "ExampleWithOneRelationCollection.h"
 
@@ -75,9 +76,9 @@ TEST(podio, cloning){
 }
 
 TEST(podio, component){
-  auto info = EventInfo();
-  info.simple().x = 3;
-
+  auto info = ExampleWithComponent();
+  info.component().data.x = 3;
+  EXPECT_EQ(3, info.component().data.x);
 }
 
 TEST(podio, invalid_refs) {
