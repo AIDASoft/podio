@@ -5,6 +5,7 @@ include_directories(
 )
 
 find_package(GTest)
+include_directories(${GTEST_INCLUDE_DIRS})
 
 foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   string(TOUPPER ${_conf} _conf )
