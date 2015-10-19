@@ -42,7 +42,7 @@ public:
 
 public:
 
-  const ConstExampleCluster cluster();
+  const ConstExampleCluster cluster() const;
 
 
   /// check whether the object is actually available

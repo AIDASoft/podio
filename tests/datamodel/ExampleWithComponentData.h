@@ -2,7 +2,7 @@
 #define ExampleWithComponentDATA_H
 
 //  a component
-// author: Bendikt Hegner
+// author: Benedikt Hegner
 
 #include "NotSoSimpleStruct.h"
 

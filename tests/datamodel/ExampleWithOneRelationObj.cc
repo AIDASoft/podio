@@ -5,7 +5,7 @@
 ExampleWithOneRelationObj::ExampleWithOneRelationObj() :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     ,data()
-    ,m_cluster(new ConstExampleCluster())
+    ,m_cluster(nullptr)
 
     { }
 

@@ -46,7 +46,7 @@ public:
 
 public:
 
-  const ConstExampleCluster cluster();
+  const ConstExampleCluster cluster() const;
 
   void cluster(ConstExampleCluster value);
 

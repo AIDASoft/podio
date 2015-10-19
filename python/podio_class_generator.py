@@ -244,9 +244,11 @@ class ClassGenerator(object):
         klass = member["type"]
         setter_declarations += "  void %s(Const%s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(Const%s value) { if (m_obj->m_%s != nullptr) delete m_obj->m_%s; m_obj->m_%s = new Const%s(value); };\n" %(classname,name, klass, name, name, name,klass)
-        getter_declarations += "  const Const%s %s();\n" %(klass, name)
-        getter_implementations += "  const Const%s %s::%s() { return Const%s(*(m_obj->m_%s));};\n" %(klass, classname, name, klass, name)
-        ConstGetter_implementations += "  const Const%s Const%s::%s() { return Const%s(*(m_obj->m_%s));};\n" %(klass, classname, name, klass, name)
+        getter_declarations += "  const Const%s %s() const;\n" %(klass, name)
+        getter_implementations += "  const Const%s %s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));};\n" \
+                                  %(klass, classname, name, name, klass, klass, name)
+        ConstGetter_implementations += "  const Const%s Const%s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));};\n" \
+                                  %(klass, classname, name, name, klass, klass, name)
 
     # handle vector members
     vectormembers = definition["VectorMembers"]
@@ -474,7 +476,7 @@ class ClassGenerator(object):
         if klass != classname:
           forward_declarations += 'class Const%s;\n' %(klass)
           includes_cc += '#include "%sConst.h"\n' %(klass)
-          initialize_relations += ",m_%s(new Const%s())\n" %(name, klass)
+          initialize_relations += ",m_%s(nullptr)\n" %(name)
         delete_relations+="delete m_%s;\n" %name
 
     if len(refvectors+definition["VectorMembers"]) !=0:

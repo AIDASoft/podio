@@ -11,6 +11,8 @@
 // Test data types
 #include "EventInfoCollection.h"
 #include "ExampleClusterCollection.h"
+#include "ExampleForCyclicDependency1Collection.h"
+#include "ExampleForCyclicDependency2Collection.h"
 #include "ExampleHitCollection.h"
 #include "ExampleWithComponent.h"
 #include "ExampleWithOneRelation.h"
@@ -79,6 +81,22 @@ TEST(podio, component){
   auto info = ExampleWithComponent();
   info.component().data.x = 3;
   EXPECT_EQ(3, info.component().data.x);
+}
+
+TEST(podio,cyclic){
+  auto start = ExampleForCyclicDependency1();
+  auto isAvailable = start.ref().isAvailable();
+  EXPECT_EQ(false,isAvailable);
+  auto end = ExampleForCyclicDependency2();
+  start.ref(end);
+  isAvailable = start.ref().isAvailable();
+  EXPECT_EQ(true,isAvailable);
+  end.ref(start);
+  EXPECT_EQ(start,end.ref());
+  auto end_eq = start.ref();
+  auto start_eq = end_eq.ref();
+  EXPECT_EQ(start,start_eq);
+  EXPECT_EQ(start,start.ref().ref());
 }
 
 TEST(podio, invalid_refs) {

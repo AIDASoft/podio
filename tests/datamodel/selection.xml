@@ -223,6 +223,66 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<ExampleForCyclicDependency1Data>" />
+
+          <class name="ExampleForCyclicDependency1Data">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleForCyclicDependency1>" />
+
+          <class name="ExampleForCyclicDependency1">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstExampleForCyclicDependency1>" />
+
+          <class name="ConstExampleForCyclicDependency1">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleForCyclicDependency1Collection>" />
+
+          <class name="ExampleForCyclicDependency1Collection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleForCyclicDependency1Obj>" />
+
+          <class name="ExampleForCyclicDependency1Obj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleForCyclicDependency2Data>" />
+
+          <class name="ExampleForCyclicDependency2Data">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleForCyclicDependency2>" />
+
+          <class name="ExampleForCyclicDependency2">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstExampleForCyclicDependency2>" />
+
+          <class name="ConstExampleForCyclicDependency2">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleForCyclicDependency2Collection>" />
+
+          <class name="ExampleForCyclicDependency2Collection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleForCyclicDependency2Obj>" />
+
+          <class name="ExampleForCyclicDependency2Obj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
 
 
     </selection>

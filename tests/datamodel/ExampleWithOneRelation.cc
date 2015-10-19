@@ -38,7 +38,9 @@ ExampleWithOneRelation::~ExampleWithOneRelation(){
 
 ExampleWithOneRelation::operator ConstExampleWithOneRelation() const {return ConstExampleWithOneRelation(m_obj);};
 
-  const ConstExampleCluster ExampleWithOneRelation::cluster() { return ConstExampleCluster(*(m_obj->m_cluster));};
+  const ConstExampleCluster ExampleWithOneRelation::cluster() const { if (m_obj->m_cluster == nullptr) {
+ return ConstExampleCluster(nullptr);}
+ return ConstExampleCluster(*(m_obj->m_cluster));};
 
 void ExampleWithOneRelation::cluster(ConstExampleCluster value) { if (m_obj->m_cluster != nullptr) delete m_obj->m_cluster; m_obj->m_cluster = new ConstExampleCluster(value); };
 

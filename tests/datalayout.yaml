@@ -54,6 +54,20 @@ datatypes :
 
   ExampleWithComponent :
     Description : "Type with one component"
-    Author : "Bendikt Hegner"
+    Author : "Benedikt Hegner"
     Members :
      - NotSoSimpleStruct component // a component
+
+  ExampleForCyclicDependency1 :
+    Description : "Type for cyclic dependency"
+    Author : "Benedikt Hegner"
+    OneToOneRelations :
+      - ExampleForCyclicDependency2 ref // a ref
+
+  ExampleForCyclicDependency2 :
+    Description : "Type for cyclic dependency"
+    Author : "Benedikt Hegner"
+    OneToOneRelations :
+      - ExampleForCyclicDependency1 ref // a ref
+
+    
