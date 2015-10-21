@@ -1,9 +1,11 @@
 import yaml
+import re
 
 class PodioConfigReader(object):
 
   def __init__(self,yamlfile):
     self.yamlfile = yamlfile
+    self.pattern = re.compile("[a-zA-Z0-9]+[\s]+[a-zA-Z0-9]+[\s]+[//\s]+")
 
   @staticmethod
   def check_class(klass):
@@ -28,10 +30,13 @@ class PodioConfigReader(object):
           definitions = []
           if value.has_key(category):
             for definition in value[category]:
-              klass, name = definition.split()[:2]
-              klass = self.check_class(klass)
-              comment = definition.split("//")[1]
-              definitions.append({"name": name, "type": klass, "description" : comment})
+              if self.pattern.match(definition):
+                klass, name = definition.split()[:2]
+                klass = self.check_class(klass)
+                comment = definition.split("//")[1]
+                definitions.append({"name": name, "type": klass, "description" : comment})
+              else:
+                raise Exception("'%s'\n Definitions in datatypes should have a following form:\n <type> <name> // <comment>\n eg. int Number // event number" %(definition))
             datatype[category] = definitions
           else:
             datatype[category] = []
