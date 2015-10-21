@@ -89,7 +89,10 @@ bool  ConstExampleReferencingType::isAvailable() const {
 }
 
 const podio::ObjectID ConstExampleReferencingType::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool ConstExampleReferencingType::operator==(const ExampleReferencingType& other) const {

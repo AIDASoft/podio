@@ -53,7 +53,10 @@ bool  ExampleForCyclicDependency2::isAvailable() const {
 }
 
 const podio::ObjectID ExampleForCyclicDependency2::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool ExampleForCyclicDependency2::operator==(const ConstExampleForCyclicDependency2& other) const {

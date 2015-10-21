@@ -51,7 +51,10 @@ bool  ExampleHit::isAvailable() const {
 }
 
 const podio::ObjectID ExampleHit::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool ExampleHit::operator==(const ConstExampleHit& other) const {

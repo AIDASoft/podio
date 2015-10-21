@@ -48,7 +48,10 @@ bool  ${name}::isAvailable() const {
 }
 
 const podio::ObjectID ${name}::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool ${name}::operator==(const Const${name}& other) const {

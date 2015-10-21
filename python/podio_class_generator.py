@@ -405,7 +405,7 @@ class ClassGenerator(object):
         clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
         clear_relations += "  m_rel_%s->clear();\n" %(name)
         # relation handling in ::prepareForWrite
-        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {(*m_refCollections)[%s]->emplace_back(obj->m_%s->getObjectID());};\n" %(counter+nOfRefVectors,name)
+        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {\nif (obj->m_%s != nullptr){\n(*m_refCollections)[%s]->emplace_back(obj->m_%s->getObjectID());} else {(*m_refCollections)[%s]->push_back({-2,-2}); } };\n" %(name,counter+nOfRefVectors,name,counter+nOfRefVectors)
         # relation handling in ::settingReferences
         prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
     substitutions = { "name" : classname,

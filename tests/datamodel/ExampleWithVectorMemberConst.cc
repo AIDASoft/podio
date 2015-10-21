@@ -67,7 +67,10 @@ bool  ConstExampleWithVectorMember::isAvailable() const {
 }
 
 const podio::ObjectID ConstExampleWithVectorMember::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool ConstExampleWithVectorMember::operator==(const ExampleWithVectorMember& other) const {

@@ -52,7 +52,10 @@ bool  ExampleWithComponent::isAvailable() const {
 }
 
 const podio::ObjectID ExampleWithComponent::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool ExampleWithComponent::operator==(const ConstExampleWithComponent& other) const {

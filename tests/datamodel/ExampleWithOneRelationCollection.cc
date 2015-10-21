@@ -53,7 +53,9 @@ void ExampleWithOneRelationCollection::prepareForWrite(){
   for(int i=0, size = m_data->size(); i != size; ++i){
   
   }
-    for (auto& obj : m_entries) {(*m_refCollections)[0]->emplace_back(obj->m_cluster->getObjectID());};
+    for (auto& obj : m_entries) {
+if (obj->m_cluster != nullptr){
+(*m_refCollections)[0]->emplace_back(obj->m_cluster->getObjectID());} else {(*m_refCollections)[0]->push_back({-2,-2}); } };
 
 }
 
@@ -71,10 +73,14 @@ bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionPro
 
   for(unsigned int i=0, size=m_entries.size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
-    m_entries[i]->m_cluster = new ConstExampleCluster((*tmp_coll)[id.index]);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
+      m_entries[i]->m_cluster = new ConstExampleCluster((*tmp_coll)[id.index]);
+    } else {
+      m_entries[i]->m_cluster = nullptr;
+    }
   }
 
   return true; //TODO: check success

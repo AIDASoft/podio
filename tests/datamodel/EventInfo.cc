@@ -51,7 +51,10 @@ bool  EventInfo::isAvailable() const {
 }
 
 const podio::ObjectID EventInfo::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool EventInfo::operator==(const ConstEventInfo& other) const {

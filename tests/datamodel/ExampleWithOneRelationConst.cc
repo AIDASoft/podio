@@ -49,7 +49,10 @@ bool  ConstExampleWithOneRelation::isAvailable() const {
 }
 
 const podio::ObjectID ConstExampleWithOneRelation::getObjectID() const {
-  return m_obj->id;
+  if (m_obj !=nullptr){
+    return m_obj->id;
+  }
+  return podio::ObjectID{-2,-2};
 }
 
 bool ConstExampleWithOneRelation::operator==(const ExampleWithOneRelation& other) const {
