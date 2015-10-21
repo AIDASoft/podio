@@ -193,6 +193,10 @@ TEST(podio, write_buffer) {
   auto cluster  = clusters.create();
   clusters.prepareForWrite();
   EXPECT_EQ(true, success);
+  auto& ref_coll  = store.create<ExampleWithOneRelationCollection>("onerel");
+  auto withRef = ref_coll.create();//ExampleWithOneRelation();
+  ref_coll.prepareForWrite();
+
 }
 
 TEST(podio, equality) {

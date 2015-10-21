@@ -75,6 +75,10 @@ int main(){
     oneRel.cluster(cluster);
     oneRels.push_back(oneRel);
 
+    // write non-filled relation
+    auto oneRelEmpty = ExampleWithOneRelation();
+    oneRels.push_back(oneRelEmpty);
+
     auto vec = ExampleWithVectorMember();
     vec.addcount(23);
     vec.addcount(24);
