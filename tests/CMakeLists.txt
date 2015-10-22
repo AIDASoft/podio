@@ -14,8 +14,6 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
-
-file(GLOB pcms ${CMAKE_CURRENT_BINARY_DIR}/*.pcm ${CMAKE_CURRENT_BINARY_DIR}/*.rootmap)
 file(GLOB sources datamodel/*.cc)
 file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
@@ -29,7 +27,9 @@ REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION datamodel/selectio
 add_library(TestDataModelDict SHARED TestDataModel.cxx)
 target_link_libraries(TestDataModelDict TestDataModel podio )
 install(TARGETS TestDataModelDict DESTINATION tests)
-install(FILES ${pcms} DESTINATION tests)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModelDict.rootmap DESTINATION lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModel_rdict.pcm DESTINATION lib)
+
 
 file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
