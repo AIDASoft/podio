@@ -8,6 +8,8 @@ $includes
 // author: $author
 
 //forward declarations
+class ${name}Obj;
+class ${name};
 class ${name}Collection;
 class ${name}CollectionIterator;
 $forward_declarations
