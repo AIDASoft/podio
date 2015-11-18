@@ -1,5 +1,25 @@
 import yaml
 
+class ComponentDefinition(object):
+    pass
+
+
+class ClassDefinition(object):
+  def __init__(self):
+      self.members_ = []
+      self.oneToOneRelations_ =  []
+      self.oneToManyRelations_ = []
+      self.transientMembers_ = []
+  def members(self):
+      return self.members_
+  def oneToOneRelations(self):
+      return self.oneToOneRelations_
+  def oneToManyRelations(self):
+      return self.oneToManyRelations_
+  def transientMembers(self):
+        return self.transientMembers_
+
+
 class PodioConfigReader(object):
 
   def __init__(self,yamlfile):
@@ -24,7 +44,7 @@ class PodioConfigReader(object):
         datatype = {}
         datatype["Description"] = value["Description"]
         datatype["Author"] = value["Author"]
-        for category in ("Members","VectorMembers","OneToOneRelations","OneToManyRelations","TransientMembers"):
+        for category in ("Members","VectorMembers","OneToOneRelations","OneToManyRelations","TransientMembers","Typedefs"):
           definitions = []
           if value.has_key(category):
             for definition in value[category]:

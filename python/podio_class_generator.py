@@ -38,7 +38,7 @@ class ClassGenerator(object):
     self.package_name =package_name
     self.template_dir = os.path.join(thisdir,"../templates")
     self.verbose=verbose
-    self.buildin_types = ["int","float","double","unsigned int","unsigned","short","bool"]
+    self.buildin_types = ["int","float","double","unsigned int","unsigned","short","bool","longlong","ulonglong"]
     self.created_classes = []
     self.requested_classes = []
     self.reader = PodioConfigReader(yamlfile)
@@ -225,12 +225,15 @@ class ClassGenerator(object):
       name = member["name"]
       klass = member["type"]
       description = member["description"]
-      getter_declarations+= "  const %s& %s() const { return m_obj->data.%s; };\n" %(klass, name, name)
+      getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
+      getter_implementations+= "  const %s& %s::%s() const { return m_obj->data.%s; };\n" %(klass,classname,name, name)
 #      getter_declarations+= "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)
       if klass in self.buildin_types:
-        setter_declarations += "  void %s(%s value) { m_obj->data.%s = value; };\n" %(name, klass, name)
+        setter_declarations += "  void %s(%s value);\n" %(name, klass)
+        setter_implementations += "void %s::%s(%s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       else:
-        setter_declarations += "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)  # getting non-const reference is conceptually a setter
+        setter_declarations += "  %s& %s();\n" %(klass, name)  # getting non-const reference is conceptually a setter
+        setter_implementations += "  %s& %s::%s() { return m_obj->data.%s; };\n" %(klass, classname,name, name)
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       # set up signature
@@ -256,7 +259,7 @@ class ClassGenerator(object):
       includes += "#include <vector>\n"
     for item in vectormembers:
       klass = item["type"]
-      if klass not in self.buildin_types:
+      if klass not in self.buildin_types and klass not in self.components:
         raise Exception("'%s' declares a non-allowed vector member of type '%s'!" %(classname, klass))
 
     # handle constructor from values
