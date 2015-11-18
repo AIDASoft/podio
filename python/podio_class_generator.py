@@ -261,6 +261,8 @@ class ClassGenerator(object):
       klass = item["type"]
       if klass not in self.buildin_types and klass not in self.components:
         raise Exception("'%s' declares a non-allowed vector member of type '%s'!" %(classname, klass))
+      if klass in self.components:
+        includes += '#include "%s.h"\n' %klass
 
     # handle constructor from values
     constructor_signature = constructor_signature.rstrip(",")
@@ -292,8 +294,9 @@ class ClassGenerator(object):
 
     for refvector in refvectors+definition["VectorMembers"]:
       relationtype = refvector["type"]
-      if relationtype not in self.buildin_types:
+      if relationtype not in self.buildin_types and relationtype not in self.components:
           relationtype = "Const"+relationtype
+
       substitutions = {"relation" : refvector["name"],
                        "relationtype" : relationtype,
                        "classname" : classname,
@@ -489,9 +492,13 @@ class ClassGenerator(object):
       name  = item["name"]
       klass = item["type"]
       if klass not in self.buildin_types:
-        relations += "  std::vector<Const%s>* m_%s;\n" %(klass, name)
-        initialize_relations += ",m_%s(new std::vector<Const%s>())" %(name,klass)
-        deepcopy_relations += ",m_%s(new std::vector<Const%s>(*(other.m_%s)))" %(name,klass,name)
+        if klass not in self.components:
+            klassWithQualifier = "Const"+klass
+        else:
+            klassWithQualifier = klass    
+        relations += "  std::vector<%s>* m_%s;\n" %(klassWithQualifier, name)
+        initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klassWithQualifier)
+        deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klassWithQualifier,name)
         if klass == classname:
           includes_cc += '#include "%s.h"\n' %(klass)
         else:
