@@ -7,7 +7,7 @@ export PODIO=$PWD/install
 
 if [[ "$unamestr" == 'Linux' ]]; then
     platform='Linux'
-    if [ -d /afs/cern.ch/sw/lcg ]; then
+    if [[ -d /afs/cern.ch/sw/lcg ]] && [[ `dnsdomainname` = 'cern.ch' ]] ; then
 	#should check domain to make sure we're at CERN
 	#or is this software available somewhere in Lyon? 
 	sw_afs=1
