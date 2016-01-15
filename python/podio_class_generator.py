@@ -691,11 +691,11 @@ class ClassGenerator(object):
 
   def write_file(self, name,content):
     #dispatch headers to header dir, the rest to /src
-    fullname = os.path.join(self.install_dir,self.package_name,name)
-    # if name.endswith("h"):
-    #  fullname = os.path.join(self.install_dir,self.package_name,name)
-    # else:
-    #  fullname = os.path.join(self.install_dir,"src",name)
+    # fullname = os.path.join(self.install_dir,self.package_name,name)
+    if name.endswith("h"):
+     fullname = os.path.join(self.install_dir,self.package_name,name)
+    else:
+     fullname = os.path.join(self.install_dir,"src",name)
     open(fullname, "w").write(content)
 
   def evaluate_template(self, filename, substitutions):

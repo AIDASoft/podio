@@ -14,7 +14,7 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
-file(GLOB sources datamodel/*.cc)
+file(GLOB sources src/*.cc)
 file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
