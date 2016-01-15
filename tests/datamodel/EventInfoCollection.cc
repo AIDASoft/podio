@@ -4,6 +4,8 @@
 
 #include "EventInfoCollection.h"
 
+
+
 EventInfoCollection::EventInfoCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new EventInfoDataContainer() ) {
   
 }
@@ -98,3 +100,5 @@ const EventInfoCollectionIterator& EventInfoCollectionIterator::operator++() con
   ++m_index;
  return *this;
 }
+
+

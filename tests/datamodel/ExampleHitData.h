@@ -6,6 +6,7 @@
 
 
 
+
 class ExampleHitData {
 public:
   double x; /// x-coordinate 
@@ -14,5 +15,6 @@ public:
   double energy; /// measured energy deposit 
 
 };
+
 
 #endif

@@ -2,6 +2,7 @@
 #define SimpleStruct_H
 
 
+
 class SimpleStruct {
 public:
   int y;

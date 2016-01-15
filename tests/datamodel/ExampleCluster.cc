@@ -6,14 +6,18 @@
 #include "ExampleClusterCollection.h"
 #include <iostream>
 
+
+
+
 ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){
  m_obj->acquire();
-};
+}
 
 ExampleCluster::ExampleCluster(double energy) : m_obj(new ExampleClusterObj()){
  m_obj->acquire();
    m_obj->data.energy = energy;
-};
+}
+
 
 ExampleCluster::ExampleCluster(const ExampleCluster& other) : m_obj(other.m_obj) {
   m_obj->acquire();
@@ -38,9 +42,11 @@ ExampleCluster::~ExampleCluster(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleCluster::operator ConstExampleCluster() const {return ConstExampleCluster(m_obj);};
+ExampleCluster::operator ConstExampleCluster() const {return ConstExampleCluster(m_obj);}
 
+  const double& ExampleCluster::energy() const { return m_obj->data.energy; }
 
+void ExampleCluster::energy(double value){ m_obj->data.energy = value;}
 
 std::vector<ConstExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
   auto ret_value = m_obj->m_Hits->begin();
@@ -96,3 +102,5 @@ bool ExampleCluster::operator==(const ConstExampleCluster& other) const {
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

@@ -6,14 +6,18 @@
 #include "ExampleWithComponentCollection.h"
 #include <iostream>
 
+
+
+
 ExampleWithComponent::ExampleWithComponent() : m_obj(new ExampleWithComponentObj()){
  m_obj->acquire();
-};
+}
 
 ExampleWithComponent::ExampleWithComponent(NotSoSimpleStruct component) : m_obj(new ExampleWithComponentObj()){
  m_obj->acquire();
    m_obj->data.component = component;
-};
+}
+
 
 ExampleWithComponent::ExampleWithComponent(const ExampleWithComponent& other) : m_obj(other.m_obj) {
   m_obj->acquire();
@@ -38,9 +42,11 @@ ExampleWithComponent::~ExampleWithComponent(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithComponent::operator ConstExampleWithComponent() const {return ConstExampleWithComponent(m_obj);};
+ExampleWithComponent::operator ConstExampleWithComponent() const {return ConstExampleWithComponent(m_obj);}
 
+  const NotSoSimpleStruct& ExampleWithComponent::component() const { return m_obj->data.component; }
 
+  NotSoSimpleStruct& ExampleWithComponent::component() { return m_obj->data.component; }
 void ExampleWithComponent::component(class NotSoSimpleStruct value){ m_obj->data.component = value;}
 
 
@@ -70,3 +76,5 @@ bool ExampleWithComponent::operator==(const ConstExampleWithComponent& other) co
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

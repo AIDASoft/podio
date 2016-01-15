@@ -6,6 +6,7 @@
 
 
 
+
 class ExampleClusterData {
 public:
   double energy; /// cluster energy 
@@ -13,5 +14,6 @@ public:
   unsigned int Hits_end; 
 
 };
+
 
 #endif

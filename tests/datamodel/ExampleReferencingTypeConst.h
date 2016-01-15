@@ -12,11 +12,16 @@
 // author: B. Hegner
 
 //forward declarations
-class ExampleReferencingTypeCollection;
-class ExampleReferencingTypeCollectionIterator;
 
 
 #include "ExampleReferencingTypeObj.h"
+
+
+
+class ExampleReferencingTypeObj;
+class ExampleReferencingType;
+class ExampleReferencingTypeCollection;
+class ExampleReferencingTypeCollectionIterator;
 
 class ConstExampleReferencingType {
 
@@ -56,7 +61,7 @@ public:
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleReferencingTypeObj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const ConstExampleReferencingType& other) const {
        return (m_obj==other.m_obj);
@@ -74,5 +79,6 @@ private:
   ExampleReferencingTypeObj* m_obj;
 
 };
+
 
 #endif

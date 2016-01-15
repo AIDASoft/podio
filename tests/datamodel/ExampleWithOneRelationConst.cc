@@ -7,9 +7,12 @@
 #include <iostream>
 #include "ExampleCluster.h"
 
+
+
+
 ConstExampleWithOneRelation::ConstExampleWithOneRelation() : m_obj(new ExampleWithOneRelationObj()){
  m_obj->acquire();
-};
+}
 
 
 
@@ -38,7 +41,7 @@ ConstExampleWithOneRelation::~ConstExampleWithOneRelation(){
 
   const ConstExampleCluster ConstExampleWithOneRelation::cluster() const { if (m_obj->m_cluster == nullptr) {
  return ConstExampleCluster(nullptr);}
- return ConstExampleCluster(*(m_obj->m_cluster));};
+ return ConstExampleCluster(*(m_obj->m_cluster));}
 
 
 bool  ConstExampleWithOneRelation::isAvailable() const {
@@ -66,3 +69,5 @@ bool ConstExampleWithOneRelation::operator==(const ExampleWithOneRelation& other
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

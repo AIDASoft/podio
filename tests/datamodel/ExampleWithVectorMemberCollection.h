@@ -18,6 +18,7 @@
 #include "ExampleWithVectorMember.h"
 #include "ExampleWithVectorMemberObj.h"
 
+
 typedef std::vector<ExampleWithVectorMemberData> ExampleWithVectorMemberDataContainer;
 typedef std::deque<ExampleWithVectorMemberObj*> ExampleWithVectorMemberObjPointerContainer;
 

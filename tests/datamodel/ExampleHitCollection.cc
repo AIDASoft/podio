@@ -4,6 +4,8 @@
 
 #include "ExampleHitCollection.h"
 
+
+
 ExampleHitCollection::ExampleHitCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleHitDataContainer() ) {
   
 }
@@ -98,3 +100,5 @@ const ExampleHitCollectionIterator& ExampleHitCollectionIterator::operator++() c
   ++m_index;
  return *this;
 }
+
+

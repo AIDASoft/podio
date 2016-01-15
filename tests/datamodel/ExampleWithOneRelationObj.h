@@ -17,6 +17,7 @@ class ConstExampleWithOneRelation;
 class ConstExampleCluster;
 
 
+
 class ExampleWithOneRelationObj : public podio::ObjBase {
 public:
   /// constructor
@@ -34,6 +35,7 @@ public:
 
 
 };
+
 
 
 #endif

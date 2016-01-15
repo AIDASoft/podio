@@ -9,13 +9,18 @@
 // author: Benedikt Hegner
 
 //forward declarations
-class ExampleWithOneRelationCollection;
-class ExampleWithOneRelationCollectionIterator;
 class ExampleCluster;
 class ConstExampleCluster;
 
 
 #include "ExampleWithOneRelationObj.h"
+
+
+
+class ExampleWithOneRelationObj;
+class ExampleWithOneRelation;
+class ExampleWithOneRelationCollection;
+class ExampleWithOneRelationCollectionIterator;
 
 class ConstExampleWithOneRelation {
 
@@ -48,7 +53,7 @@ public:
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithOneRelationObj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const ConstExampleWithOneRelation& other) const {
        return (m_obj==other.m_obj);
@@ -66,5 +71,6 @@ private:
   ExampleWithOneRelationObj* m_obj;
 
 };
+
 
 #endif

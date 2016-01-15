@@ -18,6 +18,7 @@
 #include "ExampleCluster.h"
 #include "ExampleClusterObj.h"
 
+
 typedef std::vector<ExampleClusterData> ExampleClusterDataContainer;
 typedef std::deque<ExampleClusterObj*> ExampleClusterObjPointerContainer;
 

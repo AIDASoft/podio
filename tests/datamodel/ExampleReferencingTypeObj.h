@@ -18,6 +18,7 @@ class ExampleReferencingType;
 class ConstExampleReferencingType;
 
 
+
 class ExampleReferencingTypeObj : public podio::ObjBase {
 public:
   /// constructor
@@ -36,6 +37,7 @@ public:
 
 
 };
+
 
 
 #endif

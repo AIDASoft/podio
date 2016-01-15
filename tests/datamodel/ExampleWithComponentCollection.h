@@ -18,6 +18,7 @@
 #include "ExampleWithComponent.h"
 #include "ExampleWithComponentObj.h"
 
+
 typedef std::vector<ExampleWithComponentData> ExampleWithComponentDataContainer;
 typedef std::deque<ExampleWithComponentObj*> ExampleWithComponentObjPointerContainer;
 
@@ -119,8 +120,8 @@ ExampleWithComponent  ExampleWithComponentCollection::create(Args&&... args){
 }
 
 template<size_t arraysize>
-const std::array<NotSoSimpleStruct,arraysize> ExampleWithComponentCollection::component() const {
-  std::array<NotSoSimpleStruct,arraysize> tmp;
+const std::array<class NotSoSimpleStruct,arraysize> ExampleWithComponentCollection::component() const {
+  std::array<class NotSoSimpleStruct,arraysize> tmp;
   auto valid_size = std::min(arraysize,m_entries.size());
   for (unsigned i = 0; i<valid_size; ++i){
     tmp[i] = m_entries[i]->data.component;

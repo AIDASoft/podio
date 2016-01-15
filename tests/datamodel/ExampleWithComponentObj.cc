@@ -1,6 +1,7 @@
 #include "ExampleWithComponentObj.h"
 
 
+
 ExampleWithComponentObj::ExampleWithComponentObj() :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     ,data()
@@ -23,3 +24,4 @@ ExampleWithComponentObj::~ExampleWithComponentObj() {
 
   }
 }
+

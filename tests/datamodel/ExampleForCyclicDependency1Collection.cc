@@ -5,6 +5,8 @@
 
 #include "ExampleForCyclicDependency1Collection.h"
 
+
+
 ExampleForCyclicDependency1Collection::ExampleForCyclicDependency1Collection() : m_collectionID(0), m_entries() ,m_rel_ref(new std::vector<ConstExampleForCyclicDependency2>()),m_refCollections(nullptr), m_data(new ExampleForCyclicDependency1DataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
@@ -55,7 +57,7 @@ void ExampleForCyclicDependency1Collection::prepareForWrite(){
   }
     for (auto& obj : m_entries) {
 if (obj->m_ref != nullptr){
-(*m_refCollections)[0]->emplace_back(obj->m_ref->getObjectID());} else {(*m_refCollections)[0]->push_back({-2,-2}); } };
+(*m_refCollections)[0]->emplace_back(obj->m_ref->getObjectID());} else {(*m_refCollections)[0]->push_back({-2,-2}); } }
 
 }
 
@@ -118,3 +120,5 @@ const ExampleForCyclicDependency1CollectionIterator& ExampleForCyclicDependency1
   ++m_index;
  return *this;
 }
+
+

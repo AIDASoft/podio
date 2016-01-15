@@ -10,11 +10,16 @@
 // author: Benedikt Hegner
 
 //forward declarations
-class ExampleWithComponentCollection;
-class ExampleWithComponentCollectionIterator;
 
 
 #include "ExampleWithComponentObj.h"
+
+
+
+class ExampleWithComponentObj;
+class ExampleWithComponent;
+class ExampleWithComponentCollection;
+class ExampleWithComponentCollectionIterator;
 
 class ConstExampleWithComponent {
 
@@ -42,13 +47,13 @@ public:
 
 public:
 
-  const NotSoSimpleStruct& component() const { return m_obj->data.component; };
+  const NotSoSimpleStruct& component() const;
 
 
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithComponentObj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const ConstExampleWithComponent& other) const {
        return (m_obj==other.m_obj);
@@ -66,5 +71,6 @@ private:
   ExampleWithComponentObj* m_obj;
 
 };
+
 
 #endif

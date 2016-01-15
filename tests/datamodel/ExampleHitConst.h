@@ -9,11 +9,16 @@
 // author: B. Hegner
 
 //forward declarations
-class ExampleHitCollection;
-class ExampleHitCollectionIterator;
 
 
 #include "ExampleHitObj.h"
+
+
+
+class ExampleHitObj;
+class ExampleHit;
+class ExampleHitCollection;
+class ExampleHitCollectionIterator;
 
 class ConstExampleHit {
 
@@ -41,16 +46,16 @@ public:
 
 public:
 
-  const double& x() const { return m_obj->data.x; };
-  const double& y() const { return m_obj->data.y; };
-  const double& z() const { return m_obj->data.z; };
-  const double& energy() const { return m_obj->data.energy; };
+  const double& x() const;
+  const double& y() const;
+  const double& z() const;
+  const double& energy() const;
 
 
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleHitObj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const ConstExampleHit& other) const {
        return (m_obj==other.m_obj);
@@ -68,5 +73,6 @@ private:
   ExampleHitObj* m_obj;
 
 };
+
 
 #endif

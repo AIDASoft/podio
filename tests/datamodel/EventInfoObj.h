@@ -16,6 +16,7 @@ class EventInfo;
 class ConstEventInfo;
 
 
+
 class EventInfoObj : public podio::ObjBase {
 public:
   /// constructor
@@ -32,6 +33,7 @@ public:
 
 
 };
+
 
 
 #endif

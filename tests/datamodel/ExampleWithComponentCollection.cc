@@ -4,6 +4,8 @@
 
 #include "ExampleWithComponentCollection.h"
 
+
+
 ExampleWithComponentCollection::ExampleWithComponentCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithComponentDataContainer() ) {
   
 }
@@ -98,3 +100,5 @@ const ExampleWithComponentCollectionIterator& ExampleWithComponentCollectionIter
   ++m_index;
  return *this;
 }
+
+

@@ -5,6 +5,8 @@
 
 #include "ExampleWithOneRelationCollection.h"
 
+
+
 ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collectionID(0), m_entries() ,m_rel_cluster(new std::vector<ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
@@ -55,7 +57,7 @@ void ExampleWithOneRelationCollection::prepareForWrite(){
   }
     for (auto& obj : m_entries) {
 if (obj->m_cluster != nullptr){
-(*m_refCollections)[0]->emplace_back(obj->m_cluster->getObjectID());} else {(*m_refCollections)[0]->push_back({-2,-2}); } };
+(*m_refCollections)[0]->emplace_back(obj->m_cluster->getObjectID());} else {(*m_refCollections)[0]->push_back({-2,-2}); } }
 
 }
 
@@ -118,3 +120,5 @@ const ExampleWithOneRelationCollectionIterator& ExampleWithOneRelationCollection
   ++m_index;
  return *this;
 }
+
+

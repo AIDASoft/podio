@@ -18,6 +18,7 @@
 #include "ExampleForCyclicDependency1.h"
 #include "ExampleForCyclicDependency1Obj.h"
 
+
 typedef std::vector<ExampleForCyclicDependency1Data> ExampleForCyclicDependency1DataContainer;
 typedef std::deque<ExampleForCyclicDependency1Obj*> ExampleForCyclicDependency1ObjPointerContainer;
 

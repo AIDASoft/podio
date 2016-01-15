@@ -1,6 +1,7 @@
 #include "ExampleWithVectorMemberObj.h"
 
 
+
 ExampleWithVectorMemberObj::ExampleWithVectorMemberObj() :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     ,data()
@@ -24,3 +25,4 @@ delete m_count;
 
   }
 }
+

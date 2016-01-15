@@ -16,6 +16,7 @@ class ExampleHit;
 class ConstExampleHit;
 
 
+
 class ExampleHitObj : public podio::ObjBase {
 public:
   /// constructor
@@ -32,6 +33,7 @@ public:
 
 
 };
+
 
 
 #endif

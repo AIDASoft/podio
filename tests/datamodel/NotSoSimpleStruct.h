@@ -3,6 +3,7 @@
 #include "SimpleStruct.h"
 
 
+
 class NotSoSimpleStruct {
 public:
   SimpleStruct data;

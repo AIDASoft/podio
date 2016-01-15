@@ -7,9 +7,12 @@
 #include <iostream>
 #include "ExampleForCyclicDependency1.h"
 
+
+
+
 ConstExampleForCyclicDependency2::ConstExampleForCyclicDependency2() : m_obj(new ExampleForCyclicDependency2Obj()){
  m_obj->acquire();
-};
+}
 
 
 
@@ -38,7 +41,7 @@ ConstExampleForCyclicDependency2::~ConstExampleForCyclicDependency2(){
 
   const ConstExampleForCyclicDependency1 ConstExampleForCyclicDependency2::ref() const { if (m_obj->m_ref == nullptr) {
  return ConstExampleForCyclicDependency1(nullptr);}
- return ConstExampleForCyclicDependency1(*(m_obj->m_ref));};
+ return ConstExampleForCyclicDependency1(*(m_obj->m_ref));}
 
 
 bool  ConstExampleForCyclicDependency2::isAvailable() const {
@@ -66,3 +69,5 @@ bool ConstExampleForCyclicDependency2::operator==(const ExampleForCyclicDependen
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

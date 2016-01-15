@@ -11,11 +11,16 @@
 // author: B. Hegner
 
 //forward declarations
-class ExampleClusterCollection;
-class ExampleClusterCollectionIterator;
 
 
 #include "ExampleClusterObj.h"
+
+
+
+class ExampleClusterObj;
+class ExampleCluster;
+class ExampleClusterCollection;
+class ExampleClusterCollectionIterator;
 
 class ConstExampleCluster {
 
@@ -43,7 +48,7 @@ public:
 
 public:
 
-  const double& energy() const { return m_obj->data.energy; };
+  const double& energy() const;
 
   unsigned int Hits_size() const;
   ConstExampleHit Hits(unsigned int) const;
@@ -53,7 +58,7 @@ public:
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleClusterObj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const ConstExampleCluster& other) const {
        return (m_obj==other.m_obj);
@@ -71,5 +76,6 @@ private:
   ExampleClusterObj* m_obj;
 
 };
+
 
 #endif

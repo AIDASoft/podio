@@ -6,6 +6,7 @@
 
 
 
+
 class ExampleReferencingTypeData {
 public:
   unsigned int Clusters_begin; 
@@ -14,5 +15,6 @@ public:
   unsigned int Refs_end; 
 
 };
+
 
 #endif

@@ -17,6 +17,7 @@ class ExampleWithVectorMember;
 class ConstExampleWithVectorMember;
 
 
+
 class ExampleWithVectorMemberObj : public podio::ObjBase {
 public:
   /// constructor
@@ -34,6 +35,7 @@ public:
 
 
 };
+
 
 
 #endif

@@ -6,9 +6,12 @@
 #include "ExampleWithVectorMemberCollection.h"
 #include <iostream>
 
+
+
+
 ConstExampleWithVectorMember::ConstExampleWithVectorMember() : m_obj(new ExampleWithVectorMemberObj()){
  m_obj->acquire();
-};
+}
 
 
 
@@ -84,3 +87,5 @@ bool ConstExampleWithVectorMember::operator==(const ExampleWithVectorMember& oth
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

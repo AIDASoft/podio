@@ -10,13 +10,16 @@
 // author: B. Hegner
 
 //forward declarations
-class ExampleWithVectorMemberCollection;
-class ExampleWithVectorMemberCollectionIterator;
-class ConstExampleWithVectorMember;
 
 
 #include "ExampleWithVectorMemberConst.h"
 #include "ExampleWithVectorMemberObj.h"
+
+
+
+class ExampleWithVectorMemberCollection;
+class ExampleWithVectorMemberCollectionIterator;
+class ConstExampleWithVectorMember;
 
 class ExampleWithVectorMember {
 
@@ -56,7 +59,7 @@ public:
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithVectorMemberObj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleWithVectorMember& other) const {
        return (m_obj==other.m_obj);
@@ -74,5 +77,7 @@ private:
   ExampleWithVectorMemberObj* m_obj;
 
 };
+
+
 
 #endif

@@ -18,6 +18,7 @@
 #include "ExampleHit.h"
 #include "ExampleHitObj.h"
 
+
 typedef std::vector<ExampleHitData> ExampleHitDataContainer;
 typedef std::deque<ExampleHitObj*> ExampleHitObjPointerContainer;
 

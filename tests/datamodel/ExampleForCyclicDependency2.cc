@@ -7,9 +7,12 @@
 #include <iostream>
 #include "ExampleForCyclicDependency1.h"
 
+
+
+
 ExampleForCyclicDependency2::ExampleForCyclicDependency2() : m_obj(new ExampleForCyclicDependency2Obj()){
  m_obj->acquire();
-};
+}
 
 
 
@@ -36,13 +39,13 @@ ExampleForCyclicDependency2::~ExampleForCyclicDependency2(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleForCyclicDependency2::operator ConstExampleForCyclicDependency2() const {return ConstExampleForCyclicDependency2(m_obj);};
+ExampleForCyclicDependency2::operator ConstExampleForCyclicDependency2() const {return ConstExampleForCyclicDependency2(m_obj);}
 
   const ConstExampleForCyclicDependency1 ExampleForCyclicDependency2::ref() const { if (m_obj->m_ref == nullptr) {
  return ConstExampleForCyclicDependency1(nullptr);}
- return ConstExampleForCyclicDependency1(*(m_obj->m_ref));};
+ return ConstExampleForCyclicDependency1(*(m_obj->m_ref));}
 
-void ExampleForCyclicDependency2::ref(ConstExampleForCyclicDependency1 value) { if (m_obj->m_ref != nullptr) delete m_obj->m_ref; m_obj->m_ref = new ConstExampleForCyclicDependency1(value); };
+void ExampleForCyclicDependency2::ref(ConstExampleForCyclicDependency1 value) { if (m_obj->m_ref != nullptr) delete m_obj->m_ref; m_obj->m_ref = new ConstExampleForCyclicDependency1(value); }
 
 
 bool  ExampleForCyclicDependency2::isAvailable() const {
@@ -71,3 +74,5 @@ bool ExampleForCyclicDependency2::operator==(const ConstExampleForCyclicDependen
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

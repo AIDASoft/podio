@@ -18,6 +18,7 @@
 #include "ExampleReferencingType.h"
 #include "ExampleReferencingTypeObj.h"
 
+
 typedef std::vector<ExampleReferencingTypeData> ExampleReferencingTypeDataContainer;
 typedef std::deque<ExampleReferencingTypeObj*> ExampleReferencingTypeObjPointerContainer;
 

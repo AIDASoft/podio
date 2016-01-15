@@ -2,6 +2,7 @@
 #include "ExampleForCyclicDependency1Const.h"
 
 
+
 ExampleForCyclicDependency2Obj::ExampleForCyclicDependency2Obj() :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     ,data()
@@ -26,3 +27,4 @@ delete m_ref;
 
   }
 }
+

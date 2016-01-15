@@ -4,6 +4,8 @@
 
 #include "ExampleWithVectorMemberCollection.h"
 
+
+
 ExampleWithVectorMemberCollection::ExampleWithVectorMemberCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithVectorMemberDataContainer() ) {
   
 }
@@ -98,3 +100,5 @@ const ExampleWithVectorMemberCollectionIterator& ExampleWithVectorMemberCollecti
   ++m_index;
  return *this;
 }
+
+

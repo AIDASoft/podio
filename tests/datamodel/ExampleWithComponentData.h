@@ -7,10 +7,12 @@
 #include "NotSoSimpleStruct.h"
 
 
+
 class ExampleWithComponentData {
 public:
   NotSoSimpleStruct component; /// a component 
 
 };
+
 
 #endif

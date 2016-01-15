@@ -18,6 +18,7 @@ class ExampleCluster;
 class ConstExampleCluster;
 
 
+
 class ExampleClusterObj : public podio::ObjBase {
 public:
   /// constructor
@@ -35,6 +36,7 @@ public:
 
 
 };
+
 
 
 #endif

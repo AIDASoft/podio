@@ -6,14 +6,17 @@
 #include "ExampleHitCollection.h"
 #include <iostream>
 
+
+
+
 ConstExampleHit::ConstExampleHit() : m_obj(new ExampleHitObj()){
  m_obj->acquire();
-};
+}
 
 ConstExampleHit::ConstExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()){
  m_obj->acquire();
    m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
-};
+}
 
 
 ConstExampleHit::ConstExampleHit(const ConstExampleHit& other) : m_obj(other.m_obj) {
@@ -39,6 +42,10 @@ ConstExampleHit::~ConstExampleHit(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  const double& ConstExampleHit::x() const { return m_obj->data.x; }
+  const double& ConstExampleHit::y() const { return m_obj->data.y; }
+  const double& ConstExampleHit::z() const { return m_obj->data.z; }
+  const double& ConstExampleHit::energy() const { return m_obj->data.energy; }
 
 
 bool  ConstExampleHit::isAvailable() const {
@@ -66,3 +73,5 @@ bool ConstExampleHit::operator==(const ExampleHit& other) const {
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

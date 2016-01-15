@@ -6,9 +6,12 @@
 #include "ExampleReferencingTypeCollection.h"
 #include <iostream>
 
+
+
+
 ConstExampleReferencingType::ConstExampleReferencingType() : m_obj(new ExampleReferencingTypeObj()){
  m_obj->acquire();
-};
+}
 
 
 
@@ -106,3 +109,5 @@ bool ConstExampleReferencingType::operator==(const ExampleReferencingType& other
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

@@ -9,13 +9,16 @@
 // author: B. Hegner
 
 //forward declarations
-class EventInfoCollection;
-class EventInfoCollectionIterator;
-class ConstEventInfo;
 
 
 #include "EventInfoConst.h"
 #include "EventInfoObj.h"
+
+
+
+class EventInfoCollection;
+class EventInfoCollectionIterator;
+class ConstEventInfo;
 
 class EventInfo {
 
@@ -45,15 +48,15 @@ public:
 
 public:
 
-  const int& Number() const { return m_obj->data.Number; };
+  const int& Number() const;
 
-  void Number(int value) { m_obj->data.Number = value; };
+  void Number(int value);
 
 
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from EventInfoObj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const EventInfo& other) const {
        return (m_obj==other.m_obj);
@@ -71,5 +74,7 @@ private:
   EventInfoObj* m_obj;
 
 };
+
+
 
 #endif

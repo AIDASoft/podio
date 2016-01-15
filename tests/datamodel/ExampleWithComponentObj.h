@@ -16,6 +16,7 @@ class ExampleWithComponent;
 class ConstExampleWithComponent;
 
 
+
 class ExampleWithComponentObj : public podio::ObjBase {
 public:
   /// constructor
@@ -32,6 +33,7 @@ public:
 
 
 };
+
 
 
 #endif

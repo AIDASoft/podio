@@ -7,9 +7,12 @@
 #include <iostream>
 #include "ExampleCluster.h"
 
+
+
+
 ExampleWithOneRelation::ExampleWithOneRelation() : m_obj(new ExampleWithOneRelationObj()){
  m_obj->acquire();
-};
+}
 
 
 
@@ -36,13 +39,13 @@ ExampleWithOneRelation::~ExampleWithOneRelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithOneRelation::operator ConstExampleWithOneRelation() const {return ConstExampleWithOneRelation(m_obj);};
+ExampleWithOneRelation::operator ConstExampleWithOneRelation() const {return ConstExampleWithOneRelation(m_obj);}
 
   const ConstExampleCluster ExampleWithOneRelation::cluster() const { if (m_obj->m_cluster == nullptr) {
  return ConstExampleCluster(nullptr);}
- return ConstExampleCluster(*(m_obj->m_cluster));};
+ return ConstExampleCluster(*(m_obj->m_cluster));}
 
-void ExampleWithOneRelation::cluster(ConstExampleCluster value) { if (m_obj->m_cluster != nullptr) delete m_obj->m_cluster; m_obj->m_cluster = new ConstExampleCluster(value); };
+void ExampleWithOneRelation::cluster(ConstExampleCluster value) { if (m_obj->m_cluster != nullptr) delete m_obj->m_cluster; m_obj->m_cluster = new ConstExampleCluster(value); }
 
 
 bool  ExampleWithOneRelation::isAvailable() const {
@@ -71,3 +74,5 @@ bool ExampleWithOneRelation::operator==(const ConstExampleWithOneRelation& other
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

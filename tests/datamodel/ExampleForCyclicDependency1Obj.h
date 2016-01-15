@@ -17,6 +17,7 @@ class ConstExampleForCyclicDependency1;
 class ConstExampleForCyclicDependency2;
 
 
+
 class ExampleForCyclicDependency1Obj : public podio::ObjBase {
 public:
   /// constructor
@@ -34,6 +35,7 @@ public:
 
 
 };
+
 
 
 #endif

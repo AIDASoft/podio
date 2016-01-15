@@ -6,9 +6,11 @@
 
 
 
+
 class ExampleForCyclicDependency2Data {
 public:
 
 };
+
 
 #endif

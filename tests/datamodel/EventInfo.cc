@@ -6,14 +6,18 @@
 #include "EventInfoCollection.h"
 #include <iostream>
 
+
+
+
 EventInfo::EventInfo() : m_obj(new EventInfoObj()){
  m_obj->acquire();
-};
+}
 
 EventInfo::EventInfo(int Number) : m_obj(new EventInfoObj()){
  m_obj->acquire();
    m_obj->data.Number = Number;
-};
+}
+
 
 EventInfo::EventInfo(const EventInfo& other) : m_obj(other.m_obj) {
   m_obj->acquire();
@@ -38,9 +42,11 @@ EventInfo::~EventInfo(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-EventInfo::operator ConstEventInfo() const {return ConstEventInfo(m_obj);};
+EventInfo::operator ConstEventInfo() const {return ConstEventInfo(m_obj);}
 
+  const int& EventInfo::Number() const { return m_obj->data.Number; }
 
+void EventInfo::Number(int value){ m_obj->data.Number = value;}
 
 
 bool  EventInfo::isAvailable() const {
@@ -69,3 +75,5 @@ bool EventInfo::operator==(const ConstEventInfo& other) const {
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+

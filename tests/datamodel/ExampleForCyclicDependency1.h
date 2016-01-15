@@ -9,15 +9,18 @@
 // author: Benedikt Hegner
 
 //forward declarations
-class ExampleForCyclicDependency1Collection;
-class ExampleForCyclicDependency1CollectionIterator;
-class ConstExampleForCyclicDependency1;
 class ExampleForCyclicDependency2;
 class ConstExampleForCyclicDependency2;
 
 
 #include "ExampleForCyclicDependency1Const.h"
 #include "ExampleForCyclicDependency1Obj.h"
+
+
+
+class ExampleForCyclicDependency1Collection;
+class ExampleForCyclicDependency1CollectionIterator;
+class ConstExampleForCyclicDependency1;
 
 class ExampleForCyclicDependency1 {
 
@@ -54,7 +57,7 @@ public:
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleForCyclicDependency1Obj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleForCyclicDependency1& other) const {
        return (m_obj==other.m_obj);
@@ -72,5 +75,7 @@ private:
   ExampleForCyclicDependency1Obj* m_obj;
 
 };
+
+
 
 #endif
