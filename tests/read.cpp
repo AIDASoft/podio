@@ -12,6 +12,9 @@
 #include "ExampleReferencingTypeCollection.h"
 #include "ExampleWithOneRelationCollection.h"
 #include "ExampleWithVectorMemberCollection.h"
+#include "ExampleWithComponentCollection.h"
+#include "ExampleWithARelationCollection.h"
+#include "ExampleWithNamespace.h"
 
 int glob = 0;
 
@@ -25,7 +28,7 @@ void processEvent(podio::EventStore& store, bool verbose,
     auto cluster = (*clusters)[0];
     //std::cout << "Cluster has an energy of " << cluster.energy() << std::endl;
     for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i!=end; ++i){
-      //std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
+      std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
       glob++;
     }
   }
@@ -58,6 +61,20 @@ void processEvent(podio::EventStore& store, bool verbose,
 //      std::cout << "  Counter value " << (*c) << std::endl;
 //      glob++;
 //    }
+  }
+
+  const ExampleWithComponentCollection* comps = nullptr;
+  is_available = store.get("Component", comps);
+  if (is_available) {
+    auto comp = (*comps)[0];
+    int a = comp.component().data.x + comp.component().data.z;
+  }
+
+  const ex::ExampleWithARelationCollection* nmspaces = nullptr;
+  is_available = store.get("WithNamespaceRelation", nmspaces);
+  if (is_available) {
+    auto nmsp = (*nmspaces)[0];
+    int b = nmsp.ref().data().x + nmsp.ref().data().y;
   }
 }
 

@@ -5,6 +5,9 @@
 #include "ExampleReferencingTypeCollection.h"
 #include "ExampleWithOneRelationCollection.h"
 #include "ExampleWithVectorMemberCollection.h"
+#include "ExampleWithComponentCollection.h"
+#include "ExampleWithNamespaceCollection.h"
+#include "ExampleWithARelationCollection.h"
 // STL
 #include <iostream>
 #include <vector>
@@ -20,20 +23,26 @@ int main(){
   auto store = podio::EventStore();
   auto writer = podio::ROOTWriter("example.root", &store);
 
-  auto& info     = store.create<EventInfoCollection>("info");
-  auto& hits     = store.create<ExampleHitCollection>("hits");
-  auto& clusters = store.create<ExampleClusterCollection>("clusters");
-  auto& refs     = store.create<ExampleReferencingTypeCollection>("refs");
-  auto& refs2    = store.create<ExampleReferencingTypeCollection>("refs2");
-  auto& oneRels  = store.create<ExampleWithOneRelationCollection>("OneRelation");
-  auto& vecs     = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
+  auto& info       = store.create<EventInfoCollection>("info");
+  auto& hits       = store.create<ExampleHitCollection>("hits");
+  auto& clusters   = store.create<ExampleClusterCollection>("clusters");
+  auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");
+  auto& refs2      = store.create<ExampleReferencingTypeCollection>("refs2");
+  auto& comps      = store.create<ExampleWithComponentCollection>("Component");
+  auto& oneRels    = store.create<ExampleWithOneRelationCollection>("OneRelation");
+  auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
+  auto& namesps    = store.create<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
+  auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleHitCollection>("hits");
   writer.registerForWrite<ExampleClusterCollection>("clusters");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs2");
+  writer.registerForWrite<ExampleWithComponentCollection>("Component");
   writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
+  writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
+  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
 
   unsigned nevents=2000;
 
@@ -67,6 +76,12 @@ int main(){
     ref.addClusters(cluster);
     ref.addRefs(ref2);
 
+    auto comp = ExampleWithComponent();
+    comp.component().data.x = 0;
+    comp.component().data.y = 1;
+    comp.component().data.z = i;
+    comps.push_back(comp);
+
     auto cyclic = ExampleReferencingType();
     cyclic.addRefs(cyclic);
     refs.push_back(cyclic);
@@ -83,6 +98,16 @@ int main(){
     vec.addcount(23);
     vec.addcount(24);
     vecs.push_back(vec);
+
+
+    auto namesp = ex::ExampleWithNamespace();
+    namesp.data().x = 1;
+    namesp.data().y = i;
+    namesps.push_back(namesp);
+
+    auto rel = ex::ExampleWithARelation();
+    rel.ref(namesp);
+    namesprels.push_back(rel);
 
     writer.writeEvent();
     store.clearCollections();

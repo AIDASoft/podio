@@ -8,6 +8,10 @@ components :
   NotSoSimpleStruct:
     data : SimpleStruct
 
+  ex2::NamespaceStruct:
+    x : int
+    y : int
+
 datatypes :
 
   EventInfo:
@@ -70,4 +74,15 @@ datatypes :
     OneToOneRelations :
       - ExampleForCyclicDependency1 ref // a ref
 
-    
+  ex::ExampleWithNamespace :
+    Description : "Type with namespace and namespaced member"
+    Author : "Joschka Lingemann"
+    Members:
+      - ex2::NamespaceStruct data // a component
+
+  ex::ExampleWithARelation :
+    Description : "Type with namespace and namespaced relation"
+    Author : "Joschka Lingemann"
+    OneToOneRelations :
+     - ex::ExampleWithNamespace ref // a ref in a namespace
+
