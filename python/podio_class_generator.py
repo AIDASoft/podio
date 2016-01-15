@@ -226,31 +226,32 @@ class ClassGenerator(object):
       klass = member["type"]
       description = member["description"]
       getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
-      getter_implementations+= "  const %s& %s::%s() const { return m_obj->data.%s; };\n" %(klass,classname,name, name)
+      getter_implementations+= "  const %s& %s::%s() const { return m_obj->data.%s; }\n" %(klass,classname,name, name)
 #      getter_declarations+= "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)
       if klass in self.buildin_types:
         setter_declarations += "  void %s(%s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(%s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       else:
         setter_declarations += "  %s& %s();\n" %(klass, name)  # getting non-const reference is conceptually a setter
-        setter_implementations += "  %s& %s::%s() { return m_obj->data.%s; };\n" %(klass, classname,name, name)
+        setter_implementations += "  %s& %s::%s() { return m_obj->data.%s; }\n" %(klass, classname,name, name)
         setter_declarations += "  void %s(class %s value);\n" %(name, klass)
         setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(classname, name, klass, name)
       # set up signature
       constructor_signature += "%s %s," %(klass, name)
       # constructor
       constructor_body += "  m_obj->data.%s = %s;" %(name, name)
+      ConstGetter_implementations += "  const %s& Const%s::%s() const { return m_obj->data.%s; }\n" %(klass, classname, name, name)
 
     # one-to-one relations
     for member in oneToOneRelations:
         name = member["name"]
         klass = member["type"]
         setter_declarations += "  void %s(Const%s value);\n" %(name, klass)
-        setter_implementations += "void %s::%s(Const%s value) { if (m_obj->m_%s != nullptr) delete m_obj->m_%s; m_obj->m_%s = new Const%s(value); };\n" %(classname,name, klass, name, name, name,klass)
+        setter_implementations += "void %s::%s(Const%s value) { if (m_obj->m_%s != nullptr) delete m_obj->m_%s; m_obj->m_%s = new Const%s(value); }\n" %(classname,name, klass, name, name, name,klass)
         getter_declarations += "  const Const%s %s() const;\n" %(klass, name)
-        getter_implementations += "  const Const%s %s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));};\n" \
+        getter_implementations += "  const Const%s %s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));}\n" \
                                   %(klass, classname, name, name, klass, klass, name)
-        ConstGetter_implementations += "  const Const%s Const%s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));};\n" \
+        ConstGetter_implementations += "  const Const%s Const%s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));}\n" \
                                   %(klass, classname, name, name, klass, klass, name)
 
     # handle vector members
@@ -336,7 +337,6 @@ class ClassGenerator(object):
     substitutions["relation_declarations"] = ConstReferences_declarations
     substitutions["relations"] = ConstReferences
     substitutions["getters"]   = ConstGetter_implementations
-
     self.fill_templates("ConstObject", substitutions)
     self.created_classes.append("Const%s" %classname)
 
@@ -411,7 +411,7 @@ class ClassGenerator(object):
         clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
         clear_relations += "  m_rel_%s->clear();\n" %(name)
         # relation handling in ::prepareForWrite
-        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {\nif (obj->m_%s != nullptr){\n(*m_refCollections)[%s]->emplace_back(obj->m_%s->getObjectID());} else {(*m_refCollections)[%s]->push_back({-2,-2}); } };\n" %(name,counter+nOfRefVectors,name,counter+nOfRefVectors)
+        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {\nif (obj->m_%s != nullptr){\n(*m_refCollections)[%s]->emplace_back(obj->m_%s->getObjectID());} else {(*m_refCollections)[%s]->push_back({-2,-2}); } }\n" %(name,counter+nOfRefVectors,name,counter+nOfRefVectors)
         # relation handling in ::settingReferences
         prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
     substitutions = { "name" : classname,
@@ -495,7 +495,7 @@ class ClassGenerator(object):
         if klass not in self.components:
             klassWithQualifier = "Const"+klass
         else:
-            klassWithQualifier = klass    
+            klassWithQualifier = klass
         relations += "  std::vector<%s>* m_%s;\n" %(klassWithQualifier, name)
         initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klassWithQualifier)
         deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klassWithQualifier,name)
@@ -531,6 +531,8 @@ class ClassGenerator(object):
                        "member"    : name,
                        "type"      : klass
                        }
+      if klass not in self.buildin_types:
+        substitutions["type"] = "class %s" % klass
       implementation += self.evaluate_template("CollectionReturnArray.cc.template", substitutions)
       declaration += "  template<size_t arraysize>  \n  const std::array<%s,arraysize> %s() const;\n" %(klass, name)
     return declaration, implementation
@@ -552,7 +554,7 @@ class ClassGenerator(object):
       template = open(templatefile,"r").read()
       return string.Template(template).substitute(substitutions)
 
-  def fill_templates(self, category,substitutions):
+  def fill_templates(self, category, substitutions):
     # "Data" denotes the real class;
     # only headers and the FN should not contain Data
     if category == "Data":
@@ -579,7 +581,7 @@ class ClassGenerator(object):
       template = open(templatefile,"r").read()
       content = string.Template(template).substitute(substitutions)
       filename = "%s%s.%s" %(substitutions["name"],FN,ending)
-      self.write_file(filename,content)
+      self.write_file(filename, content)
 
 
 ##########################
