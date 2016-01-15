@@ -6,9 +6,12 @@
 #include "${name}Collection.h"
 #include <iostream>
 $includes_cc
+
+${namespace_open}
+
 Const${name}::Const${name}() : m_obj(new ${name}Obj()){
  m_obj->acquire();
-};
+}
 
 ${constructor_implementation}
 
@@ -62,3 +65,5 @@ bool Const${name}::operator==(const ${name}& other) const {
 //    return p1.m_containerID < p2.m_containerID;
 //  }
 //}
+
+${namespace_close}
