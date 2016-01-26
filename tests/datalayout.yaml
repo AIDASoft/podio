@@ -12,6 +12,9 @@ components :
     x : int
     y : int
 
+  ex2::NamespaceInNamespaceStruct:
+    data : ex2::NamespaceStruct
+
 datatypes :
 
   EventInfo:

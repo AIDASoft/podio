@@ -562,7 +562,11 @@ class ClassGenerator(object):
     for name, klass in components.iteritems():
       members+= "  %s %s;\n" %(klass, name)
       if self.components.has_key(klass):
-          includes+= '#include "%s.h"\n' %(klass)
+          klassname = klass
+          mnamespace = ""
+          if "::" in klass:
+              mnamespace, klassname = klass.split("::")
+          includes+= '#include "%s.h"\n' %(klassname)
     substitutions = { "includes" : includes,
                       "members"  : members,
                       "name"     : rawclassname,
