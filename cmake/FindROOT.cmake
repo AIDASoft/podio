@@ -106,7 +106,7 @@ endfunction()
 #                                     header1 header2 ...
 #                                     SELECTION selectionfile ...
 #                                     OPTIONS opt1...)
-function(REFLEX_GENERATE_DICTIONARY dictionary)
+macro(REFLEX_GENERATE_DICTIONARY dictionary)
   CMAKE_PARSE_ARGUMENTS(ARG "" "SELECTION" "OPTIONS" ${ARGN})
   #---Get List of header files---------------
   set(headerfiles)
@@ -158,7 +158,7 @@ function(REFLEX_GENERATE_DICTIONARY dictionary)
 
   add_custom_command(
     OUTPUT ${gensrcdict} ${rootmapname}
-    COMMAND ${ROOT_genreflex_CMD}
+    COMMAND genreflex
     ARGS ${headerfiles} -o ${gensrcdict} ${rootmapopts} --select=${selectionfile}
          --gccxmlpath=${GCCXML_home}/bin ${ARG_OPTIONS} ${include_dirs} ${definitions}
     DEPENDS ${headerfiles} ${selectionfile})
@@ -176,4 +176,4 @@ function(REFLEX_GENERATE_DICTIONARY dictionary)
     # well before the dependent libraries of the dictionary are build
     add_custom_target(${targetname} ALL DEPENDS ${gensrcdict})
   endif()
-endfunction()
+endmacro()
