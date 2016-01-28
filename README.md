@@ -1,6 +1,6 @@
 # podio
 
-## Preparing the environment 
+## Preparing the environment
 
 ### On lxplus
 
@@ -10,7 +10,7 @@ To build and install this package, do:
 
 ### On Mac OS
 
-Assuming the path to your version of ROOT is <root_path>, do: 
+Assuming the path to your version of ROOT is <root_path>, do:
 
     source <root_path>/bin/thisroot.sh
 
@@ -19,11 +19,11 @@ Set up python. We advise to use the version of python that comes with Mac OS. Th
     python --version
     > Python 2.7.5
 
-Check that the yaml python module is available 
+Check that the yaml python module is available
 
-    python 
+    python
     >>> import yaml
-    
+
 If the import goes fine (no message), you're all set. If not, you need to install yaml. For that, you need to:
 
 1- install the C++ yaml library, which is used by the python module. The easiest way to do that is to use homebrew (install homebrew if you don't have it yet)
@@ -32,9 +32,9 @@ If the import goes fine (no message), you're all set. If not, you need to instal
 
 2- install the python yaml module (first install pip if you don't have it yet)
 
-    pip install yaml 
-    
-Check that you can now import the yaml module in python. 
+    pip install yaml
+
+Check that you can now import the yaml module in python.
 
 Finally, set your environment:
 
@@ -49,7 +49,7 @@ after setting up a separate build and install area, the build can be triggered w
     mkdir install
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=../install ..
-    make -j 4 install 
+    make -j 4 install
 
 ## Running
 
@@ -65,7 +65,15 @@ There is a rudimentary test in
 
     ../install/tests/test
 
-## Modifying the data model 
+## Enabling unit tests
+In order to run the unit tests you have to enable them at configuration time with the flag `tests. Note that GTest is needed. On lxplus the necessary environment is set up with the `init.sh`. On MacOS, you'll have to point cmake to your installation if it is local, see the option in braces below.
+
+To configure with unit tests enabled, do:
+
+    cmake -DCMAKE_INSTALL_PREFIX=../install -Dtests=1 (-DCMAKE_PREFIX_PATH=./path/to/googletest/install/) ..
+    make test
+
+## Modifying the data model
 
 if you want to invoke the data model creator use python/podio_class_generator.py
 and look into tests/datalayout.yaml for inspiration
