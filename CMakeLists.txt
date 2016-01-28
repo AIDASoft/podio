@@ -33,8 +33,9 @@ include(CTest)
 include(cmake/podioCPack.cmake)
 
 #--- target for Doxygen documentation ------------------------------------------
-include(cmake/podioDoxygen.cmake)
-
+if(rundoxygen)
+	include(cmake/podioDoxygen.cmake)
+endif()
 #--- add version files ---------------------------------------------------------
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podioVersion.h
                ${CMAKE_CURRENT_BINARY_DIR}/podioVersion.h )
@@ -52,4 +53,8 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(python)
 add_subdirectory(src)
-add_subdirectory(tests)
+add_subdirectory(examples)
+
+if(tests)
+	add_subdirectory(tests)
+endif()
