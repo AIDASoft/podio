@@ -6,5 +6,5 @@ source /afs/cern.ch/sw/lcg/releases/LCG_82/pytools/1.9_python2.7/x86_64-slc6-gcc
 export CMAKE_PREFIX_PATH=/afs/cern.ch/sw/lcg/releases/gtest/1.7.0-4f83b/x86_64-slc6-gcc49-opt/
 
 export PODIO=$PWD/install
-export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=$PODIO/tests:$PYTHONPATH
+export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/examples:$LD_LIBRARY_PATH
+export PYTHONPATH=$PODIO/examples:$PODIO/tests:$PYTHONPATH
