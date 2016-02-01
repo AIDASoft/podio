@@ -24,8 +24,8 @@ REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION datamodel/selectio
 add_library(TestDataModelDict SHARED TestDataModel.cxx)
 target_link_libraries(TestDataModelDict TestDataModel podio )
 install(TARGETS TestDataModelDict DESTINATION examples)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModelDict.rootmap DESTINATION lib)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModel_rdict.pcm DESTINATION lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModelDict.rootmap DESTINATION examples)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModel_rdict.pcm DESTINATION examples)
 
 
 file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
