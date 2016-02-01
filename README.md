@@ -55,15 +55,16 @@ after setting up a separate build and install area, the build can be triggered w
 
 The examples are for creating a file "example.root"
 
-    ../install/tests/write
+    ../install/examples/write
 
 And reading it again
 
-    ../install/tests/read
+    ../install/examples/read
 
-There is a rudimentary test in
+## Modifying the data model
 
-    ../install/tests/test
+if you want to invoke the data model creator use python/podio_class_generator.py
+and look into tests/datalayout.yaml for inspiration
 
 ## Enabling unit tests
 In order to run the unit tests you have to enable them at configuration time with the flag `tests. Note that GTest is needed. On lxplus the necessary environment is set up with the `init.sh`. On MacOS, you'll have to point cmake to your installation if it is local, see the option in braces below.
@@ -73,7 +74,4 @@ To configure with unit tests enabled, do:
     cmake -DCMAKE_INSTALL_PREFIX=../install -Dtests=1 (-DCMAKE_PREFIX_PATH=./path/to/googletest/install/) ..
     make test
 
-## Modifying the data model
 
-if you want to invoke the data model creator use python/podio_class_generator.py
-and look into tests/datalayout.yaml for inspiration
