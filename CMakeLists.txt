@@ -12,6 +12,10 @@ if(APPLE)
 	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif(APPLE)
 
+#--- Declare options -----------------------------------------------------------
+option(podio_documentation "Whether or not to create doxygen doc target.")
+option(podio_tests "Whether or not to create target for unittest (depends on google-tests).")
+
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -33,7 +37,7 @@ include(CTest)
 include(cmake/podioCPack.cmake)
 
 #--- target for Doxygen documentation ------------------------------------------
-if(rundoxygen)
+if(podio_documentation)
 	include(cmake/podioDoxygen.cmake)
 endif()
 #--- add version files ---------------------------------------------------------
@@ -55,6 +59,6 @@ add_subdirectory(python)
 add_subdirectory(src)
 add_subdirectory(examples)
 
-if(tests)
+if(podio_tests)
 	add_subdirectory(tests)
 endif()
