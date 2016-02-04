@@ -43,13 +43,17 @@ Finally, set your environment:
 
 ## Compiling
 
-after setting up a separate build and install area, the build can be triggered w/
+After setting up a separate build and install area, the build can be triggered.
 
     mkdir build
     mkdir install
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=../install ..
     make -j 4 install
+
+To see a list of options, do this in the build-directory:
+
+    cmake -LH ..
 
 ## Running
 
@@ -70,7 +74,7 @@ In order to run the unit tests you have to enable them at configuration time wit
 
 To configure with unit tests enabled, do:
 
-    cmake -DCMAKE_INSTALL_PREFIX=../install -Dtests=1 (-DCMAKE_PREFIX_PATH=./path/to/googletest/install/) ..
+    cmake -DCMAKE_INSTALL_PREFIX=../install -Dpodio_tests=1 (-DCMAKE_PREFIX_PATH=./path/to/googletest/install/) ..
     make test
 
 ## Modifying the data model
