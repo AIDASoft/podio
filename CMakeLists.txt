@@ -54,6 +54,10 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
               ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
         DESTINATION ${CMAKE_INSTALL_PREFIX})
 
+#--- install templates ---------------------------------------------------------
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
+		DESTINATION ${CMAKE_INSTALL_PREFIX})
+
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(python)
 add_subdirectory(src)
