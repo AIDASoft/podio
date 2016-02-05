@@ -4,6 +4,8 @@ ${includes}
 
 #include "${name}Collection.h"
 
+${namespace_open}
+
 ${name}Collection::${name}Collection() : m_collectionID(0), m_entries() ${initializers},m_refCollections(nullptr), m_data(new ${name}DataContainer() ) {
   ${constructorbody}
 }
@@ -98,3 +100,5 @@ const ${name}CollectionIterator& ${name}CollectionIterator::operator++() const {
   ++m_index;
  return *this;
 }
+
+${namespace_close}

@@ -18,6 +18,7 @@
 #include "${name}.h"
 #include "${name}Obj.h"
 
+${namespace_open}
 typedef std::vector<${name}Data> ${name}DataContainer;
 typedef std::deque<${name}Obj*> ${name}ObjPointerContainer;
 
@@ -117,5 +118,5 @@ ${name}  ${name}Collection::create(Args&&... args){
 }
 
 ${vectorized_access_implementation}
-
+${namespace_close}
 #endif

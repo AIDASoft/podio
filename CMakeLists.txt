@@ -8,11 +8,20 @@ set( podio_VERSION "${podio_VERSION_MAJOR}.${podio_VERSION_MINOR}" )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+if(APPLE)
+	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
+endif(APPLE)
+
+#--- Declare options -----------------------------------------------------------
+option(podio_documentation "Whether or not to create doxygen doc target.")
+option(podio_tests "Whether or not to create target for unittest (depends on google-tests).")
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree)
-include(${ROOT_USE_FILE})
+include_directories(${ROOT_INCLUDE_DIR})
+
 
 add_definitions(-Wno-unused-variable -Wno-unused-parameter -pthread)
 #add_definitions(-Wpadded)
@@ -28,8 +37,9 @@ include(CTest)
 include(cmake/podioCPack.cmake)
 
 #--- target for Doxygen documentation ------------------------------------------
-include(cmake/podioDoxygen.cmake)
-
+if(podio_documentation)
+	include(cmake/podioDoxygen.cmake)
+endif()
 #--- add version files ---------------------------------------------------------
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podioVersion.h
                ${CMAKE_CURRENT_BINARY_DIR}/podioVersion.h )
@@ -44,7 +54,15 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
               ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
         DESTINATION ${CMAKE_INSTALL_PREFIX})
 
+#--- install templates ---------------------------------------------------------
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
+		DESTINATION ${CMAKE_INSTALL_PREFIX})
+
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(python)
 add_subdirectory(src)
-add_subdirectory(tests)
+add_subdirectory(examples)
+
+if(podio_tests)
+	add_subdirectory(tests)
+endif()

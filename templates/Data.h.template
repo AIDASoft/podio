@@ -6,9 +6,11 @@
 
 $includes
 
+${namespace_open}
 class ${name}Data {
 public:
 $members
 };
+${namespace_close}
 
 #endif
