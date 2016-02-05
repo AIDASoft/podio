@@ -16,6 +16,7 @@ class ${name};
 class Const${name};
 $forward_declarations
 
+${namespace_open}
 class ${name}Obj : public podio::ObjBase {
 public:
   /// constructor
@@ -32,6 +33,7 @@ public:
 ${relations}
 
 };
+${namespace_close}
 
 
 #endif

@@ -8,11 +8,16 @@ $includes
 // author: $author
 
 //forward declarations
-class ${name}Collection;
-class ${name}CollectionIterator;
 $forward_declarations
 
 #include "${name}Obj.h"
+
+${namespace_open}
+
+class ${name}Obj;
+class ${name};
+class ${name}Collection;
+class ${name}CollectionIterator;
 
 class Const${name} {
 
@@ -44,7 +49,7 @@ $relation_declarations
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ${name}Obj instance
-  void unlink(){m_obj = nullptr;};
+  void unlink(){m_obj = nullptr;}
 
   bool operator==(const Const${name}& other) const {
        return (m_obj==other.m_obj);
@@ -62,5 +67,6 @@ private:
   ${name}Obj* m_obj;
 
 };
+${namespace_close}
 
 #endif

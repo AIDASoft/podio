@@ -2,9 +2,10 @@
 #define ${name}_H
 $includes
 
+${namespace_open}
 class $name {
 public:
 $members
 };
-
+${namespace_close}
 #endif
