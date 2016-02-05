@@ -25,7 +25,7 @@ class PodioConfigReader(object):
 
   def __init__(self,yamlfile):
     self.yamlfile = yamlfile
-    self.pattern = re.compile("[a-zA-Z0-9]+[\s]+[a-zA-Z0-9]+[\s]+[//\s]+")
+    self.pattern = re.compile('([a-zA-Z0-9]+(::))?[a-zA-Z0-9]+[\s]+[a-zA-Z0-9]+[\s]+[//\s]+')
 
   @staticmethod
   def check_class(klass):
@@ -56,7 +56,7 @@ class PodioConfigReader(object):
                 comment = definition.split("//")[1]
                 definitions.append({"name": name, "type": klass, "description" : comment})
               else:
-                raise Exception("'%s'\n Definitions in datatypes should have a following form:\n <type> <name> // <comment>\n eg. int Number // event number" %(definition))
+                raise Exception("'%s'\n Definitions in datatypes should have a following form:\n (<namespace>::)<type> <name> // <comment>\n eg. int Number // event number\n exam::SimpleType member" %(definition))
             datatype[category] = definitions
           else:
             datatype[category] = []
