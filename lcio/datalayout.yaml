@@ -1,0 +1,224 @@
+---
+
+# LCIO test description
+#  Changes w.r.t. to original:
+#    o no collection specific information implemented for now
+#    o no string member in Vertex
+
+datatypes :
+
+  # LCIO RawCalorimeterHit
+  RawCalorimeterHit:
+    description: "LCIO raw calorimeter hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int cellID0   // The detector specific (geometrical) cell id.
+      - int cellID1   // The second detector specific (geometrical) cell id.
+      - int amplitude // The amplitude of the hit in ADC counts.
+      - int timeStamp // The time stamp for the hit.
+
+  # LCIO CalorimeterHit
+  CalorimeterHit:
+    description: "LCIO calorimeter hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int cellID0  // The detector specific (geometrical) cell id.
+      - int cellID1  // The second detector specific (geometrical) cell id.
+      - float energy // The energy of the hit in [GeV].
+      - float time   // The time of the hit in [ns].
+      - float[3] position // The position of the hit in world coordinates.
+      - int type // The type of the hit
+    OneToOneRelations:
+      - RawCalorimeterHit rawHit // The RawCalorimeterHit
+
+  # LCIO cluster
+  #   Changes w.r.t. to original:
+  #     o std::bitset< 32 > _type not yet mapped
+  #     o ParticleIDs are not implemented
+  #     o cluster weight not properly implemented
+  Cluster:
+    description: "LCIO cluster"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - float energy // Energy of the cluster
+      - float[3] position // Position of the cluster.
+      - float[6] positionError // Covariance matrix of the position (6 Parameters)
+      - float theta // Intrinsic direction of cluster at position - Theta.
+      - float phi   // Intrinsic direction of cluster at position - Phi.
+      - float[3] directionError // Covariance matrix of the direction (3 Parameters)
+      - std::vector<float> shape  // Shape parameters
+      - std::vector<float> weight // weight of a particular cluster
+      - std::vector<float> subdetectorEnergies // A vector that holds the energy observed in a particular subdetector.
+    OneToManyRelations:
+      - Cluster clusters // The clusters that have been combined to this cluster.
+      - CalorimeterHit hits // The hits that have been combined to this cluster.
+
+  # LCIO MCParticle
+  #   Changes w.r.t. to original:
+  #     o std::bitset< 32 > 	_simstatus not yet implemented
+  MCParticle:
+    description: "LCIO MC Particle"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int pdg // The PDG code of the particle.
+      - int genstatus   // The status for particles as defined by the generator.
+      - float[3] vertex // The production vertex of the particle in [mm].
+      - float charge // The particle's charge.
+      - float mass // The mass of the particle in [GeV]
+      - float time // The creation time of the particle in [ns] wrt. the event, e.g. for preassigned decays or decays in flight from the simulator.
+      - float[3] endpoint // The endpoint of the particle in [mm]
+      - bool endpointSet  // Whether the endpoint has been set
+      - float[3] momentum // The particle's 3-momentum at the production vertex in [GeV]
+    OneToManyRelations:
+      - MCParticle parents // The parents of this particle.
+      - MCParticle daughters // The daughters this particle.
+
+  # LCIO ReconstructedParticle
+  ReconstructedParticle:
+    description: "LCIO Reconstructed Particle"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int type     // Type of reconstructed particle.
+      - float energy // Energy of the reconstructed particle.
+      - float[3] momentum // The reconstructed particle's 3-momentum
+      - float charge // The particle's charge
+      - float mass   // The mass of the particle in [GeV]
+    OneToOneRelations:
+      - Vertex vertex // The start vertex associated to this particle.
+    OneToManyRelations:
+      - Cluster clusters // The clusters combined to this particle.
+      - Track tracks // The tracks combined to this particle"
+      - ReconstructedParticle particles // The particles combined to this particle
+
+#EVENT::FloatVec 	_cov
+#float 	_reference [3]
+#EVENT::ParticleID * 	_pidUsed
+#float 	_goodnessOfPID
+#EVENT::ParticleIDVec 	_pid
+
+  # LCIO SimCalorimeterHit
+  #   Changes w.r.t. to original:
+  #     o MCParticleContribution has to become its own collection
+  SimCalorimeterHit:
+    description: "LCIO simulated calorimeter hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int cellID0  // The detector specific (geometrical) cell id.
+      - int cellID1  // The second detector specific (geometrical) cell id.
+      - float energy // The energy of the hit in [GeV].
+      - float time   // The time of the hit in [ns].
+      - float[3] position // The position of the hit in world coordinates.
+
+  # LCIO SimTrackerHit
+  SimTrackerHit:
+    description: "LCIO simulated tracker hit"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int cellID0  // The detector specific (geometrical) cell id.
+      - int cellID1  // The second detector specific (geometrical) cell id.
+      - float[3] position // The position of the hit in world coordinates.
+      - float time   // The time of the hit in [ns].
+      - float pathLength // path length
+      - float EDep   // EDep
+      - float _p [3] // position?
+    OneToOneRelations:
+      - MCParticle particle // The MCParticle that caused the hit.
+
+
+  # LCIO Track
+  #     o not yet implemented std::bitset< 32 > 	_type
+  Track:
+    description: "LCIO reconstructed track"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - float chi2 // Chi2
+      - int ndf    // Number of degrees of freedom of the track fit.
+      - float dEdx // dEdx of the track.
+      - float dEdxError // Error of dEdx.
+      - float radiusOfInnermostHit // The radius of the innermost hit that has been used in the track fit.
+      - std::vector<int> subdetectorHitNumbers // The number of hits in particular subdetectors
+    OnoToManyRelations:
+      - Track tracks    // The tracks that have been combined to this track.
+      - TrackerHit hits // The hits that have been combined to this track.
+      - TrackState trackStates // Track states associated to this track.
+
+  # LCIO TrackerData
+  TrackerData:
+    description: "LCIO tracker data"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int cellID0 // The detector specific (geometrical) cell id.
+      - int cellID1 // The second detector specific (geometrical) cell id.
+      - int time    // The time of the hit.
+      - std::vector<float> charge // The corrected (calibrated) FADC spectrum.
+
+  # LCIO TrackerHit
+  #   o no specialisation for the different kind of geometries
+  TrackerHit:
+    description : "LCIO tracker hit"
+    author : "F.Gaede, B. Hegner"
+    members :
+      - int cellID0 // The detector specific (geometrical) cell id.
+      - int cellID1 // The second detector specific (geometrical) cell id.
+      - int time    // The time of the hit.
+      - float EDep  // EDep
+      - float EDepError // error on EDep
+      - float[3] position // ...
+      - std::vector<float> // The calibrated ADC values
+
+#int 	_type
+#EVENT::FloatVec 	_cov
+#int 	_quality
+#EVENT::LCObjectVec 	_rawHits
+
+  # LCIO TrackerPulse
+  TrackerPulse:
+    description : "LCIO tracker pulse"
+    author : "F. Gaede, B. Hegner"
+    members:
+      - int cellID0  // The detector specific (geometrical) cell id.
+      - int cellID1  // The second detector specific (geometrical) cell id.
+      - int quality  // ...
+      - float time   // The time of the pulse.
+      - float charge // The integrated charge of the pulse
+      - std::vector<float> cov    // ...
+    OneToOneRelations:
+      - TrackerData corrData // ...
+
+  # LCIO TrackerRawData
+  TrackerData:
+    description: "LCIO tracker raw data"
+    author : "F.Gaede, B. Hegner"
+    members:
+      - int cellID0  // The detector specific (geometrical) cell id.
+      - int cellID1  // The second detector specific (geometrical) cell id.
+      - int time     //  time measurement associated with the adc values.
+      - std::vector<short> charge // The actual FADC spectrum.
+
+  # LCIO TrackState
+  TrackState:
+      description: "LCIO track state"
+      author : "F.Gaede, B. Hegner"
+      members:
+        - int location // The location of the track state.
+        - float d0     // Impact parameter of the track in (r-phi).
+        - float phi    // Phi of the track at the reference point.
+        - float omega  // Omega is the signed curvature of the track in [1/mm].
+        - float z0     // Impact parameter of the track in (r-z).
+        - float tanLambda // Lambda is the dip angle of the track in r-z at the reference point.
+        - float[3] referencePoint // Reference point of the track parameters
+        - std::vector<float> covMatrix // Covariance matrix of the track parameters.
+
+  # LCIO Vertex
+  Vertex:
+      description: "LCIO vertex"
+      author : "F.Gaede, B. Hegner"
+      members:
+        - int primary // Whether it is the primary vertex of the event
+        - float chi2  // Chi squared of the vertex fit.
+        - float probability // Probability of the vertex fit
+        - float[3] position // Position of the vertex.
+        - std::vector<float> cov // <empty>
+        - std::vector<float> par // <empty>
+      OneToOneRelations:
+        - ReconstructedParticle particle // Reconstructed Particle associated to the Vertex.

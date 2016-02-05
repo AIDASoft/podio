@@ -1,0 +1,42 @@
+# Declare ROOT dependency
+list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
+find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+include(${ROOT_USE_FILE})
+#--temporary fix of inconsistency in ROOT CMake macros
+set(ROOT_genreflex_cmd ${ROOT_genreflex_CMD})
+
+add_definitions(-Wno-unused-variable -Wno-unused-parameter)
+
+include_directories(
+  ${CMAKE_SOURCE_DIR}/include
+  ${podio_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
+#        ${CMAKE_CURRENT_SOURCE_DIR}/utilities
+)
+
+message(INFO ${CMAKE_CURRENT_SOURCE_DIR})
+
+foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
+  string(TOUPPER ${_conf} _conf )
+  set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
+  set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
+  set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
+endforeach()
+
+file(GLOB sources datamodel/*.cc)
+file(GLOB headers datamodel/*.h)
+
+list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/datamodel/LinkDef.h )
+REFLEX_GENERATE_DICTIONARY(PODIOTEMPLATEDataModelEx ${headers} SELECTION datamodel/selection.xml)
+
+add_library(PODIOTEMPLATEDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils} PODIOTEMPLATEDataModelEx.cxx)
+target_link_libraries(LCIODataModel ${podio_LIBS} ${ROOT_LIBRARIES})
+
+file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+
+foreach( sourcefile ${executables} )
+  string( REPLACE ".cpp" "" name ${sourcefile} )
+  add_executable( ${name} ${sourcefile} )
+  target_link_libraries( ${name} PODIOTEMPLATEDataModel )
+  install(TARGETS ${name} DESTINATION examples)
+endforeach( sourcefile ${executables} )
