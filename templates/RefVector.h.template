@@ -1,3 +1,5 @@
-  void add${relation}(${relationtype}Handle&);
-  std::vector<${relationtype}Handle>::const_iterator ${relation}_begin() const;
-  std::vector<${relationtype}Handle>::const_iterator ${relation}_end() const;
+  void add${relation}(${relationtype});
+  unsigned int ${relation}_size() const;
+  ${relationtype} ${relation}(unsigned int) const;
+  std::vector<${relationtype}>::const_iterator ${relation}_begin() const;
+  std::vector<${relationtype}>::const_iterator ${relation}_end() const;

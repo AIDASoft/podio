@@ -1,69 +1,104 @@
-#include "${package_name}/${name}Collection.h"
+// standard includes
+#include <stdexcept>
+${includes}
 
-${name}Collection::${name}Collection() : m_collectionID(0), m_data(new ${name}Vector() ){
+#include "${name}Collection.h"
+
+${namespace_open}
+
+${name}Collection::${name}Collection() : m_collectionID(0), m_entries() ${initializers},m_refCollections(nullptr), m_data(new ${name}DataContainer() ) {
+  ${constructorbody}
 }
 
-const ${name}Handle& ${name}Collection::get(int index) const{
-  return m_handles[index];
+const ${name} ${name}Collection::operator[](unsigned int index) const {
+  return ${name}(m_entries[index]);
 }
 
-${name}Handle& ${name}Collection::create() {
-  m_data->emplace_back(${name}());
-  int index = m_data->size()-1;
-  m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
-  auto& tmp_handle = m_handles.back();
+const ${name} ${name}Collection::at(unsigned int index) const {
+  return ${name}(m_entries.at(index));
+}
+
+int  ${name}Collection::size() const {
+  return m_entries.size();
+}
+
+${name} ${name}Collection::create(){
+  auto obj = new ${name}Obj();
+  m_entries.emplace_back(obj);
 ${create_relations}
-  return tmp_handle;
+  obj->id = {int(m_entries.size()-1),m_collectionID};
+  return ${name}(obj);
 }
-
-${name}Handle& ${name}Collection::insert(const ${name}Handle& origin) {
-  m_data->emplace_back(origin.read());
-  int index = m_data->size()-1;
-  m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
-  auto& tmp_handle = m_handles.back();
-${create_relations}
-  return tmp_handle;
-}  
 
 void ${name}Collection::clear(){
   m_data->clear();
-  m_handles.clear();
 ${clear_relations}
+  for (auto& obj : m_entries) { delete obj; }
+  m_entries.clear();
 }
 
-void ${name}Collection::prepareForWrite(const albers::Registry* registry){
-$prepareforwritingbody
-}
-
-void ${name}Collection::prepareAfterRead(albers::Registry* registry){
-  m_handles.clear();
+void ${name}Collection::prepareForWrite(){
   int index = 0;
-  // fix. otherwise, m_collectionID == 0..
-  m_collectionID = registry->getIDFromPODAddress( _getBuffer() );
+  auto size = m_entries.size();
+  m_data->reserve(size);
+  for (auto& obj : m_entries) {m_data->push_back(obj->data); }
+  if (m_refCollections != nullptr) {
+    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
+  }
+  $prepareforwritinghead
+  for(int i=0, size = m_data->size(); i != size; ++i){
+  $prepareforwritingbody
+  }
+  $prepareforwriting_refmembers
+}
+
+void ${name}Collection::prepareAfterRead(){
+  int index = 0;
   for (auto& data : *m_data){
-    $prepareafterreadbody
-    m_handles.emplace_back(${name}Handle(index,m_collectionID, m_data));
+    auto obj = new ${name}Obj({index,m_collectionID}, data);
+    $prepareafterread
+    m_entries.emplace_back(obj);
     ++index;
   }
 }
 
+bool ${name}Collection::setReferences(const podio::ICollectionProvider* collectionProvider){
+$setreferences
+${prepareafterread_refmembers}
+  return true; //TODO: check success
+}
 
-void ${name}Collection::setPODsAddress(const void* address){
-  m_data = (${name}Vector*)address;
+void ${name}Collection::push_back(Const${name} object){
+    int size = m_entries.size();
+    auto obj = object.m_obj;
+    if (obj->id.index == podio::ObjectID::untracked) {
+        obj->id = {size,m_collectionID};
+        m_entries.push_back(obj);
+        ${push_back_relations}
+    } else {
+      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
+
+    }
+}
+
+void ${name}Collection::setBuffer(void* address){
+  m_data = static_cast<${name}DataContainer*>(address);
 }
 
 
-const ${name}Handle ${name}CollectionIterator::operator* () const {
-  return m_collection->get(m_index);
+const ${name} ${name}CollectionIterator::operator* () const {
+  m_object.m_obj = (*m_collection)[m_index];
+  return m_object;
 }
 
-//std::vector<std::pair<std::string,albers::CollectionBase*>>& referenceCollections() {
-//}
-
-
-void ${name}Collection::print() const {
-  std::cout<<"collection "<<m_collectionID
-           <<", buf "<<m_data
-           <<", nhandles "<<m_handles.size()<<std::endl;
+const ${name}* ${name}CollectionIterator::operator-> () const {
+    m_object.m_obj = (*m_collection)[m_index];
+    return &m_object;
 }
 
+const ${name}CollectionIterator& ${name}CollectionIterator::operator++() const {
+  ++m_index;
+ return *this;
+}
+
+${namespace_close}

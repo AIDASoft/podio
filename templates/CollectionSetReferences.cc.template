@@ -1,0 +1,8 @@
+  for(unsigned int i=0, size=(*m_refCollections)[${counter}]->size();i!=size;++i ) {
+    auto id = (*(*m_refCollections)[${counter}])[i];
+    CollectionBase* coll = nullptr;
+    collectionProvider->get(id.collectionID,coll);
+    ${class}Collection* tmp_coll = static_cast<${class}Collection*>(coll);
+    auto tmp = (*tmp_coll)[id.index];
+    m_rel_${name}->emplace_back(tmp);
+  }

@@ -1,86 +1,116 @@
 // Data model
-#include "EventInfo.h"
 #include "EventInfoCollection.h"
-#include "Particle.h"
-#include "ParticleCollection.h"
-#include "JetCollection.h"
-#include "JetParticleAssociationCollection.h"
-#include "LorentzVector.h"
-
-// Utility functions
-#include "VectorUtils.h"
-
-// ROOT
-#include "TLorentzVector.h"
-#include "TBranch.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TSystem.h"
-
+#include "ExampleHitCollection.h"
+#include "ExampleClusterCollection.h"
+#include "ExampleReferencingTypeCollection.h"
+#include "ExampleWithOneRelationCollection.h"
+#include "ExampleWithVectorMemberCollection.h"
+#include "ExampleWithComponentCollection.h"
+#include "ExampleWithNamespaceCollection.h"
+#include "ExampleWithARelationCollection.h"
 // STL
 #include <iostream>
 #include <vector>
 
-// albers specific includes
-#include "albers/EventStore.h"
-#include "albers/Registry.h"
-#include "albers/Writer.h"
-
-// testing tools
-#include "DummyGenerator.h"
-
-
-void processEvent(unsigned iEvent, albers::EventStore& store, albers::Writer& writer, DummyGenerator& generator) {
-  if(iEvent % 1000 == 0)
-    std::cout<<"processing event "<<iEvent<<std::endl;
-
-  generator.generate();
-
-  // fill event information
-  EventInfoCollection* evinfocoll = nullptr;
-  store.get("EventInfo", evinfocoll);
-  if(evinfocoll==nullptr) {
-    std::cerr<<"collection EventInfo does not exist!"<<std::endl;
-    return;
-  }
-  EventInfoHandle& evinfo = evinfocoll->create();
-  evinfo.mod().Number = iEvent;
-
-  // and now for the writing
-  // TODO: do that at a different time w/o coll pointer
-  // COLIN: calling writeEvent should not be left up to the user.
-  writer.writeEvent();
-  store.next();
-
-  return;
-}
-
+// podio specific includes
+#include "podio/EventStore.h"
+#include "podio/ROOTWriter.h"
 
 int main(){
-  gSystem->Load("libDataModelExample.so");
 
   std::cout<<"start processing"<<std::endl;
 
-  albers::Registry   registry;
-  albers::EventStore store(&registry);
-  albers::Writer     writer("example.root", &registry);
+  auto store = podio::EventStore();
+  auto writer = podio::ROOTWriter("example.root", &store);
 
-  DummyGenerator generator(10, store);
-  generator.setNPrint(10);
+  auto& info       = store.create<EventInfoCollection>("info");
+  auto& hits       = store.create<ExampleHitCollection>("hits");
+  auto& clusters   = store.create<ExampleClusterCollection>("clusters");
+  auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");
+  auto& refs2      = store.create<ExampleReferencingTypeCollection>("refs2");
+  auto& comps      = store.create<ExampleWithComponentCollection>("Component");
+  auto& oneRels    = store.create<ExampleWithOneRelationCollection>("OneRelation");
+  auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
+  auto& namesps    = store.create<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
+  auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  writer.registerForWrite<EventInfoCollection>("info");
+  writer.registerForWrite<ExampleHitCollection>("hits");
+  writer.registerForWrite<ExampleClusterCollection>("clusters");
+  writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
+  writer.registerForWrite<ExampleReferencingTypeCollection>("refs2");
+  writer.registerForWrite<ExampleWithComponentCollection>("Component");
+  writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
+  writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
+  writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
+  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
 
-  unsigned nevents=10000;
-
-  EventInfoCollection& evinfocoll = store.create<EventInfoCollection>("EventInfo");
-
-  writer.registerForWrite<EventInfoCollection>("EventInfo");
-
-  // collections from the dummy generator
-  writer.registerForWrite<ParticleCollection>("GenParticle");
-  writer.registerForWrite<JetCollection>("GenJet");
-  writer.registerForWrite<JetParticleAssociationCollection>("GenJetParticle");
+  unsigned nevents=2000;
 
   for(unsigned i=0; i<nevents; ++i) {
-    processEvent(i, store, writer, generator);
+    if(i % 1000 == 0) {
+      std::cout << "processing event " << i << std::endl;
+    }
+
+    auto item1 = EventInfo();
+    item1.Number(i);
+    info.push_back(item1);
+    auto hit1 = ExampleHit(0.,0.,0.,23.+i);
+    auto hit2 = ExampleHit(1.,0.,0.,12.+i);
+
+    hits.push_back(hit1);
+    hits.push_back(hit2);
+
+    auto cluster  = ExampleCluster();
+    cluster.addHits(hit1);
+    cluster.addHits(hit2);
+    cluster.energy(hit1.energy()+hit2.energy());
+
+    clusters.push_back(cluster);
+
+    auto ref = ExampleReferencingType();
+    refs.push_back(ref);
+
+    auto ref2 = ExampleReferencingType();
+    refs2.push_back(ref2);
+
+    ref.addClusters(cluster);
+    ref.addRefs(ref2);
+
+    auto comp = ExampleWithComponent();
+    comp.component().data.x = 0;
+    comp.component().data.y = 1;
+    comp.component().data.z = i;
+    comps.push_back(comp);
+
+    auto cyclic = ExampleReferencingType();
+    cyclic.addRefs(cyclic);
+    refs.push_back(cyclic);
+
+    auto oneRel = ExampleWithOneRelation();
+    oneRel.cluster(cluster);
+    oneRels.push_back(oneRel);
+
+    // write non-filled relation
+    auto oneRelEmpty = ExampleWithOneRelation();
+    oneRels.push_back(oneRelEmpty);
+
+    auto vec = ExampleWithVectorMember();
+    vec.addcount(23);
+    vec.addcount(24);
+    vecs.push_back(vec);
+
+
+    auto namesp = ex::ExampleWithNamespace();
+    namesp.data().x = 1;
+    namesp.data().y = i;
+    namesps.push_back(namesp);
+
+    auto rel = ex::ExampleWithARelation();
+    rel.ref(namesp);
+    namesprels.push_back(rel);
+
+    writer.writeEvent();
+    store.clearCollections();
   }
 
   writer.finish();

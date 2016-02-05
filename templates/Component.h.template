@@ -1,11 +1,11 @@
-#ifndef ${name}_H 
+#ifndef ${name}_H
 #define ${name}_H
+$includes
 
-${includes}
-
+${namespace_open}
 class $name {
 public:
 $members
 };
-
+${namespace_close}
 #endif

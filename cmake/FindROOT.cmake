@@ -99,21 +99,27 @@ function(ROOT_GENERATE_DICTIONARY dictionary)
                      DEPENDS ${headerfiles} ${linkdefs} VERBATIM)
 endfunction()
 
+
+
 #----------------------------------------------------------------------------
 # function REFLEX_GENERATE_DICTIONARY(dictionary
 #                                     header1 header2 ...
 #                                     SELECTION selectionfile ...
 #                                     OPTIONS opt1...)
-function(REFLEX_GENERATE_DICTIONARY dictionary)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "SELECTION;OPTIONS" "" ${ARGN})
-  #---Get the list of header files-------------------------
+macro(REFLEX_GENERATE_DICTIONARY dictionary)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "SELECTION" "OPTIONS" ${ARGN})
+  #---Get List of header files---------------
   set(headerfiles)
   foreach(fp ${ARG_UNPARSED_ARGUMENTS})
-    file(GLOB files ${fp})
+    file(GLOB files inc/${fp})
     if(files)
       foreach(f ${files})
-        set(headerfiles ${headerfiles} ${f})
+        if(NOT f MATCHES LinkDef)
+          set(headerfiles ${headerfiles} ${f})
+        endif()
       endforeach()
+    elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${fp})
+      set(headerfiles ${headerfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${fp})
     else()
       set(headerfiles ${headerfiles} ${fp})
     endif()
@@ -124,36 +130,50 @@ function(REFLEX_GENERATE_DICTIONARY dictionary)
   else()
     set(selectionfile ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_SELECTION})
   endif()
-  #---Get the list of include directories------------------
+
+  set(gensrcdict ${dictionary}.cxx)
+
+  #---roottest compability---------------------------------
+  if(CMAKE_ROOTTEST_NOROOTMAP)
+    set(rootmapname )
+    set(rootmapopts )
+  elseif(DEFINED CMAKE_ROOTTEST_NOROOTMAP)  # Follow the roottest dictionary library naming
+    set(rootmapname ${dictionary}.rootmap)
+    set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=${libprefix}${dictionary}_dictrflx)
+  else()
+    set(rootmapname ${dictionary}Dict.rootmap)
+    set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=${libprefix}${dictionary}Dict)
+  endif()
+
+  set(include_dirs -I${CMAKE_CURRENT_SOURCE_DIR})
   get_directory_property(incdirs INCLUDE_DIRECTORIES)
-  set(includedirs)
   foreach( d ${incdirs})
-    set(includedirs ${includedirs} -I${d})
+   set(include_dirs ${include_dirs} -I${d})
   endforeach()
-  #---Get preprocessor definitions--------------------------
+
   get_directory_property(defs COMPILE_DEFINITIONS)
   foreach( d ${defs})
    set(definitions ${definitions} -D${d})
   endforeach()
-  #---Nanes and others---------------------------------------
-  set(gensrcdict ${dictionary}.cpp)
-  if(MSVC)
-    set(gccxmlopts "--gccxmlopt=\"--gccxml-compiler cl\"")
+
+  add_custom_command(
+    OUTPUT ${gensrcdict} ${rootmapname}
+    COMMAND genreflex
+    ARGS ${headerfiles} -o ${gensrcdict} ${rootmapopts} --select=${selectionfile}
+         --gccxmlpath=${GCCXML_home}/bin ${ARG_OPTIONS} ${include_dirs} ${definitions}
+    DEPENDS ${headerfiles} ${selectionfile})
+
+  #---roottest compability---------------------------------
+  if(CMAKE_ROOTTEST_DICT)
+    ROOTTEST_TARGETNAME_FROM_FILE(targetname ${dictionary})
+
+    set(targetname "${targetname}-dictgen")
+
+    add_custom_target(${targetname} DEPENDS ${gensrcdict} ${ROOT_LIBRARIES})
   else()
-    #set(gccxmlopts "--gccxmlopt=\'--gccxml-cxxflags -m64 \'")
-    set(gccxmlopts)
+    set(targetname "${dictionary}-dictgen")
+    # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
+    # well before the dependent libraries of the dictionary are build
+    add_custom_target(${targetname} ALL DEPENDS ${gensrcdict})
   endif()
-  #set(rootmapname ${dictionary}Dict.rootmap)
-  #set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=${libprefix}${dictionary}Dict)
-  #---Check GCCXML and get path-----------------------------
-  if(GCCXML)
-    get_filename_component(gccxmlpath ${GCCXML} PATH)
-  else()
-    message(WARNING "GCCXML not found. Install and setup your environment to find 'gccxml' executable")
-  endif()
-  #---Actual command----------------------------------------
-  add_custom_command(OUTPUT ${gensrcdict} ${rootmapname}
-                     COMMAND ${GENREFLEX_EXECUTABLE} ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
-                             --gccxmlpath=${gccxmlpath} ${ARG_OPTIONS} ${includedirs} ${definitions}
-                     DEPENDS ${headerfiles} ${selectionfile})
-endfunction()
+endmacro()

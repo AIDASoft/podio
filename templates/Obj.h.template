@@ -1,0 +1,39 @@
+#ifndef ${name}OBJ_H
+#define ${name}OBJ_H
+
+// std includes
+#include <atomic>
+#include <iostream>
+
+// data model specific includes
+#include "podio/ObjBase.h"
+#include "${name}Data.h"
+
+$includes
+
+// forward declarations
+class ${name};
+class Const${name};
+$forward_declarations
+
+${namespace_open}
+class ${name}Obj : public podio::ObjBase {
+public:
+  /// constructor
+  ${name}Obj();
+  /// copy constructor (does a deep-copy of relation containers)
+  ${name}Obj(const ${name}Obj&);
+  /// constructor from ObjectID and ${name}Data
+  /// does not initialize the internal relation containers
+  ${name}Obj(const podio::ObjectID id, ${name}Data data);
+  virtual ~${name}Obj();
+
+public:
+  ${name}Data data;
+${relations}
+
+};
+${namespace_close}
+
+
+#endif
