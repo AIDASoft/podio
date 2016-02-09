@@ -1,23 +1,22 @@
 # podio
 
-## Preparing the environment
+## Prerequisites
 
-### On lxplus
+If you are on lxplus, all the necessary software is preinstalled.
 
-To build and install this package, do:
+On Mac OS or Ubuntu, you need to install the following software. 
 
-    source init.sh
+### ROOT 6.04
 
-### On Mac OS
-
-Assuming the path to your version of ROOT is `<root_path>`, do:
+Install ROOT 6.04 and set up your ROOT environment: 
 
     source <root_path>/bin/thisroot.sh
 
-Set up python. We advise to use the version of python that comes with Mac OS. This version should be 2.7.X
+### Python 2.7
+
+Check the python version by doing:
 
     python --version
-    > Python 2.7.5
 
 Check that the yaml python module is available
 
@@ -26,7 +25,7 @@ Check that the yaml python module is available
 
 If the import goes fine (no message), you're all set. If not, you need to install yaml. For that, you need to:
 
-1- install the C++ yaml library, which is used by the python module. The easiest way to do that is to use homebrew (install homebrew if you don't have it yet)
+1- install the C++ yaml library, which is used by the python module. On Mac OS, The easiest way to do that is to use homebrew (install homebrew if you don't have it yet):
 
     brew install libyaml
 
@@ -36,9 +35,12 @@ If the import goes fine (no message), you're all set. If not, you need to instal
 
 Check that you can now import the yaml module in python.
 
-Finally, set your environment:
 
-    source init_macos.sh
+## Preparing the environment
+
+Before building and installing this package, and everytime you need to use it, do:
+
+    source init.sh
 
 
 ## Compiling
