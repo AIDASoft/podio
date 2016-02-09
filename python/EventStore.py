@@ -16,7 +16,7 @@ def getitem(self, key):
 
 
 class EventStore(object):
-    '''Interface to events in an albers root file.
+    '''Interface to events in an podio root file.
     Example of use:
     events = EventStore("example.root")
     for iev, store in islice(enumerate(events), 0, 2):
@@ -38,7 +38,7 @@ class EventStore(object):
     def get(self, name):
         '''Returns a collection.
         Parameters:
-           name: name of the collection in the albers root file.
+           name: name of the collection in the podio root file.
         '''
         coll = self.store.get(name)
         # adding iterator generator to be able to loop on the collection
