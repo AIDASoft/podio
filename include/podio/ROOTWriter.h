@@ -1,6 +1,8 @@
 #ifndef ROOTWRITER_H
 #define ROOTWRITER_H
 
+#include "podio/EventStore.h"
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -14,7 +16,6 @@ class TFile;
 namespace podio {
   class CollectionBase;
   class Registry;
-  class EventStore;
 
   class ROOTWriter {
 
