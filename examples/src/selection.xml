@@ -7,6 +7,12 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<ex2::NamespaceInNamespaceStruct>" />
+
+          <class name="ex2::NamespaceInNamespaceStruct">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<NotSoSimpleStruct>" />
 
           <class name="NotSoSimpleStruct">

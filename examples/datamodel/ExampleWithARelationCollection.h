@@ -7,6 +7,7 @@
 #include <vector>
 #include <deque>
 #include <array>
+#include <algorithm>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -81,7 +82,12 @@ public:
 
   podio::CollRefCollection* referenceCollections() { return m_refCollections;};
 
-  void setID(unsigned ID){m_collectionID = ID;};
+  void setID(unsigned ID){
+    m_collectionID = ID;
+    std::for_each(m_entries.begin(),m_entries.end(),
+                 [ID](ExampleWithARelationObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
+    );
+  };
 
   // support for the iterator protocol
   const const_iterator begin() const {
@@ -103,7 +109,7 @@ private:
   int m_collectionID;
   ExampleWithARelationObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<ex::ConstExampleWithNamespace>* m_rel_ref; //relation buffer for r/w
+  std::vector<::ex::ConstExampleWithNamespace>* m_rel_ref; //relation buffer for r/w
 
   // members to handle streaming
   podio::CollRefCollection* m_refCollections;
