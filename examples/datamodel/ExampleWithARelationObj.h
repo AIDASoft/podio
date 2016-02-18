@@ -32,7 +32,7 @@ public:
 
 public:
   ExampleWithARelationData data;
-  ex::ConstExampleWithNamespace* m_ref;
+  ::ex::ConstExampleWithNamespace* m_ref;
 
 
 };
