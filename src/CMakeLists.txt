@@ -1,7 +1,7 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 file(GLOB sources *.cc)
-file(GLOB headers ../include/podio/*.h)
+file(GLOB headers ${CMAKE_SOURCE_DIR}/include/podio/*.h)
 REFLEX_GENERATE_DICTIONARY(podio ${headers} SELECTION selection.xml)
 add_library(podioDict SHARED podio.cxx)
 target_link_libraries(podioDict podio ${ROOT_LIBRARIES})
