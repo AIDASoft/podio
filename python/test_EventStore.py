@@ -51,7 +51,7 @@ if __name__ == "__main__":
     from ROOT import gSystem
     from subprocess import call
     import os 
-    gSystem.Load("libdatamodel")
+    gSystem.Load("libTestDataModel")
     # creating example file for the tests
     if not os.path.isfile('example.root'):
         write = '{podio}/examples/write'.format(podio=os.environ['PODIO'])
