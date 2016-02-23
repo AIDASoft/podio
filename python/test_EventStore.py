@@ -2,12 +2,14 @@ import unittest
 from EventStore import EventStore
 import os
 
+from ROOT import TFile
+
 class EventStoreTestCase(unittest.TestCase):
 
     def setUp(self):
         self.filename = 'example.root'
         self.assertTrue( os.path.isfile(self.filename) )
-        self.store = EventStore(self.filename)
+        self.store = EventStore([self.filename])
         
     def test_eventloop(self):
         self.assertTrue( self.store.getEntries() >= 0 )
@@ -16,6 +18,8 @@ class EventStoreTestCase(unittest.TestCase):
             self.assertTrue( True )
             if iev>5:
                 break
+
+    def test_navigation(self):
         event0 = self.store[0]
         self.assertEqual( event0.__class__, self.store.__class__)
 
@@ -24,6 +28,22 @@ class EventStoreTestCase(unittest.TestCase):
         self.assertTrue( len(evinfo)>0 )
         particles = self.store.get("CollectionNotThere")
         self.assertFalse(particles)
+
+    def test_chain(self):
+        self.store = EventStore( [ self.filename,
+                                   self.filename] )
+        rootfile = TFile(self.filename)
+        events = rootfile.Get('events')
+        numbers = []
+        for iev, event in enumerate(self.store):
+            evinfo = self.store.get("info")
+            numbers.append(evinfo[0].Number())
+        self.assertEqual( iev+1, 2*events.GetEntries() )
+        # testing that numbers is [0, .. 1999, 0, .. 1999]
+        self.assertEqual(numbers, range(events.GetEntries())*2)
+        # trying to go to an event in the second file
+        self.assertRaises(ValueError, self.store.__getitem__,
+                          events.GetEntries()+1)
 
     # def test_handles(self):
     #     assocs = self.store.get("GenJetParticle")
