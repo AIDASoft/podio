@@ -42,9 +42,10 @@ endforeach( sourcefile ${executables} )
 add_test(NAME write COMMAND write)
 set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/examples:$ENV{LD_LIBRARY_PATH})
 
-add_test(NAME read COMMAND read DEPENDS write)
+add_test(NAME read COMMAND read)
 set_property(TEST read PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/examples:$ENV{LD_LIBRARY_PATH})
+set_property(TEST read PROPERTY DEPENDS write)
 
-add_test(NAME read_python COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/read.py)
-set_property(TEST read_python PROPERTY ENVIRONMENT PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python:${CMAKE_INSTALL_PREFIX}/examples:$ENV{PYTHONPATH}
-                                                   LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/examples:$ENV{LD_LIBRARY_PATH})
+add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_INSTALL_PREFIX}/python)
+set_property(TEST pyunittest PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/examples:$ENV{LD_LIBRARY_PATH} PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python:$ENV{PYTHONPATH})
+set_property(TEST pyunittest PROPERTY DEPENDS write)
