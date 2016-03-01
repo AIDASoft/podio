@@ -18,7 +18,7 @@ def getitem(self, key):
 class EventStore(object):
     '''Interface to events in an podio root file.
     Example of use:
-    events = EventStore("example.root")
+    events = EventStore(["example1.root", "example2.root"])
     for iev, store in islice(enumerate(events), 0, 2):
         particles = store.get("GenParticle");
         for i, p in islice(enumerate(particles), 0, 5):
@@ -27,27 +27,27 @@ class EventStore(object):
     def __init__(self, filenames, treename=None):
         '''Create an event list from the podio root file.
         Parameters:
-           filename: path to the root file
+           filenames: list of root files
+                      you can of course provide a list containing a single root file.
+                      you could use the glob module to get all files matching 
+                      a wildcard pattern.
            treename: not used at the moment
         '''
         self.files = filenames
-        self.ifile = 0
-        self.store = self.next_file()
-
-    def next_file(self):
-        if self.ifile == len(self.files):
-            return False
-        fname = self.files[self.ifile]
-        self.store = podio.PythonEventStore(fname)
-        self.ifile += 1    
-        return self.store
-        
+        self.stores = []
+        self.current_store = None
+        for fname in self.files:
+            store = podio.PythonEventStore(fname)
+            if self.current_store is None:
+                self.current_store = store
+            self.stores.append((store.getEntries(), store))
+ 
     def get(self, name):
         '''Returns a collection.
         Parameters:
            name: name of the collection in the podio root file.
         '''
-        coll = self.store.get(name)
+        coll = self.current_store.get(name)
         # adding iterator generator to be able to loop on the collection
         coll.__iter__ = iterator
         # adding length function
@@ -56,40 +56,40 @@ class EventStore(object):
         coll.__getitem__ = getitem
         return coll
 
-    def __getattr__(self, name):
-        '''missing attributes are taken from self.store'''
-        return getattr(self.store, name)
+    # def __getattr__(self, name):
+    #     '''missing attributes are taken from self.current_store'''
+    #     if name != 'current_store':
+    #         return getattr(self.current_store, name)
+    #     else:
+    #         return None
 
     def __iter__(self):
         '''iterate on events in the tree.
         '''
-        while 1:
-            for entry in xrange(self.getEntries()):
-                yield self
-                self.endOfEvent()        
-            if not self.next_file():
-                break
+        for nev, store in self.stores:
+            self.current_store = store
+            for entry in xrange(store.getEntries()):
+                yield store
+                store.endOfEvent()
 
     def __getitem__(self, evnum):
-        if evnum > len(self):
-            details = None
-            if len(self.files)>1:
-                details = '''
-                direct event navigation is not yet implemented. 
-                Please accept our apologies for any inconvenience, 
-                and in the meanwhile, just loop. 
-                '''
-            elif len(self.files)==1:
-                details = '''the event number that you have provided 
-                is too large as your input file contains only {length} events
-                '''.format(length=len(self))
-            err = '''Cannot navigate to event {evnum}
-
-            {details}
-            '''.format(evnum=evnum, details=details)
-            raise ValueError(err)
-        self.goToEvent( evnum )
+        '''Get event number evnum'''
+        current_store = None
+        rel_evnum = evnum
+        for nev, store in self.stores:
+            if rel_evnum < nev:
+                current_store = store
+                break
+            rel_evnum -= nev
+        if current_store is None:
+            raise ValueError('event number too large: ' + str(evnum) )
+        self.current_store = current_store
+        self.current_store.goToEvent( rel_evnum )
         return self
 
     def __len__(self):
-        return self.store.getEntries()
+        '''Returns the total number of events in all files.'''
+        nevts_all_files = 0
+        for nev, store in self.stores:
+            nevts_all_files += nev
+        return nevts_all_files
