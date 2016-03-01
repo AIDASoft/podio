@@ -12,8 +12,8 @@ class EventStoreTestCase(unittest.TestCase):
         self.store = EventStore([self.filename])
         
     def test_eventloop(self):
-        self.assertTrue( self.store.getEntries() >= 0 )
-        self.assertEqual( self.store.getEntries(), len(self.store) )
+        self.assertTrue( len(self.store) >= 0 )
+        self.assertEqual( self.store.current_store.getEntries(), len(self.store) )
         for iev, event in enumerate(self.store):
             self.assertTrue( True )
             if iev>5:
@@ -31,7 +31,7 @@ class EventStoreTestCase(unittest.TestCase):
 
     def test_chain(self):
         self.store = EventStore( [ self.filename,
-                                   self.filename] )
+                                   self.filename ] )
         rootfile = TFile(self.filename)
         events = rootfile.Get('events')
         numbers = []
@@ -41,32 +41,13 @@ class EventStoreTestCase(unittest.TestCase):
         self.assertEqual( iev+1, 2*events.GetEntries() )
         # testing that numbers is [0, .. 1999, 0, .. 1999]
         self.assertEqual(numbers, range(events.GetEntries())*2)
-        # trying to go to an event in the second file
+        # trying to go to an event beyond the last one
         self.assertRaises(ValueError, self.store.__getitem__,
-                          events.GetEntries()+1)
-
-    # def test_handles(self):
-    #     assocs = self.store.get("GenJetParticle")
-    #     particles = self.store.get("GenParticle")
-    #     jets = self.store.get("GenJet")
-    #     self.assertTrue( len(assocs)>0 )
-    #     jet = assocs[0].Jet()
-    #     ptc = assocs[0].Particle()
-    #     self.assertIsNotNone( jet )
-    #     self.assertIsNotNone( ptc )
-    #     self.assertTrue( jet in jets )
-    #     self.assertTrue( ptc in particles )
-    #     self.assertFalse( jet in particles )
-    #     self.assertFalse( ptc in jets )
-    #     ptcsInJet0 = []
-    #     for assoc in assocs:
-    #         jet = assoc.Jet()
-    #         if jet == jets[0]:
-    #             ptcsInJet0.append( assoc.Particle() )
-    #     self.assertTrue( len(ptcsInJet0) > 0)
-                
-            
-
+                          4001)
+        # this is in the first event in the second file,
+        # so its event number should be 0.
+        self.assertEqual(self.store[2000].get("info")[0].Number(), 0)
+ 
 if __name__ == "__main__":
     from ROOT import gSystem
     from subprocess import call
