@@ -11,8 +11,8 @@ if [[ "$unamestr" == 'Linux' ]]; then
 	#should check domain to make sure we're at CERN
 	#or is this software available somewhere in Lyon? 
 	sw_afs=1
-	export PATH=/afs/cern.ch/sw/lcg/contrib/CMake/2.8.9/Linux-i386/bin:${PATH}
         source /afs/cern.ch/sw/lcg/views/LCG_83/x86_64-slc6-gcc49-opt/setup.sh
+        export CMAKE_PREFIX_PATH=/afs/cern.ch/sw/lcg/releases/gtest/1.7.0-4f83b/x86_64-slc6-gcc49-opt/
 	echo cmake and root taken from /afs/cern.ch/sw/lcg
     fi
     export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/examples:$LD_LIBRARY_PATH
