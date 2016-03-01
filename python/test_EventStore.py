@@ -3,6 +3,7 @@ from EventStore import EventStore
 import os
 
 from ROOT import TFile
+from ROOT import ExampleHit, ConstExampleHit
 
 class EventStoreTestCase(unittest.TestCase):
 
@@ -10,6 +11,7 @@ class EventStoreTestCase(unittest.TestCase):
         self.filename = 'example.root'
         self.assertTrue( os.path.isfile(self.filename) )
         self.store = EventStore([self.filename])
+        
         
     def test_eventloop(self):
         self.assertTrue( len(self.store) >= 0 )
@@ -29,6 +31,55 @@ class EventStoreTestCase(unittest.TestCase):
         particles = self.store.get("CollectionNotThere")
         self.assertFalse(particles)
 
+    def test_read_only(self):
+        hits = self.store.get("hits")
+        # testing that one can't modify attributes in
+        # read-only pods
+        self.assertEqual(hits[0].energy(), 23.)
+        hits[0].energy(10)
+        self.assertEqual(hits[0].energy(), 10) # oops 
+        # self.assertEqual(type(hits[0]), ConstExampleHit) # should be True 
+        
+    def test_one_to_many(self):
+        clusters = self.store.get("clusters")
+        ref_hits = []
+        # testing that cluster hits can be accessed and make sense
+        for cluster in clusters:
+            sume = 0
+            for ihit in range(cluster.Hits_size()):
+                hit = cluster.Hits(ihit)
+                ref_hits.append(hit)
+                sume += hit.energy()
+            self.assertEqual(cluster.energy(), sume)
+        hits = self.store.get("hits")
+        # testing that the hits stored as a one to many relation
+        # in the cluster can be found in the hit collection
+        for hit in ref_hits:
+            self.assertTrue(hit in hits) 
+
+    def test_hash(self):
+        clusters = self.store.get("clusters")
+        ref_hits = []
+        # testing that cluster hits can be accessed and make sense
+        for cluster in clusters:
+            sume = 0
+            for ihit in range(cluster.Hits_size()):
+                hit = cluster.Hits(ihit)
+                ref_hits.append(hit)
+                sume += hit.energy()
+            self.assertEqual(cluster.energy(), sume)
+        hits = self.store.get("hits")
+        if hits[0] == ref_hits[0]:
+            self.assertEqual(hits[0].getObjectID().index,
+                             ref_hits[0].getObjectID().index)
+            self.assertEqual(hits[0].getObjectID().collectionID,
+                             ref_hits[0].getObjectID().collectionID)
+            self.assertEqual(hits[0].getObjectID(), ref_hits[0].getObjectID())
+        # testing that the hits stored as a one to many relation
+        # import pdb; pdb.set_trace()
+        
+
+            
     def test_chain(self):
         self.store = EventStore( [ self.filename,
                                    self.filename ] )
