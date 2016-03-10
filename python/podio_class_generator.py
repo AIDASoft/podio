@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 import os
 import string
-import sys
 import pickle
-import yaml
 from podio_config_reader import PodioConfigReader
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,31 +36,23 @@ class ClassGenerator(object):
     self.package_name =package_name
     self.template_dir = os.path.join(thisdir,"../templates")
     self.verbose=verbose
-    self.buildin_types = ["int","float","double","unsigned int","unsigned","short","bool","longlong","ulonglong"]
+    self.buildin_types = ["int", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
     self.created_classes = []
     self.requested_classes = []
     self.reader = PodioConfigReader(yamlfile)
     self.warnings = []
 
-  def load_data_definitions(self):
-    self.datatypes = self.reader.read()
-
   def process(self):
-    stream = open(self.yamlfile, "r")
-    content = yaml.load(stream)
-    if content.has_key("components"):
-      self.components = content["components"]
-      self.process_components(content["components"])
-    self.load_data_definitions()
-    self.process_datatypes(self.datatypes)
+    self.reader.read()
+    self.process_components(self.reader.components)
+    self.process_datatypes(self.reader.datatypes)
     self.create_selection_xml()
     self.print_report()
 
   def process_components(self,content):
-    for name in content.iterkeys():
-      self.requested_classes.append(name)
+    self.requested_classes += content.keys()
     for name, components in content.iteritems():
-      self.create_component(name, components)
+      self.create_component(name, components["Members"])
 
   def process_datatypes(self,content):
     for name in content.iterkeys():
@@ -108,87 +98,92 @@ class ClassGenerator(object):
       content = string.Template(template).substitute({"classes" : content})
       self.write_file("selection.xml",content)
 
-  def create_data(self, classname, definition):
-    # check whether all member types are known
-    # and prepare include directives
+  def process_datatype(self, classname, definition, is_data=False):
+    datatype_dict = {}
+    datatype_dict["description"] = definition["Description"]
+    datatype_dict["author"] = definition["Author"]
+    datatype_dict["includes"] = []
+    datatype_dict["members"] = []
+    members = definition["Members"]
+    for member in members:
+      klass = member["type"]
+      name = member["name"]
+      description = member["description"]
+      datatype_dict["members"].append("  %s %s;  ///<%s" % (klass, name, description))
+      if klass in self.buildin_types:
+        pass
+      elif klass in self.requested_classes:
+        if "::" in klass:
+          namespace, klassname = klass.split("::")
+          datatype_dict["includes"].append('#include "%s.h"' % klassname)
+        else:
+          datatype_dict["includes"].append('#include "%s.h"' % klass)
+      elif "std::array" in klass:
+        datatype_dict["includes"].append("#include <array>")
+        self.created_classes.append(klass)
+      elif "vector" in klass:
+        datatype_dict["includes"].append("#include <vector>")
+        if is_data:  # avoid having warnings twice
+          self.warnings.append("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
+      elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
+        raise Exception("'%s' defines an array type. Array types are not supported yet." % (classname, klass))
+      else:
+        raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
+    return datatype_dict
+
+  def demangle_classname(self, classname):
     namespace_open = ""
     namespace_close = ""
+    namespace = ""
+    rawclassname = ""
     if "::" in classname:
-      namespace, rawclassname = classname.split("::")
+      cnameparts = classname.split("::")
+      if len(cnameparts) > 2:
+        raise Exception("'%s' defines a type with nested namespaces. Not supported, yet." % classname)
+      namespace, rawclassname = cnameparts
       namespace_open = "namespace %s {" % namespace
       namespace_close = "} // namespace %s" % namespace
     else:
       rawclassname = classname
+    return namespace, rawclassname, namespace_open, namespace_close
 
-    includes = ""
-    description = definition["Description"]
-    author      = definition["Author"]
-    members = definition["Members"]
-    for member in members:
-      klass = member["type"]
-      name  = member["type"]
-      if klass in self.buildin_types:
-        pass
-      elif klass in self.requested_classes:
-        #    includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
-        if "::" in klass:
-          namespace, klassname = klass.split("::")
-          includes += '#include "%s.h"\n' % klassname
-        else:
-          includes += '#include "%s.h"\n' %(klass)
-      elif "std::array" in klass:
-          includes += "#include <array>\n"
-          self.created_classes.append(klass)
-      elif "vector" in klass:
-          includes += "#include <vector>\n"
-          self.warnings.append("%s defines a vector member %s, that spoils the PODness" %(classname, klass))
-      elif "[" in klass:
-          raise Exception("'%s' defines an array type. Array types are not supported yet." %(classname, klass))
-      else:
-        raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" %(classname, klass))
-    membersCode = ""
-    for member in members:
-      name = member["name"]
-      klass = member["type"]
-      description = member["description"]
-      membersCode+= "  %s %s; ///%s \n" %(klass, name, description)
+
+  def create_data(self, classname, definition):
+    # check whether all member types are known
+    # and prepare include directives
+    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+
+    data = self.process_datatype(classname, definition)
 
     # now handle the vector-members
     vectormembers = definition["VectorMembers"]
     for vectormember in vectormembers:
       name = vectormember["name"]
-      membersCode+= "  unsigned int %s_begin; \n" %(name)
-      membersCode+= "  unsigned int %s_end; \n" %(name)
+      data["members"].append("  unsigned int %s_begin;" % name)
+      data["members"].append("  unsigned int %s_end;" %(name))
 
     # now handle the one-to-many relations
     refvectors = definition["OneToManyRelations"]
     for refvector in refvectors:
       name = refvector["name"]
-      membersCode+= "  unsigned int %s_begin; \n" %(name)
-      membersCode+= "  unsigned int %s_end; \n" %(name)
+      data["members"].append("  unsigned int %s_begin;" %(name))
+      data["members"].append("  unsigned int %s_end;" %(name))
 
-    substitutions = {"includes" : includes,
-                     "members"  : membersCode,
+    substitutions = {"includes" : "\n".join(data["includes"]),
+                     "members"  : "\n".join(data["members"]),
                      "name"     : rawclassname,
-                     "description" : description,
-                     "author"   : author,
+                     "description" : data["description"],
+                     "author"   :  data["author"],
                      "package_name" : self.package_name,
                      "namespace_open" : namespace_open,
                      "namespace_close" : namespace_close
     }
-    self.fill_templates("Data",substitutions)
+    self.fill_templates("Data", substitutions)
     self.created_classes.append(classname+"Data")
 
   def create_class(self, classname, definition):
-    namespace_open = ""
-    namespace_close = ""
-    if "::" in classname:
-      namespace, rawclassname = classname.split("::")
-      namespace_open = "namespace %s {" % namespace
-      namespace_close = "} // namespace %s" % namespace
-    else:
-      rawclassname = classname
-    includes = ""
+    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+
     includes_cc = ""
     forward_declarations = ""
     forward_declarations_namespace = {"":[]}
@@ -202,29 +197,9 @@ class ClassGenerator(object):
 
     # check whether all member types are known
     # and prepare include directives
-    includes += '#include "%s.h"\n' %(rawclassname+"Data")
-    #includes += '#include "%s/%s.h"\n' %(self.package_name,classname+"Data")
-    description = definition["Description"]
-    author      = definition["Author"]
-    members = definition["Members"]
-    for member in members:
-      klass = member["type"]
-      if klass in self.buildin_types:
-        pass
-      elif klass in self.requested_classes:
-        #includes += '#include "%s/%s.h"\n' %(self.package_name,klass)
-        if "::" in klass:
-          namespace, klassname = klass.split("::")
-          includes += '#include "%s.h"\n' %klassname
-        else:
-          includes += '#include "%s.h"\n' %klass
+    datatype = self.process_datatype(classname, definition, False)
 
-      elif "std::array" in klass:
-        includes += "#include <array>\n"
-      elif "vector" in klass:
-        includes += "#include <vector>\n"
-      else:
-        raise Exception("'%s' defines a member of a type '%s' that is not declared!" %(classname, klass))
+    datatype["includes"].append('#include "%s.h"' % (rawclassname+"Data"))
 
     # check on-to-one relations and prepare include directives
     oneToOneRelations = definition["OneToOneRelations"]
@@ -253,25 +228,24 @@ class ClassGenerator(object):
     # and prepare include directives
     refvectors = definition["OneToManyRelations"]
     if len(refvectors) != 0:
-      includes += "#include <vector>\n"
+      datatype["includes"].append("#include <vector>")
     for item in refvectors:
       klass = item["type"]
       if klass in self.requested_classes:
         if "::" in klass:
           mnamespace, klassname = klass.split("::")
-          includes += '#include "%s.h"\n' %klassname
+          datatype["includes"].append('#include "%s.h"' %klassname)
         else:
-          includes += '#include "%s.h"\n' %klass
+          datatype["includes"].append('#include "%s.h"' %klass)
       elif "std::array" in klass:
-        includes += "#include <array>\n"
+        datatype["includes"].append("#include <array>")
       else:
         raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
     # handle standard members
-    for member in members:
+    for member in definition["Members"]:
       name = member["name"]
       klass = member["type"]
-      description = member["description"]
       getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
       getter_implementations+= "  const %s& %s::%s() const { return m_obj->data.%s; }\n" %(klass,rawclassname,name, name)
 #      getter_declarations+= "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)
@@ -316,17 +290,17 @@ class ClassGenerator(object):
     # handle vector members
     vectormembers = definition["VectorMembers"]
     if len(vectormembers) != 0:
-      includes += "#include <vector>\n"
+      datatype["includes"].append("#include <vector>")
     for item in vectormembers:
       klass = item["type"]
-      if klass not in self.buildin_types and klass not in self.components:
+      if klass not in self.buildin_types and klass not in self.reader.components:
         raise Exception("'%s' declares a non-allowed vector member of type '%s'!" %(classname, klass))
-      if klass in self.components:
+      if klass in self.reader.components:
         if "::" in klass:
           namespace, klassname = klass.split("::")
-          includes += '#include "%s.h"\n' %klassname
+          datatype["includes"].append('#include "%s.h"' %klassname)
         else:
-          includes += '#include "%s.h"\n' %klass
+          datatype["includes"].append('#include "%s.h"' %klass)
 
     # handle constructor from values
     constructor_signature = constructor_signature.rstrip(",")
@@ -358,7 +332,7 @@ class ClassGenerator(object):
 
     for refvector in refvectors+definition["VectorMembers"]:
       relationtype = refvector["type"]
-      if relationtype not in self.buildin_types and relationtype not in self.components:
+      if relationtype not in self.buildin_types and relationtype not in self.reader.components:
           relationtype = "Const"+relationtype
 
       substitutions = {"relation" : refvector["name"],
@@ -368,12 +342,12 @@ class ClassGenerator(object):
                       }
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
       references += string.Template(references_template).substitute(substitutions)
-      references_members += "std::vector<%s>* m_%s; //! transient \n" %(refvector["type"], refvector["name"])
+      references_members += "std::vector<%s>* m_%s; ///< transient \n" %(refvector["type"], refvector["name"])
       ConstReferences_declarations += string.Template(ConstReferences_declarations_template).substitute(substitutions)
       ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
 
 
-    substitutions = {"includes" : includes,
+    substitutions = {"includes" : "\n".join(datatype["includes"]),
                      "includes_cc" : includes_cc,
                      "forward_declarations" : forward_declarations,
                      "getters"  : getter_implementations,
@@ -383,12 +357,11 @@ class ClassGenerator(object):
                      "constructor_declaration" : constructor_declaration,
                      "constructor_implementation" : constructor_implementation,
                      "name"     : rawclassname,
-                     "description" : description,
-                     "author"   : author,
+                     "description" : datatype["description"],
+                     "author"   : datatype["author"],
                      "relations" : references,
                      "relation_declarations" : references_declarations,
                      "relation_members" : references_members,
-                     ""
                      "package_name" : self.package_name,
                      "namespace_open" : namespace_open,
                      "namespace_close" : namespace_close
@@ -553,7 +526,7 @@ class ClassGenerator(object):
     else:
       rawclassname = classname
     for klass in components.itervalues():
-      if klass in self.buildin_types or self.components.has_key(klass):
+      if klass in self.buildin_types or klass in self.reader.components.keys():
         pass
       else:
         raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(classname, klass))
@@ -568,7 +541,7 @@ class ClassGenerator(object):
         members+= "  %s %s;\n" %(klassname, name)
       else:
         members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
-      if self.components.has_key(klass):
+      if self.reader.components.has_key(klass):
           includes+= '#include "%s.h"\n' %(klassname)
     substitutions = { "includes" : includes,
                       "members"  : members,
@@ -641,7 +614,7 @@ class ClassGenerator(object):
       name  = item["name"]
       klass = item["type"]
       if klass not in self.buildin_types:
-        if klass not in self.components:
+        if klass not in self.reader.components:
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
             klassWithQualifier = "::"+mnamespace+"::Const"+klassname
