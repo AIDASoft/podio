@@ -58,7 +58,7 @@ const podio::ObjectID ${name}::getObjectID() const {
 }
 
 bool ${name}::operator==(const Const${name}& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 
