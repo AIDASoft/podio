@@ -3,6 +3,7 @@ import os
 import string
 import pickle
 from podio_config_reader import PodioConfigReader
+from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
 _text_ = """
@@ -246,22 +247,24 @@ class ClassGenerator(object):
     for member in definition["Members"]:
       name = member["name"]
       klass = member["type"]
-      getter_declarations+= "  const %s& %s() const;\n" %(klass, name)
-      getter_implementations+= "  const %s& %s::%s() const { return m_obj->data.%s; }\n" %(klass,rawclassname,name, name)
-#      getter_declarations+= "  %s& %s() { return m_obj->data.%s; };\n" %(klass, name, name)
+      getter_declarations += declarations["member_getter"].format(type=klass, name=name)
+      getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name)
       if klass in self.buildin_types:
-        setter_declarations += "  void %s(%s value);\n" %(name, klass)
-        setter_implementations += "void %s::%s(%s value){ m_obj->data.%s = value;}\n" %(rawclassname, name, klass, name)
+        setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name)
+        setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name)
       else:
-        setter_declarations += "  %s& %s();\n" %(klass, name)  # getting non-const reference is conceptually a setter
-        setter_implementations += "  %s& %s::%s() { return m_obj->data.%s; }\n" %(klass, rawclassname,name, name)
-        setter_declarations += "  void %s(class %s value);\n" %(name, klass)
-        setter_implementations += "void %s::%s(class %s value){ m_obj->data.%s = value;}\n" %(rawclassname, name, klass, name)
+        setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name)
+        setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name)
+        setter_declarations += declarations["member_class_setter"].format(type=klass, name=name)
+        setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name)
+      # Getter for the Const variety of this datatype
+      ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name)
+
+
       # set up signature
       constructor_signature += "%s %s," %(klass, name)
       # constructor
       constructor_body += "  m_obj->data.%s = %s;" %(name, name)
-      ConstGetter_implementations += "  const %s& Const%s::%s() const { return m_obj->data.%s; }\n" %(klass, rawclassname, name, name)
 
     # one-to-one relations
     for member in oneToOneRelations:
@@ -269,23 +272,14 @@ class ClassGenerator(object):
         klass = member["type"]
         mnamespace = ""
         klassname = klass
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-          setter_declarations += "  void %s(%s::Const%s value);\n" %(name, mnamespace, klassname)
-          setter_implementations += "void %s::%s(%s::Const%s value) { if (m_obj->m_%s != nullptr) delete m_obj->m_%s; m_obj->m_%s = new Const%s(value); }\n" %(rawclassname, name, mnamespace, klassname, name, name, name, klassname)
-          getter_declarations += "  const %s::Const%s %s() const;\n" %(mnamespace, klassname, name)
-          getter_implementations += "  const %s::Const%s %s::%s() const { if (m_obj->m_%s == nullptr) {\n return %s::Const%s(nullptr);}\n return %s::Const%s(*(m_obj->m_%s));}\n" \
-                                    %(mnamespace, klassname, rawclassname, name, name, mnamespace, klassname, mnamespace, klassname, name)
-          ConstGetter_implementations += "  const %s::Const%s Const%s::%s() const { if (m_obj->m_%s == nullptr) {\n return %s::Const%s(nullptr);}\n return %s::Const%s(*(m_obj->m_%s));}\n" \
-                                    %(mnamespace, klassname, rawclassname, name, name, mnamespace, klassname, mnamespace, klassname, name)
-        else:
-          setter_declarations += "  void %s(Const%s value);\n" %(name, klassname)
-          setter_implementations += "void %s::%s(Const%s value) { if (m_obj->m_%s != nullptr) delete m_obj->m_%s; m_obj->m_%s = new Const%s(value); }\n" %(rawclassname,name, klassname, name, name, name,klassname)
-          getter_declarations += "  const Const%s %s() const;\n" %(klassname, name)
-          getter_implementations += "  const Const%s %s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));}\n" \
-                                    %(klassname, rawclassname, name, name, klassname, klassname, name)
-          ConstGetter_implementations += "  const Const%s Const%s::%s() const { if (m_obj->m_%s == nullptr) {\n return Const%s(nullptr);}\n return Const%s(*(m_obj->m_%s));}\n" \
-                                    %(klassname, rawclassname, name, name, klassname, klassname, name)
+        mnamespace, klassname, _, __ = self.demangle_classname(klass)
+
+        setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname)
+        setter_implementations += implementations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
+        getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname)
+        getter_implementations += implementations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
+        ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
+
 
     # handle vector members
     vectormembers = definition["VectorMembers"]
@@ -382,14 +376,8 @@ class ClassGenerator(object):
       self.created_classes.append("Const%s" %classname)
 
   def create_collection(self, classname, definition):
-    namespace_open = ""
-    namespace_close = ""
-    if "::" in classname:
-      namespace, rawclassname = classname.split("::")
-      namespace_open = "namespace %s {" % namespace
-      namespace_close = "} // namespace %s" % namespace
-    else:
-      rawclassname = classname
+    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+
     members = definition["Members"]
     constructorbody = ""
     prepareforwritinghead = ""
@@ -412,49 +400,37 @@ class ClassGenerator(object):
     nOfRefMembers = len(refmembers)
     if nOfRefVectors + nOfRefMembers > 0:
       # member initialization
-      constructorbody += "  m_refCollections = new podio::CollRefCollection();\n"
-      clear_relations += "  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }\n"
+      constructorbody += "\tm_refCollections = new podio::CollRefCollection();\n"
+      clear_relations += "\tfor (auto& pointer : (*m_refCollections)) { pointer->clear(); }\n"
       for counter, item in enumerate(refvectors):
         name  = item["name"]
         klass = item["type"]
         substitutions = { "counter" : counter,
                           "class" : klass,
                           "name"  : name }
-        mnamespace = ""
-        klassname = klass
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
+
+        mnamespace, klassname, _, __ = self.demangle_classname(klass)
+
         # includes
         includes += '#include "%sCollection.h" \n' %(klassname)
 
-        if mnamespace != "":
-          # members
-          relations += "  std::vector<::%s::Const%s>* m_rel_%s; //relation buffer for r/w\n" %(mnamespace, klassname, name)
-          relations += "  std::vector<std::vector<::%s::Const%s>*> m_rel_%s_tmp;\n " %(mnamespace, klassname, name)
-          # constructor calls
-          initializers += ",m_rel_%s(new std::vector<::%s::Const%s>())" %(name, mnamespace, klassname)
-        else:
-          # members
-          relations += "  std::vector<Const%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
-          relations += "  std::vector<std::vector<Const%s>*> m_rel_%s_tmp;\n " %(klass, name)
-          # constructor calls
-          initializers += ",m_rel_%s(new std::vector<Const%s>())" %(name, klass)
-        constructorbody += "  m_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
+        # FIXME check if it compiles with :: for both... then delete this.
+        relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
+        relations += declarations["relation_collection"].format(namespace=mnamespace, type=klassname, name=name)
+        initializers += implementations["ctor_list_relation"].format(namespace=mnamespace, type=klassname, name=name)
+
+        constructorbody += "\tm_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::create
-        create_relations += "  m_rel_%s_tmp.push_back(obj->m_%s);\n" %(name,name)
+        create_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::clear
-        clear_relations += "  // clear relations to %s. Make sure to unlink() the reference data as they may be gone already\n" %(name)
-        clear_relations += "  for (auto& pointer : m_rel_%s_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}\n" %(name)
-        clear_relations += "  m_rel_%s_tmp.clear();\n" %(name)
-        clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
-        clear_relations += "  m_rel_%s->clear();\n" %(name)
+        clear_relations += implementations["clear_relations_vec"].format(name=name)
         # relation handling in push_back
-        push_back_relations += "  m_rel_%s_tmp.push_back(obj->m_%s);\n" %(name,name)
+        push_back_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::prepareForWrite
         prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template",substitutions)
         # relation handling in ::settingReferences
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)
-        prepareafterread += "    obj->m_%s = m_rel_%s;" %(name, name)
+        prepareafterread += "\t\tobj->m_%s = m_rel_%s;" %(name, name)
       for counter, item in enumerate(refmembers):
         name  = item["name"]
         klass = item["type"]
@@ -469,24 +445,16 @@ class ClassGenerator(object):
 
 
         # includes
-        includes += '#include "%sCollection.h" \n' %(klassname)
-
-        if mnamespace != "":
-          # constructor calls
-          initializers += ",m_rel_%s(new std::vector<::%s::Const%s>())" %(name, mnamespace, klassname)
-          # members
-          relations += "  std::vector<::%s::Const%s>* m_rel_%s; //relation buffer for r/w\n" %(mnamespace,  klassname, name)
-        else:
-          # constructor calls
-          initializers += ",m_rel_%s(new std::vector<Const%s>())" %(name, klass)
-          # members
-          relations += "  std::vector<Const%s>* m_rel_%s; //relation buffer for r/w\n" %(klass, name)
-        constructorbody += "  m_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
+        includes += '#include "%sCollection.h"\n' %(klassname)
+        # constructor call
+        initializers += implementations["ctor_list_relation"].format(namespace=mnamespace, type=klassname, name=name)
+        # member
+        relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
+        constructorbody += "\tm_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::clear
-        clear_relations += "  for (auto& item : (*m_rel_%s)) {item.unlink(); }\n" %(name)
-        clear_relations += "  m_rel_%s->clear();\n" %(name)
+        clear_relations += implementations["clear_relations"].format(name=name)
         # relation handling in ::prepareForWrite
-        prepareforwriting_refmembers +=  "  for (auto& obj : m_entries) {\nif (obj->m_%s != nullptr){\n(*m_refCollections)[%s]->emplace_back(obj->m_%s->getObjectID());} else {(*m_refCollections)[%s]->push_back({-2,-2}); } }\n" %(name,counter+nOfRefVectors,name,counter+nOfRefVectors)
+        prepareforwriting_refmembers += implementations["prep_writing_relations"].format(name=name, i=(counter+nOfRefVectors))
         # relation handling in ::settingReferences
         prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
     substitutions = { "name" : rawclassname,
@@ -517,14 +485,8 @@ class ClassGenerator(object):
         Components can only contain simple data types and no user
         defined ones
     """
-    namespace_open = ""
-    namespace_close = ""
-    if "::" in classname:
-      namespace, rawclassname = classname.split("::")
-      namespace_open = "namespace %s {" % namespace
-      namespace_close = "} // namespace %s" % namespace
-    else:
-      rawclassname = classname
+    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+
     for klass in components.itervalues():
       if klass in self.buildin_types or klass in self.reader.components.keys():
         pass
@@ -557,14 +519,7 @@ class ClassGenerator(object):
     """ Create an obj class containing all information
         relevant for a given object.
     """
-    namespace_open = ""
-    namespace_close = ""
-    if "::" in classname:
-      namespace, rawclassname = classname.split("::")
-      namespace_open = "namespace %s {" % namespace
-      namespace_close = "} // namespace %s" % namespace
-    else:
-      rawclassname = classname
+    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
     relations = ""
     includes = ""
@@ -598,7 +553,7 @@ class ClassGenerator(object):
           forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
           includes_cc += '#include "%sConst.h"\n' %(klassname)
           initialize_relations += ",m_%s(nullptr)\n" %(name)
-        delete_relations+="delete m_%s;\n" %name
+        delete_relations+="\t\tdelete m_%s;\n" %name
 
     for nsp in forward_declarations_namespace.iterkeys():
       if nsp != "":
@@ -622,9 +577,9 @@ class ClassGenerator(object):
             klassWithQualifier = "Const"+klass
         else:
             klassWithQualifier = klass
-        relations += "  std::vector<%s>* m_%s;\n" %(klassWithQualifier, name)
-        initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klassWithQualifier)
-        deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klassWithQualifier,name)
+        relations += "\tstd::vector<%s>* m_%s;\n" %(klassWithQualifier, name)
+        initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klassWithQualifier)
+        deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klassWithQualifier,name)
         if klass == classname:
           includes_cc += '#include "%s.h"\n' %(rawclassname)
         else:
@@ -634,11 +589,11 @@ class ClassGenerator(object):
           else:
             includes += '#include "%s.h"\n' %klass
       else:
-          relations += "  std::vector<%s>* m_%s;\n" %(klass, name)
-          initialize_relations += ",m_%s(new std::vector<%s>())" %(name,klass)
-          deepcopy_relations += ",m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
+          relations += "\tstd::vector<%s>* m_%s;\n" %(klass, name)
+          initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klass)
+          deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
 
-      delete_relations += "delete m_%s;\n" %(name)
+      delete_relations += "\t\tdelete m_%s;\n" %(name)
     substitutions = { "name" : rawclassname,
                       "includes" : includes,
                       "includes_cc" : includes_cc,
@@ -666,7 +621,7 @@ class ClassGenerator(object):
       if klass not in self.buildin_types:
         substitutions["type"] = "class %s" % klass
       implementation += self.evaluate_template("CollectionReturnArray.cc.template", substitutions)
-      declaration += "  template<size_t arraysize>  \n  const std::array<%s,arraysize> %s() const;\n" %(klass, name)
+      declaration += "\ttemplate<size_t arraysize>\n\tconst std::array<%s,arraysize> %s() const;\n" %(klass, name)
     return declaration, implementation
 
   def write_file(self, name,content):
@@ -711,7 +666,7 @@ class ClassGenerator(object):
       templatefile = "%s.%s.template" %(category,ending)
       templatefile = os.path.join(self.template_dir,templatefile)
       template = open(templatefile,"r").read()
-      content = string.Template(template).substitute(substitutions)
+      content = string.Template(template).substitute(substitutions).expandtabs(2)
       filename = "%s%s.%s" %(substitutions["name"],FN,ending)
       self.write_file(filename, content)
 
