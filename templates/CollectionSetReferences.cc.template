@@ -1,4 +1,4 @@
-  for(unsigned int i=0, size=(*m_refCollections)[${counter}]->size();i!=size;++i ) {
+  for(unsigned int i=0, size=(*m_refCollections)[${counter}]->size();i!=size;++i) {
     auto id = (*(*m_refCollections)[${counter}])[i];
     CollectionBase* coll = nullptr;
     collectionProvider->get(id.collectionID,coll);

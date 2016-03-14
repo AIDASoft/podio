@@ -24,6 +24,8 @@ class PodioConfigReader(object):
 
   def __init__(self,yamlfile):
     self.yamlfile = yamlfile
+    self.datatypes = {}
+    self.components = {}
 
   @staticmethod
   def check_class(klass):
@@ -38,7 +40,7 @@ class PodioConfigReader(object):
   def read(self):
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
-    datatypes = {}
+
     if content.has_key("datatypes"):
       for klassname, value in content["datatypes"].iteritems():
         datatype = {}
@@ -55,5 +57,12 @@ class PodioConfigReader(object):
             datatype[category] = definitions
           else:
             datatype[category] = []
-        datatypes[klassname] = datatype
-    return datatypes
+        self.datatypes[klassname] = datatype
+
+    if "components" in content.keys():
+      for klassname, value in content["components"].iteritems():
+        component = {"Members": value}
+        self.components[klassname] = component
+
+
+

@@ -29,7 +29,7 @@ public:
 
   /// default constructor
   ${name}();
-  ${constructor_declaration}
+${constructor_declaration}
   /// constructor from existing ${name}Obj
   ${name}(${name}Obj* obj);
   /// copy constructor
@@ -55,7 +55,7 @@ $relation_declarations
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ${name}& other) const {
-       return (m_obj==other.m_obj);
+    return (m_obj==other.m_obj);
   }
 
   bool operator==(const Const${name}& other) const;
