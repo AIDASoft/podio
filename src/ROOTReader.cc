@@ -77,7 +77,7 @@ namespace podio {
   }
 
   void ROOTReader::openFile(const std::string& filename){
-    m_file = new TFile(filename.c_str(),"READ","data file");
+    m_file = TFile::Open(filename.c_str(),"READ","data file");
     if (m_file->IsZombie()) {
       exit(-1);
     }
