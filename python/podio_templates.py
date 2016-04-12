@@ -48,6 +48,8 @@ implementations["clear_relations_vec"] += "\t\t\titem.unlink();\n"
 implementations["clear_relations_vec"] += "\t\t}};\n"
 implementations["clear_relations_vec"] += "\t\tdelete pointer;\n"
 implementations["clear_relations_vec"] += "\t}}\n"
+#fg: need to also clear the vector :
+implementations["clear_relations_vec"] += "\tm_rel_{name}_tmp.clear();\n"
 
 implementations["clear_relations"]  = "\tfor (auto& item : (*m_rel_{name})) {{ item.unlink(); }}\n"
 implementations["clear_relations"] += "\tm_rel_{name}->clear();\n"
