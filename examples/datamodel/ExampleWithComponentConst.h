@@ -1,11 +1,12 @@
 #ifndef ConstExampleWithComponent_H
 #define ConstExampleWithComponent_H
-#include "NotSoSimpleStruct.h"
 #include "ExampleWithComponentData.h"
+#include "NotSoSimpleStruct.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with one component
+//  a component
 // author: Benedikt Hegner
 
 //forward declarations

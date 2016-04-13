@@ -2,6 +2,7 @@
 #define ExampleWithVectorMember_H
 #include "ExampleWithVectorMemberData.h"
 #include <vector>
+
 #include <vector>
 #include "podio/ObjectID.h"
 
@@ -30,7 +31,7 @@ public:
 
   /// default constructor
   ExampleWithVectorMember();
-
+  
   /// constructor from existing ExampleWithVectorMemberObj
   ExampleWithVectorMember(ExampleWithVectorMemberObj* obj);
   /// copy constructor
@@ -61,7 +62,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleWithVectorMember& other) const {
-    return (m_obj==other.m_obj);
+       return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleWithVectorMember& other) const;

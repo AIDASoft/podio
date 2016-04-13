@@ -1,10 +1,11 @@
 #ifndef ExampleHit_H
 #define ExampleHit_H
 #include "ExampleHitData.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Example Hit
+//  measured energy deposit
 // author: B. Hegner
 
 //forward declarations
@@ -29,7 +30,7 @@ public:
 
   /// default constructor
   ExampleHit();
-  ExampleHit(double x,double y,double z,double energy);
+    ExampleHit(double x,double y,double z,double energy);
 
   /// constructor from existing ExampleHitObj
   ExampleHit(ExampleHitObj* obj);
@@ -53,13 +54,9 @@ public:
   const double& energy() const;
 
   void x(double value);
-
   void y(double value);
-
   void z(double value);
-
   void energy(double value);
-
 
 
   /// check whether the object is actually available
@@ -68,7 +65,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleHit& other) const {
-    return (m_obj==other.m_obj);
+       return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleHit& other) const;

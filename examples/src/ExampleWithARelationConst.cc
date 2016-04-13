@@ -10,7 +10,7 @@
 
 namespace ex {
 
-ConstExampleWithARelation::ConstExampleWithARelation() : m_obj(new ExampleWithARelationObj()) {
+ConstExampleWithARelation::ConstExampleWithARelation() : m_obj(new ExampleWithARelationObj()){
  m_obj->acquire();
 }
 
@@ -26,7 +26,7 @@ ConstExampleWithARelation& ConstExampleWithARelation::operator=(const ConstExamp
   return *this;
 }
 
-ConstExampleWithARelation::ConstExampleWithARelation(ExampleWithARelationObj* obj) : m_obj(obj) {
+ConstExampleWithARelation::ConstExampleWithARelation(ExampleWithARelationObj* obj) : m_obj(obj){
   if(m_obj != nullptr)
     m_obj->acquire();
 }
@@ -39,11 +39,10 @@ ConstExampleWithARelation::~ConstExampleWithARelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-  const ex::ConstExampleWithNamespace ConstExampleWithARelation::ref() const {
-    if (m_obj->m_ref == nullptr) {
-      return ex::ConstExampleWithNamespace(nullptr);
-    }
-    return ex::ConstExampleWithNamespace(*(m_obj->m_ref));}
+  const ex::ConstExampleWithNamespace ConstExampleWithARelation::ref() const { if (m_obj->m_ref == nullptr) {
+ return ex::ConstExampleWithNamespace(nullptr);}
+ return ex::ConstExampleWithNamespace(*(m_obj->m_ref));}
+
 
 bool  ConstExampleWithARelation::isAvailable() const {
   if (m_obj != nullptr) {

@@ -1,6 +1,7 @@
 #ifndef ExampleWithOneRelation_H
 #define ExampleWithOneRelation_H
 #include "ExampleWithOneRelationData.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
@@ -31,7 +32,7 @@ public:
 
   /// default constructor
   ExampleWithOneRelation();
-
+  
   /// constructor from existing ExampleWithOneRelationObj
   ExampleWithOneRelation(ExampleWithOneRelationObj* obj);
   /// copy constructor
@@ -48,9 +49,9 @@ public:
 
 public:
 
-  const ::ConstExampleCluster cluster() const;
+  const ConstExampleCluster cluster() const;
 
-  void cluster(::ConstExampleCluster value);
+  void cluster(ConstExampleCluster value);
 
 
   /// check whether the object is actually available
@@ -59,7 +60,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleWithOneRelation& other) const {
-    return (m_obj==other.m_obj);
+       return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleWithOneRelation& other) const;

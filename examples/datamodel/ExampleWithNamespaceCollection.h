@@ -93,7 +93,7 @@ public:
   const const_iterator begin() const {
     return const_iterator(0, &m_entries);
   }
-  const const_iterator end() const {
+  const	const_iterator end() const {
     return const_iterator(m_entries.size(), &m_entries);
   }
 
@@ -103,7 +103,7 @@ public:
   /// returns the pointer to the data buffer
   std::vector<ExampleWithNamespaceData>* _getBuffer() { return m_data;};
 
-    template<size_t arraysize>
+     template<size_t arraysize>  
   const std::array<ex2::NamespaceStruct,arraysize> data() const;
 
 

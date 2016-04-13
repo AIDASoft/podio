@@ -1,11 +1,12 @@
 #ifndef ConstExampleWithNamespace_H
 #define ConstExampleWithNamespace_H
-#include "NamespaceStruct.h"
 #include "ExampleWithNamespaceData.h"
+#include "NamespaceStruct.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with namespace and namespaced member
+//  a component
 // author: Joschka Lingemann
 
 //forward declarations

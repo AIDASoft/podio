@@ -69,15 +69,16 @@ bool ExampleHitCollection::setReferences(const podio::ICollectionProvider* colle
 }
 
 void ExampleHitCollection::push_back(ConstExampleHit object){
-  int size = m_entries.size();
-  auto obj = object.m_obj;
-  if (obj->id.index == podio::ObjectID::untracked) {
-      obj->id = {size,m_collectionID};
-      m_entries.push_back(obj);
-      
-  } else {
-    throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
-  }
+    int size = m_entries.size();
+    auto obj = object.m_obj;
+    if (obj->id.index == podio::ObjectID::untracked) {
+        obj->id = {size,m_collectionID};
+        m_entries.push_back(obj);
+        
+    } else {
+      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
+
+    }
 }
 
 void ExampleHitCollection::setBuffer(void* address){
@@ -91,13 +92,13 @@ const ExampleHit ExampleHitCollectionIterator::operator* () const {
 }
 
 const ExampleHit* ExampleHitCollectionIterator::operator-> () const {
-  m_object.m_obj = (*m_collection)[m_index];
-  return &m_object;
+    m_object.m_obj = (*m_collection)[m_index];
+    return &m_object;
 }
 
 const ExampleHitCollectionIterator& ExampleHitCollectionIterator::operator++() const {
   ++m_index;
-  return *this;
+ return *this;
 }
 
 

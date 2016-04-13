@@ -277,9 +277,9 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
-          <class name="std::vector<ex::ConstExampleWithNamespace>" />
+          <class name="std::vector<ex2::ConstExampleWithNamespace>" />
 
-          <class name="ex::ConstExampleWithNamespace">
+          <class name="ex2::ConstExampleWithNamespace">
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>

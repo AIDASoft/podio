@@ -13,9 +13,9 @@ ExampleCluster::ExampleCluster() : m_obj(new ExampleClusterObj()){
  m_obj->acquire();
 }
 
-ExampleCluster::ExampleCluster(double energy) : m_obj(new ExampleClusterObj()) {
-  m_obj->acquire();
-    m_obj->data.energy = energy;
+ExampleCluster::ExampleCluster(double energy) : m_obj(new ExampleClusterObj()){
+ m_obj->acquire();
+   m_obj->data.energy = energy;
 }
 
 
@@ -46,7 +46,7 @@ ExampleCluster::operator ConstExampleCluster() const {return ConstExampleCluster
 
   const double& ExampleCluster::energy() const { return m_obj->data.energy; }
 
-void ExampleCluster::energy(double value){ m_obj->data.energy = value; }
+void ExampleCluster::energy(double value){ m_obj->data.energy = value;}
 
 std::vector<ConstExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
   auto ret_value = m_obj->m_Hits->begin();
@@ -72,34 +72,7 @@ unsigned int ExampleCluster::Hits_size() const {
 ConstExampleHit ExampleCluster::Hits(unsigned int index) const {
   if (Hits_size() > index) {
     return m_obj->m_Hits->at(m_obj->data.Hits_begin+index);
-  }
-  else throw std::out_of_range ("index out of bounds for existing references");
 }
-std::vector<ConstExampleCluster>::const_iterator ExampleCluster::Clusters_begin() const {
-  auto ret_value = m_obj->m_Clusters->begin();
-  std::advance(ret_value, m_obj->data.Clusters_begin);
-  return ret_value;
-}
-
-std::vector<ConstExampleCluster>::const_iterator ExampleCluster::Clusters_end() const {
-  auto ret_value = m_obj->m_Clusters->begin();
-  std::advance(ret_value, m_obj->data.Clusters_end-1);
-  return ++ret_value;
-}
-
-void ExampleCluster::addClusters(ConstExampleCluster component) {
-  m_obj->m_Clusters->push_back(component);
-  m_obj->data.Clusters_end++;
-}
-
-unsigned int ExampleCluster::Clusters_size() const {
-  return (m_obj->data.Clusters_end-m_obj->data.Clusters_begin);
-}
-
-ConstExampleCluster ExampleCluster::Clusters(unsigned int index) const {
-  if (Clusters_size() > index) {
-    return m_obj->m_Clusters->at(m_obj->data.Clusters_begin+index);
-  }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 
@@ -118,7 +91,7 @@ const podio::ObjectID ExampleCluster::getObjectID() const {
 }
 
 bool ExampleCluster::operator==(const ConstExampleCluster& other) const {
-  return (m_obj==other.m_obj);
+     return (m_obj==other.m_obj);
 }
 
 

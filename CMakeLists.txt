@@ -6,7 +6,6 @@ set( podio_VERSION_MINOR 1 )
 set( podio_VERSION_PATCH 0 )
 set( podio_VERSION "${podio_VERSION_MAJOR}.${podio_VERSION_MINOR}" )
 
-set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if(APPLE)

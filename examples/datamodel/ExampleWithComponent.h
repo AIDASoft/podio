@@ -1,11 +1,12 @@
 #ifndef ExampleWithComponent_H
 #define ExampleWithComponent_H
-#include "NotSoSimpleStruct.h"
 #include "ExampleWithComponentData.h"
+#include "NotSoSimpleStruct.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with one component
+//  a component
 // author: Benedikt Hegner
 
 //forward declarations
@@ -30,7 +31,7 @@ public:
 
   /// default constructor
   ExampleWithComponent();
-  ExampleWithComponent(NotSoSimpleStruct component);
+    ExampleWithComponent(NotSoSimpleStruct component);
 
   /// constructor from existing ExampleWithComponentObj
   ExampleWithComponent(ExampleWithComponentObj* obj);
@@ -60,7 +61,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleWithComponent& other) const {
-    return (m_obj==other.m_obj);
+       return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleWithComponent& other) const;

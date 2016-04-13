@@ -1,13 +1,13 @@
 // standard includes
 #include <stdexcept>
-#include "ExampleClusterCollection.h"
+#include "ExampleClusterCollection.h" 
 
 
 #include "ExampleWithOneRelationCollection.h"
 
 
 
-ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collectionID(0), m_entries() , m_rel_cluster(new std::vector<::ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
+ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collectionID(0), m_entries() ,m_rel_cluster(new std::vector<ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
@@ -35,8 +35,8 @@ ExampleWithOneRelation ExampleWithOneRelationCollection::create(){
 
 void ExampleWithOneRelationCollection::clear(){
   m_data->clear();
-  for (auto& pointer : (*m_refCollections)) { pointer->clear(); }
-  for (auto& item : (*m_rel_cluster)) { item.unlink(); }
+  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
+  for (auto& item : (*m_rel_cluster)) {item.unlink(); }
   m_rel_cluster->clear();
 
   for (auto& obj : m_entries) { delete obj; }
@@ -56,12 +56,8 @@ void ExampleWithOneRelationCollection::prepareForWrite(){
   
   }
     for (auto& obj : m_entries) {
-    if (obj->m_cluster != nullptr) {
-      (*m_refCollections)[0]->emplace_back(obj->m_cluster->getObjectID());
-    } else {
-      (*m_refCollections)[0]->push_back({-2,-2});
-    }
-  }
+if (obj->m_cluster != nullptr){
+(*m_refCollections)[0]->emplace_back(obj->m_cluster->getObjectID());} else {(*m_refCollections)[0]->push_back({-2,-2}); } }
 
 }
 
@@ -77,7 +73,7 @@ void ExampleWithOneRelationCollection::prepareAfterRead(){
 
 bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
 
-  for(unsigned int i = 0, size = m_entries.size(); i != size; ++i) {
+  for(unsigned int i=0, size=m_entries.size();i!=size;++i ) {
     auto id = (*(*m_refCollections)[0])[i];
     if (id.index != podio::ObjectID::invalid) {
       CollectionBase* coll = nullptr;
@@ -93,15 +89,16 @@ bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionPro
 }
 
 void ExampleWithOneRelationCollection::push_back(ConstExampleWithOneRelation object){
-  int size = m_entries.size();
-  auto obj = object.m_obj;
-  if (obj->id.index == podio::ObjectID::untracked) {
-      obj->id = {size,m_collectionID};
-      m_entries.push_back(obj);
-      
-  } else {
-    throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
-  }
+    int size = m_entries.size();
+    auto obj = object.m_obj;
+    if (obj->id.index == podio::ObjectID::untracked) {
+        obj->id = {size,m_collectionID};
+        m_entries.push_back(obj);
+        
+    } else {
+      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
+
+    }
 }
 
 void ExampleWithOneRelationCollection::setBuffer(void* address){
@@ -115,13 +112,13 @@ const ExampleWithOneRelation ExampleWithOneRelationCollectionIterator::operator*
 }
 
 const ExampleWithOneRelation* ExampleWithOneRelationCollectionIterator::operator-> () const {
-  m_object.m_obj = (*m_collection)[m_index];
-  return &m_object;
+    m_object.m_obj = (*m_collection)[m_index];
+    return &m_object;
 }
 
 const ExampleWithOneRelationCollectionIterator& ExampleWithOneRelationCollectionIterator::operator++() const {
   ++m_index;
-  return *this;
+ return *this;
 }
 
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include "ExampleCluster.h"
 #include "ExampleReferencingType.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
@@ -32,7 +33,7 @@ public:
 
   /// default constructor
   ExampleReferencingType();
-
+  
   /// constructor from existing ExampleReferencingTypeObj
   ExampleReferencingType(ExampleReferencingTypeObj* obj);
   /// copy constructor
@@ -68,7 +69,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleReferencingType& other) const {
-    return (m_obj==other.m_obj);
+       return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleReferencingType& other) const;

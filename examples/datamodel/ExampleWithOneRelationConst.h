@@ -1,6 +1,7 @@
 #ifndef ConstExampleWithOneRelation_H
 #define ConstExampleWithOneRelation_H
 #include "ExampleWithOneRelationData.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
@@ -46,7 +47,7 @@ public:
 
 public:
 
-  const ::ConstExampleCluster cluster() const;
+  const ConstExampleCluster cluster() const;
 
 
   /// check whether the object is actually available

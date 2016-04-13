@@ -1,6 +1,7 @@
 #ifndef ConstExampleForCyclicDependency1_H
 #define ConstExampleForCyclicDependency1_H
 #include "ExampleForCyclicDependency1Data.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
@@ -46,7 +47,7 @@ public:
 
 public:
 
-  const ::ConstExampleForCyclicDependency2 ref() const;
+  const ConstExampleForCyclicDependency2 ref() const;
 
 
   /// check whether the object is actually available

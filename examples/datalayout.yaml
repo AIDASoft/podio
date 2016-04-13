@@ -39,8 +39,7 @@ datatypes :
       - double energy // cluster energy
     OneToManyRelations:
      - ExampleHit Hits // hits contained in the cluster
-     - ExampleCluster Clusters // sub clusters used to create this cluster
-     
+
   ExampleReferencingType :
     Description : "Referencing Type"
     Author : "B. Hegner"

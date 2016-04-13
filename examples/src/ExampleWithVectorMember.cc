@@ -66,7 +66,7 @@ unsigned int ExampleWithVectorMember::count_size() const {
 int ExampleWithVectorMember::count(unsigned int index) const {
   if (count_size() > index) {
     return m_obj->m_count->at(m_obj->data.count_begin+index);
-  }
+}
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 
@@ -85,7 +85,7 @@ const podio::ObjectID ExampleWithVectorMember::getObjectID() const {
 }
 
 bool ExampleWithVectorMember::operator==(const ConstExampleWithVectorMember& other) const {
-  return (m_obj==other.m_obj);
+     return (m_obj==other.m_obj);
 }
 
 

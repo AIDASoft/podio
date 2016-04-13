@@ -1,10 +1,11 @@
 #ifndef ConstExampleHit_H
 #define ConstExampleHit_H
 #include "ExampleHitData.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Example Hit
+//  measured energy deposit
 // author: B. Hegner
 
 //forward declarations

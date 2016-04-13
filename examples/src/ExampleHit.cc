@@ -13,9 +13,9 @@ ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){
  m_obj->acquire();
 }
 
-ExampleHit::ExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()) {
-  m_obj->acquire();
-    m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
+ExampleHit::ExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()){
+ m_obj->acquire();
+   m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
 }
 
 
@@ -49,10 +49,10 @@ ExampleHit::operator ConstExampleHit() const {return ConstExampleHit(m_obj);}
   const double& ExampleHit::z() const { return m_obj->data.z; }
   const double& ExampleHit::energy() const { return m_obj->data.energy; }
 
-void ExampleHit::x(double value){ m_obj->data.x = value; }
-void ExampleHit::y(double value){ m_obj->data.y = value; }
-void ExampleHit::z(double value){ m_obj->data.z = value; }
-void ExampleHit::energy(double value){ m_obj->data.energy = value; }
+void ExampleHit::x(double value){ m_obj->data.x = value;}
+void ExampleHit::y(double value){ m_obj->data.y = value;}
+void ExampleHit::z(double value){ m_obj->data.z = value;}
+void ExampleHit::energy(double value){ m_obj->data.energy = value;}
 
 
 bool  ExampleHit::isAvailable() const {
@@ -70,7 +70,7 @@ const podio::ObjectID ExampleHit::getObjectID() const {
 }
 
 bool ExampleHit::operator==(const ConstExampleHit& other) const {
-  return (m_obj==other.m_obj);
+     return (m_obj==other.m_obj);
 }
 
 

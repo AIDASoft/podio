@@ -1,7 +1,7 @@
 #ifndef EventInfoDATA_H
 #define EventInfoDATA_H
 
-// Event info
+//  event number
 // author: B. Hegner
 
 
@@ -9,7 +9,8 @@
 
 class EventInfoData {
 public:
-  int Number;  ///< event number
+  int Number; /// event number 
+
 };
 
 

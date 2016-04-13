@@ -69,15 +69,16 @@ bool ExampleWithComponentCollection::setReferences(const podio::ICollectionProvi
 }
 
 void ExampleWithComponentCollection::push_back(ConstExampleWithComponent object){
-  int size = m_entries.size();
-  auto obj = object.m_obj;
-  if (obj->id.index == podio::ObjectID::untracked) {
-      obj->id = {size,m_collectionID};
-      m_entries.push_back(obj);
-      
-  } else {
-    throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
-  }
+    int size = m_entries.size();
+    auto obj = object.m_obj;
+    if (obj->id.index == podio::ObjectID::untracked) {
+        obj->id = {size,m_collectionID};
+        m_entries.push_back(obj);
+        
+    } else {
+      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
+
+    }
 }
 
 void ExampleWithComponentCollection::setBuffer(void* address){
@@ -91,13 +92,13 @@ const ExampleWithComponent ExampleWithComponentCollectionIterator::operator* () 
 }
 
 const ExampleWithComponent* ExampleWithComponentCollectionIterator::operator-> () const {
-  m_object.m_obj = (*m_collection)[m_index];
-  return &m_object;
+    m_object.m_obj = (*m_collection)[m_index];
+    return &m_object;
 }
 
 const ExampleWithComponentCollectionIterator& ExampleWithComponentCollectionIterator::operator++() const {
   ++m_index;
-  return *this;
+ return *this;
 }
 
 

@@ -41,16 +41,11 @@ ExampleWithOneRelation::~ExampleWithOneRelation(){
 
 ExampleWithOneRelation::operator ConstExampleWithOneRelation() const {return ConstExampleWithOneRelation(m_obj);}
 
-  const ::ConstExampleCluster ExampleWithOneRelation::cluster() const {
-    if (m_obj->m_cluster == nullptr) {
-      return ::ConstExampleCluster(nullptr);
-    }
-    return ::ConstExampleCluster(*(m_obj->m_cluster));
-  }
-void ExampleWithOneRelation::cluster(::ConstExampleCluster value) {
-  if (m_obj->m_cluster != nullptr) delete m_obj->m_cluster;
-  m_obj->m_cluster = new ConstExampleCluster(value);
-}
+  const ConstExampleCluster ExampleWithOneRelation::cluster() const { if (m_obj->m_cluster == nullptr) {
+ return ConstExampleCluster(nullptr);}
+ return ConstExampleCluster(*(m_obj->m_cluster));}
+
+void ExampleWithOneRelation::cluster(ConstExampleCluster value) { if (m_obj->m_cluster != nullptr) delete m_obj->m_cluster; m_obj->m_cluster = new ConstExampleCluster(value); }
 
 
 bool  ExampleWithOneRelation::isAvailable() const {
@@ -68,7 +63,7 @@ const podio::ObjectID ExampleWithOneRelation::getObjectID() const {
 }
 
 bool ExampleWithOneRelation::operator==(const ConstExampleWithOneRelation& other) const {
-  return (m_obj==other.m_obj);
+     return (m_obj==other.m_obj);
 }
 
 

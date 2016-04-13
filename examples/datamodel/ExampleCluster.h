@@ -3,11 +3,11 @@
 #include "ExampleClusterData.h"
 #include <vector>
 #include "ExampleHit.h"
-#include "ExampleCluster.h"
+
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Cluster
+//  cluster energy
 // author: B. Hegner
 
 //forward declarations
@@ -32,7 +32,7 @@ public:
 
   /// default constructor
   ExampleCluster();
-  ExampleCluster(double energy);
+    ExampleCluster(double energy);
 
   /// constructor from existing ExampleClusterObj
   ExampleCluster(ExampleClusterObj* obj);
@@ -54,17 +54,11 @@ public:
 
   void energy(double value);
 
-
   void addHits(ConstExampleHit);
   unsigned int Hits_size() const;
   ConstExampleHit Hits(unsigned int) const;
   std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
   std::vector<ConstExampleHit>::const_iterator Hits_end() const;
-  void addClusters(ConstExampleCluster);
-  unsigned int Clusters_size() const;
-  ConstExampleCluster Clusters(unsigned int) const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
 
   /// check whether the object is actually available
   bool isAvailable() const;
@@ -72,7 +66,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleCluster& other) const {
-    return (m_obj==other.m_obj);
+       return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleCluster& other) const;

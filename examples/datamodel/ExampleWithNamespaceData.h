@@ -1,15 +1,17 @@
 #ifndef ExampleWithNamespaceDATA_H
 #define ExampleWithNamespaceDATA_H
 
-// Type with namespace and namespaced member
+//  a component
 // author: Joschka Lingemann
 
 #include "NamespaceStruct.h"
 
+
 namespace ex {
 class ExampleWithNamespaceData {
 public:
-  ex2::NamespaceStruct data;  ///< a component
+  ex2::NamespaceStruct data; /// a component 
+
 };
 } // namespace ex
 

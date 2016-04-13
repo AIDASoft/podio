@@ -9,7 +9,7 @@
 
 
 
-ConstExampleCluster::ConstExampleCluster() : m_obj(new ExampleClusterObj()) {
+ConstExampleCluster::ConstExampleCluster() : m_obj(new ExampleClusterObj()){
  m_obj->acquire();
 }
 
@@ -29,7 +29,7 @@ ConstExampleCluster& ConstExampleCluster::operator=(const ConstExampleCluster& o
   return *this;
 }
 
-ConstExampleCluster::ConstExampleCluster(ExampleClusterObj* obj) : m_obj(obj) {
+ConstExampleCluster::ConstExampleCluster(ExampleClusterObj* obj) : m_obj(obj){
   if(m_obj != nullptr)
     m_obj->acquire();
 }
@@ -63,29 +63,7 @@ unsigned int ConstExampleCluster::Hits_size() const {
 ConstExampleHit ConstExampleCluster::Hits(unsigned int index) const {
   if (Hits_size() > index) {
     return m_obj->m_Hits->at(m_obj->data.Hits_begin+index);
-  }
-  else throw std::out_of_range ("index out of bounds for existing references");
 }
-std::vector<ConstExampleCluster>::const_iterator ConstExampleCluster::Clusters_begin() const {
-  auto ret_value = m_obj->m_Clusters->begin();
-  std::advance(ret_value, m_obj->data.Clusters_begin);
-  return ret_value;
-}
-
-std::vector<ConstExampleCluster>::const_iterator ConstExampleCluster::Clusters_end() const {
-  auto ret_value = m_obj->m_Clusters->begin();
-  std::advance(ret_value, m_obj->data.Clusters_end-1);
-  return ++ret_value;
-}
-
-unsigned int ConstExampleCluster::Clusters_size() const {
-  return (m_obj->data.Clusters_end-m_obj->data.Clusters_begin);
-}
-
-ConstExampleCluster ConstExampleCluster::Clusters(unsigned int index) const {
-  if (Clusters_size() > index) {
-    return m_obj->m_Clusters->at(m_obj->data.Clusters_begin+index);
-  }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 

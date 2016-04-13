@@ -10,7 +10,7 @@
 
 
 
-ConstExampleForCyclicDependency2::ConstExampleForCyclicDependency2() : m_obj(new ExampleForCyclicDependency2Obj()) {
+ConstExampleForCyclicDependency2::ConstExampleForCyclicDependency2() : m_obj(new ExampleForCyclicDependency2Obj()){
  m_obj->acquire();
 }
 
@@ -26,7 +26,7 @@ ConstExampleForCyclicDependency2& ConstExampleForCyclicDependency2::operator=(co
   return *this;
 }
 
-ConstExampleForCyclicDependency2::ConstExampleForCyclicDependency2(ExampleForCyclicDependency2Obj* obj) : m_obj(obj) {
+ConstExampleForCyclicDependency2::ConstExampleForCyclicDependency2(ExampleForCyclicDependency2Obj* obj) : m_obj(obj){
   if(m_obj != nullptr)
     m_obj->acquire();
 }
@@ -39,11 +39,10 @@ ConstExampleForCyclicDependency2::~ConstExampleForCyclicDependency2(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-  const ::ConstExampleForCyclicDependency1 ConstExampleForCyclicDependency2::ref() const {
-    if (m_obj->m_ref == nullptr) {
-      return ::ConstExampleForCyclicDependency1(nullptr);
-    }
-    return ::ConstExampleForCyclicDependency1(*(m_obj->m_ref));}
+  const ConstExampleForCyclicDependency1 ConstExampleForCyclicDependency2::ref() const { if (m_obj->m_ref == nullptr) {
+ return ConstExampleForCyclicDependency1(nullptr);}
+ return ConstExampleForCyclicDependency1(*(m_obj->m_ref));}
+
 
 bool  ConstExampleForCyclicDependency2::isAvailable() const {
   if (m_obj != nullptr) {
