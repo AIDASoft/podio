@@ -1,3 +1,7 @@
+# Howto
+
+# Build and Installation
+
 ## Definition of custom components
 
 A component is just a flat struct containing data. it can be defined via:
@@ -8,8 +12,6 @@ A component is just a flat struct containing data. it can be defined via:
         x : float
         y : float
         z : float
-
-Syntax to be changed!
 
 The puropose of components is to support the patter of composition rather than inheritance when building higher level data classes.
 

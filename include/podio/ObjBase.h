@@ -24,7 +24,6 @@ namespace podio {
     int release(){
       if (id.index != podio::ObjectID::untracked){ return 1;};
       if (--ref_counter == 0) {
-        //std::cout << "deleting free-floating object at " << this << std::endl;
         delete this;
       }
       return 0;
