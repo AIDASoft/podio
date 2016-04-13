@@ -12,4 +12,13 @@ get_filename_component(podio_INCLUDE_DIRS "${podio_CMAKE_DIR}/../include" ABSOLU
 get_filename_component(podio_BINARY_DIR "${podio_CMAKE_DIR}/../bin" ABSOLUTE)
 get_filename_component(podio_LIBRARY_DIR "${podio_CMAKE_DIR}/../lib" ABSOLUTE)
 
+
+FIND_LIBRARY( podio_LIBRARIES NAMES podio PATHS
+             ${podio_LIBRARY_DIR}
+             NO_DEFAULT_PATH
+        )
+
+INCLUDE( FindPackageHandleStandardArgs )
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( podio DEFAULT_MSG podio_LIBRARY_DIR podio_INCLUDE_DIRS podio_LIBRARIES )
+
 ADD_LIBRARY(examplelibrary SHARED IMPORTED)
