@@ -30,7 +30,8 @@ namespace podio {
       auto name = m_table->name(id);
       success = doGet(name, collection,false);
     }
-    m_retrievedIDs.erase(id);
+    //fg: the set should only be cleared at the end of event (in clear() ) ...
+    //    m_retrievedIDs.erase(id);
     return success;
   }
 
@@ -76,6 +77,8 @@ namespace podio {
       delete coll.second;
     }
     m_collections.clear();
+
+    m_retrievedIDs.clear() ;
   }
 
   bool EventStore::collectionRegistered(const std::string& name) const {
