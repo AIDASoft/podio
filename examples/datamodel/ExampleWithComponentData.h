@@ -1,17 +1,15 @@
 #ifndef ExampleWithComponentDATA_H
 #define ExampleWithComponentDATA_H
 
-//  a component
+// Type with one component
 // author: Benedikt Hegner
 
 #include "NotSoSimpleStruct.h"
 
 
-
 class ExampleWithComponentData {
 public:
-  NotSoSimpleStruct component; /// a component 
-
+  NotSoSimpleStruct component;  ///< a component
 };
 
 

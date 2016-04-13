@@ -10,7 +10,7 @@
 
 
 
-ConstExampleWithOneRelation::ConstExampleWithOneRelation() : m_obj(new ExampleWithOneRelationObj()){
+ConstExampleWithOneRelation::ConstExampleWithOneRelation() : m_obj(new ExampleWithOneRelationObj()) {
  m_obj->acquire();
 }
 
@@ -26,7 +26,7 @@ ConstExampleWithOneRelation& ConstExampleWithOneRelation::operator=(const ConstE
   return *this;
 }
 
-ConstExampleWithOneRelation::ConstExampleWithOneRelation(ExampleWithOneRelationObj* obj) : m_obj(obj){
+ConstExampleWithOneRelation::ConstExampleWithOneRelation(ExampleWithOneRelationObj* obj) : m_obj(obj) {
   if(m_obj != nullptr)
     m_obj->acquire();
 }
@@ -39,10 +39,11 @@ ConstExampleWithOneRelation::~ConstExampleWithOneRelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-  const ConstExampleCluster ConstExampleWithOneRelation::cluster() const { if (m_obj->m_cluster == nullptr) {
- return ConstExampleCluster(nullptr);}
- return ConstExampleCluster(*(m_obj->m_cluster));}
-
+  const ::ConstExampleCluster ConstExampleWithOneRelation::cluster() const {
+    if (m_obj->m_cluster == nullptr) {
+      return ::ConstExampleCluster(nullptr);
+    }
+    return ::ConstExampleCluster(*(m_obj->m_cluster));}
 
 bool  ConstExampleWithOneRelation::isAvailable() const {
   if (m_obj != nullptr) {

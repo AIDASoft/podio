@@ -1,7 +1,6 @@
 #ifndef ExampleForCyclicDependency1_H
 #define ExampleForCyclicDependency1_H
 #include "ExampleForCyclicDependency1Data.h"
-
 #include <vector>
 #include "podio/ObjectID.h"
 
@@ -32,7 +31,7 @@ public:
 
   /// default constructor
   ExampleForCyclicDependency1();
-  
+
   /// constructor from existing ExampleForCyclicDependency1Obj
   ExampleForCyclicDependency1(ExampleForCyclicDependency1Obj* obj);
   /// copy constructor
@@ -49,9 +48,9 @@ public:
 
 public:
 
-  const ConstExampleForCyclicDependency2 ref() const;
+  const ::ConstExampleForCyclicDependency2 ref() const;
 
-  void ref(ConstExampleForCyclicDependency2 value);
+  void ref(::ConstExampleForCyclicDependency2 value);
 
 
   /// check whether the object is actually available
@@ -60,7 +59,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleForCyclicDependency1& other) const {
-       return (m_obj==other.m_obj);
+    return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleForCyclicDependency1& other) const;

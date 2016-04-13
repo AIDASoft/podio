@@ -8,7 +8,7 @@
 
 
 
-ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_collectionID(0), m_entries() ,m_rel_Clusters(new std::vector<ConstExampleCluster>()),m_rel_Refs(new std::vector<ConstExampleReferencingType>()),m_refCollections(nullptr), m_data(new ExampleReferencingTypeDataContainer() ) {
+ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_collectionID(0), m_entries() , m_rel_Clusters(new std::vector<::ConstExampleCluster>()), m_rel_Refs(new std::vector<::ConstExampleReferencingType>()),m_refCollections(nullptr), m_data(new ExampleReferencingTypeDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
@@ -39,17 +39,23 @@ ExampleReferencingType ExampleReferencingTypeCollection::create(){
 
 void ExampleReferencingTypeCollection::clear(){
   m_data->clear();
-  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  // clear relations to Clusters. Make sure to unlink() the reference data as they may be gone already
-  for (auto& pointer : m_rel_Clusters_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}
+  for (auto& pointer : (*m_refCollections)) { pointer->clear(); }
+  // clear relations to Clusters. Make sure to unlink() the reference data s they may be gone already.
+  for (auto& pointer : m_rel_Clusters_tmp) {
+    for(auto& item : (*pointer)) {
+      item.unlink();
+    };
+    delete pointer;
+  }
   m_rel_Clusters_tmp.clear();
-  for (auto& item : (*m_rel_Clusters)) {item.unlink(); }
-  m_rel_Clusters->clear();
-  // clear relations to Refs. Make sure to unlink() the reference data as they may be gone already
-  for (auto& pointer : m_rel_Refs_tmp) {for(auto& item : (*pointer)) {item.unlink();}; delete pointer;}
+  // clear relations to Refs. Make sure to unlink() the reference data s they may be gone already.
+  for (auto& pointer : m_rel_Refs_tmp) {
+    for(auto& item : (*pointer)) {
+      item.unlink();
+    };
+    delete pointer;
+  }
   m_rel_Refs_tmp.clear();
-  for (auto& item : (*m_rel_Refs)) {item.unlink(); }
-  m_rel_Refs->clear();
 
   for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
@@ -92,14 +98,14 @@ void ExampleReferencingTypeCollection::prepareAfterRead(){
   int index = 0;
   for (auto& data : *m_data){
     auto obj = new ExampleReferencingTypeObj({index,m_collectionID}, data);
-        obj->m_Clusters = m_rel_Clusters;    obj->m_Refs = m_rel_Refs;
+        obj->m_Clusters = m_rel_Clusters;   obj->m_Refs = m_rel_Refs;
     m_entries.emplace_back(obj);
     ++index;
   }
 }
 
 bool ExampleReferencingTypeCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
-  for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i ) {
+  for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i) {
     auto id = (*(*m_refCollections)[0])[i];
     CollectionBase* coll = nullptr;
     collectionProvider->get(id.collectionID,coll);
@@ -107,7 +113,7 @@ bool ExampleReferencingTypeCollection::setReferences(const podio::ICollectionPro
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Clusters->emplace_back(tmp);
   }
-  for(unsigned int i=0, size=(*m_refCollections)[1]->size();i!=size;++i ) {
+  for(unsigned int i=0, size=(*m_refCollections)[1]->size();i!=size;++i) {
     auto id = (*(*m_refCollections)[1])[i];
     CollectionBase* coll = nullptr;
     collectionProvider->get(id.collectionID,coll);
@@ -121,18 +127,17 @@ bool ExampleReferencingTypeCollection::setReferences(const podio::ICollectionPro
 }
 
 void ExampleReferencingTypeCollection::push_back(ConstExampleReferencingType object){
-    int size = m_entries.size();
-    auto obj = object.m_obj;
-    if (obj->id.index == podio::ObjectID::untracked) {
-        obj->id = {size,m_collectionID};
-        m_entries.push_back(obj);
-          m_rel_Clusters_tmp.push_back(obj->m_Clusters);
+  int size = m_entries.size();
+  auto obj = object.m_obj;
+  if (obj->id.index == podio::ObjectID::untracked) {
+      obj->id = {size,m_collectionID};
+      m_entries.push_back(obj);
+        m_rel_Clusters_tmp.push_back(obj->m_Clusters);
   m_rel_Refs_tmp.push_back(obj->m_Refs);
 
-    } else {
-      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
-
-    }
+  } else {
+    throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
+  }
 }
 
 void ExampleReferencingTypeCollection::setBuffer(void* address){
@@ -146,13 +151,13 @@ const ExampleReferencingType ExampleReferencingTypeCollectionIterator::operator*
 }
 
 const ExampleReferencingType* ExampleReferencingTypeCollectionIterator::operator-> () const {
-    m_object.m_obj = (*m_collection)[m_index];
-    return &m_object;
+  m_object.m_obj = (*m_collection)[m_index];
+  return &m_object;
 }
 
 const ExampleReferencingTypeCollectionIterator& ExampleReferencingTypeCollectionIterator::operator++() const {
   ++m_index;
- return *this;
+  return *this;
 }
 
 

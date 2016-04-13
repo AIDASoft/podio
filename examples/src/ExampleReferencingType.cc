@@ -66,7 +66,7 @@ unsigned int ExampleReferencingType::Clusters_size() const {
 ConstExampleCluster ExampleReferencingType::Clusters(unsigned int index) const {
   if (Clusters_size() > index) {
     return m_obj->m_Clusters->at(m_obj->data.Clusters_begin+index);
-}
+  }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 std::vector<ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_begin() const {
@@ -93,7 +93,7 @@ unsigned int ExampleReferencingType::Refs_size() const {
 ConstExampleReferencingType ExampleReferencingType::Refs(unsigned int index) const {
   if (Refs_size() > index) {
     return m_obj->m_Refs->at(m_obj->data.Refs_begin+index);
-}
+  }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 
@@ -112,7 +112,7 @@ const podio::ObjectID ExampleReferencingType::getObjectID() const {
 }
 
 bool ExampleReferencingType::operator==(const ConstExampleReferencingType& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 

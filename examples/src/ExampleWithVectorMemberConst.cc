@@ -9,7 +9,7 @@
 
 
 
-ConstExampleWithVectorMember::ConstExampleWithVectorMember() : m_obj(new ExampleWithVectorMemberObj()){
+ConstExampleWithVectorMember::ConstExampleWithVectorMember() : m_obj(new ExampleWithVectorMemberObj()) {
  m_obj->acquire();
 }
 
@@ -25,7 +25,7 @@ ConstExampleWithVectorMember& ConstExampleWithVectorMember::operator=(const Cons
   return *this;
 }
 
-ConstExampleWithVectorMember::ConstExampleWithVectorMember(ExampleWithVectorMemberObj* obj) : m_obj(obj){
+ConstExampleWithVectorMember::ConstExampleWithVectorMember(ExampleWithVectorMemberObj* obj) : m_obj(obj) {
   if(m_obj != nullptr)
     m_obj->acquire();
 }
@@ -58,7 +58,7 @@ unsigned int ConstExampleWithVectorMember::count_size() const {
 int ConstExampleWithVectorMember::count(unsigned int index) const {
   if (count_size() > index) {
     return m_obj->m_count->at(m_obj->data.count_begin+index);
-}
+  }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 

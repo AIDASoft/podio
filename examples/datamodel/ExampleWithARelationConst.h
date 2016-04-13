@@ -1,7 +1,6 @@
 #ifndef ConstExampleWithARelation_H
 #define ConstExampleWithARelation_H
 #include "ExampleWithARelationData.h"
-
 #include <vector>
 #include "podio/ObjectID.h"
 

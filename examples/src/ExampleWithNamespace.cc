@@ -13,9 +13,9 @@ ExampleWithNamespace::ExampleWithNamespace() : m_obj(new ExampleWithNamespaceObj
  m_obj->acquire();
 }
 
-ExampleWithNamespace::ExampleWithNamespace(ex2::NamespaceStruct data) : m_obj(new ExampleWithNamespaceObj()){
- m_obj->acquire();
-   m_obj->data.data = data;
+ExampleWithNamespace::ExampleWithNamespace(ex2::NamespaceStruct data) : m_obj(new ExampleWithNamespaceObj()) {
+  m_obj->acquire();
+    m_obj->data.data = data;
 }
 
 
@@ -47,7 +47,7 @@ ExampleWithNamespace::operator ConstExampleWithNamespace() const {return ConstEx
   const ex2::NamespaceStruct& ExampleWithNamespace::data() const { return m_obj->data.data; }
 
   ex2::NamespaceStruct& ExampleWithNamespace::data() { return m_obj->data.data; }
-void ExampleWithNamespace::data(class ex2::NamespaceStruct value){ m_obj->data.data = value;}
+void ExampleWithNamespace::data(class ex2::NamespaceStruct value) { m_obj->data.data = value; }
 
 
 bool  ExampleWithNamespace::isAvailable() const {
@@ -65,7 +65,7 @@ const podio::ObjectID ExampleWithNamespace::getObjectID() const {
 }
 
 bool ExampleWithNamespace::operator==(const ConstExampleWithNamespace& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 

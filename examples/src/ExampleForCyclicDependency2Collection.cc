@@ -1,13 +1,13 @@
 // standard includes
 #include <stdexcept>
-#include "ExampleForCyclicDependency1Collection.h" 
+#include "ExampleForCyclicDependency1Collection.h"
 
 
 #include "ExampleForCyclicDependency2Collection.h"
 
 
 
-ExampleForCyclicDependency2Collection::ExampleForCyclicDependency2Collection() : m_collectionID(0), m_entries() ,m_rel_ref(new std::vector<ConstExampleForCyclicDependency1>()),m_refCollections(nullptr), m_data(new ExampleForCyclicDependency2DataContainer() ) {
+ExampleForCyclicDependency2Collection::ExampleForCyclicDependency2Collection() : m_collectionID(0), m_entries() , m_rel_ref(new std::vector<::ConstExampleForCyclicDependency1>()),m_refCollections(nullptr), m_data(new ExampleForCyclicDependency2DataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
@@ -35,8 +35,8 @@ ExampleForCyclicDependency2 ExampleForCyclicDependency2Collection::create(){
 
 void ExampleForCyclicDependency2Collection::clear(){
   m_data->clear();
-  for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  for (auto& item : (*m_rel_ref)) {item.unlink(); }
+  for (auto& pointer : (*m_refCollections)) { pointer->clear(); }
+  for (auto& item : (*m_rel_ref)) { item.unlink(); }
   m_rel_ref->clear();
 
   for (auto& obj : m_entries) { delete obj; }
@@ -56,8 +56,12 @@ void ExampleForCyclicDependency2Collection::prepareForWrite(){
   
   }
     for (auto& obj : m_entries) {
-if (obj->m_ref != nullptr){
-(*m_refCollections)[0]->emplace_back(obj->m_ref->getObjectID());} else {(*m_refCollections)[0]->push_back({-2,-2}); } }
+    if (obj->m_ref != nullptr) {
+      (*m_refCollections)[0]->emplace_back(obj->m_ref->getObjectID());
+    } else {
+      (*m_refCollections)[0]->push_back({-2,-2});
+    }
+  }
 
 }
 
@@ -73,7 +77,7 @@ void ExampleForCyclicDependency2Collection::prepareAfterRead(){
 
 bool ExampleForCyclicDependency2Collection::setReferences(const podio::ICollectionProvider* collectionProvider){
 
-  for(unsigned int i=0, size=m_entries.size();i!=size;++i ) {
+  for(unsigned int i = 0, size = m_entries.size(); i != size; ++i) {
     auto id = (*(*m_refCollections)[0])[i];
     if (id.index != podio::ObjectID::invalid) {
       CollectionBase* coll = nullptr;
@@ -89,16 +93,15 @@ bool ExampleForCyclicDependency2Collection::setReferences(const podio::ICollecti
 }
 
 void ExampleForCyclicDependency2Collection::push_back(ConstExampleForCyclicDependency2 object){
-    int size = m_entries.size();
-    auto obj = object.m_obj;
-    if (obj->id.index == podio::ObjectID::untracked) {
-        obj->id = {size,m_collectionID};
-        m_entries.push_back(obj);
-        
-    } else {
-      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
-
-    }
+  int size = m_entries.size();
+  auto obj = object.m_obj;
+  if (obj->id.index == podio::ObjectID::untracked) {
+      obj->id = {size,m_collectionID};
+      m_entries.push_back(obj);
+      
+  } else {
+    throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
+  }
 }
 
 void ExampleForCyclicDependency2Collection::setBuffer(void* address){
@@ -112,13 +115,13 @@ const ExampleForCyclicDependency2 ExampleForCyclicDependency2CollectionIterator:
 }
 
 const ExampleForCyclicDependency2* ExampleForCyclicDependency2CollectionIterator::operator-> () const {
-    m_object.m_obj = (*m_collection)[m_index];
-    return &m_object;
+  m_object.m_obj = (*m_collection)[m_index];
+  return &m_object;
 }
 
 const ExampleForCyclicDependency2CollectionIterator& ExampleForCyclicDependency2CollectionIterator::operator++() const {
   ++m_index;
- return *this;
+  return *this;
 }
 
 

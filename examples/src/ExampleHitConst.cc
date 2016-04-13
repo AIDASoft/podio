@@ -9,7 +9,7 @@
 
 
 
-ConstExampleHit::ConstExampleHit() : m_obj(new ExampleHitObj()){
+ConstExampleHit::ConstExampleHit() : m_obj(new ExampleHitObj()) {
  m_obj->acquire();
 }
 
@@ -29,7 +29,7 @@ ConstExampleHit& ConstExampleHit::operator=(const ConstExampleHit& other) {
   return *this;
 }
 
-ConstExampleHit::ConstExampleHit(ExampleHitObj* obj) : m_obj(obj){
+ConstExampleHit::ConstExampleHit(ExampleHitObj* obj) : m_obj(obj) {
   if(m_obj != nullptr)
     m_obj->acquire();
 }

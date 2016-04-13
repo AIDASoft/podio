@@ -1,12 +1,11 @@
 #ifndef ExampleWithNamespace_H
 #define ExampleWithNamespace_H
-#include "ExampleWithNamespaceData.h"
 #include "NamespaceStruct.h"
-
+#include "ExampleWithNamespaceData.h"
 #include <vector>
 #include "podio/ObjectID.h"
 
-//  a component
+// Type with namespace and namespaced member
 // author: Joschka Lingemann
 
 //forward declarations
@@ -31,7 +30,7 @@ public:
 
   /// default constructor
   ExampleWithNamespace();
-    ExampleWithNamespace(ex2::NamespaceStruct data);
+  ExampleWithNamespace(ex2::NamespaceStruct data);
 
   /// constructor from existing ExampleWithNamespaceObj
   ExampleWithNamespace(ExampleWithNamespaceObj* obj);
@@ -61,7 +60,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleWithNamespace& other) const {
-       return (m_obj==other.m_obj);
+    return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleWithNamespace& other) const;

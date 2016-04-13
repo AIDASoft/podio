@@ -61,10 +61,21 @@ int main(){
     hits.push_back(hit2);
 
     auto cluster  = ExampleCluster();
+    auto clu0  = ExampleCluster();
+    auto clu1  = ExampleCluster();
+
+    clu0.addHits(hit1);
+    clu1.addHits(hit2);
+    
     cluster.addHits(hit1);
     cluster.addHits(hit2);
     cluster.energy(hit1.energy()+hit2.energy());
 
+    cluster.addClusters( clu0 ) ;
+    cluster.addClusters( clu1 ) ;
+
+    clusters.push_back(clu0);
+    clusters.push_back(clu1);
     clusters.push_back(cluster);
 
     auto ref = ExampleReferencingType();

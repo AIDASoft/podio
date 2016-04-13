@@ -13,9 +13,9 @@ EventInfo::EventInfo() : m_obj(new EventInfoObj()){
  m_obj->acquire();
 }
 
-EventInfo::EventInfo(int Number) : m_obj(new EventInfoObj()){
- m_obj->acquire();
-   m_obj->data.Number = Number;
+EventInfo::EventInfo(int Number) : m_obj(new EventInfoObj()) {
+  m_obj->acquire();
+    m_obj->data.Number = Number;
 }
 
 
@@ -46,7 +46,7 @@ EventInfo::operator ConstEventInfo() const {return ConstEventInfo(m_obj);}
 
   const int& EventInfo::Number() const { return m_obj->data.Number; }
 
-void EventInfo::Number(int value){ m_obj->data.Number = value;}
+void EventInfo::Number(int value){ m_obj->data.Number = value; }
 
 
 bool  EventInfo::isAvailable() const {
@@ -64,7 +64,7 @@ const podio::ObjectID EventInfo::getObjectID() const {
 }
 
 bool EventInfo::operator==(const ConstEventInfo& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 

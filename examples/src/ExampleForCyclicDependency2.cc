@@ -41,11 +41,16 @@ ExampleForCyclicDependency2::~ExampleForCyclicDependency2(){
 
 ExampleForCyclicDependency2::operator ConstExampleForCyclicDependency2() const {return ConstExampleForCyclicDependency2(m_obj);}
 
-  const ConstExampleForCyclicDependency1 ExampleForCyclicDependency2::ref() const { if (m_obj->m_ref == nullptr) {
- return ConstExampleForCyclicDependency1(nullptr);}
- return ConstExampleForCyclicDependency1(*(m_obj->m_ref));}
-
-void ExampleForCyclicDependency2::ref(ConstExampleForCyclicDependency1 value) { if (m_obj->m_ref != nullptr) delete m_obj->m_ref; m_obj->m_ref = new ConstExampleForCyclicDependency1(value); }
+  const ::ConstExampleForCyclicDependency1 ExampleForCyclicDependency2::ref() const {
+    if (m_obj->m_ref == nullptr) {
+      return ::ConstExampleForCyclicDependency1(nullptr);
+    }
+    return ::ConstExampleForCyclicDependency1(*(m_obj->m_ref));
+  }
+void ExampleForCyclicDependency2::ref(::ConstExampleForCyclicDependency1 value) {
+  if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
+  m_obj->m_ref = new ConstExampleForCyclicDependency1(value);
+}
 
 
 bool  ExampleForCyclicDependency2::isAvailable() const {
@@ -63,7 +68,7 @@ const podio::ObjectID ExampleForCyclicDependency2::getObjectID() const {
 }
 
 bool ExampleForCyclicDependency2::operator==(const ConstExampleForCyclicDependency2& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 

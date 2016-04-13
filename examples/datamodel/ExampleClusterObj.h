@@ -33,6 +33,7 @@ public:
 public:
   ExampleClusterData data;
   std::vector<ConstExampleHit>* m_Hits;
+  std::vector<ConstExampleCluster>* m_Clusters;
 
 
 };

@@ -41,11 +41,16 @@ ExampleWithARelation::~ExampleWithARelation(){
 
 ExampleWithARelation::operator ConstExampleWithARelation() const {return ConstExampleWithARelation(m_obj);}
 
-  const ex::ConstExampleWithNamespace ExampleWithARelation::ref() const { if (m_obj->m_ref == nullptr) {
- return ex::ConstExampleWithNamespace(nullptr);}
- return ex::ConstExampleWithNamespace(*(m_obj->m_ref));}
-
-void ExampleWithARelation::ref(ex::ConstExampleWithNamespace value) { if (m_obj->m_ref != nullptr) delete m_obj->m_ref; m_obj->m_ref = new ConstExampleWithNamespace(value); }
+  const ex::ConstExampleWithNamespace ExampleWithARelation::ref() const {
+    if (m_obj->m_ref == nullptr) {
+      return ex::ConstExampleWithNamespace(nullptr);
+    }
+    return ex::ConstExampleWithNamespace(*(m_obj->m_ref));
+  }
+void ExampleWithARelation::ref(ex::ConstExampleWithNamespace value) {
+  if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
+  m_obj->m_ref = new ConstExampleWithNamespace(value);
+}
 
 
 bool  ExampleWithARelation::isAvailable() const {
@@ -63,7 +68,7 @@ const podio::ObjectID ExampleWithARelation::getObjectID() const {
 }
 
 bool ExampleWithARelation::operator==(const ConstExampleWithARelation& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 

@@ -1,11 +1,10 @@
 #ifndef ConstEventInfo_H
 #define ConstEventInfo_H
 #include "EventInfoData.h"
-
 #include <vector>
 #include "podio/ObjectID.h"
 
-//  event number
+// Event info
 // author: B. Hegner
 
 //forward declarations
