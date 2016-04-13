@@ -2,7 +2,6 @@
 #define ConstExampleWithVectorMember_H
 #include "ExampleWithVectorMemberData.h"
 #include <vector>
-
 #include <vector>
 #include "podio/ObjectID.h"
 

@@ -93,7 +93,7 @@ public:
   const const_iterator begin() const {
     return const_iterator(0, &m_entries);
   }
-  const	const_iterator end() const {
+  const const_iterator end() const {
     return const_iterator(m_entries.size(), &m_entries);
   }
 
@@ -109,7 +109,7 @@ private:
   int m_collectionID;
   ExampleWithARelationObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<::ex::ConstExampleWithNamespace>* m_rel_ref; //relation buffer for r/w
+  std::vector<ex::ConstExampleWithNamespace>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming
   podio::CollRefCollection* m_refCollections;

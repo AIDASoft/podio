@@ -9,7 +9,7 @@
 
 
 
-ConstExampleWithComponent::ConstExampleWithComponent() : m_obj(new ExampleWithComponentObj()){
+ConstExampleWithComponent::ConstExampleWithComponent() : m_obj(new ExampleWithComponentObj()) {
  m_obj->acquire();
 }
 
@@ -29,7 +29,7 @@ ConstExampleWithComponent& ConstExampleWithComponent::operator=(const ConstExamp
   return *this;
 }
 
-ConstExampleWithComponent::ConstExampleWithComponent(ExampleWithComponentObj* obj) : m_obj(obj){
+ConstExampleWithComponent::ConstExampleWithComponent(ExampleWithComponentObj* obj) : m_obj(obj) {
   if(m_obj != nullptr)
     m_obj->acquire();
 }

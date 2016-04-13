@@ -4,7 +4,6 @@
 #include <vector>
 #include "ExampleCluster.h"
 #include "ExampleReferencingType.h"
-
 #include <vector>
 #include "podio/ObjectID.h"
 

@@ -3,11 +3,11 @@
 #include "ExampleClusterData.h"
 #include <vector>
 #include "ExampleHit.h"
-
+#include "ExampleCluster.h"
 #include <vector>
 #include "podio/ObjectID.h"
 
-//  cluster energy
+// Cluster
 // author: B. Hegner
 
 //forward declarations
@@ -54,6 +54,10 @@ public:
   ConstExampleHit Hits(unsigned int) const;
   std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
   std::vector<ConstExampleHit>::const_iterator Hits_end() const;
+  unsigned int Clusters_size() const;
+  ConstExampleCluster Clusters(unsigned int) const;
+  std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
+  std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
 
   /// check whether the object is actually available
   bool isAvailable() const;

@@ -1,11 +1,10 @@
 #ifndef EventInfo_H
 #define EventInfo_H
 #include "EventInfoData.h"
-
 #include <vector>
 #include "podio/ObjectID.h"
 
-//  event number
+// Event info
 // author: B. Hegner
 
 //forward declarations
@@ -30,7 +29,7 @@ public:
 
   /// default constructor
   EventInfo();
-    EventInfo(int Number);
+  EventInfo(int Number);
 
   /// constructor from existing EventInfoObj
   EventInfo(EventInfoObj* obj);
@@ -53,13 +52,14 @@ public:
   void Number(int value);
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from EventInfoObj instance
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const EventInfo& other) const {
-       return (m_obj==other.m_obj);
+    return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstEventInfo& other) const;

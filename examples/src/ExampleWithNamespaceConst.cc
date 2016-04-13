@@ -9,7 +9,7 @@
 
 namespace ex {
 
-ConstExampleWithNamespace::ConstExampleWithNamespace() : m_obj(new ExampleWithNamespaceObj()){
+ConstExampleWithNamespace::ConstExampleWithNamespace() : m_obj(new ExampleWithNamespaceObj()) {
  m_obj->acquire();
 }
 
@@ -29,7 +29,7 @@ ConstExampleWithNamespace& ConstExampleWithNamespace::operator=(const ConstExamp
   return *this;
 }
 
-ConstExampleWithNamespace::ConstExampleWithNamespace(ExampleWithNamespaceObj* obj) : m_obj(obj){
+ConstExampleWithNamespace::ConstExampleWithNamespace(ExampleWithNamespaceObj* obj) : m_obj(obj) {
   if(m_obj != nullptr)
     m_obj->acquire();
 }

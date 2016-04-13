@@ -93,7 +93,7 @@ public:
   const const_iterator begin() const {
     return const_iterator(0, &m_entries);
   }
-  const	const_iterator end() const {
+  const const_iterator end() const {
     return const_iterator(m_entries.size(), &m_entries);
   }
 
@@ -109,11 +109,11 @@ private:
   int m_collectionID;
   ExampleReferencingTypeObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<ConstExampleCluster>* m_rel_Clusters; //relation buffer for r/w
-  std::vector<std::vector<ConstExampleCluster>*> m_rel_Clusters_tmp;
-   std::vector<ConstExampleReferencingType>* m_rel_Refs; //relation buffer for r/w
-  std::vector<std::vector<ConstExampleReferencingType>*> m_rel_Refs_tmp;
- 
+  std::vector<::ConstExampleCluster>* m_rel_Clusters; ///< Relation buffer for read / write
+  std::vector<std::vector<::ConstExampleCluster>*> m_rel_Clusters_tmp; ///< Relation buffer for internal book-keeping
+  std::vector<::ConstExampleReferencingType>* m_rel_Refs; ///< Relation buffer for read / write
+  std::vector<std::vector<::ConstExampleReferencingType>*> m_rel_Refs_tmp; ///< Relation buffer for internal book-keeping
+
   // members to handle streaming
   podio::CollRefCollection* m_refCollections;
   ExampleReferencingTypeDataContainer* m_data;

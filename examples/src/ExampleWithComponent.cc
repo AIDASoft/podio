@@ -13,9 +13,9 @@ ExampleWithComponent::ExampleWithComponent() : m_obj(new ExampleWithComponentObj
  m_obj->acquire();
 }
 
-ExampleWithComponent::ExampleWithComponent(NotSoSimpleStruct component) : m_obj(new ExampleWithComponentObj()){
- m_obj->acquire();
-   m_obj->data.component = component;
+ExampleWithComponent::ExampleWithComponent(NotSoSimpleStruct component) : m_obj(new ExampleWithComponentObj()) {
+  m_obj->acquire();
+    m_obj->data.component = component;
 }
 
 
@@ -47,7 +47,7 @@ ExampleWithComponent::operator ConstExampleWithComponent() const {return ConstEx
   const NotSoSimpleStruct& ExampleWithComponent::component() const { return m_obj->data.component; }
 
   NotSoSimpleStruct& ExampleWithComponent::component() { return m_obj->data.component; }
-void ExampleWithComponent::component(class NotSoSimpleStruct value){ m_obj->data.component = value;}
+void ExampleWithComponent::component(class NotSoSimpleStruct value) { m_obj->data.component = value; }
 
 
 bool  ExampleWithComponent::isAvailable() const {
@@ -65,7 +65,7 @@ const podio::ObjectID ExampleWithComponent::getObjectID() const {
 }
 
 bool ExampleWithComponent::operator==(const ConstExampleWithComponent& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 

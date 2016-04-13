@@ -1,7 +1,6 @@
 #ifndef ExampleWithARelation_H
 #define ExampleWithARelation_H
 #include "ExampleWithARelationData.h"
-
 #include <vector>
 #include "podio/ObjectID.h"
 
@@ -34,7 +33,7 @@ public:
 
   /// default constructor
   ExampleWithARelation();
-  
+
   /// constructor from existing ExampleWithARelationObj
   ExampleWithARelation(ExampleWithARelationObj* obj);
   /// copy constructor
@@ -62,7 +61,7 @@ public:
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ExampleWithARelation& other) const {
-       return (m_obj==other.m_obj);
+    return (m_obj==other.m_obj);
   }
 
   bool operator==(const ConstExampleWithARelation& other) const;
