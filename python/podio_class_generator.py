@@ -37,7 +37,7 @@ class ClassGenerator(object):
     self.package_name =package_name
     self.template_dir = os.path.join(thisdir,"../templates")
     self.verbose=verbose
-    self.buildin_types = ["int", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
+    self.buildin_types = [ "int", "long", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
     self.created_classes = []
     self.requested_classes = []
     self.reader = PodioConfigReader(yamlfile)
