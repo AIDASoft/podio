@@ -7,13 +7,13 @@ export PODIO=$PWD/install
 
 if [[ "$unamestr" == 'Linux' ]]; then
     platform='Linux'
-    if [[ -d /afs/cern.ch/sw/lcg ]] && [[ `dnsdomainname` = 'cern.ch' ]] ; then
+    if [[ -d /cvmfs/sft.cern.ch ]] && [[ `dnsdomainname` = 'cern.ch' ]] ; then
 	#should check domain to make sure we're at CERN
 	#or is this software available somewhere in Lyon? 
 	sw_afs=1
-        source /afs/cern.ch/sw/lcg/views/LCG_83/x86_64-slc6-gcc49-opt/setup.sh
-        export CMAKE_PREFIX_PATH=/afs/cern.ch/sw/lcg/releases/gtest/1.7.0-4f83b/x86_64-slc6-gcc49-opt/
-	echo cmake and root taken from /afs/cern.ch/sw/lcg
+        source /cvmfs/sft.cern.ch/lcg/views/LCG_84/x86_64-slc6-gcc49-opt/setup.sh
+        export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases/gtest/1.7.0-4f83b/x86_64-slc6-gcc49-opt/
+	echo cmake and root taken from /cvmfs/sft.cern.ch
     fi
     export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/examples:$LD_LIBRARY_PATH
 elif [[ "$unamestr" == 'Darwin' ]]; then
