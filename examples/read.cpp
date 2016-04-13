@@ -18,8 +18,7 @@
 
 int glob = 0;
 
-void processEvent(podio::EventStore& store, bool verbose,
-      podio::ROOTReader& reader) {
+void processEvent(podio::EventStore& store, bool verboser) {
 
   const ExampleClusterCollection* clusters = nullptr;
   //std::cout << "Fetching collection 'clusters'" << std::endl;
@@ -90,7 +89,7 @@ int main(){
   for(unsigned i=0; i<nEvents; ++i) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
-    processEvent(store, true, reader);
+    processEvent(store, true);
     store.clear();
     reader.endOfEvent();
   }
