@@ -694,6 +694,17 @@ if __name__ == "__main__":
   if len(args) != 3:
       parser.error("incorrect number of arguments")
 
+  #--- create output directories if they do not exist
+  install_path = args[1]
+  project = args[2]
+  directory = os.path.join( install_path ,"src" )
+  if not os.path.exists( directory ):
+    os.makedirs(directory)
+  directory = os.path.join( install_path , project )
+
+  if not os.path.exists( directory ):
+    os.makedirs(directory)
+
   gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
   gen.process()
   for warning in gen.warnings:
