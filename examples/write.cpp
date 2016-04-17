@@ -65,12 +65,12 @@ int main(){
     auto clu1  = ExampleCluster();
 
     clu0.addHits(hit1);
+    clu0.energy(hit1.energy());
     clu1.addHits(hit2);
-    
+    clu1.energy(hit2.energy());
     cluster.addHits(hit1);
     cluster.addHits(hit2);
     cluster.energy(hit1.energy()+hit2.energy());
-
     cluster.addClusters( clu0 ) ;
     cluster.addClusters( clu1 ) ;
 

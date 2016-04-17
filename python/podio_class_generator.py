@@ -427,6 +427,7 @@ class ClassGenerator(object):
         # relation handling in push_back
         push_back_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::prepareForWrite
+        prepareforwritinghead += "\tint {name}_index =0;\n".format(name=name)
         prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template",substitutions)
         # relation handling in ::settingReferences
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)

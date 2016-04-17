@@ -38,18 +38,17 @@ void ExampleWithComponentCollection::clear(){
 }
 
 void ExampleWithComponentCollection::prepareForWrite(){
-  int index = 0;
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   if (m_refCollections != nullptr) {
     for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   }
-  
+
   for(int i=0, size = m_data->size(); i != size; ++i){
-  
+
   }
-  
+
 }
 
 void ExampleWithComponentCollection::prepareAfterRead(){

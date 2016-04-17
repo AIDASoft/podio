@@ -62,27 +62,28 @@ void ExampleReferencingTypeCollection::clear(){
 }
 
 void ExampleReferencingTypeCollection::prepareForWrite(){
-  int index = 0;
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   if (m_refCollections != nullptr) {
     for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   }
-  
+  int Clusters_index =0;
+  int Refs_index =0;
+
   for(int i=0, size = m_data->size(); i != size; ++i){
-     (*m_data)[i].Clusters_begin=index;
-   (*m_data)[i].Clusters_end+=index;
-   index = (*m_data)[index].Clusters_end;
+   (*m_data)[i].Clusters_begin=Clusters_index;
+   (*m_data)[i].Clusters_end+=Clusters_index;
+   Clusters_index = (*m_data)[Clusters_index].Clusters_end;
    for(auto it : (*m_rel_Clusters_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
      (*m_refCollections)[0]->emplace_back(it.getObjectID());
      m_rel_Clusters->push_back(it);
    }
-   (*m_data)[i].Refs_begin=index;
-   (*m_data)[i].Refs_end+=index;
-   index = (*m_data)[index].Refs_end;
+   (*m_data)[i].Refs_begin=Refs_index;
+   (*m_data)[i].Refs_end+=Refs_index;
+   Refs_index = (*m_data)[Refs_index].Refs_end;
    for(auto it : (*m_rel_Refs_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
@@ -91,7 +92,7 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
    }
 
   }
-  
+
 }
 
 void ExampleReferencingTypeCollection::prepareAfterRead(){

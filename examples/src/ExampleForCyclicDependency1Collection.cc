@@ -44,18 +44,17 @@ void ExampleForCyclicDependency1Collection::clear(){
 }
 
 void ExampleForCyclicDependency1Collection::prepareForWrite(){
-  int index = 0;
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   if (m_refCollections != nullptr) {
     for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
   }
-  
+
   for(int i=0, size = m_data->size(); i != size; ++i){
-  
+
   }
-    for (auto& obj : m_entries) {
+  for (auto& obj : m_entries) {
     if (obj->m_ref != nullptr) {
       (*m_refCollections)[0]->emplace_back(obj->m_ref->getObjectID());
     } else {

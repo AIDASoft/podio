@@ -1,6 +1,6 @@
-   (*m_data)[i].${name}_begin=index;
-   (*m_data)[i].${name}_end+=index;
-   index = (*m_data)[index].${name}_end;
+   (*m_data)[i].${name}_begin=${name}_index;
+   (*m_data)[i].${name}_end+=${name}_index;
+   ${name}_index = (*m_data)[${name}_index].${name}_end;
    for(auto it : (*m_rel_${name}_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
