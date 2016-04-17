@@ -43,6 +43,7 @@ ${name}::operator Const${name}() const {return Const${name}(m_obj);}
 $getters
 $setters
 $relations
+$extracode
 bool  ${name}::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

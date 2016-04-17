@@ -48,6 +48,7 @@ ConstExampleHit::~ConstExampleHit(){
   const double& ConstExampleHit::energy() const { return m_obj->data.energy; }
 
 
+
 bool  ConstExampleHit::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

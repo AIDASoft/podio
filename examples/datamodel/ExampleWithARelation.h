@@ -55,6 +55,7 @@ public:
   void ref(ex::ConstExampleWithNamespace value);
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithARelationObj instance

@@ -54,6 +54,7 @@ public:
   void component(class NotSoSimpleStruct value);
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithComponentObj instance

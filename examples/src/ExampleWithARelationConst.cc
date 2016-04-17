@@ -45,6 +45,7 @@ ConstExampleWithARelation::~ConstExampleWithARelation(){
     }
     return ex::ConstExampleWithNamespace(*(m_obj->m_ref));}
 
+
 bool  ConstExampleWithARelation::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

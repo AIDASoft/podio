@@ -50,6 +50,7 @@ ExampleWithNamespace::operator ConstExampleWithNamespace() const {return ConstEx
 void ExampleWithNamespace::data(class ex2::NamespaceStruct value) { m_obj->data.data = value; }
 
 
+
 bool  ExampleWithNamespace::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

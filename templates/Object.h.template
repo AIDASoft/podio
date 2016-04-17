@@ -49,6 +49,7 @@ public:
 $getter_declarations
 $setter_declarations
 $relation_declarations
+$extracode_declarations
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ${name}Obj instance

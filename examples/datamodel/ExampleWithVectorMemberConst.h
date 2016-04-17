@@ -51,6 +51,7 @@ public:
   std::vector<int>::const_iterator count_begin() const;
   std::vector<int>::const_iterator count_end() const;
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithVectorMemberObj instance

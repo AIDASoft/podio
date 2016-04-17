@@ -45,6 +45,7 @@ ConstExampleWithComponent::~ConstExampleWithComponent(){
   const NotSoSimpleStruct& ConstExampleWithComponent::component() const { return m_obj->data.component; }
 
 
+
 bool  ConstExampleWithComponent::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

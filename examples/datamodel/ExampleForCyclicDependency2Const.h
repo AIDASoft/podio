@@ -49,6 +49,7 @@ public:
   const ::ConstExampleForCyclicDependency1 ref() const;
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleForCyclicDependency2Obj instance

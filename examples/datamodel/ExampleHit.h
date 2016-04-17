@@ -62,6 +62,7 @@ public:
 
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleHitObj instance

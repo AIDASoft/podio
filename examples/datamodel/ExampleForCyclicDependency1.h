@@ -53,6 +53,7 @@ public:
   void ref(::ConstExampleForCyclicDependency2 value);
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleForCyclicDependency1Obj instance

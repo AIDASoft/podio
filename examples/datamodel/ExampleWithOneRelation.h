@@ -53,6 +53,7 @@ public:
   void cluster(::ConstExampleCluster value);
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithOneRelationObj instance

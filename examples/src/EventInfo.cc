@@ -49,6 +49,7 @@ EventInfo::operator ConstEventInfo() const {return ConstEventInfo(m_obj);}
 void EventInfo::Number(int value){ m_obj->data.Number = value; }
 
 
+int EventInfo::getNumber() const { return Number(); }
 bool  EventInfo::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

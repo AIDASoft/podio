@@ -50,6 +50,7 @@ ExampleWithComponent::operator ConstExampleWithComponent() const {return ConstEx
 void ExampleWithComponent::component(class NotSoSimpleStruct value) { m_obj->data.component = value; }
 
 
+
 bool  ExampleWithComponent::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

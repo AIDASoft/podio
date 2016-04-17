@@ -54,6 +54,7 @@ public:
   void data(class ex2::NamespaceStruct value);
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithNamespaceObj instance

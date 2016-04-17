@@ -53,6 +53,7 @@ void ExampleWithOneRelation::cluster(::ConstExampleCluster value) {
 }
 
 
+
 bool  ExampleWithOneRelation::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

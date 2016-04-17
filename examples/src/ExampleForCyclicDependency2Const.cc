@@ -45,6 +45,7 @@ ConstExampleForCyclicDependency2::~ConstExampleForCyclicDependency2(){
     }
     return ::ConstExampleForCyclicDependency1(*(m_obj->m_ref));}
 
+
 bool  ConstExampleForCyclicDependency2::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

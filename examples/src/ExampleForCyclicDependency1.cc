@@ -53,6 +53,7 @@ void ExampleForCyclicDependency1::ref(::ConstExampleForCyclicDependency2 value) 
 }
 
 
+
 bool  ExampleForCyclicDependency1::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

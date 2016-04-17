@@ -45,6 +45,7 @@ ConstExampleWithOneRelation::~ConstExampleWithOneRelation(){
     }
     return ::ConstExampleCluster(*(m_obj->m_cluster));}
 
+
 bool  ConstExampleWithOneRelation::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

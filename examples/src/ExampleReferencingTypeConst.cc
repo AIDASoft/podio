@@ -84,6 +84,7 @@ ConstExampleReferencingType ConstExampleReferencingType::Refs(unsigned int index
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 
+
 bool  ConstExampleReferencingType::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

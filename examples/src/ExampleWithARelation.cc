@@ -53,6 +53,7 @@ void ExampleWithARelation::ref(ex::ConstExampleWithNamespace value) {
 }
 
 
+
 bool  ExampleWithARelation::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

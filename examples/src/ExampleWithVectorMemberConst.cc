@@ -62,6 +62,7 @@ int ConstExampleWithVectorMember::count(unsigned int index) const {
   else throw std::out_of_range ("index out of bounds for existing references");
 }
 
+
 bool  ConstExampleWithVectorMember::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

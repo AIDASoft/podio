@@ -199,6 +199,11 @@ TEST(podio, write_buffer) {
 
 }
 
+TEST(podio, extracode) {
+  auto ev = EventInfo();
+  EXPECT_EQ(ev.getNumber(),0);
+}
+
 TEST(podio, equality) {
   auto cluster = ExampleCluster();
   auto rel = ExampleWithOneRelation();

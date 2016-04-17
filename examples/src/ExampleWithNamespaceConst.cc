@@ -45,6 +45,7 @@ ConstExampleWithNamespace::~ConstExampleWithNamespace(){
   const ex2::NamespaceStruct& ConstExampleWithNamespace::data() const { return m_obj->data.data; }
 
 
+
 bool  ConstExampleWithNamespace::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

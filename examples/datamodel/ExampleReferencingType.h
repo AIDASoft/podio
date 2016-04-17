@@ -62,6 +62,7 @@ public:
   std::vector<ConstExampleReferencingType>::const_iterator Refs_begin() const;
   std::vector<ConstExampleReferencingType>::const_iterator Refs_end() const;
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleReferencingTypeObj instance

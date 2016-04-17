@@ -49,6 +49,7 @@ public:
   const ex2::NamespaceStruct& data() const;
 
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleWithNamespaceObj instance

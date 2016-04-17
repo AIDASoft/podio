@@ -55,6 +55,7 @@ void ExampleHit::z(double value){ m_obj->data.z = value; }
 void ExampleHit::energy(double value){ m_obj->data.energy = value; }
 
 
+
 bool  ExampleHit::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

@@ -340,6 +340,19 @@ class ClassGenerator(object):
       ConstReferences_declarations += string.Template(ConstReferences_declarations_template).substitute(substitutions)
       ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
 
+    # handle user provided extra code
+    extracode_declarations = ""
+    extracode = ""
+    constextracode_declarations = ""
+    constextracode = ""
+    if definition.has_key("ExtraCode"):
+      extra = definition["ExtraCode"]
+      extracode_declarations = extra["declaration"]
+      extracode = extra["implementation"].replace("{name}",rawclassname)
+      constextracode_declarations = extra["declaration"]
+      constextracode = extra["implementation"].replace("{name}","Const"+rawclassname)
+      # TODO: add loading of code from external files
+      datatype["includes"] += extra["includes"]
 
     substitutions = {"includes" : "\n".join(datatype["includes"]),
                      "includes_cc" : includes_cc,
@@ -350,6 +363,8 @@ class ClassGenerator(object):
                      "setter_declarations": setter_declarations,
                      "constructor_declaration" : constructor_declaration,
                      "constructor_implementation" : constructor_implementation,
+                     "extracode" : extracode,
+                     "extracode_declarations" : extracode_declarations,
                      "name"     : rawclassname,
                      "description" : datatype["description"],
                      "author"   : datatype["author"],
@@ -369,6 +384,8 @@ class ClassGenerator(object):
     substitutions["relation_declarations"] = ConstReferences_declarations
     substitutions["relations"] = ConstReferences
     substitutions["getters"]   = ConstGetter_implementations
+    substitutions["constextracode"] = constextracode
+    substitutions["constextracode_declarations"] = constextracode_declarations
     self.fill_templates("ConstObject", substitutions)
     if "::" in classname:
       self.created_classes.append("%s::Const%s" %(namespace, rawclassname))

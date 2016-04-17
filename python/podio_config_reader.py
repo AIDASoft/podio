@@ -1,24 +1,28 @@
 import yaml
+import copy
 
 class ComponentDefinition(object):
     pass
 
+class ClassDefinitionValidator(object):
 
-class ClassDefinition(object):
-  def __init__(self):
-      self.members_ = []
-      self.oneToOneRelations_ =  []
-      self.oneToManyRelations_ = []
-      self.transientMembers_ = []
-  def members(self):
-      return self.members_
-  def oneToOneRelations(self):
-      return self.oneToOneRelations_
-  def oneToManyRelations(self):
-      return self.oneToManyRelations_
-  def transientMembers(self):
-        return self.transientMembers_
+  valid_keys = (
+    "Members",
+    "VectorMembers",
+    "OneToOneRelations",
+    "OneToManyrelations",
+    "TransientMembers",
+    "Typedefs",
+    "ExtraCode"
+  )
 
+  @staticmethod
+  def check_keys():
+    pass
+
+  @staticmethod
+  def check():
+    pass
 
 class PodioConfigReader(object):
 
@@ -36,6 +40,10 @@ class PodioConfigReader(object):
       # transform it into std::array
       #klass = "std::array<%s,%s>" %(theType, number);
     return klass
+
+  @staticmethod
+  def handle_extracode(definition):
+    return copy.deepcopy(definition)
 
   def read(self):
     stream = open(self.yamlfile, "r")
@@ -57,8 +65,9 @@ class PodioConfigReader(object):
             datatype[category] = definitions
           else:
             datatype[category] = []
+        if value.has_key("ExtraCode"):
+           datatype["ExtraCode"] = self.handle_extracode(value["ExtraCode"])
         self.datatypes[klassname] = datatype
-
     if "components" in content.keys():
       for klassname, value in content["components"].iteritems():
         component = {"Members": value}

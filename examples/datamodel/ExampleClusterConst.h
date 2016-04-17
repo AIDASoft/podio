@@ -59,6 +59,7 @@ public:
   std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
 
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleClusterObj instance

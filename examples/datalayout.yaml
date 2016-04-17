@@ -22,6 +22,10 @@ datatypes :
     Author : "B. Hegner"
     Members :
      - int Number // event number
+    ExtraCode :
+       includes: ""
+       declaration: "int getNumber() const;"
+       implementation: "int {name}::getNumber() const { return Number(); }"
 
   ExampleHit :
     Description : "Example Hit"
