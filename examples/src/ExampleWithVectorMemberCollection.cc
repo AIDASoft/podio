@@ -6,7 +6,7 @@
 
 
 
-ExampleWithVectorMemberCollection::ExampleWithVectorMemberCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithVectorMemberDataContainer() ) {
+ExampleWithVectorMemberCollection::ExampleWithVectorMemberCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithVectorMemberDataContainer() ) {
   
 }
 
@@ -59,6 +59,7 @@ void ExampleWithVectorMemberCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ExampleWithVectorMemberCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

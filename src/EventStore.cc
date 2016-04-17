@@ -15,6 +15,9 @@ namespace podio {
     for (auto& coll : m_collections){
       delete coll.second;
     }
+    for (auto& coll : m_failedRetrieves){
+      delete coll;
+    }
   }
 
   bool EventStore::get(int id, CollectionBase*& collection) const{
@@ -77,8 +80,11 @@ namespace podio {
       delete coll.second;
     }
     m_collections.clear();
-
-    m_retrievedIDs.clear() ;
+    m_retrievedIDs.clear();
+    for (auto& coll : m_failedRetrieves){
+      delete coll;
+    }
+    m_failedRetrieves.clear();
   }
 
   bool EventStore::collectionRegistered(const std::string& name) const {

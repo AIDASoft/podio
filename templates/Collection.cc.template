@@ -6,7 +6,7 @@ ${includes}
 
 ${namespace_open}
 
-${name}Collection::${name}Collection() : m_collectionID(0), m_entries() ${initializers},m_refCollections(nullptr), m_data(new ${name}DataContainer() ) {
+${name}Collection::${name}Collection() : m_isValid(false), m_collectionID(0), m_entries() ${initializers},m_refCollections(nullptr), m_data(new ${name}DataContainer() ) {
   ${constructorbody}
 }
 
@@ -59,6 +59,7 @@ void ${name}Collection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ${name}Collection::setReferences(const podio::ICollectionProvider* collectionProvider){

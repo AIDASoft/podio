@@ -6,7 +6,7 @@
 
 
 
-ExampleHitCollection::ExampleHitCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleHitDataContainer() ) {
+ExampleHitCollection::ExampleHitCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleHitDataContainer() ) {
   
 }
 
@@ -59,6 +59,7 @@ void ExampleHitCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ExampleHitCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

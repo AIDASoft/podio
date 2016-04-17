@@ -6,7 +6,7 @@
 
 
 
-ExampleWithComponentCollection::ExampleWithComponentCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithComponentDataContainer() ) {
+ExampleWithComponentCollection::ExampleWithComponentCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithComponentDataContainer() ) {
   
 }
 
@@ -59,6 +59,7 @@ void ExampleWithComponentCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ExampleWithComponentCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

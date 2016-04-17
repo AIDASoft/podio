@@ -45,6 +45,9 @@ namespace podio {
     /// get address of the pointer to the I/O buffer
     virtual void* getBufferAddress() = 0;
 
+    /// check for validity of the container after read
+    virtual bool isValid() const = 0;
+
     /// destructor
     virtual ~CollectionBase(){};
 

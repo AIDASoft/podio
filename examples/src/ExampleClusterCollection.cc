@@ -8,7 +8,7 @@
 
 
 
-ExampleClusterCollection::ExampleClusterCollection() : m_collectionID(0), m_entries() , m_rel_Hits(new std::vector<::ConstExampleHit>()), m_rel_Clusters(new std::vector<::ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleClusterDataContainer() ) {
+ExampleClusterCollection::ExampleClusterCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_Hits(new std::vector<::ConstExampleHit>()), m_rel_Clusters(new std::vector<::ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleClusterDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
@@ -103,6 +103,7 @@ void ExampleClusterCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ExampleClusterCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

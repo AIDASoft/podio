@@ -1,6 +1,7 @@
 // STL
 #include <vector>
 #include <iostream>
+#include <exception>
 
 // podio specific includes
 #include "podio/EventStore.h"
@@ -20,22 +21,26 @@ int glob = 0;
 
 void processEvent(podio::EventStore& store, bool verboser) {
 
-  const ExampleClusterCollection* clusters = nullptr;
+  auto& failing = store.get<ExampleClusterCollection>("notthere");
+  if(failing.isValid() == true) {
+    throw std::runtime_error("Collection 'notthere' should not be valid");
+};
+
   //std::cout << "Fetching collection 'clusters'" << std::endl;
-  bool is_available = store.get("clusters",clusters);
-  if(is_available){
-    auto cluster = (*clusters)[0];
+  auto& clusters = store.get<ExampleClusterCollection>("clusters");
+  if(clusters.isValid()){
+    auto cluster = clusters[0];
     //std::cout << "Cluster has an energy of " << cluster.energy() << std::endl;
     for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i!=end; ++i){
       std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
       glob++;
     }
   }
-  const ExampleReferencingTypeCollection* refs = nullptr;
+
   //std::cout << "Fetching collection 'refs'" << std::endl;
-  is_available = store.get("refs",refs);
-  if(is_available){
-    auto ref = (*refs)[0];
+  auto& refs = store.get<ExampleReferencingTypeCollection>("refs");
+  if(refs.isValid()){
+    auto ref = refs[0];
     for (auto j = ref.Clusters_begin(), end = ref.Clusters_end(); j!=end; ++j){
       for (auto i = j->Hits_begin(), end = j->Hits_end(); i!=end; ++i){
         //std::cout << "  Referenced object has an energy of " << i->energy() << std::endl;
@@ -43,17 +48,16 @@ void processEvent(podio::EventStore& store, bool verboser) {
       }
     }
   }
-  const ExampleWithOneRelationCollection* rels = nullptr;
   //std::cout << "Fetching collection 'OneRelation'" << std::endl;
-  is_available = store.get("OneRelation",rels);
-  if(is_available) {
+  auto& rels = store.get<ExampleWithOneRelationCollection>("OneRelation");
+  if(rels.isValid()) {
     //std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
     glob++;
   }
-  const ExampleWithVectorMemberCollection* vecs = nullptr;
+
 //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
-  is_available = store.get("WithVectorMember",vecs);
-  if(is_available) {
+  auto& vecs = store.get<ExampleWithVectorMemberCollection>("WithVectorMember");
+  if(vecs.isValid()) {
 //    auto item = (*vecs)[0];
 //    std::cout << (*vecs).size() << std::endl;
 //    for (auto c = item.count_begin(), end = item.count_end(); c!=end; ++c){
@@ -62,17 +66,15 @@ void processEvent(podio::EventStore& store, bool verboser) {
 //    }
   }
 
-  const ExampleWithComponentCollection* comps = nullptr;
-  is_available = store.get("Component", comps);
-  if (is_available) {
-    auto comp = (*comps)[0];
+  auto& comps = store.get<ExampleWithComponentCollection>("Component");
+  if (comps.isValid()) {
+    auto comp = comps[0];
     int a = comp.component().data.x + comp.component().data.z;
   }
 
-  const ex::ExampleWithARelationCollection* nmspaces = nullptr;
-  is_available = store.get("WithNamespaceRelation", nmspaces);
-  if (is_available) {
-    auto nmsp = (*nmspaces)[0];
+  auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  if (nmspaces.isValid()) {
+    auto nmsp = nmspaces[0];
     int b = nmsp.ref().data().x + nmsp.ref().data().y;
   }
 }

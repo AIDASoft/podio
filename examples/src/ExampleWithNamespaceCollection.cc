@@ -6,7 +6,7 @@
 
 namespace ex {
 
-ExampleWithNamespaceCollection::ExampleWithNamespaceCollection() : m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithNamespaceDataContainer() ) {
+ExampleWithNamespaceCollection::ExampleWithNamespaceCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithNamespaceDataContainer() ) {
   
 }
 
@@ -59,6 +59,7 @@ void ExampleWithNamespaceCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ExampleWithNamespaceCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

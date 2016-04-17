@@ -89,6 +89,10 @@ public:
     );
   };
 
+  bool isValid() const {
+    return m_isValid;
+  }
+
   // support for the iterator protocol
   const const_iterator begin() const {
     return const_iterator(0, &m_entries);
@@ -106,6 +110,7 @@ public:
    
 
 private:
+  bool m_isValid;
   int m_collectionID;
   ExampleWithVectorMemberObjPointerContainer m_entries;
   // members to handle 1-to-N-relations

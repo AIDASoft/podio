@@ -7,7 +7,7 @@
 
 
 
-ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_collectionID(0), m_entries() , m_rel_cluster(new std::vector<::ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
+ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_cluster(new std::vector<::ConstExampleCluster>()),m_refCollections(nullptr), m_data(new ExampleWithOneRelationDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
@@ -72,6 +72,7 @@ void ExampleWithOneRelationCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

@@ -7,7 +7,7 @@
 
 namespace ex {
 
-ExampleWithARelationCollection::ExampleWithARelationCollection() : m_collectionID(0), m_entries() , m_rel_ref(new std::vector<ex::ConstExampleWithNamespace>()),m_refCollections(nullptr), m_data(new ExampleWithARelationDataContainer() ) {
+ExampleWithARelationCollection::ExampleWithARelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<ex::ConstExampleWithNamespace>()),m_refCollections(nullptr), m_data(new ExampleWithARelationDataContainer() ) {
     m_refCollections = new podio::CollRefCollection();
   m_refCollections->push_back(new std::vector<podio::ObjectID>());
 
@@ -72,6 +72,7 @@ void ExampleWithARelationCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ExampleWithARelationCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
