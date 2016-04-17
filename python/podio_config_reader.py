@@ -15,6 +15,12 @@ class ClassDefinitionValidator(object):
     "ExtraCode"
   )
 
+  buildin_types = [ "int", "long", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
+
+  def __init__(self):
+    self.components = {}
+    self.datatypes = {}
+
   @staticmethod
   def check_keys(name, definition):
     """Check that only valid keys are provided"""
@@ -23,8 +29,19 @@ class ClassDefinitionValidator(object):
         raise Exception("%s defines invalid category '%s' " %(name,key))
 
   @staticmethod
-  def check(name, definition):
+  def check_datatype(name, definition):
     ClassDefinitionValidator.check_keys(name, definition)
+
+  def check_component(self, name, definition):
+    """Check that components only contain simple types or other components"""
+    for klass in definition.itervalues():
+      if not (klass in self.buildin_types or klass in self.components.keys()):
+        raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(name, klass))
+
+  def check_components(self,components):
+    self.components = components
+    for klassname, value in components.iteritems():
+      self.check_component(klassname, value)
 
 class PodioConfigReader(object):
 
@@ -54,7 +71,7 @@ class PodioConfigReader(object):
 
     if content.has_key("datatypes"):
       for klassname, value in content["datatypes"].iteritems():
-        validator.check(klassname, value);
+        validator.check_datatype(klassname, value);
         datatype = {}
         datatype["Description"] = value["Description"]
         datatype["Author"] = value["Author"]
@@ -73,6 +90,7 @@ class PodioConfigReader(object):
            datatype["ExtraCode"] = self.handle_extracode(value["ExtraCode"])
         self.datatypes[klassname] = datatype
     if "components" in content.keys():
+      validator.check_components(content["components"])
       for klassname, value in content["components"].iteritems():
         component = {"Members": value}
         self.components[klassname] = component
