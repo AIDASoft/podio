@@ -2,7 +2,7 @@
 import os
 import string
 import pickle
-from podio_config_reader import PodioConfigReader
+from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,7 +37,7 @@ class ClassGenerator(object):
     self.package_name =package_name
     self.template_dir = os.path.join(thisdir,"../templates")
     self.verbose=verbose
-    self.buildin_types = [ "int", "long", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
+    self.buildin_types = ClassDefinitionValidator.buildin_types
     self.created_classes = []
     self.requested_classes = []
     self.reader = PodioConfigReader(yamlfile)
@@ -505,11 +505,6 @@ class ClassGenerator(object):
     """
     namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
-    for klass in components.itervalues():
-      if klass in self.buildin_types or klass in self.reader.components.keys():
-        pass
-      else:
-        raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(classname, klass))
     includes = ""
     members = ""
     for name, klass in components.iteritems():

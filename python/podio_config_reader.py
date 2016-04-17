@@ -1,28 +1,47 @@
 import yaml
 import copy
 
-class ComponentDefinition(object):
-    pass
-
 class ClassDefinitionValidator(object):
 
   valid_keys = (
+    "Description",
+    "Author",
     "Members",
     "VectorMembers",
     "OneToOneRelations",
-    "OneToManyrelations",
+    "OneToManyRelations",
     "TransientMembers",
     "Typedefs",
     "ExtraCode"
   )
 
-  @staticmethod
-  def check_keys():
-    pass
+  buildin_types = [ "int", "long", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
+
+  def __init__(self):
+    self.components = {}
+    self.datatypes = {}
 
   @staticmethod
-  def check():
-    pass
+  def check_keys(name, definition):
+    """Check that only valid keys are provided"""
+    for key in definition:
+      if key not in ClassDefinitionValidator.valid_keys:
+        raise Exception("%s defines invalid category '%s' " %(name,key))
+
+  @staticmethod
+  def check_datatype(name, definition):
+    ClassDefinitionValidator.check_keys(name, definition)
+
+  def check_component(self, name, definition):
+    """Check that components only contain simple types or other components"""
+    for klass in definition.itervalues():
+      if not (klass in self.buildin_types or klass in self.components.keys()):
+        raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(name, klass))
+
+  def check_components(self,components):
+    self.components = components
+    for klassname, value in components.iteritems():
+      self.check_component(klassname, value)
 
 class PodioConfigReader(object):
 
@@ -46,11 +65,13 @@ class PodioConfigReader(object):
     return copy.deepcopy(definition)
 
   def read(self):
+    validator = ClassDefinitionValidator()
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
 
     if content.has_key("datatypes"):
       for klassname, value in content["datatypes"].iteritems():
+        validator.check_datatype(klassname, value);
         datatype = {}
         datatype["Description"] = value["Description"]
         datatype["Author"] = value["Author"]
@@ -69,6 +90,7 @@ class PodioConfigReader(object):
            datatype["ExtraCode"] = self.handle_extracode(value["ExtraCode"])
         self.datatypes[klassname] = datatype
     if "components" in content.keys():
+      validator.check_components(content["components"])
       for klassname, value in content["components"].iteritems():
         component = {"Members": value}
         self.components[klassname] = component
