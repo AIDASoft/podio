@@ -1,28 +1,30 @@
 import yaml
 import copy
 
-class ComponentDefinition(object):
-    pass
-
 class ClassDefinitionValidator(object):
 
   valid_keys = (
+    "Description",
+    "Author",
     "Members",
     "VectorMembers",
     "OneToOneRelations",
-    "OneToManyrelations",
+    "OneToManyRelations",
     "TransientMembers",
     "Typedefs",
     "ExtraCode"
   )
 
   @staticmethod
-  def check_keys():
-    pass
+  def check_keys(name, definition):
+    """Check that only valid keys are provided"""
+    for key in definition:
+      if key not in ClassDefinitionValidator.valid_keys:
+        raise Exception("%s defines invalid category '%s' " %(name,key))
 
   @staticmethod
-  def check():
-    pass
+  def check(name, definition):
+    ClassDefinitionValidator.check_keys(name, definition)
 
 class PodioConfigReader(object):
 
@@ -46,11 +48,13 @@ class PodioConfigReader(object):
     return copy.deepcopy(definition)
 
   def read(self):
+    validator = ClassDefinitionValidator()
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
 
     if content.has_key("datatypes"):
       for klassname, value in content["datatypes"].iteritems():
+        validator.check(klassname, value);
         datatype = {}
         datatype["Description"] = value["Description"]
         datatype["Author"] = value["Author"]

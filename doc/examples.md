@@ -3,6 +3,10 @@
 The following snippets show the support of PODIO for the different use cases.
  The event `store` used in the examples is just an example implementation, and has to be replaced with the store used in the framework of your choice.
 
+### Object Ownership
+
+Every data created is either explicitly owned by collections or automatically garbage-collected. There is no need for any `new` or `delete` call on user side.
+
 ### Object Creation and Storage
 
 Objects and collections can be created via factories, which ensure proper object ownership:
@@ -50,16 +54,6 @@ or via direct accessors
 If asking for an entry outside bounds, a std::out_of_range exception is thrown.
 
 
-### Object Retrieval
-
-Collections can be retrieved explicitly:
-
-    const HitCollection* hits;
-    bool success = store.get("hits",hits);
-
-Or implicitly when following an object reference. In both cases the access to data that has been retrieved is `const`.
-
-
 ### Looping through Collections
 Looping through collections is supported in two ways. Via iterators:
 
@@ -85,3 +79,37 @@ pattern is supported by providing access like
 
 The resulting `std::array` can then be used in (auto-)vectorizable code.
 If less objects than requested are contained in the collection, the remaining entries are default initialized.
+
+### EventStore functionality
+
+The event store contained in the package is for *educational* purposes and kept very minimal. It has two main methods:
+
+    /// create a new collection
+    template<typename T>
+    T& create(const std::string& name);
+
+    /// access a collection.
+    template<typename T>
+    const T& get(const std::string& name);
+
+Please note that a `put` method for collections is not foreseen.
+
+### Object Retrieval
+
+Collections can be retrieved explicitly:
+
+    auto& hits = store.get<HitCollection>("hits");
+    if (hits.isValid()) { ... }
+
+Or implicitly when following an object reference. In both cases the access to data that has been retrieved is `const`.
+
+#### Python Interface
+
+The class `EventStore` provides all the necessary (read) access to event files. It can be used as follows:
+
+    from EventStore import EventStore
+    store = EventStore(<list of files>)
+    for event in store:
+      hits = store.get("hits")
+      for hit in hits:
+        ...
