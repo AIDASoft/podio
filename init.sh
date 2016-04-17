@@ -12,7 +12,6 @@ if [[ "$unamestr" == 'Linux' ]]; then
 	#or is this software available somewhere in Lyon? 
 	sw_afs=1
         source /cvmfs/sft.cern.ch/lcg/views/LCG_84/x86_64-slc6-gcc49-opt/setup.sh
-        export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases/gtest/1.7.0-4f83b/x86_64-slc6-gcc49-opt/
 	echo cmake and root taken from /cvmfs/sft.cern.ch
     fi
     export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/examples:$LD_LIBRARY_PATH

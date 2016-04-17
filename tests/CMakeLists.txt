@@ -4,9 +4,6 @@ include_directories(
 #        ${CMAKE_CURRENT_SOURCE_DIR}/utilities
 )
 
-find_package(GTest)
-include_directories(${GTEST_INCLUDE_DIRS})
-
 foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   string(TOUPPER ${_conf} _conf )
   set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
@@ -19,7 +16,7 @@ file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 foreach( sourcefile ${executables} )
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
-  target_link_libraries( ${name} TestDataModelDict ${GTEST_LIBRARIES})
+  target_link_libraries( ${name} TestDataModelDict )
   install(TARGETS ${name} DESTINATION tests)
 endforeach( sourcefile ${executables} )
 

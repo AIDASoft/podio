@@ -86,16 +86,6 @@ To run the code generation script, do
 
 
 ## Running tests
-After compilation you can run rudimentary tests with
+After compilation and installation (!) you can run rudimentary tests with
 
     make test
-
-### Unit tests (for developers)
-
-In order to run the unit tests you have to enable them at configuration time with the flag `tests`. Note that GTest is needed. On lxplus the necessary environment is set up with the `init.sh`. On MacOS, you'll have to point cmake to your installation if it is local, see the option in braces below assuming you installed it in `<g_test_path>`.
-
-To configure with unit tests enabled, do:
-
-    cmake -DCMAKE_INSTALL_PREFIX=../install -Dpodio_tests=1 (-DCMAKE_PREFIX_PATH=<g_test_path>/install) ..
-    make test
-
