@@ -8,8 +8,7 @@ The driving considerations for the PODIO design are:
   1. The user does not do any explicit memory management
   1. Classes are generated using a higher-level abstraction and code generators
 
-The following sections give some more technical details and explanations for the design choices.
-More concrete implementation details can be found in the doxygen documentation.
+The following sections give some more technical details and explanations for the design choices. More concrete implementation details can be found in the doxygen documentation.
 
 ## Layout of Objects
 The data model is based on four different kind of objects and layers, namely
@@ -32,10 +31,8 @@ With the chosen interface, the code written in C++ and Python looks almost ident
 The internal objects give access to the object data, i.e. the POD, and the references to other objects.
 These objects inherit from `podio::ObjBase`, which takes care of object identification (`podio::ObjectID`), and object-ownership. The `ObjectID` consists of the index of the object and an ID of the collection it belongs to. If the object does not belong to a collection yet, the data object owns the POD containing the real data, otherwise the POD is owned by the respective collection. For details about the inter-object references and their handling within the data objects please see below.
 
-
 ### The POD Layer
-The plain-old-data (POD) contain just the data declared in the `Members` section of the datamodel definition. Ownership and lifetime of the PODs is managed by the other parts of the infrastructure, namely the data objects and the data collections
-
+The plain-old-data (POD) contain just the data declared in the `Members` section of the datamodel definition. Ownership and lifetime of the PODs is managed by the other parts of the infrastructure, namely the data objects and the data collections.
 
 ### The Collections
 
@@ -45,14 +42,9 @@ The collections created serve three purposes:
   2. preparing objects for writing into PODs or preparing them after reading
   3. support for the so-called notebook pattern
 
+### Vectorization support / notebook pattern
 
-### Vectorization support
-
-As an end-user oriented library, PODIO provides only a limited support for struct-of-arrays (SoA) memory layouts.
-
-In the vision, that the data used for heavy calculations is best copied locally, the library provides convenience methods for extracting the necessary information from the collections. 
-
-TODO: add an example for a for_each on a POD collection extracting PODS. 
+As an end-user oriented library, PODIO provides only a limited support for struct-of-arrays (SoA) memory layouts. In the vision, that the data used for heavy calculations is best copied locally, the library provides convenience methods for extracting the necessary information from the collections. More details can be found in the examples section of this document.
 
 ### References between objects
 
@@ -64,7 +56,6 @@ TODO
 
 ## Handling const-correcteness
 
-As a peculiarity, PODIO provides dedicated const and non-const classes, instead of fully trusting the C++ `const` keyword.
-TODO: explain rationale; e.g. python use case
-To guarantee const-correctness on Python side
-
+As a peculiarity, PODIO provides dedicated const and non-const classes, instead of fully trusting the C++ `const` keyword. This is done for two reasons - to avoid accidental drop of the const-keyword on user side. And to hide the non-const methods in Python. A case for accidental dropping of the `const` keyword in C++ are implicit copies when using the auto keyword. 
+  
+ 

@@ -1,8 +1,13 @@
 # Advanced Topics
 
+
+## Persistency
+
+The library is build such that it can support multiple storage backends. However, the tested storage system being used is ROOT.
+
 ## Thread-safety
 
-PODIO was written with thread-safety in mind. However, a few assumptions about user code and use-patterns were made. The following lists the caveats of the library when it comes to parallelization.
+PODIO was written with thread-safety in mind and avoids the usage of globals and statics. However, a few assumptions about user code and use-patterns were made. The following lists the caveats of the library when it comes to parallelization.
 
 ### Setting user data
 
@@ -62,4 +67,5 @@ If not taking advantage of this implementation, the data reader or the event sto
 The strong assumption here is that all references are being followed up directly and no later on-demand reading is done. 
 
 ### Necessary reflection information
-TODO
+
+To be written

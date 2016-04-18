@@ -6,44 +6,10 @@ At the same time it provides the necessary high-level functionality to the physi
 
 To support the usage of modern software technologies, PODIO was written with concurrency in mind and gives basic support for vectorization technologies.
 
-This document describes first how to define and create your own data model, then how to use the created data. 
+This document describes first how to define and create your own data model, then how to use the created data.
 
-In the 
+Afterwards it will explain the overall design and a few of the technical details of the implementation. 
 
 # Quick-start
 
 An up-to-date installation and quick start guide for the impatient user can be found on the [PODIO github page](https://github.com/hegner/podio).
-
-### Object Ownership
-
-Every data created is either explicitly owned by collections or automatically garbage-collected. There is no need for any `new` or `delete` call on user side.
-
-### EventStore functionality
-
-The event store contained in the package is for educational purposes and kept very minimal. It has two main methods:
-
-    /// create a new collection
-    template<typename T>
-    T& create(const std::string& name);
-
-    /// access a collection. returns true if successful
-    template<typename T>
-    bool get(const std::string& name, const T*& collection);
-
-Please note that a `put` method for collections is not foreseen.
-
-#### Python Interface
-
-The class `EventStore` provides all the necessary (read) access to event files.
-
-
-## Thread-safety and multi-store support
-The design avoids the usage of globals and statics. Thus multiple instances of the EventStore and Registry can trivially co-exist.
-On-demand reading is limited to the level of the event store. This allows frameworks to do a full pre-fetch of all necessary data before passing control to the user.
-
-Neither DataStore nor Registry are thread-safe at the moment.
-
-
-## Persistency
-
-The library is build such that it can support multiple storage backends. However, the tested storage system being used is ROOT.
