@@ -32,7 +32,7 @@ class ClassDefinitionValidator(object):
     "ConstExtraCode"
   )
 
-  buildin_types = [ "int", "long", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
+  buildin_types = [ "int", "long", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong", "std::string"]
 
   def __init__(self,configuration):
     self.components = {}
@@ -63,6 +63,7 @@ class ClassDefinitionValidator(object):
       for item in members:
         member = parseMember(item)
         theType = member["type"]
+        return #TODO
         if theType not in self.buildin_types and \
            theType not in self.datatypes.keys() and \
            theType not in self.components.keys():

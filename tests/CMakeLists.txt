@@ -19,7 +19,7 @@ add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${header
 target_link_libraries(TestDataModel podio )
 install(TARGETS TestDataModel DESTINATION tests)
 
-REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION datamodel/selection.xml)
+REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml)
 add_library(TestDataModelDict SHARED TestDataModel.cxx)
 add_dependencies(TestDataModelDict TestDataModel-dictgen)
 target_link_libraries(TestDataModelDict TestDataModel podio )

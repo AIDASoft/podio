@@ -14,10 +14,10 @@ if [[ "$unamestr" == 'Linux' ]]; then
         source /cvmfs/sft.cern.ch/lcg/views/LCG_84/x86_64-slc6-gcc49-opt/setup.sh
 	echo cmake and root taken from /cvmfs/sft.cern.ch
     fi
-    export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/examples:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/tests:$LD_LIBRARY_PATH
 elif [[ "$unamestr" == 'Darwin' ]]; then
     platform='Darwin'
-    export DYLD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/examples:$DYLD_LIBRARY_PATH
+    export DYLD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/tests:$DYLD_LIBRARY_PATH
 fi
 echo platform detected: $platform
 export PYTHONPATH=$PODIO/python:$PYTHONPATH

@@ -82,6 +82,18 @@ datatypes :
     OneToOneRelations :
       - ExampleForCyclicDependency1 ref // a ref
 
+#  ExampleWithArray :
+#    Description : "Type with an array"
+#    Author : "Benedikt Hegner"
+#    Members:
+#      - std::array<int,33> array // the array  
+
+  ExampleWithString :
+    Description : "Type with a string"
+    Author : "Benedikt Hegner"
+    Members:
+      - std::string theString // the string
+
   ex::ExampleWithNamespace :
     Description : "Type with namespace and namespaced member"
     Author : "Joschka Lingemann"

@@ -15,6 +15,7 @@
 #include "ExampleWithVectorMemberCollection.h"
 #include "ExampleWithComponentCollection.h"
 #include "ExampleWithARelationCollection.h"
+#include "ExampleWithStringCollection.h"
 #include "ExampleWithNamespace.h"
 
 int glob = 0;
@@ -26,6 +27,13 @@ void processEvent(podio::EventStore& store, bool verboser) {
     throw std::runtime_error("Collection 'notthere' should not be valid");
 };
 
+  auto& strings = store.get<ExampleWithStringCollection>("strings");
+  if(strings.isValid()){
+    auto string = strings[0];
+    if (string.theString() != "SomeString") { 
+      throw std::runtime_error("Couldn't read string properly");
+    }
+  }
   //std::cout << "Fetching collection 'clusters'" << std::endl;
   auto& clusters = store.get<ExampleClusterCollection>("clusters");
   if(clusters.isValid()){

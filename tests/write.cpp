@@ -8,6 +8,8 @@
 #include "ExampleWithComponentCollection.h"
 #include "ExampleWithNamespaceCollection.h"
 #include "ExampleWithARelationCollection.h"
+#include "ExampleWithStringCollection.h"
+
 // STL
 #include <iostream>
 #include <vector>
@@ -33,6 +35,7 @@ int main(){
   auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
   auto& namesps    = store.create<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& strings    = store.create<ExampleWithStringCollection>("strings");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleHitCollection>("hits");
   writer.registerForWrite<ExampleClusterCollection>("clusters");
@@ -43,6 +46,7 @@ int main(){
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
   writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  writer.registerForWrite<ExampleWithStringCollection>("strings");
 
   unsigned nevents=2000;
 
@@ -119,6 +123,9 @@ int main(){
     auto rel = ex::ExampleWithARelation();
     rel.ref(namesp);
     namesprels.push_back(rel);
+
+    auto string = ExampleWithString("SomeString");
+    strings.push_back(string);
 
     writer.writeEvent();
     store.clearCollections();

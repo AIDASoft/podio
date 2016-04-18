@@ -111,7 +111,10 @@ class ClassGenerator(object):
       name = member["name"]
       description = member["description"]
       datatype_dict["members"].append("  %s %s;  ///<%s" % (klass, name, description))
-      if klass in self.buildin_types:
+      if "std::string" == klass:
+        datatype_dict["includes"].append("#include <string>")
+        self.warnings.append("%s defines a string member %s, that spoils the PODness" % (classname, klass))
+      elif klass in self.buildin_types:
         pass
       elif klass in self.requested_classes:
         if "::" in klass:

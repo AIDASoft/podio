@@ -195,10 +195,18 @@ TEST_CASE("write_buffer") {
   clusters.prepareForWrite();
   REQUIRE(success);
   auto& ref_coll  = store.create<ExampleWithOneRelationCollection>("onerel");
-  auto withRef = ref_coll.create();//ExampleWithOneRelation();
+  auto withRef = ref_coll.create();
   ref_coll.prepareForWrite();
 
 }
+
+/*
+TEST_CASE("Arrays") {
+  auto obj = ExampleWithArray();
+  obj.array({1,2,3});
+  REQUIRE( obj.array()[0] == 1);
+}
+*/
 
 TEST_CASE("Extracode") {
   auto ev = EventInfo();

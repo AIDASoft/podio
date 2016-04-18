@@ -25,6 +25,36 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<ExampleWithStringData>" />
+
+          <class name="ExampleWithStringData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithString>" />
+
+          <class name="ExampleWithString">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstExampleWithString>" />
+
+          <class name="ConstExampleWithString">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithStringCollection>" />
+
+          <class name="ExampleWithStringCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleWithStringObj>" />
+
+          <class name="ExampleWithStringObj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<ex::ExampleWithARelationData>" />
 
           <class name="ex::ExampleWithARelationData">
