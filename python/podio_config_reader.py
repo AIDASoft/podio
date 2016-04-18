@@ -1,7 +1,23 @@
 import yaml
 import copy
 
+def parseMember(string):
+    """
+    extract klass, name, and comment from
+     - int name // comment
+    """
+    klass, name = string.split()[:2]
+    comment = string.split("//")[1]
+    return {"name": name,
+            "type": klass,
+            "description" : comment
+            }
+
 class ClassDefinitionValidator(object):
+  """
+  Validate the input yaml file for the
+  most obvious problems.
+  """
 
   valid_keys = (
     "Description",
@@ -12,14 +28,19 @@ class ClassDefinitionValidator(object):
     "OneToManyRelations",
     "TransientMembers",
     "Typedefs",
-    "ExtraCode"
+    "ExtraCode",
+    "ConstExtraCode"
   )
 
   buildin_types = [ "int", "long", "float", "double", "unsigned int", "unsigned", "short", "bool", "longlong", "ulonglong"]
 
-  def __init__(self):
+  def __init__(self,configuration):
     self.components = {}
     self.datatypes = {}
+    if configuration.has_key("datatypes"):
+      self.datatypes = configuration["datatypes"]
+    if configuration.has_key("components"):
+      self.components = configuration["components"]
 
   @staticmethod
   def check_keys(name, definition):
@@ -28,9 +49,24 @@ class ClassDefinitionValidator(object):
       if key not in ClassDefinitionValidator.valid_keys:
         raise Exception("%s defines invalid category '%s' " %(name,key))
 
-  @staticmethod
-  def check_datatype(name, definition):
-    ClassDefinitionValidator.check_keys(name, definition)
+  def check_datatype(self, name, definition):
+    self.check_keys(name, definition)
+    for category in ("Author","Description"):
+      if category not in definition.keys():
+        raise Exception("%s does not define '%s'." %(name,category))
+    for category in ("Members","OneToOneRelations","OneToManyRelations"):
+      if definition.has_key(category):
+        self.check_members(name, definition[category] )
+    #TODO: handling of vector members
+
+  def check_members(self, name,members):
+      for item in members:
+        member = parseMember(item)
+        theType = member["type"]
+        if theType not in self.buildin_types and \
+           theType not in self.datatypes.keys() and \
+           theType not in self.components.keys():
+          raise Exception("%s defines a member of not allowed type %s" %(name, theType))
 
   def check_component(self, name, definition):
     """Check that components only contain simple types or other components"""
@@ -39,9 +75,10 @@ class ClassDefinitionValidator(object):
         raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(name, klass))
 
   def check_components(self,components):
-    self.components = components
     for klassname, value in components.iteritems():
       self.check_component(klassname, value)
+
+
 
 class PodioConfigReader(object):
 
@@ -51,24 +88,13 @@ class PodioConfigReader(object):
     self.components = {}
 
   @staticmethod
-  def check_class(klass):
-    # check whether it is an array
-    if "[" in klass:
-      theType = klass.split("[")[0]
-      number  = klass.split("[")[1].split("]")[0]
-      # transform it into std::array
-      #klass = "std::array<%s,%s>" %(theType, number);
-    return klass
-
-  @staticmethod
   def handle_extracode(definition):
     return copy.deepcopy(definition)
 
   def read(self):
-    validator = ClassDefinitionValidator()
     stream = open(self.yamlfile, "r")
     content = yaml.load(stream)
-
+    validator = ClassDefinitionValidator(content)
     if content.has_key("datatypes"):
       for klassname, value in content["datatypes"].iteritems():
         validator.check_datatype(klassname, value);
@@ -79,15 +105,14 @@ class PodioConfigReader(object):
           definitions = []
           if value.has_key(category):
             for definition in value[category]:
-              klass, name = definition.split()[:2]
-              klass = self.check_class(klass)
-              comment = definition.split("//")[1]
-              definitions.append({"name": name, "type": klass, "description" : comment})
+              definitions.append(parseMember(definition))
             datatype[category] = definitions
           else:
             datatype[category] = []
         if value.has_key("ExtraCode"):
            datatype["ExtraCode"] = self.handle_extracode(value["ExtraCode"])
+        if value.has_key("ConstExtraCode"):
+           datatype["ConstExtraCode"] = self.handle_extracode(value["ConstExtraCode"])
         self.datatypes[klassname] = datatype
     if "components" in content.keys():
       validator.check_components(content["components"])
