@@ -510,6 +510,8 @@ class ClassGenerator(object):
 
     includes = ""
     members = ""
+    extracode_declarations = ""
+
     #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
     keys = sorted( components.keys() ) 
     for name in keys:
@@ -529,7 +531,6 @@ class ClassGenerator(object):
             includes+= '#include "%s.h"\n' %(klassname)
       else:
          # handle user provided extra code
-        extracode_declarations = ""
         if klass.has_key("declaration"):
           extracode_declarations = klass["declaration"]
 
