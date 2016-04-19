@@ -54,7 +54,7 @@ public:
   ExampleWithARelationCollection();
 //  ExampleWithARelationCollection(const ExampleWithARelationCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ExampleWithARelationCollection(ExampleWithARelationVector* data, int collectionID);
-  ~ExampleWithARelationCollection(){};
+  ~ExampleWithARelationCollection();
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -80,7 +80,7 @@ public:
   void setBuffer(void* address);
   bool setReferences(const podio::ICollectionProvider* collectionProvider);
 
-  podio::CollRefCollection* referenceCollections() { return m_refCollections;};
+  podio::CollRefCollection* referenceCollections() { return &m_refCollections;};
 
   void setID(unsigned ID){
     m_collectionID = ID;
@@ -117,7 +117,7 @@ private:
   std::vector<ex::ConstExampleWithNamespace>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming
-  podio::CollRefCollection* m_refCollections;
+  podio::CollRefCollection m_refCollections;
   ExampleWithARelationDataContainer* m_data;
 };
 

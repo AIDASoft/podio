@@ -8,12 +8,18 @@
 
 
 
-ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_Clusters(new std::vector<::ConstExampleCluster>()), m_rel_Refs(new std::vector<::ConstExampleReferencingType>()),m_refCollections(nullptr), m_data(new ExampleReferencingTypeDataContainer() ) {
-    m_refCollections = new podio::CollRefCollection();
-  m_refCollections->push_back(new std::vector<podio::ObjectID>());
-  m_refCollections->push_back(new std::vector<podio::ObjectID>());
+ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_Clusters(new std::vector<::ConstExampleCluster>()), m_rel_Refs(new std::vector<::ConstExampleReferencingType>()),m_data(new ExampleReferencingTypeDataContainer() ) {
+    m_refCollections.push_back(new std::vector<podio::ObjectID>());
+  m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
 }
+
+ExampleReferencingTypeCollection::~ExampleReferencingTypeCollection() {
+  clear();
+  if (m_data != nullptr) delete m_data;
+    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer;}
+
+};
 
 const ExampleReferencingType ExampleReferencingTypeCollection::operator[](unsigned int index) const {
   return ExampleReferencingType(m_entries[index]);
@@ -39,7 +45,7 @@ ExampleReferencingType ExampleReferencingTypeCollection::create(){
 
 void ExampleReferencingTypeCollection::clear(){
   m_data->clear();
-  for (auto& pointer : (*m_refCollections)) { pointer->clear(); }
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
   // clear relations to Clusters. Make sure to unlink() the reference data s they may be gone already.
   for (auto& pointer : m_rel_Clusters_tmp) {
     for(auto& item : (*pointer)) {
@@ -65,9 +71,7 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
-  if (m_refCollections != nullptr) {
-    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  }
+  for (auto& pointer : m_refCollections) {pointer->clear(); } 
   int Clusters_index =0;
   int Refs_index =0;
 
@@ -78,7 +82,7 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
    for(auto it : (*m_rel_Clusters_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
-     (*m_refCollections)[0]->emplace_back(it.getObjectID());
+     m_refCollections[0]->emplace_back(it.getObjectID());
      m_rel_Clusters->push_back(it);
    }
    (*m_data)[i].Refs_begin=Refs_index;
@@ -87,7 +91,7 @@ void ExampleReferencingTypeCollection::prepareForWrite(){
    for(auto it : (*m_rel_Refs_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
-     (*m_refCollections)[1]->emplace_back(it.getObjectID());
+     m_refCollections[1]->emplace_back(it.getObjectID());
      m_rel_Refs->push_back(it);
    }
 
@@ -107,16 +111,16 @@ void ExampleReferencingTypeCollection::prepareAfterRead(){
 }
 
 bool ExampleReferencingTypeCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
-  for(unsigned int i=0, size=(*m_refCollections)[0]->size();i!=size;++i) {
-    auto id = (*(*m_refCollections)[0])[i];
+  for(unsigned int i=0, size=m_refCollections[0]->size();i!=size;++i) {
+    auto id = (*m_refCollections[0])[i];
     CollectionBase* coll = nullptr;
     collectionProvider->get(id.collectionID,coll);
     ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
     auto tmp = (*tmp_coll)[id.index];
     m_rel_Clusters->emplace_back(tmp);
   }
-  for(unsigned int i=0, size=(*m_refCollections)[1]->size();i!=size;++i) {
-    auto id = (*(*m_refCollections)[1])[i];
+  for(unsigned int i=0, size=m_refCollections[1]->size();i!=size;++i) {
+    auto id = (*m_refCollections[1])[i];
     CollectionBase* coll = nullptr;
     collectionProvider->get(id.collectionID,coll);
     ExampleReferencingTypeCollection* tmp_coll = static_cast<ExampleReferencingTypeCollection*>(coll);
@@ -143,6 +147,7 @@ void ExampleReferencingTypeCollection::push_back(ConstExampleReferencingType obj
 }
 
 void ExampleReferencingTypeCollection::setBuffer(void* address){
+  if (m_data != nullptr) delete m_data;
   m_data = static_cast<ExampleReferencingTypeDataContainer*>(address);
 }
 

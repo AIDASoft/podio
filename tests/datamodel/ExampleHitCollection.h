@@ -54,7 +54,7 @@ public:
   ExampleHitCollection();
 //  ExampleHitCollection(const ExampleHitCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ExampleHitCollection(ExampleHitVector* data, int collectionID);
-  ~ExampleHitCollection(){};
+  ~ExampleHitCollection();
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -80,7 +80,7 @@ public:
   void setBuffer(void* address);
   bool setReferences(const podio::ICollectionProvider* collectionProvider);
 
-  podio::CollRefCollection* referenceCollections() { return m_refCollections;};
+  podio::CollRefCollection* referenceCollections() { return &m_refCollections;};
 
   void setID(unsigned ID){
     m_collectionID = ID;
@@ -124,7 +124,7 @@ private:
   // members to handle 1-to-N-relations
 
   // members to handle streaming
-  podio::CollRefCollection* m_refCollections;
+  podio::CollRefCollection m_refCollections;
   ExampleHitDataContainer* m_data;
 };
 

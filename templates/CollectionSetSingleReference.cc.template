@@ -1,5 +1,5 @@
   for(unsigned int i = 0, size = m_entries.size(); i != size; ++i) {
-    auto id = (*(*m_refCollections)[${counter}])[i];
+    auto id = (*m_refCollections[${counter}])[i];
     if (id.index != podio::ObjectID::invalid) {
       CollectionBase* coll = nullptr;
       collectionProvider->get(id.collectionID,coll);

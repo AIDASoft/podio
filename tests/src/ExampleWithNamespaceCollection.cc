@@ -6,9 +6,15 @@
 
 namespace ex {
 
-ExampleWithNamespaceCollection::ExampleWithNamespaceCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithNamespaceDataContainer() ) {
+ExampleWithNamespaceCollection::ExampleWithNamespaceCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_data(new ExampleWithNamespaceDataContainer() ) {
   
 }
+
+ExampleWithNamespaceCollection::~ExampleWithNamespaceCollection() {
+  clear();
+  if (m_data != nullptr) delete m_data;
+  
+};
 
 const ExampleWithNamespace ExampleWithNamespaceCollection::operator[](unsigned int index) const {
   return ExampleWithNamespace(m_entries[index]);
@@ -41,9 +47,7 @@ void ExampleWithNamespaceCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
-  if (m_refCollections != nullptr) {
-    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  }
+  for (auto& pointer : m_refCollections) {pointer->clear(); } 
 
   for(int i=0, size = m_data->size(); i != size; ++i){
 
@@ -81,6 +85,7 @@ void ExampleWithNamespaceCollection::push_back(ConstExampleWithNamespace object)
 }
 
 void ExampleWithNamespaceCollection::setBuffer(void* address){
+  if (m_data != nullptr) delete m_data;
   m_data = static_cast<ExampleWithNamespaceDataContainer*>(address);
 }
 

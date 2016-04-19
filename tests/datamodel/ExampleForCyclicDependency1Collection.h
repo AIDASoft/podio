@@ -54,7 +54,7 @@ public:
   ExampleForCyclicDependency1Collection();
 //  ExampleForCyclicDependency1Collection(const ExampleForCyclicDependency1Collection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ExampleForCyclicDependency1Collection(ExampleForCyclicDependency1Vector* data, int collectionID);
-  ~ExampleForCyclicDependency1Collection(){};
+  ~ExampleForCyclicDependency1Collection();
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -80,7 +80,7 @@ public:
   void setBuffer(void* address);
   bool setReferences(const podio::ICollectionProvider* collectionProvider);
 
-  podio::CollRefCollection* referenceCollections() { return m_refCollections;};
+  podio::CollRefCollection* referenceCollections() { return &m_refCollections;};
 
   void setID(unsigned ID){
     m_collectionID = ID;
@@ -117,7 +117,7 @@ private:
   std::vector<::ConstExampleForCyclicDependency2>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming
-  podio::CollRefCollection* m_refCollections;
+  podio::CollRefCollection m_refCollections;
   ExampleForCyclicDependency1DataContainer* m_data;
 };
 

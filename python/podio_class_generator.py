@@ -400,6 +400,7 @@ class ClassGenerator(object):
 
     members = definition["Members"]
     constructorbody = ""
+    destructorbody  = ""
     prepareforwritinghead = ""
     prepareforwritingbody = ""
     vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(rawclassname,members)
@@ -420,8 +421,9 @@ class ClassGenerator(object):
     nOfRefMembers = len(refmembers)
     if nOfRefVectors + nOfRefMembers > 0:
       # member initialization
-      constructorbody += "\tm_refCollections = new podio::CollRefCollection();\n"
-      clear_relations += "\tfor (auto& pointer : (*m_refCollections)) { pointer->clear(); }\n"
+      #constructorbody += "\tm_refCollections = new podio::CollRefCollection();\n"
+      destructorbody  += "\tfor (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer;}\n"
+      clear_relations += "\tfor (auto& pointer : m_refCollections) { pointer->clear(); }\n"
       for counter, item in enumerate(refvectors):
         name  = item["name"]
         klass = item["type"]
@@ -439,7 +441,7 @@ class ClassGenerator(object):
         relations += declarations["relation_collection"].format(namespace=mnamespace, type=klassname, name=name)
         initializers += implementations["ctor_list_relation"].format(namespace=mnamespace, type=klassname, name=name)
 
-        constructorbody += "\tm_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
+        constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::create
         create_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::clear
@@ -471,7 +473,7 @@ class ClassGenerator(object):
         initializers += implementations["ctor_list_relation"].format(namespace=mnamespace, type=klassname, name=name)
         # member
         relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
-        constructorbody += "\tm_refCollections->push_back(new std::vector<podio::ObjectID>());\n"
+        constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::clear
         clear_relations += implementations["clear_relations"].format(name=name)
         # relation handling in ::prepareForWrite
@@ -480,6 +482,7 @@ class ClassGenerator(object):
         prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
     substitutions = { "name" : rawclassname,
                       "constructorbody" : constructorbody,
+                      "destructorbody"  : destructorbody,
                       "prepareforwritinghead" : prepareforwritinghead,
                       "prepareforwritingbody" : prepareforwritingbody,
                       "prepareforwriting_refmembers" : prepareforwriting_refmembers,

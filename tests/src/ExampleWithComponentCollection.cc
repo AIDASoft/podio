@@ -6,9 +6,15 @@
 
 
 
-ExampleWithComponentCollection::ExampleWithComponentCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_refCollections(nullptr), m_data(new ExampleWithComponentDataContainer() ) {
+ExampleWithComponentCollection::ExampleWithComponentCollection() : m_isValid(false), m_collectionID(0), m_entries() ,m_data(new ExampleWithComponentDataContainer() ) {
   
 }
+
+ExampleWithComponentCollection::~ExampleWithComponentCollection() {
+  clear();
+  if (m_data != nullptr) delete m_data;
+  
+};
 
 const ExampleWithComponent ExampleWithComponentCollection::operator[](unsigned int index) const {
   return ExampleWithComponent(m_entries[index]);
@@ -41,9 +47,7 @@ void ExampleWithComponentCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
-  if (m_refCollections != nullptr) {
-    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  }
+  for (auto& pointer : m_refCollections) {pointer->clear(); } 
 
   for(int i=0, size = m_data->size(); i != size; ++i){
 
@@ -81,6 +85,7 @@ void ExampleWithComponentCollection::push_back(ConstExampleWithComponent object)
 }
 
 void ExampleWithComponentCollection::setBuffer(void* address){
+  if (m_data != nullptr) delete m_data;
   m_data = static_cast<ExampleWithComponentDataContainer*>(address);
 }
 

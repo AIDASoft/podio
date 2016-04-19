@@ -4,6 +4,6 @@
    for(auto it : (*m_rel_${name}_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
-     (*m_refCollections)[${counter}]->emplace_back(it.getObjectID());
+     m_refCollections[${counter}]->emplace_back(it.getObjectID());
      m_rel_${name}->push_back(it);
    }

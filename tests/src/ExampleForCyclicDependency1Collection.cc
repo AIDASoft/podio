@@ -7,11 +7,17 @@
 
 
 
-ExampleForCyclicDependency1Collection::ExampleForCyclicDependency1Collection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<::ConstExampleForCyclicDependency2>()),m_refCollections(nullptr), m_data(new ExampleForCyclicDependency1DataContainer() ) {
-    m_refCollections = new podio::CollRefCollection();
-  m_refCollections->push_back(new std::vector<podio::ObjectID>());
+ExampleForCyclicDependency1Collection::ExampleForCyclicDependency1Collection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<::ConstExampleForCyclicDependency2>()),m_data(new ExampleForCyclicDependency1DataContainer() ) {
+    m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
 }
+
+ExampleForCyclicDependency1Collection::~ExampleForCyclicDependency1Collection() {
+  clear();
+  if (m_data != nullptr) delete m_data;
+    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer;}
+
+};
 
 const ExampleForCyclicDependency1 ExampleForCyclicDependency1Collection::operator[](unsigned int index) const {
   return ExampleForCyclicDependency1(m_entries[index]);
@@ -35,7 +41,7 @@ ExampleForCyclicDependency1 ExampleForCyclicDependency1Collection::create(){
 
 void ExampleForCyclicDependency1Collection::clear(){
   m_data->clear();
-  for (auto& pointer : (*m_refCollections)) { pointer->clear(); }
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
   for (auto& item : (*m_rel_ref)) { item.unlink(); }
   m_rel_ref->clear();
 
@@ -47,18 +53,16 @@ void ExampleForCyclicDependency1Collection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
-  if (m_refCollections != nullptr) {
-    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  }
+  for (auto& pointer : m_refCollections) {pointer->clear(); } 
 
   for(int i=0, size = m_data->size(); i != size; ++i){
 
   }
   for (auto& obj : m_entries) {
     if (obj->m_ref != nullptr) {
-      (*m_refCollections)[0]->emplace_back(obj->m_ref->getObjectID());
+      m_refCollections[0]->emplace_back(obj->m_ref->getObjectID());
     } else {
-      (*m_refCollections)[0]->push_back({-2,-2});
+      m_refCollections[0]->push_back({-2,-2});
     }
   }
 
@@ -78,7 +82,7 @@ void ExampleForCyclicDependency1Collection::prepareAfterRead(){
 bool ExampleForCyclicDependency1Collection::setReferences(const podio::ICollectionProvider* collectionProvider){
 
   for(unsigned int i = 0, size = m_entries.size(); i != size; ++i) {
-    auto id = (*(*m_refCollections)[0])[i];
+    auto id = (*m_refCollections[0])[i];
     if (id.index != podio::ObjectID::invalid) {
       CollectionBase* coll = nullptr;
       collectionProvider->get(id.collectionID,coll);
@@ -105,6 +109,7 @@ void ExampleForCyclicDependency1Collection::push_back(ConstExampleForCyclicDepen
 }
 
 void ExampleForCyclicDependency1Collection::setBuffer(void* address){
+  if (m_data != nullptr) delete m_data;
   m_data = static_cast<ExampleForCyclicDependency1DataContainer*>(address);
 }
 

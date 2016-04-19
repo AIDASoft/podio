@@ -56,9 +56,9 @@ implementations["clear_relations"] += "\tm_rel_{name}->clear();\n"
 
 implementations["prep_writing_relations"]  = "\tfor (auto& obj : m_entries) {{\n"
 implementations["prep_writing_relations"] += "\t\tif (obj->m_{name} != nullptr) {{\n"
-implementations["prep_writing_relations"] += "\t\t\t(*m_refCollections)[{i}]->emplace_back(obj->m_{name}->getObjectID());\n"
+implementations["prep_writing_relations"] += "\t\t\tm_refCollections[{i}]->emplace_back(obj->m_{name}->getObjectID());\n"
 implementations["prep_writing_relations"] += "\t\t}} else {{\n"
-implementations["prep_writing_relations"] += "\t\t\t(*m_refCollections)[{i}]->push_back({{-2,-2}});\n"
+implementations["prep_writing_relations"] += "\t\t\tm_refCollections[{i}]->push_back({{-2,-2}});\n"
 implementations["prep_writing_relations"] += "\t\t}}\n\t}}\n"
 
 declarations["relation"] = "\tstd::vector<{namespace}::Const{type}>* m_rel_{name}; ///< Relation buffer for read / write\n"

@@ -6,9 +6,15 @@ ${includes}
 
 ${namespace_open}
 
-${name}Collection::${name}Collection() : m_isValid(false), m_collectionID(0), m_entries() ${initializers},m_refCollections(nullptr), m_data(new ${name}DataContainer() ) {
+${name}Collection::${name}Collection() : m_isValid(false), m_collectionID(0), m_entries() ${initializers},m_data(new ${name}DataContainer() ) {
   ${constructorbody}
 }
+
+${name}Collection::~${name}Collection() {
+  clear();
+  if (m_data != nullptr) delete m_data;
+  ${destructorbody}
+};
 
 const ${name} ${name}Collection::operator[](unsigned int index) const {
   return ${name}(m_entries[index]);
@@ -41,9 +47,7 @@ void ${name}Collection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
-  if (m_refCollections != nullptr) {
-    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  }
+  for (auto& pointer : m_refCollections) {pointer->clear(); } 
 $prepareforwritinghead
   for(int i=0, size = m_data->size(); i != size; ++i){
 $prepareforwritingbody
@@ -81,6 +85,7 @@ void ${name}Collection::push_back(Const${name} object){
 }
 
 void ${name}Collection::setBuffer(void* address){
+  if (m_data != nullptr) delete m_data;
   m_data = static_cast<${name}DataContainer*>(address);
 }
 
