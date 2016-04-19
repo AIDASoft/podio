@@ -6,6 +6,7 @@ ${namespace_open}
 class $name {
 public:
 $members
+$extracode_declarations
 };
 ${namespace_close}
 #endif

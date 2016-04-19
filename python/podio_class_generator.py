@@ -510,19 +510,33 @@ class ClassGenerator(object):
 
     includes = ""
     members = ""
-    for name, klass in components.iteritems():
-      klassname = klass
-      mnamespace = ""
-      if "::" in klass:
-        mnamespace, klassname = klass.split("::")
-      if mnamespace == "":
-        members+= "  %s %s;\n" %(klassname, name)
+    #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
+    keys = sorted( components.keys() ) 
+    for name in keys:
+      klass = components[ name ] 
+#    for name, klass in components.iteritems():
+
+      if( name != "ExtraCode"):
+        klassname = klass
+        mnamespace = ""
+        if "::" in klass:
+          mnamespace, klassname = klass.split("::")
+        if mnamespace == "":
+          members+= "  %s %s;\n" %(klassname, name)
+        else:
+          members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
+        if self.reader.components.has_key(klass):
+            includes+= '#include "%s.h"\n' %(klassname)
       else:
-        members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
-      if self.reader.components.has_key(klass):
-          includes+= '#include "%s.h"\n' %(klassname)
+         # handle user provided extra code
+        extracode_declarations = ""
+        if klass.has_key("declaration"):
+          extracode_declarations = klass["declaration"]
+
+
     substitutions = { "includes" : includes,
                       "members"  : members,
+                      "extracode_declarations" : extracode_declarations,
                       "name"     : rawclassname,
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
