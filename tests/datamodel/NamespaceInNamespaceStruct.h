@@ -8,6 +8,7 @@ class NamespaceInNamespaceStruct {
 public:
  ::ex2::NamespaceStruct data;
 
+
 };
 } // namespace ex2
 #endif
