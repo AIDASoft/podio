@@ -53,7 +53,8 @@ public:
 
 
 
-int getNumber() const;
+void setNumber(int n) { Number( n ) ; } 
+int getNumber() const; 
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from EventInfoObj instance
