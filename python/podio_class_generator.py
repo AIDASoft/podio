@@ -446,6 +446,7 @@ class ClassGenerator(object):
         create_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::clear
         clear_relations += implementations["clear_relations_vec"].format(name=name)
+        clear_relations += implementations["clear_relations"].format(name=name)
         # relation handling in push_back
         push_back_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::prepareForWrite

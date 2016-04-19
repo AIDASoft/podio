@@ -54,6 +54,8 @@ void ExampleReferencingTypeCollection::clear(){
     delete pointer;
   }
   m_rel_Clusters_tmp.clear();
+  for (auto& item : (*m_rel_Clusters)) { item.unlink(); }
+  m_rel_Clusters->clear();
   // clear relations to Refs. Make sure to unlink() the reference data s they may be gone already.
   for (auto& pointer : m_rel_Refs_tmp) {
     for(auto& item : (*pointer)) {
@@ -62,6 +64,8 @@ void ExampleReferencingTypeCollection::clear(){
     delete pointer;
   }
   m_rel_Refs_tmp.clear();
+  for (auto& item : (*m_rel_Refs)) { item.unlink(); }
+  m_rel_Refs->clear();
 
   for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
