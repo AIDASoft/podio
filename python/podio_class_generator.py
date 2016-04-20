@@ -422,7 +422,7 @@ class ClassGenerator(object):
     if nOfRefVectors + nOfRefMembers > 0:
       # member initialization
       #constructorbody += "\tm_refCollections = new podio::CollRefCollection();\n"
-      destructorbody  += "\tfor (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer;}\n"
+      destructorbody  += "\tfor (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }\n"
       clear_relations += "\tfor (auto& pointer : m_refCollections) { pointer->clear(); }\n"
       for counter, item in enumerate(refvectors):
         name  = item["name"]
@@ -447,6 +447,8 @@ class ClassGenerator(object):
         # relation handling in ::clear
         clear_relations += implementations["clear_relations_vec"].format(name=name)
         clear_relations += implementations["clear_relations"].format(name=name)
+        # relation handling in dtor:
+        destructorbody += implementations["destroy_relations"].format(name=name)
         # relation handling in push_back
         push_back_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::prepareForWrite
@@ -477,6 +479,8 @@ class ClassGenerator(object):
         constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::clear
         clear_relations += implementations["clear_relations"].format(name=name)
+        # relation handling in dtor:
+        destructorbody += implementations["destroy_relations"].format(name=name)
         # relation handling in ::prepareForWrite
         prepareforwriting_refmembers += implementations["prep_writing_relations"].format(name=name, i=(counter+nOfRefVectors))
         # relation handling in ::settingReferences
@@ -573,7 +577,7 @@ class ClassGenerator(object):
           forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
           includes_cc += '#include "%sConst.h"\n' %(klassname)
           initialize_relations += ",m_%s(nullptr)\n" %(name)
-        delete_relations+="\t\tdelete m_%s;\n" %name
+        delete_relations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
     for nsp in forward_declarations_namespace.iterkeys():
       if nsp != "":
