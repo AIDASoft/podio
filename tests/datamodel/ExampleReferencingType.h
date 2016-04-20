@@ -53,14 +53,12 @@ public:
 
   void addClusters(ConstExampleCluster);
   unsigned int Clusters_size() const;
-  std::vector<ConstExampleCluster>& Clusters() const ;
   ConstExampleCluster Clusters(unsigned int) const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
 
   void addRefs(ConstExampleReferencingType);
   unsigned int Refs_size() const;
-  std::vector<ConstExampleReferencingType>& Refs() const ;
   ConstExampleReferencingType Refs(unsigned int) const;
   std::vector<ConstExampleReferencingType>::const_iterator Refs_begin() const;
   std::vector<ConstExampleReferencingType>::const_iterator Refs_end() const;
