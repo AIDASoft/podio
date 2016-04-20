@@ -19,8 +19,9 @@ ExampleWithARelationObj::ExampleWithARelationObj(const ExampleWithARelationObj& 
 
 ExampleWithARelationObj::~ExampleWithARelationObj() {
   if (id.index == podio::ObjectID::untracked) {
-    delete m_ref;
 
   }
+    if (m_ref != nullptr) delete m_ref;
+
 }
 } // namespace ex

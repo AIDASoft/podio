@@ -49,15 +49,22 @@ TEST_CASE("Clearing"){
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
+  auto& oneRels    = store.create<ExampleWithOneRelationCollection>("OneRelation");
   auto nevents = unsigned(1000);
   for(unsigned i=0; i<nevents; ++i){
     hits.clear();
     clusters.clear();
     auto hit1 = hits.create();
+    auto hit2 = ExampleHit();
     hit1.energy(double(i));
-    auto hit2 = hits.create();
     auto cluster  = clusters.create();
     cluster.addHits(hit1);
+    cluster.addHits(hit2);
+    hits.push_back(hit2);
+    auto oneRel = ExampleWithOneRelation();
+    oneRel.cluster(cluster);
+    oneRel.cluster(cluster);
+    oneRels.push_back(oneRel);
   }
   hits.clear();
   if (hits.size() != 0 ) success = false;

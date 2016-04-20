@@ -17,7 +17,9 @@ ExampleClusterCollection::ExampleClusterCollection() : m_isValid(false), m_colle
 ExampleClusterCollection::~ExampleClusterCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
-    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer;}
+    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }
+  if (m_rel_Hits != nullptr) { delete m_rel_Hits; }
+  if (m_rel_Clusters != nullptr) { delete m_rel_Clusters; }
 
 };
 

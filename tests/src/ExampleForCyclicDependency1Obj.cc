@@ -19,8 +19,9 @@ ExampleForCyclicDependency1Obj::ExampleForCyclicDependency1Obj(const ExampleForC
 
 ExampleForCyclicDependency1Obj::~ExampleForCyclicDependency1Obj() {
   if (id.index == podio::ObjectID::untracked) {
-    delete m_ref;
 
   }
+    if (m_ref != nullptr) delete m_ref;
+
 }
 

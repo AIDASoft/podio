@@ -19,5 +19,6 @@ EventInfoObj::~EventInfoObj() {
   if (id.index == podio::ObjectID::untracked) {
 
   }
+
 }
 

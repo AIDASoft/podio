@@ -19,8 +19,9 @@ ExampleWithOneRelationObj::ExampleWithOneRelationObj(const ExampleWithOneRelatio
 
 ExampleWithOneRelationObj::~ExampleWithOneRelationObj() {
   if (id.index == podio::ObjectID::untracked) {
-    delete m_cluster;
 
   }
+    if (m_cluster != nullptr) delete m_cluster;
+
 }
 

@@ -20,5 +20,6 @@ ExampleWithVectorMemberObj::~ExampleWithVectorMemberObj() {
     delete m_count;
 
   }
+
 }
 

@@ -568,6 +568,7 @@ class ClassGenerator(object):
     initialize_relations = ""
     deepcopy_relations = ""
     delete_relations = ""
+    delete_singlerelations = ""
     refvectors = definition["OneToManyRelations"]
     singleRelations = definition["OneToOneRelations"]
     # do includes and forward declarations for
@@ -592,7 +593,7 @@ class ClassGenerator(object):
           forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
           includes_cc += '#include "%sConst.h"\n' %(klassname)
           initialize_relations += ",m_%s(nullptr)\n" %(name)
-        delete_relations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
+        delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
     for nsp in forward_declarations_namespace.iterkeys():
       if nsp != "":
@@ -641,6 +642,7 @@ class ClassGenerator(object):
                       "initialize_relations" : initialize_relations,
                       "deepcopy_relations" : deepcopy_relations,
                       "delete_relations" : delete_relations,
+                      "delete_singlerelations" : delete_singlerelations, 
                       "namespace_open" : namespace_open,
                       "namespace_close" : namespace_close
     }

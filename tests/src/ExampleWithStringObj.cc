@@ -19,5 +19,6 @@ ExampleWithStringObj::~ExampleWithStringObj() {
   if (id.index == podio::ObjectID::untracked) {
 
   }
+
 }
 
