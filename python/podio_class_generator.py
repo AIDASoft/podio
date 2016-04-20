@@ -350,12 +350,21 @@ class ClassGenerator(object):
     constextracode = ""
     if definition.has_key("ExtraCode"):
       extra = definition["ExtraCode"]
-      extracode_declarations = extra["declaration"]
-      extracode = extra["implementation"].replace("{name}",rawclassname)
-      constextracode_declarations = extra["declaration"]
-      constextracode = extra["implementation"].replace("{name}","Const"+rawclassname)
+      if( extra.has_key("declaration")):
+          extracode_declarations = extra["declaration"]
+      if( extra.has_key("implementation")):
+          extracode = extra["implementation"].replace("{name}",rawclassname)
+      if( extra.has_key("const_declaration")):
+          constextracode_declarations = extra["const_declaration"]
+          extracode_declarations += "\n"
+          extracode_declarations += extra["const_declaration"]
+      if( extra.has_key("const_implementation")):
+          constextracode = extra["const_implementation"].replace("{name}","Const"+rawclassname)
+          extracode += "\n"
+          extracode += extra["const_implementation"].replace("{name}",rawclassname)
       # TODO: add loading of code from external files
-      datatype["includes"] += extra["includes"]
+      if( extra.has_key("includes")):
+          datatype["includes"] += extra["includes"]
 
     substitutions = {"includes" : "\n".join(datatype["includes"]),
                      "includes_cc" : includes_cc,

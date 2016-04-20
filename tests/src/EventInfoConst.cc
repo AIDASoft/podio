@@ -45,7 +45,7 @@ ConstEventInfo::~ConstEventInfo(){
   const int& ConstEventInfo::Number() const { return m_obj->data.Number; }
 
 
-int ConstEventInfo::getNumber() const { return Number(); }
+int ConstEventInfo::getNumber() const { return Number(); } 
 bool  ConstEventInfo::isAvailable() const {
   if (m_obj != nullptr) {
     return true;

@@ -217,7 +217,8 @@ TEST_CASE("Arrays") {
 
 TEST_CASE("Extracode") {
   auto ev = EventInfo();
-  REQUIRE(ev.getNumber() == 0);
+  ev.setNumber(42) ;
+  REQUIRE(ev.getNumber() == 42);
 
   int ia[3] = { 1 , 2 , 3 } ;
   auto simple = SimpleStruct( ia ) ;

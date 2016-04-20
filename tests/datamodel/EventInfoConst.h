@@ -48,7 +48,7 @@ public:
   const int& Number() const;
 
 
-int getNumber() const;
+int getNumber() const; 
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from EventInfoObj instance
