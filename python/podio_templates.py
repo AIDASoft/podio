@@ -5,19 +5,19 @@ arguments = {}
 
 # Members
 #-----------------------------------
-declarations["member_getter"] = "\tconst {type}& {name}() const;\n"
-implementations["member_getter"] = "\tconst {type}& {classname}::{name}() const {{ return m_obj->data.{name}; }}\n"
+declarations["member_getter"] = "\tconst {type}& {fname}() const;\n"
+implementations["member_getter"] = "\tconst {type}& {classname}::{fname}() const {{ return m_obj->data.{name}; }}\n"
 
-declarations["member_builtin_setter"] = "\tvoid {name}({type} value);\n\n"
-implementations["member_builtin_setter"] = "void {classname}::{name}({type} value){{ m_obj->data.{name} = value; }}\n"
+declarations["member_builtin_setter"] = "\tvoid {fname}({type} value);\n\n"
+implementations["member_builtin_setter"] = "void {classname}::{fname}({type} value){{ m_obj->data.{name} = value; }}\n"
 # conceptually getting a non-const ref is a setter:
 declarations["member_class_refsetter"] = "\t{type}& {name}();\n"
 implementations["member_class_refsetter"] = "\t{type}& {classname}::{name}() {{ return m_obj->data.{name}; }}\n"
-declarations["member_class_setter"] = "\tvoid {name}(class {type} value);\n"
-implementations["member_class_setter"] = "void {classname}::{name}(class {type} value) {{ m_obj->data.{name} = value; }}\n"
+declarations["member_class_setter"] = "\tvoid {fname}(class {type} value);\n"
+implementations["member_class_setter"] = "void {classname}::{fname}(class {type} value) {{ m_obj->data.{name} = value; }}\n"
 
 # this is inline, don't need the declaration
-implementations["const_member_getter"] = "\tconst {type}& Const{classname}::{name}() const {{ return m_obj->data.{name}; }}\n"
+implementations["const_member_getter"] = "\tconst {type}& Const{classname}::{fname}() const {{ return m_obj->data.{name}; }}\n"
 
 # OneToOneRelations
 #-----------------------------------

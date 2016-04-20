@@ -64,6 +64,7 @@ public:
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleForCyclicDependency1& p1,
 //       const ExampleForCyclicDependency1& p2 );
+  bool operator<(const ConstExampleForCyclicDependency1& other) const { return m_obj < other.m_obj  ; }
 
   const podio::ObjectID getObjectID() const;
 

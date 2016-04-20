@@ -53,14 +53,18 @@ public:
 
   void addClusters(ConstExampleCluster);
   unsigned int Clusters_size() const;
+  std::vector<ConstExampleCluster>& Clusters() const ;
   ConstExampleCluster Clusters(unsigned int) const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
+
   void addRefs(ConstExampleReferencingType);
   unsigned int Refs_size() const;
+  std::vector<ConstExampleReferencingType>& Refs() const ;
   ConstExampleReferencingType Refs(unsigned int) const;
   std::vector<ConstExampleReferencingType>::const_iterator Refs_begin() const;
   std::vector<ConstExampleReferencingType>::const_iterator Refs_end() const;
+
 
 
   /// check whether the object is actually available
@@ -77,6 +81,7 @@ public:
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleReferencingType& p1,
 //       const ExampleReferencingType& p2 );
+  bool operator<(const ExampleReferencingType& other) const { return m_obj < other.m_obj  ; }
 
   const podio::ObjectID getObjectID() const;
 
