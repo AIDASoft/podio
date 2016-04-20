@@ -22,5 +22,6 @@ ExampleReferencingTypeObj::~ExampleReferencingTypeObj() {
     delete m_Refs;
 
   }
+
 }
 

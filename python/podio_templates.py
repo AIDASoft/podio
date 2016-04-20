@@ -53,6 +53,7 @@ implementations["clear_relations_vec"] += "\tm_rel_{name}_tmp.clear();\n"
 
 implementations["clear_relations"]  = "\tfor (auto& item : (*m_rel_{name})) {{ item.unlink(); }}\n"
 implementations["clear_relations"] += "\tm_rel_{name}->clear();\n"
+implementations["destroy_relations"]  = "\tif (m_rel_{name} != nullptr) {{ delete m_rel_{name}; }}\n"
 
 implementations["prep_writing_relations"]  = "\tfor (auto& obj : m_entries) {{\n"
 implementations["prep_writing_relations"] += "\t\tif (obj->m_{name} != nullptr) {{\n"

@@ -19,5 +19,6 @@ ${name}Obj::~${name}Obj() {
   if (id.index == podio::ObjectID::untracked) {
 ${delete_relations}
   }
+${delete_singlerelations}
 }
 ${namespace_close}

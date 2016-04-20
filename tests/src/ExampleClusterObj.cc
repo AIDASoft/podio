@@ -22,5 +22,6 @@ ExampleClusterObj::~ExampleClusterObj() {
     delete m_Clusters;
 
   }
+
 }
 

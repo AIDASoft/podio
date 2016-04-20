@@ -17,7 +17,9 @@ ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_isValid
 ExampleReferencingTypeCollection::~ExampleReferencingTypeCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
-    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer;}
+    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }
+  if (m_rel_Clusters != nullptr) { delete m_rel_Clusters; }
+  if (m_rel_Refs != nullptr) { delete m_rel_Refs; }
 
 };
 

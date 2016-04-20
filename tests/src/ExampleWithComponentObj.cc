@@ -19,5 +19,6 @@ ExampleWithComponentObj::~ExampleWithComponentObj() {
   if (id.index == podio::ObjectID::untracked) {
 
   }
+
 }
 

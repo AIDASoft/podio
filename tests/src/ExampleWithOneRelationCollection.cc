@@ -15,7 +15,8 @@ ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_isValid
 ExampleWithOneRelationCollection::~ExampleWithOneRelationCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
-    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer;}
+    for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }
+  if (m_rel_cluster != nullptr) { delete m_rel_cluster; }
 
 };
 

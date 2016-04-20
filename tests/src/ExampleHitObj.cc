@@ -19,5 +19,6 @@ ExampleHitObj::~ExampleHitObj() {
   if (id.index == podio::ObjectID::untracked) {
 
   }
+
 }
 
