@@ -60,11 +60,13 @@ public:
   ConstExampleHit Hits(unsigned int) const;
   std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
   std::vector<ConstExampleHit>::const_iterator Hits_end() const;
+
   void addClusters(ConstExampleCluster);
   unsigned int Clusters_size() const;
   ConstExampleCluster Clusters(unsigned int) const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
   std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
+
 
 
   /// check whether the object is actually available
@@ -81,6 +83,7 @@ public:
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleCluster& p1,
 //       const ExampleCluster& p2 );
+  bool operator<(const ExampleCluster& other) const { return m_obj < other.m_obj  ; }
 
   const podio::ObjectID getObjectID() const;
 

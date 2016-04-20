@@ -229,6 +229,43 @@ TEST_CASE("Extracode") {
 
 }
 
+
+TEST_CASE("AssociativeContainer") {
+  auto clu1 = ExampleCluster();
+  auto clu2 = ExampleCluster();
+  auto clu3 = ExampleCluster();
+  auto clu4 = ExampleCluster();
+  auto clu5 = ExampleCluster();
+
+  std::set<ExampleCluster> cSet ;
+  cSet.insert( clu1 ) ;
+  cSet.insert( clu2 ) ;
+  cSet.insert( clu3 ) ;
+  cSet.insert( clu4 ) ;
+  cSet.insert( clu5 ) ;
+  cSet.insert( clu1 ) ;
+  cSet.insert( clu2 ) ;
+  cSet.insert( clu3 ) ;
+  cSet.insert( clu4 ) ;
+  cSet.insert( clu5 ) ;
+
+  REQUIRE( cSet.size() == 5 );
+
+  std::map<ExampleCluster,int> cMap ;
+  cMap[ clu1 ] = 1  ;
+  cMap[ clu2 ] = 2  ;
+  cMap[ clu3 ] = 3  ;
+  cMap[ clu4 ] = 4  ;
+  cMap[ clu5 ] = 5  ;
+
+  REQUIRE( cMap[ clu3 ]  == 3 );
+  
+  cMap[ clu3 ] = 42  ;
+
+  REQUIRE( cMap[ clu3 ]  == 42 );
+
+}
+
 TEST_CASE("Equality") {
   auto cluster = ExampleCluster();
   auto rel = ExampleWithOneRelation();

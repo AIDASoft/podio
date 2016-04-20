@@ -31,12 +31,14 @@ _text_ = """
 
 class ClassGenerator(object):
 
-  def __init__(self,yamlfile, install_dir, package_name, verbose = True):
+  def __init__(self,yamlfile, install_dir, package_name, verbose = True, getSyntax = False ):
+
     self.yamlfile = yamlfile
     self.install_dir = install_dir
     self.package_name =package_name
     self.template_dir = os.path.join(thisdir,"../templates")
     self.verbose=verbose
+    self.getSyntax=getSyntax
     self.buildin_types = ClassDefinitionValidator.buildin_types
     self.created_classes = []
     self.requested_classes = []
@@ -250,18 +252,22 @@ class ClassGenerator(object):
     for member in definition["Members"]:
       name = member["name"]
       klass = member["type"]
-      getter_declarations += declarations["member_getter"].format(type=klass, name=name)
-      getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name)
+      gname,sname = name,name 
+      if( self.getSyntax ):
+        gname = "get" + name[:1].upper() + name[1:]
+        sname = "set" + name[:1].upper() + name[1:]
+      getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname)
+      getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
       if klass in self.buildin_types:
-        setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name)
-        setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name)
+        setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname)
+        setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
       else:
         setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name)
-        setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name)
-        setter_declarations += declarations["member_class_setter"].format(type=klass, name=name)
-        setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name)
+        setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
+        setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname)
+        setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
       # Getter for the Const variety of this datatype
-      ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name)
+      ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
 
 
       # set up signature
@@ -332,9 +338,19 @@ class ClassGenerator(object):
       if relationtype not in self.buildin_types and relationtype not in self.reader.components:
           relationtype = "Const"+relationtype
 
-      substitutions = {"relation" : refvector["name"],
+      relationName = refvector["name"]
+      get_relation = relationName
+      add_relation = "add"+relationName
+
+      if( self.getSyntax ):
+        get_relation = "get" + relationName[:1].upper() + relationName[1:]
+        add_relation = "add" + relationName[:1].upper() + relationName[1:len(relationName)-1]  # drop the 's' at the end !??
+
+      substitutions = {"relation" : relationName,
+                       "get_relation" : get_relation,
+                       "add_relation" : add_relation,
                        "relationtype" : relationtype,
-                       "classname" : rawclassname,
+                       "classname"  : rawclassname,
                        "package_name" : self.package_name
                       }
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
@@ -351,11 +367,11 @@ class ClassGenerator(object):
     if definition.has_key("ExtraCode"):
       extra = definition["ExtraCode"]
       if( extra.has_key("declaration")):
-          extracode_declarations = extra["declaration"]
+          extracode_declarations = extra["declaration"].replace("{name}",rawclassname)
       if( extra.has_key("implementation")):
           extracode = extra["implementation"].replace("{name}",rawclassname)
       if( extra.has_key("const_declaration")):
-          constextracode_declarations = extra["const_declaration"]
+          constextracode_declarations = extra["const_declaration"].replace("{name}","Const"+rawclassname)
           extracode_declarations += "\n"
           extracode_declarations += extra["const_declaration"]
       if( extra.has_key("const_implementation")):
@@ -364,7 +380,8 @@ class ClassGenerator(object):
           extracode += extra["const_implementation"].replace("{name}",rawclassname)
       # TODO: add loading of code from external files
       if( extra.has_key("includes")):
-          datatype["includes"] += extra["includes"]
+          datatype["includes"].append( extra["includes"] )
+          print " ***** adding includes : " ,  extra["includes"] , "to" ,  datatype["includes"] 
 
     substitutions = {"includes" : "\n".join(datatype["includes"]),
                      "includes_cc" : includes_cc,
@@ -739,6 +756,9 @@ if __name__ == "__main__":
   parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="Don't write a report to screen")
+  parser.add_option("-g", "--getSyntax",
+                    action="store_true", dest="getSyntax", default=False,
+                    help="Create getter and setter members with getMember/setMember syntax")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -755,7 +775,7 @@ if __name__ == "__main__":
   if not os.path.exists( directory ):
     os.makedirs(directory)
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
+  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose, getSyntax=options.getSyntax )
   gen.process()
   for warning in gen.warnings:
       print warning
