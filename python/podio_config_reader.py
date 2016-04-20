@@ -71,9 +71,13 @@ class ClassDefinitionValidator(object):
 
   def check_component(self, name, definition):
     """Check that components only contain simple types or other components"""
-    for klass in definition.itervalues():
-      if not (klass in self.buildin_types or klass in self.components.keys()):
-        raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(name, klass))
+    for mem in definition.keys():
+        klass = definition[ mem ]
+        if not (mem=="ExtraCode" or klass in self.buildin_types or klass in self.components.keys() ):
+            raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(name, klass))
+#    for klass in definition.itervalues():
+#      if not (klass in self.buildin_types or klass in self.components.keys() ):
+#        raise Exception("'%s' defines a member of a type '%s' which is not allowed in a component!" %(name, klass))
 
   def check_components(self,components):
     for klassname, value in components.iteritems():
@@ -118,7 +122,7 @@ class PodioConfigReader(object):
     if "components" in content.keys():
       validator.check_components(content["components"])
       for klassname, value in content["components"].iteritems():
-        component = {"Members": value}
+        component={ "Members" : value }
         self.components[klassname] = component
 
 

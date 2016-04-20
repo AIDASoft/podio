@@ -8,6 +8,7 @@ class NotSoSimpleStruct {
 public:
   SimpleStruct data;
 
+
 };
 
 #endif

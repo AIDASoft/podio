@@ -5,8 +5,9 @@
 namespace ex2 {
 class NamespaceStruct {
 public:
-  int y;
   int x;
+  int y;
+
 
 };
 } // namespace ex2

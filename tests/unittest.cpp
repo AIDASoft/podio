@@ -211,6 +211,14 @@ TEST_CASE("Arrays") {
 TEST_CASE("Extracode") {
   auto ev = EventInfo();
   REQUIRE(ev.getNumber() == 0);
+
+  int ia[3] = { 1 , 2 , 3 } ;
+  auto simple = SimpleStruct( ia ) ;
+  REQUIRE( simple.x == 1 );
+  REQUIRE( simple.y == 2 );
+  REQUIRE( simple.z == 3 );
+
+
 }
 
 TEST_CASE("Equality") {
