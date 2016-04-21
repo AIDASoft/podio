@@ -69,10 +69,6 @@ ConstExampleCluster ExampleReferencingType::Clusters(unsigned int index) const {
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
-
-std::vector<ConstExampleCluster>& ExampleReferencingType::Clusters() const {
-  return  *m_obj->m_Clusters ;
-}
 std::vector<ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_begin() const {
   auto ret_value = m_obj->m_Refs->begin();
   std::advance(ret_value, m_obj->data.Refs_begin);
@@ -99,10 +95,6 @@ ConstExampleReferencingType ExampleReferencingType::Refs(unsigned int index) con
     return m_obj->m_Refs->at(m_obj->data.Refs_begin+index);
   }
   else throw std::out_of_range ("index out of bounds for existing references");
-}
-
-std::vector<ConstExampleReferencingType>& ExampleReferencingType::Refs() const {
-  return  *m_obj->m_Refs ;
 }
 
 

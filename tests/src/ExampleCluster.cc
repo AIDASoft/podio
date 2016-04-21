@@ -75,10 +75,6 @@ ConstExampleHit ExampleCluster::Hits(unsigned int index) const {
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
-
-std::vector<ConstExampleHit>& ExampleCluster::Hits() const {
-  return  *m_obj->m_Hits ;
-}
 std::vector<ConstExampleCluster>::const_iterator ExampleCluster::Clusters_begin() const {
   auto ret_value = m_obj->m_Clusters->begin();
   std::advance(ret_value, m_obj->data.Clusters_begin);
@@ -105,10 +101,6 @@ ConstExampleCluster ExampleCluster::Clusters(unsigned int index) const {
     return m_obj->m_Clusters->at(m_obj->data.Clusters_begin+index);
   }
   else throw std::out_of_range ("index out of bounds for existing references");
-}
-
-std::vector<ConstExampleCluster>& ExampleCluster::Clusters() const {
-  return  *m_obj->m_Clusters ;
 }
 
 
