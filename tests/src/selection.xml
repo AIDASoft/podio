@@ -85,6 +85,36 @@
             <field name="m_registry" transient="true"/>
             <field name="m_container" transient="true"/>
           </class>
+          <class name="std::vector<ExampleMCData>" />
+
+          <class name="ExampleMCData">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleMC>" />
+
+          <class name="ExampleMC">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ConstExampleMC>" />
+
+          <class name="ConstExampleMC">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleMCCollection>" />
+
+          <class name="ExampleMCCollection">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
+          <class name="std::vector<ExampleMCObj>" />
+
+          <class name="ExampleMCObj">
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+          </class>
           <class name="std::vector<EventInfoData>" />
 
           <class name="EventInfoData">

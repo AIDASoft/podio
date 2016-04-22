@@ -10,6 +10,7 @@
 // test data model
 #include "ExampleHitCollection.h"
 #include "ExampleClusterCollection.h"
+#include "ExampleMCCollection.h"
 #include "ExampleReferencingTypeCollection.h"
 #include "ExampleWithOneRelationCollection.h"
 #include "ExampleWithVectorMemberCollection.h"
@@ -25,7 +26,7 @@ void processEvent(podio::EventStore& store, bool verboser) {
   auto& failing = store.get<ExampleClusterCollection>("notthere");
   if(failing.isValid() == true) {
     throw std::runtime_error("Collection 'notthere' should not be valid");
-};
+  };
 
   auto& strings = store.get<ExampleWithStringCollection>("strings");
   if(strings.isValid()){
@@ -44,6 +45,25 @@ void processEvent(podio::EventStore& store, bool verboser) {
       glob++;
     }
   }
+
+
+  auto& mcps =  store.get<ExampleMCCollection>("mcparticles");
+  if( mcps.isValid() ){
+
+    for( auto p : mcps ){
+      std::cout << " particle " << p.getObjectID().index << " daughters: " ;
+      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
+	int dIndex = it->getObjectID().index ;
+	std::cout << " " << dIndex ;
+      } 
+      std::cout << "  and parents: " ;
+      for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
+	std::cout << " " << it->getObjectID().index ;
+      }
+      std::cout << std::endl ;
+    }
+  }
+
 
   //std::cout << "Fetching collection 'refs'" << std::endl;
   auto& refs = store.get<ExampleReferencingTypeCollection>("refs");
