@@ -50,8 +50,11 @@ std::vector<int>::const_iterator ExampleWithVectorMember::count_begin() const {
 
 std::vector<int>::const_iterator ExampleWithVectorMember::count_end() const {
   auto ret_value = m_obj->m_count->begin();
-  std::advance(ret_value, m_obj->data.count_end-1);
-  return ++ret_value;
+//fg: this code fails if m_obj->data.count==0
+//  std::advance(ret_value, m_obj->data.count_end-1);
+//  return ++ret_value;
+  std::advance(ret_value, m_obj->data.count_end);
+  return ret_value;
 }
 
 void ExampleWithVectorMember::addcount(int component) {

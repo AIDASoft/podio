@@ -1,5 +1,6 @@
 // Data model
 #include "EventInfoCollection.h"
+#include "ExampleMCCollection.h"
 #include "ExampleHitCollection.h"
 #include "ExampleClusterCollection.h"
 #include "ExampleReferencingTypeCollection.h"
@@ -26,6 +27,7 @@ int main(){
   auto writer = podio::ROOTWriter("example.root", &store);
 
   auto& info       = store.create<EventInfoCollection>("info");
+  auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
   auto& hits       = store.create<ExampleHitCollection>("hits");
   auto& clusters   = store.create<ExampleClusterCollection>("clusters");
   auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");
@@ -37,6 +39,7 @@ int main(){
   auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   writer.registerForWrite<EventInfoCollection>("info");
+  writer.registerForWrite<ExampleMCCollection>("mcparticles");
   writer.registerForWrite<ExampleHitCollection>("hits");
   writer.registerForWrite<ExampleClusterCollection>("clusters");
   writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
@@ -48,7 +51,7 @@ int main(){
   writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   writer.registerForWrite<ExampleWithStringCollection>("strings");
 
-  unsigned nevents=2000;
+  unsigned nevents=1;//2000;
 
   for(unsigned i=0; i<nevents; ++i) {
     if(i % 1000 == 0) {
@@ -63,6 +66,77 @@ int main(){
 
     hits.push_back(hit1);
     hits.push_back(hit2);
+
+    // ---- add some MC particles ----
+    auto mcp0 = ExampleMC();
+    auto mcp1 = ExampleMC();
+    auto mcp2 = ExampleMC();
+    auto mcp3 = ExampleMC();
+    auto mcp4 = ExampleMC();
+    auto mcp5 = ExampleMC();
+    auto mcp6 = ExampleMC();
+    auto mcp7 = ExampleMC();
+    auto mcp8 = ExampleMC();
+    auto mcp9 = ExampleMC();
+
+    mcps.push_back( mcp0 ) ;
+    mcps.push_back( mcp1 ) ;
+    mcps.push_back( mcp2 ) ;
+    mcps.push_back( mcp3 ) ;
+    mcps.push_back( mcp4 ) ;
+    mcps.push_back( mcp5 ) ;
+    mcps.push_back( mcp6 ) ;
+    mcps.push_back( mcp7 ) ;
+    mcps.push_back( mcp8 ) ;
+    mcps.push_back( mcp9 ) ;
+
+    // --- add some daughter relations
+    auto p = ExampleMC();
+    auto d = ExampleMC();
+ 
+    p = mcps[0] ; 
+    p.adddaughters( mcps[2] ) ;
+    p.adddaughters( mcps[3] ) ;
+    p.adddaughters( mcps[4] ) ;
+    p.adddaughters( mcps[5] ) ;
+    p = mcps[1] ; 
+    p.adddaughters( mcps[2] ) ;
+    p.adddaughters( mcps[3] ) ;
+    p.adddaughters( mcps[4] ) ;
+    p.adddaughters( mcps[5] ) ;
+    p = mcps[2] ; 
+    p.adddaughters( mcps[6] ) ;
+    p.adddaughters( mcps[7] ) ;
+    p.adddaughters( mcps[8] ) ;
+    p.adddaughters( mcps[9] ) ;
+    p = mcps[3] ; 
+    p.adddaughters( mcps[6] ) ;
+    p.adddaughters( mcps[7] ) ;
+    p.adddaughters( mcps[8] ) ;
+    p.adddaughters( mcps[9] ) ;
+
+    //--- now fix the parent relations
+    for( unsigned j=0,N=mcps.size();j<N;++j){
+      p = mcps[j] ; 
+      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
+	int dIndex = it->getObjectID().index ;
+	d = mcps[ dIndex ] ;
+	d.addparents( p ) ;
+      }
+    }
+    //-------- print relations for debugging:
+    for( auto p : mcps ){
+      std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
+      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
+	std::cout << " " << it->getObjectID().index ;
+      }
+      std::cout << "  and parents: " ;
+      for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
+	std::cout << " " << it->getObjectID().index ;
+      }
+      std::cout << std::endl ;
+    }
+    //-------------------------------
 
     auto cluster  = ExampleCluster();
     auto clu0  = ExampleCluster();

@@ -43,6 +43,16 @@ datatypes :
      - double z      // z-coordinate
      - double energy // measured energy deposit
 
+  ExampleMC :
+    Description : "Example MC-particle"
+    Author: "F.Gaede"
+    Members:
+      - double energy  // energy
+      - int PDG  // PDG code
+    OneToManyRelations:
+      - ExampleMC parents   // parents
+      - ExampleMC daughters  // daughters
+
   ExampleCluster :
     Description : "Cluster"
     Author : "B. Hegner"
