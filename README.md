@@ -4,6 +4,18 @@
 Please submit feature requests and bugs to
 [https://sft.its.cern.ch/jira/projects/PODIO](https://sft.its.cern.ch/jira/projects/PODIO)
 
+## Documentation
+
+ - [Introduction](./doc/doc.md)
+ - [Design](./doc/design.md)
+ - [Data Model Syntax](./doc/datamodel_syntax.md)
+ - [Examples](./doc/examples.md)
+ - [Advanced Topics](./doc/advanced_topics.md)
+
+Browse the API documentation created with Doxygen at 
+
+[http://fccsw.web.cern.ch/fccsw/podio/index.html](http://fccsw.web.cern.ch/fccsw/podio/index.html).
+
 ## Prerequisites
 
 If you are on lxplus, all the necessary software is preinstalled.
