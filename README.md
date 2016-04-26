@@ -11,7 +11,10 @@ Please submit feature requests and bugs to
  - [Data Model Syntax](./doc/datamodel_syntax.md)
  - [Examples](./doc/examples.md)
  - [Advanced Topics](./doc/advanced_topics.md)
- - [**Doxygen documentation**](http://fccsw.web.cern.ch/fccsw/podio/index.html)
+
+Browse the API documentation created with Doxygen at 
+
+[http://fccsw.web.cern.ch/fccsw/podio/index.html](http://fccsw.web.cern.ch/fccsw/podio/index.html).
 
 ## Prerequisites
 
