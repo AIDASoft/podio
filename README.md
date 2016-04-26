@@ -4,6 +4,12 @@
 Please submit feature requests and bugs to
 [https://sft.its.cern.ch/jira/projects/PODIO](https://sft.its.cern.ch/jira/projects/PODIO)
 
+## Further documentation
+
+ - [Doxygen documentation](http://fccsw.web.cern.ch/fccsw/podio/index.html)
+ - [general doc](./doc/doc.md)
+ - ...
+
 ## Prerequisites
 
 If you are on lxplus, all the necessary software is preinstalled.
