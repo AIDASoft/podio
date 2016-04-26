@@ -4,11 +4,14 @@
 Please submit feature requests and bugs to
 [https://sft.its.cern.ch/jira/projects/PODIO](https://sft.its.cern.ch/jira/projects/PODIO)
 
-## Further documentation
+## Documentation
 
- - [Doxygen documentation](http://fccsw.web.cern.ch/fccsw/podio/index.html)
- - [general doc](./doc/doc.md)
- - ...
+ - [Introduction](./doc/doc.md)
+ - [Design](./doc/design.md)
+ - [Data Model Syntax](./doc/datamodel_syntax.md)
+ - [Examples](./doc/examples.md)
+ - [Advanced Topics](./doc/advanced_topics.md)
+ - [**Doxygen documentation**](http://fccsw.web.cern.ch/fccsw/podio/index.html)
 
 ## Prerequisites
 
