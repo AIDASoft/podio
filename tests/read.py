@@ -2,11 +2,11 @@ import unittest
 from EventStore import EventStore
 
 if __name__ == '__main__':
-    
+
     filename = 'example.root'
     store = EventStore([filename])
     for i, event in enumerate(store):
-        if i%1000 == 0:
+        if i % 1000 == 0:
             print 'reading event', i
         evinfo = store.get("info")[0]
         clusters = store.get("clusters")

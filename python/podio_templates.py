@@ -1,3 +1,4 @@
+# flake8: noqa
 declarations = {}
 implementations = {}
 definitions = {}
