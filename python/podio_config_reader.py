@@ -86,7 +86,7 @@ class ClassDefinitionValidator(object):
             if not (mem == "ExtraCode" or klass in self.buildin_types \
                     or klass in self.components.keys()):
                 raise Exception("'%s' defines a member of a type '%s'"
-                                % (name, class) +
+                                % (name, klass) +
                                 "which is not allowed in a component!")
 
     def check_components(self, components):

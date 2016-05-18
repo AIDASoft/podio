@@ -140,8 +140,8 @@ class ClassGenerator(object):
                     self.warnings.append("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
             elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
                 raise Exception("'%s' defines an array type. Array types are not supported yet." % (classname, klass))
-          else:
-              raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
+            else:
+                raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
         return datatype_dict
 
 
@@ -260,7 +260,7 @@ class ClassGenerator(object):
       for member in definition["Members"]:
         name = member["name"]
         klass = member["type"]
-        gname,sname = name,name 
+        gname,sname = name,name
         if( self.getSyntax ):
           gname = "get" + name[:1].upper() + name[1:]
           sname = "set" + name[:1].upper() + name[1:]
@@ -389,7 +389,7 @@ class ClassGenerator(object):
         # TODO: add loading of code from external files
         if( extra.has_key("includes")):
             datatype["includes"].append( extra["includes"] )
-            print " ***** adding includes : " ,  extra["includes"] , "to" ,  datatype["includes"] 
+            print " ***** adding includes : " ,  extra["includes"] , "to" ,  datatype["includes"]
 
       substitutions = {"includes" : "\n".join(datatype["includes"]),
                       "includes_cc" : includes_cc,
@@ -555,9 +555,9 @@ class ClassGenerator(object):
       extracode_declarations = ""
 
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
-      keys = sorted( components.keys() ) 
+      keys = sorted( components.keys() )
       for name in keys:
-        klass = components[ name ] 
+        klass = components[ name ]
   #    for name, klass in components.iteritems():
 
         if( name != "ExtraCode"):
@@ -588,100 +588,100 @@ class ClassGenerator(object):
       self.fill_templates("Component",substitutions)
       self.created_classes.append(classname)
 
-      def create_obj(self, classname, definition):
-        """ Create an obj class containing all information
-            relevant for a given object.
-        """
-        namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+    def create_obj(self, classname, definition):
+      """ Create an obj class containing all information
+          relevant for a given object.
+      """
+      namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
-        relations = ""
-        includes = ""
-        includes_cc = ""
-        forward_declarations = ""
-        forward_declarations_namespace = {"":[]}
-        initialize_relations = ""
-        deepcopy_relations = ""
-        delete_relations = ""
-        delete_singlerelations = ""
-        refvectors = definition["OneToManyRelations"]
-        singleRelations = definition["OneToOneRelations"]
-        # do includes and forward declarations for
-        # oneToOneRelations and do proper cleanups
-        for item in singleRelations:
-          name  = item["name"]
-          klass = item["type"]
-          klassname = klass
-          mnamespace = ""
-          if "::" in klass:
-            mnamespace, klassname = klass.split("::")
-            if mnamespace not in forward_declarations_namespace.keys():
-              forward_declarations_namespace[mnamespace] = []
+      relations = ""
+      includes = ""
+      includes_cc = ""
+      forward_declarations = ""
+      forward_declarations_namespace = {"":[]}
+      initialize_relations = ""
+      deepcopy_relations = ""
+      delete_relations = ""
+      delete_singlerelations = ""
+      refvectors = definition["OneToManyRelations"]
+      singleRelations = definition["OneToOneRelations"]
+      # do includes and forward declarations for
+      # oneToOneRelations and do proper cleanups
+      for item in singleRelations:
+        name  = item["name"]
+        klass = item["type"]
+        klassname = klass
+        mnamespace = ""
+        if "::" in klass:
+          mnamespace, klassname = klass.split("::")
+          if mnamespace not in forward_declarations_namespace.keys():
+            forward_declarations_namespace[mnamespace] = []
 
-          if mnamespace != "":
-            relations+= "  ::%s::Const%s* m_%s;\n" %(mnamespace, klassname, name)
-          else:
-            relations+= "  Const%s* m_%s;\n" %(klassname, name)
+        if mnamespace != "":
+          relations+= "  ::%s::Const%s* m_%s;\n" %(mnamespace, klassname, name)
+        else:
+          relations+= "  Const%s* m_%s;\n" %(klassname, name)
 
-          if klass not in self.buildin_types:
-            if klass != classname:
-              forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
-              includes_cc += '#include "%sConst.h"\n' %(klassname)
-              initialize_relations += ",m_%s(nullptr)\n" %(name)
-            delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
+        if klass not in self.buildin_types:
+          if klass != classname:
+            forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
+            includes_cc += '#include "%sConst.h"\n' %(klassname)
+            initialize_relations += ",m_%s(nullptr)\n" %(name)
+          delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
-        for nsp in forward_declarations_namespace.iterkeys():
-          if nsp != "":
-            forward_declarations += "namespace %s {" % nsp
-          forward_declarations += "".join(forward_declarations_namespace[nsp])
-          if nsp != "":
-            forward_declarations += "}\n"
+      for nsp in forward_declarations_namespace.iterkeys():
+        if nsp != "":
+          forward_declarations += "namespace %s {" % nsp
+        forward_declarations += "".join(forward_declarations_namespace[nsp])
+        if nsp != "":
+          forward_declarations += "}\n"
 
-        if len(refvectors+definition["VectorMembers"]) !=0:
-          includes += "#include <vector>\n"
+      if len(refvectors+definition["VectorMembers"]) !=0:
+        includes += "#include <vector>\n"
 
-        for item in refvectors+definition["VectorMembers"]:
-          name  = item["name"]
-          klass = item["type"]
-          if klass not in self.buildin_types:
-            if klass not in self.reader.components:
-              if "::" in klass:
-                mnamespace, klassname = klass.split("::")
-                klassWithQualifier = "::"+mnamespace+"::Const"+klassname
-              else:
-                klassWithQualifier = "Const"+klass
+      for item in refvectors+definition["VectorMembers"]:
+        name  = item["name"]
+        klass = item["type"]
+        if klass not in self.buildin_types:
+          if klass not in self.reader.components:
+            if "::" in klass:
+              mnamespace, klassname = klass.split("::")
+              klassWithQualifier = "::"+mnamespace+"::Const"+klassname
             else:
-                klassWithQualifier = klass
-            relations += "\tstd::vector<%s>* m_%s;\n" %(klassWithQualifier, name)
-            initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klassWithQualifier)
-            deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klassWithQualifier,name)
-            if klass == classname:
-              includes_cc += '#include "%s.h"\n' %(rawclassname)
-            else:
-              if "::" in klass:
-                mnamespace, klassname = klass.split("::")
-                includes += '#include "%s.h"\n' %klassname
-              else:
-                includes += '#include "%s.h"\n' %klass
+              klassWithQualifier = "Const"+klass
           else:
-              relations += "\tstd::vector<%s>* m_%s;\n" %(klass, name)
-              initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klass)
-              deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
+              klassWithQualifier = klass
+          relations += "\tstd::vector<%s>* m_%s;\n" %(klassWithQualifier, name)
+          initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klassWithQualifier)
+          deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klassWithQualifier,name)
+          if klass == classname:
+            includes_cc += '#include "%s.h"\n' %(rawclassname)
+          else:
+            if "::" in klass:
+              mnamespace, klassname = klass.split("::")
+              includes += '#include "%s.h"\n' %klassname
+            else:
+              includes += '#include "%s.h"\n' %klass
+        else:
+            relations += "\tstd::vector<%s>* m_%s;\n" %(klass, name)
+            initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klass)
+            deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klass,name)
 
-          delete_relations += "\t\tdelete m_%s;\n" %(name)
-        substitutions = { "name" : rawclassname,
-                          "includes" : includes,
-                          "includes_cc" : includes_cc,
-                          "forward_declarations" : forward_declarations,
-                          "relations" : relations,
-                          "initialize_relations" : initialize_relations,
-                          "deepcopy_relations" : deepcopy_relations,
-                          "delete_relations" : delete_relations,
-                          "delete_singlerelations" : delete_singlerelations, 
-                          "namespace_open" : namespace_open,
-                          "namespace_close" : namespace_close
-        }
-        self.fill_templates("Obj",substitutions)
-        self.created_classes.append(classname+"Obj")
+        delete_relations += "\t\tdelete m_%s;\n" %(name)
+      substitutions = { "name" : rawclassname,
+                        "includes" : includes,
+                        "includes_cc" : includes_cc,
+                        "forward_declarations" : forward_declarations,
+                        "relations" : relations,
+                        "initialize_relations" : initialize_relations,
+                        "deepcopy_relations" : deepcopy_relations,
+                        "delete_relations" : delete_relations,
+                        "delete_singlerelations" : delete_singlerelations,
+                        "namespace_open" : namespace_open,
+                        "namespace_close" : namespace_close
+      }
+      self.fill_templates("Obj",substitutions)
+      self.created_classes.append(classname+"Obj")
 
     def prepare_vectorized_access(self, classname,members ):
       implementation = ""
@@ -703,9 +703,9 @@ class ClassGenerator(object):
       #dispatch headers to header dir, the rest to /src
       # fullname = os.path.join(self.install_dir,self.package_name,name)
       if name.endswith("h"):
-      fullname = os.path.join(self.install_dir,self.package_name,name)
+        fullname = os.path.join(self.install_dir,self.package_name,name)
       else:
-      fullname = os.path.join(self.install_dir,"src",name)
+        fullname = os.path.join(self.install_dir,"src",name)
       open(fullname, "w").write(content)
 
     def evaluate_template(self, filename, substitutions):
