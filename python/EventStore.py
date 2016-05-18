@@ -2,14 +2,17 @@ from ROOT import gSystem
 gSystem.Load("libpodio")
 from ROOT import podio
 
+
 def iterator(self):
     '''dynamically added iterator'''
     entries = self.size()
     for entry in xrange(entries):
         yield self.at(entry)
 
+
 def size(self):
     return self.size()
+
 
 def getitem(self, key):
     return self.at(key)
@@ -28,9 +31,9 @@ class EventStore(object):
         '''Create an event list from the podio root file.
         Parameters:
            filenames: list of root files
-                      you can of course provide a list containing a single root file.
-                      you could use the glob module to get all files matching 
-                      a wildcard pattern.
+                      you can of course provide a list containing a single
+                      root file. you could use the glob module to get all
+                      files matching a wildcard pattern.
            treename: not used at the moment
         '''
         self.files = filenames
@@ -41,7 +44,7 @@ class EventStore(object):
             if self.current_store is None:
                 self.current_store = store
             self.stores.append((store.getEntries(), store))
- 
+
     def get(self, name):
         '''Returns a collection.
         Parameters:
@@ -82,9 +85,9 @@ class EventStore(object):
                 break
             rel_evnum -= nev
         if current_store is None:
-            raise ValueError('event number too large: ' + str(evnum) )
+            raise ValueError('event number too large: ' + str(evnum))
         self.current_store = current_store
-        self.current_store.goToEvent( rel_evnum )
+        self.current_store.goToEvent(rel_evnum)
         return self
 
     def __len__(self):

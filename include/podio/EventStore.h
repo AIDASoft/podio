@@ -47,6 +47,11 @@ namespace podio {
     /// access a collection by ID. returns true if successful
     bool get(int id, CollectionBase*& coll) const;
 
+    /// access a collection by name
+    /// returns a collection w/ setting isValid to true if successful
+    template<typename T>
+    const T& get(const std::string& name );
+
     /// empties collections.
     void clearCollections();
 
@@ -69,6 +74,7 @@ namespace podio {
     // members
     mutable std::set<int> m_retrievedIDs;
     mutable CollContainer m_collections;
+    mutable std::vector<const CollectionBase*> m_failedRetrieves;
     IReader* m_reader;
     CollectionIDTable* m_table;
   };
@@ -95,6 +101,20 @@ bool EventStore::get(const std::string& name, const T*& collection){
   collection = static_cast<T*>(tmp);
   if (collection != nullptr) { return true;}
   return false;
+}
+
+
+template<typename T>
+const T& EventStore::get(const std::string& name) {
+  const T* tmp(0);
+  auto success = this->get(name,tmp);
+  if (success==true){
+    return *tmp;
+  } else {
+    tmp = new T();
+    m_failedRetrieves.push_back(tmp);
+    return *tmp;
+  }
 }
 
 } //namespace

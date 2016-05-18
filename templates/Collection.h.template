@@ -54,7 +54,7 @@ public:
   ${name}Collection();
 //  ${name}Collection(const ${name}Collection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ${name}Collection(${name}Vector* data, int collectionID);
-  ~${name}Collection(){};
+  ~${name}Collection();
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -80,7 +80,7 @@ public:
   void setBuffer(void* address);
   bool setReferences(const podio::ICollectionProvider* collectionProvider);
 
-  podio::CollRefCollection* referenceCollections() { return m_refCollections;};
+  podio::CollRefCollection* referenceCollections() { return &m_refCollections;};
 
   void setID(unsigned ID){
     m_collectionID = ID;
@@ -88,6 +88,10 @@ public:
                  [ID](${name}Obj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
+
+  bool isValid() const {
+    return m_isValid;
+  }
 
   // support for the iterator protocol
   const const_iterator begin() const {
@@ -106,12 +110,13 @@ public:
    ${vectorized_access_declaration}
 
 private:
+  bool m_isValid;
   int m_collectionID;
   ${name}ObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
 ${relations}
   // members to handle streaming
-  podio::CollRefCollection* m_refCollections;
+  podio::CollRefCollection m_refCollections;
   ${name}DataContainer* m_data;
 };
 

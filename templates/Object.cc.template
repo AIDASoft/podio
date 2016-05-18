@@ -43,6 +43,7 @@ ${name}::operator Const${name}() const {return Const${name}(m_obj);}
 $getters
 $setters
 $relations
+$extracode
 bool  ${name}::isAvailable() const {
   if (m_obj != nullptr) {
     return true;
@@ -58,7 +59,7 @@ const podio::ObjectID ${name}::getObjectID() const {
 }
 
 bool ${name}::operator==(const Const${name}& other) const {
-     return (m_obj==other.m_obj);
+  return (m_obj==other.m_obj);
 }
 
 

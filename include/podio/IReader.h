@@ -23,6 +23,7 @@ class IReader {
   public:
     virtual ~IReader(){};
     /// Read Collection of given name
+    /// Does not set references yet.
     virtual CollectionBase* readCollection(const std::string& name) = 0;
     /// Get CollectionIDTable of read-in data
     virtual CollectionIDTable* getCollectionIDTable() = 0;

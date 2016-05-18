@@ -6,6 +6,7 @@ set( podio_VERSION_MINOR 1 )
 set( podio_VERSION_PATCH 0 )
 set( podio_VERSION "${podio_VERSION_MAJOR}.${podio_VERSION_MINOR}" )
 
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if(APPLE)
@@ -14,7 +15,6 @@ endif(APPLE)
 
 #--- Declare options -----------------------------------------------------------
 option(podio_documentation "Whether or not to create doxygen doc target.")
-option(podio_tests "Whether or not to create target for unittest (depends on google-tests).")
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
@@ -61,8 +61,4 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(python)
 add_subdirectory(src)
-add_subdirectory(examples)
-
-if(podio_tests)
-	add_subdirectory(tests)
-endif()
+add_subdirectory(tests)

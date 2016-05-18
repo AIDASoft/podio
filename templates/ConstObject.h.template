@@ -46,6 +46,7 @@ public:
 
 $getter_declarations
 $relation_declarations
+$constextracode_declarations
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ${name}Obj instance
@@ -60,6 +61,7 @@ $relation_declarations
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ${name}& p1,
 //       const ${name}& p2 );
+  bool operator<(const Const${name}& other) const { return m_obj < other.m_obj  ; }
 
   const podio::ObjectID getObjectID() const;
 

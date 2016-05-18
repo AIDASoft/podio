@@ -6,9 +6,15 @@ ${includes}
 
 ${namespace_open}
 
-${name}Collection::${name}Collection() : m_collectionID(0), m_entries() ${initializers},m_refCollections(nullptr), m_data(new ${name}DataContainer() ) {
+${name}Collection::${name}Collection() : m_isValid(false), m_collectionID(0), m_entries() ${initializers},m_data(new ${name}DataContainer() ) {
   ${constructorbody}
 }
+
+${name}Collection::~${name}Collection() {
+  clear();
+  if (m_data != nullptr) delete m_data;
+  ${destructorbody}
+};
 
 const ${name} ${name}Collection::operator[](unsigned int index) const {
   return ${name}(m_entries[index]);
@@ -38,18 +44,15 @@ ${clear_relations}
 }
 
 void ${name}Collection::prepareForWrite(){
-  int index = 0;
   auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
-  if (m_refCollections != nullptr) {
-    for (auto& pointer : (*m_refCollections)) {pointer->clear(); }
-  }
-  $prepareforwritinghead
+  for (auto& pointer : m_refCollections) {pointer->clear(); } 
+$prepareforwritinghead
   for(int i=0, size = m_data->size(); i != size; ++i){
-  $prepareforwritingbody
+$prepareforwritingbody
   }
-  $prepareforwriting_refmembers
+$prepareforwriting_refmembers
 }
 
 void ${name}Collection::prepareAfterRead(){
@@ -60,6 +63,7 @@ void ${name}Collection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
+  m_isValid = true;  
 }
 
 bool ${name}Collection::setReferences(const podio::ICollectionProvider* collectionProvider){
@@ -69,19 +73,19 @@ ${prepareafterread_refmembers}
 }
 
 void ${name}Collection::push_back(Const${name} object){
-    int size = m_entries.size();
-    auto obj = object.m_obj;
-    if (obj->id.index == podio::ObjectID::untracked) {
-        obj->id = {size,m_collectionID};
-        m_entries.push_back(obj);
-        ${push_back_relations}
-    } else {
-      throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
-
-    }
+  int size = m_entries.size();
+  auto obj = object.m_obj;
+  if (obj->id.index == podio::ObjectID::untracked) {
+      obj->id = {size,m_collectionID};
+      m_entries.push_back(obj);
+      ${push_back_relations}
+  } else {
+    throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
+  }
 }
 
 void ${name}Collection::setBuffer(void* address){
+  if (m_data != nullptr) delete m_data;
   m_data = static_cast<${name}DataContainer*>(address);
 }
 
@@ -92,13 +96,13 @@ const ${name} ${name}CollectionIterator::operator* () const {
 }
 
 const ${name}* ${name}CollectionIterator::operator-> () const {
-    m_object.m_obj = (*m_collection)[m_index];
-    return &m_object;
+  m_object.m_obj = (*m_collection)[m_index];
+  return &m_object;
 }
 
 const ${name}CollectionIterator& ${name}CollectionIterator::operator++() const {
   ++m_index;
- return *this;
+  return *this;
 }
 
 ${namespace_close}

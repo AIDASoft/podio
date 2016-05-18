@@ -6,11 +6,14 @@ std::vector<${relationtype}>::const_iterator ${classname}::${relation}_begin() c
 
 std::vector<${relationtype}>::const_iterator ${classname}::${relation}_end() const {
   auto ret_value = m_obj->m_${relation}->begin();
-  std::advance(ret_value, m_obj->data.${relation}_end-1);
-  return ++ret_value;
+//fg: this code fails if m_obj->data.${relation}==0
+//  std::advance(ret_value, m_obj->data.${relation}_end-1);
+//  return ++ret_value;
+  std::advance(ret_value, m_obj->data.${relation}_end);
+  return ret_value;
 }
 
-void ${classname}::add${relation}(${relationtype} component) {
+void ${classname}::${add_relation}(${relationtype} component) {
   m_obj->m_${relation}->push_back(component);
   m_obj->data.${relation}_end++;
 }
@@ -19,9 +22,9 @@ unsigned int ${classname}::${relation}_size() const {
   return (m_obj->data.${relation}_end-m_obj->data.${relation}_begin);
 }
 
-${relationtype} ${classname}::${relation}(unsigned int index) const {
+${relationtype} ${classname}::${get_relation}(unsigned int index) const {
   if (${relation}_size() > index) {
     return m_obj->m_${relation}->at(m_obj->data.${relation}_begin+index);
-}
+  }
   else throw std::out_of_range ("index out of bounds for existing references");
 }

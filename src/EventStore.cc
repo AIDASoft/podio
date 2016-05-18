@@ -15,6 +15,9 @@ namespace podio {
     for (auto& coll : m_collections){
       delete coll.second;
     }
+    for (auto& coll : m_failedRetrieves){
+      delete coll;
+    }
   }
 
   bool EventStore::get(int id, CollectionBase*& collection) const{
@@ -30,7 +33,8 @@ namespace podio {
       auto name = m_table->name(id);
       success = doGet(name, collection,false);
     }
-    m_retrievedIDs.erase(id);
+    //fg: the set should only be cleared at the end of event (in clear() ) ...
+    //    m_retrievedIDs.erase(id);
     return success;
   }
 
@@ -76,6 +80,11 @@ namespace podio {
       delete coll.second;
     }
     m_collections.clear();
+    m_retrievedIDs.clear();
+    for (auto& coll : m_failedRetrieves){
+      delete coll;
+    }
+    m_failedRetrieves.clear();
   }
 
   bool EventStore::collectionRegistered(const std::string& name) const {

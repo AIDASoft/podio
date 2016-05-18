@@ -2,8 +2,9 @@
 #include <iostream>
 #include <vector>
 
-// gtest
-#include "gtest/gtest.h"
+// catch
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 
 // podio specific includes
 #include "podio/EventStore.h"
@@ -18,7 +19,7 @@
 #include "ExampleWithOneRelation.h"
 #include "ExampleWithOneRelationCollection.h"
 
-TEST(podio, AutoDelete) {
+TEST_CASE("AutoDelete") {
   auto store = podio::EventStore();
   auto hit1 = EventInfo();
   auto hit2 = EventInfo();
@@ -28,7 +29,7 @@ TEST(podio, AutoDelete) {
   hit3 = hit2;
 }
 
-TEST(podio, Basics) {
+TEST_CASE("Basics") {
   auto store = podio::EventStore();
   // Adding
   auto& collection = store.create<ExampleHitCollection>("name");
@@ -40,30 +41,37 @@ TEST(podio, Basics) {
   bool success = store.get("name",coll2);
   const ExampleHitCollection* coll3(nullptr);
   if (store.get("wrongName",coll3) != false) success = false;
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio, Clearing){
+TEST_CASE("Clearing"){
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
+  auto& oneRels    = store.create<ExampleWithOneRelationCollection>("OneRelation");
   auto nevents = unsigned(1000);
   for(unsigned i=0; i<nevents; ++i){
     hits.clear();
     clusters.clear();
     auto hit1 = hits.create();
+    auto hit2 = ExampleHit();
     hit1.energy(double(i));
-    auto hit2 = hits.create();
     auto cluster  = clusters.create();
     cluster.addHits(hit1);
+    cluster.addHits(hit2);
+    hits.push_back(hit2);
+    auto oneRel = ExampleWithOneRelation();
+    oneRel.cluster(cluster);
+    oneRel.cluster(cluster);
+    oneRels.push_back(oneRel);
   }
   hits.clear();
   if (hits.size() != 0 ) success = false;
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio, cloning){
+TEST_CASE("Cloning"){
   bool success = true;
   auto hit = ExampleHit();
   hit.energy(30);
@@ -74,32 +82,32 @@ TEST(podio, cloning){
   cluster.addHits(hit);
   auto cluster2 = cluster.clone();
   cluster.addHits(hit2);
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio, component){
+TEST_CASE("Component"){
   auto info = ExampleWithComponent();
   info.component().data.x = 3;
-  EXPECT_EQ(3, info.component().data.x);
+  REQUIRE(3 == info.component().data.x);
 }
 
-TEST(podio,cyclic){
+TEST_CASE("Cyclic"){
   auto start = ExampleForCyclicDependency1();
   auto isAvailable = start.ref().isAvailable();
-  EXPECT_EQ(false,isAvailable);
+  REQUIRE_FALSE(isAvailable);
   auto end = ExampleForCyclicDependency2();
   start.ref(end);
   isAvailable = start.ref().isAvailable();
-  EXPECT_EQ(true,isAvailable);
+  REQUIRE(isAvailable);
   end.ref(start);
-  EXPECT_EQ(start,end.ref());
+  REQUIRE(start == end.ref());
   auto end_eq = start.ref();
   auto start_eq = end_eq.ref();
-  EXPECT_EQ(start,start_eq);
-  EXPECT_EQ(start,start.ref().ref());
+  REQUIRE(start == start_eq);
+  REQUIRE(start == start.ref().ref());
 }
 
-TEST(podio, invalid_refs) {
+TEST_CASE("Invalid_refs") {
   bool success = false;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -114,10 +122,10 @@ TEST(podio, invalid_refs) {
   } catch (std::runtime_error){
     success = true;
   }
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio,looping) {
+TEST_CASE("Looping") {
   bool success = true;
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("name");
@@ -130,10 +138,10 @@ TEST(podio,looping) {
     auto energy = coll[i].energy();
   }
   if ((coll[0].energy() != 0) || (coll[1].energy() != 1)) success = false;
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio,notebook) {
+TEST_CASE("Notebook") {
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -146,26 +154,26 @@ TEST(podio,notebook) {
     if(double(index) != energy) success = false;
     ++index;
   }
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio,OneToOneRelations) {
+TEST_CASE("OneToOneRelations") {
   bool success = true;
   auto cluster = ExampleCluster();
   auto rel = ExampleWithOneRelation();
   rel.cluster(cluster);
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio,podness) {
-  EXPECT_EQ(true, std::is_pod<ExampleClusterData>());
-  EXPECT_EQ(true, std::is_pod<ExampleHitData>());
-  EXPECT_EQ(true, std::is_pod<ExampleWithOneRelationData>());
+TEST_CASE("Podness") {
+  REQUIRE(std::is_pod<ExampleClusterData>());
+  REQUIRE(std::is_pod<ExampleHitData>());
+  REQUIRE(std::is_pod<ExampleWithOneRelationData>());
   // just to be sure the test does what it is supposed to do
-  EXPECT_EQ(false, std::is_pod<ExampleClusterObj>());
+  REQUIRE_FALSE(std::is_pod<ExampleClusterObj>());
 }
 
-TEST(podio,referencing) {
+TEST_CASE("Referencing") {
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -180,10 +188,10 @@ TEST(podio,referencing) {
     if( i->energy() != index) success = false;
     ++index;
   }
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
 }
 
-TEST(podio, write_buffer) {
+TEST_CASE("write_buffer") {
   bool success = true;
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("data");
@@ -192,23 +200,77 @@ TEST(podio, write_buffer) {
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
   auto cluster  = clusters.create();
   clusters.prepareForWrite();
-  EXPECT_EQ(true, success);
+  REQUIRE(success);
   auto& ref_coll  = store.create<ExampleWithOneRelationCollection>("onerel");
-  auto withRef = ref_coll.create();//ExampleWithOneRelation();
+  auto withRef = ref_coll.create();
   ref_coll.prepareForWrite();
 
 }
 
-TEST(podio, equality) {
+/*
+TEST_CASE("Arrays") {
+  auto obj = ExampleWithArray();
+  obj.array({1,2,3});
+  REQUIRE( obj.array()[0] == 1);
+}
+*/
+
+TEST_CASE("Extracode") {
+  auto ev = EventInfo();
+  ev.setNumber(42) ;
+  REQUIRE(ev.getNumber() == 42);
+
+  int ia[3] = { 1 , 2 , 3 } ;
+  auto simple = SimpleStruct( ia ) ;
+  REQUIRE( simple.x == 1 );
+  REQUIRE( simple.y == 2 );
+  REQUIRE( simple.z == 3 );
+
+
+}
+
+
+TEST_CASE("AssociativeContainer") {
+  auto clu1 = ExampleCluster();
+  auto clu2 = ExampleCluster();
+  auto clu3 = ExampleCluster();
+  auto clu4 = ExampleCluster();
+  auto clu5 = ExampleCluster();
+
+  std::set<ExampleCluster> cSet ;
+  cSet.insert( clu1 ) ;
+  cSet.insert( clu2 ) ;
+  cSet.insert( clu3 ) ;
+  cSet.insert( clu4 ) ;
+  cSet.insert( clu5 ) ;
+  cSet.insert( clu1 ) ;
+  cSet.insert( clu2 ) ;
+  cSet.insert( clu3 ) ;
+  cSet.insert( clu4 ) ;
+  cSet.insert( clu5 ) ;
+
+  REQUIRE( cSet.size() == 5 );
+
+  std::map<ExampleCluster,int> cMap ;
+  cMap[ clu1 ] = 1  ;
+  cMap[ clu2 ] = 2  ;
+  cMap[ clu3 ] = 3  ;
+  cMap[ clu4 ] = 4  ;
+  cMap[ clu5 ] = 5  ;
+
+  REQUIRE( cMap[ clu3 ]  == 3 );
+  
+  cMap[ clu3 ] = 42  ;
+
+  REQUIRE( cMap[ clu3 ]  == 42 );
+
+}
+
+TEST_CASE("Equality") {
   auto cluster = ExampleCluster();
   auto rel = ExampleWithOneRelation();
   rel.cluster(cluster);
   auto returned_cluster = rel.cluster();
-  EXPECT_EQ(cluster,returned_cluster);
-  EXPECT_EQ(returned_cluster,cluster);
-}
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  REQUIRE(cluster == returned_cluster);
+  REQUIRE(returned_cluster == cluster);
 }

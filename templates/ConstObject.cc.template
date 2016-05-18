@@ -9,7 +9,7 @@ $includes_cc
 
 ${namespace_open}
 
-Const${name}::Const${name}() : m_obj(new ${name}Obj()){
+Const${name}::Const${name}() : m_obj(new ${name}Obj()) {
  m_obj->acquire();
 }
 
@@ -25,7 +25,7 @@ Const${name}& Const${name}::operator=(const Const${name}& other) {
   return *this;
 }
 
-Const${name}::Const${name}(${name}Obj* obj) : m_obj(obj){
+Const${name}::Const${name}(${name}Obj* obj) : m_obj(obj) {
   if(m_obj != nullptr)
     m_obj->acquire();
 }
@@ -40,6 +40,7 @@ Const${name}::~Const${name}(){
 
 $getters
 $relations
+$constextracode
 bool  Const${name}::isAvailable() const {
   if (m_obj != nullptr) {
     return true;
