@@ -74,7 +74,7 @@ class EventStore(object):
 
     def __exit__(self, exception_type, exception_val, trace):
         for store in self.stores:
-            store.close()
+            store[1].close()
 
     def __iter__(self):
         '''iterate on events in the tree.
