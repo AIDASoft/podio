@@ -59,12 +59,22 @@ class EventStore(object):
         coll.__getitem__ = getitem
         return coll
 
+    def isValid(self):
+        return self.current_store is not None and self.current_store.isValid()
+
     # def __getattr__(self, name):
     #     '''missing attributes are taken from self.current_store'''
     #     if name != 'current_store':
     #         return getattr(self.current_store, name)
     #     else:
     #         return None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception_val, trace):
+        for store in self.stores:
+            store.close()
 
     def __iter__(self):
         '''iterate on events in the tree.

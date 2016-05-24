@@ -63,6 +63,8 @@ namespace podio {
 
     CollectionIDTable* getCollectionIDTable(){return m_table;};
 
+    virtual bool isValid() const final;
+
   private:
 
     /// get the collection of given name; returns true if successfull
