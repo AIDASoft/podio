@@ -40,14 +40,17 @@ endforeach( sourcefile ${executables} )
 
 #--- Adding tests --------------------------------------------------------------
 add_test(NAME write COMMAND write)
-set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
+set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{LD_LIBRARY_PATH})
 
 add_test(NAME read COMMAND read)
-set_property(TEST read PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
+set_property(TEST read PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{LD_LIBRARY_PATH})
 set_property(TEST read PROPERTY DEPENDS write)
 
-add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_INSTALL_PREFIX}/python)
-set_property(TEST pyunittest PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH} PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python:$ENV{PYTHONPATH})
+add_test( NAME pyunittest COMMAND python -m unittest discover -s ${PROJECT_SOURCE_DIR}/python)
+set_property(TEST pyunittest PROPERTY ENVIRONMENT
+  LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{LD_LIBRARY_PATH}
+  PYTHONPATH=${PROJECT_SOURCE_DIR}/python:$ENV{PYTHONPATH}
+  )
 set_property(TEST pyunittest PROPERTY DEPENDS write)
 
 add_test(NAME unittest COMMAND unittest)
