@@ -39,16 +39,21 @@ endforeach( sourcefile ${executables} )
 
 
 #--- Adding tests --------------------------------------------------------------
+set(__dynamic_loader_envvar LD_LIBRARY_PATH)
+if(APPLE)
+  set(__dynamic_loader_envvar DYLD_FALLBACK_LIBRARY_PATH)
+endif()
+
 add_test(NAME write COMMAND write)
-set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{LD_LIBRARY_PATH})
+set_property(TEST write PROPERTY ENVIRONMENT ${__dynamic_loader_envvar}=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{${__dynamic_loader_envvar}})
 
 add_test(NAME read COMMAND read)
-set_property(TEST read PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{LD_LIBRARY_PATH})
+set_property(TEST read PROPERTY ENVIRONMENT ${__dynamic_loader_envvar}=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{${__dynamic_loader_envvar}})
 set_property(TEST read PROPERTY DEPENDS write)
 
 add_test( NAME pyunittest COMMAND python -m unittest discover -s ${PROJECT_SOURCE_DIR}/python)
 set_property(TEST pyunittest PROPERTY ENVIRONMENT
-  LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{LD_LIBRARY_PATH}
+  ${__dynamic_loader_envvar}=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$ENV{${__dynamic_loader_envvar}}
   PYTHONPATH=${PROJECT_SOURCE_DIR}/python:$ENV{PYTHONPATH}
   )
 set_property(TEST pyunittest PROPERTY DEPENDS write)
