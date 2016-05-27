@@ -17,16 +17,11 @@ file(GLOB headers_utils utilities/*.h)
 
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
 target_link_libraries(TestDataModel podio )
-install(TARGETS TestDataModel DESTINATION tests)
 
 REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml)
 add_library(TestDataModelDict SHARED TestDataModel.cxx)
 add_dependencies(TestDataModelDict TestDataModel-dictgen)
 target_link_libraries(TestDataModelDict TestDataModel podio )
-install(TARGETS TestDataModelDict DESTINATION tests)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModelDict.rootmap DESTINATION tests)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/TestDataModel_rdict.pcm DESTINATION tests)
-
 
 file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
@@ -34,7 +29,6 @@ foreach( sourcefile ${executables} )
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
   target_link_libraries( ${name} TestDataModelDict )
-  install(TARGETS ${name} DESTINATION tests)
 endforeach( sourcefile ${executables} )
 
 
