@@ -7,7 +7,7 @@
 
 
 
-ExampleForCyclicDependency1Collection::ExampleForCyclicDependency1Collection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<::ConstExampleForCyclicDependency2>()),m_data(new ExampleForCyclicDependency1DataContainer() ) {
+ExampleForCyclicDependency1Collection::ExampleForCyclicDependency1Collection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<::ExampleForCyclicDependency2>()),m_data(new ExampleForCyclicDependency1DataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
 }
@@ -88,7 +88,7 @@ bool ExampleForCyclicDependency1Collection::setReferences(const podio::ICollecti
       CollectionBase* coll = nullptr;
       collectionProvider->get(id.collectionID,coll);
       ExampleForCyclicDependency2Collection* tmp_coll = static_cast<ExampleForCyclicDependency2Collection*>(coll);
-      m_entries[i]->m_ref = new ConstExampleForCyclicDependency2((*tmp_coll)[id.index]);
+      m_entries[i]->m_ref = new ExampleForCyclicDependency2((*tmp_coll)[id.index]);
     } else {
       m_entries[i]->m_ref = nullptr;
     }
@@ -97,7 +97,7 @@ bool ExampleForCyclicDependency1Collection::setReferences(const podio::ICollecti
   return true; //TODO: check success
 }
 
-void ExampleForCyclicDependency1Collection::push_back(ConstExampleForCyclicDependency1 object){
+void ExampleForCyclicDependency1Collection::push_back(ExampleForCyclicDependency1 object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

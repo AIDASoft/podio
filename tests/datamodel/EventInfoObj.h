@@ -13,7 +13,6 @@
 
 // forward declarations
 class EventInfo;
-class ConstEventInfo;
 
 
 
@@ -30,6 +29,7 @@ public:
 
 public:
   EventInfoData data;
+  bool isMutable;
 
 
 };

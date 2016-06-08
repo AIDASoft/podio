@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleWithOneRelation object);
+  void push_back(ExampleWithOneRelation object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -114,7 +114,7 @@ private:
   int m_collectionID;
   ExampleWithOneRelationObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<::ConstExampleCluster>* m_rel_cluster; ///< Relation buffer for read / write
+  std::vector<::ExampleCluster>* m_rel_cluster; ///< Relation buffer for read / write
 
   // members to handle streaming
   podio::CollRefCollection m_refCollections;

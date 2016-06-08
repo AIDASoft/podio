@@ -7,7 +7,7 @@
 
 namespace ex {
 
-ExampleWithARelationCollection::ExampleWithARelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<ex::ConstExampleWithNamespace>()),m_data(new ExampleWithARelationDataContainer() ) {
+ExampleWithARelationCollection::ExampleWithARelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<ex::ExampleWithNamespace>()),m_data(new ExampleWithARelationDataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
 }
@@ -88,7 +88,7 @@ bool ExampleWithARelationCollection::setReferences(const podio::ICollectionProvi
       CollectionBase* coll = nullptr;
       collectionProvider->get(id.collectionID,coll);
       ex::ExampleWithNamespaceCollection* tmp_coll = static_cast<ex::ExampleWithNamespaceCollection*>(coll);
-      m_entries[i]->m_ref = new ConstExampleWithNamespace((*tmp_coll)[id.index]);
+      m_entries[i]->m_ref = new ExampleWithNamespace((*tmp_coll)[id.index]);
     } else {
       m_entries[i]->m_ref = nullptr;
     }
@@ -97,7 +97,7 @@ bool ExampleWithARelationCollection::setReferences(const podio::ICollectionProvi
   return true; //TODO: check success
 }
 
-void ExampleWithARelationCollection::push_back(ConstExampleWithARelation object){
+void ExampleWithARelationCollection::push_back(ExampleWithARelation object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithVectorMember.h"
-#include "ExampleWithVectorMemberConst.h"
 #include "ExampleWithVectorMemberObj.h"
 #include "ExampleWithVectorMemberData.h"
 #include "ExampleWithVectorMemberCollection.h"
@@ -38,7 +37,7 @@ ExampleWithVectorMember::~ExampleWithVectorMember(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithVectorMember::operator ConstExampleWithVectorMember() const {return ConstExampleWithVectorMember(m_obj);}
+//ExampleWithVectorMember::operator ExampleWithVectorMember() const {return ExampleWithVectorMember(m_obj);}
 
 
 
@@ -86,10 +85,6 @@ const podio::ObjectID ExampleWithVectorMember::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithVectorMember::operator==(const ConstExampleWithVectorMember& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

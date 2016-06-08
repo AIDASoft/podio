@@ -13,7 +13,6 @@
 
 // forward declarations
 class ExampleWithString;
-class ConstExampleWithString;
 
 
 
@@ -30,6 +29,7 @@ public:
 
 public:
   ExampleWithStringData data;
+  bool isMutable;
 
 
 };

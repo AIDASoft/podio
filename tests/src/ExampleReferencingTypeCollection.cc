@@ -8,7 +8,7 @@
 
 
 
-ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_Clusters(new std::vector<::ConstExampleCluster>()), m_rel_Refs(new std::vector<::ConstExampleReferencingType>()),m_data(new ExampleReferencingTypeDataContainer() ) {
+ExampleReferencingTypeCollection::ExampleReferencingTypeCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_Clusters(new std::vector<::ExampleCluster>()), m_rel_Refs(new std::vector<::ExampleReferencingType>()),m_data(new ExampleReferencingTypeDataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
   m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
@@ -138,7 +138,7 @@ bool ExampleReferencingTypeCollection::setReferences(const podio::ICollectionPro
   return true; //TODO: check success
 }
 
-void ExampleReferencingTypeCollection::push_back(ConstExampleReferencingType object){
+void ExampleReferencingTypeCollection::push_back(ExampleReferencingType object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleForCyclicDependency2.h"
-#include "ExampleForCyclicDependency2Const.h"
 #include "ExampleForCyclicDependency2Obj.h"
 #include "ExampleForCyclicDependency2Data.h"
 #include "ExampleForCyclicDependency2Collection.h"
@@ -39,17 +38,17 @@ ExampleForCyclicDependency2::~ExampleForCyclicDependency2(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleForCyclicDependency2::operator ConstExampleForCyclicDependency2() const {return ConstExampleForCyclicDependency2(m_obj);}
+//ExampleForCyclicDependency2::operator ExampleForCyclicDependency2() const {return ExampleForCyclicDependency2(m_obj);}
 
-  const ::ConstExampleForCyclicDependency1 ExampleForCyclicDependency2::ref() const {
+  const ::ExampleForCyclicDependency1 ExampleForCyclicDependency2::ref() const {
     if (m_obj->m_ref == nullptr) {
-      return ::ConstExampleForCyclicDependency1(nullptr);
+      return ::ExampleForCyclicDependency1(nullptr);
     }
-    return ::ConstExampleForCyclicDependency1(*(m_obj->m_ref));
+    return ::ExampleForCyclicDependency1(*(m_obj->m_ref));
   }
-void ExampleForCyclicDependency2::ref(::ConstExampleForCyclicDependency1 value) {
+void ExampleForCyclicDependency2::ref(::ExampleForCyclicDependency1 value) {
   if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
-  m_obj->m_ref = new ConstExampleForCyclicDependency1(value);
+  m_obj->m_ref = new ExampleForCyclicDependency1(value);
 }
 
 
@@ -66,10 +65,6 @@ const podio::ObjectID ExampleForCyclicDependency2::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleForCyclicDependency2::operator==(const ConstExampleForCyclicDependency2& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

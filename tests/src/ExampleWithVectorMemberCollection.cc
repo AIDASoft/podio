@@ -72,7 +72,7 @@ bool ExampleWithVectorMemberCollection::setReferences(const podio::ICollectionPr
   return true; //TODO: check success
 }
 
-void ExampleWithVectorMemberCollection::push_back(ConstExampleWithVectorMember object){
+void ExampleWithVectorMemberCollection::push_back(ExampleWithVectorMember object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

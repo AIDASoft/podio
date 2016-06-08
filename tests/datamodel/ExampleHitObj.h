@@ -13,7 +13,6 @@
 
 // forward declarations
 class ExampleHit;
-class ConstExampleHit;
 
 
 
@@ -30,6 +29,7 @@ public:
 
 public:
   ExampleHitData data;
+  bool isMutable;
 
 
 };

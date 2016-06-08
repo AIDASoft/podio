@@ -3,7 +3,7 @@ from EventStore import EventStore
 import os
 
 from ROOT import TFile
-from ROOT import ExampleHit, ConstExampleHit
+from ROOT import ExampleHit
 
 
 class EventStoreTestCase(unittest.TestCase):
@@ -39,7 +39,6 @@ class EventStoreTestCase(unittest.TestCase):
         self.assertEqual(hits[0].energy(), 23.)
         hits[0].energy(10)
         self.assertEqual(hits[0].energy(), 10)  # oops
-        # self.assertEqual(type(hits[0]), ConstExampleHit) # should be True
 
     def test_one_to_many(self):
         clusters = self.store.get("clusters")

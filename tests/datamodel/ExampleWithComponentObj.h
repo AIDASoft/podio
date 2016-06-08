@@ -13,7 +13,6 @@
 
 // forward declarations
 class ExampleWithComponent;
-class ConstExampleWithComponent;
 
 
 
@@ -30,6 +29,7 @@ public:
 
 public:
   ExampleWithComponentData data;
+  bool isMutable;
 
 
 };

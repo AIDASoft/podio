@@ -7,7 +7,7 @@
 
 
 
-ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_cluster(new std::vector<::ConstExampleCluster>()),m_data(new ExampleWithOneRelationDataContainer() ) {
+ExampleWithOneRelationCollection::ExampleWithOneRelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_cluster(new std::vector<::ExampleCluster>()),m_data(new ExampleWithOneRelationDataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
 }
@@ -88,7 +88,7 @@ bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionPro
       CollectionBase* coll = nullptr;
       collectionProvider->get(id.collectionID,coll);
       ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
-      m_entries[i]->m_cluster = new ConstExampleCluster((*tmp_coll)[id.index]);
+      m_entries[i]->m_cluster = new ExampleCluster((*tmp_coll)[id.index]);
     } else {
       m_entries[i]->m_cluster = nullptr;
     }
@@ -97,7 +97,7 @@ bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionPro
   return true; //TODO: check success
 }
 
-void ExampleWithOneRelationCollection::push_back(ConstExampleWithOneRelation object){
+void ExampleWithOneRelationCollection::push_back(ExampleWithOneRelation object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

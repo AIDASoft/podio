@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleHit object);
+  void push_back(ExampleHit object);
 
   void prepareForWrite();
   void prepareAfterRead();

@@ -4,7 +4,7 @@
 
 
 ExampleClusterObj::ExampleClusterObj() :
-    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_Hits(new std::vector<ConstExampleHit>()), m_Clusters(new std::vector<ConstExampleCluster>())
+    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_Hits(new std::vector<ExampleHit>()), m_Clusters(new std::vector<ExampleCluster>())
 { }
 
 ExampleClusterObj::ExampleClusterObj(const podio::ObjectID id, ExampleClusterData data) :
@@ -13,7 +13,7 @@ ExampleClusterObj::ExampleClusterObj(const podio::ObjectID id, ExampleClusterDat
 
 ExampleClusterObj::ExampleClusterObj(const ExampleClusterObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data), m_Hits(new std::vector<ConstExampleHit>(*(other.m_Hits))), m_Clusters(new std::vector<ConstExampleCluster>(*(other.m_Clusters)))
+    , data(other.data), m_Hits(new std::vector<ExampleHit>(*(other.m_Hits))), m_Clusters(new std::vector<ExampleCluster>(*(other.m_Clusters)))
 { }
 
 ExampleClusterObj::~ExampleClusterObj() {

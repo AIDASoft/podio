@@ -10,20 +10,17 @@
 //forward declarations
 
 
-#include "EventInfoConst.h"
 #include "EventInfoObj.h"
 
 
 
 class EventInfoCollection;
 class EventInfoCollectionIterator;
-class ConstEventInfo;
 
 class EventInfo {
 
   friend EventInfoCollection;
   friend EventInfoCollectionIterator;
-  friend ConstEventInfo;
 
 public:
 
@@ -41,9 +38,6 @@ public:
   EventInfo clone() const;
   /// destructor
   ~EventInfo();
-
-  /// conversion to const object
-  operator ConstEventInfo () const;
 
 public:
 
@@ -63,8 +57,6 @@ int getNumber() const;
   bool operator==(const EventInfo& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstEventInfo& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const EventInfo& p1,

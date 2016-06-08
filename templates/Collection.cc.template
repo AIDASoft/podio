@@ -72,7 +72,7 @@ ${prepareafterread_refmembers}
   return true; //TODO: check success
 }
 
-void ${name}Collection::push_back(Const${name} object){
+void ${name}Collection::push_back(${name} object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

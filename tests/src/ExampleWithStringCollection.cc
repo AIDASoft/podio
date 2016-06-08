@@ -72,7 +72,7 @@ bool ExampleWithStringCollection::setReferences(const podio::ICollectionProvider
   return true; //TODO: check success
 }
 
-void ExampleWithStringCollection::push_back(ConstExampleWithString object){
+void ExampleWithStringCollection::push_back(ExampleWithString object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

@@ -10,24 +10,20 @@
 //forward declarations
 namespace ex {
 class ExampleWithNamespace;
-class ConstExampleWithNamespace;
 }
 
 
-#include "ExampleWithARelationConst.h"
 #include "ExampleWithARelationObj.h"
 
 namespace ex {
 
 class ExampleWithARelationCollection;
 class ExampleWithARelationCollectionIterator;
-class ConstExampleWithARelation;
 
 class ExampleWithARelation {
 
   friend ExampleWithARelationCollection;
   friend ExampleWithARelationCollectionIterator;
-  friend ConstExampleWithARelation;
 
 public:
 
@@ -45,14 +41,11 @@ public:
   /// destructor
   ~ExampleWithARelation();
 
-  /// conversion to const object
-  operator ConstExampleWithARelation () const;
-
 public:
 
-  const ex::ConstExampleWithNamespace ref() const;
+  const ex::ExampleWithNamespace ref() const;
 
-  void ref(ex::ConstExampleWithNamespace value);
+  void ref(ex::ExampleWithNamespace value);
 
 
 
@@ -64,8 +57,6 @@ public:
   bool operator==(const ExampleWithARelation& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleWithARelation& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithARelation& p1,

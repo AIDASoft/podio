@@ -13,7 +13,6 @@ $includes
 
 // forward declarations
 class ${name};
-class Const${name};
 $forward_declarations
 
 ${namespace_open}
@@ -30,6 +29,7 @@ public:
 
 public:
   ${name}Data data;
+  bool isMutable;
 ${relations}
 
 };

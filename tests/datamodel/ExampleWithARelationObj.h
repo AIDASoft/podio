@@ -13,8 +13,7 @@
 
 // forward declarations
 class ExampleWithARelation;
-class ConstExampleWithARelation;
-namespace ex {class ConstExampleWithNamespace;
+namespace ex {class ExampleWithNamespace;
 }
 
 
@@ -32,7 +31,8 @@ public:
 
 public:
   ExampleWithARelationData data;
-  ::ex::ConstExampleWithNamespace* m_ref;
+  bool isMutable;
+  ::ex::ExampleWithNamespace* m_ref;
 
 
 };

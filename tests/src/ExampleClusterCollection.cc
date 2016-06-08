@@ -8,7 +8,7 @@
 
 
 
-ExampleClusterCollection::ExampleClusterCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_Hits(new std::vector<::ConstExampleHit>()), m_rel_Clusters(new std::vector<::ConstExampleCluster>()),m_data(new ExampleClusterDataContainer() ) {
+ExampleClusterCollection::ExampleClusterCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_Hits(new std::vector<::ExampleHit>()), m_rel_Clusters(new std::vector<::ExampleCluster>()),m_data(new ExampleClusterDataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
   m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
@@ -138,7 +138,7 @@ bool ExampleClusterCollection::setReferences(const podio::ICollectionProvider* c
   return true; //TODO: check success
 }
 
-void ExampleClusterCollection::push_back(ConstExampleCluster object){
+void ExampleClusterCollection::push_back(ExampleCluster object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

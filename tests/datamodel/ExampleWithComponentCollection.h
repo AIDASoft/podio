@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleWithComponent object);
+  void push_back(ExampleWithComponent object);
 
   void prepareForWrite();
   void prepareAfterRead();

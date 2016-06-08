@@ -72,7 +72,7 @@ bool ExampleWithNamespaceCollection::setReferences(const podio::ICollectionProvi
   return true; //TODO: check success
 }
 
-void ExampleWithNamespaceCollection::push_back(ConstExampleWithNamespace object){
+void ExampleWithNamespaceCollection::push_back(ExampleWithNamespace object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

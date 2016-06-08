@@ -13,8 +13,7 @@
 
 // forward declarations
 class ExampleForCyclicDependency2;
-class ConstExampleForCyclicDependency2;
-class ConstExampleForCyclicDependency1;
+class ExampleForCyclicDependency1;
 
 
 
@@ -31,7 +30,8 @@ public:
 
 public:
   ExampleForCyclicDependency2Data data;
-  ConstExampleForCyclicDependency1* m_ref;
+  bool isMutable;
+  ExampleForCyclicDependency1* m_ref;
 
 
 };

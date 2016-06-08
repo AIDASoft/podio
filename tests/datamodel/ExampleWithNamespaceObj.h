@@ -13,7 +13,6 @@
 
 // forward declarations
 class ExampleWithNamespace;
-class ConstExampleWithNamespace;
 
 
 namespace ex {
@@ -30,6 +29,7 @@ public:
 
 public:
   ExampleWithNamespaceData data;
+  bool isMutable;
 
 
 };

@@ -14,7 +14,6 @@
 
 // forward declarations
 class ExampleMC;
-class ConstExampleMC;
 
 
 
@@ -31,8 +30,9 @@ public:
 
 public:
   ExampleMCData data;
-  std::vector<ConstExampleMC>* m_parents;
-  std::vector<ConstExampleMC>* m_daughters;
+  bool isMutable;
+  std::vector<ExampleMC>* m_parents;
+  std::vector<ExampleMC>* m_daughters;
 
 
 };

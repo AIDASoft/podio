@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstEventInfo object);
+  void push_back(EventInfo object);
 
   void prepareForWrite();
   void prepareAfterRead();

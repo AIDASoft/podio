@@ -8,7 +8,7 @@
 
 
 
-ExampleMCCollection::ExampleMCCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_parents(new std::vector<::ConstExampleMC>()), m_rel_daughters(new std::vector<::ConstExampleMC>()),m_data(new ExampleMCDataContainer() ) {
+ExampleMCCollection::ExampleMCCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_parents(new std::vector<::ExampleMC>()), m_rel_daughters(new std::vector<::ExampleMC>()),m_data(new ExampleMCDataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
   m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
@@ -138,7 +138,7 @@ bool ExampleMCCollection::setReferences(const podio::ICollectionProvider* collec
   return true; //TODO: check success
 }
 
-void ExampleMCCollection::push_back(ConstExampleMC object){
+void ExampleMCCollection::push_back(ExampleMC object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

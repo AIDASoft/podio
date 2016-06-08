@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithARelation.h"
-#include "ExampleWithARelationConst.h"
 #include "ExampleWithARelationObj.h"
 #include "ExampleWithARelationData.h"
 #include "ExampleWithARelationCollection.h"
@@ -39,17 +38,17 @@ ExampleWithARelation::~ExampleWithARelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithARelation::operator ConstExampleWithARelation() const {return ConstExampleWithARelation(m_obj);}
+//ExampleWithARelation::operator ExampleWithARelation() const {return ExampleWithARelation(m_obj);}
 
-  const ex::ConstExampleWithNamespace ExampleWithARelation::ref() const {
+  const ex::ExampleWithNamespace ExampleWithARelation::ref() const {
     if (m_obj->m_ref == nullptr) {
-      return ex::ConstExampleWithNamespace(nullptr);
+      return ex::ExampleWithNamespace(nullptr);
     }
-    return ex::ConstExampleWithNamespace(*(m_obj->m_ref));
+    return ex::ExampleWithNamespace(*(m_obj->m_ref));
   }
-void ExampleWithARelation::ref(ex::ConstExampleWithNamespace value) {
+void ExampleWithARelation::ref(ex::ExampleWithNamespace value) {
   if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
-  m_obj->m_ref = new ConstExampleWithNamespace(value);
+  m_obj->m_ref = new ExampleWithNamespace(value);
 }
 
 
@@ -66,10 +65,6 @@ const podio::ObjectID ExampleWithARelation::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithARelation::operator==(const ConstExampleWithARelation& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

@@ -14,7 +14,6 @@
 
 // forward declarations
 class ExampleWithVectorMember;
-class ConstExampleWithVectorMember;
 
 
 
@@ -31,6 +30,7 @@ public:
 
 public:
   ExampleWithVectorMemberData data;
+  bool isMutable;
   std::vector<int>* m_count;
 
 

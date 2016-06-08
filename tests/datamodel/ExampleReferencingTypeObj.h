@@ -15,7 +15,6 @@
 
 // forward declarations
 class ExampleReferencingType;
-class ConstExampleReferencingType;
 
 
 
@@ -32,8 +31,9 @@ public:
 
 public:
   ExampleReferencingTypeData data;
-  std::vector<ConstExampleCluster>* m_Clusters;
-  std::vector<ConstExampleReferencingType>* m_Refs;
+  bool isMutable;
+  std::vector<ExampleCluster>* m_Clusters;
+  std::vector<ExampleReferencingType>* m_Refs;
 
 
 };

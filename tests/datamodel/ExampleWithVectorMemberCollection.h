@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleWithVectorMember object);
+  void push_back(ExampleWithVectorMember object);
 
   void prepareForWrite();
   void prepareAfterRead();

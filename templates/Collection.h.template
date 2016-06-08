@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(Const${name} object);
+  void push_back(${name} object);
 
   void prepareForWrite();
   void prepareAfterRead();

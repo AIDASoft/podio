@@ -1,5 +1,5 @@
 #include "ExampleWithARelationObj.h"
-#include "ExampleWithNamespaceConst.h"
+#include "ExampleWithNamespace.h"
 
 
 namespace ex {

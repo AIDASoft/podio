@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithNamespace.h"
-#include "ExampleWithNamespaceConst.h"
 #include "ExampleWithNamespaceObj.h"
 #include "ExampleWithNamespaceData.h"
 #include "ExampleWithNamespaceCollection.h"
@@ -42,7 +41,7 @@ ExampleWithNamespace::~ExampleWithNamespace(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithNamespace::operator ConstExampleWithNamespace() const {return ConstExampleWithNamespace(m_obj);}
+//ExampleWithNamespace::operator ExampleWithNamespace() const {return ExampleWithNamespace(m_obj);}
 
   const ex2::NamespaceStruct& ExampleWithNamespace::data() const { return m_obj->data.data; }
 
@@ -63,10 +62,6 @@ const podio::ObjectID ExampleWithNamespace::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithNamespace::operator==(const ConstExampleWithNamespace& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

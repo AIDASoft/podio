@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleHit.h"
-#include "ExampleHitConst.h"
 #include "ExampleHitObj.h"
 #include "ExampleHitData.h"
 #include "ExampleHitCollection.h"
@@ -42,7 +41,7 @@ ExampleHit::~ExampleHit(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleHit::operator ConstExampleHit() const {return ConstExampleHit(m_obj);}
+//ExampleHit::operator ExampleHit() const {return ExampleHit(m_obj);}
 
   const double& ExampleHit::x() const { return m_obj->data.x; }
   const double& ExampleHit::y() const { return m_obj->data.y; }
@@ -68,10 +67,6 @@ const podio::ObjectID ExampleHit::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleHit::operator==(const ConstExampleHit& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

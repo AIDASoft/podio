@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleForCyclicDependency2 object);
+  void push_back(ExampleForCyclicDependency2 object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -114,7 +114,7 @@ private:
   int m_collectionID;
   ExampleForCyclicDependency2ObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<::ConstExampleForCyclicDependency1>* m_rel_ref; ///< Relation buffer for read / write
+  std::vector<::ExampleForCyclicDependency1>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming
   podio::CollRefCollection m_refCollections;

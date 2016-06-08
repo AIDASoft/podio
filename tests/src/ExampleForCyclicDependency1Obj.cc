@@ -1,5 +1,5 @@
 #include "ExampleForCyclicDependency1Obj.h"
-#include "ExampleForCyclicDependency2Const.h"
+#include "ExampleForCyclicDependency2.h"
 
 
 

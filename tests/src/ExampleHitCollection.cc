@@ -72,7 +72,7 @@ bool ExampleHitCollection::setReferences(const podio::ICollectionProvider* colle
   return true; //TODO: check success
 }
 
-void ExampleHitCollection::push_back(ConstExampleHit object){
+void ExampleHitCollection::push_back(ExampleHit object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

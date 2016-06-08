@@ -13,8 +13,7 @@
 
 // forward declarations
 class ExampleWithOneRelation;
-class ConstExampleWithOneRelation;
-class ConstExampleCluster;
+class ExampleCluster;
 
 
 
@@ -31,7 +30,8 @@ public:
 
 public:
   ExampleWithOneRelationData data;
-  ConstExampleCluster* m_cluster;
+  bool isMutable;
+  ExampleCluster* m_cluster;
 
 
 };

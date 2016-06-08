@@ -72,7 +72,7 @@ bool EventInfoCollection::setReferences(const podio::ICollectionProvider* collec
   return true; //TODO: check success
 }
 
-void EventInfoCollection::push_back(ConstEventInfo object){
+void EventInfoCollection::push_back(EventInfo object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

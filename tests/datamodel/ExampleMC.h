@@ -13,20 +13,17 @@
 //forward declarations
 
 
-#include "ExampleMCConst.h"
 #include "ExampleMCObj.h"
 
 
 
 class ExampleMCCollection;
 class ExampleMCCollectionIterator;
-class ConstExampleMC;
 
 class ExampleMC {
 
   friend ExampleMCCollection;
   friend ExampleMCCollectionIterator;
-  friend ConstExampleMC;
 
 public:
 
@@ -45,9 +42,6 @@ public:
   /// destructor
   ~ExampleMC();
 
-  /// conversion to const object
-  operator ConstExampleMC () const;
-
 public:
 
   const double& energy() const;
@@ -58,17 +52,17 @@ public:
   void PDG(int value);
 
 
-  void addparents(ConstExampleMC);
+  void addparents(ExampleMC);
   unsigned int parents_size() const;
-  ConstExampleMC parents(unsigned int) const;
-  std::vector<ConstExampleMC>::const_iterator parents_begin() const;
-  std::vector<ConstExampleMC>::const_iterator parents_end() const;
+  ExampleMC parents(unsigned int) const;
+  std::vector<ExampleMC>::const_iterator parents_begin() const;
+  std::vector<ExampleMC>::const_iterator parents_end() const;
 
-  void adddaughters(ConstExampleMC);
+  void adddaughters(ExampleMC);
   unsigned int daughters_size() const;
-  ConstExampleMC daughters(unsigned int) const;
-  std::vector<ConstExampleMC>::const_iterator daughters_begin() const;
-  std::vector<ConstExampleMC>::const_iterator daughters_end() const;
+  ExampleMC daughters(unsigned int) const;
+  std::vector<ExampleMC>::const_iterator daughters_begin() const;
+  std::vector<ExampleMC>::const_iterator daughters_end() const;
 
 
 
@@ -80,8 +74,6 @@ public:
   bool operator==(const ExampleMC& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleMC& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleMC& p1,

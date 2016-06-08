@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleWithNamespace object);
+  void push_back(ExampleWithNamespace object);
 
   void prepareForWrite();
   void prepareAfterRead();

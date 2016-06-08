@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithComponent.h"
-#include "ExampleWithComponentConst.h"
 #include "ExampleWithComponentObj.h"
 #include "ExampleWithComponentData.h"
 #include "ExampleWithComponentCollection.h"
@@ -42,7 +41,7 @@ ExampleWithComponent::~ExampleWithComponent(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithComponent::operator ConstExampleWithComponent() const {return ConstExampleWithComponent(m_obj);}
+//ExampleWithComponent::operator ExampleWithComponent() const {return ExampleWithComponent(m_obj);}
 
   const NotSoSimpleStruct& ExampleWithComponent::component() const { return m_obj->data.component; }
 
@@ -63,10 +62,6 @@ const podio::ObjectID ExampleWithComponent::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithComponent::operator==(const ConstExampleWithComponent& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

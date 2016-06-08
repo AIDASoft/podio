@@ -13,20 +13,17 @@
 //forward declarations
 
 
-#include "ExampleClusterConst.h"
 #include "ExampleClusterObj.h"
 
 
 
 class ExampleClusterCollection;
 class ExampleClusterCollectionIterator;
-class ConstExampleCluster;
 
 class ExampleCluster {
 
   friend ExampleClusterCollection;
   friend ExampleClusterCollectionIterator;
-  friend ConstExampleCluster;
 
 public:
 
@@ -45,9 +42,6 @@ public:
   /// destructor
   ~ExampleCluster();
 
-  /// conversion to const object
-  operator ConstExampleCluster () const;
-
 public:
 
   const double& energy() const;
@@ -55,17 +49,17 @@ public:
   void energy(double value);
 
 
-  void addHits(ConstExampleHit);
+  void addHits(ExampleHit);
   unsigned int Hits_size() const;
-  ConstExampleHit Hits(unsigned int) const;
-  std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
-  std::vector<ConstExampleHit>::const_iterator Hits_end() const;
+  ExampleHit Hits(unsigned int) const;
+  std::vector<ExampleHit>::const_iterator Hits_begin() const;
+  std::vector<ExampleHit>::const_iterator Hits_end() const;
 
-  void addClusters(ConstExampleCluster);
+  void addClusters(ExampleCluster);
   unsigned int Clusters_size() const;
-  ConstExampleCluster Clusters(unsigned int) const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
+  ExampleCluster Clusters(unsigned int) const;
+  std::vector<ExampleCluster>::const_iterator Clusters_begin() const;
+  std::vector<ExampleCluster>::const_iterator Clusters_end() const;
 
 
 
@@ -77,8 +71,6 @@ public:
   bool operator==(const ExampleCluster& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleCluster& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleCluster& p1,

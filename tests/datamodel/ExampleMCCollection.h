@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleMC object);
+  void push_back(ExampleMC object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -118,10 +118,10 @@ private:
   int m_collectionID;
   ExampleMCObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<::ConstExampleMC>* m_rel_parents; ///< Relation buffer for read / write
-  std::vector<std::vector<::ConstExampleMC>*> m_rel_parents_tmp; ///< Relation buffer for internal book-keeping
-  std::vector<::ConstExampleMC>* m_rel_daughters; ///< Relation buffer for read / write
-  std::vector<std::vector<::ConstExampleMC>*> m_rel_daughters_tmp; ///< Relation buffer for internal book-keeping
+  std::vector<::ExampleMC>* m_rel_parents; ///< Relation buffer for read / write
+  std::vector<std::vector<::ExampleMC>*> m_rel_parents_tmp; ///< Relation buffer for internal book-keeping
+  std::vector<::ExampleMC>* m_rel_daughters; ///< Relation buffer for read / write
+  std::vector<std::vector<::ExampleMC>*> m_rel_daughters_tmp; ///< Relation buffer for internal book-keeping
 
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
