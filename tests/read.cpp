@@ -69,6 +69,19 @@ void processEvent(podio::EventStore& store, bool verboser) {
     // particle 0 has particles 2,3,4 and 5 as daughters: 
     auto p = mcps[0] ;
 
+    //-------- print relations for debugging:
+    for( auto p : mcps ){
+      std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
+      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
+	std::cout << " " << it->getObjectID().index ;
+      }
+      std::cout << "  and parents: " ;
+      for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
+	std::cout << " " << it->getObjectID().index ;
+      }
+      std::cout << std::endl ;
+    }
+
     auto d0 = p.daughters(0) ;
     auto d1 = p.daughters(1) ;
     auto d2 = p.daughters(2) ;
