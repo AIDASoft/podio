@@ -27,6 +27,9 @@ public:
   bool isValid() const {return m_reader.isValid();}
   void close() {m_reader.closeFile();}
 
+  /// list available collections
+  const std::vector<std::string>& getCollectionNames() const;
+
  private:
   podio::ROOTReader m_reader;
   podio::EventStore m_store;

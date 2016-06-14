@@ -36,6 +36,8 @@ class EventStore(object):
                       files matching a wildcard pattern.
            treename: not used at the moment
         '''
+        if isinstance(filenames,str):
+            filenames = (filenames,)
         self.files = filenames
         self.stores = []
         self.current_store = None
@@ -44,6 +46,12 @@ class EventStore(object):
             if self.current_store is None:
                 self.current_store = store
             self.stores.append((store.getEntries(), store))
+
+    def __str__(self):
+        result = "Content:"
+        for item in self.current_store.getCollectionNames():
+            result += "\n\t%s" %item
+        return result
 
     def get(self, name):
         '''Returns a collection.
