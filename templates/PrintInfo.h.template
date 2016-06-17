@@ -1,0 +1,59 @@
+
+#ifndef  ${name}PrintInfo_h
+#define  ${name}PrintInfo_h
+
+#include "${name}Collection.h"
+
+class ${name}PrintInfo{
+
+ public:
+${widthOthers}
+${widthIntegers}
+  bool printWithTableHeader = false;
+ 
+  void setIntegerWidth(const ${name}Collection& value){
+      
+
+      /* sets the width in wich the ostream operators 
+         print out the integers of a given collection
+	 by rules of the function format */
+
+
+${findMaximum}
+
+${setFormats}	 
+
+  }   
+
+ static ${name}PrintInfo& instance(){
+        static ${name}PrintInfo _me;
+	return _me;
+  }
+ protected:
+  ${name}PrintInfo(){}
+
+  ~${name}PrintInfo(){}
+
+};
+
+ inline std::ostream& operator<<( std::ostream& o,const ${name}& value ){
+${outputSingleObject} std::endl ;
+	return o; 
+ }
+
+
+ inline std::ostream& operator<<( std::ostream& o,const ${name}Collection& value ){
+       ${name}PrintInfo::instance().setIntegerWidth(value);
+
+       if(${name}PrintInfo::instance().printWithTableHeader){o << ${tableHeader}std::endl;}
+
+       for(int i = 0; i < value.size(); i++){
+	       o << std::scientific << ${formattedOutput}  std::endl;
+	}
+
+	${name}PrintInfo::instance().printWithTableHeader = false;
+
+       return o;
+ }
+
+#endif

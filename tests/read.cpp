@@ -50,18 +50,62 @@ void processEvent(podio::EventStore& store, bool verboser) {
   auto& mcps =  store.get<ExampleMCCollection>("mcparticles");
   if( mcps.isValid() ){
 
+    // for( auto p : mcps ){
+    //   std::cout << " particle " << p.getObjectID().index << " daughters: " ;
+    //   for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
+    // 	int dIndex = it->getObjectID().index ;
+    // 	std::cout << " " << dIndex ;
+    //   } 
+    //   std::cout << "  and parents: " ;
+    //   for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
+    // 	std::cout << " " << it->getObjectID().index ;
+    //   }
+    //   std::cout << std::endl ;
+    // }
+
+    // check that we can retrieve the correct parent daughter relation
+    // set in write.cpp :
+
+    // particle 0 has particles 2,3,4 and 5 as daughters: 
+    auto p = mcps[0] ;
+
+    //-------- print relations for debugging:
     for( auto p : mcps ){
-      std::cout << " particle " << p.getObjectID().index << " daughters: " ;
+      std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-	int dIndex = it->getObjectID().index ;
-	std::cout << " " << dIndex ;
-      } 
+	std::cout << " " << it->getObjectID().index ;
+      }
       std::cout << "  and parents: " ;
       for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
 	std::cout << " " << it->getObjectID().index ;
       }
       std::cout << std::endl ;
     }
+
+    auto d0 = p.daughters(0) ;
+    auto d1 = p.daughters(1) ;
+    auto d2 = p.daughters(2) ;
+    auto d3 = p.daughters(3) ;
+    
+    if( ! ( d0 == mcps[2] ) )  throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 " ) ;  
+    if( ! ( d1 == mcps[3] ) )  throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 " ) ;  
+    if( ! ( d2 == mcps[4] ) )  throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 " ) ;  
+    if( ! ( d3 == mcps[5] ) )  throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 " ) ;  
+
+
+    // particle 3 has particles 6,7,8 and 9 as daughters: 
+    p = mcps[3] ;
+
+    d0 = p.daughters(0) ;
+    d1 = p.daughters(1) ;
+    d2 = p.daughters(2) ;
+    d3 = p.daughters(3) ;
+    
+    if( ! ( d0 == mcps[6] ) )  throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 " ) ;  
+    if( ! ( d1 == mcps[7] ) )  throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 " ) ;  
+    if( ! ( d2 == mcps[8] ) )  throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 " ) ;  
+    if( ! ( d3 == mcps[9] ) )  throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 " ) ;  
+
   }
 
 

@@ -36,6 +36,8 @@ class EventStore(object):
                       files matching a wildcard pattern.
            treename: not used at the moment
         '''
+        if isinstance(filenames,str):
+            filenames = (filenames,)
         self.files = filenames
         self.stores = []
         self.current_store = None
@@ -44,6 +46,12 @@ class EventStore(object):
             if self.current_store is None:
                 self.current_store = store
             self.stores.append((store.getEntries(), store))
+
+    def __str__(self):
+        result = "Content:"
+        for item in self.current_store.getCollectionNames():
+            result += "\n\t%s" %item
+        return result
 
     def get(self, name):
         '''Returns a collection.
@@ -59,12 +67,22 @@ class EventStore(object):
         coll.__getitem__ = getitem
         return coll
 
+    def isValid(self):
+        return self.current_store is not None and self.current_store.isValid()
+
     # def __getattr__(self, name):
     #     '''missing attributes are taken from self.current_store'''
     #     if name != 'current_store':
     #         return getattr(self.current_store, name)
     #     else:
     #         return None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception_val, trace):
+        for store in self.stores:
+            store[1].close()
 
     def __iter__(self):
         '''iterate on events in the tree.

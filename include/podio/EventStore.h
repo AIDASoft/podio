@@ -61,7 +61,9 @@ namespace podio {
     /// set the reader
     void setReader(IReader* reader);
 
-    CollectionIDTable* getCollectionIDTable(){return m_table;};
+    CollectionIDTable* getCollectionIDTable() const {return m_table;};
+
+    virtual bool isValid() const final;
 
   private:
 

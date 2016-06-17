@@ -84,7 +84,7 @@ void ExampleMCCollection::prepareForWrite(){
   for(int i=0, size = m_data->size(); i != size; ++i){
    (*m_data)[i].parents_begin=parents_index;
    (*m_data)[i].parents_end+=parents_index;
-   parents_index = (*m_data)[parents_index].parents_end;
+   parents_index = (*m_data)[i].parents_end;
    for(auto it : (*m_rel_parents_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
@@ -93,7 +93,7 @@ void ExampleMCCollection::prepareForWrite(){
    }
    (*m_data)[i].daughters_begin=daughters_index;
    (*m_data)[i].daughters_end+=daughters_index;
-   daughters_index = (*m_data)[daughters_index].daughters_end;
+   daughters_index = (*m_data)[i].daughters_end;
    for(auto it : (*m_rel_daughters_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
