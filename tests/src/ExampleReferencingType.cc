@@ -42,13 +42,13 @@ ExampleReferencingType::operator ConstExampleReferencingType() const {return Con
 
 
 
-std::vector<ConstExampleCluster>::const_iterator ExampleReferencingType::Clusters_begin() const {
+std::vector<::ConstExampleCluster>::const_iterator ExampleReferencingType::Clusters_begin() const {
   auto ret_value = m_obj->m_Clusters->begin();
   std::advance(ret_value, m_obj->data.Clusters_begin);
   return ret_value;
 }
 
-std::vector<ConstExampleCluster>::const_iterator ExampleReferencingType::Clusters_end() const {
+std::vector<::ConstExampleCluster>::const_iterator ExampleReferencingType::Clusters_end() const {
   auto ret_value = m_obj->m_Clusters->begin();
 //fg: this code fails if m_obj->data.Clusters==0
 //  std::advance(ret_value, m_obj->data.Clusters_end-1);
@@ -57,7 +57,7 @@ std::vector<ConstExampleCluster>::const_iterator ExampleReferencingType::Cluster
   return ret_value;
 }
 
-void ExampleReferencingType::addClusters(ConstExampleCluster component) {
+void ExampleReferencingType::addClusters(::ConstExampleCluster component) {
   m_obj->m_Clusters->push_back(component);
   m_obj->data.Clusters_end++;
 }
@@ -66,19 +66,19 @@ unsigned int ExampleReferencingType::Clusters_size() const {
   return (m_obj->data.Clusters_end-m_obj->data.Clusters_begin);
 }
 
-ConstExampleCluster ExampleReferencingType::Clusters(unsigned int index) const {
+::ConstExampleCluster ExampleReferencingType::Clusters(unsigned int index) const {
   if (Clusters_size() > index) {
     return m_obj->m_Clusters->at(m_obj->data.Clusters_begin+index);
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
-std::vector<ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_begin() const {
+std::vector<::ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_begin() const {
   auto ret_value = m_obj->m_Refs->begin();
   std::advance(ret_value, m_obj->data.Refs_begin);
   return ret_value;
 }
 
-std::vector<ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_end() const {
+std::vector<::ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_end() const {
   auto ret_value = m_obj->m_Refs->begin();
 //fg: this code fails if m_obj->data.Refs==0
 //  std::advance(ret_value, m_obj->data.Refs_end-1);
@@ -87,7 +87,7 @@ std::vector<ConstExampleReferencingType>::const_iterator ExampleReferencingType:
   return ret_value;
 }
 
-void ExampleReferencingType::addRefs(ConstExampleReferencingType component) {
+void ExampleReferencingType::addRefs(::ConstExampleReferencingType component) {
   m_obj->m_Refs->push_back(component);
   m_obj->data.Refs_end++;
 }
@@ -96,7 +96,7 @@ unsigned int ExampleReferencingType::Refs_size() const {
   return (m_obj->data.Refs_end-m_obj->data.Refs_begin);
 }
 
-ConstExampleReferencingType ExampleReferencingType::Refs(unsigned int index) const {
+::ConstExampleReferencingType ExampleReferencingType::Refs(unsigned int index) const {
   if (Refs_size() > index) {
     return m_obj->m_Refs->at(m_obj->data.Refs_begin+index);
   }

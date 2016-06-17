@@ -342,9 +342,10 @@ class ClassGenerator(object):
       ConstReferences_template = self.get_template("ConstRefVector.cc.template")
 
       for refvector in refvectors+definition["VectorMembers"]:
+        relnamespace, reltype, _, __ = self.demangle_classname(refvector["type"])
         relationtype = refvector["type"]
         if relationtype not in self.buildin_types and relationtype not in self.reader.components:
-            relationtype = "Const"+relationtype
+            relationtype = relnamespace+"::Const"+reltype
 
         relationName = refvector["name"]
         get_relation = relationName

@@ -44,13 +44,13 @@ ConstExampleCluster::~ConstExampleCluster(){
 
   const double& ConstExampleCluster::energy() const { return m_obj->data.energy; }
 
-std::vector<ConstExampleHit>::const_iterator ConstExampleCluster::Hits_begin() const {
+std::vector<::ConstExampleHit>::const_iterator ConstExampleCluster::Hits_begin() const {
   auto ret_value = m_obj->m_Hits->begin();
   std::advance(ret_value, m_obj->data.Hits_begin);
   return ret_value;
 }
 
-std::vector<ConstExampleHit>::const_iterator ConstExampleCluster::Hits_end() const {
+std::vector<::ConstExampleHit>::const_iterator ConstExampleCluster::Hits_end() const {
   auto ret_value = m_obj->m_Hits->begin();
   std::advance(ret_value, m_obj->data.Hits_end-1);
   return ++ret_value;
@@ -60,19 +60,19 @@ unsigned int ConstExampleCluster::Hits_size() const {
   return (m_obj->data.Hits_end-m_obj->data.Hits_begin);
 }
 
-ConstExampleHit ConstExampleCluster::Hits(unsigned int index) const {
+::ConstExampleHit ConstExampleCluster::Hits(unsigned int index) const {
   if (Hits_size() > index) {
     return m_obj->m_Hits->at(m_obj->data.Hits_begin+index);
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
-std::vector<ConstExampleCluster>::const_iterator ConstExampleCluster::Clusters_begin() const {
+std::vector<::ConstExampleCluster>::const_iterator ConstExampleCluster::Clusters_begin() const {
   auto ret_value = m_obj->m_Clusters->begin();
   std::advance(ret_value, m_obj->data.Clusters_begin);
   return ret_value;
 }
 
-std::vector<ConstExampleCluster>::const_iterator ConstExampleCluster::Clusters_end() const {
+std::vector<::ConstExampleCluster>::const_iterator ConstExampleCluster::Clusters_end() const {
   auto ret_value = m_obj->m_Clusters->begin();
   std::advance(ret_value, m_obj->data.Clusters_end-1);
   return ++ret_value;
@@ -82,7 +82,7 @@ unsigned int ConstExampleCluster::Clusters_size() const {
   return (m_obj->data.Clusters_end-m_obj->data.Clusters_begin);
 }
 
-ConstExampleCluster ConstExampleCluster::Clusters(unsigned int index) const {
+::ConstExampleCluster ConstExampleCluster::Clusters(unsigned int index) const {
   if (Clusters_size() > index) {
     return m_obj->m_Clusters->at(m_obj->data.Clusters_begin+index);
   }
