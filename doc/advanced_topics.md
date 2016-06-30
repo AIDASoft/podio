@@ -4,29 +4,7 @@
 ## Persistency
 
 The library is build such that it can support multiple storage backends. However, the tested storage system being used is ROOT.
-
-## Thread-safety
-
-PODIO was written with thread-safety in mind and avoids the usage of globals and statics. However, a few assumptions about user code and use-patterns were made. The following lists the caveats of the library when it comes to parallelization.
-
-### Setting user data
-
-The non-const variants of the user classes are in no way protected for concurrent update operations. However, if only dealing with the const-variants it is guaranteed that no internal state or cache prevents concurrent operations.
-
-### Serialization
-During the calls of `prepareForWriting` and `prepareAfterReading` on collections other operations like object creation or addition will lead to an inconsistent state.
-
-### Not-thread-safe components
-The example event store provided with PODIO is as of writing not thread-safe. Neither is the chosen serialization.
-
-
-## Implementing a transient Event Class
-
-PODIO contains one example `podio::EventStore` class. To implement your own transient event store, the only requirement is to set the collectionID of each collection to a unique ID on creation.
-
-## Implementing a persistency layer on top of PODIO
-
-PODIO contains one example persistency implementation, based on ROOT. However, it is possible to implement other serialization solution on top of PODIO.
+The following explains the requirements for a user-provided storage back-end.
 
 ### Writing Back-End
 
@@ -66,6 +44,23 @@ If not taking advantage of this implementation, the data reader or the event sto
     
 The strong assumption here is that all references are being followed up directly and no later on-demand reading is done. 
 
-### Necessary reflection information
+## Thread-safety
 
-To be written
+PODIO was written with thread-safety in mind and avoids the usage of globals and statics. 
+However, a few assumptions about user code and use-patterns were made. 
+The following lists the caveats of the library when it comes to parallelization.
+
+### Changing user data
+
+As explained in the section about mutability of data, thread-safety is only guaranteed if data are considered read-only after creation.
+
+### Serialization
+During the calls of `prepareForWriting` and `prepareAfterReading` on collections other operations like object creation or addition will lead to an inconsistent state.
+
+### Not-thread-safe components
+The example event store provided with PODIO is as of writing not thread-safe. Neither is the chosen serialization.
+
+## Implementing a transient Event Class
+
+PODIO contains one example `podio::EventStore` class. 
+To implement your own transient event store, the only requirement is to set the collectionID of each collection to a unique ID on creation.
