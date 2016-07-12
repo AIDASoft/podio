@@ -55,8 +55,11 @@ namespace podio {
     /// empties collections.
     void clearCollections();
 
-    /// clears itself; deletes collections
+    /// clears itself; deletes collections (use at end of event processing)
     void clear();
+
+    /// Clears only the cache containers (use at end of event if ownership of read objects is transferred)
+    void clearCaches();
 
     /// set the reader
     void setReader(IReader* reader);

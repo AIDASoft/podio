@@ -9,7 +9,8 @@
 namespace ex {
 class ExampleWithARelationData {
 public:
-
+  unsigned int refs_begin;
+  unsigned int refs_end;
 };
 } // namespace ex
 

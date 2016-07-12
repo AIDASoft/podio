@@ -29,6 +29,12 @@ namespace podio {
     }
   }
 
+  bool CollectionIDTable::present(const std::string& name) const {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    auto result = std::find(begin(m_names), end(m_names), name);
+    return result != end(m_names);
+  }
+
   int CollectionIDTable::add(const std::string& name) {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     auto result = std::find(begin(m_names), end(m_names), name);
