@@ -9,14 +9,14 @@ namespace podio {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
     auto index = result - m_collectionIDs.begin();
-    return m_names.at(index);
+    return m_names[index];
   }
 
   int CollectionIDTable::collectionID(const std::string& name) const {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     auto result = std::find(begin(m_names), end(m_names), name);
     auto index = result - m_names.begin();
-    return m_collectionIDs.at(index);
+    return m_collectionIDs[index];
   }
 
 
@@ -27,6 +27,12 @@ namespace podio {
       std::cout<<"\t"
          <<m_names[i] << " : " << m_collectionIDs[i] <<std::endl;
     }
+  }
+
+  bool CollectionIDTable::present(const std::string& name) const {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    auto result = std::find(begin(m_names), end(m_names), name);
+    return result != end(m_names);
   }
 
   int CollectionIDTable::add(const std::string& name) {
