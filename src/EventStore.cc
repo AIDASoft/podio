@@ -79,11 +79,15 @@ namespace podio {
       coll.second->clear();
       delete coll.second;
     }
-    m_collections.clear();
-    m_retrievedIDs.clear();
     for (auto& coll : m_failedRetrieves){
       delete coll;
     }
+    clearCaches();
+  }
+
+  void EventStore::clearCaches() {
+    m_collections.clear();
+    m_retrievedIDs.clear();
     m_failedRetrieves.clear();
   }
 
