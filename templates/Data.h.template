@@ -1,12 +1,14 @@
 #ifndef ${name}DATA_H
 #define ${name}DATA_H
 
-// $description
-// author: $author
-
 $includes
 
 ${namespace_open}
+/** @class ${name}Data
+ *  $description
+ *  @author: $author
+ */
+
 class ${name}Data {
 public:
 $members

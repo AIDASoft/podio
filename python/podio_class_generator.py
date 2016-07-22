@@ -260,22 +260,23 @@ class ClassGenerator(object):
       for member in definition["Members"]:
         name = member["name"]
         klass = member["type"]
+        desc = member["description"]
         gname,sname = name,name
         if( self.getSyntax ):
           gname = "get" + name[:1].upper() + name[1:]
           sname = "set" + name[:1].upper() + name[1:]
-        getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname)
+        getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname, description=desc)
         getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
         if klass in self.buildin_types:
-          setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname)
+          setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
         else:
-          setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name)
+          setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
           setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
-          setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname)
+          setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
         # Getter for the Const variety of this datatype
-        ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
+        ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname, description=desc)
 
 
         # set up signature
@@ -287,15 +288,16 @@ class ClassGenerator(object):
       for member in oneToOneRelations:
           name = member["name"]
           klass = member["type"]
+          desc = member["description"]
           mnamespace = ""
           klassname = klass
           mnamespace, klassname, _, __ = self.demangle_classname(klass)
 
-          setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname)
+          setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
           setter_implementations += implementations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname)
+          getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
           getter_implementations += implementations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
+          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname, description=desc)
 
 
       # handle vector members
