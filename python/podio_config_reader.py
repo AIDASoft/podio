@@ -147,4 +147,4 @@ class PodioConfigReader(object):
                 self.components[klassname] = component
         if "options" in content.keys():
             for option, value in content["options"].iteritems():
-                self.options[option] = value in ["True", "true", "TRUE", "On", "on", "ON"]
+                self.options[option] = value
