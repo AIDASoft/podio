@@ -42,9 +42,13 @@ ConstExampleHit::~ConstExampleHit(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  x-coordinate
   const double& ConstExampleHit::x() const { return m_obj->data.x; }
+  /// Access the  y-coordinate
   const double& ConstExampleHit::y() const { return m_obj->data.y; }
+  /// Access the  z-coordinate
   const double& ConstExampleHit::z() const { return m_obj->data.z; }
+  /// Access the  measured energy deposit
   const double& ConstExampleHit::energy() const { return m_obj->data.energy; }
 
 

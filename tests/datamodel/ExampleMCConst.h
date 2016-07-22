@@ -7,9 +7,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Example MC-particle
-// author: F.Gaede
-
 //forward declarations
 
 
@@ -21,6 +18,11 @@ class ExampleMCObj;
 class ExampleMC;
 class ExampleMCCollection;
 class ExampleMCCollectionIterator;
+
+/** @class ConstExampleMC
+ *  Example MC-particle
+ *  @author: F.Gaede
+ */
 
 class ConstExampleMC {
 
@@ -48,7 +50,9 @@ public:
 
 public:
 
+  /// Access the  energy
   const double& energy() const;
+  /// Access the  PDG code
   const int& PDG() const;
 
   unsigned int parents_size() const;

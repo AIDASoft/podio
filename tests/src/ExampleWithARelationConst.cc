@@ -39,6 +39,7 @@ ConstExampleWithARelation::~ConstExampleWithARelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  a ref in a namespace
   const ex::ConstExampleWithNamespace ConstExampleWithARelation::ref() const {
     if (m_obj->m_ref == nullptr) {
       return ex::ConstExampleWithNamespace(nullptr);

@@ -6,9 +6,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with namespace and namespaced relation
-// author: Joschka Lingemann
-
 //forward declarations
 namespace ex {
 class ExampleWithNamespace;
@@ -25,6 +22,10 @@ class ExampleWithARelationCollection;
 class ExampleWithARelationCollectionIterator;
 class ConstExampleWithARelation;
 
+/** @class ExampleWithARelation
+ *  Type with namespace and namespaced relation
+ *  @author: Joschka Lingemann
+ */
 class ExampleWithARelation {
 
   friend ExampleWithARelationCollection;
@@ -52,8 +53,10 @@ public:
 
 public:
 
+  /// Access the  a ref in a namespace
   const ex::ConstExampleWithNamespace ref() const;
 
+  /// Set the  a ref in a namespace
   void ref(ex::ConstExampleWithNamespace value);
 
   void addrefs(ex::ConstExampleWithNamespace);

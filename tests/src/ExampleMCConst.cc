@@ -42,7 +42,9 @@ ConstExampleMC::~ConstExampleMC(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  energy
   const double& ConstExampleMC::energy() const { return m_obj->data.energy; }
+  /// Access the  PDG code
   const int& ConstExampleMC::PDG() const { return m_obj->data.PDG; }
 
 std::vector<::ConstExampleMC>::const_iterator ConstExampleMC::parents_begin() const {

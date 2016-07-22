@@ -4,9 +4,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Event info
-// author: B. Hegner
-
 //forward declarations
 
 
@@ -19,6 +16,10 @@ class EventInfoCollection;
 class EventInfoCollectionIterator;
 class ConstEventInfo;
 
+/** @class EventInfo
+ *  Event info
+ *  @author: B. Hegner
+ */
 class EventInfo {
 
   friend EventInfoCollection;
@@ -47,8 +48,10 @@ public:
 
 public:
 
+  /// Access the  event number
   const int& Number() const;
 
+  /// Set the  event number
   void Number(int value);
 
 

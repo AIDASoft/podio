@@ -1,11 +1,13 @@
 #ifndef ExampleClusterDATA_H
 #define ExampleClusterDATA_H
 
-// Cluster
-// author: B. Hegner
 
 
 
+/** @class ExampleClusterData
+ *  Cluster
+ *  @author: B. Hegner
+ */
 
 class ExampleClusterData {
 public:
