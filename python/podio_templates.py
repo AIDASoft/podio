@@ -46,6 +46,9 @@ implementations["pod_member_class_refsetter"] = "{type}& {classname}::{name}() {
 declarations["pod_member_class_setter"] = "\tvoid {fname}(class {type} value);\n"
 implementations["pod_member_class_setter"] = "void {classname}::{fname}(class {type} value) {{ m_obj->data.{compname}.{name} = value; }}\n"
 
+# this is inline, don't need the declaration
+# implementations["const_member_getter"] =  "\t/// Access the {description}\n"
+implementations["const_pod_member_getter"] = "\tconst {type}& Const{classname}::{fname}() const {{ return m_obj->data.{compname}.{name}; }}\n"
 
 # OneToOneRelations
 #-----------------------------------
