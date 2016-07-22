@@ -33,14 +33,13 @@ _text_ = """
 class ClassGenerator(object):
 
     def __init__(self, yamlfile, install_dir, package_name,
-                 verbose=True, getSyntax=False):
+                 verbose=True):
 
         self.yamlfile = yamlfile
         self.install_dir = install_dir
         self.package_name = package_name
         self.template_dir = os.path.join(thisdir, "../templates")
         self.verbose = verbose
-        self.getSyntax = getSyntax
         self.buildin_types = ClassDefinitionValidator.buildin_types
         self.created_classes = []
         self.requested_classes = []
@@ -50,6 +49,8 @@ class ClassGenerator(object):
 
     def process(self):
         self.reader.read()
+        self.getSyntax = self.reader.options["getSyntax"]
+        self.expose_pod_members = self.reader.options["exposePODMembers"]
         self.process_components(self.reader.components)
         self.process_datatypes(self.reader.datatypes)
         self.create_selection_xml()
@@ -276,7 +277,7 @@ class ClassGenerator(object):
           setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
           setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
-          if True: # TODO: add definition of this switch
+          if self.expose_pod_members:
             sub_members = self.component_members[klass]
             for sub_member in sub_members:
               comp_member_class, comp_member_name = sub_member
@@ -809,7 +810,7 @@ if __name__ == "__main__":
   if not os.path.exists( directory ):
     os.makedirs(directory)
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose, getSyntax=options.getSyntax )
+  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
   gen.process()
   for warning in gen.warnings:
       print warning

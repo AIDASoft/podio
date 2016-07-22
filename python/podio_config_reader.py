@@ -100,6 +100,11 @@ class PodioConfigReader(object):
         self.yamlfile = yamlfile
         self.datatypes = {}
         self.components = {}
+        self.options = {
+            # should getters / setters be prefixed with get / set?
+            "getSyntax": False,
+            # should POD members be exposed with getters/setters in classes that have them as members?
+            "exposePODMembers": True}
 
     @staticmethod
     def handle_extracode(definition):
@@ -140,3 +145,6 @@ class PodioConfigReader(object):
             for klassname, value in content["components"].iteritems():
                 component = {"Members": value}
                 self.components[klassname] = component
+        if "options" in content.keys():
+            for option, value in content["options"].iteritems():
+                self.options[option] = value in ["True", "true", "TRUE", "On", "on", "ON"]
