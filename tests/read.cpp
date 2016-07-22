@@ -53,12 +53,12 @@ void processEvent(podio::EventStore& store, bool verboser) {
     for( auto p : mcps ){
       std::cout << " particle " << p.getObjectID().index << " daughters: " ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-	int dIndex = it->getObjectID().index ;
-	std::cout << " " << dIndex ;
+  int dIndex = it->getObjectID().index ;
+  std::cout << " " << dIndex ;
       } 
       std::cout << "  and parents: " ;
       for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
-	std::cout << " " << it->getObjectID().index ;
+  std::cout << " " << it->getObjectID().index ;
       }
       std::cout << std::endl ;
     }
@@ -103,7 +103,7 @@ void processEvent(podio::EventStore& store, bool verboser) {
   auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   if (nmspaces.isValid()) {
     auto nmsp = nmspaces[0];
-    int b = nmsp.ref().data().x + nmsp.ref().data().y;
+    int b = nmsp.ref().x() + nmsp.ref().data().y;
   }
 }
 
