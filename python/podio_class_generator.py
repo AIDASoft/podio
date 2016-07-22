@@ -46,6 +46,7 @@ class ClassGenerator(object):
         self.requested_classes = []
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
+        self.component_members = {}
 
     def process(self):
         self.reader.read()
@@ -275,6 +276,26 @@ class ClassGenerator(object):
           setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
           setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
+          if True: # TODO: add definition of this switch
+            sub_members = self.component_members[klass]
+            for sub_member in sub_members:
+              comp_member_class, comp_member_name = sub_member
+              comp_gname, comp_sname = comp_member_name, comp_member_name
+              if self.getSyntax:
+                comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
+                comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
+
+              getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name)
+              getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name)
+              if comp_member_class in self.buildin_types:
+                setter_declarations += declarations["pod_member_builtin_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name)
+                setter_implementations += implementations["pod_member_builtin_setter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name)
+              else:
+                setter_declarations += declarations["pod_member_class_refsetter"].format(type=comp_member_class, name=comp_member_name, compname=name)
+                setter_implementations += implementations["pod_member_class_refsetter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name)
+                setter_declarations += declarations["pod_member_class_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name)
+                setter_implementations += implementations["pod_member_class_setter"].format(type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name, compname=name)
+
         # Getter for the Const variety of this datatype
         ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname, description=desc)
 
@@ -556,7 +577,7 @@ class ClassGenerator(object):
       includes = ""
       members = ""
       extracode_declarations = ""
-
+      self.component_members[classname] = []
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
       keys = sorted( components.keys() )
       for name in keys:
@@ -570,8 +591,10 @@ class ClassGenerator(object):
             mnamespace, klassname = klass.split("::")
           if mnamespace == "":
             members+= "  %s %s;\n" %(klassname, name)
+            self.component_members[classname].append([klassname, name])
           else:
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
+            self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
           if self.reader.components.has_key(klass):
               includes+= '#include "%s.h"\n' %(klassname)
         else:
