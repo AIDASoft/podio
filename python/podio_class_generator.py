@@ -69,9 +69,13 @@ class ClassGenerator(object):
                              len(self.created_classes),
                              self.install_dir
                              )
-        for i, line in enumerate(figure):
-            print
-            print line + text.splitlines()[i],
+        cntr = 0
+        print 
+        for figline, summaryline in zip(figure, text.splitlines()):
+            cntr += 1
+            print figline + summaryline
+        for i in xrange(cntr, len(figure)):
+            print figure[i]
         print "     'Homage to the Square' - Josef Albers"
         print
 
@@ -334,9 +338,10 @@ class ClassGenerator(object):
       ConstReferences_template = self.get_template("ConstRefVector.cc.template")
 
       for refvector in refvectors+definition["VectorMembers"]:
+        relnamespace, reltype, _, __ = self.demangle_classname(refvector["type"])
         relationtype = refvector["type"]
         if relationtype not in self.buildin_types and relationtype not in self.reader.components:
-            relationtype = "Const"+relationtype
+            relationtype = relnamespace+"::Const"+reltype
 
         relationName = refvector["name"]
         get_relation = relationName

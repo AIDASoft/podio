@@ -51,13 +51,13 @@ public:
   const double& energy() const;
 
   unsigned int Hits_size() const;
-  ConstExampleHit Hits(unsigned int) const;
-  std::vector<ConstExampleHit>::const_iterator Hits_begin() const;
-  std::vector<ConstExampleHit>::const_iterator Hits_end() const;
+  ::ConstExampleHit Hits(unsigned int) const;
+  std::vector<::ConstExampleHit>::const_iterator Hits_begin() const;
+  std::vector<::ConstExampleHit>::const_iterator Hits_end() const;
   unsigned int Clusters_size() const;
-  ConstExampleCluster Clusters(unsigned int) const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
+  ::ConstExampleCluster Clusters(unsigned int) const;
+  std::vector<::ConstExampleCluster>::const_iterator Clusters_begin() const;
+  std::vector<::ConstExampleCluster>::const_iterator Clusters_end() const;
 
 
   /// check whether the object is actually available

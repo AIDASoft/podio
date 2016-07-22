@@ -122,4 +122,6 @@ datatypes :
     Author : "Joschka Lingemann"
     OneToOneRelations :
      - ex::ExampleWithNamespace ref // a ref in a namespace
+    OneToManyRelations :
+     - ex::ExampleWithNamespace refs // multiple refs in a namespace
 

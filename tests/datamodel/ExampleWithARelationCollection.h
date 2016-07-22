@@ -114,6 +114,8 @@ private:
   int m_collectionID;
   ExampleWithARelationObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
+  std::vector<ex::ConstExampleWithNamespace>* m_rel_refs; ///< Relation buffer for read / write
+  std::vector<std::vector<ex::ConstExampleWithNamespace>*> m_rel_refs_tmp; ///< Relation buffer for internal book-keeping
   std::vector<ex::ConstExampleWithNamespace>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming

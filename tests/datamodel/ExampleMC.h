@@ -58,17 +58,17 @@ public:
   void PDG(int value);
 
 
-  void addparents(ConstExampleMC);
+  void addparents(::ConstExampleMC);
   unsigned int parents_size() const;
-  ConstExampleMC parents(unsigned int) const;
-  std::vector<ConstExampleMC>::const_iterator parents_begin() const;
-  std::vector<ConstExampleMC>::const_iterator parents_end() const;
+  ::ConstExampleMC parents(unsigned int) const;
+  std::vector<::ConstExampleMC>::const_iterator parents_begin() const;
+  std::vector<::ConstExampleMC>::const_iterator parents_end() const;
 
-  void adddaughters(ConstExampleMC);
+  void adddaughters(::ConstExampleMC);
   unsigned int daughters_size() const;
-  ConstExampleMC daughters(unsigned int) const;
-  std::vector<ConstExampleMC>::const_iterator daughters_begin() const;
-  std::vector<ConstExampleMC>::const_iterator daughters_end() const;
+  ::ConstExampleMC daughters(unsigned int) const;
+  std::vector<::ConstExampleMC>::const_iterator daughters_begin() const;
+  std::vector<::ConstExampleMC>::const_iterator daughters_end() const;
 
 
 

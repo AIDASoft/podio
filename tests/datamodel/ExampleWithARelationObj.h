@@ -9,6 +9,8 @@
 #include "podio/ObjBase.h"
 #include "ExampleWithARelationData.h"
 
+#include <vector>
+#include "ExampleWithNamespace.h"
 
 
 // forward declarations
@@ -33,6 +35,7 @@ public:
 public:
   ExampleWithARelationData data;
   ::ex::ConstExampleWithNamespace* m_ref;
+  std::vector<::ex::ConstExampleWithNamespace>* m_refs;
 
 
 };
