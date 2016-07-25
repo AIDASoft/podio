@@ -14,7 +14,7 @@ ExampleWithOneRelationObj::ExampleWithOneRelationObj(const podio::ObjectID id, E
 
 ExampleWithOneRelationObj::ExampleWithOneRelationObj(const ExampleWithOneRelationObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data)
+    , data(other.data), m_cluster(new ConstExampleCluster(*(other.m_cluster)))
 { }
 
 ExampleWithOneRelationObj::~ExampleWithOneRelationObj() {

@@ -14,7 +14,7 @@ ExampleForCyclicDependency2Obj::ExampleForCyclicDependency2Obj(const podio::Obje
 
 ExampleForCyclicDependency2Obj::ExampleForCyclicDependency2Obj(const ExampleForCyclicDependency2Obj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data)
+    , data(other.data), m_ref(new ConstExampleForCyclicDependency1(*(other.m_ref)))
 { }
 
 ExampleForCyclicDependency2Obj::~ExampleForCyclicDependency2Obj() {

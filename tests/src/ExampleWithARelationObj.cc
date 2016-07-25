@@ -14,7 +14,7 @@ ExampleWithARelationObj::ExampleWithARelationObj(const podio::ObjectID id, Examp
 
 ExampleWithARelationObj::ExampleWithARelationObj(const ExampleWithARelationObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data), m_refs(new std::vector<::ex::ConstExampleWithNamespace>(*(other.m_refs)))
+    , data(other.data), m_ref(new ::ex::ConstExampleWithNamespace(*(other.m_ref))), m_refs(new std::vector<::ex::ConstExampleWithNamespace>(*(other.m_refs)))
 { }
 
 ExampleWithARelationObj::~ExampleWithARelationObj() {

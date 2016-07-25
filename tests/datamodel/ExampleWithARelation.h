@@ -35,6 +35,7 @@ public:
 
   /// default constructor
   ExampleWithARelation();
+  ExampleWithARelation(float number);
 
   /// constructor from existing ExampleWithARelationObj
   ExampleWithARelation(ExampleWithARelationObj* obj);
@@ -52,7 +53,10 @@ public:
 
 public:
 
+  const float& number() const;
   const ex::ConstExampleWithNamespace ref() const;
+
+  void number(float value);
 
   void ref(ex::ConstExampleWithNamespace value);
 

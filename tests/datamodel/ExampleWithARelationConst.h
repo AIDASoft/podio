@@ -35,7 +35,8 @@ public:
 
   /// default constructor
   ConstExampleWithARelation();
-  
+  ConstExampleWithARelation(float number);
+
   /// constructor from existing ExampleWithARelationObj
   ConstExampleWithARelation(ExampleWithARelationObj* obj);
   /// copy constructor
@@ -50,6 +51,7 @@ public:
 
 public:
 
+  const float& number() const;
   const ex::ConstExampleWithNamespace ref() const;
 
   unsigned int refs_size() const;

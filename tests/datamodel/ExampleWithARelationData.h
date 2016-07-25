@@ -9,6 +9,7 @@
 namespace ex {
 class ExampleWithARelationData {
 public:
+  float number;  ///< just a number
   unsigned int refs_begin;
   unsigned int refs_end;
 };

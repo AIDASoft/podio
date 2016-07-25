@@ -107,7 +107,9 @@ public:
   /// returns the pointer to the data buffer
   std::vector<ExampleWithARelationData>* _getBuffer() { return m_data;};
 
-   
+    template<size_t arraysize>
+  const std::array<float,arraysize> number() const;
+
 
 private:
   bool m_isValid;
@@ -131,6 +133,15 @@ ExampleWithARelation  ExampleWithARelationCollection::create(Args&&... args){
   return ExampleWithARelation(obj);
 }
 
+template<size_t arraysize>
+const std::array<float,arraysize> ExampleWithARelationCollection::number() const {
+  std::array<float,arraysize> tmp;
+  auto valid_size = std::min(arraysize,m_entries.size());
+  for (unsigned i = 0; i<valid_size; ++i){
+    tmp[i] = m_entries[i]->data.number;
+ }
+ return tmp;
+}
 
 } // namespace ex
 #endif
