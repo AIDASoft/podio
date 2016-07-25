@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <exception>
+#include <cassert>
 
 // podio specific includes
 #include "podio/EventStore.h"
@@ -101,9 +102,15 @@ void processEvent(podio::EventStore& store, bool verboser) {
   }
 
   auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& copies = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   if (nmspaces.isValid()) {
     auto nmsp = nmspaces[0];
     int b = nmsp.ref().data().x + nmsp.ref().data().y;
+    assert(nmsp.ref().data().x == nmsp.refs_begin()->data().x);
+    auto cpy = copies[0];
+    assert(nmsp.ref().data().x == cpy.ref().data().x);
+    assert(nmsp.refs_begin()->data().x == cpy.refs_begin()->data().x);
+    assert(nmsp.number() == cpy.number());
   }
 }
 

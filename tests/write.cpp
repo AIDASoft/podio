@@ -37,6 +37,7 @@ int main(){
   auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
   auto& namesps    = store.create<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& cpytest    = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleMCCollection>("mcparticles");
@@ -49,6 +50,7 @@ int main(){
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
   writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   writer.registerForWrite<ExampleWithStringCollection>("strings");
 
   unsigned nevents = 2000;
@@ -195,8 +197,12 @@ int main(){
     namesps.push_back(namesp);
 
     auto rel = ex::ExampleWithARelation();
+    rel.number(0.5);
     rel.ref(namesp);
+    rel.addrefs(namesp);
     namesprels.push_back(rel);
+
+    cpytest.push_back(rel.clone());
 
     auto string = ExampleWithString("SomeString");
     strings.push_back(string);
