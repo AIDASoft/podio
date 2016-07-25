@@ -613,10 +613,16 @@ class ClassGenerator(object):
         klass = item["type"]
         klassname = klass
         mnamespace = ""
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-          if mnamespace not in forward_declarations_namespace.keys():
-            forward_declarations_namespace[mnamespace] = []
+        if klass not in self.buildin_types:
+          if "::" in klass:
+            mnamespace, klassname = klass.split("::")
+            klassWithQualifier = "::"+mnamespace+"::Const"+klassname
+            if mnamespace not in forward_declarations_namespace.keys():
+              forward_declarations_namespace[mnamespace] = []
+          else:
+            klassWithQualifier = "Const"+klass
+        else:
+          klassWithQualifier = klass
 
         if mnamespace != "":
           relations+= "  ::%s::Const%s* m_%s;\n" %(mnamespace, klassname, name)
@@ -628,6 +634,7 @@ class ClassGenerator(object):
             forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
             includes_cc += '#include "%sConst.h"\n' %(klassname)
             initialize_relations += ",m_%s(nullptr)\n" %(name)
+            deepcopy_relations += ", m_%s(new %s(*(other.m_%s)))" % (name, klassWithQualifier, name)
           delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
       for nsp in forward_declarations_namespace.iterkeys():
