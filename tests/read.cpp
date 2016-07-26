@@ -117,8 +117,6 @@ void processEvent(podio::EventStore& store, bool verboser) {
     }
     auto cpy_it = cpy.refs_begin();
     for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
-      std::cout << it->data().x << std::endl;
-      std::cout << cpy_it->data().x << std::endl;
       assert(it->data().x == cpy_it->data().x);
       assert(it->data().y == cpy_it->data().y);
       assert(it->getObjectID() == cpy_it->getObjectID());
