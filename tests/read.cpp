@@ -103,14 +103,26 @@ void processEvent(podio::EventStore& store, bool verboser) {
 
   auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& copies = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
-  if (nmspaces.isValid()) {
-    auto nmsp = nmspaces[0];
-    int b = nmsp.ref().data().x + nmsp.ref().data().y;
-    assert(nmsp.ref().data().x == nmsp.refs_begin()->data().x);
-    auto cpy = copies[0];
-    assert(nmsp.ref().data().x == cpy.ref().data().x);
-    assert(nmsp.refs_begin()->data().x == cpy.refs_begin()->data().x);
-    assert(nmsp.number() == cpy.number());
+  auto& cpytest = store.create<ex::ExampleWithARelationCollection>("TestConstCopy");
+  assert(nmspaces.isValid() && copies.isValid());
+  for (int j = 0; j < nmspaces.size(); j++) {
+    auto nmsp = nmspaces[j];
+    auto cpy = copies[j];
+    cpytest.push_back(nmsp.clone());
+    if (nmsp.ref().isAvailable()) {
+      assert(nmsp.ref().data().x == cpy.ref().data().x);
+      assert(nmsp.ref().data().y == cpy.ref().data().y);
+      assert(nmsp.number() == cpy.number());
+      assert(nmsp.ref().getObjectID() == cpy.ref().getObjectID());
+    }
+    auto cpy_it = cpy.refs_begin();
+    for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
+      std::cout << it->data().x << std::endl;
+      std::cout << cpy_it->data().x << std::endl;
+      assert(it->data().x == cpy_it->data().x);
+      assert(it->data().y == cpy_it->data().y);
+      assert(it->getObjectID() == cpy_it->getObjectID());
+    }
   }
 }
 
