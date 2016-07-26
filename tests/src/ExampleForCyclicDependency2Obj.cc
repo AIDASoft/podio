@@ -4,7 +4,7 @@
 
 
 ExampleForCyclicDependency2Obj::ExampleForCyclicDependency2Obj() :
-    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(),m_ref(nullptr)
+    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_ref(nullptr)
 
 { }
 
@@ -14,8 +14,13 @@ ExampleForCyclicDependency2Obj::ExampleForCyclicDependency2Obj(const podio::Obje
 
 ExampleForCyclicDependency2Obj::ExampleForCyclicDependency2Obj(const ExampleForCyclicDependency2Obj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data), m_ref(new ConstExampleForCyclicDependency1(*(other.m_ref)))
-{ }
+    , data(other.data), m_ref(nullptr)
+{
+  if (other.m_ref != nullptr) {
+     m_ref = new ConstExampleForCyclicDependency1(*(other.m_ref));
+  }
+
+}
 
 ExampleForCyclicDependency2Obj::~ExampleForCyclicDependency2Obj() {
   if (id.index == podio::ObjectID::untracked) {
