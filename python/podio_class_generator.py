@@ -601,6 +601,7 @@ class ClassGenerator(object):
       forward_declarations = ""
       forward_declarations_namespace = {"":[]}
       initialize_relations = ""
+      set_relations = ""
       deepcopy_relations = ""
       delete_relations = ""
       delete_singlerelations = ""
@@ -633,8 +634,10 @@ class ClassGenerator(object):
           if klass != classname:
             forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
             includes_cc += '#include "%sConst.h"\n' %(klassname)
-            initialize_relations += ",m_%s(nullptr)\n" %(name)
-            deepcopy_relations += ", m_%s(new %s(*(other.m_%s)))" % (name, klassWithQualifier, name)
+            initialize_relations += ", m_%s(nullptr)\n" %(name)
+            # for deep copy initialise as nullptr and set in copy ctor body if copied object has non-trivial relation
+            deepcopy_relations += ", m_%s(nullptr)" % (name)
+            set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
           delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
       for nsp in forward_declarations_namespace.iterkeys():
@@ -686,7 +689,8 @@ class ClassGenerator(object):
                         "delete_relations" : delete_relations,
                         "delete_singlerelations" : delete_singlerelations,
                         "namespace_open" : namespace_open,
-                        "namespace_close" : namespace_close
+                        "namespace_close" : namespace_close,
+                        "set_deepcopy_relations": set_relations
       }
       self.fill_templates("Obj",substitutions)
       self.created_classes.append(classname+"Obj")
