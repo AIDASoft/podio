@@ -8,7 +8,8 @@ The driving considerations for the PODIO design are:
   1. The user does not do any explicit memory management
   1. Classes are generated using a higher-level abstraction and code generators
 
-The following sections give some more technical details and explanations for the design choices. More concrete implementation details can be found in the doxygen documentation.
+The following sections give some more technical details and explanations for the design choices. 
+More concrete implementation details can be found in the doxygen documentation.
 
 ## Layout of Objects
 The data model is based on four different kind of objects and layers, namely
@@ -46,16 +47,11 @@ The collections created serve three purposes:
 
 As an end-user oriented library, PODIO provides only a limited support for struct-of-arrays (SoA) memory layouts. In the vision, that the data used for heavy calculations is best copied locally, the library provides convenience methods for extracting the necessary information from the collections. More details can be found in the examples section of this document.
 
-### References between objects
+## Handling mutability
 
-The existence of relations between objects has been mentioned several times. 
+Depending on the policy of the client of PODIO, data collections may be read-only after creation, or may be altered still.
+While the base assumption of PODIO is that once-created collections are immutable once leaving the scope of its creator, 
+it still allows for explicit `unfreezing` collections afterwards. 
+This feature has to handled with care, as it heavily impacts thread-safety.
 
-#### Transient representation
-
-TODO
-
-## Handling const-correcteness
-
-As a peculiarity, PODIO provides dedicated const and non-const classes, instead of fully trusting the C++ `const` keyword. This is done for two reasons - to avoid accidental drop of the const-keyword on user side. And to hide the non-const methods in Python. A case for accidental dropping of the `const` keyword in C++ are implicit copies when using the auto keyword. 
-  
  

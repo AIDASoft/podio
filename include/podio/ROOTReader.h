@@ -36,7 +36,7 @@ class ROOTReader : public IReader {
     ROOTReader() : m_eventNumber(0) {}
     ~ROOTReader();
     void openFile(const std::string& filename);
-    void closeFile(){};
+    void closeFile();
 
     /// Read all collections requested
     void readEvent();
@@ -56,6 +56,9 @@ class ROOTReader : public IReader {
 
     /// Preparing to read a given event
     void goToEvent(unsigned evnum);
+
+    /// Check if TFile is valid
+    virtual bool isValid() const;
 
   private:
 

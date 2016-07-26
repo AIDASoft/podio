@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 import os
 import string
 import pickle
@@ -7,26 +7,17 @@ from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
 _text_ = """
-
-
-
-
-
-
   PODIO Data Model
   ================
-
   Used
     %s
   to create
     %s classes
   in
     %s/
-
   Read instructions in
   the HOWTO.TXT to run
   your first example!
-
 """
 
 
@@ -68,6 +59,7 @@ class ClassGenerator(object):
             self.create_class(name, components)
             self.create_collection(name, components)
             self.create_obj(name, components)
+            self.create_PrintInfo(name, components)
 
     def print_report(self):
         if self.verbose:
@@ -411,8 +403,8 @@ class ClassGenerator(object):
                       "relation_members" : references_members,
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
-                      "namespace_close" : namespace_close
-                      }
+                      "namespace_close" : namespace_close, 
+                     }
       self.fill_templates("Object",substitutions)
       self.created_classes.append(classname)
 
@@ -544,6 +536,88 @@ class ClassGenerator(object):
       self.fill_templates("Collection",substitutions)
       self.created_classes.append("%sCollection"%classname)
 
+    def create_PrintInfo(self, classname, definition):
+        namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+
+        toFormattingStrings = {"char" : "3" , "unsigned char" : "3", "long":"11", "longlong":"22", "bool":"1", "int":""}
+        formats = {"char" : 3 , "unsigned char" : 3, "long": 11, "longlong": 22 , "bool": 1,}
+
+        outputSingleObject = 'o << "' + classname + ':" << std::endl; \n     o << '
+        WidthIntegers = ""
+        widthOthers = ""
+        findMaximum = ""
+        setFormats = ""
+        formattedOutput = ""
+        tableHeader = ""
+        for member in definition["Members"]:
+            name = member["name"]
+            lengthName = len(name)
+            klass = member["type"]
+            if(klass in toFormattingStrings  and not klass == "int"):
+                if(formats[klass] > lengthName):
+                    widthOthers = widthOthers + "  int"+ " " + name + "Width = " + toFormattingStrings[klass] + " ; \n"
+                else:
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+            elif klass == "int":
+                findMaximum += "\n    int " + name + "Max ; \n"  
+                findMaximum += "    " + name + "Width = 1 ; \n "
+                findMaximum += "     for(int i = 0 ; i < value.size(); i++){ \n"
+                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n" 
+                findMaximum += "            if(" + name + "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
+                findMaximum += "               " + name + "Max = value[i].get" + name[:1].upper() + name[1:] + "();"
+                findMaximum += "\n            } \n" 
+                findMaximum += "\n         } \n" 
+                findMaximum += "         else if( -" + name + "Max / 10 > value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
+                findMaximum += "             " + name + "Max = - value[i].get" +  name[:1].upper() + name[1:] + "() * 10; "
+                findMaximum += "\n         } \n"
+                findMaximum += "     } \n"
+                setFormats  += "\n    while(" + name + "Max != 0){ \n"
+                setFormats  += "       " + name + "Width++; \n       " + name + "Max = " + name + "Max / 10; \n    } \n"
+                setFormats  += "   if(" + name + "Width < " + str(lengthName) + "){ " + name + "Width = " + str(lengthName) + ";} \n"
+                WidthIntegers = WidthIntegers + "  " + klass + " " + name + "Width = 1 ; \n"
+            elif(klass == "double" or klass == "float"):
+                if(lengthName > 12):
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+                else:
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = 12 ; \n"
+            elif(klass == "DoubleThree" or klass == "FloatThree"):
+                if(lengthName > 38):
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+                else:
+                    widthOthers += "  int" + " " + name + "Width = 38 ; \n"
+            elif(klass == "IntTwo"):
+                if(lengthName > 24):
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+                else:
+                    widthOthers += "  int" + " " + name + "Width = 24 ; \n"
+            else:
+                widthOthers = widthOthers + "  int" + " " + name + "Width = 38 ; \n"
+            if(klass != "StingVec"):
+                tableHeader += 'std::setw(' + classname + "PrintInfo::instance()." + name + 'Width) << "' + name + '" << "|" << '
+                if(klass == "DoubleThree" or klass == "FloatThree" or klass == "StringVec"):
+                    formattedOutput += " value[i].get" + name[:1].upper() + name[1:] + '() << " "' + " << "
+                else:
+                    formattedOutput += " std::setw(" + classname + "PrintInfo::instance()." + name + "Width)"
+                    formattedOutput += " << value[i].get" + name[:1].upper() + name[1:] + '() << " "' + " << "
+                    outputSingleObject += '"' + klass + '" << " " << "' + name + '" << " "' + " << value.get" + name[:1].upper() + name[1:] + '() << " "' + " << "
+
+
+        substitutions = { "name" : rawclassname,
+                      "widthIntegers" : WidthIntegers,
+                      "widthOthers"   : widthOthers,
+                      "findMaximum"   : findMaximum,
+                      "setFormats"    : setFormats,
+                      "formattedOutput" : formattedOutput,
+                      "tableHeader"   : tableHeader,
+                      "outputSingleObject" : outputSingleObject
+                      }
+ 
+      # TODO: add loading of code from external files
+
+        self.fill_templates("PrintInfo",substitutions)
+        self.created_classes.append(classname)
+
+
     def create_component(self, classname, components):
       """ Create a component class to be used within the data types
           Components can only contain simple data types and no user
@@ -554,20 +628,42 @@ class ClassGenerator(object):
       includes = ""
       members = ""
       extracode_declarations = ""
+      ostreamComponents = ""
+      printed = [""]
 
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
       keys = sorted( components.keys() )
       for name in keys:
         klass = components[ name ]
   #    for name, klass in components.iteritems():
-
         if( name != "ExtraCode"):
           klassname = klass
           mnamespace = ""
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
           if mnamespace == "":
-            members+= "  %s %s;\n" %(klassname, name)
+              if((classname == "DoubleThree" or classname == "FloatThree") and not classname in printed):
+                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+                    ostreamComponents +=  "       for(unsigned int i = 0; i < 3; i++){ \n"
+                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
+                    ostreamComponents +=  "       return o ; \n"
+                    ostreamComponents +=  "   } \n \n"
+                    printed += [classname]
+              elif(classname == "IntTwo" and not classname in printed):
+                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+                    ostreamComponents +=  "       for(unsigned int i = 0; i < 2; i++){ \n"
+                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
+                    ostreamComponents +=  "       return o ; \n"
+                    ostreamComponents +=  "   } \n \n"
+                    printed += [classname]
+              elif(classname == "StringVec" and not classname in printed):
+                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+                    ostreamComponents +=  "       for(unsigned int i = 0; i < value.size(); i++){"
+                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
+                    ostreamComponents +=  "       return o ; \n"
+                    ostreamComponents +=  "   } \n \n"
+                    printed += [classname] 
+              members+= "  %s %s;\n" %(klassname, name)
           else:
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
           if self.reader.components.has_key(klass):
@@ -578,7 +674,8 @@ class ClassGenerator(object):
             extracode_declarations = klass["declaration"]
 
 
-      substitutions = { "includes" : includes,
+      substitutions = { "ostreamComponents" : ostreamComponents,
+                        "includes" : includes,
                         "members"  : members,
                         "extracode_declarations" : extracode_declarations,
                         "name"     : rawclassname,
@@ -746,6 +843,9 @@ class ClassGenerator(object):
       elif category == "ConstObject":
         FN = "Const"
         endings = ("h","cc")
+      elif category == "PrintInfo":
+        FN = "PrintInfo"
+        endings = ("h")
       else:
         FN = category
         endings = ("h","cc")
@@ -764,7 +864,6 @@ if __name__ == "__main__":
   from optparse import OptionParser
 
   usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename>
-
     Given a <description.yaml>
     it creates data classes
     and a LinkDef.h file in

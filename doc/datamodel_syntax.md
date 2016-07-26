@@ -1,9 +1,27 @@
-# PODIO class definition syntax
+# Data Models and Data Model Definitions
 
-PODIO uses a user-written data model definition file
+To describe a data model PODIO provides a data model definition syntax.
+This is to ease the creation of optimised data formats, which may take advantage of a so-called `struct-of-array` data layout.
+From the user-provided data model description PODIO creates all the files necessary to use this data model.
+
+## Basic Concepts and Supported Features
+PODIO encourages the usage of composition, rather than inheritance.
+One of the reasons for doing so is the focus on efficiency friendly `plain-old-data`. 
+For this reason, PODIO does not support inheritance within the defined data model. 
+Instead, users can combine multiple `components` to build a to be used `datatype`.
+
+To allow the datatypes to be real PODs, the data stored within the data model are constrained to be
+POD-compatible data. Those are 
+
+ 1. basic types like int, double, etc
+ 1. components built up from basic types or other components
+ 1. Fixed sized arrays of those types
+ 
+In addition, PODIO supports the storage of one-to-one and one-to-many relations between objects.
+In the following the syntax for defining a given data model is explained. 
+A later section contains more details about the code being created from this.
 
 ## Definition of custom components
-
 A component is just a flat struct containing data. it can be defined via:
 
     components:
@@ -14,10 +32,9 @@ A component is just a flat struct containing data. it can be defined via:
         z : float
         a : AnotherComponent
 
-The purpose of components is to support the patter of composition rather than inheritance when building higher level data classes. Components can only contain simple data types and other components. 
-
 ## Definition of custom data classes
-This package allows the definition of data types using a simple syntax. This is to ease the creation of optimised data formats. Here an excerpt from "datamodel.yaml" for a simple class, just containing one member of the type `int`.
+Here an excerpt from "datamodel.yaml" for a simple class, just containing one member of the type `int`.
+
 
     datatypes :
       EventInfo :

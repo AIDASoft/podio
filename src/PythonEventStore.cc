@@ -26,3 +26,7 @@ void podio::PythonEventStore::goToEvent(unsigned ievent) {
 unsigned podio::PythonEventStore::getEntries() const {
   return m_reader.getEntries();
 }
+
+const std::vector<std::string>& podio::PythonEventStore::getCollectionNames() const {
+  return m_store.getCollectionIDTable()->names();
+}

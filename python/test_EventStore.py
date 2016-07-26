@@ -98,6 +98,12 @@ class EventStoreTestCase(unittest.TestCase):
         # so its event number should be 0.
         self.assertEqual(self.store[2000].get("info")[0].Number(), 0)
 
+    def test_context_managers(self):
+        with EventStore([self.filename]) as store:
+            self.assertTrue(len(store) >= 0)
+            self.assertTrue(store.isValid())
+
+
 if __name__ == "__main__":
     from ROOT import gSystem
     from subprocess import call
