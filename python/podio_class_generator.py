@@ -59,7 +59,7 @@ class ClassGenerator(object):
             self.create_class(name, components)
             self.create_collection(name, components)
             self.create_obj(name, components)
-            self.create_PrintInfo(name, components)
+            # self.create_PrintInfo(name, components)
 
     def print_report(self):
         if self.verbose:
@@ -69,9 +69,13 @@ class ClassGenerator(object):
                              len(self.created_classes),
                              self.install_dir
                              )
-        for i, line in enumerate(figure):
-            print
-            print line + text.splitlines()[i],
+        cntr = 0
+        print
+        for figline, summaryline in zip(figure, text.splitlines()):
+            cntr += 1
+            print figline + summaryline
+        for i in xrange(cntr, len(figure)):
+            print figure[i]
         print "     'Homage to the Square' - Josef Albers"
         print
 
