@@ -201,7 +201,7 @@ int main(){
         rel.ref(exWithNamesp);
         for (int k = 0; k < 5; k++) {
           auto namesp = ex::ExampleWithNamespace();
-          namesp.data().x = 3*k;
+          namesp.x(3*k);
           namesp.data().y = k;
           namesps.push_back(namesp);
           rel.addrefs(namesp);
