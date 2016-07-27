@@ -42,6 +42,9 @@ ConstExampleWithNamespace::~ConstExampleWithNamespace(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  const int& ConstExampleWithNamespace::x() const { return m_obj->data.data.x; }
+  const int& ConstExampleWithNamespace::y() const { return m_obj->data.data.y; }
+  /// Access the  a component
   const ex2::NamespaceStruct& ConstExampleWithNamespace::data() const { return m_obj->data.data; }
 
 

@@ -7,9 +7,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Referencing Type
-// author: B. Hegner
-
 //forward declarations
 
 
@@ -21,6 +18,11 @@ class ExampleReferencingTypeObj;
 class ExampleReferencingType;
 class ExampleReferencingTypeCollection;
 class ExampleReferencingTypeCollectionIterator;
+
+/** @class ConstExampleReferencingType
+ *  Referencing Type
+ *  @author: B. Hegner
+ */
 
 class ConstExampleReferencingType {
 

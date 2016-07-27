@@ -5,9 +5,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with one component
-// author: Benedikt Hegner
-
 //forward declarations
 
 
@@ -19,6 +16,11 @@ class ExampleWithComponentObj;
 class ExampleWithComponent;
 class ExampleWithComponentCollection;
 class ExampleWithComponentCollectionIterator;
+
+/** @class ConstExampleWithComponent
+ *  Type with one component
+ *  @author: Benedikt Hegner
+ */
 
 class ConstExampleWithComponent {
 
@@ -46,7 +48,9 @@ public:
 
 public:
 
+  /// Access the  a component
   const NotSoSimpleStruct& component() const;
+  const SimpleStruct& data() const;
 
 
 

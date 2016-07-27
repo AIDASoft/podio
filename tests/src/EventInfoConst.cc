@@ -42,6 +42,7 @@ ConstEventInfo::~ConstEventInfo(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  event number
   const int& ConstEventInfo::Number() const { return m_obj->data.Number; }
 
 

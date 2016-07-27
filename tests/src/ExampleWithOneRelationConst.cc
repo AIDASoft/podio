@@ -39,6 +39,7 @@ ConstExampleWithOneRelation::~ConstExampleWithOneRelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  a particular cluster
   const ::ConstExampleCluster ConstExampleWithOneRelation::cluster() const {
     if (m_obj->m_cluster == nullptr) {
       return ::ConstExampleCluster(nullptr);

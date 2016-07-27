@@ -42,6 +42,8 @@ ConstExampleWithComponent::~ConstExampleWithComponent(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  const SimpleStruct& ConstExampleWithComponent::data() const { return m_obj->data.component.data; }
+  /// Access the  a component
   const NotSoSimpleStruct& ConstExampleWithComponent::component() const { return m_obj->data.component; }
 
 
