@@ -1,11 +1,13 @@
 #ifndef ExampleReferencingTypeDATA_H
 #define ExampleReferencingTypeDATA_H
 
-// Referencing Type
-// author: B. Hegner
 
 
 
+/** @class ExampleReferencingTypeData
+ *  Referencing Type
+ *  @author: B. Hegner
+ */
 
 class ExampleReferencingTypeData {
 public:

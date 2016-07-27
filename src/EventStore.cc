@@ -38,6 +38,10 @@ namespace podio {
     return success;
   }
 
+  bool EventStore::isValid() const {
+    return m_reader->isValid();
+  }
+
   bool EventStore::doGet(const std::string& name, CollectionBase*& collection, bool setReferences) const {
     auto result = std::find_if(begin(m_collections), end(m_collections),
                                [name](const CollPair& item)->bool { return name==item.first; }

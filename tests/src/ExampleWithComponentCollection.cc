@@ -14,7 +14,7 @@ ExampleWithComponentCollection::~ExampleWithComponentCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
   
-};
+}
 
 const ExampleWithComponent ExampleWithComponentCollection::operator[](unsigned int index) const {
   return ExampleWithComponent(m_entries[index]);

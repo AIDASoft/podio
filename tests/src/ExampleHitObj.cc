@@ -13,7 +13,9 @@ ExampleHitObj::ExampleHitObj(const podio::ObjectID id, ExampleHitData data) :
 ExampleHitObj::ExampleHitObj(const ExampleHitObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data)
-{ }
+{
+
+}
 
 ExampleHitObj::~ExampleHitObj() {
   if (id.index == podio::ObjectID::untracked) {

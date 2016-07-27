@@ -4,9 +4,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type for cyclic dependency
-// author: Benedikt Hegner
-
 //forward declarations
 class ExampleForCyclicDependency1;
 class ConstExampleForCyclicDependency1;
@@ -21,6 +18,10 @@ class ExampleForCyclicDependency2Collection;
 class ExampleForCyclicDependency2CollectionIterator;
 class ConstExampleForCyclicDependency2;
 
+/** @class ExampleForCyclicDependency2
+ *  Type for cyclic dependency
+ *  @author: Benedikt Hegner
+ */
 class ExampleForCyclicDependency2 {
 
   friend ExampleForCyclicDependency2Collection;
@@ -48,8 +49,10 @@ public:
 
 public:
 
+  /// Access the  a ref
   const ::ConstExampleForCyclicDependency1 ref() const;
 
+  /// Set the  a ref
   void ref(::ConstExampleForCyclicDependency1 value);
 
 

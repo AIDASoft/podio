@@ -1,11 +1,13 @@
 #ifndef ExampleHitDATA_H
 #define ExampleHitDATA_H
 
-// Example Hit
-// author: B. Hegner
 
 
 
+/** @class ExampleHitData
+ *  Example Hit
+ *  @author: B. Hegner
+ */
 
 class ExampleHitData {
 public:

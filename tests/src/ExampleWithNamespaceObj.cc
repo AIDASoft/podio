@@ -13,7 +13,9 @@ ExampleWithNamespaceObj::ExampleWithNamespaceObj(const podio::ObjectID id, Examp
 ExampleWithNamespaceObj::ExampleWithNamespaceObj(const ExampleWithNamespaceObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data)
-{ }
+{
+
+}
 
 ExampleWithNamespaceObj::~ExampleWithNamespaceObj() {
   if (id.index == podio::ObjectID::untracked) {

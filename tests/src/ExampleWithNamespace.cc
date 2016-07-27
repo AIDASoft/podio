@@ -45,9 +45,13 @@ ExampleWithNamespace::~ExampleWithNamespace(){
 ExampleWithNamespace::operator ConstExampleWithNamespace() const {return ConstExampleWithNamespace(m_obj);}
 
   const ex2::NamespaceStruct& ExampleWithNamespace::data() const { return m_obj->data.data; }
+const int& ExampleWithNamespace::x() const { return m_obj->data.data.x; }
+const int& ExampleWithNamespace::y() const { return m_obj->data.data.y; }
 
   ex2::NamespaceStruct& ExampleWithNamespace::data() { return m_obj->data.data; }
 void ExampleWithNamespace::data(class ex2::NamespaceStruct value) { m_obj->data.data = value; }
+void ExampleWithNamespace::x(int value){ m_obj->data.data.x = value; }
+void ExampleWithNamespace::y(int value){ m_obj->data.data.y = value; }
 
 
 

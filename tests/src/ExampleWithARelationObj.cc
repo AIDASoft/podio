@@ -4,7 +4,7 @@
 
 namespace ex {
 ExampleWithARelationObj::ExampleWithARelationObj() :
-    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(),m_ref(nullptr)
+    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_ref(nullptr)
 , m_refs(new std::vector<::ex::ConstExampleWithNamespace>())
 { }
 
@@ -14,8 +14,13 @@ ExampleWithARelationObj::ExampleWithARelationObj(const podio::ObjectID id, Examp
 
 ExampleWithARelationObj::ExampleWithARelationObj(const ExampleWithARelationObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data), m_refs(new std::vector<::ex::ConstExampleWithNamespace>(*(other.m_refs)))
-{ }
+    , data(other.data), m_ref(nullptr), m_refs(new std::vector<::ex::ConstExampleWithNamespace>(*(other.m_refs)))
+{
+  if (other.m_ref != nullptr) {
+     m_ref = new ::ex::ConstExampleWithNamespace(*(other.m_ref));
+  }
+
+}
 
 ExampleWithARelationObj::~ExampleWithARelationObj() {
   if (id.index == podio::ObjectID::untracked) {

@@ -21,7 +21,7 @@ ExampleWithARelationCollection::~ExampleWithARelationCollection() {
   if (m_rel_refs != nullptr) { delete m_rel_refs; }
   if (m_rel_ref != nullptr) { delete m_rel_ref; }
 
-};
+}
 
 const ExampleWithARelation ExampleWithARelationCollection::operator[](unsigned int index) const {
   return ExampleWithARelation(m_entries[index]);
@@ -74,7 +74,7 @@ void ExampleWithARelationCollection::prepareForWrite(){
   for(int i=0, size = m_data->size(); i != size; ++i){
    (*m_data)[i].refs_begin=refs_index;
    (*m_data)[i].refs_end+=refs_index;
-   refs_index = (*m_data)[refs_index].refs_end;
+   refs_index = (*m_data)[i].refs_end;
    for(auto it : (*m_rel_refs_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");

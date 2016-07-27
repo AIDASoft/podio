@@ -85,6 +85,10 @@ namespace podio {
     readCollectionIDTable();
   }
 
+  void ROOTReader::closeFile() {
+    m_file->Close();
+  }
+
   void ROOTReader::readEvent(){
     m_eventTree->GetEntry();
     // first prepare all collections in memory...
@@ -96,6 +100,9 @@ namespace podio {
   //    inputs.first->setReferences(m_registry);
 
   //  }
+  }
+  bool ROOTReader::isValid() const {
+    return m_file->IsOpen() && !m_file->IsZombie();
   }
 
   ROOTReader::~ROOTReader() {

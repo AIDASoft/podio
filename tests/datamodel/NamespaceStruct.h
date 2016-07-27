@@ -2,6 +2,8 @@
 #define NamespaceStruct_H
 
 
+#include <iostream>
+
 namespace ex2 {
 class NamespaceStruct {
 public:
@@ -10,5 +12,9 @@ public:
 
 
 };
+
+
+
 } // namespace ex2
+
 #endif

@@ -2,11 +2,17 @@
 #define ${name}_H
 $includes
 
+#include <iostream>
+
 ${namespace_open}
 class $name {
 public:
 $members
 $extracode_declarations
 };
+
+${ostreamComponents}
+
 ${namespace_close}
+
 #endif

@@ -1,11 +1,13 @@
 #ifndef ExampleWithVectorMemberDATA_H
 #define ExampleWithVectorMemberDATA_H
 
-// Type with a vector member
-// author: B. Hegner
 
 
 
+/** @class ExampleWithVectorMemberData
+ *  Type with a vector member
+ *  @author: B. Hegner
+ */
 
 class ExampleWithVectorMemberData {
 public:

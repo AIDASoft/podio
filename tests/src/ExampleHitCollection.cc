@@ -14,7 +14,7 @@ ExampleHitCollection::~ExampleHitCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
   
-};
+}
 
 const ExampleHit ExampleHitCollection::operator[](unsigned int index) const {
   return ExampleHit(m_entries[index]);

@@ -7,9 +7,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Cluster
-// author: B. Hegner
-
 //forward declarations
 
 
@@ -22,6 +19,10 @@ class ExampleClusterCollection;
 class ExampleClusterCollectionIterator;
 class ConstExampleCluster;
 
+/** @class ExampleCluster
+ *  Cluster
+ *  @author: B. Hegner
+ */
 class ExampleCluster {
 
   friend ExampleClusterCollection;
@@ -50,8 +51,10 @@ public:
 
 public:
 
+  /// Access the  cluster energy
   const double& energy() const;
 
+  /// Set the  cluster energy
   void energy(double value);
 
 

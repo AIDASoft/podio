@@ -3,6 +3,8 @@
 #include "SimpleStruct.h"
 
 
+#include <iostream>
+
 
 class NotSoSimpleStruct {
 public:
@@ -10,5 +12,9 @@ public:
 
 
 };
+
+
+
+
 
 #endif

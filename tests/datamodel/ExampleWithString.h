@@ -5,9 +5,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with a string
-// author: Benedikt Hegner
-
 //forward declarations
 
 
@@ -20,6 +17,10 @@ class ExampleWithStringCollection;
 class ExampleWithStringCollectionIterator;
 class ConstExampleWithString;
 
+/** @class ExampleWithString
+ *  Type with a string
+ *  @author: Benedikt Hegner
+ */
 class ExampleWithString {
 
   friend ExampleWithStringCollection;
@@ -48,8 +49,10 @@ public:
 
 public:
 
+  /// Access the  the string
   const std::string& theString() const;
 
+  /// Set the  the string
   void theString(std::string value);
 
 

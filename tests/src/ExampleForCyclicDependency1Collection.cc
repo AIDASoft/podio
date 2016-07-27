@@ -18,7 +18,7 @@ ExampleForCyclicDependency1Collection::~ExampleForCyclicDependency1Collection() 
     for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }
   if (m_rel_ref != nullptr) { delete m_rel_ref; }
 
-};
+}
 
 const ExampleForCyclicDependency1 ExampleForCyclicDependency1Collection::operator[](unsigned int index) const {
   return ExampleForCyclicDependency1(m_entries[index]);

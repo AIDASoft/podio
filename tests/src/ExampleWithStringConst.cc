@@ -42,6 +42,7 @@ ConstExampleWithString::~ConstExampleWithString(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  the string
   const std::string& ConstExampleWithString::theString() const { return m_obj->data.theString; }
 
 

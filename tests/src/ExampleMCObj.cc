@@ -15,7 +15,9 @@ ExampleMCObj::ExampleMCObj(const podio::ObjectID id, ExampleMCData data) :
 ExampleMCObj::ExampleMCObj(const ExampleMCObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data), m_parents(new std::vector<ConstExampleMC>(*(other.m_parents))), m_daughters(new std::vector<ConstExampleMC>(*(other.m_daughters)))
-{ }
+{
+
+}
 
 ExampleMCObj::~ExampleMCObj() {
   if (id.index == podio::ObjectID::untracked) {

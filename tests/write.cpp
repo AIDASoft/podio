@@ -37,6 +37,7 @@ int main(){
   auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
   auto& namesps    = store.create<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& cpytest    = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleMCCollection>("mcparticles");
@@ -49,6 +50,7 @@ int main(){
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
   writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   writer.registerForWrite<ExampleWithStringCollection>("strings");
 
   unsigned nevents = 2000;
@@ -119,20 +121,20 @@ int main(){
     for( unsigned j=0,N=mcps.size();j<N;++j){
       p = mcps[j] ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-	int dIndex = it->getObjectID().index ;
-	d = mcps[ dIndex ] ;
-	d.addparents( p ) ;
+  int dIndex = it->getObjectID().index ;
+  d = mcps[ dIndex ] ;
+  d.addparents( p ) ;
       }
     }
     //-------- print relations for debugging:
     for( auto p : mcps ){
       std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-	std::cout << " " << it->getObjectID().index ;
+  std::cout << " " << it->getObjectID().index ;
       }
       std::cout << "  and parents: " ;
       for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
-	std::cout << " " << it->getObjectID().index ;
+  std::cout << " " << it->getObjectID().index ;
       }
       std::cout << std::endl ;
     }
@@ -188,15 +190,28 @@ int main(){
     vec.addcount(24);
     vecs.push_back(vec);
 
-
-    auto namesp = ex::ExampleWithNamespace();
-    namesp.data().x = 1;
-    namesp.data().y = i;
-    namesps.push_back(namesp);
-
-    auto rel = ex::ExampleWithARelation();
-    rel.ref(namesp);
-    namesprels.push_back(rel);
+    for (int j = 0; j < 5; j++) {
+      auto rel = ex::ExampleWithARelation();
+      rel.number(0.5*j);
+      auto exWithNamesp = ex::ExampleWithNamespace();
+      exWithNamesp.data().x = i;
+      exWithNamesp.data().y = 1000*i;
+      namesps.push_back(exWithNamesp);
+      if (j != 3) { // also check for empty relations
+        rel.ref(exWithNamesp);
+        for (int k = 0; k < 5; k++) {
+          auto namesp = ex::ExampleWithNamespace();
+          namesp.x(3*k);
+          namesp.data().y = k;
+          namesps.push_back(namesp);
+          rel.addrefs(namesp);
+        }
+      }
+      namesprels.push_back(rel);
+    }
+    for (int j = 0; j < namesprels.size(); ++j) {
+      cpytest.push_back(namesprels.at(j).clone());
+    }
 
     auto string = ExampleWithString("SomeString");
     strings.push_back(string);

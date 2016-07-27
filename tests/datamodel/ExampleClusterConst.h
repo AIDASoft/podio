@@ -7,9 +7,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Cluster
-// author: B. Hegner
-
 //forward declarations
 
 
@@ -21,6 +18,11 @@ class ExampleClusterObj;
 class ExampleCluster;
 class ExampleClusterCollection;
 class ExampleClusterCollectionIterator;
+
+/** @class ConstExampleCluster
+ *  Cluster
+ *  @author: B. Hegner
+ */
 
 class ConstExampleCluster {
 
@@ -48,6 +50,7 @@ public:
 
 public:
 
+  /// Access the  cluster energy
   const double& energy() const;
 
   unsigned int Hits_size() const;

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 import os
 import string
 import pickle
@@ -7,48 +7,41 @@ from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
 _text_ = """
-
-
-
-
-
-
   PODIO Data Model
   ================
-
   Used
     %s
   to create
     %s classes
   in
     %s/
-
   Read instructions in
   the HOWTO.TXT to run
   your first example!
-
 """
 
 
 class ClassGenerator(object):
 
     def __init__(self, yamlfile, install_dir, package_name,
-                 verbose=True, getSyntax=False):
+                 verbose=True):
 
         self.yamlfile = yamlfile
         self.install_dir = install_dir
         self.package_name = package_name
         self.template_dir = os.path.join(thisdir, "../templates")
         self.verbose = verbose
-        self.getSyntax = getSyntax
         self.buildin_types = ClassDefinitionValidator.buildin_types
         self.created_classes = []
         self.requested_classes = []
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
+        self.component_members = {}
 
     def process(self):
         self.reader.read()
+        self.getSyntax = self.reader.options["getSyntax"]
+        self.expose_pod_members = self.reader.options["exposePODMembers"]
         self.process_components(self.reader.components)
         self.process_datatypes(self.reader.datatypes)
         self.create_selection_xml()
@@ -68,6 +61,7 @@ class ClassGenerator(object):
             self.create_class(name, components)
             self.create_collection(name, components)
             self.create_obj(name, components)
+            # self.create_PrintInfo(name, components)
 
     def print_report(self):
         if self.verbose:
@@ -77,9 +71,13 @@ class ClassGenerator(object):
                              len(self.created_classes),
                              self.install_dir
                              )
-        for i, line in enumerate(figure):
-            print
-            print line + text.splitlines()[i],
+        cntr = 0
+        print
+        for figline, summaryline in zip(figure, text.splitlines()):
+            cntr += 1
+            print figline + summaryline
+        for i in xrange(cntr, len(figure)):
+            print figure[i]
         print "     'Homage to the Square' - Josef Albers"
         print
 
@@ -260,22 +258,44 @@ class ClassGenerator(object):
       for member in definition["Members"]:
         name = member["name"]
         klass = member["type"]
+        desc = member["description"]
         gname,sname = name,name
         if( self.getSyntax ):
           gname = "get" + name[:1].upper() + name[1:]
           sname = "set" + name[:1].upper() + name[1:]
-        getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname)
+        getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname, description=desc)
         getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
         if klass in self.buildin_types:
-          setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname)
+          setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
         else:
-          setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name)
+          setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
           setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
-          setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname)
+          setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
+          if self.expose_pod_members:
+            sub_members = self.component_members[klass]
+            for sub_member in sub_members:
+              comp_member_class, comp_member_name = sub_member
+              comp_gname, comp_sname = comp_member_name, comp_member_name
+              if self.getSyntax:
+                comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
+                comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
+
+              getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name)
+              getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name)
+              if comp_member_class in self.buildin_types:
+                setter_declarations += declarations["pod_member_builtin_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name)
+                setter_implementations += implementations["pod_member_builtin_setter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name)
+              else:
+                setter_declarations += declarations["pod_member_class_refsetter"].format(type=comp_member_class, name=comp_member_name, compname=name)
+                setter_implementations += implementations["pod_member_class_refsetter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name)
+                setter_declarations += declarations["pod_member_class_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name)
+                setter_implementations += implementations["pod_member_class_setter"].format(type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name, compname=name)
+              ConstGetter_implementations += implementations["const_pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name)
+
         # Getter for the Const variety of this datatype
-        ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
+        ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname, description=desc)
 
 
         # set up signature
@@ -287,15 +307,16 @@ class ClassGenerator(object):
       for member in oneToOneRelations:
           name = member["name"]
           klass = member["type"]
+          desc = member["description"]
           mnamespace = ""
           klassname = klass
           mnamespace, klassname, _, __ = self.demangle_classname(klass)
 
-          setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname)
+          setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
           setter_implementations += implementations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname)
+          getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
           getter_implementations += implementations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
+          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname, description=desc)
 
 
       # handle vector members
@@ -411,8 +432,8 @@ class ClassGenerator(object):
                       "relation_members" : references_members,
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
-                      "namespace_close" : namespace_close
-                      }
+                      "namespace_close" : namespace_close, 
+                     }
       self.fill_templates("Object",substitutions)
       self.created_classes.append(classname)
 
@@ -544,6 +565,88 @@ class ClassGenerator(object):
       self.fill_templates("Collection",substitutions)
       self.created_classes.append("%sCollection"%classname)
 
+    def create_PrintInfo(self, classname, definition):
+        namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+
+        toFormattingStrings = {"char" : "3" , "unsigned char" : "3", "long":"11", "longlong":"22", "bool":"1", "int":""}
+        formats = {"char" : 3 , "unsigned char" : 3, "long": 11, "longlong": 22 , "bool": 1,}
+
+        outputSingleObject = 'o << "' + classname + ':" << std::endl; \n     o << '
+        WidthIntegers = ""
+        widthOthers = ""
+        findMaximum = ""
+        setFormats = ""
+        formattedOutput = ""
+        tableHeader = ""
+        for member in definition["Members"]:
+            name = member["name"]
+            lengthName = len(name)
+            klass = member["type"]
+            if(klass in toFormattingStrings  and not klass == "int"):
+                if(formats[klass] > lengthName):
+                    widthOthers = widthOthers + "  int"+ " " + name + "Width = " + toFormattingStrings[klass] + " ; \n"
+                else:
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+            elif klass == "int":
+                findMaximum += "\n    int " + name + "Max ; \n"  
+                findMaximum += "    " + name + "Width = 1 ; \n "
+                findMaximum += "     for(int i = 0 ; i < value.size(); i++){ \n"
+                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n" 
+                findMaximum += "            if(" + name + "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
+                findMaximum += "               " + name + "Max = value[i].get" + name[:1].upper() + name[1:] + "();"
+                findMaximum += "\n            } \n" 
+                findMaximum += "\n         } \n" 
+                findMaximum += "         else if( -" + name + "Max / 10 > value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
+                findMaximum += "             " + name + "Max = - value[i].get" +  name[:1].upper() + name[1:] + "() * 10; "
+                findMaximum += "\n         } \n"
+                findMaximum += "     } \n"
+                setFormats  += "\n    while(" + name + "Max != 0){ \n"
+                setFormats  += "       " + name + "Width++; \n       " + name + "Max = " + name + "Max / 10; \n    } \n"
+                setFormats  += "   if(" + name + "Width < " + str(lengthName) + "){ " + name + "Width = " + str(lengthName) + ";} \n"
+                WidthIntegers = WidthIntegers + "  " + klass + " " + name + "Width = 1 ; \n"
+            elif(klass == "double" or klass == "float"):
+                if(lengthName > 12):
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+                else:
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = 12 ; \n"
+            elif(klass == "DoubleThree" or klass == "FloatThree"):
+                if(lengthName > 38):
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+                else:
+                    widthOthers += "  int" + " " + name + "Width = 38 ; \n"
+            elif(klass == "IntTwo"):
+                if(lengthName > 24):
+                    widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
+                else:
+                    widthOthers += "  int" + " " + name + "Width = 24 ; \n"
+            else:
+                widthOthers = widthOthers + "  int" + " " + name + "Width = 38 ; \n"
+            if(klass != "StingVec"):
+                tableHeader += 'std::setw(' + classname + "PrintInfo::instance()." + name + 'Width) << "' + name + '" << "|" << '
+                if(klass == "DoubleThree" or klass == "FloatThree" or klass == "StringVec"):
+                    formattedOutput += " value[i].get" + name[:1].upper() + name[1:] + '() << " "' + " << "
+                else:
+                    formattedOutput += " std::setw(" + classname + "PrintInfo::instance()." + name + "Width)"
+                    formattedOutput += " << value[i].get" + name[:1].upper() + name[1:] + '() << " "' + " << "
+                    outputSingleObject += '"' + klass + '" << " " << "' + name + '" << " "' + " << value.get" + name[:1].upper() + name[1:] + '() << " "' + " << "
+
+
+        substitutions = { "name" : rawclassname,
+                      "widthIntegers" : WidthIntegers,
+                      "widthOthers"   : widthOthers,
+                      "findMaximum"   : findMaximum,
+                      "setFormats"    : setFormats,
+                      "formattedOutput" : formattedOutput,
+                      "tableHeader"   : tableHeader,
+                      "outputSingleObject" : outputSingleObject
+                      }
+ 
+      # TODO: add loading of code from external files
+
+        self.fill_templates("PrintInfo",substitutions)
+        self.created_classes.append(classname)
+
+
     def create_component(self, classname, components):
       """ Create a component class to be used within the data types
           Components can only contain simple data types and no user
@@ -554,22 +657,44 @@ class ClassGenerator(object):
       includes = ""
       members = ""
       extracode_declarations = ""
-
+      ostreamComponents = ""
+      printed = [""]
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
       keys = sorted( components.keys() )
       for name in keys:
         klass = components[ name ]
   #    for name, klass in components.iteritems():
-
         if( name != "ExtraCode"):
           klassname = klass
           mnamespace = ""
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
           if mnamespace == "":
-            members+= "  %s %s;\n" %(klassname, name)
+              if((classname == "DoubleThree" or classname == "FloatThree") and not classname in printed):
+                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+                    ostreamComponents +=  "       for(unsigned int i = 0; i < 3; i++){ \n"
+                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
+                    ostreamComponents +=  "       return o ; \n"
+                    ostreamComponents +=  "   } \n \n"
+                    printed += [classname]
+              elif(classname == "IntTwo" and not classname in printed):
+                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+                    ostreamComponents +=  "       for(unsigned int i = 0; i < 2; i++){ \n"
+                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
+                    ostreamComponents +=  "       return o ; \n"
+                    ostreamComponents +=  "   } \n \n"
+                    printed += [classname]
+              elif(classname == "StringVec" and not classname in printed):
+                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+                    ostreamComponents +=  "       for(unsigned int i = 0; i < value.size(); i++){"
+                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
+                    ostreamComponents +=  "       return o ; \n"
+                    ostreamComponents +=  "   } \n \n"
+                    printed += [classname] 
+              members+= "  %s %s;\n" %(klassname, name)
           else:
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
+            self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
           if self.reader.components.has_key(klass):
               includes+= '#include "%s.h"\n' %(klassname)
         else:
@@ -578,7 +703,8 @@ class ClassGenerator(object):
             extracode_declarations = klass["declaration"]
 
 
-      substitutions = { "includes" : includes,
+      substitutions = { "ostreamComponents" : ostreamComponents,
+                        "includes" : includes,
                         "members"  : members,
                         "extracode_declarations" : extracode_declarations,
                         "name"     : rawclassname,
@@ -601,6 +727,7 @@ class ClassGenerator(object):
       forward_declarations = ""
       forward_declarations_namespace = {"":[]}
       initialize_relations = ""
+      set_relations = ""
       deepcopy_relations = ""
       delete_relations = ""
       delete_singlerelations = ""
@@ -613,10 +740,16 @@ class ClassGenerator(object):
         klass = item["type"]
         klassname = klass
         mnamespace = ""
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-          if mnamespace not in forward_declarations_namespace.keys():
-            forward_declarations_namespace[mnamespace] = []
+        if klass not in self.buildin_types:
+          if "::" in klass:
+            mnamespace, klassname = klass.split("::")
+            klassWithQualifier = "::"+mnamespace+"::Const"+klassname
+            if mnamespace not in forward_declarations_namespace.keys():
+              forward_declarations_namespace[mnamespace] = []
+          else:
+            klassWithQualifier = "Const"+klass
+        else:
+          klassWithQualifier = klass
 
         if mnamespace != "":
           relations+= "  ::%s::Const%s* m_%s;\n" %(mnamespace, klassname, name)
@@ -627,7 +760,10 @@ class ClassGenerator(object):
           if klass != classname:
             forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
             includes_cc += '#include "%sConst.h"\n' %(klassname)
-            initialize_relations += ",m_%s(nullptr)\n" %(name)
+            initialize_relations += ", m_%s(nullptr)\n" %(name)
+            # for deep copy initialise as nullptr and set in copy ctor body if copied object has non-trivial relation
+            deepcopy_relations += ", m_%s(nullptr)" % (name)
+            set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
           delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
       for nsp in forward_declarations_namespace.iterkeys():
@@ -679,7 +815,8 @@ class ClassGenerator(object):
                         "delete_relations" : delete_relations,
                         "delete_singlerelations" : delete_singlerelations,
                         "namespace_open" : namespace_open,
-                        "namespace_close" : namespace_close
+                        "namespace_close" : namespace_close,
+                        "set_deepcopy_relations": set_relations
       }
       self.fill_templates("Obj",substitutions)
       self.created_classes.append(classname+"Obj")
@@ -735,6 +872,9 @@ class ClassGenerator(object):
       elif category == "ConstObject":
         FN = "Const"
         endings = ("h","cc")
+      elif category == "PrintInfo":
+        FN = "PrintInfo"
+        endings = ("h")
       else:
         FN = category
         endings = ("h","cc")
@@ -753,7 +893,6 @@ if __name__ == "__main__":
   from optparse import OptionParser
 
   usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename>
-
     Given a <description.yaml>
     it creates data classes
     and a LinkDef.h file in
@@ -765,9 +904,6 @@ if __name__ == "__main__":
   parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="Don't write a report to screen")
-  parser.add_option("-g", "--getSyntax",
-                    action="store_true", dest="getSyntax", default=False,
-                    help="Create getter and setter members with getMember/setMember syntax")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -784,7 +920,7 @@ if __name__ == "__main__":
   if not os.path.exists( directory ):
     os.makedirs(directory)
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose, getSyntax=options.getSyntax )
+  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
   gen.process()
   for warning in gen.warnings:
       print warning
