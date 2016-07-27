@@ -32,9 +32,11 @@ void processEvent(podio::EventStore& store, bool verboser) {
   auto& strings = store.get<ExampleWithStringCollection>("strings");
   if(strings.isValid()){
     auto string = strings[0];
-    if (string.theString() != "SomeString") { 
+    if (string.theString() != "SomeString") {
       throw std::runtime_error("Couldn't read string properly");
     }
+  } else {
+    throw std::runtime_error("Collection 'strings' should be present.");
   }
   //std::cout << "Fetching collection 'clusters'" << std::endl;
   auto& clusters = store.get<ExampleClusterCollection>("clusters");
@@ -45,40 +47,28 @@ void processEvent(podio::EventStore& store, bool verboser) {
       std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
       glob++;
     }
+  } else {
+    throw std::runtime_error("Collection 'clusters' should be present");
   }
 
 
   auto& mcps =  store.get<ExampleMCCollection>("mcparticles");
   if( mcps.isValid() ){
-
-    // for( auto p : mcps ){
-    //   std::cout << " particle " << p.getObjectID().index << " daughters: " ;
-    //   for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-    // 	int dIndex = it->getObjectID().index ;
-    // 	std::cout << " " << dIndex ;
-    //   } 
-    //   std::cout << "  and parents: " ;
-    //   for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
-    // 	std::cout << " " << it->getObjectID().index ;
-    //   }
-    //   std::cout << std::endl ;
-    // }
-
     // check that we can retrieve the correct parent daughter relation
     // set in write.cpp :
 
-    // particle 0 has particles 2,3,4 and 5 as daughters: 
+    // particle 0 has particles 2,3,4 and 5 as daughters:
     auto p = mcps[0] ;
 
     //-------- print relations for debugging:
     for( auto p : mcps ){
       std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-	std::cout << " " << it->getObjectID().index ;
+        std::cout << " " << it->getObjectID().index ;
       }
       std::cout << "  and parents: " ;
       for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
-	std::cout << " " << it->getObjectID().index ;
+        std::cout << " " << it->getObjectID().index ;
       }
       std::cout << std::endl ;
     }
@@ -87,11 +77,11 @@ void processEvent(podio::EventStore& store, bool verboser) {
     auto d1 = p.daughters(1) ;
     auto d2 = p.daughters(2) ;
     auto d3 = p.daughters(3) ;
-    
-    if( ! ( d0 == mcps[2] ) )  throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 " ) ;  
-    if( ! ( d1 == mcps[3] ) )  throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 " ) ;  
-    if( ! ( d2 == mcps[4] ) )  throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 " ) ;  
-    if( ! ( d3 == mcps[5] ) )  throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 " ) ;  
+
+    if( ! ( d0 == mcps[2] ) )  throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 ");
+    if( ! ( d1 == mcps[3] ) )  throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 ");
+    if( ! ( d2 == mcps[4] ) )  throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 ");
+    if( ! ( d3 == mcps[5] ) )  throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 ");
 
 
     // particle 3 has particles 6,7,8 and 9 as daughters: 
@@ -101,12 +91,14 @@ void processEvent(podio::EventStore& store, bool verboser) {
     d1 = p.daughters(1) ;
     d2 = p.daughters(2) ;
     d3 = p.daughters(3) ;
-    
-    if( ! ( d0 == mcps[6] ) )  throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 " ) ;  
-    if( ! ( d1 == mcps[7] ) )  throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 " ) ;  
-    if( ! ( d2 == mcps[8] ) )  throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 " ) ;  
-    if( ! ( d3 == mcps[9] ) )  throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 " ) ;  
 
+    if( ! ( d0 == mcps[6] ) )  throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 ");
+    if( ! ( d1 == mcps[7] ) )  throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 ");
+    if( ! ( d2 == mcps[8] ) )  throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 ");
+    if( ! ( d3 == mcps[9] ) )  throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 ");
+
+  } else {
+    throw std::runtime_error("Collection 'mcparticles' should be present");
   }
 
 
@@ -120,12 +112,16 @@ void processEvent(podio::EventStore& store, bool verboser) {
         glob++;
       }
     }
+  } else {
+    throw std::runtime_error("Collection 'refs' should be present");
   }
   //std::cout << "Fetching collection 'OneRelation'" << std::endl;
   auto& rels = store.get<ExampleWithOneRelationCollection>("OneRelation");
   if(rels.isValid()) {
     //std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
     glob++;
+  } else {
+    throw std::runtime_error("Collection 'OneRelation' should be present");
   }
 
 //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
@@ -137,6 +133,8 @@ void processEvent(podio::EventStore& store, bool verboser) {
 //      std::cout << "  Counter value " << (*c) << std::endl;
 //      glob++;
 //    }
+  } else {
+    throw std::runtime_error("Collection 'WithVectorMember' should be present");
   }
 
   auto& comps = store.get<ExampleWithComponentCollection>("Component");
@@ -148,23 +146,34 @@ void processEvent(podio::EventStore& store, bool verboser) {
   auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& copies = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& cpytest = store.create<ex::ExampleWithARelationCollection>("TestConstCopy");
-  assert(nmspaces.isValid() && copies.isValid());
-  for (int j = 0; j < nmspaces.size(); j++) {
-    auto nmsp = nmspaces[j];
-    auto cpy = copies[j];
-    cpytest.push_back(nmsp.clone());
-    if (nmsp.ref().isAvailable()) {
-      assert(nmsp.ref().data().x == cpy.ref().data().x);
-      assert(nmsp.ref().data().y == cpy.ref().data().y);
-      assert(nmsp.number() == cpy.number());
-      assert(nmsp.ref().getObjectID() == cpy.ref().getObjectID());
+  if (nmspaces.isValid() && copies.isValid()) {
+    for (int j = 0; j < nmspaces.size(); j++) {
+      auto nmsp = nmspaces[j];
+      auto cpy = copies[j];
+      cpytest.push_back(nmsp.clone());
+      if (nmsp.ref().isAvailable()) {
+        if (nmsp.ref().data().x != cpy.ref().data().x || nmsp.ref().data().y != cpy.ref().data().y) {
+          throw std::runtime_error("Copied item has differing data in OneToOne referenced item.")
+        }
+        if (nmsp.number() != cpy.number()) {
+          throw std::runtime_error("Copied item has differing member.")
+        }
+        if (nmsp.ref().getObjectID() != cpy.ref().getObjectID()) {
+          throw std::runtime_error("Copied item has wrong OneToOne references.")
+        }
+      }
+      auto cpy_it = cpy.refs_begin();
+      for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
+        if (it->data().x != cpy_it->data().x || it->data().y != cpy_it->data().y) {
+          throw std::runtime_error("Copied item has differing data in OneToMany referenced item.")
+        }
+        if (it->getObjectID() != cpy_it->getObjectID()) {
+          throw std::runtime_error("Copied item has wrong OneToMany references.")
+        }
+      }
     }
-    auto cpy_it = cpy.refs_begin();
-    for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
-      assert(it->data().x == cpy_it->data().x);
-      assert(it->data().y == cpy_it->data().y);
-      assert(it->getObjectID() == cpy_it->getObjectID());
-    }
+  } else {
+    throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
   }
 }
 
