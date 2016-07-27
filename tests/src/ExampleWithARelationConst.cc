@@ -43,7 +43,9 @@ ConstExampleWithARelation::~ConstExampleWithARelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  just a number
   const float& ConstExampleWithARelation::number() const { return m_obj->data.number; }
+  /// Access the  a ref in a namespace
   const ex::ConstExampleWithNamespace ConstExampleWithARelation::ref() const {
     if (m_obj->m_ref == nullptr) {
       return ex::ConstExampleWithNamespace(nullptr);

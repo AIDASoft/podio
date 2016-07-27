@@ -14,7 +14,7 @@ ExampleWithStringCollection::~ExampleWithStringCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
   
-};
+}
 
 const ExampleWithString ExampleWithStringCollection::operator[](unsigned int index) const {
   return ExampleWithString(m_entries[index]);

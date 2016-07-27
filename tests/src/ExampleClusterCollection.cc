@@ -21,7 +21,7 @@ ExampleClusterCollection::~ExampleClusterCollection() {
   if (m_rel_Hits != nullptr) { delete m_rel_Hits; }
   if (m_rel_Clusters != nullptr) { delete m_rel_Clusters; }
 
-};
+}
 
 const ExampleCluster ExampleClusterCollection::operator[](unsigned int index) const {
   return ExampleCluster(m_entries[index]);

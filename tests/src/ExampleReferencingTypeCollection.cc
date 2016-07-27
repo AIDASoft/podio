@@ -21,7 +21,7 @@ ExampleReferencingTypeCollection::~ExampleReferencingTypeCollection() {
   if (m_rel_Clusters != nullptr) { delete m_rel_Clusters; }
   if (m_rel_Refs != nullptr) { delete m_rel_Refs; }
 
-};
+}
 
 const ExampleReferencingType ExampleReferencingTypeCollection::operator[](unsigned int index) const {
   return ExampleReferencingType(m_entries[index]);

@@ -14,7 +14,7 @@ ExampleWithNamespaceCollection::~ExampleWithNamespaceCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
   
-};
+}
 
 const ExampleWithNamespace ExampleWithNamespaceCollection::operator[](unsigned int index) const {
   return ExampleWithNamespace(m_entries[index]);

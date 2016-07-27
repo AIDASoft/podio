@@ -18,7 +18,7 @@ ExampleWithOneRelationCollection::~ExampleWithOneRelationCollection() {
     for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }
   if (m_rel_cluster != nullptr) { delete m_rel_cluster; }
 
-};
+}
 
 const ExampleWithOneRelation ExampleWithOneRelationCollection::operator[](unsigned int index) const {
   return ExampleWithOneRelation(m_entries[index]);
