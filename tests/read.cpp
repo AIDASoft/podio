@@ -153,22 +153,22 @@ void processEvent(podio::EventStore& store, bool verboser) {
       cpytest.push_back(nmsp.clone());
       if (nmsp.ref().isAvailable()) {
         if (nmsp.ref().data().x != cpy.ref().data().x || nmsp.ref().data().y != cpy.ref().data().y) {
-          throw std::runtime_error("Copied item has differing data in OneToOne referenced item.")
+          throw std::runtime_error("Copied item has differing data in OneToOne referenced item.");
         }
         if (nmsp.number() != cpy.number()) {
-          throw std::runtime_error("Copied item has differing member.")
+          throw std::runtime_error("Copied item has differing member.");
         }
-        if (nmsp.ref().getObjectID() != cpy.ref().getObjectID()) {
-          throw std::runtime_error("Copied item has wrong OneToOne references.")
+        if (!(nmsp.ref().getObjectID() == cpy.ref().getObjectID())) {
+          throw std::runtime_error("Copied item has wrong OneToOne references.");
         }
       }
       auto cpy_it = cpy.refs_begin();
       for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
         if (it->data().x != cpy_it->data().x || it->data().y != cpy_it->data().y) {
-          throw std::runtime_error("Copied item has differing data in OneToMany referenced item.")
+          throw std::runtime_error("Copied item has differing data in OneToMany referenced item.");
         }
-        if (it->getObjectID() != cpy_it->getObjectID()) {
-          throw std::runtime_error("Copied item has wrong OneToMany references.")
+        if (!(it->getObjectID() == cpy_it->getObjectID())) {
+          throw std::runtime_error("Copied item has wrong OneToMany references.");
         }
       }
     }
