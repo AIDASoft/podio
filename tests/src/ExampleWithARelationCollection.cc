@@ -1,5 +1,6 @@
 // standard includes
 #include <stdexcept>
+#include "ExampleWithNamespaceCollection.h" 
 #include "ExampleWithNamespaceCollection.h"
 
 
@@ -7,8 +8,9 @@
 
 namespace ex {
 
-ExampleWithARelationCollection::ExampleWithARelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_ref(new std::vector<ex::ConstExampleWithNamespace>()),m_data(new ExampleWithARelationDataContainer() ) {
+ExampleWithARelationCollection::ExampleWithARelationCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_refs(new std::vector<ex::ConstExampleWithNamespace>()), m_rel_ref(new std::vector<ex::ConstExampleWithNamespace>()),m_data(new ExampleWithARelationDataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
+  m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
 }
 
@@ -16,6 +18,7 @@ ExampleWithARelationCollection::~ExampleWithARelationCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
     for (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }
+  if (m_rel_refs != nullptr) { delete m_rel_refs; }
   if (m_rel_ref != nullptr) { delete m_rel_ref; }
 
 };
@@ -35,6 +38,7 @@ int  ExampleWithARelationCollection::size() const {
 ExampleWithARelation ExampleWithARelationCollection::create(){
   auto obj = new ExampleWithARelationObj();
   m_entries.emplace_back(obj);
+  m_rel_refs_tmp.push_back(obj->m_refs);
 
   obj->id = {int(m_entries.size()-1),m_collectionID};
   return ExampleWithARelation(obj);
@@ -43,6 +47,16 @@ ExampleWithARelation ExampleWithARelationCollection::create(){
 void ExampleWithARelationCollection::clear(){
   m_data->clear();
   for (auto& pointer : m_refCollections) { pointer->clear(); }
+  // clear relations to refs. Make sure to unlink() the reference data s they may be gone already.
+  for (auto& pointer : m_rel_refs_tmp) {
+    for(auto& item : (*pointer)) {
+      item.unlink();
+    };
+    delete pointer;
+  }
+  m_rel_refs_tmp.clear();
+  for (auto& item : (*m_rel_refs)) { item.unlink(); }
+  m_rel_refs->clear();
   for (auto& item : (*m_rel_ref)) { item.unlink(); }
   m_rel_ref->clear();
 
@@ -55,15 +69,25 @@ void ExampleWithARelationCollection::prepareForWrite(){
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   for (auto& pointer : m_refCollections) {pointer->clear(); } 
+  int refs_index =0;
 
   for(int i=0, size = m_data->size(); i != size; ++i){
+   (*m_data)[i].refs_begin=refs_index;
+   (*m_data)[i].refs_end+=refs_index;
+   refs_index = (*m_data)[i].refs_end;
+   for(auto it : (*m_rel_refs_tmp[i])) {
+     if (it.getObjectID().index == podio::ObjectID::untracked)
+       throw std::runtime_error("Trying to persistify untracked object");
+     m_refCollections[0]->emplace_back(it.getObjectID());
+     m_rel_refs->push_back(it);
+   }
 
   }
   for (auto& obj : m_entries) {
     if (obj->m_ref != nullptr) {
-      m_refCollections[0]->emplace_back(obj->m_ref->getObjectID());
+      m_refCollections[1]->emplace_back(obj->m_ref->getObjectID());
     } else {
-      m_refCollections[0]->push_back({-2,-2});
+      m_refCollections[1]->push_back({-2,-2});
     }
   }
 
@@ -73,7 +97,7 @@ void ExampleWithARelationCollection::prepareAfterRead(){
   int index = 0;
   for (auto& data : *m_data){
     auto obj = new ExampleWithARelationObj({index,m_collectionID}, data);
-    
+        obj->m_refs = m_rel_refs;
     m_entries.emplace_back(obj);
     ++index;
   }
@@ -81,9 +105,17 @@ void ExampleWithARelationCollection::prepareAfterRead(){
 }
 
 bool ExampleWithARelationCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
+  for(unsigned int i=0, size=m_refCollections[0]->size();i!=size;++i) {
+    auto id = (*m_refCollections[0])[i];
+    CollectionBase* coll = nullptr;
+    collectionProvider->get(id.collectionID,coll);
+    ex::ExampleWithNamespaceCollection* tmp_coll = static_cast<ex::ExampleWithNamespaceCollection*>(coll);
+    auto tmp = (*tmp_coll)[id.index];
+    m_rel_refs->emplace_back(tmp);
+  }
 
   for(unsigned int i = 0, size = m_entries.size(); i != size; ++i) {
-    auto id = (*m_refCollections[0])[i];
+    auto id = (*m_refCollections[1])[i];
     if (id.index != podio::ObjectID::invalid) {
       CollectionBase* coll = nullptr;
       collectionProvider->get(id.collectionID,coll);
@@ -103,7 +135,8 @@ void ExampleWithARelationCollection::push_back(ConstExampleWithARelation object)
   if (obj->id.index == podio::ObjectID::untracked) {
       obj->id = {size,m_collectionID};
       m_entries.push_back(obj);
-      
+        m_rel_refs_tmp.push_back(obj->m_refs);
+
   } else {
     throw std::invalid_argument( "Object already in a collection. Cannot add it to a second collection " );
   }

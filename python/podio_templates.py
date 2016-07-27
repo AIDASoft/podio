@@ -56,6 +56,10 @@ implementations["clear_relations"]  = "\tfor (auto& item : (*m_rel_{name})) {{ i
 implementations["clear_relations"] += "\tm_rel_{name}->clear();\n"
 implementations["destroy_relations"]  = "\tif (m_rel_{name} != nullptr) {{ delete m_rel_{name}; }}\n"
 
+implementations["set_relations"]  = "\tif (other.m_{name} != nullptr) {{\n"
+implementations["set_relations"] += "\t\t m_{name} = new {klass}(*(other.m_{name}));\n"
+implementations["set_relations"] += "\t}}\n"
+
 implementations["prep_writing_relations"]  = "\tfor (auto& obj : m_entries) {{\n"
 implementations["prep_writing_relations"] += "\t\tif (obj->m_{name} != nullptr) {{\n"
 implementations["prep_writing_relations"] += "\t\t\tm_refCollections[{i}]->emplace_back(obj->m_{name}->getObjectID());\n"

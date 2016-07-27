@@ -3,6 +3,8 @@
 #include "NamespaceStruct.h"
 
 
+#include <iostream>
+
 namespace ex2 {
 class NamespaceInNamespaceStruct {
 public:
@@ -10,5 +12,9 @@ public:
 
 
 };
+
+
+
 } // namespace ex2
+
 #endif

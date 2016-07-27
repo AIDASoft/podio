@@ -37,6 +37,7 @@ int main(){
   auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
   auto& namesps    = store.create<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& cpytest    = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleMCCollection>("mcparticles");
@@ -49,6 +50,7 @@ int main(){
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
   writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
   writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   writer.registerForWrite<ExampleWithStringCollection>("strings");
 
   unsigned nevents = 2000;
@@ -188,15 +190,28 @@ int main(){
     vec.addcount(24);
     vecs.push_back(vec);
 
-
-    auto namesp = ex::ExampleWithNamespace();
-    namesp.data().x = 1;
-    namesp.data().y = i;
-    namesps.push_back(namesp);
-
-    auto rel = ex::ExampleWithARelation();
-    rel.ref(namesp);
-    namesprels.push_back(rel);
+    for (int j = 0; j < 5; j++) {
+      auto rel = ex::ExampleWithARelation();
+      rel.number(0.5*j);
+      auto exWithNamesp = ex::ExampleWithNamespace();
+      exWithNamesp.data().x = i;
+      exWithNamesp.data().y = 1000*i;
+      namesps.push_back(exWithNamesp);
+      if (j != 3) { // also check for empty relations
+        rel.ref(exWithNamesp);
+        for (int k = 0; k < 5; k++) {
+          auto namesp = ex::ExampleWithNamespace();
+          namesp.data().x = 3*k;
+          namesp.data().y = k;
+          namesps.push_back(namesp);
+          rel.addrefs(namesp);
+        }
+      }
+      namesprels.push_back(rel);
+    }
+    for (int j = 0; j < namesprels.size(); ++j) {
+      cpytest.push_back(namesprels.at(j).clone());
+    }
 
     auto string = ExampleWithString("SomeString");
     strings.push_back(string);

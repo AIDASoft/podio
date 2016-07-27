@@ -59,7 +59,7 @@ class ClassGenerator(object):
             self.create_class(name, components)
             self.create_collection(name, components)
             self.create_obj(name, components)
-            self.create_PrintInfo(name, components)
+            # self.create_PrintInfo(name, components)
 
     def print_report(self):
         if self.verbose:
@@ -69,9 +69,13 @@ class ClassGenerator(object):
                              len(self.created_classes),
                              self.install_dir
                              )
-        for i, line in enumerate(figure):
-            print
-            print line + text.splitlines()[i],
+        cntr = 0
+        print
+        for figline, summaryline in zip(figure, text.splitlines()):
+            cntr += 1
+            print figline + summaryline
+        for i in xrange(cntr, len(figure)):
+            print figure[i]
         print "     'Homage to the Square' - Josef Albers"
         print
 
@@ -334,9 +338,10 @@ class ClassGenerator(object):
       ConstReferences_template = self.get_template("ConstRefVector.cc.template")
 
       for refvector in refvectors+definition["VectorMembers"]:
+        relnamespace, reltype, _, __ = self.demangle_classname(refvector["type"])
         relationtype = refvector["type"]
         if relationtype not in self.buildin_types and relationtype not in self.reader.components:
-            relationtype = "Const"+relationtype
+            relationtype = relnamespace+"::Const"+reltype
 
         relationName = refvector["name"]
         get_relation = relationName
@@ -697,6 +702,7 @@ class ClassGenerator(object):
       forward_declarations = ""
       forward_declarations_namespace = {"":[]}
       initialize_relations = ""
+      set_relations = ""
       deepcopy_relations = ""
       delete_relations = ""
       delete_singlerelations = ""
@@ -709,10 +715,16 @@ class ClassGenerator(object):
         klass = item["type"]
         klassname = klass
         mnamespace = ""
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-          if mnamespace not in forward_declarations_namespace.keys():
-            forward_declarations_namespace[mnamespace] = []
+        if klass not in self.buildin_types:
+          if "::" in klass:
+            mnamespace, klassname = klass.split("::")
+            klassWithQualifier = "::"+mnamespace+"::Const"+klassname
+            if mnamespace not in forward_declarations_namespace.keys():
+              forward_declarations_namespace[mnamespace] = []
+          else:
+            klassWithQualifier = "Const"+klass
+        else:
+          klassWithQualifier = klass
 
         if mnamespace != "":
           relations+= "  ::%s::Const%s* m_%s;\n" %(mnamespace, klassname, name)
@@ -723,7 +735,10 @@ class ClassGenerator(object):
           if klass != classname:
             forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
             includes_cc += '#include "%sConst.h"\n' %(klassname)
-            initialize_relations += ",m_%s(nullptr)\n" %(name)
+            initialize_relations += ", m_%s(nullptr)\n" %(name)
+            # for deep copy initialise as nullptr and set in copy ctor body if copied object has non-trivial relation
+            deepcopy_relations += ", m_%s(nullptr)" % (name)
+            set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
           delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
       for nsp in forward_declarations_namespace.iterkeys():
@@ -775,7 +790,8 @@ class ClassGenerator(object):
                         "delete_relations" : delete_relations,
                         "delete_singlerelations" : delete_singlerelations,
                         "namespace_open" : namespace_open,
-                        "namespace_close" : namespace_close
+                        "namespace_close" : namespace_close,
+                        "set_deepcopy_relations": set_relations
       }
       self.fill_templates("Obj",substitutions)
       self.created_classes.append(classname+"Obj")

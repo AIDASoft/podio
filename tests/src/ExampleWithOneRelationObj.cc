@@ -4,7 +4,7 @@
 
 
 ExampleWithOneRelationObj::ExampleWithOneRelationObj() :
-    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(),m_cluster(nullptr)
+    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_cluster(nullptr)
 
 { }
 
@@ -14,8 +14,13 @@ ExampleWithOneRelationObj::ExampleWithOneRelationObj(const podio::ObjectID id, E
 
 ExampleWithOneRelationObj::ExampleWithOneRelationObj(const ExampleWithOneRelationObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data)
-{ }
+    , data(other.data), m_cluster(nullptr)
+{
+  if (other.m_cluster != nullptr) {
+     m_cluster = new ConstExampleCluster(*(other.m_cluster));
+  }
+
+}
 
 ExampleWithOneRelationObj::~ExampleWithOneRelationObj() {
   if (id.index == podio::ObjectID::untracked) {

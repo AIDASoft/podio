@@ -2,6 +2,8 @@
 #define ConstExampleWithARelation_H
 #include "ExampleWithARelationData.h"
 #include <vector>
+#include "ExampleWithNamespace.h"
+#include <vector>
 #include "podio/ObjectID.h"
 
 // Type with namespace and namespaced relation
@@ -33,7 +35,8 @@ public:
 
   /// default constructor
   ConstExampleWithARelation();
-  
+  ConstExampleWithARelation(float number);
+
   /// constructor from existing ExampleWithARelationObj
   ConstExampleWithARelation(ExampleWithARelationObj* obj);
   /// copy constructor
@@ -48,8 +51,13 @@ public:
 
 public:
 
+  const float& number() const;
   const ex::ConstExampleWithNamespace ref() const;
 
+  unsigned int refs_size() const;
+  ex::ConstExampleWithNamespace refs(unsigned int) const;
+  std::vector<ex::ConstExampleWithNamespace>::const_iterator refs_begin() const;
+  std::vector<ex::ConstExampleWithNamespace>::const_iterator refs_end() const;
 
 
   /// check whether the object is actually available
