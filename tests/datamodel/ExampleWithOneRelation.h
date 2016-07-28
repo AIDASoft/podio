@@ -4,9 +4,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with one relation member
-// author: Benedikt Hegner
-
 //forward declarations
 class ExampleCluster;
 class ConstExampleCluster;
@@ -21,6 +18,10 @@ class ExampleWithOneRelationCollection;
 class ExampleWithOneRelationCollectionIterator;
 class ConstExampleWithOneRelation;
 
+/** @class ExampleWithOneRelation
+ *  Type with one relation member
+ *  @author: Benedikt Hegner
+ */
 class ExampleWithOneRelation {
 
   friend ExampleWithOneRelationCollection;
@@ -48,8 +49,10 @@ public:
 
 public:
 
+  /// Access the  a particular cluster
   const ::ConstExampleCluster cluster() const;
 
+  /// Set the  a particular cluster
   void cluster(::ConstExampleCluster value);
 
 

@@ -14,7 +14,7 @@ EventInfoCollection::~EventInfoCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
   
-};
+}
 
 const EventInfo EventInfoCollection::operator[](unsigned int index) const {
   return EventInfo(m_entries[index]);

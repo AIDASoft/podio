@@ -21,7 +21,7 @@ ExampleWithARelationCollection::~ExampleWithARelationCollection() {
   if (m_rel_refs != nullptr) { delete m_rel_refs; }
   if (m_rel_ref != nullptr) { delete m_rel_ref; }
 
-};
+}
 
 const ExampleWithARelation ExampleWithARelationCollection::operator[](unsigned int index) const {
   return ExampleWithARelation(m_entries[index]);

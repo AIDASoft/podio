@@ -42,6 +42,7 @@ ConstExampleCluster::~ConstExampleCluster(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  cluster energy
   const double& ConstExampleCluster::energy() const { return m_obj->data.energy; }
 
 std::vector<::ConstExampleHit>::const_iterator ConstExampleCluster::Hits_begin() const {

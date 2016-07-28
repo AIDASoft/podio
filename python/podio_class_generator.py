@@ -24,22 +24,24 @@ _text_ = """
 class ClassGenerator(object):
 
     def __init__(self, yamlfile, install_dir, package_name,
-                 verbose=True, getSyntax=False):
+                 verbose=True):
 
         self.yamlfile = yamlfile
         self.install_dir = install_dir
         self.package_name = package_name
         self.template_dir = os.path.join(thisdir, "../templates")
         self.verbose = verbose
-        self.getSyntax = getSyntax
         self.buildin_types = ClassDefinitionValidator.buildin_types
         self.created_classes = []
         self.requested_classes = []
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
+        self.component_members = {}
 
     def process(self):
         self.reader.read()
+        self.getSyntax = self.reader.options["getSyntax"]
+        self.expose_pod_members = self.reader.options["exposePODMembers"]
         self.process_components(self.reader.components)
         self.process_datatypes(self.reader.datatypes)
         self.create_selection_xml()
@@ -253,25 +255,55 @@ class ClassGenerator(object):
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
       # handle standard members
+      all_members = {}
       for member in definition["Members"]:
         name = member["name"]
         klass = member["type"]
+        desc = member["description"]
         gname,sname = name,name
         if( self.getSyntax ):
           gname = "get" + name[:1].upper() + name[1:]
           sname = "set" + name[:1].upper() + name[1:]
-        getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname)
+        if name in all_members.keys():
+          raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" % (name, classname, all_members[name]))
+        all_members[name] = classname
+        getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname, description=desc)
         getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
         if klass in self.buildin_types:
-          setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname)
+          setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
         else:
-          setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name)
+          setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
           setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
-          setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname)
+          setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_class_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
+          if self.expose_pod_members:
+            sub_members = self.component_members[klass]
+            for sub_member in sub_members:
+              comp_member_class, comp_member_name = sub_member
+              if comp_member_name in all_members.keys():
+                raise Exception("'%s' clashes with another member name in class '%s' (defined in the component '%s' and '%s')" % (comp_member_name, classname, name, all_members[comp_member_name]))
+              all_members[comp_member_name] = " member '" + name + "'"
+              # use mystructMember with camel case as name to avoid clashes
+              comp_gname, comp_sname = comp_member_name, comp_member_name
+              if self.getSyntax:
+                comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
+                comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
+
+              getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
+              getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
+              if comp_member_class in self.buildin_types:
+                setter_declarations += declarations["pod_member_builtin_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                setter_implementations += implementations["pod_member_builtin_setter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+              else:
+                setter_declarations += declarations["pod_member_class_refsetter"].format(type=comp_member_class, name=comp_member_name, compname=name, description=desc)
+                setter_implementations += implementations["pod_member_class_refsetter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                setter_declarations += declarations["pod_member_class_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                setter_implementations += implementations["pod_member_class_setter"].format(type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name, compname=name, description=desc)
+              ConstGetter_implementations += implementations["const_pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
+
         # Getter for the Const variety of this datatype
-        ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
+        ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname, description=desc)
 
 
         # set up signature
@@ -283,15 +315,16 @@ class ClassGenerator(object):
       for member in oneToOneRelations:
           name = member["name"]
           klass = member["type"]
+          desc = member["description"]
           mnamespace = ""
           klassname = klass
           mnamespace, klassname, _, __ = self.demangle_classname(klass)
 
-          setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname)
+          setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
           setter_implementations += implementations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname)
+          getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
           getter_implementations += implementations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
+          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname, description=desc)
 
 
       # handle vector members
@@ -634,7 +667,7 @@ class ClassGenerator(object):
       extracode_declarations = ""
       ostreamComponents = ""
       printed = [""]
-
+      self.component_members[classname] = []
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
       keys = sorted( components.keys() )
       for name in keys:
@@ -668,8 +701,10 @@ class ClassGenerator(object):
                     ostreamComponents +=  "   } \n \n"
                     printed += [classname] 
               members+= "  %s %s;\n" %(klassname, name)
+              self.component_members[classname].append([klassname, name])
           else:
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
+            self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
           if self.reader.components.has_key(klass):
               includes+= '#include "%s.h"\n' %(klassname)
         else:
@@ -879,9 +914,6 @@ if __name__ == "__main__":
   parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="Don't write a report to screen")
-  parser.add_option("-g", "--getSyntax",
-                    action="store_true", dest="getSyntax", default=False,
-                    help="Create getter and setter members with getMember/setMember syntax")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -898,7 +930,7 @@ if __name__ == "__main__":
   if not os.path.exists( directory ):
     os.makedirs(directory)
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose, getSyntax=options.getSyntax )
+  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
   gen.process()
   for warning in gen.warnings:
       print warning

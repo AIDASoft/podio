@@ -45,9 +45,12 @@ ExampleWithComponent::~ExampleWithComponent(){
 ExampleWithComponent::operator ConstExampleWithComponent() const {return ConstExampleWithComponent(m_obj);}
 
   const NotSoSimpleStruct& ExampleWithComponent::component() const { return m_obj->data.component; }
+const SimpleStruct& ExampleWithComponent::data() const { return m_obj->data.component.data; }
 
   NotSoSimpleStruct& ExampleWithComponent::component() { return m_obj->data.component; }
 void ExampleWithComponent::component(class NotSoSimpleStruct value) { m_obj->data.component = value; }
+SimpleStruct& ExampleWithComponent::data() { return m_obj->data.component.data; }
+void ExampleWithComponent::data(class SimpleStruct value) { m_obj->data.component.data = value; }
 
 
 

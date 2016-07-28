@@ -21,7 +21,7 @@ ExampleMCCollection::~ExampleMCCollection() {
   if (m_rel_parents != nullptr) { delete m_rel_parents; }
   if (m_rel_daughters != nullptr) { delete m_rel_daughters; }
 
-};
+}
 
 const ExampleMC ExampleMCCollection::operator[](unsigned int index) const {
   return ExampleMC(m_entries[index]);

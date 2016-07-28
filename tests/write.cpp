@@ -121,20 +121,20 @@ int main(){
     for( unsigned j=0,N=mcps.size();j<N;++j){
       p = mcps[j] ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-	int dIndex = it->getObjectID().index ;
-	d = mcps[ dIndex ] ;
-	d.addparents( p ) ;
+  int dIndex = it->getObjectID().index ;
+  d = mcps[ dIndex ] ;
+  d.addparents( p ) ;
       }
     }
     //-------- print relations for debugging:
     for( auto p : mcps ){
       std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-	std::cout << " " << it->getObjectID().index ;
+  std::cout << " " << it->getObjectID().index ;
       }
       std::cout << "  and parents: " ;
       for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
-	std::cout << " " << it->getObjectID().index ;
+  std::cout << " " << it->getObjectID().index ;
       }
       std::cout << std::endl ;
     }
@@ -201,7 +201,7 @@ int main(){
         rel.ref(exWithNamesp);
         for (int k = 0; k < 5; k++) {
           auto namesp = ex::ExampleWithNamespace();
-          namesp.data().x = 3*k;
+          namesp.x(3*k);
           namesp.data().y = k;
           namesps.push_back(namesp);
           rel.addrefs(namesp);

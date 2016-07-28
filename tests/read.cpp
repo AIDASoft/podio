@@ -155,6 +155,10 @@ void processEvent(podio::EventStore& store, bool verboser) {
         if (nmsp.ref().data().x != cpy.ref().data().x || nmsp.ref().data().y != cpy.ref().data().y) {
           throw std::runtime_error("Copied item has differing data in OneToOne referenced item.");
         }
+        // check direct accessors of POD sub members
+        if (nmsp.ref().x() != cpy.ref().x()) {
+          throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
+        }
         if (nmsp.number() != cpy.number()) {
           throw std::runtime_error("Copied item has differing member.");
         }

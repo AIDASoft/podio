@@ -14,7 +14,7 @@ ${name}Collection::~${name}Collection() {
   clear();
   if (m_data != nullptr) delete m_data;
   ${destructorbody}
-};
+}
 
 const ${name} ${name}Collection::operator[](unsigned int index) const {
   return ${name}(m_entries[index]);

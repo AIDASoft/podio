@@ -39,6 +39,7 @@ ConstExampleForCyclicDependency2::~ConstExampleForCyclicDependency2(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  a ref
   const ::ConstExampleForCyclicDependency1 ConstExampleForCyclicDependency2::ref() const {
     if (m_obj->m_ref == nullptr) {
       return ::ConstExampleForCyclicDependency1(nullptr);
