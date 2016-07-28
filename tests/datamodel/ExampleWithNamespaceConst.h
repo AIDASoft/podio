@@ -50,7 +50,9 @@ public:
 
   /// Access the  a component
   const ex2::NamespaceStruct& data() const;
+  /// Access the member of  a component
   const int& x() const;
+  /// Access the member of  a component
   const int& y() const;
 
 
