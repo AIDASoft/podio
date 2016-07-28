@@ -29,25 +29,25 @@ implementations["const_member_getter"] += "\tconst {type}& Const{classname}::{fn
 
 
 # currently no description of the POD members this could be re-added then
-# declarations["pod_member_getter"] =  "\t/// Access the {description}\n"
-declarations["pod_member_getter"] = "\tconst {type}& {fname}() const;\n"
+declarations["pod_member_getter"] =  "\t/// Access the member of {description}\n"
+declarations["pod_member_getter"] += "\tconst {type}& {fname}() const;\n"
 implementations["pod_member_getter"] = "const {type}& {classname}::{fname}() const {{ return m_obj->data.{compname}.{name}; }}\n"
 
-# declarations["pod_member_builtin_setter"] =  "\t/// Set the {description}\n"
-declarations["pod_member_builtin_setter"] = "\tvoid {fname}({type} value);\n\n"
+declarations["pod_member_builtin_setter"] =  "\t/// Set the  member of {description}\n"
+declarations["pod_member_builtin_setter"] += "\tvoid {fname}({type} value);\n\n"
 implementations["pod_member_builtin_setter"] = "void {classname}::{fname}({type} value){{ m_obj->data.{compname}.{name} = value; }}\n"
 
 # conceptually getting a non-const ref is a setter:
-# declarations["pod_member_class_refsetter"] =  "\t/// Get reference to the {description}\n"
-declarations["pod_member_class_refsetter"] = "\t{type}& {name}();\n"
+declarations["pod_member_class_refsetter"] =  "\t/// Get reference to the member of {description}\n"
+declarations["pod_member_class_refsetter"] += "\t{type}& {name}();\n"
 implementations["pod_member_class_refsetter"] = "{type}& {classname}::{name}() {{ return m_obj->data.{compname}.{name}; }}\n"
 
-# declarations["pod_member_class_setter"] =  "\t/// Set the {description}\n"
-declarations["pod_member_class_setter"] = "\tvoid {fname}(class {type} value);\n"
+declarations["pod_member_class_setter"] =  "\t/// Set the  member of {description}\n"
+declarations["pod_member_class_setter"] += "\tvoid {fname}(class {type} value);\n"
 implementations["pod_member_class_setter"] = "void {classname}::{fname}(class {type} value) {{ m_obj->data.{compname}.{name} = value; }}\n"
 
 # this is inline, don't need the declaration
-# implementations["const_member_getter"] =  "\t/// Access the {description}\n"
+implementations["const_pod_member_getter"] =  "\t/// Access the  member of {description}\n"
 implementations["const_pod_member_getter"] = "\tconst {type}& Const{classname}::{fname}() const {{ return m_obj->data.{compname}.{name}; }}\n"
 
 # OneToOneRelations
