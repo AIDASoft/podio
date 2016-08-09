@@ -37,7 +37,6 @@ class ClassGenerator(object):
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
         self.component_members = {}
-        self.type_name_map = {"ulonglong": "unsigned long long"}
 
     def process(self):
         self.reader.read()
