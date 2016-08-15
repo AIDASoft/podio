@@ -24,7 +24,7 @@ _text_ = """
 class ClassGenerator(object):
 
     def __init__(self, yamlfile, install_dir, package_name,
-                 verbose=True):
+                 verbose=True, dryrun=False):
 
         self.yamlfile = yamlfile
         self.install_dir = install_dir
@@ -37,6 +37,7 @@ class ClassGenerator(object):
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
         self.component_members = {}
+        self.dryrun = dryrun
 
     def process(self):
         self.reader.read()
@@ -854,7 +855,8 @@ class ClassGenerator(object):
         fullname = os.path.join(self.install_dir,self.package_name,name)
       else:
         fullname = os.path.join(self.install_dir,"src",name)
-      open(fullname, "w").write(content)
+      if not self.dryrun:
+        open(fullname, "w").write(content)
 
     def evaluate_template(self, filename, substitutions):
         """ reads in a given template, evaluates it
@@ -914,6 +916,9 @@ if __name__ == "__main__":
   parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="Don't write a report to screen")
+  parser.add_option("-d", "--dryrun",
+                    action="store_true", dest="dryrun", default=False,
+                    help="Do not actually write datamodel files")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -930,7 +935,7 @@ if __name__ == "__main__":
   if not os.path.exists( directory ):
     os.makedirs(directory)
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
+  gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
   gen.process()
   for warning in gen.warnings:
       print warning
