@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(podio)
 set( podio_VERSION_MAJOR 0 )
-set( podio_VERSION_MINOR 1 )
-set( podio_VERSION_PATCH 0 )
+set( podio_VERSION_MINOR 4 )
+set( podio_VERSION_PATCH 1 )
 set( podio_VERSION "${podio_VERSION_MAJOR}.${podio_VERSION_MINOR}" )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
