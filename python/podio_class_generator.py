@@ -24,7 +24,7 @@ _text_ = """
 class ClassGenerator(object):
 
     def __init__(self, yamlfile, install_dir, package_name,
-                 verbose=True):
+                 verbose=True, dryrun=False):
 
         self.yamlfile = yamlfile
         self.install_dir = install_dir
@@ -37,6 +37,7 @@ class ClassGenerator(object):
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
         self.component_members = {}
+        self.dryrun = dryrun
 
     def process(self):
         self.reader.read()
@@ -255,6 +256,7 @@ class ClassGenerator(object):
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
       # handle standard members
+      all_members = {}
       for member in definition["Members"]:
         name = member["name"]
         klass = member["type"]
@@ -263,6 +265,9 @@ class ClassGenerator(object):
         if( self.getSyntax ):
           gname = "get" + name[:1].upper() + name[1:]
           sname = "set" + name[:1].upper() + name[1:]
+        if name in all_members.keys():
+          raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" % (name, classname, all_members[name]))
+        all_members[name] = classname
         getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname, description=desc)
         getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
         if klass in self.buildin_types:
@@ -277,22 +282,26 @@ class ClassGenerator(object):
             sub_members = self.component_members[klass]
             for sub_member in sub_members:
               comp_member_class, comp_member_name = sub_member
+              if comp_member_name in all_members.keys():
+                raise Exception("'%s' clashes with another member name in class '%s' (defined in the component '%s' and '%s')" % (comp_member_name, classname, name, all_members[comp_member_name]))
+              all_members[comp_member_name] = " member '" + name + "'"
+              # use mystructMember with camel case as name to avoid clashes
               comp_gname, comp_sname = comp_member_name, comp_member_name
               if self.getSyntax:
                 comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
                 comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
 
-              getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name)
-              getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name)
+              getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
+              getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
               if comp_member_class in self.buildin_types:
-                setter_declarations += declarations["pod_member_builtin_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name)
-                setter_implementations += implementations["pod_member_builtin_setter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name)
+                setter_declarations += declarations["pod_member_builtin_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                setter_implementations += implementations["pod_member_builtin_setter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
               else:
-                setter_declarations += declarations["pod_member_class_refsetter"].format(type=comp_member_class, name=comp_member_name, compname=name)
-                setter_implementations += implementations["pod_member_class_refsetter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name)
-                setter_declarations += declarations["pod_member_class_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name)
-                setter_implementations += implementations["pod_member_class_setter"].format(type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name, compname=name)
-              ConstGetter_implementations += implementations["const_pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name)
+                setter_declarations += declarations["pod_member_class_refsetter"].format(type=comp_member_class, name=comp_member_name, compname=name, description=desc)
+                setter_implementations += implementations["pod_member_class_refsetter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                setter_declarations += declarations["pod_member_class_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                setter_implementations += implementations["pod_member_class_setter"].format(type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name, compname=name, description=desc)
+              ConstGetter_implementations += implementations["const_pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
 
         # Getter for the Const variety of this datatype
         ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname, description=desc)
@@ -659,6 +668,7 @@ class ClassGenerator(object):
       extracode_declarations = ""
       ostreamComponents = ""
       printed = [""]
+      self.component_members[classname] = []
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
       keys = sorted( components.keys() )
       for name in keys:
@@ -692,6 +702,7 @@ class ClassGenerator(object):
                     ostreamComponents +=  "   } \n \n"
                     printed += [classname] 
               members+= "  %s %s;\n" %(klassname, name)
+              self.component_members[classname].append([klassname, name])
           else:
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
             self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
@@ -844,7 +855,8 @@ class ClassGenerator(object):
         fullname = os.path.join(self.install_dir,self.package_name,name)
       else:
         fullname = os.path.join(self.install_dir,"src",name)
-      open(fullname, "w").write(content)
+      if not self.dryrun:
+        open(fullname, "w").write(content)
 
     def evaluate_template(self, filename, substitutions):
         """ reads in a given template, evaluates it
@@ -904,6 +916,9 @@ if __name__ == "__main__":
   parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="Don't write a report to screen")
+  parser.add_option("-d", "--dryrun",
+                    action="store_true", dest="dryrun", default=False,
+                    help="Do not actually write datamodel files")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -920,7 +935,7 @@ if __name__ == "__main__":
   if not os.path.exists( directory ):
     os.makedirs(directory)
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
+  gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
   gen.process()
   for warning in gen.warnings:
       print warning

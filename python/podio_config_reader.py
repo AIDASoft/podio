@@ -35,9 +35,9 @@ class ClassDefinitionValidator(object):
     )
 
     buildin_types = ["int", "long", "float", "double",
-                     "unsigned int", "unsigned",
-                     "short", "bool", "longlong",
-                     "ulonglong", "std::string"]
+                     "unsigned int", "unsigned", "unsigned long",
+                     "short", "bool", "long long",
+                     "unsigned long long", "std::string"]
 
     def __init__(self, configuration):
         self.components = {}

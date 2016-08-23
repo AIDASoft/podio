@@ -39,6 +39,11 @@ endforeach( sourcefile ${executables} )
 
 
 #--- Adding tests --------------------------------------------------------------
+add_test(NAME generate-edm COMMAND python $ENV{PODIO}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel --dryrun
+         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+set_property(TEST generate-edm PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
+
+
 add_test(NAME write COMMAND write)
 set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
 

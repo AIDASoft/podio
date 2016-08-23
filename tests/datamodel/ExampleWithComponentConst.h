@@ -50,6 +50,7 @@ public:
 
   /// Access the  a component
   const NotSoSimpleStruct& component() const;
+  /// Access the member of  a component
   const SimpleStruct& data() const;
 
 
