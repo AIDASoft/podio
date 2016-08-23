@@ -13,7 +13,7 @@ if(APPLE)
 endif(APPLE)
 
 #--- Declare options -----------------------------------------------------------
-option(podio_documentation "Whether or not to create doxygen doc target.")
+option(CREATE_DOC "Whether or not to create doxygen doc target.")
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
