@@ -14,7 +14,7 @@ unsigned int Const${classname}::${relation}_size() const {
   return (m_obj->data.${relation}_end-m_obj->data.${relation}_begin);
 }
 
-${relationtype} Const${classname}::${relation}(unsigned int index) const {
+${relationtype} Const${classname}::${get_relation}(unsigned int index) const {
   if (${relation}_size() > index) {
     return m_obj->m_${relation}->at(m_obj->data.${relation}_begin+index);
   }

@@ -363,14 +363,6 @@ class ClassGenerator(object):
           else:
             datatype["includes"].append('#include "%s.h"' %klass)
         
-#fg: vector members don't work yet ....
-#        name = item["name"]
-#        fname = name 
-#        if self.getSyntax:
-#          fname = "get" + name[:1].upper() + name[1:]
-#        ostream_implementation += ( '  o << " %s : " ; \n ' % name  ) 
-#        ostream_implementation += ( '  for( auto& v : value.%s() ) o << v ; \n' % fname  ) 
-
 
       # handle constructor from values
       constructor_signature = constructor_signature.rstrip(",")

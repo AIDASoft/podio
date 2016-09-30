@@ -56,9 +56,6 @@ std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_begin() cons
 
 std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_end() const {
   auto ret_value = m_obj->m_Hits->begin();
-//fg: this code fails if m_obj->data.Hits==0
-//  std::advance(ret_value, m_obj->data.Hits_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Hits_end);
   return ret_value;
 }
@@ -86,9 +83,6 @@ std::vector<::ConstExampleCluster>::const_iterator ExampleCluster::Clusters_begi
 
 std::vector<::ConstExampleCluster>::const_iterator ExampleCluster::Clusters_end() const {
   auto ret_value = m_obj->m_Clusters->begin();
-//fg: this code fails if m_obj->data.Clusters==0
-//  std::advance(ret_value, m_obj->data.Clusters_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Clusters_end);
   return ret_value;
 }

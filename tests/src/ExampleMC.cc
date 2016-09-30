@@ -58,9 +58,6 @@ std::vector<::ConstExampleMC>::const_iterator ExampleMC::parents_begin() const {
 
 std::vector<::ConstExampleMC>::const_iterator ExampleMC::parents_end() const {
   auto ret_value = m_obj->m_parents->begin();
-//fg: this code fails if m_obj->data.parents==0
-//  std::advance(ret_value, m_obj->data.parents_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.parents_end);
   return ret_value;
 }
@@ -88,9 +85,6 @@ std::vector<::ConstExampleMC>::const_iterator ExampleMC::daughters_begin() const
 
 std::vector<::ConstExampleMC>::const_iterator ExampleMC::daughters_end() const {
   auto ret_value = m_obj->m_daughters->begin();
-//fg: this code fails if m_obj->data.daughters==0
-//  std::advance(ret_value, m_obj->data.daughters_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.daughters_end);
   return ret_value;
 }

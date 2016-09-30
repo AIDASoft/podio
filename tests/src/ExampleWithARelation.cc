@@ -66,9 +66,6 @@ std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation:
 
 std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation::refs_end() const {
   auto ret_value = m_obj->m_refs->begin();
-//fg: this code fails if m_obj->data.refs==0
-//  std::advance(ret_value, m_obj->data.refs_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.refs_end);
   return ret_value;
 }

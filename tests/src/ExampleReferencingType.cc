@@ -50,9 +50,6 @@ std::vector<::ConstExampleCluster>::const_iterator ExampleReferencingType::Clust
 
 std::vector<::ConstExampleCluster>::const_iterator ExampleReferencingType::Clusters_end() const {
   auto ret_value = m_obj->m_Clusters->begin();
-//fg: this code fails if m_obj->data.Clusters==0
-//  std::advance(ret_value, m_obj->data.Clusters_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Clusters_end);
   return ret_value;
 }
@@ -80,9 +77,6 @@ std::vector<::ConstExampleReferencingType>::const_iterator ExampleReferencingTyp
 
 std::vector<::ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_end() const {
   auto ret_value = m_obj->m_Refs->begin();
-//fg: this code fails if m_obj->data.Refs==0
-//  std::advance(ret_value, m_obj->data.Refs_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Refs_end);
   return ret_value;
 }
