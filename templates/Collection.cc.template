@@ -105,4 +105,6 @@ const ${name}CollectionIterator& ${name}CollectionIterator::operator++() const {
   return *this;
 }
 
+${ostream_implementation}
+
 ${namespace_close}
