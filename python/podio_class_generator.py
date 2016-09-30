@@ -540,14 +540,14 @@ class ClassGenerator(object):
         if t in comps.keys():
           nCompMem = 0
           compMemStr += ' ['
-          print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
+          #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
           for cm in comps[t]["Members"]:
             if cm != 'ExtraCode':
               nCompMem += 1
               compMemStr += ('%s,' % cm )
           compMemStr += ']'
           colW *=  nCompMem    
-          print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
+          #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
         colName = name[:colW-2]
         colName += compMemStr
         colName +=":"
