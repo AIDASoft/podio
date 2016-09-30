@@ -68,6 +68,12 @@ bool ExampleWithString::operator==(const ConstExampleWithString& other) const {
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithString& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " theString : " << value.theString() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleWithString& p1, const ExampleWithString& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

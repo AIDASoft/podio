@@ -108,6 +108,17 @@ bool ExampleWithARelation::operator==(const ConstExampleWithARelation& other) co
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithARelation& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " number : " << value.number() << std::endl ;
+  o << " ref : " << value.ref().id() << std::endl ;
+  o << " refs : " ;
+  for(unsigned i=0,N=value.refs_size(); i<N ; ++i)
+    o << value.refs(i) << " " ; 
+  o << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleWithARelation& p1, const ExampleWithARelation& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

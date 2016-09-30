@@ -5,6 +5,8 @@
 #include "ExampleHit.h"
 #include "ExampleCluster.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -88,12 +90,18 @@ public:
 //       const ExampleCluster& p2 );
   bool operator<(const ExampleCluster& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   ExampleClusterObj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleCluster& value );
+
 
 
 

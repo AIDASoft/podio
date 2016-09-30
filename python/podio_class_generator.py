@@ -216,8 +216,8 @@ class ClassGenerator(object):
 
       datatype["includes"].append('#include "%s.h"' % (rawclassname+"Data"))
 
-      ostream_declaration    = ("std::ostream& operator<<( std::ostream& o,const %s& value );\n" % rawclassname )
-      ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const %s& value ){\n" % rawclassname )
+      ostream_declaration    = ("std::ostream& operator<<( std::ostream& o,const Const%s& value );\n" % rawclassname )
+      ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const Const%s& value ){\n" % rawclassname )
       ostream_implementation += '  o << " id : " << value.id() << std::endl ;\n'
 
       # check on-to-one relations and prepare include directives
@@ -416,7 +416,7 @@ class ClassGenerator(object):
 
         ostream_implementation += ( '  o << " %s : " ;\n' % relationName  ) 
         ostream_implementation += ( '  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName ) 
-        ostream_implementation += ( '    o << value.%s(i).id() << " " ; \n'  % get_relation  ) 
+        ostream_implementation += ( '    o << value.%s(i) << " " ; \n'  % get_relation  ) 
         ostream_implementation +=   '  o << std::endl ;\n' 
 
 
@@ -768,36 +768,22 @@ class ClassGenerator(object):
       self.component_members[classname] = []
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
       keys = sorted( components.keys() )
+
+      ostreamComponents +=  "inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+
       for name in keys:
+#        print  " comp: " , classname , " name : " , name 
         klass = components[ name ]
   #    for name, klass in components.iteritems():
         if( name != "ExtraCode"):
+
+          ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  ) 
+
           klassname = klass
           mnamespace = ""
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
           if mnamespace == "":
-              if((classname == "DoubleThree" or classname == "FloatThree") and not classname in printed):
-                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
-                    ostreamComponents +=  "       for(unsigned int i = 0; i < 3; i++){ \n"
-                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
-                    ostreamComponents +=  "       return o ; \n"
-                    ostreamComponents +=  "   } \n \n"
-                    printed += [classname]
-              elif(classname == "IntTwo" and not classname in printed):
-                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
-                    ostreamComponents +=  "       for(unsigned int i = 0; i < 2; i++){ \n"
-                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
-                    ostreamComponents +=  "       return o ; \n"
-                    ostreamComponents +=  "   } \n \n"
-                    printed += [classname]
-              elif(classname == "StringVec" and not classname in printed):
-                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
-                    ostreamComponents +=  "       for(unsigned int i = 0; i < value.size(); i++){"
-                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
-                    ostreamComponents +=  "       return o ; \n"
-                    ostreamComponents +=  "   } \n \n"
-                    printed += [classname] 
               members+= "  %s %s;\n" %(klassname, name)
               self.component_members[classname].append([klassname, name])
           else:
@@ -809,6 +795,9 @@ class ClassGenerator(object):
           # handle user provided extra code
           if klass.has_key("declaration"):
             extracode_declarations = klass["declaration"]
+
+      ostreamComponents +=  "  return o ;\n"
+      ostreamComponents +=  "}\n"
 
 
       substitutions = { "ostreamComponents" : ostreamComponents,

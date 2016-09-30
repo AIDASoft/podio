@@ -92,6 +92,15 @@ bool ExampleWithVectorMember::operator==(const ConstExampleWithVectorMember& oth
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithVectorMember& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " count : " ;
+  for(unsigned i=0,N=value.count_size(); i<N ; ++i)
+    o << value.count(i) << " " ; 
+  o << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleWithVectorMember& p1, const ExampleWithVectorMember& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

@@ -72,6 +72,12 @@ bool ExampleWithOneRelation::operator==(const ConstExampleWithOneRelation& other
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithOneRelation& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " cluster : " << value.cluster().id() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleWithOneRelation& p1, const ExampleWithOneRelation& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

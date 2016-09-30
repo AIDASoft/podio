@@ -105,4 +105,15 @@ const ExampleHitCollectionIterator& ExampleHitCollectionIterator::operator++() c
   return *this;
 }
 
+std::ostream& operator<<( std::ostream& o,const ExampleHitCollection& v){
+  std::ios::fmtflags old_flags = o.flags() ; 
+  o << "id:          x:            y:            z:            energy:       " << std::endl ;
+   for(int i = 0; i < v.size(); i++){
+     o << std::scientific << std::showpos  << std::setw(12)  << v[i].id() << " "  << std::setw(12) << v[i].x() << " " << std::setw(12) << v[i].y() << " " << std::setw(12) << v[i].z() << " " << std::setw(12) << v[i].energy() << " "  << std::endl;
+  o.flags(old_flags) ; 
+}
+  return o ;
+}
+
+
 

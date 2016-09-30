@@ -122,6 +122,19 @@ bool ExampleReferencingType::operator==(const ConstExampleReferencingType& other
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleReferencingType& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " Clusters : " ;
+  for(unsigned i=0,N=value.Clusters_size(); i<N ; ++i)
+    o << value.Clusters(i) << " " ; 
+  o << std::endl ;
+  o << " Refs : " ;
+  for(unsigned i=0,N=value.Refs_size(); i<N ; ++i)
+    o << value.Refs(i) << " " ; 
+  o << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleReferencingType& p1, const ExampleReferencingType& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

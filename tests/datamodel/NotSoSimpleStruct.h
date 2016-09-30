@@ -13,6 +13,10 @@ public:
 
 };
 
+inline std::ostream& operator<<( std::ostream& o,const NotSoSimpleStruct& value ){ 
+  o << value.data << " " ;
+  return o ;
+}
 
 
 

@@ -3,6 +3,8 @@
 #include <string>
 #include "ExampleWithStringData.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -74,12 +76,18 @@ public:
 //       const ExampleWithString& p2 );
   bool operator<(const ExampleWithString& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   ExampleWithStringObj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithString& value );
+
 
 
 

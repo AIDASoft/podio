@@ -130,6 +130,21 @@ bool ExampleMC::operator==(const ConstExampleMC& other) const {
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleMC& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " energy : " << value.energy() << std::endl ;
+  o << " PDG : " << value.PDG() << std::endl ;
+  o << " parents : " ;
+  for(unsigned i=0,N=value.parents_size(); i<N ; ++i)
+    o << value.parents(i) << " " ; 
+  o << std::endl ;
+  o << " daughters : " ;
+  for(unsigned i=0,N=value.daughters_size(); i<N ; ++i)
+    o << value.daughters(i) << " " ; 
+  o << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleMC& p1, const ExampleMC& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

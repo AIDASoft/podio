@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -55,6 +57,11 @@ public:
 //  ExampleHitCollection(const ExampleHitCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ExampleHitCollection(ExampleHitVector* data, int collectionID);
   ~ExampleHitCollection();
+
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleHitCollection* operator->() { return (ExampleHitCollection*) this ; }
+
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -127,6 +134,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleHitDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleHitCollection& v);
+
 
 template<typename... Args>
 ExampleHit  ExampleHitCollection::create(Args&&... args){

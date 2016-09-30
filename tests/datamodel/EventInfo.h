@@ -2,6 +2,8 @@
 #define EventInfo_H
 #include "EventInfoData.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -74,12 +76,18 @@ int getNumber() const;
 //       const EventInfo& p2 );
   bool operator<(const EventInfo& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   EventInfoObj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstEventInfo& value );
+
 
 
 

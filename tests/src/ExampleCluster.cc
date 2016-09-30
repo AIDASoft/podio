@@ -128,6 +128,20 @@ bool ExampleCluster::operator==(const ConstExampleCluster& other) const {
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleCluster& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " energy : " << value.energy() << std::endl ;
+  o << " Hits : " ;
+  for(unsigned i=0,N=value.Hits_size(); i<N ; ++i)
+    o << value.Hits(i) << " " ; 
+  o << std::endl ;
+  o << " Clusters : " ;
+  for(unsigned i=0,N=value.Clusters_size(); i<N ; ++i)
+    o << value.Clusters(i) << " " ; 
+  o << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleCluster& p1, const ExampleCluster& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {
