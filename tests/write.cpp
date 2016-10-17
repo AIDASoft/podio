@@ -39,19 +39,19 @@ int main(){
   auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& cpytest    = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
-  writer.registerForWrite<EventInfoCollection>("info");
-  writer.registerForWrite<ExampleMCCollection>("mcparticles");
-  writer.registerForWrite<ExampleHitCollection>("hits");
-  writer.registerForWrite<ExampleClusterCollection>("clusters");
-  writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
-  writer.registerForWrite<ExampleReferencingTypeCollection>("refs2");
-  writer.registerForWrite<ExampleWithComponentCollection>("Component");
-  writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
-  writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
-  writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
-  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
-  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
-  writer.registerForWrite<ExampleWithStringCollection>("strings");
+  writer.registerForWrite("info");
+  writer.registerForWrite("mcparticles");
+  writer.registerForWrite("hits");
+  writer.registerForWrite("clusters");
+  writer.registerForWrite("refs");
+  writer.registerForWrite("refs2");
+  writer.registerForWrite("Component");
+  writer.registerForWrite("OneRelation");
+  writer.registerForWrite("WithVectorMember");
+  writer.registerForWrite("WithNamespaceMember");
+  writer.registerForWrite("WithNamespaceRelation");
+  writer.registerForWrite("WithNamespaceRelationCopy");
+  writer.registerForWrite("strings");
 
   unsigned nevents = 2000;
 
