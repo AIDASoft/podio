@@ -13,7 +13,9 @@ ExampleWithVectorMemberObj::ExampleWithVectorMemberObj(const podio::ObjectID id,
 ExampleWithVectorMemberObj::ExampleWithVectorMemberObj(const ExampleWithVectorMemberObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data), m_count(new std::vector<int>(*(other.m_count)))
-{ }
+{
+
+}
 
 ExampleWithVectorMemberObj::~ExampleWithVectorMemberObj() {
   if (id.index == podio::ObjectID::untracked) {

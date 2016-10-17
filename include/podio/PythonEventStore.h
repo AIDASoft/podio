@@ -24,6 +24,12 @@ public:
   /// get number of entries in the tree
   unsigned getEntries() const;
 
+  bool isValid() const {return m_reader.isValid();}
+  void close() {m_reader.closeFile();}
+
+  /// list available collections
+  const std::vector<std::string>& getCollectionNames() const;
+
  private:
   podio::ROOTReader m_reader;
   podio::EventStore m_store;

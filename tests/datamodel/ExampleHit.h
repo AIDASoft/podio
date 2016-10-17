@@ -4,9 +4,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Example Hit
-// author: B. Hegner
-
 //forward declarations
 
 
@@ -19,6 +16,10 @@ class ExampleHitCollection;
 class ExampleHitCollectionIterator;
 class ConstExampleHit;
 
+/** @class ExampleHit
+ *  Example Hit
+ *  @author: B. Hegner
+ */
 class ExampleHit {
 
   friend ExampleHitCollection;
@@ -47,17 +48,25 @@ public:
 
 public:
 
+  /// Access the  x-coordinate
   const double& x() const;
+  /// Access the  y-coordinate
   const double& y() const;
+  /// Access the  z-coordinate
   const double& z() const;
+  /// Access the  measured energy deposit
   const double& energy() const;
 
+  /// Set the  x-coordinate
   void x(double value);
 
+  /// Set the  y-coordinate
   void y(double value);
 
+  /// Set the  z-coordinate
   void z(double value);
 
+  /// Set the  measured energy deposit
   void energy(double value);
 
 

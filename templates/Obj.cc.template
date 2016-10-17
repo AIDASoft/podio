@@ -13,7 +13,9 @@ ${name}Obj::${name}Obj(const podio::ObjectID id, ${name}Data data) :
 ${name}Obj::${name}Obj(const ${name}Obj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data)${deepcopy_relations}
-{ }
+{
+${set_deepcopy_relations}
+}
 
 ${name}Obj::~${name}Obj() {
   if (id.index == podio::ObjectID::untracked) {

@@ -13,7 +13,9 @@ ExampleWithStringObj::ExampleWithStringObj(const podio::ObjectID id, ExampleWith
 ExampleWithStringObj::ExampleWithStringObj(const ExampleWithStringObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data)
-{ }
+{
+
+}
 
 ExampleWithStringObj::~ExampleWithStringObj() {
   if (id.index == podio::ObjectID::untracked) {

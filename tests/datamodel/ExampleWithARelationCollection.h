@@ -107,13 +107,17 @@ public:
   /// returns the pointer to the data buffer
   std::vector<ExampleWithARelationData>* _getBuffer() { return m_data;};
 
-   
+    template<size_t arraysize>
+  const std::array<float,arraysize> number() const;
+
 
 private:
   bool m_isValid;
   int m_collectionID;
   ExampleWithARelationObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
+  std::vector<ex::ConstExampleWithNamespace>* m_rel_refs; ///< Relation buffer for read / write
+  std::vector<std::vector<ex::ConstExampleWithNamespace>*> m_rel_refs_tmp; ///< Relation buffer for internal book-keeping
   std::vector<ex::ConstExampleWithNamespace>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming
@@ -129,6 +133,15 @@ ExampleWithARelation  ExampleWithARelationCollection::create(Args&&... args){
   return ExampleWithARelation(obj);
 }
 
+template<size_t arraysize>
+const std::array<float,arraysize> ExampleWithARelationCollection::number() const {
+  std::array<float,arraysize> tmp;
+  auto valid_size = std::min(arraysize,m_entries.size());
+  for (unsigned i = 0; i<valid_size; ++i){
+    tmp[i] = m_entries[i]->data.number;
+ }
+ return tmp;
+}
 
 } // namespace ex
 #endif

@@ -5,9 +5,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with a vector member
-// author: B. Hegner
-
 //forward declarations
 
 
@@ -20,6 +17,10 @@ class ExampleWithVectorMemberCollection;
 class ExampleWithVectorMemberCollectionIterator;
 class ConstExampleWithVectorMember;
 
+/** @class ExampleWithVectorMember
+ *  Type with a vector member
+ *  @author: B. Hegner
+ */
 class ExampleWithVectorMember {
 
   friend ExampleWithVectorMemberCollection;

@@ -7,9 +7,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Referencing Type
-// author: B. Hegner
-
 //forward declarations
 
 
@@ -21,6 +18,11 @@ class ExampleReferencingTypeObj;
 class ExampleReferencingType;
 class ExampleReferencingTypeCollection;
 class ExampleReferencingTypeCollectionIterator;
+
+/** @class ConstExampleReferencingType
+ *  Referencing Type
+ *  @author: B. Hegner
+ */
 
 class ConstExampleReferencingType {
 
@@ -49,13 +51,13 @@ public:
 
 
   unsigned int Clusters_size() const;
-  ConstExampleCluster Clusters(unsigned int) const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_begin() const;
-  std::vector<ConstExampleCluster>::const_iterator Clusters_end() const;
+  ::ConstExampleCluster Clusters(unsigned int) const;
+  std::vector<::ConstExampleCluster>::const_iterator Clusters_begin() const;
+  std::vector<::ConstExampleCluster>::const_iterator Clusters_end() const;
   unsigned int Refs_size() const;
-  ConstExampleReferencingType Refs(unsigned int) const;
-  std::vector<ConstExampleReferencingType>::const_iterator Refs_begin() const;
-  std::vector<ConstExampleReferencingType>::const_iterator Refs_end() const;
+  ::ConstExampleReferencingType Refs(unsigned int) const;
+  std::vector<::ConstExampleReferencingType>::const_iterator Refs_begin() const;
+  std::vector<::ConstExampleReferencingType>::const_iterator Refs_end() const;
 
 
   /// check whether the object is actually available

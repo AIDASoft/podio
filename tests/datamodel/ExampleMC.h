@@ -7,9 +7,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Example MC-particle
-// author: F.Gaede
-
 //forward declarations
 
 
@@ -22,6 +19,10 @@ class ExampleMCCollection;
 class ExampleMCCollectionIterator;
 class ConstExampleMC;
 
+/** @class ExampleMC
+ *  Example MC-particle
+ *  @author: F.Gaede
+ */
 class ExampleMC {
 
   friend ExampleMCCollection;
@@ -50,25 +51,29 @@ public:
 
 public:
 
+  /// Access the  energy
   const double& energy() const;
+  /// Access the  PDG code
   const int& PDG() const;
 
+  /// Set the  energy
   void energy(double value);
 
+  /// Set the  PDG code
   void PDG(int value);
 
 
-  void addparents(ConstExampleMC);
+  void addparents(::ConstExampleMC);
   unsigned int parents_size() const;
-  ConstExampleMC parents(unsigned int) const;
-  std::vector<ConstExampleMC>::const_iterator parents_begin() const;
-  std::vector<ConstExampleMC>::const_iterator parents_end() const;
+  ::ConstExampleMC parents(unsigned int) const;
+  std::vector<::ConstExampleMC>::const_iterator parents_begin() const;
+  std::vector<::ConstExampleMC>::const_iterator parents_end() const;
 
-  void adddaughters(ConstExampleMC);
+  void adddaughters(::ConstExampleMC);
   unsigned int daughters_size() const;
-  ConstExampleMC daughters(unsigned int) const;
-  std::vector<ConstExampleMC>::const_iterator daughters_begin() const;
-  std::vector<ConstExampleMC>::const_iterator daughters_end() const;
+  ::ConstExampleMC daughters(unsigned int) const;
+  std::vector<::ConstExampleMC>::const_iterator daughters_begin() const;
+  std::vector<::ConstExampleMC>::const_iterator daughters_end() const;
 
 
 

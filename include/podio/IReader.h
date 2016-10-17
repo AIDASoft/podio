@@ -28,6 +28,8 @@ class IReader {
     /// Get CollectionIDTable of read-in data
     virtual CollectionIDTable* getCollectionIDTable() = 0;
     //TODO: decide on smart-pointers for passing of objects
+    /// Check if reader is valid
+    virtual bool isValid() const = 0;
 };
 
 } // namespace

@@ -2,10 +2,9 @@
 #define ExampleWithARelation_H
 #include "ExampleWithARelationData.h"
 #include <vector>
+#include "ExampleWithNamespace.h"
+#include <vector>
 #include "podio/ObjectID.h"
-
-// Type with namespace and namespaced relation
-// author: Joschka Lingemann
 
 //forward declarations
 namespace ex {
@@ -23,6 +22,10 @@ class ExampleWithARelationCollection;
 class ExampleWithARelationCollectionIterator;
 class ConstExampleWithARelation;
 
+/** @class ExampleWithARelation
+ *  Type with namespace and namespaced relation
+ *  @author: Joschka Lingemann
+ */
 class ExampleWithARelation {
 
   friend ExampleWithARelationCollection;
@@ -33,6 +36,7 @@ public:
 
   /// default constructor
   ExampleWithARelation();
+  ExampleWithARelation(float number);
 
   /// constructor from existing ExampleWithARelationObj
   ExampleWithARelation(ExampleWithARelationObj* obj);
@@ -50,9 +54,22 @@ public:
 
 public:
 
+  /// Access the  just a number
+  const float& number() const;
+  /// Access the  a ref in a namespace
   const ex::ConstExampleWithNamespace ref() const;
 
+  /// Set the  just a number
+  void number(float value);
+
+  /// Set the  a ref in a namespace
   void ref(ex::ConstExampleWithNamespace value);
+
+  void addrefs(ex::ConstExampleWithNamespace);
+  unsigned int refs_size() const;
+  ex::ConstExampleWithNamespace refs(unsigned int) const;
+  std::vector<ex::ConstExampleWithNamespace>::const_iterator refs_begin() const;
+  std::vector<ex::ConstExampleWithNamespace>::const_iterator refs_end() const;
 
 
 

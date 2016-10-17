@@ -14,7 +14,7 @@ ExampleWithVectorMemberCollection::~ExampleWithVectorMemberCollection() {
   clear();
   if (m_data != nullptr) delete m_data;
   
-};
+}
 
 const ExampleWithVectorMember ExampleWithVectorMemberCollection::operator[](unsigned int index) const {
   return ExampleWithVectorMember(m_entries[index]);

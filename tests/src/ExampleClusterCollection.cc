@@ -21,7 +21,7 @@ ExampleClusterCollection::~ExampleClusterCollection() {
   if (m_rel_Hits != nullptr) { delete m_rel_Hits; }
   if (m_rel_Clusters != nullptr) { delete m_rel_Clusters; }
 
-};
+}
 
 const ExampleCluster ExampleClusterCollection::operator[](unsigned int index) const {
   return ExampleCluster(m_entries[index]);
@@ -84,7 +84,7 @@ void ExampleClusterCollection::prepareForWrite(){
   for(int i=0, size = m_data->size(); i != size; ++i){
    (*m_data)[i].Hits_begin=Hits_index;
    (*m_data)[i].Hits_end+=Hits_index;
-   Hits_index = (*m_data)[Hits_index].Hits_end;
+   Hits_index = (*m_data)[i].Hits_end;
    for(auto it : (*m_rel_Hits_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");
@@ -93,7 +93,7 @@ void ExampleClusterCollection::prepareForWrite(){
    }
    (*m_data)[i].Clusters_begin=Clusters_index;
    (*m_data)[i].Clusters_end+=Clusters_index;
-   Clusters_index = (*m_data)[Clusters_index].Clusters_end;
+   Clusters_index = (*m_data)[i].Clusters_end;
    for(auto it : (*m_rel_Clusters_tmp[i])) {
      if (it.getObjectID().index == podio::ObjectID::untracked)
        throw std::runtime_error("Trying to persistify untracked object");

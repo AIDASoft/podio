@@ -14,6 +14,10 @@ ConstExampleWithARelation::ConstExampleWithARelation() : m_obj(new ExampleWithAR
  m_obj->acquire();
 }
 
+ConstExampleWithARelation::ConstExampleWithARelation(float number) : m_obj(new ExampleWithARelationObj()){
+ m_obj->acquire();
+   m_obj->data.number = number;
+}
 
 
 ConstExampleWithARelation::ConstExampleWithARelation(const ConstExampleWithARelation& other) : m_obj(other.m_obj) {
@@ -39,11 +43,36 @@ ConstExampleWithARelation::~ConstExampleWithARelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  just a number
+  const float& ConstExampleWithARelation::number() const { return m_obj->data.number; }
+  /// Access the  a ref in a namespace
   const ex::ConstExampleWithNamespace ConstExampleWithARelation::ref() const {
     if (m_obj->m_ref == nullptr) {
       return ex::ConstExampleWithNamespace(nullptr);
     }
     return ex::ConstExampleWithNamespace(*(m_obj->m_ref));}
+std::vector<ex::ConstExampleWithNamespace>::const_iterator ConstExampleWithARelation::refs_begin() const {
+  auto ret_value = m_obj->m_refs->begin();
+  std::advance(ret_value, m_obj->data.refs_begin);
+  return ret_value;
+}
+
+std::vector<ex::ConstExampleWithNamespace>::const_iterator ConstExampleWithARelation::refs_end() const {
+  auto ret_value = m_obj->m_refs->begin();
+  std::advance(ret_value, m_obj->data.refs_end-1);
+  return ++ret_value;
+}
+
+unsigned int ConstExampleWithARelation::refs_size() const {
+  return (m_obj->data.refs_end-m_obj->data.refs_begin);
+}
+
+ex::ConstExampleWithNamespace ConstExampleWithARelation::refs(unsigned int index) const {
+  if (refs_size() > index) {
+    return m_obj->m_refs->at(m_obj->data.refs_begin+index);
+  }
+  else throw std::out_of_range ("index out of bounds for existing references");
+}
 
 
 bool  ConstExampleWithARelation::isAvailable() const {

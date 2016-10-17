@@ -1,11 +1,13 @@
 #ifndef ExampleMCDATA_H
 #define ExampleMCDATA_H
 
-// Example MC-particle
-// author: F.Gaede
 
 
 
+/** @class ExampleMCData
+ *  Example MC-particle
+ *  @author: F.Gaede
+ */
 
 class ExampleMCData {
 public:

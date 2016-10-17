@@ -14,6 +14,10 @@ ExampleWithARelation::ExampleWithARelation() : m_obj(new ExampleWithARelationObj
  m_obj->acquire();
 }
 
+ExampleWithARelation::ExampleWithARelation(float number) : m_obj(new ExampleWithARelationObj()) {
+  m_obj->acquire();
+    m_obj->data.number = number;
+}
 
 
 ExampleWithARelation::ExampleWithARelation(const ExampleWithARelation& other) : m_obj(other.m_obj) {
@@ -41,17 +45,49 @@ ExampleWithARelation::~ExampleWithARelation(){
 
 ExampleWithARelation::operator ConstExampleWithARelation() const {return ConstExampleWithARelation(m_obj);}
 
+  const float& ExampleWithARelation::number() const { return m_obj->data.number; }
   const ex::ConstExampleWithNamespace ExampleWithARelation::ref() const {
     if (m_obj->m_ref == nullptr) {
       return ex::ConstExampleWithNamespace(nullptr);
     }
     return ex::ConstExampleWithNamespace(*(m_obj->m_ref));
   }
+void ExampleWithARelation::number(float value){ m_obj->data.number = value; }
 void ExampleWithARelation::ref(ex::ConstExampleWithNamespace value) {
   if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
   m_obj->m_ref = new ConstExampleWithNamespace(value);
 }
 
+std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation::refs_begin() const {
+  auto ret_value = m_obj->m_refs->begin();
+  std::advance(ret_value, m_obj->data.refs_begin);
+  return ret_value;
+}
+
+std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation::refs_end() const {
+  auto ret_value = m_obj->m_refs->begin();
+//fg: this code fails if m_obj->data.refs==0
+//  std::advance(ret_value, m_obj->data.refs_end-1);
+//  return ++ret_value;
+  std::advance(ret_value, m_obj->data.refs_end);
+  return ret_value;
+}
+
+void ExampleWithARelation::addrefs(ex::ConstExampleWithNamespace component) {
+  m_obj->m_refs->push_back(component);
+  m_obj->data.refs_end++;
+}
+
+unsigned int ExampleWithARelation::refs_size() const {
+  return (m_obj->data.refs_end-m_obj->data.refs_begin);
+}
+
+ex::ConstExampleWithNamespace ExampleWithARelation::refs(unsigned int index) const {
+  if (refs_size() > index) {
+    return m_obj->m_refs->at(m_obj->data.refs_begin+index);
+  }
+  else throw std::out_of_range ("index out of bounds for existing references");
+}
 
 
 bool  ExampleWithARelation::isAvailable() const {

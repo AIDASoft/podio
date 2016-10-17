@@ -1,4 +1,10 @@
 ---
+options :
+  # should getters / setters be prefixed with get / set?
+  getSyntax: False
+  # should POD members be exposed with getters/setters in classes that have them as members?
+  exposePODMembers: True
+
 components :
   SimpleStruct:
     x : int
@@ -120,6 +126,10 @@ datatypes :
   ex::ExampleWithARelation :
     Description : "Type with namespace and namespaced relation"
     Author : "Joschka Lingemann"
+    Members:
+     - float number // just a number
     OneToOneRelations :
      - ex::ExampleWithNamespace ref // a ref in a namespace
+    OneToManyRelations :
+     - ex::ExampleWithNamespace refs // multiple refs in a namespace
 

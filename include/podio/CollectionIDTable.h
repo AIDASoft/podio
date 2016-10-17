@@ -27,6 +27,12 @@ namespace podio {
     /// return name for given collection ID
     const std::string name(int collectionID) const;
 
+    /// Check if collection name is known
+    bool present(const std::string& name) const;
+
+    /// return registered names
+    const std::vector<std::string>& names() const { return m_names; };
+
     /// register new name to the table
     /// returns assigned collection ID
     int add(const std::string& name);

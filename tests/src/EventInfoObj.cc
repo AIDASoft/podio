@@ -13,7 +13,9 @@ EventInfoObj::EventInfoObj(const podio::ObjectID id, EventInfoData data) :
 EventInfoObj::EventInfoObj(const EventInfoObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data)
-{ }
+{
+
+}
 
 EventInfoObj::~EventInfoObj() {
   if (id.index == podio::ObjectID::untracked) {

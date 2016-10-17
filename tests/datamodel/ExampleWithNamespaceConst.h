@@ -5,9 +5,6 @@
 #include <vector>
 #include "podio/ObjectID.h"
 
-// Type with namespace and namespaced member
-// author: Joschka Lingemann
-
 //forward declarations
 
 
@@ -19,6 +16,11 @@ class ExampleWithNamespaceObj;
 class ExampleWithNamespace;
 class ExampleWithNamespaceCollection;
 class ExampleWithNamespaceCollectionIterator;
+
+/** @class ConstExampleWithNamespace
+ *  Type with namespace and namespaced member
+ *  @author: Joschka Lingemann
+ */
 
 class ConstExampleWithNamespace {
 
@@ -46,7 +48,12 @@ public:
 
 public:
 
+  /// Access the  a component
   const ex2::NamespaceStruct& data() const;
+  /// Access the member of  a component
+  const int& x() const;
+  /// Access the member of  a component
+  const int& y() const;
 
 
 

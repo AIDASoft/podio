@@ -4,9 +4,6 @@ $includes
 #include <vector>
 #include "podio/ObjectID.h"
 
-// $description
-// author: $author
-
 //forward declarations
 $forward_declarations
 
@@ -19,6 +16,10 @@ class ${name}Collection;
 class ${name}CollectionIterator;
 class Const${name};
 
+/** @class ${name}
+ *  $description
+ *  @author: $author
+ */
 class ${name} {
 
   friend ${name}Collection;

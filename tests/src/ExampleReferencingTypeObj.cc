@@ -14,7 +14,9 @@ ExampleReferencingTypeObj::ExampleReferencingTypeObj(const podio::ObjectID id, E
 ExampleReferencingTypeObj::ExampleReferencingTypeObj(const ExampleReferencingTypeObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
     , data(other.data), m_Clusters(new std::vector<ConstExampleCluster>(*(other.m_Clusters))), m_Refs(new std::vector<ConstExampleReferencingType>(*(other.m_Refs)))
-{ }
+{
+
+}
 
 ExampleReferencingTypeObj::~ExampleReferencingTypeObj() {
   if (id.index == podio::ObjectID::untracked) {
