@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 import os
 import string
 import pickle
@@ -440,7 +440,7 @@ class ClassGenerator(object):
                       "relation_members" : references_members,
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
-                      "namespace_close" : namespace_close, 
+                      "namespace_close" : namespace_close,
                      }
       self.fill_templates("Object",substitutions)
       self.created_classes.append(classname)
@@ -596,14 +596,14 @@ class ClassGenerator(object):
                 else:
                     widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
             elif klass == "int":
-                findMaximum += "\n    int " + name + "Max ; \n"  
+                findMaximum += "\n    int " + name + "Max ; \n"
                 findMaximum += "    " + name + "Width = 1 ; \n "
                 findMaximum += "     for(int i = 0 ; i < value.size(); i++){ \n"
-                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n" 
+                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n"
                 findMaximum += "            if(" + name + "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
                 findMaximum += "               " + name + "Max = value[i].get" + name[:1].upper() + name[1:] + "();"
-                findMaximum += "\n            } \n" 
-                findMaximum += "\n         } \n" 
+                findMaximum += "\n            } \n"
+                findMaximum += "\n         } \n"
                 findMaximum += "         else if( -" + name + "Max / 10 > value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
                 findMaximum += "             " + name + "Max = - value[i].get" +  name[:1].upper() + name[1:] + "() * 10; "
                 findMaximum += "\n         } \n"
@@ -648,7 +648,7 @@ class ClassGenerator(object):
                       "tableHeader"   : tableHeader,
                       "outputSingleObject" : outputSingleObject
                       }
- 
+
       # TODO: add loading of code from external files
 
         self.fill_templates("PrintInfo",substitutions)
@@ -699,7 +699,7 @@ class ClassGenerator(object):
                     ostreamComponents +=  '          o << value[i] << " " ; } \n'
                     ostreamComponents +=  "       return o ; \n"
                     ostreamComponents +=  "   } \n \n"
-                    printed += [classname] 
+                    printed += [classname]
               members+= "  %s %s;\n" %(klassname, name)
               self.component_members[classname].append([klassname, name])
           else:
