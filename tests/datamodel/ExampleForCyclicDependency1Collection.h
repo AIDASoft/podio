@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleForCyclicDependency1 object);
+  void push_back(ExampleForCyclicDependency1 object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -88,6 +88,8 @@ public:
                  [ID](ExampleForCyclicDependency1Obj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
+
+  void setReadOnly();
 
   bool isValid() const {
     return m_isValid;
@@ -111,10 +113,11 @@ public:
 
 private:
   bool m_isValid;
+  bool m_isReadOnly{false};
   int m_collectionID;
   ExampleForCyclicDependency1ObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<::ConstExampleForCyclicDependency2>* m_rel_ref; ///< Relation buffer for read / write
+  std::vector<::ExampleForCyclicDependency2>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming
   podio::CollRefCollection m_refCollections;

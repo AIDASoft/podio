@@ -6,17 +6,14 @@
 
 //forward declarations
 class ExampleForCyclicDependency1;
-class ConstExampleForCyclicDependency1;
 
 
-#include "ExampleForCyclicDependency2Const.h"
 #include "ExampleForCyclicDependency2Obj.h"
 
 
 
 class ExampleForCyclicDependency2Collection;
 class ExampleForCyclicDependency2CollectionIterator;
-class ConstExampleForCyclicDependency2;
 
 /** @class ExampleForCyclicDependency2
  *  Type for cyclic dependency
@@ -26,7 +23,6 @@ class ExampleForCyclicDependency2 {
 
   friend ExampleForCyclicDependency2Collection;
   friend ExampleForCyclicDependency2CollectionIterator;
-  friend ConstExampleForCyclicDependency2;
 
 public:
 
@@ -44,16 +40,13 @@ public:
   /// destructor
   ~ExampleForCyclicDependency2();
 
-  /// conversion to const object
-  operator ConstExampleForCyclicDependency2 () const;
-
 public:
 
   /// Access the  a ref
-  const ::ConstExampleForCyclicDependency1 ref() const;
+  const ::ExampleForCyclicDependency1 ref() const;
 
   /// Set the  a ref
-  void ref(::ConstExampleForCyclicDependency1 value);
+  void ref(::ExampleForCyclicDependency1 value);
 
 
 
@@ -65,8 +58,6 @@ public:
   bool operator==(const ExampleForCyclicDependency2& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleForCyclicDependency2& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleForCyclicDependency2& p1,

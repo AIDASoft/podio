@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "${name}.h"
-#include "${name}Const.h"
 #include "${name}Obj.h"
 #include "${name}Data.h"
 #include "${name}Collection.h"
@@ -38,8 +37,6 @@ ${name}::~${name}(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-${name}::operator Const${name}() const {return Const${name}(m_obj);}
-
 $getters
 $setters
 $relations
@@ -56,10 +53,6 @@ const podio::ObjectID ${name}::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ${name}::operator==(const Const${name}& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

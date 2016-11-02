@@ -5,7 +5,7 @@
 
 
 ExampleMCObj::ExampleMCObj() :
-    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_parents(new std::vector<ConstExampleMC>()), m_daughters(new std::vector<ConstExampleMC>())
+    ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_parents(new std::vector<ExampleMC>()), m_daughters(new std::vector<ExampleMC>())
 { }
 
 ExampleMCObj::ExampleMCObj(const podio::ObjectID id, ExampleMCData data) :
@@ -14,7 +14,7 @@ ExampleMCObj::ExampleMCObj(const podio::ObjectID id, ExampleMCData data) :
 
 ExampleMCObj::ExampleMCObj(const ExampleMCObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data), m_parents(new std::vector<ConstExampleMC>(*(other.m_parents))), m_daughters(new std::vector<ConstExampleMC>(*(other.m_daughters)))
+    , data(other.data), m_parents(new std::vector<ExampleMC>(*(other.m_parents))), m_daughters(new std::vector<ExampleMC>(*(other.m_daughters)))
 {
 
 }

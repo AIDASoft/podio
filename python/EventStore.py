@@ -53,6 +53,14 @@ class EventStore(object):
             result += "\n\t%s" %item
         return result
 
+    def create(self, klass, name):
+        collection = klass()
+        self.register_collection(name, collection)
+        return collection
+
+    def register_collection(self, name, collection):
+        self.current_store.registerCollection(name, collection);
+
     def get(self, name):
         '''Returns a collection.
         Parameters:

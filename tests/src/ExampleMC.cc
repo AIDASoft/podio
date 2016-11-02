@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleMC.h"
-#include "ExampleMCConst.h"
 #include "ExampleMCObj.h"
 #include "ExampleMCData.h"
 #include "ExampleMCCollection.h"
@@ -42,21 +41,19 @@ ExampleMC::~ExampleMC(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleMC::operator ConstExampleMC() const {return ConstExampleMC(m_obj);}
-
   const double& ExampleMC::energy() const { return m_obj->data.energy; }
   const int& ExampleMC::PDG() const { return m_obj->data.PDG; }
 
 void ExampleMC::energy(double value){ m_obj->data.energy = value; }
 void ExampleMC::PDG(int value){ m_obj->data.PDG = value; }
 
-std::vector<::ConstExampleMC>::const_iterator ExampleMC::parents_begin() const {
+std::vector<::ExampleMC>::const_iterator ExampleMC::parents_begin() const {
   auto ret_value = m_obj->m_parents->begin();
   std::advance(ret_value, m_obj->data.parents_begin);
   return ret_value;
 }
 
-std::vector<::ConstExampleMC>::const_iterator ExampleMC::parents_end() const {
+std::vector<::ExampleMC>::const_iterator ExampleMC::parents_end() const {
   auto ret_value = m_obj->m_parents->begin();
 //fg: this code fails if m_obj->data.parents==0
 //  std::advance(ret_value, m_obj->data.parents_end-1);
@@ -65,7 +62,7 @@ std::vector<::ConstExampleMC>::const_iterator ExampleMC::parents_end() const {
   return ret_value;
 }
 
-void ExampleMC::addparents(::ConstExampleMC component) {
+void ExampleMC::addparents(::ExampleMC component) {
   m_obj->m_parents->push_back(component);
   m_obj->data.parents_end++;
 }
@@ -74,19 +71,19 @@ unsigned int ExampleMC::parents_size() const {
   return (m_obj->data.parents_end-m_obj->data.parents_begin);
 }
 
-::ConstExampleMC ExampleMC::parents(unsigned int index) const {
+::ExampleMC ExampleMC::parents(unsigned int index) const {
   if (parents_size() > index) {
     return m_obj->m_parents->at(m_obj->data.parents_begin+index);
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
-std::vector<::ConstExampleMC>::const_iterator ExampleMC::daughters_begin() const {
+std::vector<::ExampleMC>::const_iterator ExampleMC::daughters_begin() const {
   auto ret_value = m_obj->m_daughters->begin();
   std::advance(ret_value, m_obj->data.daughters_begin);
   return ret_value;
 }
 
-std::vector<::ConstExampleMC>::const_iterator ExampleMC::daughters_end() const {
+std::vector<::ExampleMC>::const_iterator ExampleMC::daughters_end() const {
   auto ret_value = m_obj->m_daughters->begin();
 //fg: this code fails if m_obj->data.daughters==0
 //  std::advance(ret_value, m_obj->data.daughters_end-1);
@@ -95,7 +92,7 @@ std::vector<::ConstExampleMC>::const_iterator ExampleMC::daughters_end() const {
   return ret_value;
 }
 
-void ExampleMC::adddaughters(::ConstExampleMC component) {
+void ExampleMC::adddaughters(::ExampleMC component) {
   m_obj->m_daughters->push_back(component);
   m_obj->data.daughters_end++;
 }
@@ -104,7 +101,7 @@ unsigned int ExampleMC::daughters_size() const {
   return (m_obj->data.daughters_end-m_obj->data.daughters_begin);
 }
 
-::ConstExampleMC ExampleMC::daughters(unsigned int index) const {
+::ExampleMC ExampleMC::daughters(unsigned int index) const {
   if (daughters_size() > index) {
     return m_obj->m_daughters->at(m_obj->data.daughters_begin+index);
   }
@@ -124,10 +121,6 @@ const podio::ObjectID ExampleMC::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleMC::operator==(const ConstExampleMC& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

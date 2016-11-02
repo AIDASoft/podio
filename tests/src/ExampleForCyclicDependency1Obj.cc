@@ -1,5 +1,5 @@
 #include "ExampleForCyclicDependency1Obj.h"
-#include "ExampleForCyclicDependency2Const.h"
+#include "ExampleForCyclicDependency2.h"
 
 
 
@@ -17,7 +17,7 @@ ExampleForCyclicDependency1Obj::ExampleForCyclicDependency1Obj(const ExampleForC
     , data(other.data), m_ref(nullptr)
 {
   if (other.m_ref != nullptr) {
-     m_ref = new ConstExampleForCyclicDependency2(*(other.m_ref));
+     m_ref = new ExampleForCyclicDependency2(*(other.m_ref));
   }
 
 }

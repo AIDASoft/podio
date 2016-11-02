@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleCluster.h"
-#include "ExampleClusterConst.h"
 #include "ExampleClusterObj.h"
 #include "ExampleClusterData.h"
 #include "ExampleClusterCollection.h"
@@ -42,19 +41,17 @@ ExampleCluster::~ExampleCluster(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleCluster::operator ConstExampleCluster() const {return ConstExampleCluster(m_obj);}
-
   const double& ExampleCluster::energy() const { return m_obj->data.energy; }
 
 void ExampleCluster::energy(double value){ m_obj->data.energy = value; }
 
-std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
+std::vector<::ExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
   auto ret_value = m_obj->m_Hits->begin();
   std::advance(ret_value, m_obj->data.Hits_begin);
   return ret_value;
 }
 
-std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_end() const {
+std::vector<::ExampleHit>::const_iterator ExampleCluster::Hits_end() const {
   auto ret_value = m_obj->m_Hits->begin();
 //fg: this code fails if m_obj->data.Hits==0
 //  std::advance(ret_value, m_obj->data.Hits_end-1);
@@ -63,7 +60,7 @@ std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_end() const 
   return ret_value;
 }
 
-void ExampleCluster::addHits(::ConstExampleHit component) {
+void ExampleCluster::addHits(::ExampleHit component) {
   m_obj->m_Hits->push_back(component);
   m_obj->data.Hits_end++;
 }
@@ -72,19 +69,19 @@ unsigned int ExampleCluster::Hits_size() const {
   return (m_obj->data.Hits_end-m_obj->data.Hits_begin);
 }
 
-::ConstExampleHit ExampleCluster::Hits(unsigned int index) const {
+::ExampleHit ExampleCluster::Hits(unsigned int index) const {
   if (Hits_size() > index) {
     return m_obj->m_Hits->at(m_obj->data.Hits_begin+index);
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
-std::vector<::ConstExampleCluster>::const_iterator ExampleCluster::Clusters_begin() const {
+std::vector<::ExampleCluster>::const_iterator ExampleCluster::Clusters_begin() const {
   auto ret_value = m_obj->m_Clusters->begin();
   std::advance(ret_value, m_obj->data.Clusters_begin);
   return ret_value;
 }
 
-std::vector<::ConstExampleCluster>::const_iterator ExampleCluster::Clusters_end() const {
+std::vector<::ExampleCluster>::const_iterator ExampleCluster::Clusters_end() const {
   auto ret_value = m_obj->m_Clusters->begin();
 //fg: this code fails if m_obj->data.Clusters==0
 //  std::advance(ret_value, m_obj->data.Clusters_end-1);
@@ -93,7 +90,7 @@ std::vector<::ConstExampleCluster>::const_iterator ExampleCluster::Clusters_end(
   return ret_value;
 }
 
-void ExampleCluster::addClusters(::ConstExampleCluster component) {
+void ExampleCluster::addClusters(::ExampleCluster component) {
   m_obj->m_Clusters->push_back(component);
   m_obj->data.Clusters_end++;
 }
@@ -102,7 +99,7 @@ unsigned int ExampleCluster::Clusters_size() const {
   return (m_obj->data.Clusters_end-m_obj->data.Clusters_begin);
 }
 
-::ConstExampleCluster ExampleCluster::Clusters(unsigned int index) const {
+::ExampleCluster ExampleCluster::Clusters(unsigned int index) const {
   if (Clusters_size() > index) {
     return m_obj->m_Clusters->at(m_obj->data.Clusters_begin+index);
   }
@@ -122,10 +119,6 @@ const podio::ObjectID ExampleCluster::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleCluster::operator==(const ConstExampleCluster& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

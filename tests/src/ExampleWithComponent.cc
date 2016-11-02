@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithComponent.h"
-#include "ExampleWithComponentConst.h"
 #include "ExampleWithComponentObj.h"
 #include "ExampleWithComponentData.h"
 #include "ExampleWithComponentCollection.h"
@@ -42,15 +41,13 @@ ExampleWithComponent::~ExampleWithComponent(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithComponent::operator ConstExampleWithComponent() const {return ConstExampleWithComponent(m_obj);}
-
   const NotSoSimpleStruct& ExampleWithComponent::component() const { return m_obj->data.component; }
 const SimpleStruct& ExampleWithComponent::data() const { return m_obj->data.component.data; }
 
   NotSoSimpleStruct& ExampleWithComponent::component() { return m_obj->data.component; }
-void ExampleWithComponent::component(class NotSoSimpleStruct value) { m_obj->data.component = value; }
+void ExampleWithComponent::component(class NotSoSimpleStruct value) { m_obj->checkAccess(); m_obj->data.component = value; }
 SimpleStruct& ExampleWithComponent::data() { return m_obj->data.component.data; }
-void ExampleWithComponent::data(class SimpleStruct value) { m_obj->data.component.data = value; }
+void ExampleWithComponent::data(class SimpleStruct value) { m_obj->checkAccess(); m_obj->data.component.data = value; }
 
 
 
@@ -66,10 +63,6 @@ const podio::ObjectID ExampleWithComponent::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithComponent::operator==(const ConstExampleWithComponent& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

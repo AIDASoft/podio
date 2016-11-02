@@ -10,14 +10,12 @@
 //forward declarations
 
 
-#include "ExampleReferencingTypeConst.h"
 #include "ExampleReferencingTypeObj.h"
 
 
 
 class ExampleReferencingTypeCollection;
 class ExampleReferencingTypeCollectionIterator;
-class ConstExampleReferencingType;
 
 /** @class ExampleReferencingType
  *  Referencing Type
@@ -27,7 +25,6 @@ class ExampleReferencingType {
 
   friend ExampleReferencingTypeCollection;
   friend ExampleReferencingTypeCollectionIterator;
-  friend ConstExampleReferencingType;
 
 public:
 
@@ -45,24 +42,21 @@ public:
   /// destructor
   ~ExampleReferencingType();
 
-  /// conversion to const object
-  operator ConstExampleReferencingType () const;
-
 public:
 
 
 
-  void addClusters(::ConstExampleCluster);
+  void addClusters(::ExampleCluster);
   unsigned int Clusters_size() const;
-  ::ConstExampleCluster Clusters(unsigned int) const;
-  std::vector<::ConstExampleCluster>::const_iterator Clusters_begin() const;
-  std::vector<::ConstExampleCluster>::const_iterator Clusters_end() const;
+  ::ExampleCluster Clusters(unsigned int) const;
+  std::vector<::ExampleCluster>::const_iterator Clusters_begin() const;
+  std::vector<::ExampleCluster>::const_iterator Clusters_end() const;
 
-  void addRefs(::ConstExampleReferencingType);
+  void addRefs(::ExampleReferencingType);
   unsigned int Refs_size() const;
-  ::ConstExampleReferencingType Refs(unsigned int) const;
-  std::vector<::ConstExampleReferencingType>::const_iterator Refs_begin() const;
-  std::vector<::ConstExampleReferencingType>::const_iterator Refs_end() const;
+  ::ExampleReferencingType Refs(unsigned int) const;
+  std::vector<::ExampleReferencingType>::const_iterator Refs_begin() const;
+  std::vector<::ExampleReferencingType>::const_iterator Refs_end() const;
 
 
 
@@ -74,8 +68,6 @@ public:
   bool operator==(const ExampleReferencingType& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleReferencingType& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleReferencingType& p1,

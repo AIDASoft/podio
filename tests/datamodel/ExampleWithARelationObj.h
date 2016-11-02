@@ -15,8 +15,7 @@
 
 // forward declarations
 class ExampleWithARelation;
-class ConstExampleWithARelation;
-namespace ex {class ConstExampleWithNamespace;
+namespace ex {class ExampleWithNamespace;
 }
 
 
@@ -34,8 +33,8 @@ public:
 
 public:
   ExampleWithARelationData data;
-  ::ex::ConstExampleWithNamespace* m_ref;
-  std::vector<::ex::ConstExampleWithNamespace>* m_refs;
+  ::ex::ExampleWithNamespace* m_ref;
+  std::vector<::ex::ExampleWithNamespace>* m_refs;
 
 
 };

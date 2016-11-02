@@ -15,7 +15,6 @@
 
 // forward declarations
 class ExampleCluster;
-class ConstExampleCluster;
 
 
 
@@ -32,8 +31,8 @@ public:
 
 public:
   ExampleClusterData data;
-  std::vector<ConstExampleHit>* m_Hits;
-  std::vector<ConstExampleCluster>* m_Clusters;
+  std::vector<ExampleHit>* m_Hits;
+  std::vector<ExampleCluster>* m_Clusters;
 
 
 };

@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithARelation.h"
-#include "ExampleWithARelationConst.h"
 #include "ExampleWithARelationObj.h"
 #include "ExampleWithARelationData.h"
 #include "ExampleWithARelationCollection.h"
@@ -43,28 +42,26 @@ ExampleWithARelation::~ExampleWithARelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithARelation::operator ConstExampleWithARelation() const {return ConstExampleWithARelation(m_obj);}
-
   const float& ExampleWithARelation::number() const { return m_obj->data.number; }
-  const ex::ConstExampleWithNamespace ExampleWithARelation::ref() const {
+  const ex::ExampleWithNamespace ExampleWithARelation::ref() const {
     if (m_obj->m_ref == nullptr) {
-      return ex::ConstExampleWithNamespace(nullptr);
+      return ex::ExampleWithNamespace(nullptr);
     }
-    return ex::ConstExampleWithNamespace(*(m_obj->m_ref));
+    return ex::ExampleWithNamespace(*(m_obj->m_ref));
   }
 void ExampleWithARelation::number(float value){ m_obj->data.number = value; }
-void ExampleWithARelation::ref(ex::ConstExampleWithNamespace value) {
+void ExampleWithARelation::ref(ex::ExampleWithNamespace value) {
   if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
-  m_obj->m_ref = new ConstExampleWithNamespace(value);
+  m_obj->m_ref = new ExampleWithNamespace(value);
 }
 
-std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation::refs_begin() const {
+std::vector<ex::ExampleWithNamespace>::const_iterator ExampleWithARelation::refs_begin() const {
   auto ret_value = m_obj->m_refs->begin();
   std::advance(ret_value, m_obj->data.refs_begin);
   return ret_value;
 }
 
-std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation::refs_end() const {
+std::vector<ex::ExampleWithNamespace>::const_iterator ExampleWithARelation::refs_end() const {
   auto ret_value = m_obj->m_refs->begin();
 //fg: this code fails if m_obj->data.refs==0
 //  std::advance(ret_value, m_obj->data.refs_end-1);
@@ -73,7 +70,7 @@ std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation:
   return ret_value;
 }
 
-void ExampleWithARelation::addrefs(ex::ConstExampleWithNamespace component) {
+void ExampleWithARelation::addrefs(ex::ExampleWithNamespace component) {
   m_obj->m_refs->push_back(component);
   m_obj->data.refs_end++;
 }
@@ -82,7 +79,7 @@ unsigned int ExampleWithARelation::refs_size() const {
   return (m_obj->data.refs_end-m_obj->data.refs_begin);
 }
 
-ex::ConstExampleWithNamespace ExampleWithARelation::refs(unsigned int index) const {
+ex::ExampleWithNamespace ExampleWithARelation::refs(unsigned int index) const {
   if (refs_size() > index) {
     return m_obj->m_refs->at(m_obj->data.refs_begin+index);
   }
@@ -102,10 +99,6 @@ const podio::ObjectID ExampleWithARelation::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithARelation::operator==(const ConstExampleWithARelation& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

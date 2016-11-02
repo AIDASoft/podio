@@ -43,6 +43,11 @@ void ExampleHitCollection::clear(){
   m_entries.clear();
 }
 
+void ExampleHitCollection::setReadOnly(){
+  m_isReadOnly = true;
+  for (auto& obj : m_entries) { obj->setReadOnly(); }
+}
+
 void ExampleHitCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
@@ -72,7 +77,8 @@ bool ExampleHitCollection::setReferences(const podio::ICollectionProvider* colle
   return true; //TODO: check success
 }
 
-void ExampleHitCollection::push_back(ConstExampleHit object){
+void ExampleHitCollection::push_back(ExampleHit object){
+  if (m_isReadOnly) { throw std::runtime_error("You cannot modify this collection any more"); }
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

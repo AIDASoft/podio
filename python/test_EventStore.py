@@ -3,7 +3,7 @@ from EventStore import EventStore
 import os
 
 from ROOT import TFile
-from ROOT import ExampleHit, ConstExampleHit
+from ROOT import ExampleHit
 
 
 class EventStoreTestCase(unittest.TestCase):

@@ -13,7 +13,6 @@
 
 // forward declarations
 class EventInfo;
-class ConstEventInfo;
 
 
 

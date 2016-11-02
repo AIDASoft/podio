@@ -73,6 +73,7 @@ namespace podio {
     auto id = m_table->collectionID(name);
     collection->setID(id);
     collection->prepareAfterRead();
+    collection->setReadOnly();
     return collection;
   }
 

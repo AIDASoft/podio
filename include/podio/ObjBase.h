@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <iostream>
+#include <stdexcept>
 #include "podio/ObjectID.h"
 
 namespace podio {
@@ -29,6 +30,9 @@ namespace podio {
       return 0;
     };
 
+    void setReadOnly(){ is_readonly = true;}
+    void checkAccess() throw( std::runtime_error ) {if (is_readonly) throw std::runtime_error("error");}
+
     /// destructor
     virtual ~ObjBase(){};
 
@@ -37,6 +41,8 @@ namespace podio {
     podio::ObjectID id;
 
   private:
+    /// whether the object is read-only
+    bool is_readonly{false};
     /// reference counter
     std::atomic<int> ref_counter;
 

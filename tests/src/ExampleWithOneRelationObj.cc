@@ -1,5 +1,5 @@
 #include "ExampleWithOneRelationObj.h"
-#include "ExampleClusterConst.h"
+#include "ExampleCluster.h"
 
 
 
@@ -17,7 +17,7 @@ ExampleWithOneRelationObj::ExampleWithOneRelationObj(const ExampleWithOneRelatio
     , data(other.data), m_cluster(nullptr)
 {
   if (other.m_cluster != nullptr) {
-     m_cluster = new ConstExampleCluster(*(other.m_cluster));
+     m_cluster = new ExampleCluster(*(other.m_cluster));
   }
 
 }

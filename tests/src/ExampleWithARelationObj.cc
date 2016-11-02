@@ -1,11 +1,11 @@
 #include "ExampleWithARelationObj.h"
-#include "ExampleWithNamespaceConst.h"
+#include "ExampleWithNamespace.h"
 
 
 namespace ex {
 ExampleWithARelationObj::ExampleWithARelationObj() :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}, data(), m_ref(nullptr)
-, m_refs(new std::vector<::ex::ConstExampleWithNamespace>())
+, m_refs(new std::vector<::ex::ExampleWithNamespace>())
 { }
 
 ExampleWithARelationObj::ExampleWithARelationObj(const podio::ObjectID id, ExampleWithARelationData data) :
@@ -14,10 +14,10 @@ ExampleWithARelationObj::ExampleWithARelationObj(const podio::ObjectID id, Examp
 
 ExampleWithARelationObj::ExampleWithARelationObj(const ExampleWithARelationObj& other) :
     ObjBase{{podio::ObjectID::untracked,podio::ObjectID::untracked},0}
-    , data(other.data), m_ref(nullptr), m_refs(new std::vector<::ex::ConstExampleWithNamespace>(*(other.m_refs)))
+    , data(other.data), m_ref(nullptr), m_refs(new std::vector<::ex::ExampleWithNamespace>(*(other.m_refs)))
 {
   if (other.m_ref != nullptr) {
-     m_ref = new ::ex::ConstExampleWithNamespace(*(other.m_ref));
+     m_ref = new ::ex::ExampleWithNamespace(*(other.m_ref));
   }
 
 }

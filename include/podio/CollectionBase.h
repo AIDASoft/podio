@@ -48,6 +48,9 @@ namespace podio {
     /// check for validity of the container after read
     virtual bool isValid() const = 0;
 
+    /// set the collection and the objects contained to read-only
+    virtual void setReadOnly() = 0;
+
     /// destructor
     virtual ~CollectionBase(){};
 

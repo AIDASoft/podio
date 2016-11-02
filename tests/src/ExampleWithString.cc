@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithString.h"
-#include "ExampleWithStringConst.h"
 #include "ExampleWithStringObj.h"
 #include "ExampleWithStringData.h"
 #include "ExampleWithStringCollection.h"
@@ -42,8 +41,6 @@ ExampleWithString::~ExampleWithString(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithString::operator ConstExampleWithString() const {return ConstExampleWithString(m_obj);}
-
   const std::string& ExampleWithString::theString() const { return m_obj->data.theString; }
 
 void ExampleWithString::theString(std::string value){ m_obj->data.theString = value; }
@@ -62,10 +59,6 @@ const podio::ObjectID ExampleWithString::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithString::operator==(const ConstExampleWithString& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

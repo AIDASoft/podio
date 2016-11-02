@@ -43,6 +43,11 @@ void ExampleWithComponentCollection::clear(){
   m_entries.clear();
 }
 
+void ExampleWithComponentCollection::setReadOnly(){
+  m_isReadOnly = true;
+  for (auto& obj : m_entries) { obj->setReadOnly(); }
+}
+
 void ExampleWithComponentCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
@@ -72,7 +77,8 @@ bool ExampleWithComponentCollection::setReferences(const podio::ICollectionProvi
   return true; //TODO: check success
 }
 
-void ExampleWithComponentCollection::push_back(ConstExampleWithComponent object){
+void ExampleWithComponentCollection::push_back(ExampleWithComponent object){
+  if (m_isReadOnly) { throw std::runtime_error("You cannot modify this collection any more"); }
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

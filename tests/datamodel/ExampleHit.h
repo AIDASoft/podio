@@ -7,14 +7,12 @@
 //forward declarations
 
 
-#include "ExampleHitConst.h"
 #include "ExampleHitObj.h"
 
 
 
 class ExampleHitCollection;
 class ExampleHitCollectionIterator;
-class ConstExampleHit;
 
 /** @class ExampleHit
  *  Example Hit
@@ -24,7 +22,6 @@ class ExampleHit {
 
   friend ExampleHitCollection;
   friend ExampleHitCollectionIterator;
-  friend ConstExampleHit;
 
 public:
 
@@ -42,9 +39,6 @@ public:
   ExampleHit clone() const;
   /// destructor
   ~ExampleHit();
-
-  /// conversion to const object
-  operator ConstExampleHit () const;
 
 public:
 
@@ -80,8 +74,6 @@ public:
   bool operator==(const ExampleHit& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleHit& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleHit& p1,

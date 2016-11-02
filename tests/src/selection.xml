@@ -37,12 +37,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ConstExampleWithString>" />
-
-            <class name="ConstExampleWithString">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ExampleWithStringCollection>" />
 
             <class name="ExampleWithStringCollection">
@@ -64,12 +58,6 @@
           <class name="std::vector<ex::ExampleWithARelation>" />
 
             <class name="ex::ExampleWithARelation">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ex::ConstExampleWithARelation>" />
-
-            <class name="ex::ConstExampleWithARelation">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
@@ -97,12 +85,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ConstExampleMC>" />
-
-            <class name="ConstExampleMC">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ExampleMCCollection>" />
 
             <class name="ExampleMCCollection">
@@ -124,12 +106,6 @@
           <class name="std::vector<EventInfo>" />
 
             <class name="EventInfo">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ConstEventInfo>" />
-
-            <class name="ConstEventInfo">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
@@ -157,12 +133,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ConstExampleWithComponent>" />
-
-            <class name="ConstExampleWithComponent">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ExampleWithComponentCollection>" />
 
             <class name="ExampleWithComponentCollection">
@@ -184,12 +154,6 @@
           <class name="std::vector<ExampleReferencingType>" />
 
             <class name="ExampleReferencingType">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ConstExampleReferencingType>" />
-
-            <class name="ConstExampleReferencingType">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
@@ -217,12 +181,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ConstExampleHit>" />
-
-            <class name="ConstExampleHit">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ExampleHitCollection>" />
 
             <class name="ExampleHitCollection">
@@ -244,12 +202,6 @@
           <class name="std::vector<ExampleWithOneRelation>" />
 
             <class name="ExampleWithOneRelation">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ConstExampleWithOneRelation>" />
-
-            <class name="ConstExampleWithOneRelation">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
@@ -277,12 +229,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ConstExampleWithVectorMember>" />
-
-            <class name="ConstExampleWithVectorMember">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ExampleWithVectorMemberCollection>" />
 
             <class name="ExampleWithVectorMemberCollection">
@@ -304,12 +250,6 @@
           <class name="std::vector<ExampleCluster>" />
 
             <class name="ExampleCluster">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ConstExampleCluster>" />
-
-            <class name="ConstExampleCluster">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
@@ -337,12 +277,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ex::ConstExampleWithNamespace>" />
-
-            <class name="ex::ConstExampleWithNamespace">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ex::ExampleWithNamespaceCollection>" />
 
             <class name="ex::ExampleWithNamespaceCollection">
@@ -367,12 +301,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ConstExampleForCyclicDependency1>" />
-
-            <class name="ConstExampleForCyclicDependency1">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ExampleForCyclicDependency1Collection>" />
 
             <class name="ExampleForCyclicDependency1Collection">
@@ -394,12 +322,6 @@
           <class name="std::vector<ExampleForCyclicDependency2>" />
 
             <class name="ExampleForCyclicDependency2">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ConstExampleForCyclicDependency2>" />
-
-            <class name="ConstExampleForCyclicDependency2">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>

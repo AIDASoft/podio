@@ -6,17 +6,14 @@
 
 //forward declarations
 class ExampleCluster;
-class ConstExampleCluster;
 
 
-#include "ExampleWithOneRelationConst.h"
 #include "ExampleWithOneRelationObj.h"
 
 
 
 class ExampleWithOneRelationCollection;
 class ExampleWithOneRelationCollectionIterator;
-class ConstExampleWithOneRelation;
 
 /** @class ExampleWithOneRelation
  *  Type with one relation member
@@ -26,7 +23,6 @@ class ExampleWithOneRelation {
 
   friend ExampleWithOneRelationCollection;
   friend ExampleWithOneRelationCollectionIterator;
-  friend ConstExampleWithOneRelation;
 
 public:
 
@@ -44,16 +40,13 @@ public:
   /// destructor
   ~ExampleWithOneRelation();
 
-  /// conversion to const object
-  operator ConstExampleWithOneRelation () const;
-
 public:
 
   /// Access the  a particular cluster
-  const ::ConstExampleCluster cluster() const;
+  const ::ExampleCluster cluster() const;
 
   /// Set the  a particular cluster
-  void cluster(::ConstExampleCluster value);
+  void cluster(::ExampleCluster value);
 
 
 
@@ -65,8 +58,6 @@ public:
   bool operator==(const ExampleWithOneRelation& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleWithOneRelation& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithOneRelation& p1,

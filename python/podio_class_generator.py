@@ -205,7 +205,6 @@ class ClassGenerator(object):
       setter_declarations = ""
       constructor_signature = ""
       constructor_body = ""
-      ConstGetter_implementations = ""
 
       # check whether all member types are known
       # and prepare include directives
@@ -226,7 +225,6 @@ class ClassGenerator(object):
               forward_declarations_namespace[mnamespace] = []
 
           forward_declarations_namespace[mnamespace] += ["class %s;\n" %(klassname)]
-          forward_declarations_namespace[mnamespace] += ["class Const%s;\n" %(klassname)]
           includes_cc += '#include "%s.h"\n' %(klassname)
 
       for nsp in forward_declarations_namespace.iterkeys():
@@ -300,12 +298,7 @@ class ClassGenerator(object):
                 setter_implementations += implementations["pod_member_class_refsetter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
                 setter_declarations += declarations["pod_member_class_setter"].format(type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
                 setter_implementations += implementations["pod_member_class_setter"].format(type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name, compname=name, description=desc)
-              ConstGetter_implementations += implementations["const_pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
-
-        # Getter for the Const variety of this datatype
-        ConstGetter_implementations += implementations["const_member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname, description=desc)
-
-
+  
         # set up signature
         constructor_signature += "%s %s," %(klass, name)
         # constructor
@@ -324,8 +317,6 @@ class ClassGenerator(object):
           setter_implementations += implementations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
           getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
           getter_implementations += implementations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname, description=desc)
-
 
       # handle vector members
       vectormembers = definition["VectorMembers"]
@@ -347,8 +338,6 @@ class ClassGenerator(object):
       if constructor_signature == "":
         constructor_implementation = ""
         constructor_declaration = ""
-        ConstConstructor_declaration = ""
-        ConstConstructor_implementation = ""
       else:
         substitutions = { "name" : rawclassname,
                           "constructor" : constructor_body,
@@ -356,25 +345,19 @@ class ClassGenerator(object):
         }
         constructor_implementation = self.evaluate_template("Object.constructor.cc.template",substitutions)
         constructor_declaration = "  %s(%s);\n" %(rawclassname, constructor_signature)
-        ConstConstructor_implementation = self.evaluate_template("ConstObject.constructor.cc.template",substitutions)
-        ConstConstructor_declaration = "Const%s(%s);\n" %(rawclassname, constructor_signature)
 
       # handle one-to-many relations
       references_members = ""
       references_declarations = ""
       references = ""
-      ConstReferences_declarations = ""
-      ConstReferences = ""
       references_template = self.get_template("RefVector.cc.template")
       references_declarations_template = self.get_template("RefVector.h.template")
-      ConstReferences_declarations_template = self.get_template("ConstRefVector.h.template")
-      ConstReferences_template = self.get_template("ConstRefVector.cc.template")
 
       for refvector in refvectors+definition["VectorMembers"]:
         relnamespace, reltype, _, __ = self.demangle_classname(refvector["type"])
         relationtype = refvector["type"]
         if relationtype not in self.buildin_types and relationtype not in self.reader.components:
-            relationtype = relnamespace+"::Const"+reltype
+            relationtype = relnamespace+"::"+reltype
 
         relationName = refvector["name"]
         get_relation = relationName
@@ -394,8 +377,6 @@ class ClassGenerator(object):
         references_declarations += string.Template(references_declarations_template).substitute(substitutions)
         references += string.Template(references_template).substitute(substitutions)
         references_members += "std::vector<%s>* m_%s; ///< transient \n" %(refvector["type"], refvector["name"])
-        ConstReferences_declarations += string.Template(ConstReferences_declarations_template).substitute(substitutions)
-        ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
 
       # handle user provided extra code
       extracode_declarations = ""
@@ -444,20 +425,6 @@ class ClassGenerator(object):
                      }
       self.fill_templates("Object",substitutions)
       self.created_classes.append(classname)
-
-
-      substitutions["constructor_declaration"] = ConstConstructor_declaration
-      substitutions["constructor_implementation"] = ConstConstructor_implementation
-      substitutions["relation_declarations"] = ConstReferences_declarations
-      substitutions["relations"] = ConstReferences
-      substitutions["getters"]   = ConstGetter_implementations
-      substitutions["constextracode"] = constextracode
-      substitutions["constextracode_declarations"] = constextracode_declarations
-      self.fill_templates("ConstObject", substitutions)
-      if "::" in classname:
-        self.created_classes.append("%s::Const%s" %(namespace, rawclassname))
-      else:
-        self.created_classes.append("Const%s" %classname)
 
     def create_collection(self, classname, definition):
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
@@ -753,23 +720,23 @@ class ClassGenerator(object):
         if klass not in self.buildin_types:
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
-            klassWithQualifier = "::"+mnamespace+"::Const"+klassname
+            klassWithQualifier = "::"+mnamespace+"::"+klassname
             if mnamespace not in forward_declarations_namespace.keys():
               forward_declarations_namespace[mnamespace] = []
           else:
-            klassWithQualifier = "Const"+klass
+            klassWithQualifier = klass
         else:
           klassWithQualifier = klass
 
         if mnamespace != "":
-          relations+= "  ::%s::Const%s* m_%s;\n" %(mnamespace, klassname, name)
+          relations+= "  ::%s::%s* m_%s;\n" %(mnamespace, klassname, name)
         else:
-          relations+= "  Const%s* m_%s;\n" %(klassname, name)
+          relations+= "  %s* m_%s;\n" %(klassname, name)
 
         if klass not in self.buildin_types:
           if klass != classname:
-            forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
-            includes_cc += '#include "%sConst.h"\n' %(klassname)
+            forward_declarations_namespace[mnamespace] += ['class %s;\n' %(klassname)]
+            includes_cc += '#include "%s.h"\n' %(klassname)
             initialize_relations += ", m_%s(nullptr)\n" %(name)
             # for deep copy initialise as nullptr and set in copy ctor body if copied object has non-trivial relation
             deepcopy_relations += ", m_%s(nullptr)" % (name)
@@ -793,9 +760,9 @@ class ClassGenerator(object):
           if klass not in self.reader.components:
             if "::" in klass:
               mnamespace, klassname = klass.split("::")
-              klassWithQualifier = "::"+mnamespace+"::Const"+klassname
+              klassWithQualifier = "::"+mnamespace+"::"+klassname
             else:
-              klassWithQualifier = "Const"+klass
+              klassWithQualifier = klass
           else:
               klassWithQualifier = klass
           relations += "\tstd::vector<%s>* m_%s;\n" %(klassWithQualifier, name)
@@ -878,9 +845,6 @@ class ClassGenerator(object):
         endings = ("h")
       elif category == "Object":
         FN = ""
-        endings = ("h","cc")
-      elif category == "ConstObject":
-        FN = "Const"
         endings = ("h","cc")
       elif category == "PrintInfo":
         FN = "PrintInfo"

@@ -13,6 +13,10 @@ podio::CollectionBase* podio::PythonEventStore::get(const char* name) {
   return const_cast<podio::CollectionBase*>(coll);
 }
 
+void podio::PythonEventStore::registerCollection(const char* name, podio::CollectionBase* coll) {
+  m_store.registerCollection(name, coll);
+}
+
 void podio::PythonEventStore::endOfEvent() {
   m_store.clear();
   m_reader.endOfEvent();

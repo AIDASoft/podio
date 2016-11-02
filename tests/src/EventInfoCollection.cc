@@ -43,6 +43,11 @@ void EventInfoCollection::clear(){
   m_entries.clear();
 }
 
+void EventInfoCollection::setReadOnly(){
+  m_isReadOnly = true;
+  for (auto& obj : m_entries) { obj->setReadOnly(); }
+}
+
 void EventInfoCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
@@ -72,7 +77,8 @@ bool EventInfoCollection::setReferences(const podio::ICollectionProvider* collec
   return true; //TODO: check success
 }
 
-void EventInfoCollection::push_back(ConstEventInfo object){
+void EventInfoCollection::push_back(EventInfo object){
+  if (m_isReadOnly) { throw std::runtime_error("You cannot modify this collection any more"); }
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

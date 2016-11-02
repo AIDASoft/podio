@@ -13,8 +13,7 @@
 
 // forward declarations
 class ExampleForCyclicDependency1;
-class ConstExampleForCyclicDependency1;
-class ConstExampleForCyclicDependency2;
+class ExampleForCyclicDependency2;
 
 
 
@@ -31,7 +30,7 @@ public:
 
 public:
   ExampleForCyclicDependency1Data data;
-  ConstExampleForCyclicDependency2* m_ref;
+  ExampleForCyclicDependency2* m_ref;
 
 
 };

@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(Const${name} object);
+  void push_back(${name} object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -88,6 +88,8 @@ public:
                  [ID](${name}Obj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
+
+  void setReadOnly();
 
   bool isValid() const {
     return m_isValid;
@@ -111,6 +113,7 @@ public:
 
 private:
   bool m_isValid;
+  bool m_isReadOnly{false};
   int m_collectionID;
   ${name}ObjPointerContainer m_entries;
   // members to handle 1-to-N-relations

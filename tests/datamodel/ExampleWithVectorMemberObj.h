@@ -14,7 +14,6 @@
 
 // forward declarations
 class ExampleWithVectorMember;
-class ConstExampleWithVectorMember;
 
 
 

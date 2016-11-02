@@ -43,6 +43,11 @@ void ExampleWithNamespaceCollection::clear(){
   m_entries.clear();
 }
 
+void ExampleWithNamespaceCollection::setReadOnly(){
+  m_isReadOnly = true;
+  for (auto& obj : m_entries) { obj->setReadOnly(); }
+}
+
 void ExampleWithNamespaceCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
@@ -72,7 +77,8 @@ bool ExampleWithNamespaceCollection::setReferences(const podio::ICollectionProvi
   return true; //TODO: check success
 }
 
-void ExampleWithNamespaceCollection::push_back(ConstExampleWithNamespace object){
+void ExampleWithNamespaceCollection::push_back(ExampleWithNamespace object){
+  if (m_isReadOnly) { throw std::runtime_error("You cannot modify this collection any more"); }
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

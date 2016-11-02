@@ -7,14 +7,12 @@ $includes
 //forward declarations
 $forward_declarations
 
-#include "${name}Const.h"
 #include "${name}Obj.h"
 
 ${namespace_open}
 
 class ${name}Collection;
 class ${name}CollectionIterator;
-class Const${name};
 
 /** @class ${name}
  *  $description
@@ -24,7 +22,6 @@ class ${name} {
 
   friend ${name}Collection;
   friend ${name}CollectionIterator;
-  friend Const${name};
 
 public:
 
@@ -42,9 +39,6 @@ ${constructor_declaration}
   /// destructor
   ~${name}();
 
-  /// conversion to const object
-  operator Const${name} () const;
-
 public:
 
 $getter_declarations
@@ -59,8 +53,6 @@ $extracode_declarations
   bool operator==(const ${name}& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const Const${name}& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ${name}& p1,

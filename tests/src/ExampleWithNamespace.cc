@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithNamespace.h"
-#include "ExampleWithNamespaceConst.h"
 #include "ExampleWithNamespaceObj.h"
 #include "ExampleWithNamespaceData.h"
 #include "ExampleWithNamespaceCollection.h"
@@ -42,16 +41,14 @@ ExampleWithNamespace::~ExampleWithNamespace(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithNamespace::operator ConstExampleWithNamespace() const {return ConstExampleWithNamespace(m_obj);}
-
   const ex2::NamespaceStruct& ExampleWithNamespace::data() const { return m_obj->data.data; }
 const int& ExampleWithNamespace::x() const { return m_obj->data.data.x; }
 const int& ExampleWithNamespace::y() const { return m_obj->data.data.y; }
 
   ex2::NamespaceStruct& ExampleWithNamespace::data() { return m_obj->data.data; }
-void ExampleWithNamespace::data(class ex2::NamespaceStruct value) { m_obj->data.data = value; }
-void ExampleWithNamespace::x(int value){ m_obj->data.data.x = value; }
-void ExampleWithNamespace::y(int value){ m_obj->data.data.y = value; }
+void ExampleWithNamespace::data(class ex2::NamespaceStruct value) { m_obj->checkAccess(); m_obj->data.data = value; }
+void ExampleWithNamespace::x(int value){ m_obj->checkAccess(); m_obj->data.data.x = value; }
+void ExampleWithNamespace::y(int value){ m_obj->checkAccess(); m_obj->data.data.y = value; }
 
 
 
@@ -67,10 +64,6 @@ const podio::ObjectID ExampleWithNamespace::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithNamespace::operator==(const ConstExampleWithNamespace& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

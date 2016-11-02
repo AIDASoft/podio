@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "ExampleWithOneRelation.h"
-#include "ExampleWithOneRelationConst.h"
 #include "ExampleWithOneRelationObj.h"
 #include "ExampleWithOneRelationData.h"
 #include "ExampleWithOneRelationCollection.h"
@@ -39,17 +38,15 @@ ExampleWithOneRelation::~ExampleWithOneRelation(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-ExampleWithOneRelation::operator ConstExampleWithOneRelation() const {return ConstExampleWithOneRelation(m_obj);}
-
-  const ::ConstExampleCluster ExampleWithOneRelation::cluster() const {
+  const ::ExampleCluster ExampleWithOneRelation::cluster() const {
     if (m_obj->m_cluster == nullptr) {
-      return ::ConstExampleCluster(nullptr);
+      return ::ExampleCluster(nullptr);
     }
-    return ::ConstExampleCluster(*(m_obj->m_cluster));
+    return ::ExampleCluster(*(m_obj->m_cluster));
   }
-void ExampleWithOneRelation::cluster(::ConstExampleCluster value) {
+void ExampleWithOneRelation::cluster(::ExampleCluster value) {
   if (m_obj->m_cluster != nullptr) delete m_obj->m_cluster;
-  m_obj->m_cluster = new ConstExampleCluster(value);
+  m_obj->m_cluster = new ExampleCluster(value);
 }
 
 
@@ -66,10 +63,6 @@ const podio::ObjectID ExampleWithOneRelation::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool ExampleWithOneRelation::operator==(const ConstExampleWithOneRelation& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

@@ -8,7 +8,7 @@
 
 
 
-ExampleMCCollection::ExampleMCCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_parents(new std::vector<::ConstExampleMC>()), m_rel_daughters(new std::vector<::ConstExampleMC>()),m_data(new ExampleMCDataContainer() ) {
+ExampleMCCollection::ExampleMCCollection() : m_isValid(false), m_collectionID(0), m_entries() , m_rel_parents(new std::vector<::ExampleMC>()), m_rel_daughters(new std::vector<::ExampleMC>()),m_data(new ExampleMCDataContainer() ) {
     m_refCollections.push_back(new std::vector<podio::ObjectID>());
   m_refCollections.push_back(new std::vector<podio::ObjectID>());
 
@@ -71,6 +71,11 @@ void ExampleMCCollection::clear(){
 
   for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
+}
+
+void ExampleMCCollection::setReadOnly(){
+  m_isReadOnly = true;
+  for (auto& obj : m_entries) { obj->setReadOnly(); }
 }
 
 void ExampleMCCollection::prepareForWrite(){
@@ -138,7 +143,8 @@ bool ExampleMCCollection::setReferences(const podio::ICollectionProvider* collec
   return true; //TODO: check success
 }
 
-void ExampleMCCollection::push_back(ConstExampleMC object){
+void ExampleMCCollection::push_back(ExampleMC object){
+  if (m_isReadOnly) { throw std::runtime_error("You cannot modify this collection any more"); }
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

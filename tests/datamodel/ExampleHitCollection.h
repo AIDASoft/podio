@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleHit object);
+  void push_back(ExampleHit object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -88,6 +88,8 @@ public:
                  [ID](ExampleHitObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
+
+  void setReadOnly();
 
   bool isValid() const {
     return m_isValid;
@@ -119,6 +121,7 @@ public:
 
 private:
   bool m_isValid;
+  bool m_isReadOnly{false};
   int m_collectionID;
   ExampleHitObjPointerContainer m_entries;
   // members to handle 1-to-N-relations

@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleWithVectorMember object);
+  void push_back(ExampleWithVectorMember object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -88,6 +88,8 @@ public:
                  [ID](ExampleWithVectorMemberObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
+
+  void setReadOnly();
 
   bool isValid() const {
     return m_isValid;
@@ -111,6 +113,7 @@ public:
 
 private:
   bool m_isValid;
+  bool m_isReadOnly{false};
   int m_collectionID;
   ExampleWithVectorMemberObjPointerContainer m_entries;
   // members to handle 1-to-N-relations

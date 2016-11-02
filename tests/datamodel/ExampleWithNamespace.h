@@ -8,14 +8,12 @@
 //forward declarations
 
 
-#include "ExampleWithNamespaceConst.h"
 #include "ExampleWithNamespaceObj.h"
 
 namespace ex {
 
 class ExampleWithNamespaceCollection;
 class ExampleWithNamespaceCollectionIterator;
-class ConstExampleWithNamespace;
 
 /** @class ExampleWithNamespace
  *  Type with namespace and namespaced member
@@ -25,7 +23,6 @@ class ExampleWithNamespace {
 
   friend ExampleWithNamespaceCollection;
   friend ExampleWithNamespaceCollectionIterator;
-  friend ConstExampleWithNamespace;
 
 public:
 
@@ -43,9 +40,6 @@ public:
   ExampleWithNamespace clone() const;
   /// destructor
   ~ExampleWithNamespace();
-
-  /// conversion to const object
-  operator ConstExampleWithNamespace () const;
 
 public:
 
@@ -77,8 +71,6 @@ public:
   bool operator==(const ExampleWithNamespace& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleWithNamespace& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithNamespace& p1,

@@ -43,6 +43,11 @@ void ExampleWithVectorMemberCollection::clear(){
   m_entries.clear();
 }
 
+void ExampleWithVectorMemberCollection::setReadOnly(){
+  m_isReadOnly = true;
+  for (auto& obj : m_entries) { obj->setReadOnly(); }
+}
+
 void ExampleWithVectorMemberCollection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
@@ -72,7 +77,8 @@ bool ExampleWithVectorMemberCollection::setReferences(const podio::ICollectionPr
   return true; //TODO: check success
 }
 
-void ExampleWithVectorMemberCollection::push_back(ConstExampleWithVectorMember object){
+void ExampleWithVectorMemberCollection::push_back(ExampleWithVectorMember object){
+  if (m_isReadOnly) { throw std::runtime_error("You cannot modify this collection any more"); }
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {

@@ -13,7 +13,6 @@
 
 // forward declarations
 class ExampleWithNamespace;
-class ConstExampleWithNamespace;
 
 
 namespace ex {

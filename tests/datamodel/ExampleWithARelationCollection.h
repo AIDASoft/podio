@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleWithARelation object);
+  void push_back(ExampleWithARelation object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -88,6 +88,8 @@ public:
                  [ID](ExampleWithARelationObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
+
+  void setReadOnly();
 
   bool isValid() const {
     return m_isValid;
@@ -113,12 +115,13 @@ public:
 
 private:
   bool m_isValid;
+  bool m_isReadOnly{false};
   int m_collectionID;
   ExampleWithARelationObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<ex::ConstExampleWithNamespace>* m_rel_refs; ///< Relation buffer for read / write
-  std::vector<std::vector<ex::ConstExampleWithNamespace>*> m_rel_refs_tmp; ///< Relation buffer for internal book-keeping
-  std::vector<ex::ConstExampleWithNamespace>* m_rel_ref; ///< Relation buffer for read / write
+  std::vector<ex::ExampleWithNamespace>* m_rel_refs; ///< Relation buffer for read / write
+  std::vector<std::vector<ex::ExampleWithNamespace>*> m_rel_refs_tmp; ///< Relation buffer for internal book-keeping
+  std::vector<ex::ExampleWithNamespace>* m_rel_ref; ///< Relation buffer for read / write
 
   // members to handle streaming
   podio::CollRefCollection m_refCollections;

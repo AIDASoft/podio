@@ -8,14 +8,12 @@
 //forward declarations
 
 
-#include "ExampleWithComponentConst.h"
 #include "ExampleWithComponentObj.h"
 
 
 
 class ExampleWithComponentCollection;
 class ExampleWithComponentCollectionIterator;
-class ConstExampleWithComponent;
 
 /** @class ExampleWithComponent
  *  Type with one component
@@ -25,7 +23,6 @@ class ExampleWithComponent {
 
   friend ExampleWithComponentCollection;
   friend ExampleWithComponentCollectionIterator;
-  friend ConstExampleWithComponent;
 
 public:
 
@@ -43,9 +40,6 @@ public:
   ExampleWithComponent clone() const;
   /// destructor
   ~ExampleWithComponent();
-
-  /// conversion to const object
-  operator ConstExampleWithComponent () const;
 
 public:
 
@@ -73,8 +67,6 @@ public:
   bool operator==(const ExampleWithComponent& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleWithComponent& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithComponent& p1,

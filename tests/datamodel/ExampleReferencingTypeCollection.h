@@ -73,7 +73,7 @@ public:
 
 
   /// Append object to the collection
-  void push_back(ConstExampleReferencingType object);
+  void push_back(ExampleReferencingType object);
 
   void prepareForWrite();
   void prepareAfterRead();
@@ -88,6 +88,8 @@ public:
                  [ID](ExampleReferencingTypeObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
+
+  void setReadOnly();
 
   bool isValid() const {
     return m_isValid;
@@ -111,13 +113,14 @@ public:
 
 private:
   bool m_isValid;
+  bool m_isReadOnly{false};
   int m_collectionID;
   ExampleReferencingTypeObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<::ConstExampleCluster>* m_rel_Clusters; ///< Relation buffer for read / write
-  std::vector<std::vector<::ConstExampleCluster>*> m_rel_Clusters_tmp; ///< Relation buffer for internal book-keeping
-  std::vector<::ConstExampleReferencingType>* m_rel_Refs; ///< Relation buffer for read / write
-  std::vector<std::vector<::ConstExampleReferencingType>*> m_rel_Refs_tmp; ///< Relation buffer for internal book-keeping
+  std::vector<::ExampleCluster>* m_rel_Clusters; ///< Relation buffer for read / write
+  std::vector<std::vector<::ExampleCluster>*> m_rel_Clusters_tmp; ///< Relation buffer for internal book-keeping
+  std::vector<::ExampleReferencingType>* m_rel_Refs; ///< Relation buffer for read / write
+  std::vector<std::vector<::ExampleReferencingType>*> m_rel_Refs_tmp; ///< Relation buffer for internal book-keeping
 
   // members to handle streaming
   podio::CollRefCollection m_refCollections;

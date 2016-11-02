@@ -143,6 +143,17 @@ void processEvent(podio::EventStore& store, bool verboser) {
     int a = comp.component().data.x + comp.component().data.z;
   }
 
+  bool threwException{false};
+  try {  
+    auto comp = comps[0];
+    auto c = comp.component();
+    c.data.x = 4;
+    comp.component(c);
+  } catch ( ... ) {
+    threwException = true;   
+  }
+  if (!threwException) throw std::runtime_error("Could write object!");
+
   auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& copies = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& cpytest = store.create<ex::ExampleWithARelationCollection>("TestConstCopy");

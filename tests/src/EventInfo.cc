@@ -1,6 +1,5 @@
 // datamodel specific includes
 #include "EventInfo.h"
-#include "EventInfoConst.h"
 #include "EventInfoObj.h"
 #include "EventInfoData.h"
 #include "EventInfoCollection.h"
@@ -42,8 +41,6 @@ EventInfo::~EventInfo(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
-EventInfo::operator ConstEventInfo() const {return ConstEventInfo(m_obj);}
-
   const int& EventInfo::Number() const { return m_obj->data.Number; }
 
 void EventInfo::Number(int value){ m_obj->data.Number = value; }
@@ -63,10 +60,6 @@ const podio::ObjectID EventInfo::getObjectID() const {
     return m_obj->id;
   }
   return podio::ObjectID{-2,-2};
-}
-
-bool EventInfo::operator==(const ConstEventInfo& other) const {
-  return (m_obj==other.m_obj);
 }
 
 

@@ -8,14 +8,12 @@
 //forward declarations
 
 
-#include "ExampleWithStringConst.h"
 #include "ExampleWithStringObj.h"
 
 
 
 class ExampleWithStringCollection;
 class ExampleWithStringCollectionIterator;
-class ConstExampleWithString;
 
 /** @class ExampleWithString
  *  Type with a string
@@ -25,7 +23,6 @@ class ExampleWithString {
 
   friend ExampleWithStringCollection;
   friend ExampleWithStringCollectionIterator;
-  friend ConstExampleWithString;
 
 public:
 
@@ -43,9 +40,6 @@ public:
   ExampleWithString clone() const;
   /// destructor
   ~ExampleWithString();
-
-  /// conversion to const object
-  operator ConstExampleWithString () const;
 
 public:
 
@@ -66,8 +60,6 @@ public:
   bool operator==(const ExampleWithString& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleWithString& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithString& p1,

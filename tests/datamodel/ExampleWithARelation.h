@@ -9,18 +9,15 @@
 //forward declarations
 namespace ex {
 class ExampleWithNamespace;
-class ConstExampleWithNamespace;
 }
 
 
-#include "ExampleWithARelationConst.h"
 #include "ExampleWithARelationObj.h"
 
 namespace ex {
 
 class ExampleWithARelationCollection;
 class ExampleWithARelationCollectionIterator;
-class ConstExampleWithARelation;
 
 /** @class ExampleWithARelation
  *  Type with namespace and namespaced relation
@@ -30,7 +27,6 @@ class ExampleWithARelation {
 
   friend ExampleWithARelationCollection;
   friend ExampleWithARelationCollectionIterator;
-  friend ConstExampleWithARelation;
 
 public:
 
@@ -49,27 +45,24 @@ public:
   /// destructor
   ~ExampleWithARelation();
 
-  /// conversion to const object
-  operator ConstExampleWithARelation () const;
-
 public:
 
   /// Access the  just a number
   const float& number() const;
   /// Access the  a ref in a namespace
-  const ex::ConstExampleWithNamespace ref() const;
+  const ex::ExampleWithNamespace ref() const;
 
   /// Set the  just a number
   void number(float value);
 
   /// Set the  a ref in a namespace
-  void ref(ex::ConstExampleWithNamespace value);
+  void ref(ex::ExampleWithNamespace value);
 
-  void addrefs(ex::ConstExampleWithNamespace);
+  void addrefs(ex::ExampleWithNamespace);
   unsigned int refs_size() const;
-  ex::ConstExampleWithNamespace refs(unsigned int) const;
-  std::vector<ex::ConstExampleWithNamespace>::const_iterator refs_begin() const;
-  std::vector<ex::ConstExampleWithNamespace>::const_iterator refs_end() const;
+  ex::ExampleWithNamespace refs(unsigned int) const;
+  std::vector<ex::ExampleWithNamespace>::const_iterator refs_begin() const;
+  std::vector<ex::ExampleWithNamespace>::const_iterator refs_end() const;
 
 
 
@@ -81,8 +74,6 @@ public:
   bool operator==(const ExampleWithARelation& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleWithARelation& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithARelation& p1,

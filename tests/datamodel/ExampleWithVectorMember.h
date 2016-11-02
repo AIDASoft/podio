@@ -8,14 +8,12 @@
 //forward declarations
 
 
-#include "ExampleWithVectorMemberConst.h"
 #include "ExampleWithVectorMemberObj.h"
 
 
 
 class ExampleWithVectorMemberCollection;
 class ExampleWithVectorMemberCollectionIterator;
-class ConstExampleWithVectorMember;
 
 /** @class ExampleWithVectorMember
  *  Type with a vector member
@@ -25,7 +23,6 @@ class ExampleWithVectorMember {
 
   friend ExampleWithVectorMemberCollection;
   friend ExampleWithVectorMemberCollectionIterator;
-  friend ConstExampleWithVectorMember;
 
 public:
 
@@ -42,9 +39,6 @@ public:
   ExampleWithVectorMember clone() const;
   /// destructor
   ~ExampleWithVectorMember();
-
-  /// conversion to const object
-  operator ConstExampleWithVectorMember () const;
 
 public:
 
@@ -66,8 +60,6 @@ public:
   bool operator==(const ExampleWithVectorMember& other) const {
     return (m_obj==other.m_obj);
   }
-
-  bool operator==(const ConstExampleWithVectorMember& other) const;
 
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ExampleWithVectorMember& p1,
