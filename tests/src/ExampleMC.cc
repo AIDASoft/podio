@@ -44,8 +44,8 @@ ExampleMC::~ExampleMC(){
   const double& ExampleMC::energy() const { return m_obj->data.energy; }
   const int& ExampleMC::PDG() const { return m_obj->data.PDG; }
 
-void ExampleMC::energy(double value){ m_obj->data.energy = value; }
-void ExampleMC::PDG(int value){ m_obj->data.PDG = value; }
+void ExampleMC::energy(double value){ m_obj->checkAccess(); m_obj->data.energy = value; }
+void ExampleMC::PDG(int value){ m_obj->checkAccess(); m_obj->data.PDG = value; }
 
 std::vector<::ExampleMC>::const_iterator ExampleMC::parents_begin() const {
   auto ret_value = m_obj->m_parents->begin();

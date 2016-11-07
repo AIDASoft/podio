@@ -49,7 +49,7 @@ ExampleWithARelation::~ExampleWithARelation(){
     }
     return ex::ExampleWithNamespace(*(m_obj->m_ref));
   }
-void ExampleWithARelation::number(float value){ m_obj->data.number = value; }
+void ExampleWithARelation::number(float value){ m_obj->checkAccess(); m_obj->data.number = value; }
 void ExampleWithARelation::ref(ex::ExampleWithNamespace value) {
   if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
   m_obj->m_ref = new ExampleWithNamespace(value);

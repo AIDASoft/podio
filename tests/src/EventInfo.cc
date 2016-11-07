@@ -43,7 +43,7 @@ EventInfo::~EventInfo(){
 
   const int& EventInfo::Number() const { return m_obj->data.Number; }
 
-void EventInfo::Number(int value){ m_obj->data.Number = value; }
+void EventInfo::Number(int value){ m_obj->checkAccess(); m_obj->data.Number = value; }
 
 
 

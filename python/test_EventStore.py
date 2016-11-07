@@ -37,8 +37,7 @@ class EventStoreTestCase(unittest.TestCase):
         # testing that one can't modify attributes in
         # read-only pods
         self.assertEqual(hits[0].energy(), 23.)
-        hits[0].energy(10)
-        self.assertEqual(hits[0].energy(), 10)  # oops
+        #hits[0].energy(10)
         # self.assertEqual(type(hits[0]), ConstExampleHit) # should be True
 
     def test_one_to_many(self):

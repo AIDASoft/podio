@@ -131,6 +131,7 @@ private:
 
 template<typename... Args>
 ExampleCluster  ExampleClusterCollection::create(Args&&... args){
+  if(m_isReadOnly) throw std::runtime_error("Collection has been set to read-only");
   int size = m_entries.size();
   auto obj = new ExampleClusterObj({size,m_collectionID},{args...});
   m_entries.push_back(obj);

@@ -274,3 +274,18 @@ TEST_CASE("Equality") {
   REQUIRE(cluster == returned_cluster);
   REQUIRE(returned_cluster == cluster);
 }
+
+TEST_CASE("ReadOnly") {
+  bool success = true;
+  auto store = podio::EventStore();
+  auto& coll  = store.create<ExampleHitCollection>("data");
+  auto hit1 = coll.create(0.,0.,0.,0.);
+  coll.setReadOnly();
+  // shouldn't be able to create an object
+  REQUIRE_THROWS( coll.create(0.,0.,0.,0.) );
+  // shouldn't be able to change an object
+  REQUIRE_THROWS( hit1.x(5) );
+  // shouldn't be able to attach an object
+  auto hit2 = ExampleHit();
+  REQUIRE_THROWS( coll.push_back(hit2) );
+}

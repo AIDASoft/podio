@@ -43,7 +43,7 @@ ExampleWithString::~ExampleWithString(){
 
   const std::string& ExampleWithString::theString() const { return m_obj->data.theString; }
 
-void ExampleWithString::theString(std::string value){ m_obj->data.theString = value; }
+void ExampleWithString::theString(std::string value){ m_obj->checkAccess(); m_obj->data.theString = value; }
 
 
 

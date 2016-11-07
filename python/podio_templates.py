@@ -12,7 +12,7 @@ implementations["member_getter"] = "\tconst {type}& {classname}::{fname}() const
 
 declarations["member_builtin_setter"] =  "\t/// Set the {description}\n"
 declarations["member_builtin_setter"] += "\tvoid {fname}({type} value);\n\n"
-implementations["member_builtin_setter"] = "void {classname}::{fname}({type} value){{ m_obj->data.{name} = value; }}\n"
+implementations["member_builtin_setter"] = "void {classname}::{fname}({type} value){{ m_obj->checkAccess(); m_obj->data.{name} = value; }}\n"
 
 # conceptually getting a non-const ref is a setter:
 declarations["member_class_refsetter"] =  "\t/// Get reference to the {description}\n"
