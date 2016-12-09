@@ -6,7 +6,7 @@ set( podio_VERSION_MINOR 4 )
 set( podio_VERSION_PATCH 1 )
 set( podio_VERSION "${podio_VERSION_MAJOR}.${podio_VERSION_MINOR}" )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 if(APPLE)
 	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
