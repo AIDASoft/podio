@@ -31,6 +31,14 @@ const ExampleCluster ExampleClusterCollection::at(unsigned int index) const {
   return ExampleCluster(m_entries.at(index));
 }
 
+ExampleCluster ExampleClusterCollection::operator[](unsigned int index) {
+  return ExampleCluster(m_entries[index]);
+}
+
+ExampleCluster ExampleClusterCollection::at(unsigned int index) {
+  return ExampleCluster(m_entries.at(index));
+}
+
 int  ExampleClusterCollection::size() const {
   return m_entries.size();
 }
@@ -113,25 +121,33 @@ void ExampleClusterCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleClusterCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=m_refCollections[0]->size();i!=size;++i) {
     auto id = (*m_refCollections[0])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ExampleHitCollection* tmp_coll = static_cast<ExampleHitCollection*>(coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_Hits->emplace_back(tmp);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ExampleHitCollection* tmp_coll = static_cast<ExampleHitCollection*>(coll);
+      auto tmp = (*tmp_coll)[id.index];
+      m_rel_Hits->emplace_back(tmp);
+    } else {
+      m_rel_Hits->emplace_back(nullptr);
+    }
   }
   for(unsigned int i=0, size=m_refCollections[1]->size();i!=size;++i) {
     auto id = (*m_refCollections[1])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_Clusters->emplace_back(tmp);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
+      auto tmp = (*tmp_coll)[id.index];
+      m_rel_Clusters->emplace_back(tmp);
+    } else {
+      m_rel_Clusters->emplace_back(nullptr);
+    }
   }
 
 

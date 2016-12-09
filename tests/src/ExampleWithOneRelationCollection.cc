@@ -28,6 +28,14 @@ const ExampleWithOneRelation ExampleWithOneRelationCollection::at(unsigned int i
   return ExampleWithOneRelation(m_entries.at(index));
 }
 
+ExampleWithOneRelation ExampleWithOneRelationCollection::operator[](unsigned int index) {
+  return ExampleWithOneRelation(m_entries[index]);
+}
+
+ExampleWithOneRelation ExampleWithOneRelationCollection::at(unsigned int index) {
+  return ExampleWithOneRelation(m_entries.at(index));
+}
+
 int  ExampleWithOneRelationCollection::size() const {
   return m_entries.size();
 }
@@ -77,7 +85,7 @@ void ExampleWithOneRelationCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleWithOneRelationCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

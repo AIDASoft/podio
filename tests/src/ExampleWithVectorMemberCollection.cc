@@ -24,6 +24,14 @@ const ExampleWithVectorMember ExampleWithVectorMemberCollection::at(unsigned int
   return ExampleWithVectorMember(m_entries.at(index));
 }
 
+ExampleWithVectorMember ExampleWithVectorMemberCollection::operator[](unsigned int index) {
+  return ExampleWithVectorMember(m_entries[index]);
+}
+
+ExampleWithVectorMember ExampleWithVectorMemberCollection::at(unsigned int index) {
+  return ExampleWithVectorMember(m_entries.at(index));
+}
+
 int  ExampleWithVectorMemberCollection::size() const {
   return m_entries.size();
 }
@@ -63,7 +71,7 @@ void ExampleWithVectorMemberCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleWithVectorMemberCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
