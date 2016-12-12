@@ -31,6 +31,14 @@ const ExampleWithARelation ExampleWithARelationCollection::at(unsigned int index
   return ExampleWithARelation(m_entries.at(index));
 }
 
+ExampleWithARelation ExampleWithARelationCollection::operator[](unsigned int index) {
+  return ExampleWithARelation(m_entries[index]);
+}
+
+ExampleWithARelation ExampleWithARelationCollection::at(unsigned int index) {
+  return ExampleWithARelation(m_entries.at(index));
+}
+
 int  ExampleWithARelationCollection::size() const {
   return m_entries.size();
 }
@@ -101,17 +109,21 @@ void ExampleWithARelationCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleWithARelationCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=m_refCollections[0]->size();i!=size;++i) {
     auto id = (*m_refCollections[0])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ex::ExampleWithNamespaceCollection* tmp_coll = static_cast<ex::ExampleWithNamespaceCollection*>(coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_refs->emplace_back(tmp);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ex::ExampleWithNamespaceCollection* tmp_coll = static_cast<ex::ExampleWithNamespaceCollection*>(coll);
+      auto tmp = (*tmp_coll)[id.index];
+      m_rel_refs->emplace_back(tmp);
+    } else {
+      m_rel_refs->emplace_back(nullptr);
+    }
   }
 
   for(unsigned int i = 0, size = m_entries.size(); i != size; ++i) {

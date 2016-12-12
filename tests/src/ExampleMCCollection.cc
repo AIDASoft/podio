@@ -31,6 +31,14 @@ const ExampleMC ExampleMCCollection::at(unsigned int index) const {
   return ExampleMC(m_entries.at(index));
 }
 
+ExampleMC ExampleMCCollection::operator[](unsigned int index) {
+  return ExampleMC(m_entries[index]);
+}
+
+ExampleMC ExampleMCCollection::at(unsigned int index) {
+  return ExampleMC(m_entries.at(index));
+}
+
 int  ExampleMCCollection::size() const {
   return m_entries.size();
 }
@@ -113,25 +121,33 @@ void ExampleMCCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleMCCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=m_refCollections[0]->size();i!=size;++i) {
     auto id = (*m_refCollections[0])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ExampleMCCollection* tmp_coll = static_cast<ExampleMCCollection*>(coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_parents->emplace_back(tmp);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ExampleMCCollection* tmp_coll = static_cast<ExampleMCCollection*>(coll);
+      auto tmp = (*tmp_coll)[id.index];
+      m_rel_parents->emplace_back(tmp);
+    } else {
+      m_rel_parents->emplace_back(nullptr);
+    }
   }
   for(unsigned int i=0, size=m_refCollections[1]->size();i!=size;++i) {
     auto id = (*m_refCollections[1])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ExampleMCCollection* tmp_coll = static_cast<ExampleMCCollection*>(coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_daughters->emplace_back(tmp);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ExampleMCCollection* tmp_coll = static_cast<ExampleMCCollection*>(coll);
+      auto tmp = (*tmp_coll)[id.index];
+      m_rel_daughters->emplace_back(tmp);
+    } else {
+      m_rel_daughters->emplace_back(nullptr);
+    }
   }
 
 
