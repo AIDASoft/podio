@@ -20,12 +20,10 @@ list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree)
 include_directories(${ROOT_INCLUDE_DIR})
-
+include(${ROOT_USE_FILE})
 
 add_definitions(-Wno-unused-variable -Wno-unused-parameter -pthread)
 #add_definitions(-Wpadded)
-#--temporary fix of inconsistency in ROOT CMake macros
-set(ROOT_genreflex_cmd ${ROOT_genreflex_CMD})
 
 add_definitions(-Wno-unused-variable -Wno-unused-parameter)
 
