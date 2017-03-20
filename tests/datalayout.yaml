@@ -10,6 +10,7 @@ components :
     x : int
     y : int
     z : int
+    p: std::array<int, 4>
     # can also add c'tors:
     ExtraCode :
       declaration: "
@@ -17,7 +18,6 @@ components :
       SimpleStruct( const int* v) : x(v[0]),y(v[1]),z(v[2]) {}
       "
 
-    
   NotSoSimpleStruct:
     data : SimpleStruct
 
@@ -39,7 +39,7 @@ datatypes :
        const_declaration: "int getNumber() const; "
        const_implementation: "int {name}::getNumber() const { return Number(); } "
        declaration: "void setNumber(int n) { Number( n ) ; } "
-       
+
   ExampleHit :
     Description : "Example Hit"
     Author : "B. Hegner"
@@ -67,7 +67,7 @@ datatypes :
     OneToManyRelations:
      - ExampleHit Hits // hits contained in the cluster
      - ExampleCluster Clusters // sub clusters used to create this cluster
-     
+
   ExampleReferencingType :
     Description : "Referencing Type"
     Author : "B. Hegner"
@@ -109,7 +109,7 @@ datatypes :
 #    Description : "Type with an array"
 #    Author : "Benedikt Hegner"
 #    Members:
-#      - std::array<int,33> array // the array  
+#      - std::array<int,33> array // the array
 
   ExampleWithString :
     Description : "Type with a string"
@@ -133,3 +133,12 @@ datatypes :
     OneToManyRelations :
      - ex::ExampleWithNamespace refs // multiple refs in a namespace
 
+  ExampleWithArray:
+    Description: "Datatype with an array member"
+    Author: "Joschka Lingemann"
+    Members:
+      - NotSoSimpleStruct arrayStruct // component that contains an array
+      - std::array<int,4> myArray // array-member without space to test regex
+      - std::array<int, 4> anotherArray2 // array-member with space to test regex
+      - std::array<int, 4> snail_case_array // snail case to test regex
+      - std::array<int, 4> snail_case_Array3 // mixing things up for regex

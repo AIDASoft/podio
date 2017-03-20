@@ -19,10 +19,11 @@
 #include "ExampleWithARelationCollection.h"
 #include "ExampleWithStringCollection.h"
 #include "ExampleWithNamespace.h"
+#include "ExampleWithArrayCollection.h"
 
 int glob = 0;
 
-void processEvent(podio::EventStore& store, bool verboser) {
+void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
   auto& failing = store.get<ExampleClusterCollection>("notthere");
   if(failing.isValid() == true) {
@@ -84,7 +85,7 @@ void processEvent(podio::EventStore& store, bool verboser) {
     if( ! ( d3 == mcps[5] ) )  throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 ");
 
 
-    // particle 3 has particles 6,7,8 and 9 as daughters: 
+    // particle 3 has particles 6,7,8 and 9 as daughters:
     p = mcps[3] ;
 
     d0 = p.daughters(0) ;
@@ -143,6 +144,19 @@ void processEvent(podio::EventStore& store, bool verboser) {
     int a = comp.component().data.x + comp.component().data.z;
   }
 
+  auto& arrays = store.get<ExampleWithArrayCollection>("arrays");
+  if (arrays.isValid() && arrays.size() != 0) {
+    auto array = arrays[0];
+    if (array.myArray(1) != eventNum) {
+      throw std::runtime_error("Array not properly set.");
+    }
+    if (array.arrayStruct().data.p.at(2) != 2*eventNum) {
+      throw std::runtime_error("Array not properly set.");
+    }
+  } else {
+    throw std::runtime_error("Collection 'arrays' should be present");
+  }
+
   auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& copies = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& cpytest = store.create<ex::ExampleWithARelationCollection>("TestConstCopy");
@@ -193,7 +207,7 @@ int main(){
   for(unsigned i=0; i<nEvents; ++i) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
-    processEvent(store, true);
+    processEvent(store, true, i);
     store.clear();
     reader.endOfEvent();
   }

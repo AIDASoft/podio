@@ -1,18 +1,6 @@
 import yaml
 import copy
-
-
-def parseMember(string):
-    """
-    extract klass, name, and comment from
-     - int name // comment
-    """
-    klass, name = string.split()[:2]
-    comment = string.split("//")[1]
-    return {"name": name,
-            "type": klass,
-            "description": comment
-            }
+import re
 
 
 class ClassDefinitionValidator(object):
@@ -33,6 +21,12 @@ class ClassDefinitionValidator(object):
       "ExtraCode",
       "ConstExtraCode"
     )
+
+    # regex to get std::array definition: one group for type, one for length,
+    # one for comment (this one is for members of datatypes)
+    full_array_re = re.compile(' *std::array *<([a-z]+) *, *([0-9]+)> *(\S+) *\/\/ *(.+)')
+    array_re = re.compile(' *std::array *<([a-z]+) *, *([0-9]+)> *')
+
 
     buildin_types = ["int", "long", "float", "double",
                      "unsigned int", "unsigned", "unsigned long",
@@ -67,7 +61,7 @@ class ClassDefinitionValidator(object):
 
     def check_members(self, name, members):
         for item in members:
-            member = parseMember(item)
+            member = self.parseMember(item)
             theType = member["type"]
             return  # TODO
             if theType not in self.buildin_types and \
@@ -75,6 +69,32 @@ class ClassDefinitionValidator(object):
                theType not in self.components.keys():
                 raise Exception("%s defines a member of not allowed type %s"
                                 % (name, theType))
+
+    def parseMember(self, string):
+        """
+        extract klass, name, and comment from
+        - int name // comment
+        """
+        klass, name, comment = "", "", ""
+        array_match = re.match(self.full_array_re, string)
+        if not array_match is None:
+            name, comment = array_match.group(3), array_match.group(4)
+            typ = array_match.group(1)
+            if not typ in self.buildin_types:
+                raise Exception("%s defines an array of disallowed type %s"
+                                % (string, typ))
+            klass = "std::array<{typ}, {length}>".format(
+                typ=typ, length=array_match.group(2)
+            )
+        else:
+            klass, name = string.split()[:2]
+            comment = string.split("//")[1]
+        return {"name": name,
+                "type": klass,
+                "description": comment
+                }
+
+
 
     def check_component(self, name, definition):
         """
@@ -85,9 +105,16 @@ class ClassDefinitionValidator(object):
             klass = definition[mem]
             if not (mem == "ExtraCode" or klass in self.buildin_types \
                     or klass in self.components.keys()):
-                raise Exception("'%s' defines a member of a type '%s'"
-                                % (name, klass) +
-                                "which is not allowed in a component!")
+                array_match = re.match(self.array_re, klass)
+                builtin_array = False
+                if not array_match is None:
+                    typ = array_match.group(1)
+                    if typ in self.buildin_types or typ in self.components.keys():
+                        builtin_array = True
+                if not builtin_array:
+                    raise Exception("'%s' defines a member of a type '%s'"
+                                    % (name, klass) +
+                                    "which is not allowed in a component!")
 
     def check_components(self, components):
         for klassname, value in components.iteritems():
@@ -129,7 +156,7 @@ class PodioConfigReader(object):
                     definitions = []
                     if category in value:
                         for definition in value[category]:
-                            definitions.append(parseMember(definition))
+                            definitions.append(validator.parseMember(definition))
                         datatype[category] = definitions
                     else:
                         datatype[category] = []

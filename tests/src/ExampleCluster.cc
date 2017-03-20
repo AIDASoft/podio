@@ -46,7 +46,7 @@ ExampleCluster::operator ConstExampleCluster() const {return ConstExampleCluster
 
   const double& ExampleCluster::energy() const { return m_obj->data.energy; }
 
-void ExampleCluster::energy(double value){ m_obj->data.energy = value; }
+void ExampleCluster::energy(double value) { m_obj->data.energy = value; }
 
 std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_begin() const {
   auto ret_value = m_obj->m_Hits->begin();

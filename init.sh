@@ -11,7 +11,7 @@ if [[ "$unamestr" == 'Linux' ]]; then
     if [[ -d /cvmfs/sft.cern.ch/lcg ]]; then
 	#should check domain to make sure we're at CERN
 	#or is this software available somewhere in Lyon?
-    source /cvmfs/sft.cern.ch/lcg/views/LCG_87/x86_64-slc6-gcc49-opt/setup.sh
+    source /cvmfs/sft.cern.ch/lcg/views/LCG_88/x86_64-slc6-gcc49-opt/setup.sh
 	echo cmake and root taken from /cvmfs/sft.cern.ch/lcg
     fi
     export LD_LIBRARY_PATH=$PODIO/tests:$PODIO/lib:$PODIO/tests:$LD_LIBRARY_PATH
