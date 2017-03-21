@@ -2,30 +2,28 @@ cmake_minimum_required(VERSION 2.8)
 
 project(podio)
 set( podio_VERSION_MAJOR 0 )
-set( podio_VERSION_MINOR 1 )
-set( podio_VERSION_PATCH 0 )
+set( podio_VERSION_MINOR 4 )
+set( podio_VERSION_PATCH 1 )
 set( podio_VERSION "${podio_VERSION_MAJOR}.${podio_VERSION_MINOR}" )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 if(APPLE)
 	set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif(APPLE)
 
 #--- Declare options -----------------------------------------------------------
-option(podio_documentation "Whether or not to create doxygen doc target.")
+option(CREATE_DOC "Whether or not to create doxygen doc target.")
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree)
 include_directories(${ROOT_INCLUDE_DIR})
-
+include(${ROOT_USE_FILE})
 
 add_definitions(-Wno-unused-variable -Wno-unused-parameter -pthread)
 #add_definitions(-Wpadded)
-#--temporary fix of inconsistency in ROOT CMake macros
-set(ROOT_genreflex_cmd ${ROOT_genreflex_CMD})
 
 add_definitions(-Wno-unused-variable -Wno-unused-parameter)
 

@@ -1,5 +1,6 @@
 #ifndef SimpleStruct_H
 #define SimpleStruct_H
+#include <array>
 
 
 #include <iostream>
@@ -7,6 +8,7 @@
 
 class SimpleStruct {
 public:
+ ::std::array<int, 4> p;
   int x;
   int y;
   int z;

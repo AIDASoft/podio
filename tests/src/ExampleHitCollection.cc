@@ -24,6 +24,14 @@ const ExampleHit ExampleHitCollection::at(unsigned int index) const {
   return ExampleHit(m_entries.at(index));
 }
 
+ExampleHit ExampleHitCollection::operator[](unsigned int index) {
+  return ExampleHit(m_entries[index]);
+}
+
+ExampleHit ExampleHitCollection::at(unsigned int index) {
+  return ExampleHit(m_entries.at(index));
+}
+
 int  ExampleHitCollection::size() const {
   return m_entries.size();
 }
@@ -63,7 +71,7 @@ void ExampleHitCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleHitCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
