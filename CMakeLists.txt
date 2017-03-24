@@ -18,7 +18,7 @@ option(CREATE_DOC "Whether or not to create doxygen doc target.")
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+find_package(ROOT 6.08.06 REQUIRED COMPONENTS RIO Tree)
 include_directories(${ROOT_INCLUDE_DIR})
 include(${ROOT_USE_FILE})
 
