@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -55,6 +57,11 @@ public:
 //  ExampleWithArrayCollection(const ExampleWithArrayCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ExampleWithArrayCollection(ExampleWithArrayVector* data, int collectionID);
   ~ExampleWithArrayCollection();
+
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleWithArrayCollection* operator->() { return (ExampleWithArrayCollection*) this ; }
+
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -133,6 +140,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleWithArrayDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleWithArrayCollection& v);
+
 
 template<typename... Args>
 ExampleWithArray  ExampleWithArrayCollection::create(Args&&... args){

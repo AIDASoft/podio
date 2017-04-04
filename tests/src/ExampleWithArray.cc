@@ -88,6 +88,13 @@ bool ExampleWithArray::operator==(const ConstExampleWithArray& other) const {
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithArray& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " arrayStruct : " << value.arrayStruct() << std::endl ;
+  o << " data : " << value.data() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleWithArray& p1, const ExampleWithArray& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

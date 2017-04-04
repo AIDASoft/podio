@@ -277,13 +277,12 @@ class ClassGenerator(object):
           raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" % (name, classname, all_members[name]))
         all_members[name] = classname
 
-        ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) ) 
-
         getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname, description=desc)
         getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
         if klass in self.buildin_types:
           setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
+          ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) ) 
         elif klass.startswith("std::array"):
           setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
@@ -294,6 +293,7 @@ class ClassGenerator(object):
           getter_implementations += implementations["array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname)
           ConstGetter_implementations += implementations["const_array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname, description=desc)
         else:
+          ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) )
           setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
           setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
           setter_declarations += declarations["member_class_setter"].format(type=klass, name=name, fname=sname, description=desc)
@@ -568,7 +568,8 @@ class ClassGenerator(object):
 
         if( self.getSyntax ):
           name  = "get" + name[:1].upper() + name[1:]
-        ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) ) 
+        if not t.startswith("std::array"):
+          ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) ) 
 
       ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string ) 
 
@@ -780,7 +781,8 @@ class ClassGenerator(object):
   #    for name, klass in components.iteritems():
         if( name != "ExtraCode"):
 
-          ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  ) 
+          if not klass.startswith("std::array"):
+            ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  ) 
 
           klassname = klass
           mnamespace = ""
