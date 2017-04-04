@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -55,6 +57,11 @@ public:
 //  EventInfoCollection(const EventInfoCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  EventInfoCollection(EventInfoVector* data, int collectionID);
   ~EventInfoCollection();
+
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  EventInfoCollection* operator->() { return (EventInfoCollection*) this ; }
+
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -125,6 +132,9 @@ private:
   podio::CollRefCollection m_refCollections;
   EventInfoDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const EventInfoCollection& v);
+
 
 template<typename... Args>
 EventInfo  EventInfoCollection::create(Args&&... args){

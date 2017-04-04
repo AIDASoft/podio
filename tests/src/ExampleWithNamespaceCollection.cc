@@ -113,4 +113,15 @@ const ExampleWithNamespaceCollectionIterator& ExampleWithNamespaceCollectionIter
   return *this;
 }
 
+std::ostream& operator<<( std::ostream& o,const ExampleWithNamespaceCollection& v){
+  std::ios::fmtflags old_flags = o.flags() ; 
+  o << "id:          data [y,x,]:                " << std::endl ;
+   for(int i = 0; i < v.size(); i++){
+     o << std::scientific << std::showpos  << std::setw(12)  << v[i].id() << " "  << std::setw(12) << v[i].data() << " "  << std::endl;
+  o.flags(old_flags) ; 
+}
+  return o ;
+}
+
+
 } // namespace ex

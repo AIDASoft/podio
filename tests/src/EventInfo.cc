@@ -69,6 +69,12 @@ bool EventInfo::operator==(const ConstEventInfo& other) const {
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstEventInfo& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " Number : " << value.Number() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const EventInfo& p1, const EventInfo& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

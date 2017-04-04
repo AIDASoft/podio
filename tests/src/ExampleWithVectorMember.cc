@@ -50,9 +50,6 @@ std::vector<int>::const_iterator ExampleWithVectorMember::count_begin() const {
 
 std::vector<int>::const_iterator ExampleWithVectorMember::count_end() const {
   auto ret_value = m_obj->m_count->begin();
-//fg: this code fails if m_obj->data.count==0
-//  std::advance(ret_value, m_obj->data.count_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.count_end);
   return ret_value;
 }
@@ -90,6 +87,15 @@ const podio::ObjectID ExampleWithVectorMember::getObjectID() const {
 
 bool ExampleWithVectorMember::operator==(const ConstExampleWithVectorMember& other) const {
   return (m_obj==other.m_obj);
+}
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithVectorMember& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " count : " ;
+  for(unsigned i=0,N=value.count_size(); i<N ; ++i)
+    o << value.count(i) << " " ; 
+  o << std::endl ;
+  return o ;
 }
 
 

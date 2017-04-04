@@ -208,12 +208,19 @@ class ClassGenerator(object):
       constructor_signature = ""
       constructor_body = ""
       ConstGetter_implementations = ""
+      ostream_declaration = ""
+      ostream_implementation = ""
+
 
       # check whether all member types are known
       # and prepare include directives
       datatype = self.process_datatype(classname, definition, False)
 
       datatype["includes"].append('#include "%s.h"' % (rawclassname+"Data"))
+
+      ostream_declaration    = ("std::ostream& operator<<( std::ostream& o,const Const%s& value );\n" % rawclassname )
+      ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const Const%s& value ){\n" % rawclassname )
+      ostream_implementation += '  o << " id : " << value.id() << std::endl ;\n'
 
       # check on-to-one relations and prepare include directives
       oneToOneRelations = definition["OneToOneRelations"]
@@ -269,6 +276,9 @@ class ClassGenerator(object):
         if name in all_members.keys():
           raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" % (name, classname, all_members[name]))
         all_members[name] = classname
+
+        ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) ) 
+
         getter_declarations += declarations["member_getter"].format(type=klass, name=name,fname=gname, description=desc)
         getter_implementations += implementations["member_getter"].format(type=klass, classname=rawclassname, name=name, fname=gname)
         if klass in self.buildin_types:
@@ -301,6 +311,8 @@ class ClassGenerator(object):
                 comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
                 comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
 
+              ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (comp_member_name ,  comp_gname) ) 
+
               getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
               getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
               if comp_member_class in self.buildin_types:
@@ -331,11 +343,20 @@ class ClassGenerator(object):
           klassname = klass
           mnamespace, klassname, _, __ = self.demangle_classname(klass)
 
-          setter_declarations += declarations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
-          setter_implementations += implementations["one_rel_setter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          getter_declarations += declarations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, description=desc)
-          getter_implementations += implementations["one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname)
-          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name, namespace=mnamespace, type=klassname, classname=rawclassname, description=desc)
+          gname = name
+          sname = name
+          if self.getSyntax:
+              gname = "get" + name[:1].upper() + name[1:]
+              sname = "set" + name[:1].upper() + name[1:]
+          ostream_implementation += ( '  o << " %s : " << value.%s().id() << std::endl ;\n' % (name, gname) ) 
+
+          setter_declarations += declarations["one_rel_setter"].format(name=name,fname=sname, namespace=mnamespace, type=klassname, description=desc)
+          setter_implementations += implementations["one_rel_setter"].format(name=name,fname=sname, namespace=mnamespace, type=klassname, classname=rawclassname)
+
+
+          getter_declarations += declarations["one_rel_getter"].format(name=name,fname=gname, namespace=mnamespace, type=klassname, description=desc)
+          getter_implementations += implementations["one_rel_getter"].format(name=name,fname=gname, namespace=mnamespace, type=klassname, classname=rawclassname)
+          ConstGetter_implementations += implementations["const_one_rel_getter"].format(name=name,fname=gname, namespace=mnamespace, type=klassname, classname=rawclassname, description=desc)
 
 
       # handle vector members
@@ -352,6 +373,7 @@ class ClassGenerator(object):
             datatype["includes"].append('#include "%s.h"' %klassname)
           else:
             datatype["includes"].append('#include "%s.h"' %klass)
+        
 
       # handle constructor from values
       constructor_signature = constructor_signature.rstrip(",")
@@ -395,6 +417,12 @@ class ClassGenerator(object):
           get_relation = "get" + relationName[:1].upper() + relationName[1:]
           add_relation = "add" + relationName[:1].upper() + relationName[1:len(relationName)-1]  # drop the 's' at the end !??
 
+        ostream_implementation += ( '  o << " %s : " ;\n' % relationName  ) 
+        ostream_implementation += ( '  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName ) 
+        ostream_implementation += ( '    o << value.%s(i) << " " ; \n'  % get_relation  ) 
+        ostream_implementation +=   '  o << std::endl ;\n' 
+
+
         substitutions = {"relation" : relationName,
                         "get_relation" : get_relation,
                         "add_relation" : add_relation,
@@ -432,6 +460,10 @@ class ClassGenerator(object):
             datatype["includes"].append( extra["includes"] )
             print " ***** adding includes : " ,  extra["includes"] , "to" ,  datatype["includes"]
 
+
+      ostream_implementation += "  return o ;\n}\n"
+
+
       substitutions = {"includes" : "\n".join(datatype["includes"]),
                       "includes_cc" : includes_cc,
                       "forward_declarations" : forward_declarations,
@@ -452,6 +484,8 @@ class ClassGenerator(object):
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
                       "namespace_close" : namespace_close, 
+                       "ostream_declaration" : ostream_declaration,
+                      "ostream_implementation" : ostream_implementation
                      }
       self.fill_templates("Object",substitutions)
       self.created_classes.append(classname)
@@ -469,6 +503,7 @@ class ClassGenerator(object):
         self.created_classes.append("%s::Const%s" %(namespace, rawclassname))
       else:
         self.created_classes.append("Const%s" %classname)
+
 
     def create_collection(self, classname, definition):
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
@@ -489,6 +524,55 @@ class ClassGenerator(object):
       push_back_relations = ""
       prepareafterread_refmembers = ""
       prepareforwriting_refmembers = ""
+
+      #------------------ create ostream operator --------------------------
+      # create colum based output fro data members using scientific format 
+      #
+      numColWidth = 12 
+      ostream_header_string = "id:"
+      while len( ostream_header_string ) < numColWidth+1:
+        ostream_header_string += " " 
+     
+
+      ostream_declaration    = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v);\n" % rawclassname )
+      ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v){\n" % rawclassname )
+      ostream_implementation += '  std::ios::fmtflags old_flags = o.flags() ; \n' 
+      ostream_implementation += '  o << "{header_string}" << std::endl ;\n ' 
+      ostream_implementation += '  for(int i = 0; i < v.size(); i++){\n'
+      ostream_implementation += '     o << std::scientific << std::showpos ' 
+      ostream_implementation += ( ' << std::setw(%i) ' %  numColWidth )  
+      ostream_implementation += ' << v[i].id() << " " '
+      for m in members:
+        name = m["name"]
+        t = m["type"]
+        colW = numColWidth+2
+        comps = self.reader.components
+        compMemStr = "" 
+        if t in comps.keys():
+          nCompMem = 0
+          compMemStr += ' ['
+          #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
+          for cm in comps[t]["Members"]:
+            if cm != 'ExtraCode':
+              nCompMem += 1
+              compMemStr += ('%s,' % cm )
+          compMemStr += ']'
+          colW *=  nCompMem    
+          #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
+        colName = name[:colW-2]
+        colName += compMemStr
+        colName +=":"
+        while len( colName ) < colW:
+          colName += " " 
+        ostream_header_string  += colName    
+
+        if( self.getSyntax ):
+          name  = "get" + name[:1].upper() + name[1:]
+        ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) ) 
+
+      ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string ) 
+
+      #----------------------------------------------------------------------
 
       refmembers = definition["OneToOneRelations"]
       refvectors = definition["OneToManyRelations"]
@@ -560,6 +644,10 @@ class ClassGenerator(object):
           prepareforwriting_refmembers += implementations["prep_writing_relations"].format(name=name, i=(counter+nOfRefVectors))
           # relation handling in ::settingReferences
           prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
+
+      ostream_implementation += '  << std::endl;\n  o.flags(old_flags) ; \n' 
+      ostream_implementation += "}\n  return o ;\n}\n"
+
       substitutions = { "name" : rawclassname,
                         "constructorbody" : constructorbody,
                         "destructorbody"  : destructorbody,
@@ -579,7 +667,9 @@ class ClassGenerator(object):
                         "vectorized_access_declaration" : vectorized_access_decl,
                         "vectorized_access_implementation" : vectorized_access_impl,
                         "namespace_open" : namespace_open,
-                        "namespace_close" : namespace_close
+                        "namespace_close" : namespace_close,
+                        "ostream_declaration" : ostream_declaration,
+                        "ostream_implementation" : ostream_implementation
       }
       self.fill_templates("Collection",substitutions)
       self.created_classes.append("%sCollection"%classname)
@@ -681,36 +771,22 @@ class ClassGenerator(object):
       self.component_members[classname] = []
       #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
       keys = sorted( components.keys() )
+
+      ostreamComponents +=  "inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
+
       for name in keys:
+#        print  " comp: " , classname , " name : " , name 
         klass = components[ name ]
   #    for name, klass in components.iteritems():
         if( name != "ExtraCode"):
+
+          ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  ) 
+
           klassname = klass
           mnamespace = ""
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
           if mnamespace == "":
-              if((classname == "DoubleThree" or classname == "FloatThree") and not classname in printed):
-                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
-                    ostreamComponents +=  "       for(unsigned int i = 0; i < 3; i++){ \n"
-                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
-                    ostreamComponents +=  "       return o ; \n"
-                    ostreamComponents +=  "   } \n \n"
-                    printed += [classname]
-              elif(classname == "IntTwo" and not classname in printed):
-                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
-                    ostreamComponents +=  "       for(unsigned int i = 0; i < 2; i++){ \n"
-                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
-                    ostreamComponents +=  "       return o ; \n"
-                    ostreamComponents +=  "   } \n \n"
-                    printed += [classname]
-              elif(classname == "StringVec" and not classname in printed):
-                    ostreamComponents +=  "   inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
-                    ostreamComponents +=  "       for(unsigned int i = 0; i < value.size(); i++){"
-                    ostreamComponents +=  '          o << value[i] << " " ; } \n'
-                    ostreamComponents +=  "       return o ; \n"
-                    ostreamComponents +=  "   } \n \n"
-                    printed += [classname]
               members+= "  %s %s;\n" %(klassname, name)
               self.component_members[classname].append([klassname, name])
           else:
@@ -725,6 +801,8 @@ class ClassGenerator(object):
           if klass.has_key("declaration"):
             extracode_declarations = klass["declaration"]
 
+      ostreamComponents +=  "  return o ;\n"
+      ostreamComponents +=  "}\n"
       # make includes unique and put it in a string
       includes = ''.join(list(set(includes)))
       substitutions = { "ostreamComponents" : ostreamComponents,

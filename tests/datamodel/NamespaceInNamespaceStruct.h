@@ -13,6 +13,10 @@ public:
 
 };
 
+inline std::ostream& operator<<( std::ostream& o,const ex2::NamespaceInNamespaceStruct& value ){ 
+  o << value.data << " " ;
+  return o ;
+}
 
 
 } // namespace ex2

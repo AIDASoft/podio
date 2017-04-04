@@ -73,6 +73,14 @@ bool ExampleWithNamespace::operator==(const ConstExampleWithNamespace& other) co
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithNamespace& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " data : " << value.data() << std::endl ;
+  o << " x : " << value.x() << std::endl ;
+  o << " y : " << value.y() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleWithNamespace& p1, const ExampleWithNamespace& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

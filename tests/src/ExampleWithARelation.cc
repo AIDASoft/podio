@@ -66,9 +66,6 @@ std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation:
 
 std::vector<ex::ConstExampleWithNamespace>::const_iterator ExampleWithARelation::refs_end() const {
   auto ret_value = m_obj->m_refs->begin();
-//fg: this code fails if m_obj->data.refs==0
-//  std::advance(ret_value, m_obj->data.refs_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.refs_end);
   return ret_value;
 }
@@ -106,6 +103,17 @@ const podio::ObjectID ExampleWithARelation::getObjectID() const {
 
 bool ExampleWithARelation::operator==(const ConstExampleWithARelation& other) const {
   return (m_obj==other.m_obj);
+}
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithARelation& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " number : " << value.number() << std::endl ;
+  o << " ref : " << value.ref().id() << std::endl ;
+  o << " refs : " ;
+  for(unsigned i=0,N=value.refs_size(); i<N ; ++i)
+    o << value.refs(i) << " " ; 
+  o << std::endl ;
+  return o ;
 }
 
 

@@ -58,9 +58,6 @@ std::vector<::ConstExampleMC>::const_iterator ExampleMC::parents_begin() const {
 
 std::vector<::ConstExampleMC>::const_iterator ExampleMC::parents_end() const {
   auto ret_value = m_obj->m_parents->begin();
-//fg: this code fails if m_obj->data.parents==0
-//  std::advance(ret_value, m_obj->data.parents_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.parents_end);
   return ret_value;
 }
@@ -88,9 +85,6 @@ std::vector<::ConstExampleMC>::const_iterator ExampleMC::daughters_begin() const
 
 std::vector<::ConstExampleMC>::const_iterator ExampleMC::daughters_end() const {
   auto ret_value = m_obj->m_daughters->begin();
-//fg: this code fails if m_obj->data.daughters==0
-//  std::advance(ret_value, m_obj->data.daughters_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.daughters_end);
   return ret_value;
 }
@@ -128,6 +122,21 @@ const podio::ObjectID ExampleMC::getObjectID() const {
 
 bool ExampleMC::operator==(const ConstExampleMC& other) const {
   return (m_obj==other.m_obj);
+}
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleMC& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " energy : " << value.energy() << std::endl ;
+  o << " PDG : " << value.PDG() << std::endl ;
+  o << " parents : " ;
+  for(unsigned i=0,N=value.parents_size(); i<N ; ++i)
+    o << value.parents(i) << " " ; 
+  o << std::endl ;
+  o << " daughters : " ;
+  for(unsigned i=0,N=value.daughters_size(); i<N ; ++i)
+    o << value.daughters(i) << " " ; 
+  o << std::endl ;
+  return o ;
 }
 
 

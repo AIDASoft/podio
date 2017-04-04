@@ -66,21 +66,21 @@ implementations["const_pod_member_getter"] = "\tconst {type}& Const{classname}::
 # OneToOneRelations
 #-----------------------------------
 declarations["one_rel_setter"] =  "\t/// Set the {description}\n"
-declarations["one_rel_setter"] += "\tvoid {name}({namespace}::Const{type} value);\n"
-implementations["one_rel_setter"]  = "void {classname}::{name}({namespace}::Const{type} value) {{\n"
+declarations["one_rel_setter"] += "\tvoid {fname}({namespace}::Const{type} value);\n"
+implementations["one_rel_setter"]  = "void {classname}::{fname}({namespace}::Const{type} value) {{\n"
 implementations["one_rel_setter"] += "\tif (m_obj->m_{name} != nullptr) delete m_obj->m_{name};\n"
 implementations["one_rel_setter"] += "\tm_obj->m_{name} = new Const{type}(value);\n}}\n"
 
 declarations["one_rel_getter"] =  "\t/// Access the {description}\n"
-declarations["one_rel_getter"] += "\tconst {namespace}::Const{type} {name}() const;\n"
-implementations["one_rel_getter"] = "\tconst {namespace}::Const{type} {classname}::{name}() const {{\n"
+declarations["one_rel_getter"] += "\tconst {namespace}::Const{type} {fname}() const;\n"
+implementations["one_rel_getter"] = "\tconst {namespace}::Const{type} {classname}::{fname}() const {{\n"
 implementations["one_rel_getter"] += "\t\tif (m_obj->m_{name} == nullptr) {{\n"
 implementations["one_rel_getter"] += "\t\t\treturn {namespace}::Const{type}(nullptr);\n"
 implementations["one_rel_getter"] += "\t\t}}\n"
 implementations["one_rel_getter"] += "\t\treturn {namespace}::Const{type}(*(m_obj->m_{name}));\n\t}}"
 # this is inline, don't need the declaration
 implementations["const_one_rel_getter"] =  "\t/// Access the {description}\n"
-implementations["const_one_rel_getter"] += "\tconst {namespace}::Const{type} Const{classname}::{name}() const {{\n"
+implementations["const_one_rel_getter"] += "\tconst {namespace}::Const{type} Const{classname}::{fname}() const {{\n"
 implementations["const_one_rel_getter"] += "\t\tif (m_obj->m_{name} == nullptr) {{\n"
 implementations["const_one_rel_getter"] += "\t\t\treturn {namespace}::Const{type}(nullptr);\n"
 implementations["const_one_rel_getter"] += "\t\t}}\n"

@@ -56,9 +56,6 @@ std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_begin() cons
 
 std::vector<::ConstExampleHit>::const_iterator ExampleCluster::Hits_end() const {
   auto ret_value = m_obj->m_Hits->begin();
-//fg: this code fails if m_obj->data.Hits==0
-//  std::advance(ret_value, m_obj->data.Hits_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Hits_end);
   return ret_value;
 }
@@ -86,9 +83,6 @@ std::vector<::ConstExampleCluster>::const_iterator ExampleCluster::Clusters_begi
 
 std::vector<::ConstExampleCluster>::const_iterator ExampleCluster::Clusters_end() const {
   auto ret_value = m_obj->m_Clusters->begin();
-//fg: this code fails if m_obj->data.Clusters==0
-//  std::advance(ret_value, m_obj->data.Clusters_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Clusters_end);
   return ret_value;
 }
@@ -126,6 +120,20 @@ const podio::ObjectID ExampleCluster::getObjectID() const {
 
 bool ExampleCluster::operator==(const ConstExampleCluster& other) const {
   return (m_obj==other.m_obj);
+}
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleCluster& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " energy : " << value.energy() << std::endl ;
+  o << " Hits : " ;
+  for(unsigned i=0,N=value.Hits_size(); i<N ; ++i)
+    o << value.Hits(i) << " " ; 
+  o << std::endl ;
+  o << " Clusters : " ;
+  for(unsigned i=0,N=value.Clusters_size(); i<N ; ++i)
+    o << value.Clusters(i) << " " ; 
+  o << std::endl ;
+  return o ;
 }
 
 

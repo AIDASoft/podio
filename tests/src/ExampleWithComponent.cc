@@ -72,6 +72,13 @@ bool ExampleWithComponent::operator==(const ConstExampleWithComponent& other) co
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithComponent& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " component : " << value.component() << std::endl ;
+  o << " data : " << value.data() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleWithComponent& p1, const ExampleWithComponent& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

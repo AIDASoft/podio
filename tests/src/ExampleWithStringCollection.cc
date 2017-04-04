@@ -113,4 +113,15 @@ const ExampleWithStringCollectionIterator& ExampleWithStringCollectionIterator::
   return *this;
 }
 
+std::ostream& operator<<( std::ostream& o,const ExampleWithStringCollection& v){
+  std::ios::fmtflags old_flags = o.flags() ; 
+  o << "id:          theString:    " << std::endl ;
+   for(int i = 0; i < v.size(); i++){
+     o << std::scientific << std::showpos  << std::setw(12)  << v[i].id() << " "  << std::setw(12) << v[i].theString() << " "  << std::endl;
+  o.flags(old_flags) ; 
+}
+  return o ;
+}
+
+
 

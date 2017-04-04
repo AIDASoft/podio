@@ -113,4 +113,15 @@ const EventInfoCollectionIterator& EventInfoCollectionIterator::operator++() con
   return *this;
 }
 
+std::ostream& operator<<( std::ostream& o,const EventInfoCollection& v){
+  std::ios::fmtflags old_flags = o.flags() ; 
+  o << "id:          Number:       " << std::endl ;
+   for(int i = 0; i < v.size(); i++){
+     o << std::scientific << std::showpos  << std::setw(12)  << v[i].id() << " "  << std::setw(12) << v[i].Number() << " "  << std::endl;
+  o.flags(old_flags) ; 
+}
+  return o ;
+}
+
+
 

@@ -2,6 +2,8 @@
 #define ExampleForCyclicDependency2_H
 #include "ExampleForCyclicDependency2Data.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -73,12 +75,18 @@ public:
 //       const ExampleForCyclicDependency2& p2 );
   bool operator<(const ExampleForCyclicDependency2& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   ExampleForCyclicDependency2Obj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleForCyclicDependency2& value );
+
 
 
 

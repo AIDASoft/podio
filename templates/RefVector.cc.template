@@ -6,9 +6,6 @@ std::vector<${relationtype}>::const_iterator ${classname}::${relation}_begin() c
 
 std::vector<${relationtype}>::const_iterator ${classname}::${relation}_end() const {
   auto ret_value = m_obj->m_${relation}->begin();
-//fg: this code fails if m_obj->data.${relation}==0
-//  std::advance(ret_value, m_obj->data.${relation}_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.${relation}_end);
   return ret_value;
 }

@@ -175,4 +175,15 @@ const ExampleWithARelationCollectionIterator& ExampleWithARelationCollectionIter
   return *this;
 }
 
+std::ostream& operator<<( std::ostream& o,const ExampleWithARelationCollection& v){
+  std::ios::fmtflags old_flags = o.flags() ; 
+  o << "id:          number:       " << std::endl ;
+   for(int i = 0; i < v.size(); i++){
+     o << std::scientific << std::showpos  << std::setw(12)  << v[i].id() << " "  << std::setw(12) << v[i].number() << " "  << std::endl;
+  o.flags(old_flags) ; 
+}
+  return o ;
+}
+
+
 } // namespace ex

@@ -2,6 +2,8 @@
 #define ExampleHit_H
 #include "ExampleHitData.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -88,12 +90,18 @@ public:
 //       const ExampleHit& p2 );
   bool operator<(const ExampleHit& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   ExampleHitObj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleHit& value );
+
 
 
 

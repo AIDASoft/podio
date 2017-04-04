@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -55,6 +57,11 @@ public:
 //  ExampleWithNamespaceCollection(const ExampleWithNamespaceCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ExampleWithNamespaceCollection(ExampleWithNamespaceVector* data, int collectionID);
   ~ExampleWithNamespaceCollection();
+
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleWithNamespaceCollection* operator->() { return (ExampleWithNamespaceCollection*) this ; }
+
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -125,6 +132,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleWithNamespaceDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleWithNamespaceCollection& v);
+
 
 template<typename... Args>
 ExampleWithNamespace  ExampleWithNamespaceCollection::create(Args&&... args){

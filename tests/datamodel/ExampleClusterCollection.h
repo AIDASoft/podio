@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -55,6 +57,11 @@ public:
 //  ExampleClusterCollection(const ExampleClusterCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
 //  ExampleClusterCollection(ExampleClusterVector* data, int collectionID);
   ~ExampleClusterCollection();
+
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleClusterCollection* operator->() { return (ExampleClusterCollection*) this ; }
+
 
   void clear();
   /// Append a new object to the collection, and return this object.
@@ -129,6 +136,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleClusterDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleClusterCollection& v);
+
 
 template<typename... Args>
 ExampleCluster  ExampleClusterCollection::create(Args&&... args){
