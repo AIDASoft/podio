@@ -73,10 +73,14 @@ public:
   ExampleWithARelation create(Args&&... args);
   int size() const;
 
-  /// Returns the object of given index
+  /// Returns the const object of given index
   const ExampleWithARelation operator[](unsigned int index) const;
-  /// Returns the object of given index
+  /// Returns the object of a given index
+  ExampleWithARelation operator[](unsigned int index);
+  /// Returns the const object of given index
   const ExampleWithARelation at(unsigned int index) const;
+  /// Returns the object of given index
+  ExampleWithARelation at(unsigned int index);
 
 
   /// Append object to the collection

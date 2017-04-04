@@ -73,10 +73,14 @@ public:
   ExampleWithString create(Args&&... args);
   int size() const;
 
-  /// Returns the object of given index
+  /// Returns the const object of given index
   const ExampleWithString operator[](unsigned int index) const;
-  /// Returns the object of given index
+  /// Returns the object of a given index
+  ExampleWithString operator[](unsigned int index);
+  /// Returns the const object of given index
   const ExampleWithString at(unsigned int index) const;
+  /// Returns the object of given index
+  ExampleWithString at(unsigned int index);
 
 
   /// Append object to the collection

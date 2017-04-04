@@ -355,6 +355,36 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
+          <class name="std::vector<ExampleWithArrayData>" />
+
+            <class name="ExampleWithArrayData">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ExampleWithArray>" />
+
+            <class name="ExampleWithArray">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ConstExampleWithArray>" />
+
+            <class name="ConstExampleWithArray">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ExampleWithArrayCollection>" />
+
+            <class name="ExampleWithArrayCollection">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ExampleWithArrayObj>" />
+
+            <class name="ExampleWithArrayObj">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
           <class name="std::vector<ExampleForCyclicDependency1Data>" />
 
             <class name="ExampleForCyclicDependency1Data">

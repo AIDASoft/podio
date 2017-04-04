@@ -49,10 +49,10 @@ ExampleHit::operator ConstExampleHit() const {return ConstExampleHit(m_obj);}
   const double& ExampleHit::z() const { return m_obj->data.z; }
   const double& ExampleHit::energy() const { return m_obj->data.energy; }
 
-void ExampleHit::x(double value){ m_obj->data.x = value; }
-void ExampleHit::y(double value){ m_obj->data.y = value; }
-void ExampleHit::z(double value){ m_obj->data.z = value; }
-void ExampleHit::energy(double value){ m_obj->data.energy = value; }
+void ExampleHit::x(double value) { m_obj->data.x = value; }
+void ExampleHit::y(double value) { m_obj->data.y = value; }
+void ExampleHit::z(double value) { m_obj->data.z = value; }
+void ExampleHit::energy(double value) { m_obj->data.energy = value; }
 
 
 

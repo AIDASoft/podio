@@ -40,6 +40,9 @@ namespace podio {
     template<typename T>
     T& create(const std::string& name);
 
+    /// register an existing collection
+    void registerCollection(const std::string& name, podio::CollectionBase* coll);
+
     /// access a collection by name. returns true if successful
     template<typename T>
     bool get(const std::string& name, const T*& collection);
@@ -91,9 +94,7 @@ T& EventStore::create(const std::string& name) {
     "DataStore only accepts types inheriting from CollectionBase");
   // TODO: add check for existence
   T* coll = new T();
-  m_collections.push_back({name,coll});
-  auto id = m_table->add(name);
-  coll->setID(id);
+  registerCollection(name, coll);
   return *coll;
 }
 

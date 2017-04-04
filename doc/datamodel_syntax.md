@@ -95,19 +95,19 @@ The code being provided has to use the macro `{name}` in place of the concrete n
 ## Global options
 Some customization of the generated code is possible through flags. These flags are listed in the section `options`:
 
-  options:
-    getSyntax: False
-    exposePODMembers: True
-  components:
-    # My simple component
-    ExampleComponent:
-      x : int
-  datatypes:
-    ExampleType:
-      Description: "My datatype with a component member"
-      Author: "Mr me"
-      Members:
-       - ExampleComponent comp // component from above
+    options:
+      getSyntax: False
+      exposePODMembers: True
+    components:
+      # My simple component
+      ExampleComponent:
+        x : int
+    datatypes:
+      ExampleType:
+        Description: "My datatype with a component member"
+        Author: "Mr me"
+        Members:
+         - ExampleComponent comp // component from above
 
 - `getSyntax`: steers the naming of get and set methods. If set to true, methods are prefixed with `get` and `set` following the capitalized member name, otherwise the member name is used for both.
 - `exposePODMembers`: whether get and set methods are also generated for members of a member-component. In the example corresponding methods would be generated to directly set / get `x` through `ExampleType`.

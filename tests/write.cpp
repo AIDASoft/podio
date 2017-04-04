@@ -10,6 +10,8 @@
 #include "ExampleWithNamespaceCollection.h"
 #include "ExampleWithARelationCollection.h"
 #include "ExampleWithStringCollection.h"
+#include "ExampleWithArrayCollection.h"
+#include "StructWithArray.h"
 
 // STL
 #include <iostream>
@@ -39,19 +41,21 @@ int main(){
   auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& cpytest    = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
-  writer.registerForWrite<EventInfoCollection>("info");
-  writer.registerForWrite<ExampleMCCollection>("mcparticles");
-  writer.registerForWrite<ExampleHitCollection>("hits");
-  writer.registerForWrite<ExampleClusterCollection>("clusters");
-  writer.registerForWrite<ExampleReferencingTypeCollection>("refs");
-  writer.registerForWrite<ExampleReferencingTypeCollection>("refs2");
-  writer.registerForWrite<ExampleWithComponentCollection>("Component");
-  writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
-  writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
-  writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
-  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
-  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
-  writer.registerForWrite<ExampleWithStringCollection>("strings");
+  auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
+  writer.registerForWrite("info");
+  writer.registerForWrite("mcparticles");
+  writer.registerForWrite("hits");
+  writer.registerForWrite("clusters");
+  writer.registerForWrite("refs");
+  writer.registerForWrite("refs2");
+  writer.registerForWrite("Component");
+  writer.registerForWrite("OneRelation");
+  writer.registerForWrite("WithVectorMember");
+  writer.registerForWrite("WithNamespaceMember");
+  writer.registerForWrite("WithNamespaceRelation");
+  writer.registerForWrite("WithNamespaceRelationCopy");
+  writer.registerForWrite("strings");
+  writer.registerForWrite("arrays");
 
   unsigned nevents = 2000;
 
@@ -216,6 +220,14 @@ int main(){
     auto string = ExampleWithString("SomeString");
     strings.push_back(string);
 
+    std::array<int, 4> arrayTest = {0, 0, 2, 3};
+    std::array<int, 4> arrayTest2 = {4, 4, 2*static_cast<int>(i)};
+    NotSoSimpleStruct a;
+    a.data.p = arrayTest2;
+    auto array = ExampleWithArray(a, arrayTest, arrayTest, arrayTest, arrayTest);
+    array.myArray(1, i);
+    array.arrayStruct(a);
+    arrays.push_back(array);
     writer.writeEvent();
     store.clearCollections();
   }

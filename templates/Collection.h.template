@@ -73,10 +73,14 @@ public:
   ${name} create(Args&&... args);
   int size() const;
 
-  /// Returns the object of given index
+  /// Returns the const object of given index
   const ${name} operator[](unsigned int index) const;
-  /// Returns the object of given index
+  /// Returns the object of a given index
+  ${name} operator[](unsigned int index);
+  /// Returns the const object of given index
   const ${name} at(unsigned int index) const;
+  /// Returns the object of given index
+  ${name} at(unsigned int index);
 
 
   /// Append object to the collection
@@ -104,7 +108,7 @@ public:
   const const_iterator begin() const {
     return const_iterator(0, &m_entries);
   }
-  const	const_iterator end() const {
+  const const_iterator end() const {
     return const_iterator(m_entries.size(), &m_entries);
   }
 

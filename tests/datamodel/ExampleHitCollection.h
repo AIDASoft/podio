@@ -73,10 +73,14 @@ public:
   ExampleHit create(Args&&... args);
   int size() const;
 
-  /// Returns the object of given index
+  /// Returns the const object of given index
   const ExampleHit operator[](unsigned int index) const;
-  /// Returns the object of given index
+  /// Returns the object of a given index
+  ExampleHit operator[](unsigned int index);
+  /// Returns the const object of given index
   const ExampleHit at(unsigned int index) const;
+  /// Returns the object of given index
+  ExampleHit at(unsigned int index);
 
 
   /// Append object to the collection

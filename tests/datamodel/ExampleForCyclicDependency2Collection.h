@@ -73,10 +73,14 @@ public:
   ExampleForCyclicDependency2 create(Args&&... args);
   int size() const;
 
-  /// Returns the object of given index
+  /// Returns the const object of given index
   const ExampleForCyclicDependency2 operator[](unsigned int index) const;
-  /// Returns the object of given index
+  /// Returns the object of a given index
+  ExampleForCyclicDependency2 operator[](unsigned int index);
+  /// Returns the const object of given index
   const ExampleForCyclicDependency2 at(unsigned int index) const;
+  /// Returns the object of given index
+  ExampleForCyclicDependency2 at(unsigned int index);
 
 
   /// Append object to the collection

@@ -12,7 +12,7 @@ Please submit feature requests and bugs to
  - [Examples](./doc/examples.md)
  - [Advanced Topics](./doc/advanced_topics.md)
 
-Browse the API documentation created with Doxygen at 
+Browse the API documentation created with Doxygen at
 
 [http://fccsw.web.cern.ch/fccsw/podio/index.html](http://fccsw.web.cern.ch/fccsw/podio/index.html).
 
@@ -20,11 +20,11 @@ Browse the API documentation created with Doxygen at
 
 If you are on lxplus, all the necessary software is preinstalled.
 
-On Mac OS or Ubuntu, you need to install the following software. 
+On Mac OS or Ubuntu, you need to install the following software.
 
-### ROOT 6.06
+### ROOT 6.08.06
 
-Install ROOT 6.06 and set up your ROOT environment: 
+Install ROOT 6.08.06 (or later) and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
 
@@ -61,7 +61,7 @@ Before building and installing this package, and everytime you need to use it, d
 
 ## Compiling
 
-Set up separate build and install areas, and trigger the build: 
+Set up separate build and install areas, and trigger the build:
 
     mkdir build
     mkdir install

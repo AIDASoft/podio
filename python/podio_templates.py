@@ -12,7 +12,16 @@ implementations["member_getter"] = "\tconst {type}& {classname}::{fname}() const
 
 declarations["member_builtin_setter"] =  "\t/// Set the {description}\n"
 declarations["member_builtin_setter"] += "\tvoid {fname}({type} value);\n\n"
-implementations["member_builtin_setter"] = "void {classname}::{fname}({type} value){{ m_obj->data.{name} = value; }}\n"
+implementations["member_builtin_setter"] = "void {classname}::{fname}({type} value) {{ m_obj->data.{name} = value; }}\n"
+
+# arrays
+declarations["array_builtin_setter"] =  "\t/// Set item i in {description}\n"
+declarations["array_builtin_setter"] += "\tvoid {fname}(size_t i, {type} value);\n\n"
+implementations["array_builtin_setter"] = "void {classname}::{fname}(size_t i, {type} value) {{ m_obj->data.{name}.at(i) = value; }}\n"
+
+declarations["array_member_getter"] =  "\t/// Access item i in the {description}\n"
+declarations["array_member_getter"] += "\tconst {type}& {fname}(size_t i) const;\n"
+implementations["array_member_getter"] = "\tconst {type}& {classname}::{fname}(size_t i) const {{ return m_obj->data.{name}.at(i); }}\n"
 
 # conceptually getting a non-const ref is a setter:
 declarations["member_class_refsetter"] =  "\t/// Get reference to the {description}\n"
@@ -26,6 +35,10 @@ implementations["member_class_setter"] = "void {classname}::{fname}(class {type}
 # this is inline, don't need the declaration
 implementations["const_member_getter"] =  "\t/// Access the {description}\n"
 implementations["const_member_getter"] += "\tconst {type}& Const{classname}::{fname}() const {{ return m_obj->data.{name}; }}\n"
+
+# this is inline, don't need the declaration
+implementations["const_array_member_getter"] =  "\t/// Access the {description}\n"
+implementations["const_array_member_getter"] += "\tconst {type}& Const{classname}::{fname}(size_t i) const {{ return m_obj->data.{name}.at(i); }}\n"
 
 
 # currently no description of the POD members this could be re-added then

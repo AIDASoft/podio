@@ -24,7 +24,7 @@ _text_ = """
 class ClassGenerator(object):
 
     def __init__(self, yamlfile, install_dir, package_name,
-                 verbose=True):
+                 verbose=True, dryrun=False):
 
         self.yamlfile = yamlfile
         self.install_dir = install_dir
@@ -37,6 +37,7 @@ class ClassGenerator(object):
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
         self.component_members = {}
+        self.dryrun = dryrun
 
     def process(self):
         self.reader.read()
@@ -131,7 +132,6 @@ class ClassGenerator(object):
                                                      % klass)
             elif "std::array" in klass:
                 datatype_dict["includes"].append("#include <array>")
-                self.created_classes.append(klass)
             elif "vector" in klass:
                 datatype_dict["includes"].append("#include <vector>")
                 if is_data:  # avoid having warnings twice
@@ -140,6 +140,8 @@ class ClassGenerator(object):
                 raise Exception("'%s' defines an array type. Array types are not supported yet." % (classname, klass))
             else:
                 raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
+        # get rid of duplicates:
+        datatype_dict["includes"] = list(set(datatype_dict["includes"]))
         return datatype_dict
 
 
@@ -282,6 +284,15 @@ class ClassGenerator(object):
         if klass in self.buildin_types:
           setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
+        elif klass.startswith("std::array"):
+          setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
+          setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
+          item_class = klass.split("<")[1].split(",")[0].strip()
+          setter_declarations += declarations["array_builtin_setter"].format(type=item_class, name=name, fname=sname, description=desc)
+          setter_implementations += implementations["array_builtin_setter"].format(type=item_class, classname=rawclassname, name=name, fname=sname)
+          getter_declarations += declarations["array_member_getter"].format(type=item_class, name=name, fname=sname, description=desc)
+          getter_implementations += implementations["array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname)
+          ConstGetter_implementations += implementations["const_array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname, description=desc)
         else:
           setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
           setter_implementations += implementations["member_class_refsetter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
@@ -752,7 +763,7 @@ class ClassGenerator(object):
       """
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
-      includes = ""
+      includes = []
       members = ""
       extracode_declarations = ""
       ostreamComponents = ""
@@ -782,7 +793,9 @@ class ClassGenerator(object):
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
             self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
           if self.reader.components.has_key(klass):
-              includes+= '#include "%s.h"\n' %(klassname)
+              includes.append('#include "%s.h"\n' %(klassname))
+          if "std::array" in klass:
+              includes.append("#include <array>\n")
         else:
           # handle user provided extra code
           if klass.has_key("declaration"):
@@ -790,8 +803,8 @@ class ClassGenerator(object):
 
       ostreamComponents +=  "  return o ;\n"
       ostreamComponents +=  "}\n"
-
-
+      # make includes unique and put it in a string
+      includes = ''.join(list(set(includes)))
       substitutions = { "ostreamComponents" : ostreamComponents,
                         "includes" : includes,
                         "members"  : members,
@@ -933,7 +946,8 @@ class ClassGenerator(object):
         fullname = os.path.join(self.install_dir,self.package_name,name)
       else:
         fullname = os.path.join(self.install_dir,"src",name)
-      open(fullname, "w").write(content)
+      if not self.dryrun:
+        open(fullname, "w").write(content)
 
     def evaluate_template(self, filename, substitutions):
         """ reads in a given template, evaluates it
@@ -993,6 +1007,9 @@ if __name__ == "__main__":
   parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="Don't write a report to screen")
+  parser.add_option("-d", "--dryrun",
+                    action="store_true", dest="dryrun", default=False,
+                    help="Do not actually write datamodel files")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -1009,7 +1026,7 @@ if __name__ == "__main__":
   if not os.path.exists( directory ):
     os.makedirs(directory)
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose = options.verbose)
+  gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
   gen.process()
   for warning in gen.warnings:
       print warning

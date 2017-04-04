@@ -46,7 +46,7 @@ EventInfo::operator ConstEventInfo() const {return ConstEventInfo(m_obj);}
 
   const int& EventInfo::Number() const { return m_obj->data.Number; }
 
-void EventInfo::Number(int value){ m_obj->data.Number = value; }
+void EventInfo::Number(int value) { m_obj->data.Number = value; }
 
 
 

@@ -31,6 +31,14 @@ const ExampleReferencingType ExampleReferencingTypeCollection::at(unsigned int i
   return ExampleReferencingType(m_entries.at(index));
 }
 
+ExampleReferencingType ExampleReferencingTypeCollection::operator[](unsigned int index) {
+  return ExampleReferencingType(m_entries[index]);
+}
+
+ExampleReferencingType ExampleReferencingTypeCollection::at(unsigned int index) {
+  return ExampleReferencingType(m_entries.at(index));
+}
+
 int  ExampleReferencingTypeCollection::size() const {
   return m_entries.size();
 }
@@ -113,25 +121,33 @@ void ExampleReferencingTypeCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleReferencingTypeCollection::setReferences(const podio::ICollectionProvider* collectionProvider){
   for(unsigned int i=0, size=m_refCollections[0]->size();i!=size;++i) {
     auto id = (*m_refCollections[0])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_Clusters->emplace_back(tmp);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ExampleClusterCollection* tmp_coll = static_cast<ExampleClusterCollection*>(coll);
+      auto tmp = (*tmp_coll)[id.index];
+      m_rel_Clusters->emplace_back(tmp);
+    } else {
+      m_rel_Clusters->emplace_back(nullptr);
+    }
   }
   for(unsigned int i=0, size=m_refCollections[1]->size();i!=size;++i) {
     auto id = (*m_refCollections[1])[i];
-    CollectionBase* coll = nullptr;
-    collectionProvider->get(id.collectionID,coll);
-    ExampleReferencingTypeCollection* tmp_coll = static_cast<ExampleReferencingTypeCollection*>(coll);
-    auto tmp = (*tmp_coll)[id.index];
-    m_rel_Refs->emplace_back(tmp);
+    if (id.index != podio::ObjectID::invalid) {
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID,coll);
+      ExampleReferencingTypeCollection* tmp_coll = static_cast<ExampleReferencingTypeCollection*>(coll);
+      auto tmp = (*tmp_coll)[id.index];
+      m_rel_Refs->emplace_back(tmp);
+    } else {
+      m_rel_Refs->emplace_back(nullptr);
+    }
   }
 
 

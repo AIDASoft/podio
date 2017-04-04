@@ -24,6 +24,14 @@ const ${name} ${name}Collection::at(unsigned int index) const {
   return ${name}(m_entries.at(index));
 }
 
+${name} ${name}Collection::operator[](unsigned int index) {
+  return ${name}(m_entries[index]);
+}
+
+${name} ${name}Collection::at(unsigned int index) {
+  return ${name}(m_entries.at(index));
+}
+
 int  ${name}Collection::size() const {
   return m_entries.size();
 }
@@ -63,7 +71,7 @@ void ${name}Collection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ${name}Collection::setReferences(const podio::ICollectionProvider* collectionProvider){

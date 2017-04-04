@@ -52,7 +52,7 @@ ExampleWithARelation::operator ConstExampleWithARelation() const {return ConstEx
     }
     return ex::ConstExampleWithNamespace(*(m_obj->m_ref));
   }
-void ExampleWithARelation::number(float value){ m_obj->data.number = value; }
+void ExampleWithARelation::number(float value) { m_obj->data.number = value; }
 void ExampleWithARelation::ref(ex::ConstExampleWithNamespace value) {
   if (m_obj->m_ref != nullptr) delete m_obj->m_ref;
   m_obj->m_ref = new ConstExampleWithNamespace(value);

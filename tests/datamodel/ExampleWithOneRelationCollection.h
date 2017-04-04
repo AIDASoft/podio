@@ -73,10 +73,14 @@ public:
   ExampleWithOneRelation create(Args&&... args);
   int size() const;
 
-  /// Returns the object of given index
+  /// Returns the const object of given index
   const ExampleWithOneRelation operator[](unsigned int index) const;
-  /// Returns the object of given index
+  /// Returns the object of a given index
+  ExampleWithOneRelation operator[](unsigned int index);
+  /// Returns the const object of given index
   const ExampleWithOneRelation at(unsigned int index) const;
+  /// Returns the object of given index
+  ExampleWithOneRelation at(unsigned int index);
 
 
   /// Append object to the collection

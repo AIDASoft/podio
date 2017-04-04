@@ -24,6 +24,14 @@ const EventInfo EventInfoCollection::at(unsigned int index) const {
   return EventInfo(m_entries.at(index));
 }
 
+EventInfo EventInfoCollection::operator[](unsigned int index) {
+  return EventInfo(m_entries[index]);
+}
+
+EventInfo EventInfoCollection::at(unsigned int index) {
+  return EventInfo(m_entries.at(index));
+}
+
 int  EventInfoCollection::size() const {
   return m_entries.size();
 }
@@ -63,7 +71,7 @@ void EventInfoCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool EventInfoCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

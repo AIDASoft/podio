@@ -24,6 +24,14 @@ const ExampleWithString ExampleWithStringCollection::at(unsigned int index) cons
   return ExampleWithString(m_entries.at(index));
 }
 
+ExampleWithString ExampleWithStringCollection::operator[](unsigned int index) {
+  return ExampleWithString(m_entries[index]);
+}
+
+ExampleWithString ExampleWithStringCollection::at(unsigned int index) {
+  return ExampleWithString(m_entries.at(index));
+}
+
 int  ExampleWithStringCollection::size() const {
   return m_entries.size();
 }
@@ -63,7 +71,7 @@ void ExampleWithStringCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleWithStringCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

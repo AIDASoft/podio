@@ -24,6 +24,14 @@ const ExampleWithNamespace ExampleWithNamespaceCollection::at(unsigned int index
   return ExampleWithNamespace(m_entries.at(index));
 }
 
+ExampleWithNamespace ExampleWithNamespaceCollection::operator[](unsigned int index) {
+  return ExampleWithNamespace(m_entries[index]);
+}
+
+ExampleWithNamespace ExampleWithNamespaceCollection::at(unsigned int index) {
+  return ExampleWithNamespace(m_entries.at(index));
+}
+
 int  ExampleWithNamespaceCollection::size() const {
   return m_entries.size();
 }
@@ -63,7 +71,7 @@ void ExampleWithNamespaceCollection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleWithNamespaceCollection::setReferences(const podio::ICollectionProvider* collectionProvider){

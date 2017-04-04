@@ -73,10 +73,14 @@ public:
   ExampleReferencingType create(Args&&... args);
   int size() const;
 
-  /// Returns the object of given index
+  /// Returns the const object of given index
   const ExampleReferencingType operator[](unsigned int index) const;
-  /// Returns the object of given index
+  /// Returns the object of a given index
+  ExampleReferencingType operator[](unsigned int index);
+  /// Returns the const object of given index
   const ExampleReferencingType at(unsigned int index) const;
+  /// Returns the object of given index
+  ExampleReferencingType at(unsigned int index);
 
 
   /// Append object to the collection

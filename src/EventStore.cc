@@ -38,6 +38,12 @@ namespace podio {
     return success;
   }
 
+  void EventStore::registerCollection(const std::string& name, podio::CollectionBase* coll) {
+    m_collections.push_back({name,coll});
+    auto id = m_table->add(name);
+    coll->setID(id);
+  }
+
   bool EventStore::isValid() const {
     return m_reader->isValid();
   }

@@ -28,6 +28,14 @@ const ExampleForCyclicDependency1 ExampleForCyclicDependency1Collection::at(unsi
   return ExampleForCyclicDependency1(m_entries.at(index));
 }
 
+ExampleForCyclicDependency1 ExampleForCyclicDependency1Collection::operator[](unsigned int index) {
+  return ExampleForCyclicDependency1(m_entries[index]);
+}
+
+ExampleForCyclicDependency1 ExampleForCyclicDependency1Collection::at(unsigned int index) {
+  return ExampleForCyclicDependency1(m_entries.at(index));
+}
+
 int  ExampleForCyclicDependency1Collection::size() const {
   return m_entries.size();
 }
@@ -77,7 +85,7 @@ void ExampleForCyclicDependency1Collection::prepareAfterRead(){
     m_entries.emplace_back(obj);
     ++index;
   }
-  m_isValid = true;  
+  m_isValid = true;
 }
 
 bool ExampleForCyclicDependency1Collection::setReferences(const podio::ICollectionProvider* collectionProvider){
