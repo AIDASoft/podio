@@ -132,6 +132,11 @@ class ClassGenerator(object):
                                                      % klass)
             elif "std::array" in klass:
                 datatype_dict["includes"].append("#include <array>")
+                array_type = klass.split("<")[1].split(",")[0]
+                if array_type not in self.buildin_types:
+                  if "::" in array_type:
+                        array_type = array_type.split("::")[1]
+                  datatype_dict["includes"].append("#include \"%s.h\"\n" % array_type)
             elif "vector" in klass:
                 datatype_dict["includes"].append("#include <vector>")
                 if is_data:  # avoid having warnings twice
@@ -253,6 +258,11 @@ class ClassGenerator(object):
             datatype["includes"].append('#include "%s.h"' %klass)
         elif "std::array" in klass:
           datatype["includes"].append("#include <array>")
+          array_type = klass.split("<")[1].split(",")[0]
+          if array_type not in self.buildin_types:
+            if "::" in array_type:
+                  array_type = array_type.split("::")[1]
+            datatype["includes"].append("#include \"%s.h\"\n" % array_type)
         else:
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
@@ -720,6 +730,11 @@ class ClassGenerator(object):
               includes.append('#include "%s.h"\n' %(klassname))
           if "std::array" in klass:
               includes.append("#include <array>\n")
+              array_type = klass.split("<")[1].split(",")[0]
+              if array_type not in self.buildin_types:
+                if "::" in array_type:
+                      array_type = array_type.split("::")[1]
+                includes.append("#include \"%s.h\"\n" % array_type)
         else:
           # handle user provided extra code
           if klass.has_key("declaration"):
