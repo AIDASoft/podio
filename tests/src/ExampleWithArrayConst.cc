@@ -13,9 +13,9 @@ ConstExampleWithArray::ConstExampleWithArray() : m_obj(new ExampleWithArrayObj()
  m_obj->acquire();
 }
 
-ConstExampleWithArray::ConstExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3) : m_obj(new ExampleWithArrayObj()){
+ConstExampleWithArray::ConstExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3,std::array<ex2::NamespaceStruct, 4> structArray) : m_obj(new ExampleWithArrayObj()){
  m_obj->acquire();
-   m_obj->data.arrayStruct = arrayStruct;  m_obj->data.myArray = myArray;  m_obj->data.anotherArray2 = anotherArray2;  m_obj->data.snail_case_array = snail_case_array;  m_obj->data.snail_case_Array3 = snail_case_Array3;
+   m_obj->data.arrayStruct = arrayStruct;  m_obj->data.myArray = myArray;  m_obj->data.anotherArray2 = anotherArray2;  m_obj->data.snail_case_array = snail_case_array;  m_obj->data.snail_case_Array3 = snail_case_Array3;  m_obj->data.structArray = structArray;
 }
 
 
@@ -61,6 +61,10 @@ ConstExampleWithArray::~ConstExampleWithArray(){
   const int& ConstExampleWithArray::snail_case_Array3(size_t i) const { return m_obj->data.snail_case_Array3.at(i); }
   /// Access the mixing things up for regex
   const std::array<int, 4>& ConstExampleWithArray::snail_case_Array3() const { return m_obj->data.snail_case_Array3; }
+  /// Access the an array containing structs
+  const ex2::NamespaceStruct& ConstExampleWithArray::structArray(size_t i) const { return m_obj->data.structArray.at(i); }
+  /// Access the an array containing structs
+  const std::array<ex2::NamespaceStruct, 4>& ConstExampleWithArray::structArray() const { return m_obj->data.structArray; }
 
 
 

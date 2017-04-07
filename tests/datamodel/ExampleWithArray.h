@@ -1,6 +1,8 @@
 #ifndef ExampleWithArray_H
 #define ExampleWithArray_H
 #include <array>
+#include "NamespaceStruct.h"
+
 #include "NotSoSimpleStruct.h"
 #include "ExampleWithArrayData.h"
 #include <vector>
@@ -32,7 +34,7 @@ public:
 
   /// default constructor
   ExampleWithArray();
-  ExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3);
+  ExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3,std::array<ex2::NamespaceStruct, 4> structArray);
 
   /// constructor from existing ExampleWithArrayObj
   ExampleWithArray(ExampleWithArrayObj* obj);
@@ -70,6 +72,10 @@ public:
   const std::array<int, 4>& snail_case_Array3() const;
   /// Access item i in the mixing things up for regex
   const int& snail_case_Array3(size_t i) const;
+  /// Access the an array containing structs
+  const std::array<ex2::NamespaceStruct, 4>& structArray() const;
+  /// Access item i in the an array containing structs
+  const ex2::NamespaceStruct& structArray(size_t i) const;
 
   /// Get reference to the  component that contains an array
   NotSoSimpleStruct& arrayStruct();
@@ -102,6 +108,12 @@ public:
 
   /// Set item i in mixing things up for regex
   void snail_case_Array3(size_t i, int value);
+
+  /// Set the an array containing structs
+  void structArray(std::array<ex2::NamespaceStruct, 4> value);
+
+  /// Set item i in an array containing structs
+  void structArray(size_t i, ex2::NamespaceStruct value);
 
 
 
