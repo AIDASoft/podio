@@ -882,7 +882,8 @@ class ClassGenerator(object):
         fullname = os.path.join(self.install_dir,"src",name)
       if not self.dryrun:
         open(fullname, "w").write(content)
-        subprocess.call(self.clang_format + [fullname])
+        if self.clang_format:
+          subprocess.call(self.clang_format + [fullname])
 
     def evaluate_template(self, filename, substitutions):
         """ reads in a given template, evaluates it
