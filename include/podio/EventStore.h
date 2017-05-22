@@ -48,7 +48,7 @@ namespace podio {
     bool get(const std::string& name, const T*& collection);
 
     /// access a collection by ID. returns true if successful
-    bool get(int id, CollectionBase*& coll) const;
+    bool get(int id, CollectionBase*& coll) const override final;
 
     /// access a collection by name
     /// returns a collection w/ setting isValid to true if successful
