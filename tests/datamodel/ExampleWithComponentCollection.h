@@ -56,7 +56,7 @@ public:
 //  ExampleWithComponentCollection(ExampleWithComponentVector* data, int collectionID);
   ~ExampleWithComponentCollection();
 
-  void clear();
+  void clear() override;
   /// Append a new object to the collection, and return this object.
   ExampleWithComponent create();
 
@@ -79,21 +79,21 @@ public:
   /// Append object to the collection
   void push_back(ConstExampleWithComponent object);
 
-  void prepareForWrite();
-  void prepareAfterRead();
-  void setBuffer(void* address);
-  bool setReferences(const podio::ICollectionProvider* collectionProvider);
+  void prepareForWrite() override;
+  void prepareAfterRead() override;
+  void setBuffer(void* address) override;
+  bool setReferences(const podio::ICollectionProvider* collectionProvider) override;
 
-  podio::CollRefCollection* referenceCollections() { return &m_refCollections;};
+  podio::CollRefCollection* referenceCollections() override { return &m_refCollections;};
 
-  void setID(unsigned ID){
+  void setID(unsigned ID) override {
     m_collectionID = ID;
     std::for_each(m_entries.begin(),m_entries.end(),
                  [ID](ExampleWithComponentObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
 
-  bool isValid() const {
+  bool isValid() const override {
     return m_isValid;
   }
 
@@ -106,7 +106,7 @@ public:
   }
 
   /// returns the address of the pointer to the data buffer
-  void* getBufferAddress() { return (void*)&m_data;};
+  void* getBufferAddress() override { return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
   std::vector<ExampleWithComponentData>* _getBuffer() { return m_data;};
