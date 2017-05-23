@@ -121,6 +121,8 @@ public:
   const std::array<std::array<int, 4>,arraysize> snail_case_array() const;
   template<size_t arraysize>
   const std::array<std::array<int, 4>,arraysize> snail_case_Array3() const;
+  template<size_t arraysize>
+  const std::array<std::array<ex2::NamespaceStruct, 4>,arraysize> structArray() const;
 
 
 private:
@@ -184,6 +186,15 @@ const std::array<class std::array<int, 4>,arraysize> ExampleWithArrayCollection:
   auto valid_size = std::min(arraysize,m_entries.size());
   for (unsigned i = 0; i<valid_size; ++i){
     tmp[i] = m_entries[i]->data.snail_case_Array3;
+ }
+ return tmp;
+}
+template<size_t arraysize>
+const std::array<class std::array<ex2::NamespaceStruct, 4>,arraysize> ExampleWithArrayCollection::structArray() const {
+  std::array<class std::array<ex2::NamespaceStruct, 4>,arraysize> tmp;
+  auto valid_size = std::min(arraysize,m_entries.size());
+  for (unsigned i = 0; i<valid_size; ++i){
+    tmp[i] = m_entries[i]->data.structArray;
  }
  return tmp;
 }

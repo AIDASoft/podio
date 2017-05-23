@@ -13,9 +13,9 @@ ExampleWithArray::ExampleWithArray() : m_obj(new ExampleWithArrayObj()){
  m_obj->acquire();
 }
 
-ExampleWithArray::ExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3) : m_obj(new ExampleWithArrayObj()) {
+ExampleWithArray::ExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3,std::array<ex2::NamespaceStruct, 4> structArray) : m_obj(new ExampleWithArrayObj()) {
   m_obj->acquire();
-    m_obj->data.arrayStruct = arrayStruct;  m_obj->data.myArray = myArray;  m_obj->data.anotherArray2 = anotherArray2;  m_obj->data.snail_case_array = snail_case_array;  m_obj->data.snail_case_Array3 = snail_case_Array3;
+    m_obj->data.arrayStruct = arrayStruct;  m_obj->data.myArray = myArray;  m_obj->data.anotherArray2 = anotherArray2;  m_obj->data.snail_case_array = snail_case_array;  m_obj->data.snail_case_Array3 = snail_case_Array3;  m_obj->data.structArray = structArray;
 }
 
 
@@ -54,6 +54,8 @@ const SimpleStruct& ExampleWithArray::data() const { return m_obj->data.arrayStr
   const int& ExampleWithArray::snail_case_array(size_t i) const { return m_obj->data.snail_case_array.at(i); }
   const std::array<int, 4>& ExampleWithArray::snail_case_Array3() const { return m_obj->data.snail_case_Array3; }
   const int& ExampleWithArray::snail_case_Array3(size_t i) const { return m_obj->data.snail_case_Array3.at(i); }
+  const std::array<ex2::NamespaceStruct, 4>& ExampleWithArray::structArray() const { return m_obj->data.structArray; }
+  const ex2::NamespaceStruct& ExampleWithArray::structArray(size_t i) const { return m_obj->data.structArray.at(i); }
 
   NotSoSimpleStruct& ExampleWithArray::arrayStruct() { return m_obj->data.arrayStruct; }
 void ExampleWithArray::arrayStruct(class NotSoSimpleStruct value) { m_obj->data.arrayStruct = value; }
@@ -67,6 +69,8 @@ void ExampleWithArray::snail_case_array(std::array<int, 4> value) { m_obj->data.
 void ExampleWithArray::snail_case_array(size_t i, int value) { m_obj->data.snail_case_array.at(i) = value; }
 void ExampleWithArray::snail_case_Array3(std::array<int, 4> value) { m_obj->data.snail_case_Array3 = value; }
 void ExampleWithArray::snail_case_Array3(size_t i, int value) { m_obj->data.snail_case_Array3.at(i) = value; }
+void ExampleWithArray::structArray(std::array<ex2::NamespaceStruct, 4> value) { m_obj->data.structArray = value; }
+void ExampleWithArray::structArray(size_t i, ex2::NamespaceStruct value) { m_obj->data.structArray.at(i) = value; }
 
 
 
