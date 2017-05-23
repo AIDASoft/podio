@@ -2,6 +2,7 @@
 import os
 import string
 import pickle
+import subprocess
 from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +39,17 @@ class ClassGenerator(object):
         self.warnings = []
         self.component_members = {}
         self.dryrun = dryrun
+
+    def apply_clang_format(self, clangformat):
+        try:
+            cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
+        except subprocess.CalledProcessError:
+            print "ERROR: Cannot find clang-format executable"
+            print "       Please make sure it is in the PATH."
+            self.clang_format = []
+            return
+        self.clang_format = [cformat_exe, "-i",  "-style=file", "-fallback-style=llvm"]
+
 
     def process(self):
         self.reader.read()
@@ -870,6 +882,8 @@ class ClassGenerator(object):
         fullname = os.path.join(self.install_dir,"src",name)
       if not self.dryrun:
         open(fullname, "w").write(content)
+        if self.clang_format:
+          subprocess.call(self.clang_format + [fullname])
 
     def evaluate_template(self, filename, substitutions):
         """ reads in a given template, evaluates it
@@ -932,6 +946,9 @@ if __name__ == "__main__":
   parser.add_option("-d", "--dryrun",
                     action="store_true", dest="dryrun", default=False,
                     help="Do not actually write datamodel files")
+  parser.add_option("-c", "--clangformat", dest="clangformat",
+                    action="store_true", default=False,
+                    help="Apply clang-format when generating code (with -style=file)")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -942,13 +959,15 @@ if __name__ == "__main__":
   project = args[2]
   directory = os.path.join( install_path ,"src" )
   if not os.path.exists( directory ):
-    os.makedirs(directory)
+      os.makedirs(directory)
   directory = os.path.join( install_path , project )
 
   if not os.path.exists( directory ):
-    os.makedirs(directory)
+      os.makedirs(directory)
 
   gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
+  if options.clangformat:
+      gen.apply_clang_format(options.clangformat)
   gen.process()
   for warning in gen.warnings:
       print warning

@@ -100,6 +100,11 @@ To run the code generation script, do
     mkdir ../Tmp/src
     python ../python/podio_class_generator.py ../examples/datalayout.yaml ../Tmp data
 
+The generation script has the following additional options:
+
+- `--clangformat` (`-c`): Apply clang-format after file creation (uses [option `-style=file`](https://clang.llvm.org/docs/ClangFormatStyleOptions.html) with llvm as backup style), needs clang-format in `$PATH`.
+- `--quiet` (`-q`): Suppress all print out to STDOUT
+- `--dryrun` (`-d`): Only run the generation logic and validate yaml, do not write files to disk
 
 ## Running tests
 After compilation and installation (!) you can run rudimentary tests with
