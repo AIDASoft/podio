@@ -40,7 +40,10 @@ class ClassGenerator(object):
         self.component_members = {}
         self.dryrun = dryrun
 
-    def apply_clang_format(self, clangformat):
+    def configure_clang_format(self, apply):
+        if not apply:
+            self.clang_format = []
+            return
         try:
             cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
         except subprocess.CalledProcessError:
@@ -473,7 +476,7 @@ class ClassGenerator(object):
                       "relation_members" : references_members,
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
-                      "namespace_close" : namespace_close, 
+                      "namespace_close" : namespace_close,
                      }
       self.fill_templates("Object",substitutions)
       self.created_classes.append(classname)
@@ -629,14 +632,14 @@ class ClassGenerator(object):
                 else:
                     widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
             elif klass == "int":
-                findMaximum += "\n    int " + name + "Max ; \n"  
+                findMaximum += "\n    int " + name + "Max ; \n"
                 findMaximum += "    " + name + "Width = 1 ; \n "
                 findMaximum += "     for(int i = 0 ; i < value.size(); i++){ \n"
-                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n" 
+                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n"
                 findMaximum += "            if(" + name + "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
                 findMaximum += "               " + name + "Max = value[i].get" + name[:1].upper() + name[1:] + "();"
-                findMaximum += "\n            } \n" 
-                findMaximum += "\n         } \n" 
+                findMaximum += "\n            } \n"
+                findMaximum += "\n         } \n"
                 findMaximum += "         else if( -" + name + "Max / 10 > value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
                 findMaximum += "             " + name + "Max = - value[i].get" +  name[:1].upper() + name[1:] + "() * 10; "
                 findMaximum += "\n         } \n"
@@ -681,7 +684,7 @@ class ClassGenerator(object):
                       "tableHeader"   : tableHeader,
                       "outputSingleObject" : outputSingleObject
                       }
- 
+
       # TODO: add loading of code from external files
 
         self.fill_templates("PrintInfo",substitutions)
@@ -981,8 +984,7 @@ if __name__ == "__main__":
       os.makedirs(directory)
 
   gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
-  if options.clangformat:
-      gen.apply_clang_format(options.clangformat)
+  gen.configure_clang_format(options.clangformat)
   gen.process()
   for warning in gen.warnings:
       print warning
