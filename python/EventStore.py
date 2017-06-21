@@ -43,6 +43,7 @@ class EventStore(object):
         self.current_store = None
         for fname in self.files:
             store = podio.PythonEventStore(fname)
+            store.name = fname
             if self.current_store is None:
                 self.current_store = store
             self.stores.append((store.getEntries(), store))
@@ -77,6 +78,13 @@ class EventStore(object):
     #     else:
     #         return None
 
+    def current_filename(self):
+        '''Returns the name of the current file.'''
+        if self.current_store is None:
+            return None
+        else:
+            return self.current_store.fname
+    
     def __enter__(self):
         return self
 
