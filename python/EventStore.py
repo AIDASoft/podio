@@ -43,6 +43,8 @@ class EventStore(object):
         self.current_store = None
         for fname in self.files:
             store = podio.PythonEventStore(fname)
+            if store.isZombie():
+                raise ValueError(fname + ' does not exist.')
             store.name = fname
             if self.current_store is None:
                 self.current_store = store

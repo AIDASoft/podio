@@ -105,7 +105,8 @@ class EventStoreTestCase(unittest.TestCase):
 
     def test_no_file(self):
         '''Test that non-accessible files are gracefully handled.'''
-        self.store = EventStore('foo.root')
+        with self.assertRaises(ValueError):
+            self.store = EventStore('foo.root')
         
 if __name__ == "__main__":
     from ROOT import gSystem
