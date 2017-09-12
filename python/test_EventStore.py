@@ -103,7 +103,10 @@ class EventStoreTestCase(unittest.TestCase):
             self.assertTrue(len(store) >= 0)
             self.assertTrue(store.isValid())
 
-
+    def test_no_file(self):
+        '''Test that non-accessible files are gracefully handled.'''
+        self.store = EventStore('foo.root')
+        
 if __name__ == "__main__":
     from ROOT import gSystem
     from subprocess import call
@@ -111,7 +114,7 @@ if __name__ == "__main__":
     gSystem.Load("libTestDataModel")
     # creating example file for the tests
     if not os.path.isfile('example.root'):
-        write = '{podio}/examples/write'.format(podio=os.environ['PODIO'])
+        write = '{podio}/tests/write'.format(podio=os.environ['PODIO'])
         print write
         call(write)
     unittest.main()
