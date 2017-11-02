@@ -6,23 +6,19 @@
 #include <iostream>
 
 // data model specific includes
-#include "podio/ObjBase.h"
 #include "EventInfoData.h"
-
-
+#include "podio/ObjBase.h"
 
 // forward declarations
 class EventInfo;
 class ConstEventInfo;
-
-
 
 class EventInfoObj : public podio::ObjBase {
 public:
   /// constructor
   EventInfoObj();
   /// copy constructor (does a deep-copy of relation containers)
-  EventInfoObj(const EventInfoObj&);
+  EventInfoObj(const EventInfoObj &);
   /// constructor from ObjectID and EventInfoData
   /// does not initialize the internal relation containers
   EventInfoObj(const podio::ObjectID id, EventInfoData data);
@@ -30,10 +26,6 @@ public:
 
 public:
   EventInfoData data;
-
-
 };
-
-
 
 #endif

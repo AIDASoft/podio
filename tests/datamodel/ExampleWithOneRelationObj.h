@@ -6,36 +6,29 @@
 #include <iostream>
 
 // data model specific includes
-#include "podio/ObjBase.h"
 #include "ExampleWithOneRelationData.h"
-
-
+#include "podio/ObjBase.h"
 
 // forward declarations
 class ExampleWithOneRelation;
 class ConstExampleWithOneRelation;
 class ConstExampleCluster;
 
-
-
 class ExampleWithOneRelationObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleWithOneRelationObj();
   /// copy constructor (does a deep-copy of relation containers)
-  ExampleWithOneRelationObj(const ExampleWithOneRelationObj&);
+  ExampleWithOneRelationObj(const ExampleWithOneRelationObj &);
   /// constructor from ObjectID and ExampleWithOneRelationData
   /// does not initialize the internal relation containers
-  ExampleWithOneRelationObj(const podio::ObjectID id, ExampleWithOneRelationData data);
+  ExampleWithOneRelationObj(const podio::ObjectID id,
+                            ExampleWithOneRelationData data);
   virtual ~ExampleWithOneRelationObj();
 
 public:
   ExampleWithOneRelationData data;
-  ConstExampleCluster* m_cluster;
-
-
+  ConstExampleCluster *m_cluster;
 };
-
-
 
 #endif

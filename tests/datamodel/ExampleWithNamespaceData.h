@@ -11,7 +11,7 @@ namespace ex {
 
 class ExampleWithNamespaceData {
 public:
-  ex2::NamespaceStruct data;  ///< a component
+  ex2::NamespaceStruct data; ///< a component
 };
 } // namespace ex
 
