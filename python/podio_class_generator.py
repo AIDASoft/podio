@@ -2,6 +2,7 @@
 import os
 import string
 import pickle
+import subprocess
 from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +39,20 @@ class ClassGenerator(object):
         self.warnings = []
         self.component_members = {}
         self.dryrun = dryrun
+
+    def configure_clang_format(self, apply):
+        if not apply:
+            self.clang_format = []
+            return
+        try:
+            cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
+        except subprocess.CalledProcessError:
+            print "ERROR: Cannot find clang-format executable"
+            print "       Please make sure it is in the PATH."
+            self.clang_format = []
+            return
+        self.clang_format = [cformat_exe, "-i",  "-style=file", "-fallback-style=llvm"]
+
 
     def process(self):
         self.reader.read()
@@ -132,6 +147,11 @@ class ClassGenerator(object):
                                                      % klass)
             elif "std::array" in klass:
                 datatype_dict["includes"].append("#include <array>")
+                array_type = klass.split("<")[1].split(",")[0]
+                if array_type not in self.buildin_types:
+                  if "::" in array_type:
+                        array_type = array_type.split("::")[1]
+                  datatype_dict["includes"].append("#include \"%s.h\"\n" % array_type)
             elif "vector" in klass:
                 datatype_dict["includes"].append("#include <vector>")
                 if is_data:  # avoid having warnings twice
@@ -260,6 +280,11 @@ class ClassGenerator(object):
             datatype["includes"].append('#include "%s.h"' %klass)
         elif "std::array" in klass:
           datatype["includes"].append("#include <array>")
+          array_type = klass.split("<")[1].split(",")[0]
+          if array_type not in self.buildin_types:
+            if "::" in array_type:
+                  array_type = array_type.split("::")[1]
+            datatype["includes"].append("#include \"%s.h\"\n" % array_type)
         else:
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
@@ -484,7 +509,7 @@ class ClassGenerator(object):
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
                       "namespace_close" : namespace_close, 
-                       "ostream_declaration" : ostream_declaration,
+                      "ostream_declaration" : ostream_declaration,
                       "ostream_implementation" : ostream_implementation
                      }
       self.fill_templates("Object",substitutions)
@@ -698,14 +723,14 @@ class ClassGenerator(object):
                 else:
                     widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
             elif klass == "int":
-                findMaximum += "\n    int " + name + "Max ; \n"  
+                findMaximum += "\n    int " + name + "Max ; \n"
                 findMaximum += "    " + name + "Width = 1 ; \n "
                 findMaximum += "     for(int i = 0 ; i < value.size(); i++){ \n"
-                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n" 
+                findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n"
                 findMaximum += "            if(" + name + "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
                 findMaximum += "               " + name + "Max = value[i].get" + name[:1].upper() + name[1:] + "();"
-                findMaximum += "\n            } \n" 
-                findMaximum += "\n         } \n" 
+                findMaximum += "\n            } \n"
+                findMaximum += "\n         } \n"
                 findMaximum += "         else if( -" + name + "Max / 10 > value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
                 findMaximum += "             " + name + "Max = - value[i].get" +  name[:1].upper() + name[1:] + "() * 10; "
                 findMaximum += "\n         } \n"
@@ -750,7 +775,7 @@ class ClassGenerator(object):
                       "tableHeader"   : tableHeader,
                       "outputSingleObject" : outputSingleObject
                       }
- 
+
       # TODO: add loading of code from external files
 
         self.fill_templates("PrintInfo",substitutions)
@@ -798,6 +823,11 @@ class ClassGenerator(object):
               includes.append('#include "%s.h"\n' %(klassname))
           if "std::array" in klass:
               includes.append("#include <array>\n")
+              array_type = klass.split("<")[1].split(",")[0]
+              if array_type not in self.buildin_types:
+                if "::" in array_type:
+                      array_type = array_type.split("::")[1]
+                includes.append("#include \"%s.h\"\n" % array_type)
         else:
           # handle user provided extra code
           if klass.has_key("declaration"):
@@ -950,6 +980,8 @@ class ClassGenerator(object):
         fullname = os.path.join(self.install_dir,"src",name)
       if not self.dryrun:
         open(fullname, "w").write(content)
+        if self.clang_format:
+          subprocess.call(self.clang_format + [fullname])
 
     def evaluate_template(self, filename, substitutions):
         """ reads in a given template, evaluates it
@@ -1012,6 +1044,9 @@ if __name__ == "__main__":
   parser.add_option("-d", "--dryrun",
                     action="store_true", dest="dryrun", default=False,
                     help="Do not actually write datamodel files")
+  parser.add_option("-c", "--clangformat", dest="clangformat",
+                    action="store_true", default=False,
+                    help="Apply clang-format when generating code (with -style=file)")
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
@@ -1022,13 +1057,14 @@ if __name__ == "__main__":
   project = args[2]
   directory = os.path.join( install_path ,"src" )
   if not os.path.exists( directory ):
-    os.makedirs(directory)
+      os.makedirs(directory)
   directory = os.path.join( install_path , project )
 
   if not os.path.exists( directory ):
-    os.makedirs(directory)
+      os.makedirs(directory)
 
   gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
+  gen.configure_clang_format(options.clangformat)
   gen.process()
   for warning in gen.warnings:
       print warning

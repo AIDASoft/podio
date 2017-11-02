@@ -58,12 +58,10 @@ public:
 //  ExampleWithArrayCollection(ExampleWithArrayVector* data, int collectionID);
   ~ExampleWithArrayCollection();
 
-
+  void clear() override;
   /// operator to allow pointer like calling of members a la LCIO  \n     
   ExampleWithArrayCollection* operator->() { return (ExampleWithArrayCollection*) this ; }
 
-
-  void clear();
   /// Append a new object to the collection, and return this object.
   ExampleWithArray create();
 
@@ -86,21 +84,21 @@ public:
   /// Append object to the collection
   void push_back(ConstExampleWithArray object);
 
-  void prepareForWrite();
-  void prepareAfterRead();
-  void setBuffer(void* address);
-  bool setReferences(const podio::ICollectionProvider* collectionProvider);
+  void prepareForWrite() override;
+  void prepareAfterRead() override;
+  void setBuffer(void* address) override;
+  bool setReferences(const podio::ICollectionProvider* collectionProvider) override;
 
-  podio::CollRefCollection* referenceCollections() { return &m_refCollections;};
+  podio::CollRefCollection* referenceCollections() override { return &m_refCollections;};
 
-  void setID(unsigned ID){
+  void setID(unsigned ID) override {
     m_collectionID = ID;
     std::for_each(m_entries.begin(),m_entries.end(),
                  [ID](ExampleWithArrayObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
 
-  bool isValid() const {
+  bool isValid() const override {
     return m_isValid;
   }
 
@@ -113,7 +111,7 @@ public:
   }
 
   /// returns the address of the pointer to the data buffer
-  void* getBufferAddress() { return (void*)&m_data;};
+  void* getBufferAddress() override { return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
   std::vector<ExampleWithArrayData>* _getBuffer() { return m_data;};
@@ -128,6 +126,8 @@ public:
   const std::array<std::array<int, 4>,arraysize> snail_case_array() const;
   template<size_t arraysize>
   const std::array<std::array<int, 4>,arraysize> snail_case_Array3() const;
+  template<size_t arraysize>
+  const std::array<std::array<ex2::NamespaceStruct, 4>,arraysize> structArray() const;
 
 
 private:
@@ -194,6 +194,15 @@ const std::array<class std::array<int, 4>,arraysize> ExampleWithArrayCollection:
   auto valid_size = std::min(arraysize,m_entries.size());
   for (unsigned i = 0; i<valid_size; ++i){
     tmp[i] = m_entries[i]->data.snail_case_Array3;
+ }
+ return tmp;
+}
+template<size_t arraysize>
+const std::array<class std::array<ex2::NamespaceStruct, 4>,arraysize> ExampleWithArrayCollection::structArray() const {
+  std::array<class std::array<ex2::NamespaceStruct, 4>,arraysize> tmp;
+  auto valid_size = std::min(arraysize,m_entries.size());
+  for (unsigned i = 0; i<valid_size; ++i){
+    tmp[i] = m_entries[i]->data.structArray;
  }
  return tmp;
 }

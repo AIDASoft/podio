@@ -58,12 +58,11 @@ public:
 //  ExampleReferencingTypeCollection(ExampleReferencingTypeVector* data, int collectionID);
   ~ExampleReferencingTypeCollection();
 
+  void clear() override;
 
   /// operator to allow pointer like calling of members a la LCIO  \n     
   ExampleReferencingTypeCollection* operator->() { return (ExampleReferencingTypeCollection*) this ; }
 
-
-  void clear();
   /// Append a new object to the collection, and return this object.
   ExampleReferencingType create();
 
@@ -86,21 +85,21 @@ public:
   /// Append object to the collection
   void push_back(ConstExampleReferencingType object);
 
-  void prepareForWrite();
-  void prepareAfterRead();
-  void setBuffer(void* address);
-  bool setReferences(const podio::ICollectionProvider* collectionProvider);
+  void prepareForWrite() override;
+  void prepareAfterRead() override;
+  void setBuffer(void* address) override;
+  bool setReferences(const podio::ICollectionProvider* collectionProvider) override;
 
-  podio::CollRefCollection* referenceCollections() { return &m_refCollections;};
+  podio::CollRefCollection* referenceCollections() override { return &m_refCollections;};
 
-  void setID(unsigned ID){
+  void setID(unsigned ID) override {
     m_collectionID = ID;
     std::for_each(m_entries.begin(),m_entries.end(),
                  [ID](ExampleReferencingTypeObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
     );
   };
 
-  bool isValid() const {
+  bool isValid() const override {
     return m_isValid;
   }
 
@@ -113,7 +112,7 @@ public:
   }
 
   /// returns the address of the pointer to the data buffer
-  void* getBufferAddress() { return (void*)&m_data;};
+  void* getBufferAddress() override { return (void*)&m_data;};
 
   /// returns the pointer to the data buffer
   std::vector<ExampleReferencingTypeData>* _getBuffer() { return m_data;};

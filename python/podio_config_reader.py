@@ -24,8 +24,8 @@ class ClassDefinitionValidator(object):
 
     # regex to get std::array definition: one group for type, one for length,
     # one for comment (this one is for members of datatypes)
-    full_array_re = re.compile(' *std::array *<([a-z]+) *, *([0-9]+)> *(\S+) *\/\/ *(.+)')
-    array_re = re.compile(' *std::array *<([a-z]+) *, *([0-9]+)> *')
+    full_array_re = re.compile(' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *(\S+) *\/\/ *(.+)')
+    array_re = re.compile(' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *')
 
 
     buildin_types = ["int", "long", "float", "double",
@@ -80,7 +80,7 @@ class ClassDefinitionValidator(object):
         if not array_match is None:
             name, comment = array_match.group(3), array_match.group(4)
             typ = array_match.group(1)
-            if not typ in self.buildin_types:
+            if not typ in self.buildin_types and not typ in self.components.keys():
                 raise Exception("%s defines an array of disallowed type %s"
                                 % (string, typ))
             klass = "std::array<{typ}, {length}>".format(
@@ -141,6 +141,11 @@ class PodioConfigReader(object):
         stream = open(self.yamlfile, "r")
         content = yaml.load(stream)
         validator = ClassDefinitionValidator(content)
+        if "components" in content.keys():
+            validator.check_components(content["components"])
+            for klassname, value in content["components"].iteritems():
+                component = {"Members": value}
+                self.components[klassname] = component
         if "datatypes" in content:
             for klassname, value in content["datatypes"].iteritems():
                 validator.check_datatype(klassname, value)
@@ -167,11 +172,6 @@ class PodioConfigReader(object):
                     datatype["ConstExtraCode"] = self.handle_extracode(
                                                      value["ConstExtraCode"])
                 self.datatypes[klassname] = datatype
-        if "components" in content.keys():
-            validator.check_components(content["components"])
-            for klassname, value in content["components"].iteritems():
-                component = {"Members": value}
-                self.components[klassname] = component
         if "options" in content.keys():
             for option, value in content["options"].iteritems():
                 self.options[option] = value
