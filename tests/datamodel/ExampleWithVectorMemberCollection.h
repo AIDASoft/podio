@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -57,6 +59,10 @@ public:
   ~ExampleWithVectorMemberCollection();
 
   void clear() override;
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleWithVectorMemberCollection* operator->() { return (ExampleWithVectorMemberCollection*) this ; }
+
   /// Append a new object to the collection, and return this object.
   ExampleWithVectorMember create();
 
@@ -123,6 +129,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleWithVectorMemberDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleWithVectorMemberCollection& v);
+
 
 template<typename... Args>
 ExampleWithVectorMember  ExampleWithVectorMemberCollection::create(Args&&... args){

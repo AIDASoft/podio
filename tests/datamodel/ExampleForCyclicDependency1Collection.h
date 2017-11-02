@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -57,6 +59,10 @@ public:
   ~ExampleForCyclicDependency1Collection();
 
   void clear() override;
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleForCyclicDependency1Collection* operator->() { return (ExampleForCyclicDependency1Collection*) this ; }
+
   /// Append a new object to the collection, and return this object.
   ExampleForCyclicDependency1 create();
 
@@ -124,6 +130,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleForCyclicDependency1DataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleForCyclicDependency1Collection& v);
+
 
 template<typename... Args>
 ExampleForCyclicDependency1  ExampleForCyclicDependency1Collection::create(Args&&... args){

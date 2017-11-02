@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -57,6 +59,10 @@ public:
   ~ExampleReferencingTypeCollection();
 
   void clear() override;
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleReferencingTypeCollection* operator->() { return (ExampleReferencingTypeCollection*) this ; }
+
   /// Append a new object to the collection, and return this object.
   ExampleReferencingType create();
 
@@ -127,6 +133,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleReferencingTypeDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleReferencingTypeCollection& v);
+
 
 template<typename... Args>
 ExampleReferencingType  ExampleReferencingTypeCollection::create(Args&&... args){

@@ -3,6 +3,8 @@
 #include "NotSoSimpleStruct.h"
 #include "ExampleWithComponentData.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -81,12 +83,18 @@ public:
 //       const ExampleWithComponent& p2 );
   bool operator<(const ExampleWithComponent& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   ExampleWithComponentObj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithComponent& value );
+
 
 
 

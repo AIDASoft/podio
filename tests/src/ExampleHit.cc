@@ -74,6 +74,15 @@ bool ExampleHit::operator==(const ConstExampleHit& other) const {
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleHit& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " x : " << value.x() << std::endl ;
+  o << " y : " << value.y() << std::endl ;
+  o << " z : " << value.z() << std::endl ;
+  o << " energy : " << value.energy() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleHit& p1, const ExampleHit& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

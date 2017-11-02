@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -57,6 +59,10 @@ public:
   ~ExampleWithOneRelationCollection();
 
   void clear() override;
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleWithOneRelationCollection* operator->() { return (ExampleWithOneRelationCollection*) this ; }
+
   /// Append a new object to the collection, and return this object.
   ExampleWithOneRelation create();
 
@@ -124,6 +130,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleWithOneRelationDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleWithOneRelationCollection& v);
+
 
 template<typename... Args>
 ExampleWithOneRelation  ExampleWithOneRelationCollection::create(Args&&... args){

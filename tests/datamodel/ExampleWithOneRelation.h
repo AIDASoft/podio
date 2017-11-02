@@ -2,6 +2,8 @@
 #define ExampleWithOneRelation_H
 #include "ExampleWithOneRelationData.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -73,12 +75,18 @@ public:
 //       const ExampleWithOneRelation& p2 );
   bool operator<(const ExampleWithOneRelation& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   ExampleWithOneRelationObj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithOneRelation& value );
+
 
 
 

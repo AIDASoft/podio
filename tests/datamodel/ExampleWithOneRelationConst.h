@@ -69,6 +69,8 @@ public:
 //       const ExampleWithOneRelation& p2 );
   bool operator<(const ConstExampleWithOneRelation& other) const { return m_obj < other.m_obj  ; }
 
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:

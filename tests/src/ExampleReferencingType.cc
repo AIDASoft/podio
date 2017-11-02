@@ -50,9 +50,6 @@ std::vector<::ConstExampleCluster>::const_iterator ExampleReferencingType::Clust
 
 std::vector<::ConstExampleCluster>::const_iterator ExampleReferencingType::Clusters_end() const {
   auto ret_value = m_obj->m_Clusters->begin();
-//fg: this code fails if m_obj->data.Clusters==0
-//  std::advance(ret_value, m_obj->data.Clusters_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Clusters_end);
   return ret_value;
 }
@@ -80,9 +77,6 @@ std::vector<::ConstExampleReferencingType>::const_iterator ExampleReferencingTyp
 
 std::vector<::ConstExampleReferencingType>::const_iterator ExampleReferencingType::Refs_end() const {
   auto ret_value = m_obj->m_Refs->begin();
-//fg: this code fails if m_obj->data.Refs==0
-//  std::advance(ret_value, m_obj->data.Refs_end-1);
-//  return ++ret_value;
   std::advance(ret_value, m_obj->data.Refs_end);
   return ret_value;
 }
@@ -120,6 +114,19 @@ const podio::ObjectID ExampleReferencingType::getObjectID() const {
 
 bool ExampleReferencingType::operator==(const ConstExampleReferencingType& other) const {
   return (m_obj==other.m_obj);
+}
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleReferencingType& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " Clusters : " ;
+  for(unsigned i=0,N=value.Clusters_size(); i<N ; ++i)
+    o << value.Clusters(i) << " " ; 
+  o << std::endl ;
+  o << " Refs : " ;
+  for(unsigned i=0,N=value.Refs_size(); i<N ; ++i)
+    o << value.Refs(i) << " " ; 
+  o << std::endl ;
+  return o ;
 }
 
 

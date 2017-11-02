@@ -72,6 +72,12 @@ bool ExampleForCyclicDependency1::operator==(const ConstExampleForCyclicDependen
   return (m_obj==other.m_obj);
 }
 
+std::ostream& operator<<( std::ostream& o,const ConstExampleForCyclicDependency1& value ){
+  o << " id : " << value.id() << std::endl ;
+  o << " ref : " << value.ref().id() << std::endl ;
+  return o ;
+}
+
 
 //bool operator< (const ExampleForCyclicDependency1& p1, const ExampleForCyclicDependency1& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

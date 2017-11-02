@@ -4,6 +4,8 @@
 #include <vector>
 #include "ExampleWithNamespace.h"
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "podio/ObjectID.h"
 
 //forward declarations
@@ -89,12 +91,18 @@ public:
 //       const ExampleWithARelation& p2 );
   bool operator<(const ExampleWithARelation& other) const { return m_obj < other.m_obj  ; }
 
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
   ExampleWithARelationObj* m_obj;
 
 };
+
+std::ostream& operator<<( std::ostream& o,const ConstExampleWithARelation& value );
+
 
 } // namespace ex
 

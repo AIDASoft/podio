@@ -62,6 +62,7 @@ bool ${name}::operator==(const Const${name}& other) const {
   return (m_obj==other.m_obj);
 }
 
+${ostream_implementation}
 
 //bool operator< (const ${name}& p1, const ${name}& p2 ) {
 //  if( p1.m_containerID == p2.m_containerID ) {

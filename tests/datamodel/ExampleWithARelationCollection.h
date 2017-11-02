@@ -8,6 +8,8 @@
 #include <deque>
 #include <array>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -57,6 +59,10 @@ public:
   ~ExampleWithARelationCollection();
 
   void clear() override;
+
+  /// operator to allow pointer like calling of members a la LCIO  \n     
+  ExampleWithARelationCollection* operator->() { return (ExampleWithARelationCollection*) this ; }
+
   /// Append a new object to the collection, and return this object.
   ExampleWithARelation create();
 
@@ -128,6 +134,9 @@ private:
   podio::CollRefCollection m_refCollections;
   ExampleWithARelationDataContainer* m_data;
 };
+
+std::ostream& operator<<( std::ostream& o,const ExampleWithARelationCollection& v);
+
 
 template<typename... Args>
 ExampleWithARelation  ExampleWithARelationCollection::create(Args&&... args){

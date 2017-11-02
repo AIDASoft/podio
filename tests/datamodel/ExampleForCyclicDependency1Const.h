@@ -69,6 +69,8 @@ public:
 //       const ExampleForCyclicDependency1& p2 );
   bool operator<(const ConstExampleForCyclicDependency1& other) const { return m_obj < other.m_obj  ; }
 
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+
   const podio::ObjectID getObjectID() const;
 
 private:
