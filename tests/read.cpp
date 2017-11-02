@@ -153,6 +153,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
     if (array.arrayStruct().data.p.at(2) != 2*eventNum) {
       throw std::runtime_error("Array not properly set.");
     }
+    if (array.structArray(0).x != eventNum) {
+      throw std::runtime_error("Array of struct not properly set.");
+    }
   } else {
     throw std::runtime_error("Collection 'arrays' should be present");
   }

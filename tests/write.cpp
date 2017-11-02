@@ -221,13 +221,17 @@ int main(){
     strings.push_back(string);
 
     std::array<int, 4> arrayTest = {0, 0, 2, 3};
-    std::array<int, 4> arrayTest2 = {4, 4, 2*static_cast<int>(i)};
+    std::array<int, 4> arrayTest2 = {4, 4, 2 * static_cast<int>(i)};
     NotSoSimpleStruct a;
     a.data.p = arrayTest2;
-    auto array = ExampleWithArray(a, arrayTest, arrayTest, arrayTest, arrayTest);
+    ex2::NamespaceStruct nstruct;
+    nstruct.x = static_cast<int>(i);
+    std::array<ex2::NamespaceStruct, 4> structArrayTest = {nstruct, nstruct, nstruct, nstruct};
+    auto array = ExampleWithArray(a, arrayTest, arrayTest, arrayTest, arrayTest, structArrayTest);
     array.myArray(1, i);
     array.arrayStruct(a);
     arrays.push_back(array);
+
     writer.writeEvent();
     store.clearCollections();
   }

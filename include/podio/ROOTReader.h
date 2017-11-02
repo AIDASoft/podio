@@ -46,7 +46,7 @@ class ROOTReader : public IReader {
     bool getCollection(const std::string& name, T*& collection);
 
     /// Read CollectionIDTable from ROOT file
-    CollectionIDTable* getCollectionIDTable() {return m_table;}
+    CollectionIDTable* getCollectionIDTable() override final {return m_table;}
 
     /// Returns number of entries in the TTree
     unsigned getEntries() const;
@@ -58,14 +58,14 @@ class ROOTReader : public IReader {
     void goToEvent(unsigned evnum);
 
     /// Check if TFile is valid
-    virtual bool isValid() const;
+    virtual bool isValid() const override final;
 
   private:
 
     void readCollectionIDTable();
 
     /// Implementation for collection reading
-    CollectionBase* readCollection(const std::string& name);
+    CollectionBase* readCollection(const std::string& name) override final;
 
   private:
     typedef std::pair<CollectionBase*, std::string> Input;

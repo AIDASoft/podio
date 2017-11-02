@@ -1,6 +1,8 @@
 #ifndef ConstExampleWithArray_H
 #define ConstExampleWithArray_H
 #include <array>
+#include "NamespaceStruct.h"
+
 #include "NotSoSimpleStruct.h"
 #include "ExampleWithArrayData.h"
 #include <vector>
@@ -33,7 +35,7 @@ public:
 
   /// default constructor
   ConstExampleWithArray();
-  ConstExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3);
+  ConstExampleWithArray(NotSoSimpleStruct arrayStruct,std::array<int, 4> myArray,std::array<int, 4> anotherArray2,std::array<int, 4> snail_case_array,std::array<int, 4> snail_case_Array3,std::array<ex2::NamespaceStruct, 4> structArray);
 
   /// constructor from existing ExampleWithArrayObj
   ConstExampleWithArray(ExampleWithArrayObj* obj);
@@ -69,6 +71,10 @@ public:
   const std::array<int, 4>& snail_case_Array3() const;
   /// Access item i in the mixing things up for regex
   const int& snail_case_Array3(size_t i) const;
+  /// Access the an array containing structs
+  const std::array<ex2::NamespaceStruct, 4>& structArray() const;
+  /// Access item i in the an array containing structs
+  const ex2::NamespaceStruct& structArray(size_t i) const;
 
 
 

@@ -24,6 +24,9 @@ public:
   /// get number of entries in the tree
   unsigned getEntries() const;
 
+  /// is the input file accessible?
+  bool isZombie() const {return m_isZombie;}
+  
   bool isValid() const {return m_reader.isValid();}
   void close() {m_reader.closeFile();}
 
@@ -33,6 +36,9 @@ public:
  private:
   podio::ROOTReader m_reader;
   podio::EventStore m_store;
+
+  /// set to true if input root file accessible, false otherwise
+  bool              m_isZombie;
 };
 
 }
