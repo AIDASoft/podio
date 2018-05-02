@@ -551,7 +551,7 @@ class ClassGenerator(object):
       prepareforwriting_refmembers = ""
 
       #------------------ create ostream operator --------------------------
-      # create colum based output fro data members using scientific format 
+      # create colum based output for data members using scientific format
       #
       numColWidth = 12 
       ostream_header_string = "id:"
@@ -595,13 +595,14 @@ class ClassGenerator(object):
           name  = "get" + name[:1].upper() + name[1:]
         if not t.startswith("std::array"):
           ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) ) 
-
+      ostream_implementation += '  << std::endl;\n'
       ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string ) 
 
       #----------------------------------------------------------------------
 
       refmembers = definition["OneToOneRelations"]
       refvectors = definition["OneToManyRelations"]
+      vectormembers = definition["VectorMembers"]
       nOfRefVectors = len(refvectors)
       nOfRefMembers = len(refmembers)
       if nOfRefVectors + nOfRefMembers > 0:
@@ -609,6 +610,7 @@ class ClassGenerator(object):
         #constructorbody += "\tm_refCollections = new podio::CollRefCollection();\n"
         destructorbody  += "\tfor (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }\n"
         clear_relations += "\tfor (auto& pointer : m_refCollections) { pointer->clear(); }\n"
+
         for counter, item in enumerate(refvectors):
           name  = item["name"]
           klass = item["type"]
@@ -642,6 +644,17 @@ class ClassGenerator(object):
           # relation handling in ::settingReferences
           setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)
           prepareafterread += "\t\tobj->m_%s = m_rel_%s;" %(name, name)
+
+
+          get_name = name
+          if( self.getSyntax ):
+              get_name = "get" + name[:1].upper() + name[1:]
+          ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
+          ostream_implementation += ( '  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name )
+          ostream_implementation += ( '    o << v[i].%s(j).id() << " " ; \n'  % get_name  )
+          ostream_implementation +=   '  o << std::endl ;\n'
+
+
         for counter, item in enumerate(refmembers):
           name  = item["name"]
           klass = item["type"]
@@ -671,8 +684,24 @@ class ClassGenerator(object):
           # relation handling in ::settingReferences
           prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
 
-      ostream_implementation += '  << std::endl;\n  o.flags(old_flags) ; \n' 
-      ostream_implementation += "}\n  return o ;\n}\n"
+          get_name = name
+          if( self.getSyntax ):
+              get_name = "get" + name[:1].upper() + name[1:]
+          ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
+          ostream_implementation += ( '  o << v[i].%s().id() << std::endl;\n'  % get_name  )
+
+      for counter, item in enumerate(vectormembers):
+        name  = item["name"]
+        get_name = name
+        if( self.getSyntax ):
+            get_name = "get" + name[:1].upper() + name[1:]
+        ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
+        ostream_implementation += ( '  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name )
+        ostream_implementation += ( '    o << v[i].%s(j) << " " ; \n'  % get_name  )
+        ostream_implementation +=   '  o << std::endl ;\n'
+
+      ostream_implementation += '  }\no.flags(old_flags);\n'
+      ostream_implementation += "  return o ;\n}\n"
 
       substitutions = { "name" : rawclassname,
                         "constructorbody" : constructorbody,
