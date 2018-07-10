@@ -44,12 +44,19 @@ add_test(NAME generate-edm COMMAND python $ENV{PODIO}/python/podio_class_generat
 set_property(TEST generate-edm PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
 
 
-add_test(NAME write COMMAND write)
-set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
+#[[add_test(NAME write COMMAND write)
+set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})]]
 
-add_test(NAME read COMMAND read)
+add_test(NAME writecopy COMMAND writecopy)
+set_property(TEST writecopy PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
+
+#[[add_test(NAME read COMMAND read)
 set_property(TEST read PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
-set_property(TEST read PROPERTY DEPENDS write)
+set_property(TEST read PROPERTY DEPENDS write)]]
+
+add_test(NAME readcopy COMMAND readcopy)
+set_property(TEST readcopy PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
+set_property(TEST readcopy PROPERTY DEPENDS writecopy)
 
 add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_INSTALL_PREFIX}/python)
 set_property(TEST pyunittest
