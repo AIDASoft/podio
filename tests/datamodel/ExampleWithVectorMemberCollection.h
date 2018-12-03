@@ -91,6 +91,7 @@ public:
   bool setReferences(const podio::ICollectionProvider* collectionProvider) override;
 
   podio::CollRefCollection* referenceCollections() override { return &m_refCollections;};
+  podio::VectorMembersInfo* vectorMembers() override {return &m_vecmem_info ; }
 
   void setID(unsigned ID) override {
     m_collectionID = ID;
@@ -128,6 +129,9 @@ private:
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
   ExampleWithVectorMemberDataContainer* m_data;
+  podio::VectorMembersInfo m_vecmem_info ;
+  std::vector<int>* m_vec_count;
+  std::vector<std::vector<int>*> m_vecs_count;
 };
 
 std::ostream& operator<<( std::ostream& o,const ExampleWithVectorMemberCollection& v);
