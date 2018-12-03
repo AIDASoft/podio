@@ -11,8 +11,8 @@
 
 class ExampleWithVectorMemberData {
 public:
-  unsigned int count_begin;
-  unsigned int count_end;
+  unsigned int count_begin{};
+  unsigned int count_end{};
 };
 
 
