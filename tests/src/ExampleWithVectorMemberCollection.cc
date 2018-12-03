@@ -47,7 +47,8 @@ ExampleWithVectorMember ExampleWithVectorMemberCollection::create(){
 
 void ExampleWithVectorMemberCollection::clear(){
   m_data->clear();
-
+  m_vec_count->clear() ;
+  m_vecs_count.clear() ;
   for (auto& obj : m_entries) { delete obj; }
   m_entries.clear();
 }
@@ -57,8 +58,7 @@ void ExampleWithVectorMemberCollection::prepareForWrite(){
   m_data->reserve(size);
   for (auto& obj : m_entries) {m_data->push_back(obj->data); }
   for (auto& pointer : m_refCollections) {pointer->clear(); } 
-
-  int count_index ;
+  int count_index =0  ;
   for(int i=0, size = m_data->size(); i != size; ++i){
     (*m_data)[i].count_begin=count_index;
     (*m_data)[i].count_end +=count_index;
