@@ -59,7 +59,7 @@ namespace podio {
     virtual CollRefCollection* referenceCollections() = 0;
 
     /// return pointers to vector members
-    virtual VectorMembersInfo* vectorMembers() {return nullptr ; }
+    virtual VectorMembersInfo* vectorMembers() = 0;
   };
 
 } // namespace

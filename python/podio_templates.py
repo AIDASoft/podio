@@ -117,3 +117,8 @@ declarations["relation"] = "\tstd::vector<{namespace}::Const{type}>* m_rel_{name
 declarations["relation_collection"] = "\tstd::vector<std::vector<{namespace}::Const{type}>*> m_rel_{name}_tmp; ///< Relation buffer for internal book-keeping\n"
 
 implementations["ctor_list_relation"] = ", m_rel_{name}(new std::vector<{namespace}::Const{type}>())"
+
+# Vector Members
+#-----------------------------------
+declarations["vecmembers"] = "\tstd::vector<{type}>* m_vec_{name}; /// combined vector of all objects in collection\n"
+declarations["vecmembers"] += "\tstd::vector<std::vector<{type}>*> m_vecs_{name}; /// pointers to individual member vectors\n"

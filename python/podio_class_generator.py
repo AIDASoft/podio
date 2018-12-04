@@ -549,7 +549,7 @@ class ClassGenerator(object):
       push_back_relations = ""
       prepareafterread_refmembers = ""
       prepareforwriting_refmembers = ""
-
+      vecmembers = ""
       #------------------ create ostream operator --------------------------
       # create colum based output for data members using scientific format
       #
@@ -692,6 +692,7 @@ class ClassGenerator(object):
 
       for counter, item in enumerate(vectormembers):
         name  = item["name"]
+        klass = item["type"]
         get_name = name
         if( self.getSyntax ):
             get_name = "get" + name[:1].upper() + name[1:]
@@ -699,6 +700,7 @@ class ClassGenerator(object):
         ostream_implementation += ( '  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name )
         ostream_implementation += ( '    o << v[i].%s(j) << " " ; \n'  % get_name  )
         ostream_implementation +=   '  o << std::endl ;\n'
+        vecmembers += declarations["vecmembers"].format(type=klass, name=name)
 
       ostream_implementation += '  }\no.flags(old_flags);\n'
       ostream_implementation += "  return o ;\n}\n"
@@ -718,6 +720,7 @@ class ClassGenerator(object):
                         "create_relations" : create_relations,
                         "clear_relations"  : clear_relations,
                         "push_back_relations" : push_back_relations,
+                        "vecmembers" : vecmembers,
                         "package_name" : self.package_name,
                         "vectorized_access_declaration" : vectorized_access_decl,
                         "vectorized_access_implementation" : vectorized_access_impl,

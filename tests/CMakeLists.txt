@@ -40,8 +40,8 @@ endforeach( sourcefile ${executables} )
 
 #--- Adding tests --------------------------------------------------------------
 # uncomment this to actually run the EDM generation in the tests
-#add_test(NAME generate-edm COMMAND python $ENV{PODIO}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel --clangformat
-add_test(NAME generate-edm COMMAND python $ENV{PODIO}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel --dryrun --clangformat
+add_test(NAME generate-edm COMMAND python $ENV{PODIO}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel --clangformat
+#add_test(NAME generate-edm COMMAND python $ENV{PODIO}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel --dryrun --clangformat
          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 set_property(TEST generate-edm PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
 

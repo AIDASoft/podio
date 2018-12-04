@@ -92,6 +92,8 @@ public:
 
   podio::CollRefCollection* referenceCollections() override final { return &m_refCollections;};
 
+  podio::VectorMembersInfo* vectorMembers() override {return &m_vecmem_info ; }
+
   void setID(unsigned ID) override final {
     m_collectionID = ID;
     std::for_each(m_entries.begin(),m_entries.end(),
@@ -125,8 +127,11 @@ private:
   ${name}ObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
 ${relations}
+  //members to handle vector members
+${vecmembers}
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
+  podio::VectorMembersInfo m_vecmem_info ;
   ${name}DataContainer* m_data;
 };
 
