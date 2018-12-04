@@ -6,34 +6,27 @@
 #include <iostream>
 
 // data model specific includes
-#include "podio/ObjBase.h"
 #include "ExampleWithComponentData.h"
-
-
+#include "podio/ObjBase.h"
 
 // forward declarations
 class ExampleWithComponent;
 class ConstExampleWithComponent;
-
-
 
 class ExampleWithComponentObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleWithComponentObj();
   /// copy constructor (does a deep-copy of relation containers)
-  ExampleWithComponentObj(const ExampleWithComponentObj&);
+  ExampleWithComponentObj(const ExampleWithComponentObj &);
   /// constructor from ObjectID and ExampleWithComponentData
   /// does not initialize the internal relation containers
-  ExampleWithComponentObj(const podio::ObjectID id, ExampleWithComponentData data);
+  ExampleWithComponentObj(const podio::ObjectID id,
+                          ExampleWithComponentData data);
   virtual ~ExampleWithComponentObj();
 
 public:
   ExampleWithComponentData data;
-
-
 };
-
-
 
 #endif

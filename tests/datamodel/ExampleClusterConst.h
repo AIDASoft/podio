@@ -1,18 +1,14 @@
 #ifndef ConstExampleCluster_H
 #define ConstExampleCluster_H
-#include "ExampleClusterData.h"
-#include <vector>
-#include "ExampleHit.h"
 #include "ExampleCluster.h"
-#include <vector>
+#include "ExampleClusterData.h"
+#include "ExampleHit.h"
 #include "podio/ObjectID.h"
+#include <vector>
 
-//forward declarations
-
+// forward declarations
 
 #include "ExampleClusterObj.h"
-
-
 
 class ExampleClusterObj;
 class ExampleCluster;
@@ -31,27 +27,24 @@ class ConstExampleCluster {
   friend ExampleClusterCollectionIterator;
 
 public:
-
   /// default constructor
   ConstExampleCluster();
   ConstExampleCluster(double energy);
 
   /// constructor from existing ExampleClusterObj
-  ConstExampleCluster(ExampleClusterObj* obj);
+  ConstExampleCluster(ExampleClusterObj *obj);
   /// copy constructor
-  ConstExampleCluster(const ConstExampleCluster& other);
+  ConstExampleCluster(const ConstExampleCluster &other);
   /// copy-assignment operator
-  ConstExampleCluster& operator=(const ConstExampleCluster& other);
+  ConstExampleCluster &operator=(const ConstExampleCluster &other);
   /// support cloning (deep-copy)
   ConstExampleCluster clone() const;
   /// destructor
   ~ConstExampleCluster();
 
-
 public:
-
   /// Access the  cluster energy
-  const double& energy() const;
+  const double &energy() const;
 
   unsigned int Hits_size() const;
   ::ConstExampleHit Hits(unsigned int) const;
@@ -62,31 +55,32 @@ public:
   std::vector<::ConstExampleCluster>::const_iterator Clusters_begin() const;
   std::vector<::ConstExampleCluster>::const_iterator Clusters_end() const;
 
-
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleClusterObj instance
-  void unlink(){m_obj = nullptr;}
+  void unlink() { m_obj = nullptr; }
 
-  bool operator==(const ConstExampleCluster& other) const {
-       return (m_obj==other.m_obj);
+  bool operator==(const ConstExampleCluster &other) const {
+    return (m_obj == other.m_obj);
   }
 
-  bool operator==(const ExampleCluster& other) const;
+  bool operator==(const ExampleCluster &other) const;
 
-// less comparison operator, so that objects can be e.g. stored in sets.
-//  friend bool operator< (const ExampleCluster& p1,
-//       const ExampleCluster& p2 );
-  bool operator<(const ConstExampleCluster& other) const { return m_obj < other.m_obj  ; }
+  // less comparison operator, so that objects can be e.g. stored in sets.
+  //  friend bool operator< (const ExampleCluster& p1,
+  //       const ExampleCluster& p2 );
+  bool operator<(const ConstExampleCluster &other) const {
+    return m_obj < other.m_obj;
+  }
 
-  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+  unsigned int id() const {
+    return getObjectID().collectionID * 10000000 + getObjectID().index;
+  }
 
   const podio::ObjectID getObjectID() const;
 
 private:
-  ExampleClusterObj* m_obj;
-
+  ExampleClusterObj *m_obj;
 };
-
 
 #endif

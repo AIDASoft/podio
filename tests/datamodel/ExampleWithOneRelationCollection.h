@@ -1,47 +1,50 @@
-//AUTOMATICALLY GENERATED - DO NOT EDIT
+// AUTOMATICALLY GENERATED - DO NOT EDIT
 
 #ifndef ExampleWithOneRelationCollection_H
-#define  ExampleWithOneRelationCollection_H
+#define ExampleWithOneRelationCollection_H
 
+#include <algorithm>
+#include <array>
+#include <deque>
+#include <iomanip>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <deque>
-#include <array>
-#include <algorithm>
-#include <iostream>
-#include <iomanip>
 
 // podio specific includes
-#include "podio/ICollectionProvider.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
+#include "podio/ICollectionProvider.h"
 
 // datamodel specific includes
-#include "ExampleWithOneRelationData.h"
 #include "ExampleWithOneRelation.h"
+#include "ExampleWithOneRelationData.h"
 #include "ExampleWithOneRelationObj.h"
 
-
-typedef std::vector<ExampleWithOneRelationData> ExampleWithOneRelationDataContainer;
-typedef std::deque<ExampleWithOneRelationObj*> ExampleWithOneRelationObjPointerContainer;
+typedef std::vector<ExampleWithOneRelationData>
+    ExampleWithOneRelationDataContainer;
+typedef std::deque<ExampleWithOneRelationObj *>
+    ExampleWithOneRelationObjPointerContainer;
 
 class ExampleWithOneRelationCollectionIterator {
 
-  public:
-    ExampleWithOneRelationCollectionIterator(int index, const ExampleWithOneRelationObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+public:
+  ExampleWithOneRelationCollectionIterator(
+      int index, const ExampleWithOneRelationObjPointerContainer *collection)
+      : m_index(index), m_object(nullptr), m_collection(collection) {}
 
-    bool operator!=(const ExampleWithOneRelationCollectionIterator& x) const {
-      return m_index != x.m_index; //TODO: may not be complete
-    }
+  bool operator!=(const ExampleWithOneRelationCollectionIterator &x) const {
+    return m_index != x.m_index; // TODO: may not be complete
+  }
 
-    const ExampleWithOneRelation operator*() const;
-    const ExampleWithOneRelation* operator->() const;
-    const ExampleWithOneRelationCollectionIterator& operator++() const;
+  const ExampleWithOneRelation operator*() const;
+  const ExampleWithOneRelation *operator->() const;
+  const ExampleWithOneRelationCollectionIterator &operator++() const;
 
-  private:
-    mutable int m_index;
-    mutable ExampleWithOneRelation m_object;
-    const ExampleWithOneRelationObjPointerContainer* m_collection;
+private:
+  mutable int m_index;
+  mutable ExampleWithOneRelation m_object;
+  const ExampleWithOneRelationObjPointerContainer *m_collection;
 };
 
 /**
@@ -54,22 +57,25 @@ public:
   typedef const ExampleWithOneRelationCollectionIterator const_iterator;
 
   ExampleWithOneRelationCollection();
-//  ExampleWithOneRelationCollection(const ExampleWithOneRelationCollection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
-//  ExampleWithOneRelationCollection(ExampleWithOneRelationVector* data, int collectionID);
+  //  ExampleWithOneRelationCollection(const ExampleWithOneRelationCollection& )
+  //  = delete; // deletion doesn't work w/ ROOT IO ! :-(
+  //  ExampleWithOneRelationCollection(ExampleWithOneRelationVector* data, int
+  //  collectionID);
   ~ExampleWithOneRelationCollection();
 
-  void clear() override;
+  void clear() override final;
 
-  /// operator to allow pointer like calling of members a la LCIO  \n     
-  ExampleWithOneRelationCollection* operator->() { return (ExampleWithOneRelationCollection*) this ; }
+  /// operator to allow pointer like calling of members a la LCIO  \n
+  ExampleWithOneRelationCollection *operator->() {
+    return (ExampleWithOneRelationCollection *)this;
+  }
 
   /// Append a new object to the collection, and return this object.
   ExampleWithOneRelation create();
 
   /// Append a new object to the collection, and return this object.
   /// Initialized with the parameters given
-  template<typename... Args>
-  ExampleWithOneRelation create(Args&&... args);
+  template <typename... Args> ExampleWithOneRelation create(Args &&... args);
   int size() const;
 
   /// Returns the const object of given index
@@ -81,67 +87,69 @@ public:
   /// Returns the object of given index
   ExampleWithOneRelation at(unsigned int index);
 
-
   /// Append object to the collection
   void push_back(ConstExampleWithOneRelation object);
 
-  void prepareForWrite() override;
-  void prepareAfterRead() override;
-  void setBuffer(void* address) override;
-  bool setReferences(const podio::ICollectionProvider* collectionProvider) override;
+  void prepareForWrite() override final;
+  void prepareAfterRead() override final;
+  void setBuffer(void *address) override final;
+  bool setReferences(
+      const podio::ICollectionProvider *collectionProvider) override final;
 
-  podio::CollRefCollection* referenceCollections() override { return &m_refCollections;};
-
-  void setID(unsigned ID) override {
-    m_collectionID = ID;
-    std::for_each(m_entries.begin(),m_entries.end(),
-                 [ID](ExampleWithOneRelationObj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
-    );
+  podio::CollRefCollection *referenceCollections() override final {
+    return &m_refCollections;
   };
 
-  bool isValid() const override {
-    return m_isValid;
-  }
+  podio::VectorMembersInfo *vectorMembers() override { return &m_vecmem_info; }
+
+  void setID(unsigned ID) override final {
+    m_collectionID = ID;
+    std::for_each(m_entries.begin(), m_entries.end(),
+                  [ID](ExampleWithOneRelationObj *obj) {
+                    obj->id = {obj->id.index, static_cast<int>(ID)};
+                  });
+  };
+
+  bool isValid() const override final { return m_isValid; }
 
   // support for the iterator protocol
-  const const_iterator begin() const {
-    return const_iterator(0, &m_entries);
-  }
+  const const_iterator begin() const { return const_iterator(0, &m_entries); }
   const const_iterator end() const {
     return const_iterator(m_entries.size(), &m_entries);
   }
 
   /// returns the address of the pointer to the data buffer
-  void* getBufferAddress() override { return (void*)&m_data;};
+  void *getBufferAddress() override final { return (void *)&m_data; };
 
   /// returns the pointer to the data buffer
-  std::vector<ExampleWithOneRelationData>* _getBuffer() { return m_data;};
-
-   
+  std::vector<ExampleWithOneRelationData> *_getBuffer() { return m_data; };
 
 private:
   bool m_isValid;
   int m_collectionID;
   ExampleWithOneRelationObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
-  std::vector<::ConstExampleCluster>* m_rel_cluster; ///< Relation buffer for read / write
+  std::vector<::ConstExampleCluster>
+      *m_rel_cluster; ///< Relation buffer for read / write
+
+  // members to handle vector members
 
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
-  ExampleWithOneRelationDataContainer* m_data;
+  podio::VectorMembersInfo m_vecmem_info;
+  ExampleWithOneRelationDataContainer *m_data;
 };
 
-std::ostream& operator<<( std::ostream& o,const ExampleWithOneRelationCollection& v);
+std::ostream &operator<<(std::ostream &o,
+                         const ExampleWithOneRelationCollection &v);
 
-
-template<typename... Args>
-ExampleWithOneRelation  ExampleWithOneRelationCollection::create(Args&&... args){
+template <typename... Args>
+ExampleWithOneRelation
+ExampleWithOneRelationCollection::create(Args &&... args) {
   int size = m_entries.size();
-  auto obj = new ExampleWithOneRelationObj({size,m_collectionID},{args...});
+  auto obj = new ExampleWithOneRelationObj({size, m_collectionID}, {args...});
   m_entries.push_back(obj);
   return ExampleWithOneRelation(obj);
 }
-
-
 
 #endif
