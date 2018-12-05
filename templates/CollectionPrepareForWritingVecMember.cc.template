@@ -1,0 +1,5 @@
+   (*m_data)[i].${name}_begin=${name}_index;
+   (*m_data)[i].${name}_end+=${name}_index;
+   ${name}_index = (*m_data)[i].${name}_end;
+   m_vec_${name}->insert(m_vec_${name}->end(), *m_vecs_${name}[i]->begin(), *m_vecs_${name}[i]->end() );
+//   for(auto it : (*m_vecs_${name}[i])) { m_vec_${name}->push_back(it); }

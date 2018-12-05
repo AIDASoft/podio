@@ -696,11 +696,24 @@ class ClassGenerator(object):
         get_name = name
         if( self.getSyntax ):
             get_name = "get" + name[:1].upper() + name[1:]
+
+        vecmembers += declarations["vecmembers"].format(type=klass, name=name)
+        constructorbody += "\tm_vecmem_info.push_back( std::make_pair( \"{type}\", &m_vec_{name} )) ; \n".format(type=klass, name=name)
+        constructorbody += "\tm_vec_{name} = new std::vector<{type}>() ;\n".format(type=klass, name=name)
+        create_relations += "\tm_vecs_{name}.push_back(obj->m_{name});\n".format(name=name)
+        destructorbody += "\tif(m_vec_{name} != nullptr) delete m_vec_{name};\n".format(name=name)
+        clear_relations += "\tm_vec_{name}->clear();\n".format(name=name)
+        clear_relations += "\tm_vecs_{name}.clear();\n".format(name=name)
+        prepareforwritinghead += "\tint {name}_index =0;\n".format(name=name)
+        prepareforwritingbody += self.evaluate_template("CollectionPrepareForWritingVecMember.cc.template", {"name"  : name })
+        push_back_relations += "\tm_vecs_{name}.push_back(obj->m_{name});\n".format(name=name)
+
+        prepareafterread += "\t\tobj->m_{name} = m_vec_{name};\n".format(name=name)
+
         ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
         ostream_implementation += ( '  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name )
         ostream_implementation += ( '    o << v[i].%s(j) << " " ; \n'  % get_name  )
         ostream_implementation +=   '  o << std::endl ;\n'
-        vecmembers += declarations["vecmembers"].format(type=klass, name=name)
 
       ostream_implementation += '  }\no.flags(old_flags);\n'
       ostream_implementation += "  return o ;\n}\n"
