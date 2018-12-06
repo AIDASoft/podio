@@ -1,4 +1,5 @@
 // standard includes
+#include <numeric>
 #include <stdexcept>
 
 #include "ExampleWithVectorMemberCollection.h"
@@ -69,15 +70,21 @@ void ExampleWithVectorMemberCollection::prepareForWrite() {
   for (auto &pointer : m_refCollections) {
     pointer->clear();
   }
+  int count_size =
+      std::accumulate(m_entries.begin(), m_entries.end(), 0,
+                      [](int sum, const ExampleWithVectorMemberObj *obj) {
+                        return sum + obj->m_count->size();
+                      });
+  m_vec_count->reserve(count_size);
   int count_index = 0;
 
   for (int i = 0, size = m_data->size(); i != size; ++i) {
     (*m_data)[i].count_begin = count_index;
     (*m_data)[i].count_end += count_index;
     count_index = (*m_data)[i].count_end;
-    m_vec_count->insert(m_vec_count->end(), *m_vecs_count[i]->begin(),
-                        *m_vecs_count[i]->end());
-    //   for(auto it : (*m_vecs_count[i])) { m_vec_count->push_back(it); }
+    for (auto it : (*m_vecs_count[i])) {
+      m_vec_count->push_back(it);
+    }
   }
 }
 

@@ -690,6 +690,8 @@ class ClassGenerator(object):
           ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
           ostream_implementation += ( '  o << v[i].%s().id() << std::endl;\n'  % get_name  )
 
+      if len(vectormembers)>0:
+          includes += '#include <numeric>\n'
       for counter, item in enumerate(vectormembers):
         name  = item["name"]
         klass = item["type"]
@@ -704,7 +706,11 @@ class ClassGenerator(object):
         destructorbody += "\tif(m_vec_{name} != nullptr) delete m_vec_{name};\n".format(name=name)
         clear_relations += "\tm_vec_{name}->clear();\n".format(name=name)
         clear_relations += "\tm_vecs_{name}.clear();\n".format(name=name)
+        prepareforwritinghead += "\tint {name}_size = std::accumulate( m_entries.begin(), m_entries.end(), 0, ".format(name=name)
+        prepareforwritinghead += "[](int sum, const {rawclassname}Obj*  obj){{ return sum + obj->m_{name}->size();}} );\n".format(rawclassname=rawclassname, name=name)
+        prepareforwritinghead += "\tm_vec_{name}->reserve( {name}_size );\n".format(name=name)
         prepareforwritinghead += "\tint {name}_index =0;\n".format(name=name)
+
         prepareforwritingbody += self.evaluate_template("CollectionPrepareForWritingVecMember.cc.template", {"name"  : name })
         push_back_relations += "\tm_vecs_{name}.push_back(obj->m_{name});\n".format(name=name)
 
