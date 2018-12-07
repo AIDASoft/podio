@@ -13,13 +13,15 @@
 #include <vector>
 
 // forward declarations
-class ExampleWithARelation;
-class ConstExampleWithARelation;
 namespace ex {
 class ConstExampleWithNamespace;
 }
 
 namespace ex {
+
+class ExampleWithARelation;
+class ConstExampleWithARelation;
+
 class ExampleWithARelationObj : public podio::ObjBase {
 public:
   /// constructor

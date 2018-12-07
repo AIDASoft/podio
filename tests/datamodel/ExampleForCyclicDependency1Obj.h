@@ -10,9 +10,10 @@
 #include "podio/ObjBase.h"
 
 // forward declarations
+class ConstExampleForCyclicDependency2;
+
 class ExampleForCyclicDependency1;
 class ConstExampleForCyclicDependency1;
-class ConstExampleForCyclicDependency2;
 
 class ExampleForCyclicDependency1Obj : public podio::ObjBase {
 public:
