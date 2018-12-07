@@ -10,6 +10,7 @@
 #include "podio/ObjBase.h"
 
 // forward declarations
+
 class ExampleWithArray;
 class ConstExampleWithArray;
 
