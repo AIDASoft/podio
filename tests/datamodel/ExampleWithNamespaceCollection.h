@@ -76,7 +76,9 @@ public:
   /// Append a new object to the collection, and return this object.
   /// Initialized with the parameters given
   template <typename... Args> ExampleWithNamespace create(Args &&... args);
-  int size() const;
+
+  /// number of elements in the collection
+  int size() const override final;
 
   /// Returns the const object of given index
   const ExampleWithNamespace operator[](unsigned int index) const;

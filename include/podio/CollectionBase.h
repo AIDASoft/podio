@@ -49,6 +49,9 @@ namespace podio {
     /// check for validity of the container after read
     virtual bool isValid() const = 0;
 
+    /// number of elements in the collection
+    virtual int size() const = 0;
+
     /// destructor
     virtual ~CollectionBase(){};
 
