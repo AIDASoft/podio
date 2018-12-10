@@ -314,9 +314,9 @@ class ClassGenerator(object):
           item_class = klass.split("<")[1].split(",")[0].strip()
           setter_declarations += declarations["array_builtin_setter"].format(type=item_class, name=name, fname=sname, description=desc)
           setter_implementations += implementations["array_builtin_setter"].format(type=item_class, classname=rawclassname, name=name, fname=sname)
-          getter_declarations += declarations["array_member_getter"].format(type=item_class, name=name, fname=sname, description=desc)
-          getter_implementations += implementations["array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname)
-          ConstGetter_implementations += implementations["const_array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname, description=desc)
+          getter_declarations += declarations["array_member_getter"].format(type=item_class, name=name, fname=gname, description=desc)
+          getter_implementations += implementations["array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=gname)
+          ConstGetter_implementations += implementations["const_array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=gname, description=desc)
         else:
           ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) )
           setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
