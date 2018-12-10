@@ -80,7 +80,9 @@ public:
   /// Initialized with the parameters given
   template <typename... Args>
   ExampleForCyclicDependency2 create(Args &&... args);
-  int size() const;
+
+  /// number of elements in the collection
+  int size() const override final;
 
   /// Returns the const object of given index
   const ExampleForCyclicDependency2 operator[](unsigned int index) const;
