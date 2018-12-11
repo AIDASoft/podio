@@ -317,6 +317,11 @@ class ClassGenerator(object):
           getter_declarations += declarations["array_member_getter"].format(type=item_class, name=name, fname=gname, description=desc)
           getter_implementations += implementations["array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=gname)
           ConstGetter_implementations += implementations["const_array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=gname, description=desc)
+          arrsize = klass[ klass.rfind(',')+1 : klass.rfind('>') ]
+          ostream_implementation += ( '  o << " %s : " ;\n' % (name) )
+          ostream_implementation +=    '  for(int i=0,N='+arrsize+';i<N;++i)\n'
+          ostream_implementation +=  ( '      o << value.%s()[i] << "|" ;\n' %  gname  )
+          ostream_implementation +=    '  o << std::endl ;\n'
         else:
           ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) )
           setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
@@ -858,8 +863,12 @@ class ClassGenerator(object):
         if( name != "ExtraCode"):
 
           if not klass.startswith("std::array"):
-            ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  ) 
-
+            ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  )
+          else:
+            arrsize = klass[ klass.rfind(',')+1 : klass.rfind('>') ]
+            ostreamComponents +=    '  for(int i=0,N='+arrsize+';i<N;++i)\n'
+            ostreamComponents +=  ( '      o << value.%s[i] << "|" ;\n' %  name  )
+            ostreamComponents +=    '  o << "  " ;\n'
           klassname = klass
           mnamespace = ""
           if "::" in klass:
