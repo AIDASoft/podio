@@ -883,6 +883,8 @@ class ClassGenerator(object):
           # handle user provided extra code
           if klass.has_key("declaration"):
             extracode_declarations = klass["declaration"]
+          if klass.has_key("includes"):
+             includes.append(klass["includes"])
 
       ostreamComponents +=  "  return o ;\n"
       ostreamComponents +=  "}\n"
