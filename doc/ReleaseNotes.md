@@ -1,3 +1,29 @@
+# v00-09
+
+* 2018-12-20 Frank Gaede ([PR#39](https://github.com/aidasoft/podio/pull/39))
+  - add some fixes and improvements
+       - fix forward declarations in Object template when using a namespace for the EDM
+       - fix array getter names when using the get/set syntax
+       -  add missing treatment for include statements  in component's header files
+       - handle array members in ostream operators
+   - add CollectionBase::size() member function
+        - allows to access collection size w/o knowing the concrete type
+        - method is already generated in implementation classes
+
+* 2018-12-06 Frank Gaede ([PR#38](https://github.com/aidasoft/podio/pull/38))
+  - add code generation for I/O of vector members
+         - vector members are treated analogous to the reference vectors,i.e.
+            streamed as one large vector per collection
+  - updated tests/datamodel  accordingly  (using clang-format)
+
+* 2018-11-30 Frank Gaede ([PR#37](https://github.com/aidasoft/podio/pull/37))
+  - handle references and vector members in collection's  ostream operators
+
+* 2018-11-30 Frank Gaede ([PR#36](https://github.com/aidasoft/podio/pull/36))
+  - add github templates for releaase notes, issues and contribution guidelines
+  - add ReleaseNotes.md 
+        - contains all commit logs so far (v00-08)
+
 # v00-08
 
 * 2017-11-02 hegner 
