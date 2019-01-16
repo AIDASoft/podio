@@ -5,11 +5,11 @@ file(GLOB headers ${CMAKE_SOURCE_DIR}/include/podio/*.h)
 REFLEX_GENERATE_DICTIONARY(podio ${headers} SELECTION selection.xml)
 add_library(podioDict SHARED podio.cxx)
 add_dependencies(podioDict podio-dictgen)
-target_link_libraries(podioDict podio ${ROOT_LIBRARIES})
+target_link_libraries(podioDict podio ROOT::Core)
 install(TARGETS podioDict DESTINATION lib)
 
 add_library(podio SHARED ${sources})
-target_link_libraries(podio ${ROOT_LIBRARIES})
+target_link_libraries(podio ROOT::RIO ROOT::Tree)
 install(TARGETS podio DESTINATION lib)
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/podio DESTINATION include)
