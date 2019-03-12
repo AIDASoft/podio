@@ -34,7 +34,9 @@ class ROOTReader : public IReader {
   public:
     ROOTReader() : m_eventNumber(0) {}
     ~ROOTReader();
+    void openFile(const std::string& filename);
     void openFiles(const std::vector<std::string>& filenames);
+    void closeFile();
     void closeFiles();
 
     /// Read all collections requested
