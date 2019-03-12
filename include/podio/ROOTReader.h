@@ -5,22 +5,17 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <iostream>
 
 // forward declarations
 class TClass;
 class TFile;
 class TTree;
+class TChain;
 
-#include <iostream>
 
 #include "podio/ICollectionProvider.h"
 #include "podio/IReader.h"
-/*
-
-This class has the function to read available data from disk
-and to prepare collections and buffers.
-
-*/
 
 
 namespace podio {
@@ -30,13 +25,17 @@ class CollectionBase;
 class Registry;
 class CollectionIDTable;
 
+/**
+This class has the function to read available data from disk
+and to prepare collections and buffers.
+**/
 class ROOTReader : public IReader {
   friend EventStore;
   public:
     ROOTReader() : m_eventNumber(0) {}
     ~ROOTReader();
-    void openFile(const std::string& filename);
-    void closeFile();
+    void openFiles(const std::vector<std::string>& filenames);
+    void closeFiles();
 
     /// Read all collections requested
     void readEvent();
@@ -62,8 +61,6 @@ class ROOTReader : public IReader {
 
   private:
 
-    void readCollectionIDTable();
-
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name) override final;
 
@@ -72,8 +69,7 @@ class ROOTReader : public IReader {
     std::vector<Input> m_inputs;
     std::map<std::string, std::pair<TClass*,TClass*> > m_storedClasses;
     CollectionIDTable* m_table;
-    TFile* m_file;
-    TTree* m_eventTree;
+    TChain* m_chain;
     unsigned m_eventNumber;
 };
 

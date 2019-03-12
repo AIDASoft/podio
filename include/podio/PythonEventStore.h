@@ -28,7 +28,7 @@ public:
   bool isZombie() const {return m_isZombie;}
   
   bool isValid() const {return m_reader.isValid();}
-  void close() {m_reader.closeFile();}
+  void close() {m_reader.closeFiles();}
 
   /// list available collections
   const std::vector<std::string>& getCollectionNames() const;
