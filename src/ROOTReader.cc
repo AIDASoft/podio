@@ -82,6 +82,10 @@ namespace podio {
     return collection;
   }
 
+  void ROOTReader::openFile(const std::string& filename){
+    openFiles({filename});
+  }
+
   void ROOTReader::openFiles(const std::vector<std::string>& filenames){
     m_chain = new TChain("events");
     for (const auto& filename:  filenames) {
@@ -98,6 +102,10 @@ namespace podio {
 
     }
     m_table = new CollectionIDTable(l_collectionIDs, l_names);
+  }
+
+  void ROOTReader::closeFile(){
+    closeFiles();
   }
 
   void ROOTReader::closeFiles() {
