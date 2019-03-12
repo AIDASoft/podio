@@ -21,12 +21,11 @@
 #include "podio/EventStore.h"
 #include "podio/ROOTWriter.h"
 
-int main(){
-
+void write(std::string outfilename) {
   std::cout<<"start processing"<<std::endl;
 
   auto store = podio::EventStore();
-  auto writer = podio::ROOTWriter("example.root", &store);
+  auto writer = podio::ROOTWriter(outfilename, &store);
 
   auto& info       = store.create<EventInfoCollection>("info");
   auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
@@ -237,4 +236,12 @@ int main(){
   }
 
   writer.finish();
+}
+
+
+int main(int argc, char* argv[]){
+  write("example1.root");
+  write("example2.root");
+
+
 }

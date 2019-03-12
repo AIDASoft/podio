@@ -39,11 +39,10 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
   } else {
     throw std::runtime_error("Collection 'strings' should be present.");
   }
-  //std::cout << "Fetching collection 'clusters'" << std::endl;
+
   auto& clusters = store.get<ExampleClusterCollection>("clusters");
   if(clusters.isValid()){
     auto cluster = clusters[0];
-    //std::cout << "Cluster has an energy of " << cluster.energy() << std::endl;
     for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i!=end; ++i){
       std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
       glob++;
@@ -201,7 +200,7 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 int main(){
   auto reader = podio::ROOTReader();
   auto store = podio::EventStore();
-  reader.openFile("example.root");
+  reader.openFiles({"example2.root", "example1.root"});
   store.setReader(&reader);
 
   bool verbose = true;
@@ -210,9 +209,10 @@ int main(){
   for(unsigned i=0; i<nEvents; ++i) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
-    processEvent(store, true, i);
+    processEvent(store, true, i%(nEvents / 2));
     store.clear();
     reader.endOfEvent();
   }
+  reader.closeFiles();
   return 0;
 }

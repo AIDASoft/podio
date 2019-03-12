@@ -1,6 +1,7 @@
 #include "podio/PythonEventStore.h"
 
 #include <fstream>
+#include <string>
 #include <iostream>
 
 podio::PythonEventStore::PythonEventStore(const char* name) :
@@ -15,7 +16,7 @@ podio::PythonEventStore::PythonEventStore(const char* name) :
     m_isZombie = false;
   }
   if(! m_isZombie ) {
-    m_reader.openFile(name);
+    m_reader.openFiles({std::string(name)});
     m_store.setReader(&m_reader);
   }
 }
