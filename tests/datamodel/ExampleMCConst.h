@@ -1,10 +1,8 @@
 #ifndef ConstExampleMC_H
 #define ConstExampleMC_H
 #include "ExampleMC.h"
-#include "ExampleMC.h"
 #include "ExampleMCData.h"
 #include "podio/ObjectID.h"
-#include <vector>
 #include <vector>
 
 // forward declarations

@@ -13,6 +13,7 @@
 #include <vector>
 
 // forward declarations
+
 class ExampleReferencingType;
 class ConstExampleReferencingType;
 

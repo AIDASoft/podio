@@ -56,8 +56,8 @@ public:
 
   ExampleHitCollection();
   //  ExampleHitCollection(const ExampleHitCollection& ) = delete; // deletion
-  //  doesn't work w/ ROOT IO ! :-(
-  //  ExampleHitCollection(ExampleHitVector* data, int collectionID);
+  //  doesn't work w/ ROOT IO ! :-( ExampleHitCollection(ExampleHitVector* data,
+  //  int collectionID);
   ~ExampleHitCollection();
 
   void clear() override final;
@@ -71,7 +71,9 @@ public:
   /// Append a new object to the collection, and return this object.
   /// Initialized with the parameters given
   template <typename... Args> ExampleHit create(Args &&... args);
-  int size() const;
+
+  /// number of elements in the collection
+  int size() const override final;
 
   /// Returns the const object of given index
   const ExampleHit operator[](unsigned int index) const;
@@ -94,6 +96,8 @@ public:
   podio::CollRefCollection *referenceCollections() override final {
     return &m_refCollections;
   };
+
+  podio::VectorMembersInfo *vectorMembers() override { return &m_vecmem_info; }
 
   void setID(unsigned ID) override final {
     m_collectionID = ID;
@@ -128,8 +132,11 @@ private:
   ExampleHitObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
 
+  // members to handle vector members
+
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
+  podio::VectorMembersInfo m_vecmem_info;
   ExampleHitDataContainer *m_data;
 };
 

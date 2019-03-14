@@ -16,6 +16,9 @@ public:
 };
 
 inline std::ostream &operator<<(std::ostream &o, const SimpleStruct &value) {
+  for (int i = 0, N = 4; i < N; ++i)
+    o << value.p[i] << "|";
+  o << "  ";
   o << value.x << " ";
   o << value.y << " ";
   o << value.z << " ";

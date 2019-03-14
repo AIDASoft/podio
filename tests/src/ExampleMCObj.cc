@@ -1,6 +1,5 @@
 #include "ExampleMCObj.h"
 #include "ExampleMC.h"
-#include "ExampleMC.h"
 
 ExampleMCObj::ExampleMCObj()
     : ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0},

@@ -213,7 +213,7 @@ operator->() const {
 }
 
 const ExampleReferencingTypeCollectionIterator &
-    ExampleReferencingTypeCollectionIterator::operator++() const {
+ExampleReferencingTypeCollectionIterator::operator++() const {
   ++m_index;
   return *this;
 }
@@ -225,7 +225,15 @@ std::ostream &operator<<(std::ostream &o,
   for (int i = 0; i < v.size(); i++) {
     o << std::scientific << std::showpos << std::setw(12) << v[i].id() << " "
       << std::endl;
-    o.flags(old_flags);
+    o << "     Clusters : ";
+    for (unsigned j = 0, N = v[i].Clusters_size(); j < N; ++j)
+      o << v[i].Clusters(j).id() << " ";
+    o << std::endl;
+    o << "     Refs : ";
+    for (unsigned j = 0, N = v[i].Refs_size(); j < N; ++j)
+      o << v[i].Refs(j).id() << " ";
+    o << std::endl;
   }
+  o.flags(old_flags);
   return o;
 }

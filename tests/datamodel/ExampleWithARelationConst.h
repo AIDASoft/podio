@@ -4,13 +4,12 @@
 #include "ExampleWithNamespace.h"
 #include "podio/ObjectID.h"
 #include <vector>
-#include <vector>
 
 // forward declarations
 namespace ex {
 class ExampleWithNamespace;
 class ConstExampleWithNamespace;
-}
+} // namespace ex
 
 #include "ExampleWithARelationObj.h"
 

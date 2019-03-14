@@ -75,9 +75,22 @@ namespace podio {
         m_datatree->Branch((name+"#"+std::to_string(i)).c_str(),c);
         ++i;
       }
-    }
+      }
+// ---- vector members
+      auto vminfo = coll->vectorMembers();
+      if (vminfo != nullptr){
+      	int i = 0;
+      	for(auto& c : (*vminfo)){
+      	  std::string typeName = "vector<"+c.first+">" ;
+      	  void* add = c.second ;
+      	  m_datatree->Branch((name+"_"+std::to_string(i)).c_str(),
+      			     typeName.c_str(),
+      			     add);
+      	  ++i;
+      	}
+      }
       m_storedCollections.emplace_back(coll);
     }
-  }
+ }
 
 } // namespace

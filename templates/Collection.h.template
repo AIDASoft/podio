@@ -70,7 +70,9 @@ public:
   /// Initialized with the parameters given
   template<typename... Args>
   ${name} create(Args&&... args);
-  int size() const;
+
+  /// number of elements in the collection
+  int size() const override final ;
 
   /// Returns the const object of given index
   const ${name} operator[](unsigned int index) const;
@@ -91,6 +93,8 @@ public:
   bool setReferences(const podio::ICollectionProvider* collectionProvider) override final;
 
   podio::CollRefCollection* referenceCollections() override final { return &m_refCollections;};
+
+  podio::VectorMembersInfo* vectorMembers() override {return &m_vecmem_info ; }
 
   void setID(unsigned ID) override final {
     m_collectionID = ID;
@@ -125,8 +129,11 @@ private:
   ${name}ObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
 ${relations}
+  //members to handle vector members
+${vecmembers}
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
+  podio::VectorMembersInfo m_vecmem_info ;
   ${name}DataContainer* m_data;
 };
 

@@ -10,10 +10,12 @@
 #include "podio/ObjBase.h"
 
 // forward declarations
+
+namespace ex {
+
 class ExampleWithNamespace;
 class ConstExampleWithNamespace;
 
-namespace ex {
 class ExampleWithNamespaceObj : public podio::ObjBase {
 public:
   /// constructor

@@ -127,12 +127,12 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
   auto& vecs = store.get<ExampleWithVectorMemberCollection>("WithVectorMember");
   if(vecs.isValid()) {
-//    auto item = (*vecs)[0];
-//    std::cout << (*vecs).size() << std::endl;
-//    for (auto c = item.count_begin(), end = item.count_end(); c!=end; ++c){
-//      std::cout << "  Counter value " << (*c) << std::endl;
-//      glob++;
-//    }
+    std::cout << vecs.size() << std::endl;
+    for( auto item : vecs )
+      for (auto c = item.count_begin(), end = item.count_end(); c!=end; ++c){
+	std::cout << "  Counter value " << (*c) << std::endl;
+	glob++;
+    }
   } else {
     throw std::runtime_error("Collection 'WithVectorMember' should be present");
   }

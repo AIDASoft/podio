@@ -76,6 +76,15 @@ namespace podio {
         branch->GetEntry(localEntry);
       }
     }
+    // load the collections containing vector members
+    auto vecmeminfo = collection->vectorMembers();
+    if (vecmeminfo != nullptr) {
+      for (int i = 0, end = vecmeminfo->size(); i!=end; ++i){
+        branch = m_eventTree->GetBranch((name+"_"+std::to_string(i)).c_str());
+        branch->SetAddress((*vecmeminfo)[i].second);
+        branch->GetEntry(m_eventNumber);
+      }
+    }
     auto id = m_table->collectionID(name);
     collection->setID(id);
     collection->prepareAfterRead();
