@@ -5,7 +5,6 @@
 #include "ExampleHit.h"
 #include "podio/ObjectID.h"
 #include <vector>
-#include <vector>
 
 // forward declarations
 

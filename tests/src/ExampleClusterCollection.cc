@@ -218,7 +218,15 @@ std::ostream &operator<<(std::ostream &o, const ExampleClusterCollection &v) {
   for (int i = 0; i < v.size(); i++) {
     o << std::scientific << std::showpos << std::setw(12) << v[i].id() << " "
       << std::setw(12) << v[i].energy() << " " << std::endl;
-    o.flags(old_flags);
+    o << "     Hits : ";
+    for (unsigned j = 0, N = v[i].Hits_size(); j < N; ++j)
+      o << v[i].Hits(j).id() << " ";
+    o << std::endl;
+    o << "     Clusters : ";
+    for (unsigned j = 0, N = v[i].Clusters_size(); j < N; ++j)
+      o << v[i].Clusters(j).id() << " ";
+    o << std::endl;
   }
+  o.flags(old_flags);
   return o;
 }

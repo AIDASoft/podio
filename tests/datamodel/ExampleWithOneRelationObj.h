@@ -10,9 +10,10 @@
 #include "podio/ObjBase.h"
 
 // forward declarations
+class ConstExampleCluster;
+
 class ExampleWithOneRelation;
 class ConstExampleWithOneRelation;
-class ConstExampleCluster;
 
 class ExampleWithOneRelationObj : public podio::ObjBase {
 public:

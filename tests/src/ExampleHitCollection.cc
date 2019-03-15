@@ -123,7 +123,7 @@ std::ostream &operator<<(std::ostream &o, const ExampleHitCollection &v) {
       << std::setw(12) << v[i].x() << " " << std::setw(12) << v[i].y() << " "
       << std::setw(12) << v[i].z() << " " << std::setw(12) << v[i].energy()
       << " " << std::endl;
-    o.flags(old_flags);
   }
+  o.flags(old_flags);
   return o;
 }

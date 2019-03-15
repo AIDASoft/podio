@@ -189,9 +189,13 @@ void write(std::string outfilename) {
     oneRels.push_back(oneRelEmpty);
 
     auto vec = ExampleWithVectorMember();
-    vec.addcount(23);
-    vec.addcount(24);
+    vec.addcount(i);
+    vec.addcount(i+10);
     vecs.push_back(vec);
+    auto vec1 = ExampleWithVectorMember();
+    vec1.addcount(i+1);
+    vec1.addcount(i+11);
+    vecs.push_back(vec1);
 
     for (int j = 0; j < 5; j++) {
       auto rel = ex::ExampleWithARelation();

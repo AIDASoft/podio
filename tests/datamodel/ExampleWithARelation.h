@@ -6,13 +6,12 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
-#include <vector>
 
 // forward declarations
 namespace ex {
 class ExampleWithNamespace;
 class ConstExampleWithNamespace;
-}
+} // namespace ex
 
 #include "ExampleWithARelationConst.h"
 #include "ExampleWithARelationObj.h"

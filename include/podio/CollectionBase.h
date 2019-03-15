@@ -15,6 +15,7 @@ namespace podio {
 
   typedef std::vector<std::pair<std::string,podio::CollectionBase*>> CollRegistry;
   typedef std::vector<std::vector<podio::ObjectID>*> CollRefCollection;
+  typedef std::vector<std::pair<std::string,void*>> VectorMembersInfo;
 
   //class CollectionBuffer {
   //public:
@@ -48,6 +49,9 @@ namespace podio {
     /// check for validity of the container after read
     virtual bool isValid() const = 0;
 
+    /// number of elements in the collection
+    virtual int size() const = 0;
+
     /// destructor
     virtual ~CollectionBase(){};
 
@@ -56,6 +60,9 @@ namespace podio {
 
     /// return the buffers containing the object-relation information
     virtual CollRefCollection* referenceCollections() = 0;
+
+    /// return pointers to vector members
+    virtual VectorMembersInfo* vectorMembers() = 0;
   };
 
 } // namespace

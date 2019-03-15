@@ -156,6 +156,26 @@ std::ostream &operator<<(std::ostream &o, const ConstExampleWithArray &value) {
   o << " id : " << value.id() << std::endl;
   o << " arrayStruct : " << value.arrayStruct() << std::endl;
   o << " data : " << value.data() << std::endl;
+  o << " myArray : ";
+  for (int i = 0, N = 4; i < N; ++i)
+    o << value.myArray()[i] << "|";
+  o << std::endl;
+  o << " anotherArray2 : ";
+  for (int i = 0, N = 4; i < N; ++i)
+    o << value.anotherArray2()[i] << "|";
+  o << std::endl;
+  o << " snail_case_array : ";
+  for (int i = 0, N = 4; i < N; ++i)
+    o << value.snail_case_array()[i] << "|";
+  o << std::endl;
+  o << " snail_case_Array3 : ";
+  for (int i = 0, N = 4; i < N; ++i)
+    o << value.snail_case_Array3()[i] << "|";
+  o << std::endl;
+  o << " structArray : ";
+  for (int i = 0, N = 4; i < N; ++i)
+    o << value.structArray()[i] << "|";
+  o << std::endl;
   return o;
 }
 

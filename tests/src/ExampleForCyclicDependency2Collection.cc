@@ -159,7 +159,7 @@ const ExampleForCyclicDependency2 *
 }
 
 const ExampleForCyclicDependency2CollectionIterator &
-    ExampleForCyclicDependency2CollectionIterator::operator++() const {
+ExampleForCyclicDependency2CollectionIterator::operator++() const {
   ++m_index;
   return *this;
 }
@@ -171,7 +171,9 @@ std::ostream &operator<<(std::ostream &o,
   for (int i = 0; i < v.size(); i++) {
     o << std::scientific << std::showpos << std::setw(12) << v[i].id() << " "
       << std::endl;
-    o.flags(old_flags);
+    o << "     ref : ";
+    o << v[i].ref().id() << std::endl;
   }
+  o.flags(old_flags);
   return o;
 }

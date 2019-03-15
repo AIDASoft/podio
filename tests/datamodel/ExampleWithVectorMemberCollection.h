@@ -76,7 +76,9 @@ public:
   /// Append a new object to the collection, and return this object.
   /// Initialized with the parameters given
   template <typename... Args> ExampleWithVectorMember create(Args &&... args);
-  int size() const;
+
+  /// number of elements in the collection
+  int size() const override final;
 
   /// Returns the const object of given index
   const ExampleWithVectorMember operator[](unsigned int index) const;
@@ -99,6 +101,8 @@ public:
   podio::CollRefCollection *referenceCollections() override final {
     return &m_refCollections;
   };
+
+  podio::VectorMembersInfo *vectorMembers() override { return &m_vecmem_info; }
 
   void setID(unsigned ID) override final {
     m_collectionID = ID;
@@ -128,8 +132,15 @@ private:
   ExampleWithVectorMemberObjPointerContainer m_entries;
   // members to handle 1-to-N-relations
 
+  // members to handle vector members
+  std::vector<int>
+      *m_vec_count; /// combined vector of all objects in collection
+  std::vector<std::vector<int> *>
+      m_vecs_count; /// pointers to individual member vectors
+
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
+  podio::VectorMembersInfo m_vecmem_info;
   ExampleWithVectorMemberDataContainer *m_data;
 };
 

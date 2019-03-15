@@ -1,6 +1,5 @@
 // standard includes
 #include "ExampleMCCollection.h"
-#include "ExampleMCCollection.h"
 #include <stdexcept>
 
 #include "ExampleMCCollection.h"
@@ -216,7 +215,15 @@ std::ostream &operator<<(std::ostream &o, const ExampleMCCollection &v) {
     o << std::scientific << std::showpos << std::setw(12) << v[i].id() << " "
       << std::setw(12) << v[i].energy() << " " << std::setw(12) << v[i].PDG()
       << " " << std::endl;
-    o.flags(old_flags);
+    o << "     parents : ";
+    for (unsigned j = 0, N = v[i].parents_size(); j < N; ++j)
+      o << v[i].parents(j).id() << " ";
+    o << std::endl;
+    o << "     daughters : ";
+    for (unsigned j = 0, N = v[i].daughters_size(); j < N; ++j)
+      o << v[i].daughters(j).id() << " ";
+    o << std::endl;
   }
+  o.flags(old_flags);
   return o;
 }

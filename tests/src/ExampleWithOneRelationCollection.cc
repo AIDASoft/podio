@@ -154,7 +154,7 @@ operator->() const {
 }
 
 const ExampleWithOneRelationCollectionIterator &
-    ExampleWithOneRelationCollectionIterator::operator++() const {
+ExampleWithOneRelationCollectionIterator::operator++() const {
   ++m_index;
   return *this;
 }
@@ -166,7 +166,9 @@ std::ostream &operator<<(std::ostream &o,
   for (int i = 0; i < v.size(); i++) {
     o << std::scientific << std::showpos << std::setw(12) << v[i].id() << " "
       << std::endl;
-    o.flags(old_flags);
+    o << "     cluster : ";
+    o << v[i].cluster().id() << std::endl;
   }
+  o.flags(old_flags);
   return o;
 }

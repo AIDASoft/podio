@@ -314,9 +314,14 @@ class ClassGenerator(object):
           item_class = klass.split("<")[1].split(",")[0].strip()
           setter_declarations += declarations["array_builtin_setter"].format(type=item_class, name=name, fname=sname, description=desc)
           setter_implementations += implementations["array_builtin_setter"].format(type=item_class, classname=rawclassname, name=name, fname=sname)
-          getter_declarations += declarations["array_member_getter"].format(type=item_class, name=name, fname=sname, description=desc)
-          getter_implementations += implementations["array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname)
-          ConstGetter_implementations += implementations["const_array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=sname, description=desc)
+          getter_declarations += declarations["array_member_getter"].format(type=item_class, name=name, fname=gname, description=desc)
+          getter_implementations += implementations["array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=gname)
+          ConstGetter_implementations += implementations["const_array_member_getter"].format(type=item_class, classname=rawclassname, name=name, fname=gname, description=desc)
+          arrsize = klass[ klass.rfind(',')+1 : klass.rfind('>') ]
+          ostream_implementation += ( '  o << " %s : " ;\n' % (name) )
+          ostream_implementation +=    '  for(int i=0,N='+arrsize+';i<N;++i)\n'
+          ostream_implementation +=  ( '      o << value.%s()[i] << "|" ;\n' %  gname  )
+          ostream_implementation +=    '  o << std::endl ;\n'
         else:
           ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) )
           setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
@@ -549,9 +554,9 @@ class ClassGenerator(object):
       push_back_relations = ""
       prepareafterread_refmembers = ""
       prepareforwriting_refmembers = ""
-
+      vecmembers = ""
       #------------------ create ostream operator --------------------------
-      # create colum based output fro data members using scientific format 
+      # create colum based output for data members using scientific format
       #
       numColWidth = 12 
       ostream_header_string = "id:"
@@ -595,13 +600,14 @@ class ClassGenerator(object):
           name  = "get" + name[:1].upper() + name[1:]
         if not t.startswith("std::array"):
           ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) ) 
-
+      ostream_implementation += '  << std::endl;\n'
       ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string ) 
 
       #----------------------------------------------------------------------
 
       refmembers = definition["OneToOneRelations"]
       refvectors = definition["OneToManyRelations"]
+      vectormembers = definition["VectorMembers"]
       nOfRefVectors = len(refvectors)
       nOfRefMembers = len(refmembers)
       if nOfRefVectors + nOfRefMembers > 0:
@@ -609,6 +615,7 @@ class ClassGenerator(object):
         #constructorbody += "\tm_refCollections = new podio::CollRefCollection();\n"
         destructorbody  += "\tfor (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }\n"
         clear_relations += "\tfor (auto& pointer : m_refCollections) { pointer->clear(); }\n"
+
         for counter, item in enumerate(refvectors):
           name  = item["name"]
           klass = item["type"]
@@ -642,6 +649,17 @@ class ClassGenerator(object):
           # relation handling in ::settingReferences
           setreferences += self.evaluate_template("CollectionSetReferences.cc.template",substitutions)
           prepareafterread += "\t\tobj->m_%s = m_rel_%s;" %(name, name)
+
+
+          get_name = name
+          if( self.getSyntax ):
+              get_name = "get" + name[:1].upper() + name[1:]
+          ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
+          ostream_implementation += ( '  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name )
+          ostream_implementation += ( '    o << v[i].%s(j).id() << " " ; \n'  % get_name  )
+          ostream_implementation +=   '  o << std::endl ;\n'
+
+
         for counter, item in enumerate(refmembers):
           name  = item["name"]
           klass = item["type"]
@@ -671,8 +689,45 @@ class ClassGenerator(object):
           # relation handling in ::settingReferences
           prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template",substitutions)
 
-      ostream_implementation += '  << std::endl;\n  o.flags(old_flags) ; \n' 
-      ostream_implementation += "}\n  return o ;\n}\n"
+          get_name = name
+          if( self.getSyntax ):
+              get_name = "get" + name[:1].upper() + name[1:]
+          ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
+          ostream_implementation += ( '  o << v[i].%s().id() << std::endl;\n'  % get_name  )
+
+      if len(vectormembers)>0:
+          includes += '#include <numeric>\n'
+      for counter, item in enumerate(vectormembers):
+        name  = item["name"]
+        klass = item["type"]
+        get_name = name
+        if( self.getSyntax ):
+            get_name = "get" + name[:1].upper() + name[1:]
+
+        vecmembers += declarations["vecmembers"].format(type=klass, name=name)
+        constructorbody += "\tm_vecmem_info.push_back( std::make_pair( \"{type}\", &m_vec_{name} )) ; \n".format(type=klass, name=name)
+        constructorbody += "\tm_vec_{name} = new std::vector<{type}>() ;\n".format(type=klass, name=name)
+        create_relations += "\tm_vecs_{name}.push_back(obj->m_{name});\n".format(name=name)
+        destructorbody += "\tif(m_vec_{name} != nullptr) delete m_vec_{name};\n".format(name=name)
+        clear_relations += "\tm_vec_{name}->clear();\n".format(name=name)
+        clear_relations += "\tm_vecs_{name}.clear();\n".format(name=name)
+        prepareforwritinghead += "\tint {name}_size = std::accumulate( m_entries.begin(), m_entries.end(), 0, ".format(name=name)
+        prepareforwritinghead += "[](int sum, const {rawclassname}Obj*  obj){{ return sum + obj->m_{name}->size();}} );\n".format(rawclassname=rawclassname, name=name)
+        prepareforwritinghead += "\tm_vec_{name}->reserve( {name}_size );\n".format(name=name)
+        prepareforwritinghead += "\tint {name}_index =0;\n".format(name=name)
+
+        prepareforwritingbody += self.evaluate_template("CollectionPrepareForWritingVecMember.cc.template", {"name"  : name })
+        push_back_relations += "\tm_vecs_{name}.push_back(obj->m_{name});\n".format(name=name)
+
+        prepareafterread += "\t\tobj->m_{name} = m_vec_{name};\n".format(name=name)
+
+        ostream_implementation += ( '  o << "     %s : " ;\n' % name  )
+        ostream_implementation += ( '  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name )
+        ostream_implementation += ( '    o << v[i].%s(j) << " " ; \n'  % get_name  )
+        ostream_implementation +=   '  o << std::endl ;\n'
+
+      ostream_implementation += '  }\no.flags(old_flags);\n'
+      ostream_implementation += "  return o ;\n}\n"
 
       substitutions = { "name" : rawclassname,
                         "constructorbody" : constructorbody,
@@ -689,6 +744,7 @@ class ClassGenerator(object):
                         "create_relations" : create_relations,
                         "clear_relations"  : clear_relations,
                         "push_back_relations" : push_back_relations,
+                        "vecmembers" : vecmembers,
                         "package_name" : self.package_name,
                         "vectorized_access_declaration" : vectorized_access_decl,
                         "vectorized_access_implementation" : vectorized_access_impl,
@@ -807,8 +863,12 @@ class ClassGenerator(object):
         if( name != "ExtraCode"):
 
           if not klass.startswith("std::array"):
-            ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  ) 
-
+            ostreamComponents +=  ( '  o << value.%s << " " ;\n' %  name  )
+          else:
+            arrsize = klass[ klass.rfind(',')+1 : klass.rfind('>') ]
+            ostreamComponents +=    '  for(int i=0,N='+arrsize+';i<N;++i)\n'
+            ostreamComponents +=  ( '      o << value.%s[i] << "|" ;\n' %  name  )
+            ostreamComponents +=    '  o << "  " ;\n'
           klassname = klass
           mnamespace = ""
           if "::" in klass:
@@ -832,6 +892,8 @@ class ClassGenerator(object):
           # handle user provided extra code
           if klass.has_key("declaration"):
             extracode_declarations = klass["declaration"]
+          if klass.has_key("includes"):
+             includes.append(klass["includes"])
 
       ostreamComponents +=  "  return o ;\n"
       ostreamComponents +=  "}\n"
