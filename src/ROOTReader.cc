@@ -80,7 +80,7 @@ namespace podio {
     auto vecmeminfo = collection->vectorMembers();
     if (vecmeminfo != nullptr) {
       for (int i = 0, end = vecmeminfo->size(); i!=end; ++i){
-        branch = m_eventTree->GetBranch((name+"_"+std::to_string(i)).c_str());
+        branch = m_chain->GetBranch((name+"_"+std::to_string(i)).c_str());
         branch->SetAddress((*vecmeminfo)[i].second);
         branch->GetEntry(m_eventNumber);
       }
