@@ -3,13 +3,9 @@
 cmake_minimum_required(VERSION 3.3)
 
 #--- Project name --------------------------------------------------------------
-project(podio)
+project(podio VERSION 0.9.1)
 
 #--- Version -------------------------------------------------------------------
-set( podio_VERSION_MAJOR 0 )
-set( podio_VERSION_MINOR 9 )
-set( podio_VERSION_PATCH 0 )
-set( podio_VERSION "${podio_VERSION_MAJOR}.${podio_VERSION_MINOR}" )
 
 #--- Define basic build settings -----------------------------------------------
 # Provides install directory variables as defined for GNU software
