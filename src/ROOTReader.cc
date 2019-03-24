@@ -1,7 +1,9 @@
 // ROOT specific includes
 #include "TFile.h"
 #include "TTree.h"
+#include "TChain.h"
 #include "TROOT.h"
+#include "TTreeCache.h"
 
 // podio specific includes
 #include "podio/ROOTReader.h"
@@ -10,12 +12,6 @@
 
 namespace podio {
 
-  void ROOTReader::readCollectionIDTable(){
-    m_table = new CollectionIDTable();
-    auto metadatatree = static_cast<TTree*>(m_file->Get("metadata"));
-    metadatatree->SetBranchAddress("CollectionIDs",&m_table);
-    metadatatree->GetEntry(0);
-  }
 
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
     // has the collection already been constructed?
@@ -24,9 +20,11 @@ namespace podio {
     if (p != end(m_inputs)){
       return p->first;
     }
-    // get the branches in the ROOT file
-    auto branch = m_eventTree->GetBranch(name.c_str());
-    if (branch == nullptr) return nullptr;
+    auto branch = m_chain->GetBranch(name.c_str());
+    if (nullptr == branch) {
+      return nullptr;
+    }
+
 
     // look for involved classes
     TClass* theClass(nullptr);
@@ -60,23 +58,31 @@ namespace podio {
     collection->setBuffer(buffer);
     branch->SetAddress(collection->getBufferAddress());
     m_inputs.emplace_back(std::make_pair(collection,name));
-    branch->GetEntry(m_eventNumber);
+    Long64_t localEntry = m_chain->LoadTree(m_eventNumber);
+    // After switching trees in the chain, branch pointers get invalidated
+    // so they need to be reassigned as well as addresses
+    if(localEntry == 0){
+        branch = m_chain->GetBranch(name.c_str());
+        branch->SetAddress(collection->getBufferAddress());
+    }
+    branch->GetEntry(localEntry);
     // load the collections containing references
     auto refCollections = collection->referenceCollections();
+
     if (refCollections != nullptr) {
       for (int i = 0, end = refCollections->size(); i!=end; ++i){
-        branch = m_eventTree->GetBranch((name+"#"+std::to_string(i)).c_str());
+        branch = m_chain->GetBranch((name+"#"+std::to_string(i)).c_str());
         branch->SetAddress(&(*refCollections)[i]);
-        branch->GetEntry(m_eventNumber);
+        branch->GetEntry(localEntry);
       }
     }
     // load the collections containing vector members
     auto vecmeminfo = collection->vectorMembers();
     if (vecmeminfo != nullptr) {
       for (int i = 0, end = vecmeminfo->size(); i!=end; ++i){
-        branch = m_eventTree->GetBranch((name+"_"+std::to_string(i)).c_str());
+        branch = m_chain->GetBranch((name+"_"+std::to_string(i)).c_str());
         branch->SetAddress((*vecmeminfo)[i].second);
-        branch->GetEntry(m_eventNumber);
+        branch->GetEntry(localEntry);
       }
     }
     auto id = m_table->collectionID(name);
@@ -86,20 +92,37 @@ namespace podio {
   }
 
   void ROOTReader::openFile(const std::string& filename){
-    m_file = TFile::Open(filename.c_str(),"READ","data file");
-    if (m_file->IsZombie()) {
-      exit(-1);
-    }
-    m_eventTree = static_cast<TTree*>( m_file->Get("events") );
-    readCollectionIDTable();
+    openFiles({filename});
   }
 
-  void ROOTReader::closeFile() {
-    m_file->Close();
+  void ROOTReader::openFiles(const std::vector<std::string>& filenames){
+    m_chain = new TChain("events");
+    for (const auto& filename:  filenames) {
+      m_chain->Add(filename.c_str());
+    }
+    CollectionIDTable* l_table = new CollectionIDTable();
+    auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
+    metadatatree->SetBranchAddress("CollectionIDs",&l_table);
+    metadatatree->GetEntry(0);
+    auto l_names = l_table->names();
+    std::vector<int> l_collectionIDs;
+    for (auto name: l_names) {
+      l_collectionIDs.push_back(l_table->collectionID(name));
+
+    }
+    m_table = new CollectionIDTable(l_collectionIDs, l_names);
+  }
+
+  void ROOTReader::closeFile(){
+    closeFiles();
+  }
+
+  void ROOTReader::closeFiles() {
+    delete m_chain;
   }
 
   void ROOTReader::readEvent(){
-    m_eventTree->GetEntry();
+    m_chain->GetEntry(m_eventNumber);
     // first prepare all collections in memory...
     for(auto inputs : m_inputs){
       inputs.first->prepareAfterRead();
@@ -111,7 +134,7 @@ namespace podio {
   //  }
   }
   bool ROOTReader::isValid() const {
-    return m_file->IsOpen() && !m_file->IsZombie();
+    return m_chain->GetFile()->IsOpen() && !m_chain->GetFile()->IsZombie();
   }
 
   ROOTReader::~ROOTReader() {
@@ -126,7 +149,7 @@ namespace podio {
   }
 
   unsigned ROOTReader::getEntries() const {
-    return m_eventTree->GetEntries();
+    return m_chain->GetEntries();
   }
 
   void ROOTReader::goToEvent(unsigned eventNumber) {

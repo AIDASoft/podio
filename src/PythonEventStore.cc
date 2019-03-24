@@ -1,14 +1,22 @@
 #include "podio/PythonEventStore.h"
 
 #include <fstream>
+#include <string>
+#include <iostream>
 
 podio::PythonEventStore::PythonEventStore(const char* name) :
   m_reader(),
   m_store() {
   std::ifstream inputfile(name);
   m_isZombie = inputfile.good() ? false : true;
-  if(! m_isZombie) {
-    m_reader.openFile(name);
+  // the file could be a remote file that we cannot access but root
+  // knows how to handle via the xrootd protocol.
+  // if that is the case we ignore m_isZombie.
+  if (!std::string("root:/").compare(0, 6, name, 6)) {
+    m_isZombie = false;
+  }
+  if(! m_isZombie ) {
+    m_reader.openFiles({std::string(name)});
     m_store.setReader(&m_reader);
   }
 }

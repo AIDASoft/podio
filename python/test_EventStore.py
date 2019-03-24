@@ -9,7 +9,7 @@ from ROOT import ExampleHit, ConstExampleHit
 class EventStoreTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.filename = 'example.root'
+        self.filename = 'example1.root'
         self.assertTrue(os.path.isfile(self.filename))
         self.store = EventStore([self.filename])
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     import os
     gSystem.Load("libTestDataModel")
     # creating example file for the tests
-    if not os.path.isfile('example.root'):
+    if not os.path.isfile('example1.root'):
         write = '{podio}/tests/write'.format(podio=os.environ['PODIO'])
         print write
         call(write)
