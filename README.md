@@ -54,14 +54,25 @@ Check that you can now import the yaml module in python.
 
 ## Preparing the environment
 
-Before building and installing this package, and everytime you need to use it, do:
+Full use of PODIO requires you to set the `PODIO` environment variable
+and modify `LD_LIBRARY_PATH` and `PYTHONPATH`. Some convenience scripts
+are provided:
 
+    # Set PODIO install area to `./install` and setup environment accordingly
     source ./init.sh
 
+or
+
+    # Setup environment based on current value of `PODIO`
+    source ./env.sh
+
+Or you can setup the environment entirely under your control: see `init.sh`
+and `env.sh`.
 
 ## Compiling
 
-Set up separate build and install areas, and trigger the build:
+If you are using the easy setup from `init.sh` then create separate build
+and install areas, and trigger the build:
 
     mkdir build
     mkdir install
