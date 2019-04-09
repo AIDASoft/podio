@@ -15,7 +15,7 @@ if [ -n "$PODIO" -a "$1" != "-r" ]; then
 	return
 fi
 
-PODIO=$(pwd)/install
+export PODIO=$(pwd)/install
 
 if [ -e env.sh ]; then
 	source ./env.sh
