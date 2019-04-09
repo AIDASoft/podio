@@ -18,7 +18,8 @@ Browse the API documentation created with Doxygen at
 
 ## Prerequisites
 
-If you are on lxplus, all the necessary software is preinstalled.
+If you are on lxplus, all the necessary software is preinstalled if you
+use a recent LCG or FCC stack release.
 
 On Mac OS or Ubuntu, you need to install the following software.
 
