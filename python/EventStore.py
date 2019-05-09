@@ -21,7 +21,7 @@ def getitem(self, key):
 class EventStore(object):
     '''Interface to events in an podio root file.
     Example of use:
-    events = EventStore(["example1.root", "example2.root"])
+    events = EventStore(["example.root", "example1.root"])
     for iev, store in islice(enumerate(events), 0, 2):
         particles = store.get("GenParticle");
         for i, p in islice(enumerate(particles), 0, 5):

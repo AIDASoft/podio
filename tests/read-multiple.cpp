@@ -21,6 +21,10 @@
 #include "ExampleWithNamespace.h"
 #include "ExampleWithArrayCollection.h"
 
+/* example test program reading multiple files with one reader
+*/
+
+
 int glob = 0;
 
 void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
