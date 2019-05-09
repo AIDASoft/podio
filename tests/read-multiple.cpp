@@ -204,7 +204,7 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 int main(){
   auto reader = podio::ROOTReader();
   auto store = podio::EventStore();
-  reader.openFiles({"example2.root", "example1.root"});
+  reader.openFiles({"example.root", "example1.root"});
   store.setReader(&reader);
 
   bool verbose = true;
