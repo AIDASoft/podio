@@ -244,8 +244,8 @@ void write(std::string outfilename) {
 
 
 int main(int argc, char* argv[]){
+  write("example.root");
   write("example1.root");
-  write("example2.root");
 
 
 }
