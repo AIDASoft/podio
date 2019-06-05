@@ -1,4 +1,4 @@
- #!/usr/bin/python2
+ # #!/usr/bin/env python
 import os
 import string
 import pickle
@@ -831,6 +831,10 @@ class ClassGenerator(object):
 
 
     def create_component(self, classname, components):
+      """ Create a component class to be used within the data types
+          Components can only contain simple data types and no user
+          defined ones
+      """
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
       includes = []
@@ -900,6 +904,9 @@ class ClassGenerator(object):
       self.created_classes.append(classname)
 
     def create_obj(self, classname, definition):
+      """ Create an obj class containing all information
+          relevant for a given object.
+      """
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
       relations = ""
@@ -1031,6 +1038,9 @@ class ClassGenerator(object):
           subprocess.call(self.clang_format + [fullname])
 
     def evaluate_template(self, filename, substitutions):
+	""" reads in a given template, evaluates it
+		and returns result
+	"""
         templatefile = os.path.join(self.template_dir,filename)
         template = open(templatefile,"r").read()
         return string.Template(template).substitute(substitutions)
@@ -1074,13 +1084,13 @@ if __name__ == "__main__":
 
     from optparse import OptionParser
 
-    usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename>
-    Given a <description.yaml>
-    it creates data classes
-    and a LinkDef.h file in
-    the specified <targetdir>:
-      <packagename>/*.
-      src/*.cc"""
+    usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename> Given a <description.yaml>
+			it creates data classes
+			and a LinkDef.h file in
+			the specified <targetdir>:
+			 <packagename>/*.h
+			src/*.cc
+			"""
 
     parser = OptionParser(usage)
     parser.add_option("-q", "--quiet",
