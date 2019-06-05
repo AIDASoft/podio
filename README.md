@@ -49,7 +49,7 @@ If the import goes fine (no message), you're all set. If not, you need to instal
 
 2- install the python yaml module (first install pip if you don't have it yet)
 
-    pip install yaml
+    pip install pyyaml
 
 Check that you can now import the yaml module in python.
 
