@@ -1,4 +1,4 @@
- # #!/usr/bin/env python
+ #!/usr/bin/env python
 import os
 import string
 import pickle
@@ -7,10 +7,26 @@ from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
+_text_ = """
+  PODIO Data Model
+  ================
+  Used
+    %s
+  to create
+    %s classes
+  in
+    %s/
+  Read instructions in
+  the HOWTO.TXT to run
+  your first example!
+"""
+
 
 class ClassGenerator(object):
 
-    def __init__(self, yamlfile, install_dir, package_name, verbose=True, dryrun=False):
+    def __init__(self, yamlfile, install_dir, package_name,
+                 verbose=True, dryrun=False):
+
         self.yamlfile = yamlfile
         self.install_dir = install_dir
         self.package_name = package_name
@@ -24,7 +40,6 @@ class ClassGenerator(object):
         self.component_members = {}
         self.dryrun = dryrun
 
-
     def configure_clang_format(self, apply):
         if not apply:
             self.clang_format = []
@@ -32,8 +47,8 @@ class ClassGenerator(object):
         try:
             cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
         except subprocess.CalledProcessError:
-            print ("ERROR: Cannot find clang-format executable")
-            print ("       Please make sure it is in the PATH.")
+            print "ERROR: Cannot find clang-format executable"
+            print "       Please make sure it is in the PATH."
             self.clang_format = []
             return
         self.clang_format = [cformat_exe, "-i",  "-style=file", "-fallback-style=llvm"]
@@ -43,47 +58,44 @@ class ClassGenerator(object):
         self.reader.read()
         self.getSyntax = self.reader.options["getSyntax"]
         self.expose_pod_members = self.reader.options["exposePODMembers"]
-
         self.process_components(self.reader.components)
-	
-	# no datatypes at the moment
         self.process_datatypes(self.reader.datatypes)
-       	self.create_selection_xml()
+        self.create_selection_xml()
         self.print_report()
-
 
     def process_components(self, content):
         self.requested_classes += content.keys()
-        for name, components in content.items():
+        for name, components in content.iteritems():
             self.create_component(name, components["Members"])
 
     def process_datatypes(self, content):
         for name in content.iterkeys():
             self.requested_classes.append(name)
             self.requested_classes.append("%sData" % name)
-        for name, components in content.items():
+        for name, components in content.iteritems():
             self.create_data(name, components)
             self.create_class(name, components)
             self.create_collection(name, components)
             self.create_obj(name, components)
-            self.create_PrintInfo(name, components)
+            # self.create_PrintInfo(name, components)
 
     def print_report(self):
         if self.verbose:
             pkl = open(os.path.join(thisdir, "figure.txt"))
             figure = pickle.load(pkl)
-            text = "%s %d %s" % (self.yamlfile,
+            text = _text_ % (self.yamlfile,
                              len(self.created_classes),
-                             self.install_dir)
-            cntr = 0
-            print
-            for figline, summaryline in zip(figure, text.splitlines()):
-                cntr += 1
-                print (figline + summaryline)
-            for i in xrange(cntr, len(figure)):
-                print (figure[i])
-            print ("     'Homage to the Square' - Josef Albers")
-            print
+                             self.install_dir
+                             )
+        cntr = 0
+        print
+        for figline, summaryline in zip(figure, text.splitlines()):
+            cntr += 1
+            print figline + summaryline
+        for i in xrange(cntr, len(figure)):
+            print figure[i]
+        print "     'Homage to the Square' - Josef Albers"
+        print
 
     def get_template(self, filename):
         templatefile = os.path.join(self.template_dir, filename)
@@ -154,46 +166,44 @@ class ClassGenerator(object):
 
 
     def demangle_classname(self, classname):
-        namespace_open = ""
-        namespace_close = ""
-        namespace = ""
-        rawclassname = ""
-        if "::" in classname:
-            cnameparts = classname.split("::")
-
-            if len(cnameparts) > 2:
-                raise Exception("'%s' defines a type with nested namespaces. Not supported, yet." % classname)
-                namespace, rawclassname = cnameparts
-                namespace_open = "namespace %s {" % namespace
-                namespace_close = "} // namespace %s" % namespace
-
-        else:
-            rawclassname = classname
-        return namespace, rawclassname, namespace_open, namespace_close
+      namespace_open = ""
+      namespace_close = ""
+      namespace = ""
+      rawclassname = ""
+      if "::" in classname:
+        cnameparts = classname.split("::")
+        if len(cnameparts) > 2:
+          raise Exception("'%s' defines a type with nested namespaces. Not supported, yet." % classname)
+        namespace, rawclassname = cnameparts
+        namespace_open = "namespace %s {" % namespace
+        namespace_close = "} // namespace %s" % namespace
+      else:
+        rawclassname = classname
+      return namespace, rawclassname, namespace_open, namespace_close
 
 
     def create_data(self, classname, definition):
-        # check whether all member types are known
-        # and prepare include directives
-        namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+      # check whether all member types are known
+      # and prepare include directives
+      namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
-        data = self.process_datatype(classname, definition)
+      data = self.process_datatype(classname, definition)
 
-        # now handle the vector-members
-        vectormembers = definition["VectorMembers"]
-        for vectormember in vectormembers:
-          name = vectormember["name"]
-          data["members"].append("  unsigned int %s_begin;" % name)
-          data["members"].append("  unsigned int %s_end;" %(name))
+      # now handle the vector-members
+      vectormembers = definition["VectorMembers"]
+      for vectormember in vectormembers:
+        name = vectormember["name"]
+        data["members"].append("  unsigned int %s_begin;" % name)
+        data["members"].append("  unsigned int %s_end;" %(name))
 
-        # now handle the one-to-many relations
-        refvectors = definition["OneToManyRelations"]
-        for refvector in refvectors:
-          name = refvector["name"]
-          data["members"].append("  unsigned int %s_begin;" %(name))
-          data["members"].append("  unsigned int %s_end;" %(name))
+      # now handle the one-to-many relations
+      refvectors = definition["OneToManyRelations"]
+      for refvector in refvectors:
+        name = refvector["name"]
+        data["members"].append("  unsigned int %s_begin;" %(name))
+        data["members"].append("  unsigned int %s_end;" %(name))
 
-        substitutions = {"includes" : "\n".join(data["includes"]),
+      substitutions = {"includes" : "\n".join(data["includes"]),
                       "members"  : "\n".join(data["members"]),
                       "name"     : rawclassname,
                       "description" : data["description"],
@@ -201,9 +211,9 @@ class ClassGenerator(object):
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
                       "namespace_close" : namespace_close
-        }
-        self.fill_templates("Data", substitutions)
-        self.created_classes.append(classname+"Data")
+      }
+      self.fill_templates("Data", substitutions)
+      self.created_classes.append(classname+"Data")
 
     def create_class(self, classname, definition):
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
@@ -297,7 +307,7 @@ class ClassGenerator(object):
         if klass in self.buildin_types:
           setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
-          ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) )
+          ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) ) 
         elif klass.startswith("std::array"):
           setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
@@ -331,7 +341,7 @@ class ClassGenerator(object):
                 comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
                 comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
 
-              ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (comp_member_name ,  comp_gname) )
+              ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (comp_member_name ,  comp_gname) ) 
 
               getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
               getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
@@ -368,7 +378,7 @@ class ClassGenerator(object):
           if self.getSyntax:
               gname = "get" + name[:1].upper() + name[1:]
               sname = "set" + name[:1].upper() + name[1:]
-          ostream_implementation += ( '  o << " %s : " << value.%s().id() << std::endl ;\n' % (name, gname) )
+          ostream_implementation += ( '  o << " %s : " << value.%s().id() << std::endl ;\n' % (name, gname) ) 
 
           setter_declarations += declarations["one_rel_setter"].format(name=name,fname=sname, namespace=mnamespace, type=klassname, description=desc)
           setter_implementations += implementations["one_rel_setter"].format(name=name,fname=sname, namespace=mnamespace, type=klassname, classname=rawclassname)
@@ -393,7 +403,7 @@ class ClassGenerator(object):
             datatype["includes"].append('#include "%s.h"' %klassname)
           else:
             datatype["includes"].append('#include "%s.h"' %klass)
-
+        
 
       # handle constructor from values
       constructor_signature = constructor_signature.rstrip(",")
@@ -437,10 +447,10 @@ class ClassGenerator(object):
           get_relation = "get" + relationName[:1].upper() + relationName[1:]
           add_relation = "add" + relationName[:1].upper() + relationName[1:len(relationName)-1]  # drop the 's' at the end !??
 
-        ostream_implementation += ( '  o << " %s : " ;\n' % relationName  )
-        ostream_implementation += ( '  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName )
-        ostream_implementation += ( '    o << value.%s(i) << " " ; \n'  % get_relation  )
-        ostream_implementation +=   '  o << std::endl ;\n'
+        ostream_implementation += ( '  o << " %s : " ;\n' % relationName  ) 
+        ostream_implementation += ( '  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName ) 
+        ostream_implementation += ( '    o << value.%s(i) << " " ; \n'  % get_relation  ) 
+        ostream_implementation +=   '  o << std::endl ;\n' 
 
 
         substitutions = {"relation" : relationName,
@@ -478,7 +488,7 @@ class ClassGenerator(object):
         # TODO: add loading of code from external files
         if( extra.has_key("includes")):
             datatype["includes"].append( extra["includes"] )
-            print (" ***** adding includes : " ,  extra["includes"] , "to" ,  datatype["includes"])
+            print " ***** adding includes : " ,  extra["includes"] , "to" ,  datatype["includes"]
 
 
       ostream_implementation += "  return o ;\n}\n"
@@ -503,7 +513,7 @@ class ClassGenerator(object):
                       "relation_members" : references_members,
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
-                      "namespace_close" : namespace_close,
+                      "namespace_close" : namespace_close, 
                       "ostream_declaration" : ostream_declaration,
                       "ostream_implementation" : ostream_implementation
                      }
@@ -526,8 +536,6 @@ class ClassGenerator(object):
 
 
     def create_collection(self, classname, definition):
-
-
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
       members = definition["Members"]
@@ -550,26 +558,26 @@ class ClassGenerator(object):
       #------------------ create ostream operator --------------------------
       # create colum based output for data members using scientific format
       #
-      numColWidth = 12
+      numColWidth = 12 
       ostream_header_string = "id:"
       while len( ostream_header_string ) < numColWidth+1:
-        ostream_header_string += " "
-
+        ostream_header_string += " " 
+     
 
       ostream_declaration    = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v);\n" % rawclassname )
       ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v){\n" % rawclassname )
-      ostream_implementation += '  std::ios::fmtflags old_flags = o.flags() ; \n'
-      ostream_implementation += '  o << "{header_string}" << std::endl ;\n '
+      ostream_implementation += '  std::ios::fmtflags old_flags = o.flags() ; \n' 
+      ostream_implementation += '  o << "{header_string}" << std::endl ;\n ' 
       ostream_implementation += '  for(int i = 0; i < v.size(); i++){\n'
-      ostream_implementation += '     o << std::scientific << std::showpos '
-      ostream_implementation += ( ' << std::setw(%i) ' %  numColWidth )
+      ostream_implementation += '     o << std::scientific << std::showpos ' 
+      ostream_implementation += ( ' << std::setw(%i) ' %  numColWidth )  
       ostream_implementation += ' << v[i].id() << " " '
       for m in members:
         name = m["name"]
         t = m["type"]
         colW = numColWidth+2
         comps = self.reader.components
-        compMemStr = ""
+        compMemStr = "" 
         if t in comps.keys():
           nCompMem = 0
           compMemStr += ' ['
@@ -579,21 +587,21 @@ class ClassGenerator(object):
               nCompMem += 1
               compMemStr += ('%s,' % cm )
           compMemStr += ']'
-          colW *=  nCompMem
+          colW *=  nCompMem    
           #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
         colName = name[:colW-2]
         colName += compMemStr
         colName +=":"
         while len( colName ) < colW:
-          colName += " "
-        ostream_header_string  += colName
+          colName += " " 
+        ostream_header_string  += colName    
 
         if( self.getSyntax ):
           name  = "get" + name[:1].upper() + name[1:]
         if not t.startswith("std::array"):
-          ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) )
+          ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) ) 
       ostream_implementation += '  << std::endl;\n'
-      ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string )
+      ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string ) 
 
       #----------------------------------------------------------------------
 
@@ -849,9 +857,9 @@ class ClassGenerator(object):
       ostreamComponents +=  "inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
 
       for name in keys:
-#        print  " comp: " , classname , " name : " , name
+#        print  " comp: " , classname , " name : " , name 
         klass = components[ name ]
-  #    for name, klass in components.items():
+  #    for name, klass in components.iteritems():
         if( name != "ExtraCode"):
 
           if not klass.startswith("std::array"):
@@ -1038,9 +1046,9 @@ class ClassGenerator(object):
           subprocess.call(self.clang_format + [fullname])
 
     def evaluate_template(self, filename, substitutions):
-	""" reads in a given template, evaluates it
-		and returns result
-	"""
+        """ reads in a given template, evaluates it
+            and returns result
+        """
         templatefile = os.path.join(self.template_dir,filename)
         template = open(templatefile,"r").read()
         return string.Template(template).substitute(substitutions)
@@ -1079,49 +1087,46 @@ class ClassGenerator(object):
 
 
 ##########################
-
 if __name__ == "__main__":
 
-    from optparse import OptionParser
+  from optparse import OptionParser
 
-    usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename> Given a <description.yaml>
-			it creates data classes
-			and a LinkDef.h file in
-			the specified <targetdir>:
-			 <packagename>/*.h
-			src/*.cc
-			"""
-
-    parser = OptionParser(usage)
-    parser.add_option("-q", "--quiet",
+  usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename>
+    Given a <description.yaml>
+    it creates data classes
+    and a LinkDef.h file in
+    the specified <targetdir>:
+      <packagename>/*.h
+      src/*.cc
+"""
+  parser = OptionParser(usage)
+  parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="Don't write a report to screen")
-    parser.add_option("-d", "--dryrun",
+  parser.add_option("-d", "--dryrun",
                     action="store_true", dest="dryrun", default=False,
                     help="Do not actually write datamodel files")
-    parser.add_option("-c", "--clangformat", dest="clangformat",
+  parser.add_option("-c", "--clangformat", dest="clangformat",
                     action="store_true", default=False,
                     help="Apply clang-format when generating code (with -style=file)")
-    (options, args) = parser.parse_args()
+  (options, args) = parser.parse_args()
 
-    if len(args) != 3:
+  if len(args) != 3:
       parser.error("incorrect number of arguments")
 
-
-
-    #--- create output directories if they do not exist
-    install_path = args[1]
-    project = args[2]
-    directory = os.path.join( install_path ,"src" )
-    if not os.path.exists( directory ):
+  #--- create output directories if they do not exist
+  install_path = args[1]
+  project = args[2]
+  directory = os.path.join( install_path ,"src" )
+  if not os.path.exists( directory ):
       os.makedirs(directory)
-    directory = os.path.join( install_path , project )
+  directory = os.path.join( install_path , project )
 
-    if not os.path.exists( directory ):
+  if not os.path.exists( directory ):
       os.makedirs(directory)
 
-    gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
-    gen.configure_clang_format(options.clangformat)
-    gen.process()
-    for warning in gen.warnings:
-      print (warning)
+  gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
+  gen.configure_clang_format(options.clangformat)
+  gen.process()
+  for warning in gen.warnings:
+      print warning
