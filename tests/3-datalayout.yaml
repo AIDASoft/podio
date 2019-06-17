@@ -1,0 +1,22 @@
+components :
+  SimpleStruct:
+    x : int
+    y : int
+    z : int
+    p: std::array<int, 4>
+    # can also add c'tors:
+    ExtraCode :
+      declaration: "
+      SimpleStruct() : x(0),y(0),z(0) {}
+      SimpleStruct( const int* v) : x(v[0]),y(v[1]),z(v[2]) {}
+      "
+
+  NotSoSimpleStruct:
+    data : SimpleStruct
+
+  ex2::NamespaceStruct:
+    x : int
+    y : int
+
+  ex2::NamespaceInNamespaceStruct:
+   data : ex2::NamespaceStruct
