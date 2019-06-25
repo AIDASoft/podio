@@ -1,7 +1,16 @@
+find_package(HDF5 COMPONENTS CXX REQUIRED)
+
+
+#target_link_libraries(dummy PUBLIC ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
+
+
+
 include_directories(
 	${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
-)
+  ${CMAKE_CURRENT_SOURCE_DIR}/datamodel ${HDF5_INCLUDE_DIRS})
+
+
+
 
 foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   string(TOUPPER ${_conf} _conf )
@@ -17,6 +26,7 @@ file(GLOB headers_utils utilities/*.h)
 
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
 target_link_libraries(TestDataModel podio )
+target_link_libraries(TestDataModel ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
 install(TARGETS TestDataModel DESTINATION tests)
 
 REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml)
@@ -66,3 +76,6 @@ set_property(TEST pyunittest
 set_property(TEST pyunittest PROPERTY DEPENDS write)
 
 add_test(NAME unittest COMMAND unittest)
+
+
+
