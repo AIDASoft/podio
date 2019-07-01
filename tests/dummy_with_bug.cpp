@@ -67,14 +67,14 @@ mtype_EventInfo.insertMember(EventInfo_Number,HOFFSET(EventInfoData, Number), Pr
 
 
 		// DATASET 1
-		const int SIZE_1 = info_1.size(); 
+		const hsize_t SIZE_1 = info_1.size();
 		hsize_t dim_1[] = {SIZE_1};
 		DataSpace space_1(RANK, dim_1);
 		std::shared_ptr<DataSet> dataset1(new DataSet(file->createDataSet(DATASET_NAME_1, mtype_EventInfo, space_1)));
 		
 		
 		// DATASET 2
-		const int SIZE_2 = info_2.size(); 
+		const hsize_t SIZE_2 = info_2.size();
 		hsize_t dim_2[] = {SIZE_2};
 		DataSpace space_2(RANK, dim_2);
 		std::shared_ptr<DataSet> dataset2(new DataSet(file->createDataSet(DATASET_NAME_2, mtype_EventInfo, space_2)));
@@ -100,19 +100,19 @@ mtype_EventInfo.insertMember(EventInfo_Number,HOFFSET(EventInfoData, Number), Pr
 	// catch failure caused by the H5File operations
 	catch( FileIException error )
 	{
-		error.printError();
+		error.printErrorStack();
 		return -1;
 	}
 	// catch failure caused by the DataSet operations
 	catch( DataSetIException error )
 	{
-		error.printError();
+		error.printErrorStack();
 		return -1;
 	}
 	// catch failure caused by the DataSpace operations
 	catch( DataSpaceIException error )
 	{
-		error.printError();
+		error.printErrorStack();
 		return -1;
 	}
 	catch(...)
