@@ -36,13 +36,12 @@ int main()
 	
 		// DATASET 1
 		DataSet dataset1 = file.openDataSet(DATASET_NAME_1);
-		
 		// DATASET 2
 		DataSet dataset2 = file.openDataSet(DATASET_NAME_2);
-	
-		// Extract information from the datasets
 
+		// Extract information from the datasets
 		DataSpace dataspace1 = dataset1.getSpace();
+		// Extract information from the datasets
 		DataSpace dataspace2 = dataset2.getSpace();
 
 		hsize_t dim_1[2];
@@ -51,43 +50,46 @@ int main()
 		dataspace1.getSimpleExtentDims(dim_1, NULL);
 		dataspace2.getSimpleExtentDims(dim_2, NULL);
 
-		std::cout<<"dimension of dataset 1 = "<< (unsigned long)dim_1[0]<<std::endl;
-	        std::cout<<"dimension of dataset 2 = "<<(unsigned long)dim_2[0]<<std::endl;
+		//std::cout<<"dimension of dataset 1 = "<< (unsigned long)dim_1[0]<<std::endl;
+	        //std::cout<<"dimension of dataset 2 = "<<(unsigned long)dim_2[0]<<std::endl;
 		
 		hsize_t size_1 = dataset1.getStorageSize();
 		hsize_t size_2 = dataset2.getStorageSize();
 
-		std::cout<<"storage space for dataset 1"<<(unsigned long)size_1<<std::endl;
-		std::cout<<"storage space for dataset 2"<<(unsigned long)size_2<<std::endl; 
+		//std::cout<<"storage space for dataset 1"<<(unsigned long)size_1<<std::endl;
+		//std::cout<<"storage space for dataset 2"<<(unsigned long)size_2<<std::endl; 
 		
 		// Read data to file
 		std::cout<<"Reading data..."<<std::endl;
 		
 		auto store = podio::EventStore();
 		auto& info_1 = store.create<EventInfoCollection>("info_1");
-		
-		void* buffer_1 = malloc(size_1);	
-		dataset1.read(buffer_1, mtype_EventInfo);	
-		
-		//check if we managed to read the stuff into buffer_1
-		EventInfoData* p = reinterpret_cast<EventInfoData*>(buffer_1);
-		std::cout<<p[0].Number<<std::endl;
-		std::cout<<p[1].Number<<std::endl;
-				
-
+		auto& info_2 = store.create<EventInfoCollection>("info_2");
 			
-		void* dest = info_1->_getBuffer();
-
-		memcpy(dest, buffer_1,size_1);
-
-		// SEG FAULT OCCURS HERE when creating EventInfoObj
-		info_1->prepareAfterRead();  
 		
+		EventInfoDataContainer* dest_1 = info_1._getBuffer();
+		dest_1->resize( size_1) ;
+		void* buffer_1 = &dest_1->at(0) ;
+		dataset1.read(buffer_1, mtype_EventInfo);	
+	
+		
+		EventInfoDataContainer* dest_2 = info_2._getBuffer();
+		dest_2->resize(size_2) ;
+		void* buffer_2 = &dest_2->at(0) ;
+		dataset2.read(buffer_2, mtype_EventInfo);
+		
+	
+		info_1->prepareAfterRead();  
+		info_2->prepareAfterRead();  
+
 		// print data to verify
 		std::cout<<"Dataset I"<<std::endl;
 		std::cout<<info_1<<std::endl;
 
-		store.clearCollections();		
+		std::cout<<"Dataset II"<<std::endl;
+		std::cout<<info_2<<std::endl;
+		
+		store.clearCollections();
 
 	} // end of try block
 	
