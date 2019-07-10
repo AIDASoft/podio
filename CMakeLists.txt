@@ -63,6 +63,11 @@ include(${ROOT_USE_FILE})
 
 add_definitions(-Wno-unused-variable -Wno-unused-parameter -pthread)
 
+
+#--- Declate HDF5 dependency ---------------------------------------------------
+find_package(HDF5 COMPONENTS CXX REQUIRED)
+include_directories(${HDF5_INCLUDE_DIRS})
+
 #--- enable unit testing capabilities ------------------------------------------
 include(CTest)
 
