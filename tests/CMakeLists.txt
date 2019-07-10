@@ -1,10 +1,4 @@
 find_package(HDF5 COMPONENTS CXX REQUIRED)
-
-
-#target_link_libraries(dummy PUBLIC ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
-
-
-
 include_directories(
 	${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/datamodel ${HDF5_INCLUDE_DIRS})
@@ -23,9 +17,11 @@ file(GLOB sources src/*.cc)
 file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
+file(GLOB sources_1 ../src/*.cc)
+file(GLOB headers_1 ../includes/podio/*.h)
 
-add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
-target_link_libraries(TestDataModel podio )
+add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils} ${sources_1} ${headers_1})
+target_link_libraries(TestDataModel podio)
 target_link_libraries(TestDataModel ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
 install(TARGETS TestDataModel DESTINATION tests)
 
