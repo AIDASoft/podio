@@ -4,7 +4,6 @@
 #include "ExampleMCData.h"
 #include "ExampleMCCollection.h"
 
-
 // STL
 #include <iostream>
 #include <vector>
@@ -41,10 +40,12 @@ int main()
 		// Initialize some data that we would like to serialize
 		std::cout<<"Start Processing..."<<std::endl;
 
-		auto store = podio::EventStore();
-		auto& info_1 = store.create<EventInfoCollection>("info_1");
-		auto& info_2 = store.create<EventInfoCollection>("info_2");
-		auto& mcps = store.create<ExampleMCCollection>("mcparticles");
+		auto store_1 = podio::EventStore();
+		auto& info_1 = store_1.create<EventInfoCollection>("info_1");
+		auto& info_2 = store_1.create<EventInfoCollection>("info_2");
+		
+		auto store_2 = podio::EventStore();
+		auto& mcps = store_2.create<ExampleMCCollection>("mcparticles");
 
 		// COLLECTION 1
 		auto item_1 = EventInfo();
@@ -77,24 +78,49 @@ int main()
 		auto mcp1 = ExampleMC();
 		auto mcp2 = ExampleMC();
 		auto mcp3 = ExampleMC();
+		auto mcp4 = ExampleMC();
+		auto mcp5 = ExampleMC();
+		auto mcp6 = ExampleMC();
+		auto mcp7 = ExampleMC();
+		auto mcp8 = ExampleMC();
+		auto mcp9 = ExampleMC();
 
 		mcps.push_back( mcp0 ) ;
 		mcps.push_back( mcp1 ) ;
 		mcps.push_back( mcp2 ) ;
 		mcps.push_back( mcp3 ) ;
+		mcps.push_back( mcp4 ) ;
+		mcps.push_back( mcp5 ) ;
+		mcps.push_back( mcp6 ) ;
+		mcps.push_back( mcp7 ) ;
+		mcps.push_back( mcp8 ) ;
+		mcps.push_back( mcp9 ) ;
 
 		// --- add some daughter relations
 		auto p = ExampleMC();
 		auto d = ExampleMC();
 
 		p = mcps[0] ;
-		p.adddaughters( mcps[1] ) ;
 		p.adddaughters( mcps[2] ) ;
-		
+		p.adddaughters( mcps[3] ) ;
+		p.adddaughters( mcps[4] ) ;
+		p.adddaughters( mcps[5] ) ;
 		p = mcps[1] ;
 		p.adddaughters( mcps[2] ) ;
 		p.adddaughters( mcps[3] ) ;
-		
+		p.adddaughters( mcps[4] ) ;
+		p.adddaughters( mcps[5] ) ;
+		p = mcps[2] ;
+		p.adddaughters( mcps[6] ) ;
+		p.adddaughters( mcps[7] ) ;
+		p.adddaughters( mcps[8] ) ;
+		p.adddaughters( mcps[9] ) ;
+		p = mcps[3] ;
+		p.adddaughters( mcps[6] ) ;
+		p.adddaughters( mcps[7] ) ;
+		p.adddaughters( mcps[8] ) ;
+		p.adddaughters( mcps[9] ) ;
+
 		//--- now fix the parent relations
 		for( unsigned j=0,N=mcps.size();j<N;++j)
 		{
@@ -106,40 +132,54 @@ int main()
 				d.addparents( p ) ;
 			}
 		}
-		
-
+	
 		// In the future we want ...
 		// Currently the part below does not do anything yet apart from printing the collection. 
+		/*
 		auto writer = podio::HDF5Writer(FILE_NAME_1, &store);
 		writer.registerForWrite<EventInfoCollection>("info_1");
-		//writer.registerForWrite<EventInfoCollection>("info_2");
-		//writer.registerForWrite<ExampleMCCollection>("mcparticles");
+		writer.registerForWrite<EventInfoCollection>("info_2");
+		writer.registerForWrite<ExampleMCCollection>("mcparticles");
 		writer.writeEvent(); 
-
+		*/
 
 		// CompTypes
 		H5_EventInfoData h5eid;
 		H5_ExampleMCData h5emcd; 
-	
+		
+		
+		/* We want to have the following structure:
+		*  /store_1 
+		*   - DATASET 1
+		*   - DATASET 2
+		*  /store_2
+		*   - DATASET 3
+		*/
+		
+		
+		Group g1 = file.createGroup("/store_1");
+		Group g2 = file.createGroup("/store_2");
+				
+			
 		// DATASET 1
 		const hsize_t SIZE_1 = info_1.size(); 
 		hsize_t dim_1[] = {SIZE_1};
 		DataSpace space_1(RANK, dim_1);
-		DataSet dataset1 = file.createDataSet(DATASET_NAME_1, h5eid.h5dt(), space_1);
+		DataSet dataset1 = file.createDataSet("/store_1/EventInfoData_1", h5eid.h5dt(), space_1);
 		
 		
 		// DATASET 2
 		const hsize_t SIZE_2 = info_2.size(); 
 		hsize_t dim_2[] = {SIZE_2};
 		DataSpace space_2(RANK, dim_2);
-		DataSet dataset2 = file.createDataSet(DATASET_NAME_2, h5eid.h5dt(), space_2);
+		DataSet dataset2 = file.createDataSet("/store_1/EventInfoData_2", h5eid.h5dt(), space_2);
 	
 
 		// DATASET 3
 		const hsize_t SIZE_3 = mcps.size(); 
 		hsize_t dim_3[] = {SIZE_3};
 		DataSpace space_3(RANK, dim_3);
-		DataSet dataset3 = file.createDataSet(DATASET_NAME_3, h5emcd.h5dt(), space_3);
+		DataSet dataset3 = file.createDataSet("/store_2/ExampleMCData_1", h5emcd.h5dt(), space_3);
 		
 		
 		// Fill 
@@ -154,46 +194,16 @@ int main()
 		mcps->prepareForWrite();
 		void* buffer_3 = mcps->_getBuffer();
 		ExampleMCData** data_3 = reinterpret_cast<ExampleMCData**>(buffer_3);
-		
-
-		std::cout<<"Writing data..."<<std::endl;
-		
-		std::cout<<"Dataset I"<<std::endl;
-		
-		for(int i=0; i<2; i++)	
-			std::cout<<info_1[i]<<std::endl; 
 			
-		std::cout<<"Dataset II"<<std::endl;
-
-		for(int i=0; i<4; i++)	
-			std::cout<<info_2[i]<<std::endl;
-			
-		std::cout<<"Dataset III"<<std::endl;
-		
-    		for( auto p : mcps )
-    		{
-			std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
-	
-			for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it )
-			{
-				std::cout << " " << it->getObjectID().index ;
-			}
-			std::cout << "  and parents: " ;
-	
-			for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it )
-			{
-				std::cout << " " << it->getObjectID().index ;
-			}
-			std::cout << std::endl ;
-		}
-	
 		// Write data to file
 		
 		dataset1.write(*data_1, h5eid.h5dt());	
 		dataset2.write(*data_2, h5eid.h5dt()); 
-		dataset2.write(buffer_3, h5emcd.h5dt()); 
+		dataset3.write(*data_3, h5emcd.h5dt()); 
 		
-		store.clearCollections();
+		store_1.clearCollections();
+		store_2.clearCollections();
+		
 
 	} // end of try block
 	
@@ -203,6 +213,7 @@ int main()
 		error.printErrorStack();
 		return -1;
 	}
+	
 	// catch failure caused by the DataSet operations
 	catch( DataSetIException error )
 	{
