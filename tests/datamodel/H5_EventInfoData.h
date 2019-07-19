@@ -6,11 +6,10 @@
 #include "EventInfoData.h"
 #include "EventInfoCollection.h"
 
+
 #include "podio/EventStore.h"
 #include "podio/CollectionBase.h"
-
-#include <typeindex>
-
+#include "podio/HDF5Writer.h"
 
 using namespace H5;
 using namespace std;
@@ -31,6 +30,7 @@ class H5_EventInfoData
 	public:
 		H5_EventInfoData();
 		void writeH5(H5File& file, EventInfoCollection& info);
+	
 
 
 };
@@ -42,6 +42,8 @@ H5_EventInfoData::H5_EventInfoData()
 	hsize_t chunk_dims[2] = {1, 5};
 	cparms.setChunk(1, chunk_dims); 
 	flag = 0;
+	
+
 }
 
 
