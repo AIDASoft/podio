@@ -15,7 +15,7 @@
 // HDF5 specific includes
 #include "H5Cpp.h"
 #include "H5_EventInfoData.h"
-//#include "podio/HDF5Writer.h"
+#include "podio/HDF5Writer.h"
 
 using namespace H5;	
 using namespace std; 
@@ -34,17 +34,17 @@ int main()
 		
 		// create EventStore
 		auto store = podio::EventStore();
-		//auto writer = podio::HDF5Writer(FILE_NAME_1, &store);
+		auto writer = podio::HDF5Writer(FILE_NAME_1, &store);
 		
 		auto& info = store.create<EventInfoCollection>("info");
 		
 		// for writing EventInfoData	
-		H5_EventInfoData h5eid; 	
+		// H5_EventInfoData h5eid; 	
 		
-		//m[&typeid(h5eid)] = "H5_EventInfoData";
-		//cout << m[&typeid(h5eid)] << endl;
+		auto h5eid = H5_EventInfoData::getInstance();
+
 			
-		//writer.registerForWrite<EventInfoCollection>("info");
+		writer.registerForWrite<EventInfoCollection>("info");
 
 		unsigned nevents = 3;
 		
@@ -71,9 +71,9 @@ int main()
 			info.push_back(item_3);
 			info.push_back(item_4);
 			
-			h5eid.writeH5(file, info);
+			h5eid->writeH5(file, info);
 			
-			//writer.writeEvent();
+			writer.writeEvent();
 
 			store.clearCollections();
 
