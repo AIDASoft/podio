@@ -13,6 +13,7 @@
 
 using namespace H5;
 using namespace std;
+using namespace podio;
 
 const H5std_string EVENT_INFO_DATA("EventInfoData");
 const int RANK = 1;
@@ -28,26 +29,16 @@ class H5_EventInfoData
 		int flag; // if flag = 0 then we are writing the dataset for the first time
 		
 	public:
-		H5_EventInfoData();
 		void writeH5(H5File& file, EventInfoCollection& info);
-	
+		static H5_EventInfoData* getInstance();
 
-
+	private:
+		static H5_EventInfoData* instance;
+		H5_EventInfoData();
 };
 
-H5_EventInfoData::H5_EventInfoData() 
-{
-	h5_datatype = CompType(sizeof(EventInfoData));
-	h5_datatype.insertMember("Number", HOFFSET(EventInfoData, Number), H5::PredType::NATIVE_INT);
-	hsize_t chunk_dims[2] = {1, 5};
-	cparms.setChunk(1, chunk_dims); 
-	flag = 0;
-	
-
-}
-
-
-
+/* Initially the instance is NULL */
+H5_EventInfoData* H5_EventInfoData::instance = 0;
 
 
 #endif
