@@ -1,5 +1,31 @@
 #include "H5_EventInfoData.h"
 
+H5_EventInfoData::H5_EventInfoData() 
+{
+	cout<<"Registering EventInfoData" << endl;
+	//h5map[type_index(typeid(EventInfoCollection))] = reinterpret_cast<void(*)()>(&getInstance);
+
+	h5_datatype = CompType(sizeof(EventInfoData));
+	h5_datatype.insertMember("Number", HOFFSET(EventInfoData, Number), H5::PredType::NATIVE_INT);
+	hsize_t chunk_dims[2] = {1, 5};
+	cparms.setChunk(1, chunk_dims); 
+	flag = 0;
+	
+
+}
+
+
+H5_EventInfoData* H5_EventInfoData::getInstance()
+{
+    if (instance == 0)
+    {
+        instance = new H5_EventInfoData();
+    }
+
+    return instance;
+}
+
+
 void H5_EventInfoData::writeH5(H5File& file, EventInfoCollection& info)
 {
 	// Fill 
