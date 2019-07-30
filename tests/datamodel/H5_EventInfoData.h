@@ -2,6 +2,7 @@
 #define H5_EVENTINFODATA_H
 
 #include <iostream>
+#include <typeindex>
 #include "H5Cpp.h"
 #include "EventInfoData.h"
 #include "EventInfoCollection.h"
@@ -18,19 +19,21 @@ using namespace podio;
 const H5std_string EVENT_INFO_DATA("EventInfoData");
 const int RANK = 1;
 
-class H5_EventInfoData
+
+class H5_EventInfoData : public podio::HDF5Writer
 {
 	public:
 		CompType h5_datatype;
 		DSetCreatPropList cparms;
-		DataSet dataset_eventInfo;		
+		DataSet dataset_eventInfo;
 		hsize_t size[1];
 		hsize_t offset[1];
 		int flag; // if flag = 0 then we are writing the dataset for the first time
-		
+
 	public:
-		void writeH5(H5File& file, EventInfoCollection& info);
+		void writeCollection(CollectionBase* c, H5File& file);
 		static H5_EventInfoData* getInstance();
+		std::type_index get_typeindex();
 
 	private:
 		static H5_EventInfoData* instance;
