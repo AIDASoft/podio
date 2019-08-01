@@ -44,11 +44,15 @@ add_test(NAME write COMMAND write)
 set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
 
 add_test(NAME read COMMAND read)
-set_property(TEST read PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
+set_property(TEST read PROPERTY ENVIRONMENT
+             LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+             ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST read PROPERTY DEPENDS write)
 
 add_test(NAME read-multiple COMMAND read-multiple)
-set_property(TEST read-multiple PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
+set_property(TEST read-multiple PROPERTY ENVIRONMENT
+             LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+             ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST read-multiple PROPERTY DEPENDS write)
 
 add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_SOURCE_DIR}/python)
@@ -62,7 +66,7 @@ set_property(TEST pyunittest PROPERTY DEPENDS write)
 add_test(NAME unittest COMMAND unittest)
 
 # Fail tests if there is any error in the output
-set_tests_properties(generate-edm write read-one read-multiple pyunittest unittest 
+set_tests_properties(generate-edm write read read-multiple pyunittest unittest
     PROPERTIES FAIL_REGULAR_EXPRESSION "[^a-z]Error;ERROR;Failed"
 )
 
