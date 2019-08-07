@@ -1,11 +1,11 @@
-#ifndef H5_EVENTINFODATA_H
-#define H5_EVENTINFODATA_H
+#ifndef H5_EXAMPLEMCDATA_H
+#define H5_EXAMPLEMCDATA_H
 
 #include <iostream>
 #include <typeindex>
 #include "H5Cpp.h"
-#include "EventInfoData.h"
-#include "EventInfoCollection.h"
+#include "ExampleMCData.h"
+#include "ExampleMCCollection.h"
 
 
 #include "podio/EventStore.h"
@@ -18,31 +18,31 @@ using namespace H5;
 using namespace std;
 using namespace podio;
 
-const H5std_string EVENT_INFO_DATA("EventInfoData");
-const int RANK_EID = 1;
+const H5std_string EXAMPLE_MC_DATA("ExampleMCData");
+const int RANK_EMD = 1;
 
-class H5_EventInfoData : public podio::HDF5Writer
+class H5_ExampleMCData : public podio::HDF5Writer
 {
 	public:
 		CompType h5_datatype;
 		DSetCreatPropList cparms;
-		DataSet dataset_eventInfo;
+		DataSet dataset_ExampleMC;
 		hsize_t size[1];
 		hsize_t offset[1];
 		int flag; // if flag = 0 then we are writing the dataset for the first time
 
 	public:
 		void writeCollection(CollectionBase* c, H5File& file);
-		static H5_EventInfoData* getInstance();
+		static H5_ExampleMCData* getInstance();
 		std::type_index get_typeindex();
 
 	private:
-		static H5_EventInfoData* instance;
-		H5_EventInfoData();
+		static H5_ExampleMCData* instance;
+		H5_ExampleMCData();
 };
 
 /* Initially the instance is NULL */
-H5_EventInfoData* H5_EventInfoData::instance = 0;
+H5_ExampleMCData* H5_ExampleMCData::instance = 0;
 
 
 #endif
