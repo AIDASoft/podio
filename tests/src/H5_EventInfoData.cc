@@ -1,8 +1,10 @@
 #include "H5_EventInfoData.h"
 
+
 H5_EventInfoData::H5_EventInfoData()
 {
 	cout<<"Registering EventInfoData" << endl;
+
 	h5_datatype = CompType(sizeof(EventInfoData));
 	h5_datatype.insertMember("Number", HOFFSET(EventInfoData, Number), H5::PredType::NATIVE_INT);
 	hsize_t chunk_dims[2] = {1, 5};
@@ -36,7 +38,6 @@ void H5_EventInfoData::writeCollection(CollectionBase* c, H5File& file)
 
 	EventInfoCollection* info = static_cast<EventInfoCollection*>( c );
 	// Fill
-	info->prepareForWrite();
 	void* buffer_1 = info->_getBuffer();
 	EventInfoData** data_1 = reinterpret_cast<EventInfoData**>(buffer_1);
 
@@ -49,7 +50,7 @@ void H5_EventInfoData::writeCollection(CollectionBase* c, H5File& file)
 		*/
 		hsize_t dims[1]  = {info->size()};
 		hsize_t maxdims[1] = {H5S_UNLIMITED};
-		DataSpace mspace1( RANK, dims, maxdims);
+		DataSpace mspace1( RANK_EID, dims, maxdims);
 
 		dataset_eventInfo = file.createDataSet(EVENT_INFO_DATA, h5_datatype, mspace1, cparms);
 		DataSpace fspace1 = dataset_eventInfo.getSpace();
@@ -81,7 +82,7 @@ void H5_EventInfoData::writeCollection(CollectionBase* c, H5File& file)
 		DataSpace fspace2 = dataset_eventInfo.getSpace();
 		fspace2.selectHyperslab(H5S_SELECT_SET, dim2, offset );
 
-		DataSpace mspace2( RANK, dim2 );
+		DataSpace mspace2( RANK_EID, dim2 );
 
 		// Write data to file
 		dataset_eventInfo.write(*data_1, h5_datatype, mspace2, fspace2);
