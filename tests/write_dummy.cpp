@@ -1,7 +1,3 @@
-// Data model
-#include "EventInfoData.h"
-#include "EventInfoCollection.h"
-
 // STL
 #include <iostream>
 #include <vector>
@@ -17,6 +13,7 @@
 // HDF5 specific includes
 #include "H5Cpp.h"
 #include "H5_EventInfoData.h"
+#include "H5_ExampleMCData.h"
 
 
 using namespace H5;
@@ -24,9 +21,6 @@ using namespace std;
 using namespace podio;
 
 const H5std_string FILE_NAME("dummy.h5");
-const H5std_string FILE_NAME_1("dummy_new.h5");
-
-map<const type_info*, string> m;
 
 int main()
 {
@@ -37,17 +31,21 @@ int main()
 		auto store = EventStore();
 
 		// declare HDF5Writer
-		auto writer = HDF5Writer(FILE_NAME_1, &store);
+		auto writer = HDF5Writer(FILE_NAME, &store);
 
 		// declare register
-		WriterRegister* writer_register = WriterRegister::getInstance();
+		auto wr = podio::WriterRegister::getInstance();
 		// we should register EventInfoData writer
-		H5_EventInfoData* eid = H5_EventInfoData::getInstance();
-		writer_register->register_writer(eid);
-
+		wr->register_writer(H5_EventInfoData::getInstance());
+		wr->register_writer(H5_ExampleMCData::getInstance());
+			
+		// create EventInfoCollection
 		auto& info = store.create<EventInfoCollection>("info");
+		auto& mcps = store.create<ExampleMCCollection>("mcparticles");
+		
 		writer.registerForWrite<EventInfoCollection>("info");
-
+		writer.registerForWrite<ExampleMCCollection>("mcparticles");
+		
 
 		unsigned nevents = 3;
 
@@ -73,11 +71,41 @@ int main()
 			info.push_back(item_2);
 			info.push_back(item_3);
 			info.push_back(item_4);
+			
+			// ---- add some MC particles ----
+			auto mcp0 = ExampleMC();
+			auto mcp1 = ExampleMC();
+			auto mcp2 = ExampleMC();
 
-			writer.writeEvent(writer_register->h5map);
+			mcps.push_back( mcp0 ) ;
+			mcps.push_back( mcp1 ) ;
+			mcps.push_back( mcp2 ) ;
+
+			// --- add some daughter relations
+			auto p = ExampleMC();
+			auto d = ExampleMC();
+			
+			p = mcps[0] ; 
+			p.adddaughters( mcps[1] ) ;
+			p.adddaughters( mcps[2] ) ;
+
+			//--- now fix the parent relations
+			for( unsigned j=0,N=mcps.size();j<N;++j)
+			{
+				p = mcps[j] ; 
+				for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it )
+				{
+					int dIndex = it->getObjectID().index ;
+					d = mcps[ dIndex ] ;
+					d.addparents( p ) ;
+				}
+			}
+
+    
+			writer.writeEvent(wr->h5map);
 			store.clearCollections();
-
 		}
+
 
 
 	} // end of try block
