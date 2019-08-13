@@ -14,6 +14,7 @@
 // podio specification
 #include "podio/EventStore.h"
 #include "podio/CollectionBase.h"
+#include "podio/H5_Writer_Collections.h"
 
 // HDF5 specific includes
 #include "H5Cpp.h"
@@ -24,20 +25,15 @@ namespace podio
 {
 
 	class CollectionBase;
-	class Registry;
-
-
 
 class HDF5Writer
 {
 	public:
-		std::map<std::string, std::type_index> Fmap;
-		HDF5Writer();
+		std::map<std::string, H5_Writer_Collections*> Fmap;
 		HDF5Writer(const H5std_string FILE_NAME, EventStore* store);
 		template<typename T>void registerForWrite(const std::string& name);
-		void writeEvent(std::map<std::type_index, HDF5Writer*> h5map);
-		virtual std::type_index get_typeindex();
-		virtual void writeCollection(CollectionBase* col, H5File& file);
+		void writeEvent();
+
 
 	private:
 		H5std_string m_filename;
@@ -50,9 +46,9 @@ class HDF5Writer
 
 template<typename T> void HDF5Writer::registerForWrite(const std::string& name)
 {
-	const T* tmp_coll(nullptr);
-	m_store->get(name, tmp_coll);
-	T* coll = const_cast<T*>(tmp_coll);
+
+	T* tmp_writer = T::getInstance();
+	auto coll = tmp_writer->get_collection(name, m_store);
 
 	if(coll==nullptr)
 		{
@@ -61,7 +57,7 @@ template<typename T> void HDF5Writer::registerForWrite(const std::string& name)
 
 	m_storedCollections.emplace_back(coll);
 	m_collectionNames.emplace_back(name);
-	Fmap.insert({name, std::type_index(typeid(T))});
+	Fmap.insert({name, tmp_writer});
 }
 
 
