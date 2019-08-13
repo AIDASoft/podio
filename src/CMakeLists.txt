@@ -9,7 +9,7 @@ target_link_libraries(podioDict podio ROOT::Core)
 install(TARGETS podioDict DESTINATION lib)
 
 add_library(podio SHARED ${sources})
-target_link_libraries(podio ROOT::RIO ROOT::Tree)
+target_link_libraries(podio ROOT::RIO ROOT::Tree ${HDF5_CXX_LIBRARIES})
 install(TARGETS podio DESTINATION lib)
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/podio DESTINATION include)

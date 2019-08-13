@@ -47,14 +47,14 @@ void H5_Writer_EventInfoCollection::writeCollection(CollectionBase* c, H5File& f
 		/*
 		* Initialize the data space with unlimited dimensions.
 		*/
-		hsize_t dims[1]  = {info->size()};
+		hsize_t dims[1]  = {static_cast<hsize_t>(info->size())};
 		hsize_t maxdims[1] = {H5S_UNLIMITED};
 		DataSpace mspace1( RANK_EventInfoCollection, dims, maxdims);
 
 		dataset_EventInfo = file.createDataSet(EVENTINFODATA, h5_datatype, mspace1, cparms);
 		DataSpace fspace1 = dataset_EventInfo.getSpace();
 		offset[0] = 0;
-		hsize_t dims1[1] = {info->size()};            /* data1 dimensions */
+		hsize_t dims1[1] = {static_cast<hsize_t>(info->size())};            /* data1 dimensions */
 		fspace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
 
 		dataset_EventInfo.extend(size);
@@ -70,7 +70,7 @@ void H5_Writer_EventInfoCollection::writeCollection(CollectionBase* c, H5File& f
 	else
 	{
 		// extend dataset_EventInfo
-		hsize_t dim2[1] = {info->size()};
+	        hsize_t dim2[1] = {static_cast<hsize_t>(info->size())};
 
 		offset[0] = size[0];
 		size[0] += info->size();
