@@ -28,7 +28,7 @@ namespace podio{
 			{
 				const std::string &name = m_collectionNames[i++];
 				std::cout <<"Writing collection "<<name<<std::endl;
-				H5_Writer_Collections* wrt = Fmap.at(name);
+				H5Collections* wrt = Fmap.at(name);
 				col->prepareForWrite();
 				wrt->writeCollection(col, file);
 
