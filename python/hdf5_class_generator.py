@@ -1,10 +1,10 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 import os
 import string
 import pickle
 import subprocess
 import re
-from collections import OrderedDict 
+from collections import OrderedDict
 import copy
 from pprint import pprint
 from sys import exit
@@ -25,9 +25,9 @@ class ClassGenerator(object):
 		self.reader = PodioConfigReader(yamlfile)
 		self.warnings = []
 		self.dryrun = dryrun
-		self.unique_flat_members = {}
 		self.namespace = {}
-		# c++ to hdf5 datatype map; 
+
+		# c++ to hdf5 datatype map;
 		# note: bool type not found in hdf5 pre-defined datatypes.
 		self.dtype_map = {'int': 'PredType::NATIVE_INT',     \
 				'long': 'PredType::NATIVE_LONG',    \
@@ -44,6 +44,7 @@ class ClassGenerator(object):
 				'long double' : 'PredType::NATIVE_LDOUBLE'
 				}
 		self.predef = self.dtype_map.keys()
+
 		# different map for array type, Predefined native datatypes
 		self.a_type_map = {'int': 'H5T_NATIVE_INT',     \
 				'long': 'H5T_NATIVE_LONG',    \
@@ -60,7 +61,6 @@ class ClassGenerator(object):
 				'long double' : 'H5T_NATIVE_LDOUBLE'\
 				}
 
-
 	def configure_clang_format(self, apply):
 		if not apply:
 		    self.clang_format = []
@@ -74,538 +74,333 @@ class ClassGenerator(object):
 		    return
 		self.clang_format = [cformat_exe, "-i",  "-style=file", "-fallback-style=llvm"]
 
-
 	def process(self):
 		self.reader.read()
 		self.getSyntax = self.reader.options["getSyntax"]
 		self.expose_pod_members = self.reader.options["exposePODMembers"]
-		#print self.reader.components
-		
-		# build namespace and get rid of ::
-		for name in self.reader.components:
-			new_key = name
-			if "::" in name:
-				last_index = name.rindex("::")
-				new_key = name[last_index+2:]
-			self.namespace[new_key] = ['using namespace H5;\n\n']
-	
-		# remove :: for namespace struct
-		
-		for name, components in self.reader.components.items():
-			if "::" in name:
-				#print name
-				original_name = copy.deepcopy(name)
-				last_index = name.rindex("::")
-				entry = self.reader.components[name]
-				self.reader.components.pop(name, None)
-				name = name[last_index+2:]
-				self.reader.components[name] = entry
+		#pprint(self.reader.components)
+		#pprint(self.reader.datatypes)
 
-				for k in self.reader.components:
-					for varName, dtype in self.reader.components[k]['Members'].items():
-						if dtype == original_name:
-							self.reader.components[k]['Members'][varName] = name
-							#print "Are we here!"
-						if "::" in dtype and not "std::" in dtype:
-							last_index = dtype.rindex("::")
-							self.reader.components[k]['Members'][varName] = dtype[last_index+2:]
-					
 
-				list_namespace = original_name.split("::")[:-1]
-				for word in list_namespace:
-					if 'using namespace {};\n\n'.format(word) not in self.namespace[name]:
-						self.namespace[name].append('using namespace {};\n\n'.format(word))
-			
-				#print self.reader.components
-				#print self.namespace
-		
-		
-		self.get_unique_flat_members(self.reader.components)
-		self.process_components(self.reader.components)
-		
+		# First we want the components and datatypes to have the same
+		# structure
+		mod_dtype = self.process_datatypes(self.reader.datatypes)
 
+		# next we want to combine the components and datatypes dictonaries
+		content = copy.deepcopy(mod_dtype)
+		content.update(self.reader.components)
 
-	def get_unique_flat_members(self,obj):
-	    unfolded = self.unfold_definitions(obj)
-	    for varName, dtype in unfolded.items():
-		track = []
-		flattened_members = {}
-		self.flatten(unfolded[varName]['Members'], track, flattened_members)
-		
-		# we want to make names as unique as possible
-		for k, v in flattened_members.items():
-		    n_key = varName + "." + k
-		    self.unique_flat_members[n_key] = v
+		# clean the contents by getting rid of ExtraCode in components
+		# and also building a list of namespace
+		clean_content = self.clean(content)
 
+		# we only need to iterate over the datatypes
+		# but we need to clean_content to remember the components
 
-	def dot_to_underscore(self,superVarName):
-		return superVarName.replace('.', '_')
+		for name in mod_dtype:
+			if clean_content[self.strip_namespace(name)]['Members']:
+				self.write_hdf5_header(self.strip_namespace(name))
+				self.write_hdf5_src(self.strip_namespace(name), clean_content)
 
+	def clean(self, content):
 
-	def is_child(self, members):
-		"""
-		This is not a child 
-
-		{'y': 'double', 'x': 'int', 'data': {'y': 'int', 'x': 'int', 'z': 'int'}, 'p': 'std::array<int, 4>'}}
-
-		since data has a dict object as dataype.
-		"""
-		child = True
-		if isinstance(members, dict):        
-			for varNames, dtype in members.items():
-				if isinstance(dtype, dict):
-					child = False
-					break 
-		return child
-
-
-	def unfold_definitions(self,obj):
-		"""
-		Example:
-		{'SimpleStruct': {'Members': {'y': 'int', 'x': 'int', 'z': 'int'}, 'p': 'std::array<int, 4>'} },
-		 'NotSoSimpleStruct': {'Members': {'y': 'double', 'x': 'int', 'data': 'SimpleStruct'} } }
-
-				    ||
-				    ||
-				   \  /
-				    \/
-
-		{'SimpleStruct': {'Members': {'y': 'int', 'x': 'int', 'z': 'int'}, 'p': 'std::array<int, 4>'} },
-		 'NotSoSimpleStruct': {'Members': {'y': 'double', 'x': 'int', 'data': {'y': 'int', 'x': 'int', 'z': 'int'}, 'p': 'std::array<int, 4>'}} } }
-		"""
-
-		unfolded = copy.deepcopy(obj)
-
-		for name, comps in obj.items():
-			members = comps['Members']
-			for varName, dtype in members.items():
-				if varName!= 'ExtraCode':
-					if dtype not in self.predef and not 'std::array' in dtype:
-						# then we need to unfold it
-						unfolded[name]['Members'].pop(varName,None)
-						new_name = varName + '.' + dtype 
-					    	unfolded[name]['Members'][new_name] = unfolded[dtype]['Members']
-
-		# I also want to get rid of extra code
-		for name,comps in unfolded.items():
-			members = comps['Members']
-			members.pop('ExtraCode', None)
-		return unfolded	
-
-
-	def flatten(self,unfolded_obj, track, res):
-		"""
-		Example:
-		{'y': 'double', 'x': 'int', 'data': {'y': 'int', 'x': 'int', 'z': 'int'}, 'p': 'std::array<int, 4>'}
-				    ||
-				    ||
-				   \  /
-				    \/
-
-		{'y': 'double', 'x': 'int', 'data.y':'int', 'data.x': 'int', 'data.z': 'int', 'p': 'std::array<int, 4>'}
-		"""
-		for varName,dtype in unfolded_obj.items():
-			track.append(varName)
-			if self.is_child(dtype):
-				if isinstance(dtype, dict):
-				    for k,v in dtype.items():
-				        new_key = ".".join(track) + "." + k
-				        res[new_key] = v
-				    track.pop()
-
-				else:
-				    new_key = ".".join(track)
-				    res[new_key] = dtype
-				    track.pop()
-			else:
-				self.flatten(unfolded_obj[varName], track, res)
-
-	def remove_varNames(self,split_list):
-		result = []
-		for x in split_list:
-			if x in self.reader.components:
-				result.append(x)
-		return result
-
-	def working_set(self, obj, name):
-		"""
-		{'SimpleStruct.y': 'double',
-		 'SimpleStruct.p': 'std::array<int, 4>',
-		 'SimpleStruct.x': 'int',
-		'NotSoSimpleStruct.data.SimpleStruct.p': 'std::array<int, 4>',
-		'NotSoSimpleStruct.data.SimpleStruct.x': 'int',
-		'NotSoSimpleStruct.data.SimpleStruct.y': 'int',
-		'NotSoSimpleStruct.data.SimpleStruct.z': 'int',
-		'NotSoSimpleStruct.x': 'int',
-		'NotSoSimpleStruct.y': 'double'}  
-				    ||
-				    || 			name = NotSoSimpleStruct
-				   \  /
-				    \/
-
-		{'NotSoSimpleStruct.data.SimpleStruct.p': 'std::array<int, 4>',
-		 'NotSoSimpleStruct.data.SimpleStruct.x': 'int',
-		 'NotSoSimpleStruct.data.SimpleStruct.y': 'int',
-		 'NotSoSimpleStruct.data.SimpleStruct.z': 'int',
-		 'NotSoSimpleStruct.x': 'int',
-		 'NotSoSimpleStruct.y': 'double'}			
-		"""
-		result = {}
-		for k,v in obj.items():
-			if k.find(name) == 0:
-				result[k] = v
-		return result 
-
-
-
-	def order_by_class(self,flattened_members):
-		"""
-		{'NotNotSoSimpleStruct.w.NotSoSimpleStruct.data.SimpleStruct.p': 'std::array<int, 4>',
-		 'NotNotSoSimpleStruct.w.NotSoSimpleStruct.data.SimpleStruct.x': 'int',
-		 'NotNotSoSimpleStruct.w.NotSoSimpleStruct.data.SimpleStruct.y': 'int',
-		 'NotNotSoSimpleStruct.w.NotSoSimpleStruct.data.SimpleStruct.z': 'int',
-		 'NotNotSoSimpleStruct.w.NotSoSimpleStruct.x': 'int',
-		 'NotNotSoSimpleStruct.w.NotSoSimpleStruct.y': 'double',
-		 'NotNotSoSimpleStruct.x.SimpleStruct.p': 'std::array<int, 4>',
-		 'NotNotSoSimpleStruct.x.SimpleStruct.x': 'int',
-		 'NotNotSoSimpleStruct.x.SimpleStruct.y': 'int',
-		 'NotNotSoSimpleStruct.x.SimpleStruct.z': 'int',
-		 'NotNotSoSimpleStruct.y': 'double',
-		 'NotNotSoSimpleStruct.z': 'std::array<int, 1000>',
-		 'NotSoSimpleStruct.data.SimpleStruct.p': 'std::array<int, 4>',
-		 'NotSoSimpleStruct.data.SimpleStruct.x': 'int',
-		 'NotSoSimpleStruct.data.SimpleStruct.y': 'int',
-		 'NotSoSimpleStruct.data.SimpleStruct.z': 'int',
-		 'NotSoSimpleStruct.x': 'int',
-		 'NotSoSimpleStruct.y': 'double',
-		 'SimpleStruct.p': 'std::array<int, 4>',
-		 'SimpleStruct.x': 'int',
-		 'SimpleStruct.y': 'int',
-		 'SimpleStruct.z': 'int'}
-
-		}
-		"""
-		equivalent_class = OrderedDict()
-		temp = OrderedDict() 
-		max_count = max([k.count('.') for k in flattened_members])
-		for i in range(0, max_count, 2):
-			equivalent_class[i] = []
-			temp[i] = []
-
-
-
-		# first organize them classes 0, 2, 4...
-		for k, v in flattened_members.items():
-			class_count = max_count - k.count('.')
-			equivalent_class[class_count].append((k,v))
-
-
-		#pprint(dict(equivalent_class))
-
-		order_sets = []
-
-		for flat_name, dtype in equivalent_class[0]:
-			clean_order = self.remove_varNames(flat_name.split('.'))
-			if clean_order[::-1] not in order_sets:
-				order_sets.append(clean_order[::-1])
-
-
-		for sequence in order_sets:
-			for name in sequence:
-				type_name = '.' + name + '.'
-				#print 'Type Name', type_name
-				for k, v in flattened_members.items():
-					
-					if type_name in k:
-						new_key = k[:k.find(type_name)]
-						#print k, "New Key", new_key
-						flattened_members[new_key] = 'mtype' + '_' + name 
-						flattened_members.pop(k, None)
-
-
-
-		return (order_sets, flattened_members)
-
-	def const_lines(self,flattened_members):
-		final_buffer = ''
-		for superVar, dtype in flattened_members.items():
-			name = superVar.split('.')[1]
-			final_buffer += 'const H5std_string {}("{}");\n'.format(self.dot_to_underscore(superVar), name)
-
-		return final_buffer 
-
-
-
-
-	def write_hdf5_component(self, name):
-		
-		d = OrderedDict()
-		
-		
-		header_dir = os.path.join(thisdir, self.install_dir,self.package_name,name)
-		
-		includes = ['// this is generated by podio_class_generator.py\n#include "{}.h"\n'.format(header_dir),\
-					 '// header required for HDF5\n\n#include "H5Cpp.h"\n',\
-					"// for shared pointers\n\n#include <memory>\n", \
-					"// for printing messages\n\n#include <iostream>\n\n"]
-
-
-		# need to declare the strings for setting up the struct
-		const_dec = ['const H5std_string FILE_NAME("{}_to_HDF5.h5");\n'.format(name), \
-						'const H5std_string DATASET_NAME("{}_data");\n'.format(name)]
-
-		# fill the const_dec with each variable in the struct
-		# also get array dimensions if any and insert
-		# but instead of iterating on the member.items() we will iterate on the members
-		# obtained from the unfolded method
-
-		# TODO: after this we should have a unique_flat_members, with array_dims	
-                
-                # get a list of relevant structs required
-                list_of_dependent_structs = []
-                for k_name,d_name in self.reader.components[name]['Members'].items():
-                    if 'std::array' not in d_name and d_name not in self.predef and 'ExtraCode' not in k_name:
-                      list_of_dependent_structs.append(d_name)
-                list_of_dependent_structs.append(name)
-
-                #print "List of dependencies for name = {}".format(name)
-
-                #print list_of_dependent_structs
-
-                work_set = {}
-                for struct_name in list_of_dependent_structs:
-                    for dot_name in self.unique_flat_members:
-			try:
-		                first_occur = dot_name.index(struct_name)
-		                if first_occur == 0:
-		                    work_set[dot_name] = self.unique_flat_members[dot_name]
-		        except:
-		        	continue 
-		#print "UNIQUE FLAT MEMBERS "
-		
-                #pprint(self.unique_flat_members)
-        	
-                
-                #print "Working Set for name = {}".format(name)
-
-                #pprint(work_set)
-
-
-		order_sets, flattened_members = self.order_by_class(work_set)
-		
-		#print "Order Set for name = {}".format(name)
-
-                #print pprint(order_sets)
-                
-                #print "Flattened Set for name = {}".format(name)
-
-                #print pprint(flattened_members)
-                
-		final_buffer = self.const_lines(flattened_members)
-                
-		# TODO: Have to figure out rank declaration. 
-		rank_declaration = 'const int RANK = 1;\n'
-		
-		#print 'Here name = {}'.format(name), self.namespace[name]
-
-		before_main = "".join(includes + self.namespace[name] + const_dec) + rank_declaration + final_buffer 
-		
-		# Now we write the main function
-		generic = "int main(int argc, char** argv)"+\
-			"{\n"+ \
-			"\tif(argc !=2)\n"+\
-			"\t\t{\n"+\
-				'\t\t\tstd::cout<<"Wrong Input. Run ./SimpleStruct <int size>\\n";\n'+ \
-				'\t\t\texit(1);\n' +\
-			'\t\t}\n'+\
-		'\tconst long long unsigned int SIZE = atoi(argv[1]);\n'
-		
-		# create an array with elements of type name
-		array_dec = "\tstruct {}* p = (struct {}*)malloc(SIZE * sizeof(struct {}));\n".format(name, name, name)
-		
-		# print empty data
-		array_dec += '\tfor(int i = 0; i<SIZE; i++)\n\t{\n\t\tstd::cout<< "Entry :"<<i+1<<std::endl;\n\t\tstd::cout<<p[i]<<std::endl;\n\t}'
-		
-		comp_dec = ''
-		struct_array_dec = ''
-
-		order_sets = reduce(lambda x,y: x+y,order_sets)
-		
-		#print "After reduce order set for name = {}".format(name)
-
-                #print pprint(order_sets)
-
-		index = order_sets.index(name)
-		useful_set = order_sets[:index+1] 
-
-		for struct_name in useful_set:			
-			# declare dimension of arrays if any for compound type
-			wking_set = self.working_set(flattened_members, struct_name)	
-			for varName, dtype in wking_set.items():
-				if 'std::array' in dtype:			
-					new_var = self.dot_to_underscore(varName)
-					d = re.findall(r'\d+', dtype)[0]
-					struct_array_dec += '\thsize_t %s_array_dim[] = {%s};\n' % (new_var, d)
-
-			comp_dec += '\tCompType mtype_{}(sizeof({}));\n'.format(struct_name, struct_name)
-			
-			for superVar, dtype in wking_set.items():
-				varName = superVar.split('.')[1]
-				# standard datatype				
-				if dtype in self.dtype_map:
-					hdf5_dtype = self.dtype_map[dtype]
-					comp_dec += '\tmtype_{}.insertMember({}, HOFFSET({}, {}),{});\n'.format(struct_name, self.dot_to_underscore(superVar),struct_name, varName, hdf5_dtype)
-
-				# array datatype 
-				elif 'std::array' in dtype:
-					st_index = dtype.find('<') + 1
-					end_index = dtype.find(',') 
-					data_type = dtype[st_index:end_index].strip()
-					hdf5_dtype = self.a_type_map[data_type]
-					comp_dec += '\tmtype_{}.insertMember({}, HOFFSET({}, {}),H5Tarray_create({}, 1, {}_array_dim));\n'.format(struct_name,self.dot_to_underscore(superVar), struct_name, varName, hdf5_dtype,self.dot_to_underscore(superVar))
-				# else it is a compound type
-				else:
-					new_line = '\tmtype_{}.insertMember({}, HOFFSET({}, {}),{});\n'.format(struct_name, self.dot_to_underscore(superVar),struct_name, varName, dtype)
-					comp_dec += new_line
-			
-
-		till_now = before_main + generic + array_dec + struct_array_dec + comp_dec
-
-		# create file
-		file_dec = "\tstd::shared_ptr<H5File> file(new H5File(FILE_NAME, H5F_ACC_TRUNC));\n"
-		# create dataset
-		data_dec = "\thsize_t dim[] = {SIZE};\n"
-		data_dec += "\tDataSpace space(RANK, dim);\n" 
-		data_dec += "\tstd::shared_ptr<DataSet> dataset(new DataSet(file->createDataSet(DATASET_NAME, mtype_{}, space)));\n".format(name)
-		# write data
-		data_dec += '\tdataset->write(p, mtype_{});\n'.format(name) + '\treturn 0;\n}'
-		
-		content = till_now + file_dec + data_dec
-		filename = "write_{}.cpp".format(name)	
-
-		self.write_file(filename, content)
-
-
-
-	def read_hdf5_component(self, name):
-		d = OrderedDict()
-		header_dir = os.path.join(thisdir, self.install_dir,self.package_name,name)
-		includes = ['// this is generated by podio_class_generator.py\n#include "{}.h"\n'.format(header_dir),\
-					 '// header required for HDF5\n\n#include "H5Cpp.h"\n',\
-					"// for shared pointers\n\n#include <memory>\n", \
-					"// for printing messages\n\n#include <iostream>\n\n"]
-			
-		# need to declare the strings for setting up the struct
-		const_dec = ['const H5std_string FILE_NAME("{}_to_HDF5.h5");\n'.format(name), \
-						'const H5std_string DATASET_NAME("{}_data");\n'.format(name)]
-                
-                # get a list of relevant structs required
-                list_of_dependent_structs = []
-                for k_name,d_name in self.reader.components[name]['Members'].items():
-                    if 'std::array' not in d_name and d_name not in self.predef and 'ExtraCode' not in k_name:
-                      list_of_dependent_structs.append(d_name)
-                list_of_dependent_structs.append(name)
-
-                work_set = {}
-                for struct_name in list_of_dependent_structs:
-                    for dot_name in self.unique_flat_members:
-			try:
-		                first_occur = dot_name.index(struct_name)
-		                if first_occur == 0:
-		                    work_set[dot_name] = self.unique_flat_members[dot_name]
-		        except:
-		        	continue 
-
-		order_sets, flattened_members = self.order_by_class(work_set)                
-		final_buffer = self.const_lines(flattened_members)
-                
-		# TODO: Have to figure out rank declaration. 
-		rank_declaration = 'const int RANK = 1;\n'
-		
-		before_main = "".join(includes + self.namespace[name] + const_dec) + rank_declaration + final_buffer 
-		
-		# Now we write the main function
-		generic = "int main(int argc, char** argv)"+\
-			"{\n"+ \
-			"\tif(argc !=2)\n"+\
-			"\t\t{\n"+\
-				'\t\t\tstd::cout<<"Wrong Input. Run ./SimpleStruct <int size>\\n";\n'+ \
-				'\t\t\texit(1);\n' +\
-			'\t\t}\n'+\
-		'\tconst long long unsigned int SIZE = atoi(argv[1]);\n'
-		
-		# create an array with elements of type name
-		array_dec = "\tstruct {}* p = (struct {}*)malloc(SIZE * sizeof(struct {}));\n".format(name, name, name)
-
-		comp_dec = ''
-		struct_array_dec = ''
-
-		order_sets = reduce(lambda x,y: x+y,order_sets)
-		
-		index = order_sets.index(name)
-		useful_set = order_sets[:index+1] 
-
-		for struct_name in useful_set:
-		
-			# declare dimension of arrays if any for compound type
-			wking_set = self.working_set(flattened_members, struct_name)	
-			for varName, dtype in wking_set.items():
-				if 'std::array' in dtype:			
-					new_var = self.dot_to_underscore(varName)
-					d = re.findall(r'\d+', dtype)[0]
-					struct_array_dec += '\thsize_t %s_array_dim[] = {%s};\n' % (new_var, d)
-
-			comp_dec += '\tCompType mtype_{}(sizeof({}));\n'.format(struct_name, struct_name)
-
-			for superVar, dtype in wking_set.items():
-				varName = superVar.split('.')[1]
-				# standard datatype				
-				if dtype in self.dtype_map:
-					hdf5_dtype = self.dtype_map[dtype]
-					comp_dec += '\tmtype_{}.insertMember({}, HOFFSET({}, {}),{});\n'.format(struct_name, self.dot_to_underscore(superVar),struct_name, varName, hdf5_dtype)
-
-				# array datatype 
-				elif 'std::array' in dtype:
-					st_index = dtype.find('<') + 1
-					end_index = dtype.find(',') 
-					data_type = dtype[st_index:end_index].strip()
-					hdf5_dtype = self.a_type_map[data_type]
-					comp_dec += '\tmtype_{}.insertMember({}, HOFFSET({}, {}),H5Tarray_create({}, 1, {}_array_dim));\n'.format(struct_name,self.dot_to_underscore(superVar), struct_name, varName, hdf5_dtype,self.dot_to_underscore(superVar))
-				# else it is a compound type
-				else:
-					new_line = '\tmtype_{}.insertMember({}, HOFFSET({}, {}),{});\n'.format(struct_name, self.dot_to_underscore(superVar),struct_name, varName, dtype)
-					comp_dec += new_line
-			
-
-		till_now = before_main + generic + array_dec + struct_array_dec + comp_dec
-
-		# create file
-		file_dec = "\tstd::shared_ptr<H5File> file(new H5File(FILE_NAME, H5F_ACC_RDONLY));\n"
-		# create dataset
-		data_dec = "\thsize_t dim[] = {SIZE};\n"
-		data_dec += "\tDataSpace space(RANK, dim);\n" 
-		data_dec += "\tstd::shared_ptr<DataSet> dataset(new DataSet(file->openDataSet(DATASET_NAME)));\n"
-		# read data
-		data_dec += '\tdataset->read(p, mtype_{});\n'.format(name) 
-		# print data
-		loop_dec = '\tfor(int i = 0; i<SIZE; i++)\n\t{\n\t\tstd::cout<< "Entry :"<<i+1<<std::endl;\n\t\tstd::cout<<p[i]<<std::endl;\n\t}'
-		end = '\n\treturn 0;\n}'
-		data_dec += loop_dec + end 
-		
-		content = till_now + file_dec + data_dec
-		filename = "read_{}.cpp".format(name)	
-
-		self.write_file(filename, content)
-
-
-	def process_components(self, content):
-		#print 'ClassGenerator process_components TRIGGERED\n'
+		# first get rid of extraCode if any
 		for name, components in content.items():
-			#print "NAME", name
-			self.write_hdf5_component(name)
-			self.read_hdf5_component(name)
-			
+			components['Members'].pop("ExtraCode", None)
 
+		# next gather the required namespace for each datatype
+		for name in content:
+			order = self.topological_sort(name, content)
+			new_name = name
+			if "::" in name:
+				new_name = name[name.rindex("::")+2:]
+
+			self.namespace[new_name] = set([])
+			for type in order:
+				if "::" in type:
+					namespace = set(type.split("::")[:-1])
+					#print(namespace)
+					self.namespace[new_name] = self.namespace[new_name].union(namespace)
+
+		#pprint(self.namespace)
+		#exit(1)
+
+		# now get rid of the namespace in each word
+		new_content = self.remove_namespace(content)
+
+		return new_content
+
+	def process_datatypes(self, content):
+		mod_dtype = {}
+		for datatype, dic  in content.items():
+			# extract Members
+			members = dic['Members']
+			temp = {}
+			for d in members:
+			    key = d['name']
+			    value = d['type']
+			    temp[key] = value
+
+			mod_dtype[datatype] = {'Members':temp}
+
+			# extract oneToManyRelations
+			one_to_many = dic['OneToManyRelations']
+			temp = {}
+			for d in one_to_many:
+			    k1 = d['name'] + '_begin'
+			    k2 = d['name'] + '_end'
+			    value = 'unsigned int'
+			    temp[k1] = value
+			    temp[k2] = value
+
+			mod_dtype[datatype]['Members'].update(temp)
+
+			# extract Vector Members
+			vec_member = dic['VectorMembers']
+			temp = {}
+			for d in vec_member:
+			    k1 = d['name'] + '_begin'
+			    k2 = d['name'] + '_end'
+			    value = 'unsigned int'
+			    temp[k1] = value
+			    temp[k2] = value
+
+			mod_dtype[datatype]['Members'].update(temp)
+
+		return mod_dtype
+
+	def write_hdf5_header(self, name):
+
+		# declare header guards
+		header_guards = "#ifndef H5" + name.upper() + "DATA_H\n" + \
+						"#define H5" + name.upper() + "DATA_H\n\n\n"
+
+		# declare includes
+		includes = self.get_includes(name)
+
+		# declare the namespaces being used
+		namespace = self.get_namespace(name)
+
+		# declare dataset variable and rank
+		# first convert EventInfo to EVENT_INFO_DATA
+		const_dec = 'const H5std_string {}DATA("{}Data");\n'.format(name.upper(),name) + \
+					'const int RANK_{} = 2;\n\n\n'.format(name.upper())
+
+		before_class_dec = header_guards + includes + namespace + const_dec
+
+		# Begin Class declaration
+
+		after_class_dec = "class H5{}Collection : public podio::H5Collections\n".format(name)+ \
+					"{\n" + \
+					"\tpublic:\n" + \
+					"\t\tCompType h5_datatype;\n" + \
+					"\t\tDSetCreatPropList cparms;\n" + \
+					"\t\tDataSet dataset_{};\n".format(name) +\
+					"\t\thsize_t size[2];\n" + \
+					"\t\thsize_t offset[2];\n" + \
+					"\t\tint flag; // if flag = 0 then we are writing the dataset for the first time" + \
+					"\n\n"+\
+					"\tpublic:\n"+\
+					"\t\tvoid writeCollection(CollectionBase* c, H5File& file);\n"+\
+					"\t\tstatic H5{}Collection* getInstance();\n".format(name)+\
+					"\t\t{}Collection* get_collection(const std::string& name, EventStore* m_store);\n".format(name) + \
+					"\n\n" +\
+					"\tprivate:\n" +\
+					"\t\tstatic H5{}Collection* instance;\n".format(name) +\
+					"\t\tH5{}Collection();\n".format(name) +\
+					"};\n\n" +\
+					"/* Initially the instance is NULL */\n"+\
+					"H5{}Collection* H5{}Collection::instance = 0;\n\n\n".format(name, name) +\
+					"#endif"
+
+		content = before_class_dec + after_class_dec
+		filename = "H5{}Collection".format(name) + ".h"
+		self.write_file(filename, content)
+
+	def get_neighbours(self, varName, content):
+	    data_dic = content[varName]['Members']
+	    n_list = []
+	    for varName, d_name in data_dic.items():
+			if 'array' not in d_name and 'string' not in d_name and d_name not in self.dtype_map:
+				n_list.append(d_name)
+			if 'array' in d_name:
+				st_index = d_name.find('<') + 1
+				end_index = d_name.find(',')
+				data_type = d_name[st_index:end_index].strip()
+				if data_type not in self.a_type_map:
+					# then it is a compound type
+					n_list.append(data_type)
+
+	    return n_list
+
+	def topological_sort(self, varName, content):
+	    result = []
+	    seen = set()
+
+	    def recursive_helper(varName):
+	        n_list = self.get_neighbours(varName, content)
+	        for neighbor in n_list:
+	            if neighbor not in seen:
+	                seen.add(neighbor)
+	                recursive_helper(neighbor)
+	        result.insert(0, varName)
+
+	    recursive_helper(varName)
+
+	    # this returns the order in which one should define the compound types
+	    return result[::-1]
+
+	def get_constructor(self, name, content):
+		constructor_dec = "H5{}Collection::H5{}Collection()\n".format(name, name) + "{\n"
+
+		order = self.topological_sort(name, content)
+
+		struct_array_dec = ''
+		string_dec = ''
+		comp_dec = ''
+		for struct_name in order:
+
+			# declare dimension of arrays if any for compound type
+			for varName, dtype in content[struct_name]['Members'].items():
+				if 'array' in dtype:
+					d = re.findall(r'\d+', dtype)[0]
+					struct_array_dec += '\thsize_t %s_array_dim[] = {%s};\n' % (varName, d)
+				if 'string' in dtype:
+					string_dec += '\tStrType vlst_{}(0, H5T_VARIABLE);\n'.format(dtype)
+
+			# declare compound type
+			if(struct_name == name):
+				comp_dec += "\n\th5_datatype = CompType(sizeof({}Data)+sizeof(unsigned int));\n".format(name)
+			else:
+				comp_dec += '\n\tCompType mtype_{}(sizeof({}));\n'.format(struct_name, struct_name)
+
+			# insert members for compound type
+			for superVar, dtype in content[struct_name]['Members'].items():
+
+				# standard datatype
+				if dtype in self.dtype_map:
+					hdf5_dtype = self.dtype_map[dtype]
+					if (struct_name == name):
+						comp_dec += '\th5_datatype.insertMember("{}", HOFFSET({}Data, {}),{});\n'.format(superVar, struct_name,superVar, hdf5_dtype)
+					else:
+						comp_dec += '\tmtype_{}.insertMember("{}", HOFFSET({}, {}),{});\n'.format(struct_name, superVar,struct_name, superVar, hdf5_dtype)
+
+				# string datatype
+				elif 'string' in dtype:
+					if (struct_name == name):
+						comp_dec += '\th5_datatype.insertMember("{}", HOFFSET({}Data, {}),vlst_{});\n'.format(superVar, struct_name, superVar, dtype)
+					else:
+						comp_dec += '\tmtype_{}.insertMember("{}", HOFFSET({}, {}),vlst_{});\n'.format(struct_name, superVar, struct_name, superVar, dtype)
+
+				# array datatype
+				elif 'std::array' in dtype:
+					st_index = dtype.find('<') + 1
+					end_index = dtype.find(',')
+					data_type = dtype[st_index:end_index].strip()
+
+					# if the array is made up of standard datatype like int, double etc.
+					if data_type in self.a_type_map:
+						hdf5_dtype = self.a_type_map[data_type]
+						if (struct_name == name):
+							comp_dec += '\th5_datatype.insertMember("{}", HOFFSET({}Data, {}),H5Tarray_create({}, 1, {}_array_dim));\n'.format(superVar, struct_name, superVar, hdf5_dtype,superVar)
+						else:
+							comp_dec += '\tmtype_{}.insertMember("{}", HOFFSET({}, {}),H5Tarray_create({}, 1, {}_array_dim));\n'.format(struct_name, superVar, struct_name, superVar, hdf5_dtype, superVar)
+
+					# otherwise we have an array with a compound type
+					else:
+						if (struct_name == name):
+							comp_dec += '\th5_datatype.insertMember("{}", HOFFSET({}Data, {}),H5Tarray_create(mtype_{}.getId(), 1, {}_array_dim));\n'.format(superVar, struct_name, superVar, data_type,superVar)
+						else:
+							comp_dec += '\tmtype_{}.insertMember("{}", HOFFSET({}, {}),H5Tarray_create(mtype_{}.getId(), 1, {}_array_dim));\n'.format(struct_name, superVar, struct_name, superVar, data_type, superVar)
+
+				# else it is a compound type
+				else:
+					if (struct_name == name):
+						comp_dec += '\th5_datatype.insertMember("{}", HOFFSET({}Data, {}),mtype_{});\n'.format(superVar, struct_name, superVar, dtype)
+					else:
+						comp_dec += '\tmtype_{}.insertMember("{}", HOFFSET({}, {}),mtype_{});\n'.format(struct_name, superVar, struct_name, superVar, dtype)
+
+
+
+		# CHUNKING IN ORDER TO CREATE A DYNAMIC DATASET
+		end  = "\n\thsize_t chunk_dims[2] = {2, 5};\n" + \
+				"\tcparms.setChunk(2, chunk_dims);\n"  + \
+				"\tflag = 0;\n\n}"
+
+		return constructor_dec + struct_array_dec + string_dec + comp_dec + end
+
+	def write_hdf5_src(self, name, content):
+
+		include = '#include "H5{}Collection.h"\n'.format(name)
+
+		# declare constructor
+		constructor = self.get_constructor(name, content)
+
+		# the functions below are generic and depend only on the name of the dataype
+		get_instance = "\n\nH5{}Collection* H5{}Collection::getInstance()\n".format(name, name) + \
+						"{\n" + \
+					    "\tif (instance == 0)\n" + \
+					   "\t\t{\n" + \
+					      "\t\t\tinstance = new H5{}Collection();\n".format(name) + \
+					   "\t\t}\n\n" + \
+					    "\treturn instance;\n" + \
+					"}\n\n"
+
+		get_collection = "\n\n{}Collection* H5{}Collection::get_collection(const std::string& name, EventStore* m_store)\n".format(name, name) + \
+						"{\n" + \
+						"\tconst {}Collection* tmp_coll(nullptr);\n".format(name) + \
+						"\tm_store->get<{}Collection>(name, tmp_coll);\n".format(name) + \
+						"\t{}Collection* coll = const_cast<{}Collection*>(tmp_coll);\n".format(name, name) + \
+						"\treturn coll;\n" + \
+						"}\n"
+
+		data_name = name + "Data"
+		write_collection = "\n\nvoid H5{}Collection::writeCollection(CollectionBase* c, H5File& file)\n".format(name) +\
+							"{\n" + \
+							"\t{}Collection* info = static_cast<{}Collection*>( c );\n".format(name,name) + \
+							"\tvoid* buffer_1 = info->_getBuffer();\n" + \
+							"\t{}** data_1 = reinterpret_cast<{}**>(buffer_1);\n\n".format(data_name, data_name) + \
+							"\tif(flag == 0)\n" + \
+							"\t{\n" +\
+							"\t\tsize[0] = 1;\n" + \
+							"\t\tsize[1] = info->size();\n" + \
+							"\t\t\n" + \
+							"\t\toffset[0] = 0;\n" + \
+							"\t\toffset[1] = 0;\n" + \
+							"\t\t/* Initialize the data space with unlimited dimensions.\n" + \
+							"\t\t*/\n" + \
+							"\t\thsize_t dims[2]  = {1, static_cast<hsize_t>(info->size())};\n" + \
+							"\t\thsize_t maxdims[2] = {H5S_UNLIMITED,H5S_UNLIMITED};\n" + \
+							"\t\tDataSpace mspace1( RANK_{}, dims, maxdims);\n\n".format(name.upper()) + \
+							"\t\tdataset_{} = file.createDataSet({}, h5_datatype, mspace1, cparms);\n".format(name, data_name.upper()) + \
+							"\t\t// Write data to file\n" + \
+							"\t\tdataset_{}.write(*data_1, h5_datatype);\n\n".format(name) + \
+							"\t\t// we have written once so set flag = 1\n" + \
+							"\t\tflag = 1;\n\n" + \
+							"\t}\n\n" + \
+							"\telse\n" + \
+							"\t{\n" + \
+							"\t\toffset[0] = size[0];\n" + \
+							"\t\toffset[1] = 0;\n" + \
+							"\t\tsize[0] += 1;\n" + \
+							"\t\tif(info->size() > static_cast<int>(size[1]))\n" + \
+							"\t\t{\n" + \
+							"\t\t\tsize[1] += info->size() - static_cast<int>(size[1]);\n" + \
+							"\t\t}\n" + \
+							"\t\thsize_t dim2[2] = {1, static_cast<hsize_t>(info->size())};\n\n" + \
+							"\t\tdataset_{}.extend( size );\n\n".format(name) + \
+							"\t\t// select hyperslab\n" + \
+							"\t\tDataSpace fspace2 = dataset_{}.getSpace();\n".format(name) + \
+							"\t\tfspace2.selectHyperslab(H5S_SELECT_SET, dim2, offset );\n\n" + \
+							"\t\tDataSpace mspace2( RANK_{}, dim2 );\n\n".format(name.upper()) + \
+							"\t\t// Write data to file\n" + \
+							"\t\tdataset_{}.write(*data_1, h5_datatype, mspace2, fspace2);\n\n".format(name) + \
+							"\t}\n\n" + \
+							"}\n"
+
+		content = include + constructor + get_instance + get_collection + write_collection
+		filename = "H5{}Collection".format(name) + ".cc"
+		self.write_file(filename, content)
 
 	def write_file(self, name,content):
 
@@ -624,6 +419,91 @@ class ClassGenerator(object):
 		open(fullname, "w").write(content)
 		if self.clang_format:
 		  subprocess.call(self.clang_format + [fullname])
+
+	def get_includes(self, name):
+		result = "#include <iostream>\n" + \
+				  "#include <typeindex>\n" + \
+				  '#include "H5Cpp.h"\n'  + \
+				  '#include "{}Data.h"\n'.format(name) + \
+				  '#include "{}Collection.h"'.format(name)
+
+		result += "\n\n"
+
+		result += '#include "podio/EventStore.h"\n' + \
+				   '#include "podio/CollectionBase.h"\n' + \
+				   '#include "podio/HDF5Writer.h"\n\n\n'
+
+		return result
+
+	def get_namespace(self, name):
+		result = "using namespace H5;\n" + \
+		 		 "using namespace std;\n" + \
+				 "using namespace podio;\n"
+
+		for x in self.namespace[name]:
+			if x !=	'std':
+				result += "using namespace {};\n".format(x)
+
+		return result
+
+	def remove_namespace(self, content):
+		new_content = copy.deepcopy(content)
+		#pprint(content)
+
+		for varName in content:
+			new_key = varName
+
+			if "::" in varName:
+				last_index = varName.rindex("::")
+				new_key = varName[last_index+2 : ]
+				members = content[varName]
+				new_content.pop(varName, 'None')
+				new_content[new_key] = members
+
+			#print("--------------------------------")
+			#print("NEW KEY = ", new_key)
+			#print 'BEFORE'
+			#pprint(new_content)
+			#print('--------------------------------')
+
+			for name, dtype in content[varName]['Members'].items():
+				new_dtype = dtype
+				if "::" in dtype and "std::array" not in dtype:
+					last_index = dtype.rindex("::")
+					new_dtype = dtype[last_index+2 : ]
+
+				if "::" in dtype and "std::array" in dtype:
+					shift_dtype = dtype[dtype.index("std::array")+9 : ]
+					last_index = 0
+					if "::" in shift_dtype:
+						last_index = shift_dtype.rindex("::")
+
+					new_dtype = "std::array<" + shift_dtype[last_index+2 : ]
+
+				new_content[new_key]['Members'][name] = new_dtype
+
+			#print 'AFTER'
+			#pprint (new_content)
+
+
+		return new_content
+
+	def strip_namespace(self,name):
+		if "::" in name:
+			last_index = name.rindex("::")
+			return name[last_index+2 : ]
+		return name
+
+
+
+
+
+
+
+
+
+
+
 
 
 
