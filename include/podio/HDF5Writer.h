@@ -14,7 +14,7 @@
 // podio specification
 #include "podio/EventStore.h"
 #include "podio/CollectionBase.h"
-#include "podio/H5_Writer_Collections.h"
+#include "podio/H5Collections.h"
 
 // HDF5 specific includes
 #include "H5Cpp.h"
@@ -29,7 +29,7 @@ namespace podio
 class HDF5Writer
 {
 	public:
-		std::map<std::string, H5_Writer_Collections*> Fmap;
+		std::map<std::string, H5Collections*> Fmap;
 		HDF5Writer(const H5std_string FILE_NAME, EventStore* store);
 		template<typename T>void registerForWrite(const std::string& name);
 		void writeEvent();
