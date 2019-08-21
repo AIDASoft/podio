@@ -31,6 +31,7 @@ class H5Collections
 		H5Collections() = default;
 		virtual void writeCollection(CollectionBase* col, H5File& file)=0;
 		virtual CollectionBase* get_collection(const std::string& name, EventStore* m_store)=0;
+		inline bool pathExists(hid_t id, const std::string& path) { return H5Lexists( id, path.c_str(), H5P_DEFAULT ) > 0;}
 
 };
 
