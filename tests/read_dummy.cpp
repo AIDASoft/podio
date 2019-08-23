@@ -1,114 +1,65 @@
 // Data model
-#include "EventInfoData.h"
-#include "EventInfoCollection.h"
+#include "H5EventInfoCollection.h"
 
 // STL
 #include <iostream>
 #include <vector>
-#include <cstring>
+#include <memory>
+
 // podio specific includes
 #include "podio/EventStore.h"
-
 
 // HDF5 specific includes
 #include "H5Cpp.h"
 
 using namespace H5;
 const H5std_string FILE_NAME( "dummy.h5" );
-const H5std_string DATASET_NAME_1( "EventInfo_data_1" );
-const H5std_string DATASET_NAME_2( "EventInfo_data_2" );
-const H5std_string EventInfo_Number( "Number" );
-const int RANK = 1;
-
-
-
 
 int main()
 {
 
 	try{
-	
-		CompType mtype_EventInfo(sizeof(EventInfoData));
-		mtype_EventInfo.insertMember(EventInfo_Number,HOFFSET(EventInfoData, Number), PredType::NATIVE_INT);
+
 
 		// open file in read only mode
 		H5File file(FILE_NAME, H5F_ACC_RDONLY);
-	
-		// DATASET 1
-		DataSet dataset1 = file.openDataSet(DATASET_NAME_1);
-		// DATASET 2
-		DataSet dataset2 = file.openDataSet(DATASET_NAME_2);
 
-		// Extract information from the datasets
-		DataSpace dataspace1 = dataset1.getSpace();
-		// Extract information from the datasets
-		DataSpace dataspace2 = dataset2.getSpace();
+        //auto reader = podio::ROOTReader();
+        auto store = podio::EventStore();
+        //reader.openFile("example.root");
+        //store.setReader(&reader);
 
-		hsize_t dim_1[2];
-		hsize_t dim_2[2];
+        //unsigned nEvents = reader.getEntries();
+        unsigned nEvents = 2;
+        auto eid = H5EventInfoCollection::getInstance();
+     
 
-		dataspace1.getSimpleExtentDims(dim_1, NULL);
-		dataspace2.getSimpleExtentDims(dim_2, NULL);
+        for(unsigned i=0; i<nEvents; ++i)
+        {
+            eid->readCollection(i, file, store);
+            
+        }
 
-		//std::cout<<"dimension of dataset 1 = "<< (unsigned long)dim_1[0]<<std::endl;
-	        //std::cout<<"dimension of dataset 2 = "<<(unsigned long)dim_2[0]<<std::endl;
-		
-		hsize_t size_1 = dataset1.getStorageSize();
-		hsize_t size_2 = dataset2.getStorageSize();
-
-		//std::cout<<"storage space for dataset 1"<<(unsigned long)size_1<<std::endl;
-		//std::cout<<"storage space for dataset 2"<<(unsigned long)size_2<<std::endl; 
-		
-		// Read data to file
-		std::cout<<"Reading data..."<<std::endl;
-		
-		auto store = podio::EventStore();
-		auto& info_1 = store.create<EventInfoCollection>("info_1");
-		auto& info_2 = store.create<EventInfoCollection>("info_2");
-			
-		
-		EventInfoDataContainer* dest_1 = info_1._getBuffer();
-		dest_1->resize( size_1) ;
-		void* buffer_1 = &dest_1->at(0) ;
-		dataset1.read(buffer_1, mtype_EventInfo);	
-	
-		
-		EventInfoDataContainer* dest_2 = info_2._getBuffer();
-		dest_2->resize(size_2) ;
-		void* buffer_2 = &dest_2->at(0) ;
-		dataset2.read(buffer_2, mtype_EventInfo);
-		
-	
-		info_1->prepareAfterRead();  
-		info_2->prepareAfterRead();  
-
-		// print data to verify
-		std::cout<<"Dataset I"<<std::endl;
-		std::cout<<info_1<<std::endl;
-
-		std::cout<<"Dataset II"<<std::endl;
-		std::cout<<info_2<<std::endl;
-		
-		store.clearCollections();
+        return 0;
 
 	} // end of try block
-	
+
 	// catch failure caused by the H5File operations
 	catch( FileIException error )
 	{
-		error.printErrorStack();
+		error.printError();
 		return -1;
 	}
 	// catch failure caused by the DataSet operations
 	catch( DataSetIException error )
 	{
-		error.printErrorStack();
+		error.printError();
 		return -1;
 	}
 	// catch failure caused by the DataSpace operations
 	catch( DataSpaceIException error )
 	{
-		error.printErrorStack();
+		error.printError();
 		return -1;
 	}
 	catch(...)
