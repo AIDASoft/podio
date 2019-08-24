@@ -1,7 +1,7 @@
 import yaml
 import copy
 import re
-
+from collections import OrderedDict
 
 class ClassDefinitionValidator(object):
     """
@@ -36,8 +36,8 @@ class ClassDefinitionValidator(object):
 
 
     def __init__(self, configuration):
-        self.components = {}
-        self.datatypes = {}
+        self.components = OrderedDict()
+        self.datatypes = OrderedDict()
         if "datatypes" in configuration:
             self.datatypes = configuration["datatypes"]
         if "components" in configuration:
@@ -127,8 +127,8 @@ class PodioConfigReader(object):
 
     def __init__(self, yamlfile):
         self.yamlfile = yamlfile
-        self.datatypes = {}
-        self.components = {}
+        self.datatypes = OrderedDict()
+        self.components = OrderedDict()
         self.options = {
             # should getters / setters be prefixed with get / set?
             "getSyntax": False,
@@ -154,7 +154,7 @@ class PodioConfigReader(object):
         if "datatypes" in content:
             for klassname, value in content["datatypes"].items():
                 validator.check_datatype(klassname, value)
-                datatype = {}
+                datatype = OrderedDict()
                 datatype["Description"] = value["Description"]
                 datatype["Author"] = value["Author"]
                 for category in ("Members",

@@ -25,7 +25,7 @@ class ClassGenerator(object):
 		self.reader = PodioConfigReader(yamlfile)
 		self.warnings = []
 		self.dryrun = dryrun
-		self.namespace = {}
+		self.namespace = OrderedDict()
 
 		# c++ to hdf5 datatype map;
 		# note: bool type not found in hdf5 pre-defined datatypes.
@@ -131,11 +131,11 @@ class ClassGenerator(object):
 		return new_content
 
 	def process_datatypes(self, content):
-		mod_dtype = {}
+		mod_dtype = OrderedDict()
 		for datatype, dic  in content.items():
 			# extract Members
 			members = dic['Members']
-			temp = {}
+			temp = OrderedDict()
 			for d in members:
 			    key = d['name']
 			    value = d['type']
@@ -145,7 +145,7 @@ class ClassGenerator(object):
 
 			# extract oneToManyRelations
 			one_to_many = dic['OneToManyRelations']
-			temp = {}
+			temp = OrderedDict()
 			for d in one_to_many:
 			    k1 = d['name'] + '_begin'
 			    k2 = d['name'] + '_end'
@@ -157,7 +157,7 @@ class ClassGenerator(object):
 
 			# extract Vector Members
 			vec_member = dic['VectorMembers']
-			temp = {}
+			temp = OrderedDict()
 			for d in vec_member:
 			    k1 = d['name'] + '_begin'
 			    k2 = d['name'] + '_end'
@@ -372,6 +372,7 @@ class ClassGenerator(object):
 							"\t\td.write(*data, h5_datatype);\n" + \
 							"\t}\n"  + \
 						 	"}\n"
+
 		content = include + constructor + get_instance + get_collection + write_collection
 		filename = "H5{}Collection".format(name) + ".cc"
 		self.write_file(filename, content)
