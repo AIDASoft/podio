@@ -63,13 +63,13 @@ add_test(NAME read-multiple COMMAND read-multiple)
 set_property(TEST read-multiple PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH})
 set_property(TEST read-multiple PROPERTY DEPENDS write)
 
-add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_INSTALL_PREFIX}/python)
-set_property(TEST pyunittest
-             PROPERTY ENVIRONMENT
-                      LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH}
-                      PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python:$ENV{PYTHONPATH}
-                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel)
-set_property(TEST pyunittest PROPERTY DEPENDS write)
+## add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_INSTALL_PREFIX}/python)
+## set_property(TEST pyunittest
+#             PROPERTY ENVIRONMENT
+#                      LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/tests:$ENV{LD_LIBRARY_PATH}
+#                      PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python:$ENV{PYTHONPATH}
+#                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel)
+## set_property(TEST pyunittest PROPERTY DEPENDS write)
 
 add_test(NAME unittest COMMAND unittest)
 
