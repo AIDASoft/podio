@@ -12,3 +12,5 @@ Next, include/podio/ and src/ directories contain the scripts for the classes H5
 ## Testing
 To run the code one only needs to build the project and run the executable ./write_hdf5 in the build/tests directory. This generates the file dummy.h5 which can be viewed through h5dump or any other software of choice. 
 
+## Changes done for HDF5Writer
+- [https://github.com/AIDASoft/podio/compare/master...hdf5_writer](https://github.com/AIDASoft/podio/compare/master...hdf5_writer)
