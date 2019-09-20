@@ -1,24 +1,20 @@
-# - Config file for the podio package
-# It defines the following variables
-#  podio_INCLUDE_DIRS - include directories
-#  podio_LIBRARIES    - libraries to link against
-#  podio_LIBRARY_DIR  - podio library dir
-#  podio_BINARY_DIR   - binary directory
+@PACKAGE_INIT@
 
-# Compute paths
-get_filename_component(podio_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set_and_check(podio_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+set_and_check(podio_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
 
-get_filename_component(podio_INCLUDE_DIRS "${podio_CMAKE_DIR}/../include" ABSOLUTE)
-get_filename_component(podio_BINARY_DIR "${podio_CMAKE_DIR}/../bin" ABSOLUTE)
-get_filename_component(podio_LIBRARY_DIR "${podio_CMAKE_DIR}/../lib" ABSOLUTE)
+include(CMakeFindDependencyMacro)
+find_dependency(ROOT @ROOT_VERSION@)
 
+if(NOT TARGET podio::podio)
+  include("${CMAKE_CURRENT_LIST_DIR}/podioTargets.cmake")
 
-FIND_LIBRARY( podio_LIBRARIES NAMES podio PATHS
-             ${podio_LIBRARY_DIR}
-             NO_DEFAULT_PATH
-        )
+  # ROOT only sets usage requirements from 6.14, so for
+  # earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
+  if(ROOT_VERSION VERSION_LESS 6.14)
+    message(STATUS "triggered")
+    target_include_directories(podio::podio INTERFACE "${ROOT_INCLUDE_DIRS}")
+  endif()
+endif()
 
-INCLUDE( FindPackageHandleStandardArgs )
-FIND_PACKAGE_HANDLE_STANDARD_ARGS( podio DEFAULT_MSG podio_LIBRARY_DIR podio_INCLUDE_DIRS podio_LIBRARIES )
-
-ADD_LIBRARY(examplelibrary SHARED IMPORTED)
+check_required_components(podio)

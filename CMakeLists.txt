@@ -79,9 +79,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podioVersion.h
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/podioVersion.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio )
 
-#--- add CMake infrastructure --------------------------------------------------
-include(cmake/podioCreateConfig.cmake)
-
 #--- add license files ---------------------------------------------------------
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
               ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
@@ -89,9 +86,14 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
 
 #--- install templates ---------------------------------------------------------
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
-		DESTINATION ${CMAKE_INSTALL_PREFIX})
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
 
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(python)
 add_subdirectory(src)
 add_subdirectory(tests)
+
+#--- add CMake infrastructure --------------------------------------------------
+include(cmake/podioCreateConfig.cmake)
+
+
