@@ -9,7 +9,9 @@ namespace podio {
   EventStore::EventStore() :
     m_reader(nullptr),
     m_table(new CollectionIDTable())
-  {}
+  {
+    m_cachedCollections.resize(128) ; // allow for a sufficiently large initial number of collections
+  }
 
   EventStore::~EventStore(){
     for (auto& coll : m_collections){
@@ -20,13 +22,23 @@ namespace podio {
     }
   }
 
+
   bool EventStore::get(int id, CollectionBase*& collection) const{
+    // see if we have a cached collection
+    if( ( collection = getFast(id) )  != nullptr )
+      return true ;
+
     auto val = m_retrievedIDs.insert(id);
     bool success = false;
     if (val.second == true){
       // collection not yet retrieved in recursive-call
       auto name = m_table->name(id);
       success = doGet(name, collection,true);
+      if( collection != nullptr ){  // cache the collection for faster retreaval later
+	if( m_cachedCollections.size() < id + 1 )
+	  m_cachedCollections.resize( id+1 ) ;
+	m_cachedCollections[id] = collection ;
+      }
     } else {
       // collection already requested in recursive call
       // do not set the references to break collection dependency-cycle
@@ -97,6 +109,8 @@ namespace podio {
 
   void EventStore::clearCaches() {
     m_collections.clear();
+    m_cachedCollections.clear() ;
+    m_cachedCollections.resize(128) ;
     m_retrievedIDs.clear();
     m_failedRetrieves.clear();
   }
