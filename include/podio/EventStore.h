@@ -47,6 +47,11 @@ namespace podio {
     template<typename T>
     bool get(const std::string& name, const T*& collection);
 
+    /// fast access to cached collections
+    CollectionBase* getFast(int id) const{
+      return ( m_cachedCollections.size() > id ? m_cachedCollections[id] : nullptr ) ;
+    }
+
     /// access a collection by ID. returns true if successful
     bool get(int id, CollectionBase*& coll) const override final;
 
@@ -83,6 +88,7 @@ namespace podio {
     mutable std::set<int> m_retrievedIDs;
     mutable CollContainer m_collections;
     mutable std::vector<const CollectionBase*> m_failedRetrieves;
+    mutable std::vector<CollectionBase*> m_cachedCollections;
     IReader* m_reader;
     CollectionIDTable* m_table;
   };
