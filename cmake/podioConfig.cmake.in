@@ -12,8 +12,7 @@ if(NOT TARGET podio::podio)
   # ROOT only sets usage requirements from 6.14, so for
   # earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
   if(ROOT_VERSION VERSION_LESS 6.14)
-    message(STATUS "triggered")
-    target_include_directories(podio::podio INTERFACE "${ROOT_INCLUDE_DIRS}")
+    set_property(TARGET podio::podio APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
   endif()
 endif()
 
