@@ -35,8 +35,8 @@ int main(){
   auto& comps      = store.create<ExampleWithComponentCollection>("Component");
   auto& oneRels    = store.create<ExampleWithOneRelationCollection>("OneRelation");
   auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
-  auto& namesps    = store.create<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
-  auto& namesprels = store.create<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& namesps    = store.create<ex42::ExampleWithNamespaceCollection>("WithNamespaceMember");
+  auto& namesprels = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleMCCollection>("mcparticles");
@@ -47,8 +47,8 @@ int main(){
   writer.registerForWrite<ExampleWithComponentCollection>("Component");
   writer.registerForWrite<ExampleWithOneRelationCollection>("OneRelation");
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
-  writer.registerForWrite<ex::ExampleWithNamespaceCollection>("WithNamespaceMember");
-  writer.registerForWrite<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
+  writer.registerForWrite<ex42::ExampleWithNamespaceCollection>("WithNamespaceMember");
+  writer.registerForWrite<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
   writer.registerForWrite<ExampleWithStringCollection>("strings");
 
   unsigned nevents=1;//2000;
@@ -189,12 +189,12 @@ int main(){
     vecs.push_back(vec);
 
 
-    auto namesp = ex::ExampleWithNamespace();
+    auto namesp = ex42::ExampleWithNamespace();
     namesp.data().x = 1;
     namesp.data().y = i;
     namesps.push_back(namesp);
 
-    auto rel = ex::ExampleWithARelation();
+    auto rel = ex42::ExampleWithARelation();
     rel.ref(namesp);
     namesprels.push_back(rel);
 

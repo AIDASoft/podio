@@ -27,6 +27,7 @@
 
 int glob = 0;
 
+
 void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
   auto& failing = store.get<ExampleClusterCollection>("notthere");
@@ -163,9 +164,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
     throw std::runtime_error("Collection 'arrays' should be present");
   }
 
-  auto& nmspaces = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelation");
-  auto& copies = store.get<ex::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
-  auto& cpytest = store.create<ex::ExampleWithARelationCollection>("TestConstCopy");
+  auto& nmspaces = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& copies = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
+  auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("TestConstCopy");
   if (nmspaces.isValid() && copies.isValid()) {
     for (int j = 0; j < nmspaces.size(); j++) {
       auto nmsp = nmspaces[j];

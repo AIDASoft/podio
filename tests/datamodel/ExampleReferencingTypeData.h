@@ -1,6 +1,9 @@
 #ifndef ExampleReferencingTypeDATA_H
 #define ExampleReferencingTypeDATA_H
 
+
+
+
 /** @class ExampleReferencingTypeData
  *  Referencing Type
  *  @author: B. Hegner
@@ -13,5 +16,6 @@ public:
   unsigned int Refs_begin;
   unsigned int Refs_end;
 };
+
 
 #endif

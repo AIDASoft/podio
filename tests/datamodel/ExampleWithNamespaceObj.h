@@ -6,31 +6,37 @@
 #include <iostream>
 
 // data model specific includes
-#include "ExampleWithNamespaceData.h"
 #include "podio/ObjBase.h"
+#include "ExampleWithNamespaceData.h"
+
+
 
 // forward declarations
 
-namespace ex {
+
+namespace ex42 {
 
 class ExampleWithNamespace;
 class ConstExampleWithNamespace;
+
 
 class ExampleWithNamespaceObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleWithNamespaceObj();
   /// copy constructor (does a deep-copy of relation containers)
-  ExampleWithNamespaceObj(const ExampleWithNamespaceObj &);
+  ExampleWithNamespaceObj(const ExampleWithNamespaceObj&);
   /// constructor from ObjectID and ExampleWithNamespaceData
   /// does not initialize the internal relation containers
-  ExampleWithNamespaceObj(const podio::ObjectID id,
-                          ExampleWithNamespaceData data);
+  ExampleWithNamespaceObj(const podio::ObjectID id, ExampleWithNamespaceData data);
   virtual ~ExampleWithNamespaceObj();
 
 public:
   ExampleWithNamespaceData data;
+
+
 };
-} // namespace ex
+} // namespace ex42
+
 
 #endif
