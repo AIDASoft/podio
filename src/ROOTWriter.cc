@@ -40,27 +40,9 @@ namespace podio {
  void ROOTWriter::registerForWrite(const std::string& name){
     const podio::CollectionBase* tmp_coll(nullptr);
     m_store->get(name, tmp_coll);
+
     podio::CollectionBase* coll = const_cast<CollectionBase*>(tmp_coll);
-    std::string className( typeid(*(tmp_coll)).name() );
-    size_t  pos = className.find_first_not_of("0123456789");
-    className.erase(0,pos);
-    // demangling the namespace: due to namespace additional characters were introduced:
-    // e.g. N3fcc18TrackHit
-    // remove any number+char before the namespace:
-    pos = className.find_first_of("0123456789");
-    if (pos != std::string::npos) {
-      size_t pos1 = className.find_first_not_of("0123456789", pos);
-      className.erase(0, pos1);
-    }
-    // replace any numbers between namespace and class with "::"
-    pos = className.find_first_of("0123456789");
-    if (pos != std::string::npos) {
-      size_t pos1 = className.find_first_not_of("0123456789", pos);
-      className.replace(pos, pos1-pos, "::");
-    }
-    // transform XCollection into vector<XData>
-    pos = className.find("Collection");
-    className.erase(pos,pos+10);
+    std::string className( coll->getValueTypeName() ) ;
     std::string collClassName = "vector<"+className+"Data>";
 
     if(coll==nullptr) {
