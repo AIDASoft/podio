@@ -74,6 +74,9 @@ public:
   /// number of elements in the collection
   int size() const override final ;
 
+  /// fully qualified type name of elements - with namespace
+  std::string getValueTypeName() const override { return std::string("${classname}") ; } ;
+
   /// Returns the const object of given index
   const ${name} operator[](unsigned int index) const;
   /// Returns the object of a given index
