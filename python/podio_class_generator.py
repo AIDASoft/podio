@@ -730,6 +730,7 @@ class ClassGenerator(object):
       ostream_implementation += "  return o ;\n}\n"
 
       substitutions = { "name" : rawclassname,
+                        "classname" : classname,
                         "constructorbody" : constructorbody,
                         "destructorbody"  : destructorbody,
                         "prepareforwritinghead" : prepareforwritinghead,
