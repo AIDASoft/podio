@@ -1,16 +1,21 @@
 #ifndef ExampleMC_H
 #define ExampleMC_H
-#include "ExampleMC.h"
 #include "ExampleMCData.h"
-#include "podio/ObjectID.h"
-#include <iomanip>
-#include <iostream>
 #include <vector>
+#include "ExampleMC.h"
+#include "ExampleMC.h"
+#include <vector>
+#include <iostream>
+#include <iomanip>
+#include "podio/ObjectID.h"
 
-// forward declarations
+//forward declarations
+
 
 #include "ExampleMCConst.h"
 #include "ExampleMCObj.h"
+
+
 
 class ExampleMCCollection;
 class ExampleMCCollectionIterator;
@@ -27,35 +32,38 @@ class ExampleMC {
   friend ConstExampleMC;
 
 public:
+
   /// default constructor
   ExampleMC();
-  ExampleMC(double energy, int PDG);
+  ExampleMC(double energy,int PDG);
 
   /// constructor from existing ExampleMCObj
-  ExampleMC(ExampleMCObj *obj);
+  ExampleMC(ExampleMCObj* obj);
   /// copy constructor
-  ExampleMC(const ExampleMC &other);
+  ExampleMC(const ExampleMC& other);
   /// copy-assignment operator
-  ExampleMC &operator=(const ExampleMC &other);
+  ExampleMC& operator=(const ExampleMC& other);
   /// support cloning (deep-copy)
   ExampleMC clone() const;
   /// destructor
   ~ExampleMC();
 
   /// conversion to const object
-  operator ConstExampleMC() const;
+  operator ConstExampleMC () const;
 
 public:
+
   /// Access the  energy
-  const double &energy() const;
+  const double& energy() const;
   /// Access the  PDG code
-  const int &PDG() const;
+  const int& PDG() const;
 
   /// Set the  energy
   void energy(double value);
 
   /// Set the  PDG code
   void PDG(int value);
+
 
   void addparents(::ConstExampleMC);
   unsigned int parents_size() const;
@@ -69,32 +77,37 @@ public:
   std::vector<::ConstExampleMC>::const_iterator daughters_begin() const;
   std::vector<::ConstExampleMC>::const_iterator daughters_end() const;
 
+
+
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from ExampleMCObj instance
-  void unlink() { m_obj = nullptr; }
+  void unlink(){m_obj = nullptr;}
 
-  bool operator==(const ExampleMC &other) const {
-    return (m_obj == other.m_obj);
+  bool operator==(const ExampleMC& other) const {
+    return (m_obj==other.m_obj);
   }
 
-  bool operator==(const ConstExampleMC &other) const;
+  bool operator==(const ConstExampleMC& other) const;
 
-  // less comparison operator, so that objects can be e.g. stored in sets.
-  //  friend bool operator< (const ExampleMC& p1,
-  //       const ExampleMC& p2 );
-  bool operator<(const ExampleMC &other) const { return m_obj < other.m_obj; }
+// less comparison operator, so that objects can be e.g. stored in sets.
+//  friend bool operator< (const ExampleMC& p1,
+//       const ExampleMC& p2 );
+  bool operator<(const ExampleMC& other) const { return m_obj < other.m_obj  ; }
 
-  unsigned int id() const {
-    return getObjectID().collectionID * 10000000 + getObjectID().index;
-  }
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
 
   const podio::ObjectID getObjectID() const;
 
 private:
-  ExampleMCObj *m_obj;
+  ExampleMCObj* m_obj;
+
 };
 
-std::ostream &operator<<(std::ostream &o, const ConstExampleMC &value);
+std::ostream& operator<<( std::ostream& o,const ConstExampleMC& value );
+
+
+
 
 #endif

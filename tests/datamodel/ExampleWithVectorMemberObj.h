@@ -6,31 +6,39 @@
 #include <iostream>
 
 // data model specific includes
-#include "ExampleWithVectorMemberData.h"
 #include "podio/ObjBase.h"
+#include "ExampleWithVectorMemberData.h"
 
 #include <vector>
 
+
 // forward declarations
+
+
+
 
 class ExampleWithVectorMember;
 class ConstExampleWithVectorMember;
+
 
 class ExampleWithVectorMemberObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleWithVectorMemberObj();
   /// copy constructor (does a deep-copy of relation containers)
-  ExampleWithVectorMemberObj(const ExampleWithVectorMemberObj &);
+  ExampleWithVectorMemberObj(const ExampleWithVectorMemberObj&);
   /// constructor from ObjectID and ExampleWithVectorMemberData
   /// does not initialize the internal relation containers
-  ExampleWithVectorMemberObj(const podio::ObjectID id,
-                             ExampleWithVectorMemberData data);
+  ExampleWithVectorMemberObj(const podio::ObjectID id, ExampleWithVectorMemberData data);
   virtual ~ExampleWithVectorMemberObj();
 
 public:
   ExampleWithVectorMemberData data;
-  std::vector<int> *m_count;
+  std::vector<int>* m_count;
+
+
 };
+
+
 
 #endif

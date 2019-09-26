@@ -3,7 +3,7 @@
 
 #include "NamespaceStruct.h"
 
-namespace ex {
+namespace ex42 {
 /** @class ExampleWithNamespaceData
  *  Type with namespace and namespaced member
  *  @author: Joschka Lingemann
@@ -11,8 +11,8 @@ namespace ex {
 
 class ExampleWithNamespaceData {
 public:
-  ex2::NamespaceStruct data; ///< a component
+  ex2::NamespaceStruct data;  ///< a component
 };
-} // namespace ex
+} // namespace ex42
 
 #endif

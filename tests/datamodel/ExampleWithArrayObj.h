@@ -6,20 +6,26 @@
 #include <iostream>
 
 // data model specific includes
-#include "ExampleWithArrayData.h"
 #include "podio/ObjBase.h"
+#include "ExampleWithArrayData.h"
+
+
 
 // forward declarations
 
+
+
+
 class ExampleWithArray;
 class ConstExampleWithArray;
+
 
 class ExampleWithArrayObj : public podio::ObjBase {
 public:
   /// constructor
   ExampleWithArrayObj();
   /// copy constructor (does a deep-copy of relation containers)
-  ExampleWithArrayObj(const ExampleWithArrayObj &);
+  ExampleWithArrayObj(const ExampleWithArrayObj&);
   /// constructor from ObjectID and ExampleWithArrayData
   /// does not initialize the internal relation containers
   ExampleWithArrayObj(const podio::ObjectID id, ExampleWithArrayData data);
@@ -27,6 +33,10 @@ public:
 
 public:
   ExampleWithArrayData data;
+
+
 };
+
+
 
 #endif

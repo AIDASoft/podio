@@ -55,36 +55,6 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ex::ExampleWithARelationData>" />
-
-            <class name="ex::ExampleWithARelationData">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ex::ExampleWithARelation>" />
-
-            <class name="ex::ExampleWithARelation">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ex::ConstExampleWithARelation>" />
-
-            <class name="ex::ConstExampleWithARelation">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ex::ExampleWithARelationCollection>" />
-
-            <class name="ex::ExampleWithARelationCollection">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
-          <class name="std::vector<ex::ExampleWithARelationObj>" />
-
-            <class name="ex::ExampleWithARelationObj">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>
           <class name="std::vector<ExampleMCData>" />
 
             <class name="ExampleMCData">
@@ -172,6 +142,36 @@
           <class name="std::vector<ExampleWithComponentObj>" />
 
             <class name="ExampleWithComponentObj">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ex42::ExampleWithNamespaceData>" />
+
+            <class name="ex42::ExampleWithNamespaceData">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ex42::ExampleWithNamespace>" />
+
+            <class name="ex42::ExampleWithNamespace">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ex42::ConstExampleWithNamespace>" />
+
+            <class name="ex42::ConstExampleWithNamespace">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ex42::ExampleWithNamespaceCollection>" />
+
+            <class name="ex42::ExampleWithNamespaceCollection">
+              <field name="m_registry" transient="true"/>
+              <field name="m_container" transient="true"/>
+            </class>
+          <class name="std::vector<ex42::ExampleWithNamespaceObj>" />
+
+            <class name="ex42::ExampleWithNamespaceObj">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
@@ -325,33 +325,33 @@
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ex::ExampleWithNamespaceData>" />
+          <class name="std::vector<ex42::ExampleWithARelationData>" />
 
-            <class name="ex::ExampleWithNamespaceData">
+            <class name="ex42::ExampleWithARelationData">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ex::ExampleWithNamespace>" />
+          <class name="std::vector<ex42::ExampleWithARelation>" />
 
-            <class name="ex::ExampleWithNamespace">
+            <class name="ex42::ExampleWithARelation">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ex::ConstExampleWithNamespace>" />
+          <class name="std::vector<ex42::ConstExampleWithARelation>" />
 
-            <class name="ex::ConstExampleWithNamespace">
+            <class name="ex42::ConstExampleWithARelation">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ex::ExampleWithNamespaceCollection>" />
+          <class name="std::vector<ex42::ExampleWithARelationCollection>" />
 
-            <class name="ex::ExampleWithNamespaceCollection">
+            <class name="ex42::ExampleWithARelationCollection">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>
-          <class name="std::vector<ex::ExampleWithNamespaceObj>" />
+          <class name="std::vector<ex42::ExampleWithARelationObj>" />
 
-            <class name="ex::ExampleWithNamespaceObj">
+            <class name="ex42::ExampleWithARelationObj">
               <field name="m_registry" transient="true"/>
               <field name="m_container" transient="true"/>
             </class>

@@ -117,21 +117,21 @@ datatypes :
     Members:
       - std::string theString // the string
 
-  ex::ExampleWithNamespace :
+  ex42::ExampleWithNamespace :
     Description : "Type with namespace and namespaced member"
     Author : "Joschka Lingemann"
     Members:
       - ex2::NamespaceStruct data // a component
 
-  ex::ExampleWithARelation :
+  ex42::ExampleWithARelation :
     Description : "Type with namespace and namespaced relation"
     Author : "Joschka Lingemann"
     Members:
      - float number // just a number
     OneToOneRelations :
-     - ex::ExampleWithNamespace ref // a ref in a namespace
+     - ex42::ExampleWithNamespace ref // a ref in a namespace
     OneToManyRelations :
-     - ex::ExampleWithNamespace refs // multiple refs in a namespace
+     - ex42::ExampleWithNamespace refs // multiple refs in a namespace
 
   ExampleWithArray:
     Description: "Datatype with an array member"
