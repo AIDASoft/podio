@@ -32,7 +32,7 @@ public:
 
   /// default constructor
   ExampleHit();
-  ExampleHit(double x,double y,double z,double energy);
+  ExampleHit(unsigned long long cellID,double x,double y,double z,double energy);
 
   /// constructor from existing ExampleHitObj
   ExampleHit(ExampleHitObj* obj);
@@ -50,6 +50,8 @@ public:
 
 public:
 
+  /// Access the  cellID
+  const unsigned long long& cellID() const;
   /// Access the  x-coordinate
   const double& x() const;
   /// Access the  y-coordinate
@@ -58,6 +60,9 @@ public:
   const double& z() const;
   /// Access the  measured energy deposit
   const double& energy() const;
+
+  /// Set the  cellID
+  void cellID(unsigned long long value);
 
   /// Set the  x-coordinate
   void x(double value);

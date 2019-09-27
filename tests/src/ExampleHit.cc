@@ -13,9 +13,9 @@ ExampleHit::ExampleHit() : m_obj(new ExampleHitObj()){
  m_obj->acquire();
 }
 
-ExampleHit::ExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()) {
+ExampleHit::ExampleHit(unsigned long long cellID,double x,double y,double z,double energy) : m_obj(new ExampleHitObj()) {
   m_obj->acquire();
-    m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
+    m_obj->data.cellID = cellID;  m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
 }
 
 
@@ -44,11 +44,13 @@ ExampleHit::~ExampleHit(){
 
 ExampleHit::operator ConstExampleHit() const {return ConstExampleHit(m_obj);}
 
+  const unsigned long long& ExampleHit::cellID() const { return m_obj->data.cellID; }
   const double& ExampleHit::x() const { return m_obj->data.x; }
   const double& ExampleHit::y() const { return m_obj->data.y; }
   const double& ExampleHit::z() const { return m_obj->data.z; }
   const double& ExampleHit::energy() const { return m_obj->data.energy; }
 
+void ExampleHit::cellID(unsigned long long value) { m_obj->data.cellID = value; }
 void ExampleHit::x(double value) { m_obj->data.x = value; }
 void ExampleHit::y(double value) { m_obj->data.y = value; }
 void ExampleHit::z(double value) { m_obj->data.z = value; }
@@ -76,6 +78,7 @@ bool ExampleHit::operator==(const ConstExampleHit& other) const {
 
 std::ostream& operator<<( std::ostream& o,const ConstExampleHit& value ){
   o << " id : " << value.id() << std::endl ;
+  o << " cellID : " << value.cellID() << std::endl ;
   o << " x : " << value.x() << std::endl ;
   o << " y : " << value.y() << std::endl ;
   o << " z : " << value.z() << std::endl ;

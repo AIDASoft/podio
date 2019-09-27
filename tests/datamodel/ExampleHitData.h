@@ -11,6 +11,7 @@
 
 class ExampleHitData {
 public:
+  unsigned long long cellID;  ///< cellID
   double x;  ///< x-coordinate
   double y;  ///< y-coordinate
   double z;  ///< z-coordinate

@@ -34,7 +34,7 @@ endforeach( sourcefile ${executables} )
 #--- Adding tests --------------------------------------------------------------
 # uncomment this to actually run the EDM generation in the tests
 add_test(NAME generate-edm
-	 COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel --dryrun
+	 COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel #--dryrun
 	 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_test(NAME write COMMAND write)

@@ -87,8 +87,10 @@ class ClassDefinitionValidator(object):
                 typ=typ, length=array_match.group(2)
             )
         else:
-            klass, name = string.split()[:2]
             comment = string.split("//")[1]
+            rest    = string.split("//")[0].split()
+            name = rest[ len(rest)-1 ]
+            klass = ' '.join( rest[:len(rest)-1] )
         return {"name": name,
                 "type": klass,
                 "description": comment
