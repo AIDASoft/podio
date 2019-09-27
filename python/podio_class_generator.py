@@ -30,7 +30,7 @@ class ClassGenerator(object):
         self.yamlfile = yamlfile
         self.install_dir = install_dir
         self.package_name = package_name
-        self.template_dir = os.path.join(thisdir, "../templates")
+        self.template_dir = os.path.join(thisdir, "templates")
         self.verbose = verbose
         self.buildin_types = ClassDefinitionValidator.buildin_types
         self.created_classes = []
@@ -307,7 +307,7 @@ class ClassGenerator(object):
         if klass in self.buildin_types:
           setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
-          ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) ) 
+          ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (name,gname) )
         elif klass.startswith("std::array"):
           setter_declarations += declarations["member_builtin_setter"].format(type=klass, name=name, fname=sname, description=desc)
           setter_implementations += implementations["member_builtin_setter"].format(type=klass, classname=rawclassname, name=name, fname=sname)
@@ -341,7 +341,7 @@ class ClassGenerator(object):
                 comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
                 comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
 
-              ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (comp_member_name ,  comp_gname) ) 
+              ostream_implementation += ( '  o << " %s : " << value.%s() << std::endl ;\n' % (comp_member_name ,  comp_gname) )
 
               getter_declarations += declarations["pod_member_getter"].format(type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
               getter_implementations += implementations["pod_member_getter"].format(type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
@@ -378,7 +378,7 @@ class ClassGenerator(object):
           if self.getSyntax:
               gname = "get" + name[:1].upper() + name[1:]
               sname = "set" + name[:1].upper() + name[1:]
-          ostream_implementation += ( '  o << " %s : " << value.%s().id() << std::endl ;\n' % (name, gname) ) 
+          ostream_implementation += ( '  o << " %s : " << value.%s().id() << std::endl ;\n' % (name, gname) )
 
           setter_declarations += declarations["one_rel_setter"].format(name=name,fname=sname, namespace=mnamespace, type=klassname, description=desc)
           setter_implementations += implementations["one_rel_setter"].format(name=name,fname=sname, namespace=mnamespace, type=klassname, classname=rawclassname)
@@ -403,7 +403,7 @@ class ClassGenerator(object):
             datatype["includes"].append('#include "%s.h"' %klassname)
           else:
             datatype["includes"].append('#include "%s.h"' %klass)
-        
+
 
       # handle constructor from values
       constructor_signature = constructor_signature.rstrip(",")
@@ -447,10 +447,10 @@ class ClassGenerator(object):
           get_relation = "get" + relationName[:1].upper() + relationName[1:]
           add_relation = "add" + relationName[:1].upper() + relationName[1:len(relationName)-1]  # drop the 's' at the end !??
 
-        ostream_implementation += ( '  o << " %s : " ;\n' % relationName  ) 
-        ostream_implementation += ( '  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName ) 
-        ostream_implementation += ( '    o << value.%s(i) << " " ; \n'  % get_relation  ) 
-        ostream_implementation +=   '  o << std::endl ;\n' 
+        ostream_implementation += ( '  o << " %s : " ;\n' % relationName  )
+        ostream_implementation += ( '  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName )
+        ostream_implementation += ( '    o << value.%s(i) << " " ; \n'  % get_relation  )
+        ostream_implementation +=   '  o << std::endl ;\n'
 
 
         substitutions = {"relation" : relationName,
@@ -513,7 +513,7 @@ class ClassGenerator(object):
                       "relation_members" : references_members,
                       "package_name" : self.package_name,
                       "namespace_open" : namespace_open,
-                      "namespace_close" : namespace_close, 
+                      "namespace_close" : namespace_close,
                       "ostream_declaration" : ostream_declaration,
                       "ostream_implementation" : ostream_implementation
                      }
@@ -558,26 +558,26 @@ class ClassGenerator(object):
       #------------------ create ostream operator --------------------------
       # create colum based output for data members using scientific format
       #
-      numColWidth = 12 
+      numColWidth = 12
       ostream_header_string = "id:"
       while len( ostream_header_string ) < numColWidth+1:
-        ostream_header_string += " " 
-     
+        ostream_header_string += " "
+
 
       ostream_declaration    = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v);\n" % rawclassname )
       ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v){\n" % rawclassname )
-      ostream_implementation += '  std::ios::fmtflags old_flags = o.flags() ; \n' 
-      ostream_implementation += '  o << "{header_string}" << std::endl ;\n ' 
+      ostream_implementation += '  std::ios::fmtflags old_flags = o.flags() ; \n'
+      ostream_implementation += '  o << "{header_string}" << std::endl ;\n '
       ostream_implementation += '  for(int i = 0; i < v.size(); i++){\n'
-      ostream_implementation += '     o << std::scientific << std::showpos ' 
-      ostream_implementation += ( ' << std::setw(%i) ' %  numColWidth )  
+      ostream_implementation += '     o << std::scientific << std::showpos '
+      ostream_implementation += ( ' << std::setw(%i) ' %  numColWidth )
       ostream_implementation += ' << v[i].id() << " " '
       for m in members:
         name = m["name"]
         t = m["type"]
         colW = numColWidth+2
         comps = self.reader.components
-        compMemStr = "" 
+        compMemStr = ""
         if t in comps.keys():
           nCompMem = 0
           compMemStr += ' ['
@@ -587,21 +587,21 @@ class ClassGenerator(object):
               nCompMem += 1
               compMemStr += ('%s,' % cm )
           compMemStr += ']'
-          colW *=  nCompMem    
+          colW *=  nCompMem
           #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
         colName = name[:colW-2]
         colName += compMemStr
         colName +=":"
         while len( colName ) < colW:
-          colName += " " 
-        ostream_header_string  += colName    
+          colName += " "
+        ostream_header_string  += colName
 
         if( self.getSyntax ):
           name  = "get" + name[:1].upper() + name[1:]
         if not t.startswith("std::array"):
-          ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) ) 
+          ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % ( numColWidth, name ) )
       ostream_implementation += '  << std::endl;\n'
-      ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string ) 
+      ostream_implementation = ostream_implementation.replace( "{header_string}",  ostream_header_string )
 
       #----------------------------------------------------------------------
 
@@ -858,7 +858,7 @@ class ClassGenerator(object):
       ostreamComponents +=  "inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
 
       for name in keys:
-#        print  " comp: " , classname , " name : " , name 
+#        print  " comp: " , classname , " name : " , name
         klass = components[ name ]
   #    for name, klass in components.iteritems():
         if( name != "ExtraCode"):
