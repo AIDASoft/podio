@@ -61,8 +61,8 @@ int main(){
     auto item1 = EventInfo();
     item1.Number(i);
     info.push_back(item1);
-    auto hit1 = ExampleHit(0.,0.,0.,23.+i);
-    auto hit2 = ExampleHit(1.,0.,0.,12.+i);
+    auto hit1 = ExampleHit( 0xbad, 0.,0.,0.,23.+i);
+    auto hit2 = ExampleHit( 0xcaffee,1.,0.,0.,12.+i);
 
     hits.push_back(hit1);
     hits.push_back(hit2);

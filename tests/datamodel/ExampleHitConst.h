@@ -31,7 +31,7 @@ public:
 
   /// default constructor
   ConstExampleHit();
-  ConstExampleHit(double x,double y,double z,double energy);
+  ConstExampleHit(unsigned long long cellID,double x,double y,double z,double energy);
 
   /// constructor from existing ExampleHitObj
   ConstExampleHit(ExampleHitObj* obj);
@@ -47,6 +47,8 @@ public:
 
 public:
 
+  /// Access the  cellID
+  const unsigned long long& cellID() const;
   /// Access the  x-coordinate
   const double& x() const;
   /// Access the  y-coordinate

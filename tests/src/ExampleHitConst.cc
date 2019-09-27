@@ -13,9 +13,9 @@ ConstExampleHit::ConstExampleHit() : m_obj(new ExampleHitObj()) {
  m_obj->acquire();
 }
 
-ConstExampleHit::ConstExampleHit(double x,double y,double z,double energy) : m_obj(new ExampleHitObj()){
+ConstExampleHit::ConstExampleHit(unsigned long long cellID,double x,double y,double z,double energy) : m_obj(new ExampleHitObj()){
  m_obj->acquire();
-   m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
+   m_obj->data.cellID = cellID;  m_obj->data.x = x;  m_obj->data.y = y;  m_obj->data.z = z;  m_obj->data.energy = energy;
 }
 
 
@@ -42,6 +42,8 @@ ConstExampleHit::~ConstExampleHit(){
   if ( m_obj != nullptr) m_obj->release();
 }
 
+  /// Access the  cellID
+  const unsigned long long& ConstExampleHit::cellID() const { return m_obj->data.cellID; }
   /// Access the  x-coordinate
   const double& ConstExampleHit::x() const { return m_obj->data.x; }
   /// Access the  y-coordinate

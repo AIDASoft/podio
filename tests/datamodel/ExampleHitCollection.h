@@ -125,6 +125,8 @@ public:
   std::vector<ExampleHitData>* _getBuffer() { return m_data;};
 
     template<size_t arraysize>
+  const std::array<unsigned long long,arraysize> cellID() const;
+  template<size_t arraysize>
   const std::array<double,arraysize> x() const;
   template<size_t arraysize>
   const std::array<double,arraysize> y() const;
@@ -159,6 +161,15 @@ ExampleHit  ExampleHitCollection::create(Args&&... args){
   return ExampleHit(obj);
 }
 
+template<size_t arraysize>
+const std::array<unsigned long long,arraysize> ExampleHitCollection::cellID() const {
+  std::array<unsigned long long,arraysize> tmp;
+  auto valid_size = std::min(arraysize,m_entries.size());
+  for (unsigned i = 0; i<valid_size; ++i){
+    tmp[i] = m_entries[i]->data.cellID;
+ }
+ return tmp;
+}
 template<size_t arraysize>
 const std::array<double,arraysize> ExampleHitCollection::x() const {
   std::array<double,arraysize> tmp;
