@@ -1,3 +1,71 @@
+# v00-09-02
+
+* 2019-09-27 Frank Gaede ([PR#60](https://github.com/AIDASoft/podio/pull/60))
+  - fixed the code generation for members with multi word types (long long, unsigned long,...) 
+        - add example to ExampleHit:
+          `- unsigned long long cellID // cellID`
+
+* 2019-09-27 Ben Morgan ([PR#59](https://github.com/AIDASoft/podio/pull/59))
+  - move `templates` inside the `python` directory when installing
+        - fixes: #58
+
+* 2019-09-27 Ben Morgan ([PR#59](https://github.com/AIDASoft/podio/pull/59))
+  /
+
+* 2019-09-27 Frank Gaede ([PR#57](https://github.com/AIDASoft/podio/pull/57))
+  - allow for numbers in namespace and class names
+        - generate type name string for CollectionBase::getValueTypeName()  
+        - fixes #56
+
+* 2019-09-26 Frank Gaede ([PR#55](https://github.com/AIDASoft/podio/pull/55))
+  -  cache collection pointers for fast access in `EventStore::get()`
+        - added `EventStore::getFast(int id)` 
+        - considerably speeds up XXCollection::setReferences()
+           when reading back collections
+
+* 2019-09-26 Ben Morgan ([PR#54](https://github.com/AIDASoft/podio/pull/54))
+  - improve the CMake 
+       1. Consistent use of CMake usage requirements to propagate include and link dependencies
+       2. Full use of the CMakePackageConfigHelpers module to generate the `podioConfig.cmake`      file and associated `podioTargets.cmake`
+       3. Automatically refind the ROOT dependency
+       4. Standardize install paths for CMake and template files
+  A podio client can, in CMake, do
+  ```cmake
+  find_package(podio REQUIRED)
+  add_executable(foo foo.cc)
+  target_link_libraries(foo podio::podio)
+  ```
+  and all include/link paths will be set correctly.
+
+* 2019-08-21 Javier Cervantes Villanueva ([PR#51](https://github.com/AIDASoft/podio/pull/51))
+  Do not install tests
+  - Allow tests to run after the build phase
+  - Paths have been modified to point to binary or source directories
+  - Before, tests had to be run only after running make install
+  - Test are not installed anymore
+  - Fail tests if any error is reported (ROOT Interpreter error may not be considered by CMake)
+
+* 2019-05-10 Frank Gaede ([PR#45](https://github.com/AIDASoft/podio/pull/45))
+  - updated documentation
+      - add guidelines for contributing
+  - reverted some name changes in tests/examples (fixes #44)
+      - `read-one` now again called `read`
+  - enamble `dryrun` again for generate-edm test
+
+* 2019-04-09 Marko Petric ([PR#43](https://github.com/AIDASoft/podio/pull/43))
+  - Implementation of CI based on LCG views, as suggested in #42
+
+* 2019-04-09 Graeme A Stewart ([PR#41](https://github.com/AIDASoft/podio/pull/41))
+  - Improve convenience setup scripts and build instructions
+         - remove FCC specific code from init.sh
+         - factorise environment setup to env.sh
+         - updated README.md
+
+* 2019-03-24 Javier Cervantes ([PR#40](https://github.com/AIDASoft/podio/pull/40))
+  - ROOTReader now supports multiple inputs thanks to new implementation based on TChain 
+  - ROOTReader now supports opening files via xrootd (`root:///eospublic.cern.ch//eos...` for example)
+  - Improved CMake and CPack configuration, sticking more closely to HSF template
+
 # v00-09
 
 * 2018-12-20 Frank Gaede ([PR#39](https://github.com/aidasoft/podio/pull/39))
