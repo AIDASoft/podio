@@ -3450,7 +3450,7 @@ namespace Catch {
     };
 
     class DebugOutStream : public IStream {
-        std::auto_ptr<StreamBufBase> m_streamBuf;
+        std::unique_ptr<StreamBufBase> m_streamBuf;
         mutable std::ostream m_os;
     public:
         DebugOutStream();
@@ -3598,7 +3598,7 @@ namespace Catch {
         }
         ConfigData m_data;
 
-        std::auto_ptr<IStream const> m_stream;
+        std::unique_ptr<IStream const> m_stream;
         TestSpec m_testSpec;
     };
 
@@ -6428,7 +6428,10 @@ namespace Catch {
                     seedRng( config );
 
                     RandomNumberGenerator rng;
-                    std::random_shuffle( sorted.begin(), sorted.end(), rng );
+                    //std::random_shuffle( sorted.begin(), sorted.end(), rng );
+                    for (size_t i = sorted.size() - 1; i > 0; --i) {
+                        std::swap(sorted[i], sorted[rng(i+1)]);
+                    }
                 }
                 break;
             case RunTests::InDeclarationOrder:
