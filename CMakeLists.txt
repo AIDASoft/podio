@@ -52,7 +52,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPP_STANDARD_FLAGS}")
 
 
 #--- Declare options -----------------------------------------------------------
-option(CREATE_DOC "Whether or not to create doxygen doc target.")
+option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
+option(BUILD_TESTS "Whether or not to build unit and integration tests." ON)
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
@@ -70,7 +71,7 @@ include(CTest)
 include(cmake/podioCPack.cmake)
 
 #--- target for Doxygen documentation ------------------------------------------
-if(podio_documentation)
+if(CREATE_DOC)
 	include(cmake/podioDoxygen.cmake)
 endif()
 #--- add version files ---------------------------------------------------------
@@ -87,7 +88,9 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(python)
 add_subdirectory(src)
-add_subdirectory(tests)
+if(BUILD_TESTS)
+  add_subdirectory(tests)
+endif()
 
 #--- add CMake infrastructure --------------------------------------------------
 include(cmake/podioCreateConfig.cmake)
