@@ -51,8 +51,7 @@ class ClassGenerator(object):
             print "       Please make sure it is in the PATH."
             self.clang_format = []
             return
-        self.clang_format = [cformat_exe, "-i",  "-style=file", "-fallback-style=llvm"]
-
+        self.clang_format = [cformat_exe, "-style=file", "-fallback-style=llvm"]
 
     def process(self):
         self.reader.read()
@@ -1034,7 +1033,7 @@ class ClassGenerator(object):
         declaration += "\ttemplate<size_t arraysize>\n\tconst std::array<%s,arraysize> %s() const;\n" %(klass, name)
       return declaration, implementation
 
-    def write_file(self, name,content):
+    def write_file(self, name, content):
       #dispatch headers to header dir, the rest to /src
       # fullname = os.path.join(self.install_dir,self.package_name,name)
       if name.endswith("h"):
@@ -1042,9 +1041,14 @@ class ClassGenerator(object):
       else:
         fullname = os.path.join(self.install_dir,"src",name)
       if not self.dryrun:
-        open(fullname, "w").write(content)
         if self.clang_format:
-          subprocess.call(self.clang_format + [fullname])
+          cfproc = subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+          content = cfproc.communicate(input=content)[0]
+        existing_content = ''
+        if os.path.exists(fullname):
+          existing_content = open(fullname, 'r').read()
+        if existing_content != content:
+          open(fullname, 'w').write(content)
 
     def evaluate_template(self, filename, substitutions):
         """ reads in a given template, evaluates it
