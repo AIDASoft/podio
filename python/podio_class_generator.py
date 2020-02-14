@@ -1,4 +1,7 @@
  #!/usr/bin/env python
+
+from collections import OrderedDict
+
 import os
 import string
 import pickle
@@ -37,7 +40,7 @@ class ClassGenerator(object):
         self.requested_classes = []
         self.reader = PodioConfigReader(yamlfile)
         self.warnings = []
-        self.component_members = {}
+        self.component_members = OrderedDict()
         self.dryrun = dryrun
 
     def configure_clang_format(self, apply):
@@ -289,7 +292,7 @@ class ClassGenerator(object):
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
       # handle standard members
-      all_members = {}
+      all_members = OrderedDict()
       for member in definition["Members"]:
         name = member["name"]
         klass = member["type"]
@@ -852,15 +855,10 @@ class ClassGenerator(object):
       ostreamComponents = ""
       printed = [""]
       self.component_members[classname] = []
-      #fg: sort the dictionary, so at least we get a predictable order (alphabetical) of the members
-      keys = sorted( components.keys() )
 
       ostreamComponents +=  "inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
 
-      for name in keys:
-#        print  " comp: " , classname , " name : " , name
-        klass = components[ name ]
-  #    for name, klass in components.iteritems():
+      for name, klass in components.items():
         if( name != "ExtraCode"):
 
           if not klass.startswith("std::array"):

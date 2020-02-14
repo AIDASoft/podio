@@ -2,6 +2,19 @@ import yaml
 import copy
 import re
 
+from collections import OrderedDict
+
+def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
+    class OrderedLoader(Loader):
+        pass
+    def construct_mapping(loader, node):
+        loader.flatten_mapping(node)
+        return object_pairs_hook(loader.construct_pairs(node))
+    OrderedLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+        construct_mapping)
+    return yaml.load(stream, OrderedLoader)
+
 
 class ClassDefinitionValidator(object):
     """
@@ -34,8 +47,8 @@ class ClassDefinitionValidator(object):
                      "unsigned long long", "std::string"]
 
     def __init__(self, configuration):
-        self.components = {}
-        self.datatypes = {}
+        self.components = OrderedDict()
+        self.datatypes = OrderedDict()
         if "datatypes" in configuration:
             self.datatypes = configuration["datatypes"]
         if "components" in configuration:
@@ -127,8 +140,8 @@ class PodioConfigReader(object):
 
     def __init__(self, yamlfile):
         self.yamlfile = yamlfile
-        self.datatypes = {}
-        self.components = {}
+        self.datatypes = OrderedDict()
+        self.components = OrderedDict()
         self.options = {
             # should getters / setters be prefixed with get / set?
             "getSyntax": False,
@@ -141,7 +154,7 @@ class PodioConfigReader(object):
 
     def read(self):
         stream = open(self.yamlfile, "r")
-        content = yaml.load(stream)
+        content = ordered_load(stream, yaml.SafeLoader)
         validator = ClassDefinitionValidator(content)
         if "components" in content.keys():
             validator.check_components(content["components"])
