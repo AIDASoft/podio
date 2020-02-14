@@ -1,6 +1,5 @@
 # This is needed for older ROOTs which do not understand
 # target usage requirements
-include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB sources *.cc)
 file(GLOB headers ${CMAKE_SOURCE_DIR}/include/podio/*.h)
@@ -10,16 +9,20 @@ add_library(podio SHARED ${headers} ${sources})
 target_include_directories(podio PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(podio PUBLIC ROOT::RIO ROOT::Tree)
+target_link_libraries(podio PUBLIC ROOT::Core ROOT::RIO ROOT::Tree)
+target_compile_options(podio PRIVATE -Wno-unused-variable -Wno-unused-parameter -pthread)
 
 # Add alias target to ease "subproject" usage
 add_library(podio::podio ALIAS podio)
 
+
 # Dict Library
-REFLEX_GENERATE_DICTIONARY(podio ${headers} SELECTION selection.xml)
+PODIO_GENERATE_DICTIONARY(podio ${headers} SELECTION selection.xml
+  USES podio)
 add_library(podioDict SHARED podio.cxx)
 add_dependencies(podioDict podio-dictgen)
 target_link_libraries(podioDict podio ROOT::Core)
+
 
 # Install the Targets and Headers
 install(TARGETS podio podioDict

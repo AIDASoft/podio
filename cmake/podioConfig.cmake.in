@@ -8,6 +8,7 @@ find_dependency(ROOT @ROOT_VERSION@)
 
 if(NOT TARGET podio::podio)
   include("${CMAKE_CURRENT_LIST_DIR}/podioTargets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/podioMacros.cmake")
 
   # ROOT only sets usage requirements from 6.14, so for
   # earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES

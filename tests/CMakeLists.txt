@@ -1,8 +1,3 @@
-include_directories(
-  ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
-)
-
 foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   string(TOUPPER ${_conf} _conf )
   set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
@@ -17,8 +12,12 @@ file(GLOB headers_utils utilities/*.h)
 
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
 target_link_libraries(TestDataModel podio )
+target_include_directories(TestDataModel PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
+)
 
-REFLEX_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml)
+PODIO_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml USES TestDataModel)
 add_library(TestDataModelDict SHARED TestDataModel.cxx)
 add_dependencies(TestDataModelDict TestDataModel-dictgen)
 target_link_libraries(TestDataModelDict TestDataModel podio )
