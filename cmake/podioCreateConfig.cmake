@@ -19,6 +19,7 @@ configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/podioConfig.cmake.in
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/podioConfig.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/podioConfigVersion.cmake
+              ${CMAKE_SOURCE_DIR}/cmake/podioMacros.cmake
               DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${PROJECT_NAME} )
 install(EXPORT podioTargets
   DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${PROJECT_NAME}

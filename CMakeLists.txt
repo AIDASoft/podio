@@ -58,10 +58,14 @@ option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree)
-include_directories(${ROOT_INCLUDE_DIR})
-include(${ROOT_USE_FILE})
+# ROOT only sets usage requirements from 6.14, so for
+# earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
+if(ROOT_VERSION VERSION_LESS 6.14)
+  set_property(TARGET ROOT::Core APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
+endif()
 
-add_definitions(-Wno-unused-variable -Wno-unused-parameter -pthread)
+#--- enable podio macros--------------------------------------------------------
+include(cmake/podioMacros.cmake)
 
 #--- enable unit testing capabilities ------------------------------------------
 include(CTest)
