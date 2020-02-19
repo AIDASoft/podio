@@ -2,35 +2,61 @@
 # target usage requirements
 
 file(GLOB sources *.cc)
-file(GLOB headers ${CMAKE_SOURCE_DIR}/include/podio/*.h)
+SET(root_sources ${sources})
 
-# Main Library
-add_library(podio SHARED ${headers} ${sources})
+LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.* )
+LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.* )
+
+# Main Library, no external dependencies
+add_library(podio SHARED ${sources})
+add_library(podio::podio ALIAS podio)
 target_include_directories(podio PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(podio PUBLIC ROOT::Core ROOT::RIO ROOT::Tree)
-target_compile_options(podio PRIVATE -Wno-unused-variable -Wno-unused-parameter -pthread)
+target_compile_options(podio PRIVATE -pthread)
 
-# Add alias target to ease "subproject" usage
-add_library(podio::podio ALIAS podio)
-
+# Root dependency, mostly IO
+add_library(podioRootIO SHARED ${root_sources})
+add_library(podio::podioRootIO ALIAS podioRootIO)
+target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree)
+target_include_directories(podioRootIO PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Dict Library
-PODIO_GENERATE_DICTIONARY(podio ${headers} SELECTION selection.xml
-  USES podio)
-add_library(podioDict SHARED podio.cxx)
-add_dependencies(podioDict podio-dictgen)
-target_link_libraries(podioDict podio ROOT::Core)
+add_library(podioDict SHARED)
+add_library(podio::podioDict ALIAS podioDict)
+target_include_directories(podioDict PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree)
 
+SET(headers
+  ${CMAKE_SOURCE_DIR}/include/podio/CollectionBase.h
+  ${CMAKE_SOURCE_DIR}/include/podio/CollectionIDTable.h
+  ${CMAKE_SOURCE_DIR}/include/podio/EventStore.h
+  ${CMAKE_SOURCE_DIR}/include/podio/ICollectionProvider.h
+  ${CMAKE_SOURCE_DIR}/include/podio/IReader.h
+  ${CMAKE_SOURCE_DIR}/include/podio/ObjectID.h
+  ${CMAKE_SOURCE_DIR}/include/podio/PythonEventStore.h
+  )
+PODIO_GENERATE_DICTIONARY(podioDict ${headers} SELECTION selection.xml
+  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}podio${CMAKE_SHARED_LIBRARY_SUFFIX}
+  )
+# prevent generating dictionary twice
+set_target_properties(podioDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
+target_sources(podioDict PRIVATE podioDict.cxx)
+# ROOT IO without the Dict does not work, so we link RootIO against the Dict
+target_link_libraries(podioRootIO PUBLIC podioDict)
 
 # Install the Targets and Headers
-install(TARGETS podio podioDict
+install(TARGETS podio podioDict podioRootIO
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/podioDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/podio_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodio_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")

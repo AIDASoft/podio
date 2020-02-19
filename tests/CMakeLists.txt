@@ -11,23 +11,23 @@ file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
-target_link_libraries(TestDataModel podio )
+target_link_libraries(TestDataModel podio::podio)
 target_include_directories(TestDataModel PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
-)
-
-PODIO_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml USES TestDataModel)
-add_library(TestDataModelDict SHARED TestDataModel.cxx)
-add_dependencies(TestDataModelDict TestDataModel-dictgen)
-target_link_libraries(TestDataModelDict TestDataModel podio )
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
+  )
+PODIO_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml
+  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}TestDataModel${CMAKE_SHARED_LIBRARY_SUFFIX}
+  )
+set_target_properties(TestDataModel-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+target_sources(TestDataModel PRIVATE TestDataModel.cxx)
 
 file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
 foreach( sourcefile ${executables} )
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
-  target_link_libraries( ${name} TestDataModelDict podio)
+  target_link_libraries( ${name} TestDataModel podio::podioRootIO)
 endforeach( sourcefile ${executables} )
 
 #--- Adding tests --------------------------------------------------------------
@@ -38,7 +38,7 @@ add_test(NAME generate-edm
 
 add_test(NAME write COMMAND write)
 # The following directories need to be added to the LD_LIBRARY_PATH:
-# - CMAKE_CURRENT_BINARY_DIR: contains the root dictionary and pcm files for TestDataModelDict
+# - CMAKE_CURRENT_BINARY_DIR: contains the root dictionary and pcm files for TestDataModel
 # - CMAKE_BINARY_DIR/src: contains the root dictionary and pcm files for podio
 set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
 
