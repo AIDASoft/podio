@@ -1,5 +1,5 @@
 from ROOT import gSystem
-gSystem.Load("libpodio")
+gSystem.Load("libpodioRootIO")
 from ROOT import podio
 
 
