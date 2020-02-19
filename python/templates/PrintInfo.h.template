@@ -2,7 +2,7 @@
 #ifndef  ${name}PrintInfo_h
 #define  ${name}PrintInfo_h
 
-#include "${name}Collection.h"
+#include "${incfolder}${name}Collection.h"
 
 class ${name}PrintInfo{
 

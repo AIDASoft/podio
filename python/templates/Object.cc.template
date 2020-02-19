@@ -1,9 +1,9 @@
 // datamodel specific includes
-#include "${name}.h"
-#include "${name}Const.h"
-#include "${name}Obj.h"
-#include "${name}Data.h"
-#include "${name}Collection.h"
+#include "${incfolder}${name}.h"
+#include "${incfolder}${name}Const.h"
+#include "${incfolder}${name}Obj.h"
+#include "${incfolder}${name}Data.h"
+#include "${incfolder}${name}Collection.h"
 #include <iostream>
 $includes_cc
 

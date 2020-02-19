@@ -7,7 +7,7 @@
 
 // data model specific includes
 #include "podio/ObjBase.h"
-#include "${name}Data.h"
+#include "${incfolder}${name}Data.h"
 
 $includes
 

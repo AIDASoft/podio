@@ -1,4 +1,4 @@
-#include "${name}Obj.h"
+#include "${incfolder}${name}Obj.h"
 $includes_cc
 
 ${namespace_open}

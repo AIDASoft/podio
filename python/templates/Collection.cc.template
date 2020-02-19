@@ -2,7 +2,7 @@
 #include <stdexcept>
 ${includes}
 
-#include "${name}Collection.h"
+#include "${incfolder}${name}Collection.h"
 
 ${namespace_open}
 
