@@ -17,9 +17,9 @@
 #include "podio/CollectionIDTable.h"
 
 // datamodel specific includes
-#include "${name}Data.h"
-#include "${name}.h"
-#include "${name}Obj.h"
+#include "${incfolder}${name}Data.h"
+#include "${incfolder}${name}.h"
+#include "${incfolder}${name}Obj.h"
 
 ${namespace_open}
 typedef std::vector<${name}Data> ${name}DataContainer;

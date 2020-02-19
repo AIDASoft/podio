@@ -4,6 +4,7 @@ options :
   getSyntax: False
   # should POD members be exposed with getters/setters in classes that have them as members?
   exposePODMembers: True
+  includeSubfolder: False
 
 components :
   SimpleStruct:

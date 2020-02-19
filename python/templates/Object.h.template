@@ -9,8 +9,8 @@ $includes
 //forward declarations
 $forward_declarations
 
-#include "${name}Const.h"
-#include "${name}Obj.h"
+#include "${incfolder}${name}Const.h"
+#include "${incfolder}${name}Obj.h"
 
 ${namespace_open}
 

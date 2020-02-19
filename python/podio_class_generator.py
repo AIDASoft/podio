@@ -59,6 +59,7 @@ class ClassGenerator(object):
     def process(self):
         self.reader.read()
         self.getSyntax = self.reader.options["getSyntax"]
+        self.includeSubfolder = self.reader.options["includeSubfolder"]
         self.expose_pod_members = self.reader.options["exposePODMembers"]
         self.process_components(self.reader.components)
         self.process_datatypes(self.reader.datatypes)
@@ -124,7 +125,7 @@ class ClassGenerator(object):
         datatype_dict = {}
         datatype_dict["description"] = definition["Description"]
         datatype_dict["author"] = definition["Author"]
-        datatype_dict["includes"] = []
+        datatype_dict["includes"] = set()
         datatype_dict["members"] = []
         members = definition["Members"]
         for member in members:
@@ -134,7 +135,7 @@ class ClassGenerator(object):
             datatype_dict["members"].append("  %s %s;  ///<%s"
                                             % (klass, name, description))
             if "std::string" == klass:
-                datatype_dict["includes"].append("#include <string>")
+                datatype_dict["includes"].add("#include <string>")
                 self.warnings.append("%s defines a string member %s, that spoils the PODness"
                                      % (classname, klass))
             elif klass in self.buildin_types:
@@ -142,20 +143,18 @@ class ClassGenerator(object):
             elif klass in self.requested_classes:
                 if "::" in klass:
                     namespace, klassname = klass.split("::")
-                    datatype_dict["includes"].append('#include "%s.h"'
-                                                     % klassname)
+                    datatype_dict["includes"].add(self._build_include(klassname))
                 else:
-                    datatype_dict["includes"].append('#include "%s.h"'
-                                                     % klass)
+                    datatype_dict["includes"].add(self._build_include(klass))
             elif "std::array" in klass:
-                datatype_dict["includes"].append("#include <array>")
+                datatype_dict["includes"].add("#include <array>")
                 array_type = klass.split("<")[1].split(",")[0]
                 if array_type not in self.buildin_types:
-                  if "::" in array_type:
+                    if "::" in array_type:
                         array_type = array_type.split("::")[1]
-                  datatype_dict["includes"].append("#include \"%s.h\"\n" % array_type)
+                    datatype_dict["includes"].add(self._build_include(array_type))
             elif "vector" in klass:
-                datatype_dict["includes"].append("#include <vector>")
+                datatype_dict["includes"].add("#include <vector>")
                 if is_data:  # avoid having warnings twice
                     self.warnings.append("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
             elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
@@ -163,7 +162,6 @@ class ClassGenerator(object):
             else:
                 raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
         # get rid of duplicates:
-        datatype_dict["includes"] = list(set(datatype_dict["includes"]))
         return datatype_dict
 
 
@@ -205,7 +203,7 @@ class ClassGenerator(object):
         data["members"].append("  unsigned int %s_begin;" %(name))
         data["members"].append("  unsigned int %s_end;" %(name))
 
-      substitutions = {"includes" : "\n".join(data["includes"]),
+      substitutions = {"includes" : self._join_set(data["includes"]),
                       "members"  : "\n".join(data["members"]),
                       "name"     : rawclassname,
                       "description" : data["description"],
@@ -220,7 +218,7 @@ class ClassGenerator(object):
     def create_class(self, classname, definition):
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
-      includes_cc = ""
+      includes_cc = set()
       forward_declarations = ""
       forward_declarations_namespace = {"":[]}
       getter_implementations = ""
@@ -238,7 +236,7 @@ class ClassGenerator(object):
       # and prepare include directives
       datatype = self.process_datatype(classname, definition, False)
 
-      datatype["includes"].append('#include "%s.h"' % (rawclassname+"Data"))
+      datatype["includes"].add(self._build_include(rawclassname+"Data"))
 
       ostream_declaration    = ("std::ostream& operator<<( std::ostream& o,const Const%s& value );\n" % rawclassname )
       ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const Const%s& value ){\n" % rawclassname )
@@ -258,7 +256,7 @@ class ClassGenerator(object):
 
           forward_declarations_namespace[mnamespace] += ["class %s;\n" %(klassname)]
           forward_declarations_namespace[mnamespace] += ["class Const%s;\n" %(klassname)]
-          includes_cc += '#include "%s.h"\n' %(klassname)
+          includes_cc.add(self._build_include(klassname))
 
       for nsp in forward_declarations_namespace.iterkeys():
         if nsp != "":
@@ -271,22 +269,22 @@ class ClassGenerator(object):
       # and prepare include directives
       refvectors = definition["OneToManyRelations"]
       if len(refvectors) != 0:
-        datatype["includes"].append("#include <vector>")
+        datatype["includes"].add("#include <vector>")
       for item in refvectors:
         klass = item["type"]
         if klass in self.requested_classes:
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
-            datatype["includes"].append('#include "%s.h"' %klassname)
+            datatype["includes"].add(self._build_include(klassname))
           else:
-            datatype["includes"].append('#include "%s.h"' %klass)
+            datatype["includes"].add(self._build_include(klass))
         elif "std::array" in klass:
-          datatype["includes"].append("#include <array>")
+          datatype["includes"].add("#include <array>")
           array_type = klass.split("<")[1].split(",")[0]
           if array_type not in self.buildin_types:
             if "::" in array_type:
                   array_type = array_type.split("::")[1]
-            datatype["includes"].append("#include \"%s.h\"\n" % array_type)
+            datatype["includes"].add(self._build_include(array_type))
         else:
           raise Exception("'%s' declares a non-allowed many-relation to '%s'!" %(classname, klass))
 
@@ -394,7 +392,7 @@ class ClassGenerator(object):
       # handle vector members
       vectormembers = definition["VectorMembers"]
       if len(vectormembers) != 0:
-        datatype["includes"].append("#include <vector>")
+        datatype["includes"].add("#include <vector>")
       for item in vectormembers:
         klass = item["type"]
         if klass not in self.buildin_types and klass not in self.reader.components:
@@ -402,9 +400,9 @@ class ClassGenerator(object):
         if klass in self.reader.components:
           if "::" in klass:
             namespace, klassname = klass.split("::")
-            datatype["includes"].append('#include "%s.h"' %klassname)
+            datatype["includes"].add(self._build_include(klassname))
           else:
-            datatype["includes"].append('#include "%s.h"' %klass)
+            datatype["includes"].add(self._build_include(klass))
 
 
       # handle constructor from values
@@ -488,16 +486,17 @@ class ClassGenerator(object):
             extracode += "\n"
             extracode += extra["const_implementation"].replace("{name}",rawclassname)
         # TODO: add loading of code from external files
-        if( extra.has_key("includes")):
-            datatype["includes"].append( extra["includes"] )
-            print " ***** adding includes : " ,  extra["includes"] , "to" ,  datatype["includes"]
+        if "includes" in extra:
+            extraIncludes = set(extra["includes"].split('\n'))
+            datatype["includes"].update(extraIncludes)
+            print " ***** adding includes : " ,  extraIncludes , "to" ,  datatype["includes"]
 
 
       ostream_implementation += "  return o ;\n}\n"
 
 
-      substitutions = {"includes" : "\n".join(datatype["includes"]),
-                      "includes_cc" : includes_cc,
+      substitutions = {"includes" : self._join_set(datatype["includes"]),
+                      "includes_cc" : self._join_set(includes_cc),
                       "forward_declarations" : forward_declarations,
                       "getters"  : getter_implementations,
                       "getter_declarations": getter_declarations,
@@ -548,7 +547,7 @@ class ClassGenerator(object):
       vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(rawclassname,members)
       setreferences = ""
       prepareafterread = ""
-      includes = ""
+      includes = set()
       initializers = ""
       relations = ""
       create_relations = ""
@@ -628,7 +627,7 @@ class ClassGenerator(object):
           mnamespace, klassname, _, __ = self.demangle_classname(klass)
 
           # includes
-          includes += '#include "%sCollection.h" \n' %(klassname)
+          includes.add(self._build_include(klassname+'Collection'))
 
           # FIXME check if it compiles with :: for both... then delete this.
           relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
@@ -676,7 +675,7 @@ class ClassGenerator(object):
 
 
           # includes
-          includes += '#include "%sCollection.h"\n' %(klassname)
+          includes.add(self._build_include(klassname+'Collection'))
           # constructor call
           initializers += implementations["ctor_list_relation"].format(namespace=mnamespace, type=klassname, name=name)
           # member
@@ -698,7 +697,7 @@ class ClassGenerator(object):
           ostream_implementation += ( '  o << v[i].%s().id() << std::endl;\n'  % get_name  )
 
       if len(vectormembers)>0:
-          includes += '#include <numeric>\n'
+          includes.add('#include <numeric>')
       for counter, item in enumerate(vectormembers):
         name  = item["name"]
         klass = item["type"]
@@ -741,7 +740,7 @@ class ClassGenerator(object):
                         "setreferences" : setreferences,
                         "prepareafterread" : prepareafterread,
                         "prepareafterread_refmembers" : prepareafterread_refmembers,
-                        "includes" : includes,
+                        "includes" : self._join_set(includes),
                         "initializers" : initializers,
                         "relations"           : relations,
                         "create_relations" : create_relations,
@@ -848,7 +847,7 @@ class ClassGenerator(object):
       """
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
-      includes = []
+      includes = set()
       members = ""
       extracode_declarations = ""
       ostreamComponents = ""
@@ -878,27 +877,24 @@ class ClassGenerator(object):
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
             self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
           if self.reader.components.has_key(klass):
-              includes.append('#include "%s.h"\n' %(klassname))
+              includes.add(self._build_include(klassname))
           if "std::array" in klass:
-              includes.append("#include <array>\n")
+              includes.add("#include <array>")
               array_type = klass.split("<")[1].split(",")[0]
               if array_type not in self.buildin_types:
                 if "::" in array_type:
                       array_type = array_type.split("::")[1]
-                includes.append("#include \"%s.h\"\n" % array_type)
+                includes.add(self._build_include(array_type))
         else:
           # handle user provided extra code
-          if klass.has_key("declaration"):
-            extracode_declarations = klass["declaration"]
-          if klass.has_key("includes"):
-             includes.append(klass["includes"])
+          extracode_declarations = klass.get("declaration", "")
+          includes.update(set(klass.get("includes", "").split('\n')))
 
       ostreamComponents +=  "  return o ;\n"
       ostreamComponents +=  "}\n"
-      # make includes unique and put it in a string
-      includes = ''.join(list(set(includes)))
+
       substitutions = { "ostreamComponents" : ostreamComponents,
-                        "includes" : includes,
+                        "includes" : self._join_set(includes),
                         "members"  : members,
                         "extracode_declarations" : extracode_declarations,
                         "name"     : rawclassname,
@@ -916,8 +912,8 @@ class ClassGenerator(object):
       namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
       relations = ""
-      includes = ""
-      includes_cc = ""
+      includes = set()
+      includes_cc = set()
       forward_declarations = ""
       forward_declarations_namespace = {"":[]}
       initialize_relations = ""
@@ -953,7 +949,7 @@ class ClassGenerator(object):
         if klass not in self.buildin_types:
           if klass != classname:
             forward_declarations_namespace[mnamespace] += ['class Const%s;\n' %(klassname)]
-            includes_cc += '#include "%sConst.h"\n' %(klassname)
+            includes_cc.add(self._build_include("%sConst" % klassname))
             initialize_relations += ", m_%s(nullptr)\n" %(name)
             # for deep copy initialise as nullptr and set in copy ctor body if copied object has non-trivial relation
             deepcopy_relations += ", m_%s(nullptr)" % (name)
@@ -968,7 +964,7 @@ class ClassGenerator(object):
           forward_declarations += "}\n"
 
       if len(refvectors+definition["VectorMembers"]) !=0:
-        includes += "#include <vector>\n"
+        includes.add("#include <vector>")
 
       for item in refvectors+definition["VectorMembers"]:
         name  = item["name"]
@@ -986,13 +982,13 @@ class ClassGenerator(object):
           initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klassWithQualifier)
           deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" %(name,klassWithQualifier,name)
           if klass == classname:
-            includes_cc += '#include "%s.h"\n' %(rawclassname)
+              includes_cc.add(self._build_include(rawclassname))
           else:
             if "::" in klass:
               mnamespace, klassname = klass.split("::")
-              includes += '#include "%s.h"\n' %klassname
+              includes.add(self._build_include(klassname))
             else:
-              includes += '#include "%s.h"\n' %klass
+              includes.add(self._build_include(klass))
         else:
             relations += "\tstd::vector<%s>* m_%s;\n" %(klass, name)
             initialize_relations += ", m_%s(new std::vector<%s>())" %(name,klass)
@@ -1000,8 +996,8 @@ class ClassGenerator(object):
 
         delete_relations += "\t\tdelete m_%s;\n" %(name)
       substitutions = { "name" : rawclassname,
-                        "includes" : includes,
-                        "includes_cc" : includes_cc,
+                        "includes" : self._join_set(includes),
+                        "includes_cc" : self._join_set(includes_cc),
                         "forward_declarations" : forward_declarations,
                         "relations" : relations,
                         "initialize_relations" : initialize_relations,
@@ -1057,6 +1053,8 @@ class ClassGenerator(object):
         return string.Template(template).substitute(substitutions)
 
     def fill_templates(self, category, substitutions):
+      # add common include subfolder if required    
+      substitutions['incfolder'] = '' if not self.includeSubfolder else self.package_name + '/'
       # "Data" denotes the real class;
       # only headers and the FN should not contain Data
       if category == "Data":
@@ -1088,6 +1086,17 @@ class ClassGenerator(object):
         filename = "%s%s.%s" %(substitutions["name"],FN,ending)
         self.write_file(filename, content)
 
+
+    def _build_include(self, classname):
+      """Return the include statement."""
+      if self.includeSubfolder:
+        classname = os.path.join(self.package_name, classname)
+      return '#include "%s.h"' % classname
+
+    @staticmethod
+    def _join_set(aSet):
+      """Return newline-joined sorted set."""
+      return '\n'.join(sorted([inc.strip() for inc in aSet]))
 
 ##########################
 if __name__ == "__main__":

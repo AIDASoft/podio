@@ -146,7 +146,10 @@ class PodioConfigReader(object):
             # should getters / setters be prefixed with get / set?
             "getSyntax": False,
             # should POD members be exposed with getters/setters in classes that have them as members?
-            "exposePODMembers": True}
+            "exposePODMembers": True,
+            # use subfolder when including package header files
+            "includeSubfolder": False,
+            }
 
     @staticmethod
     def handle_extracode(definition):

@@ -7,7 +7,7 @@ $includes
 //forward declarations
 $forward_declarations
 
-#include "${name}Obj.h"
+#include "${incfolder}${name}Obj.h"
 
 ${namespace_open}
 
