@@ -1,6 +1,6 @@
 
-#ifndef  ${name}PrintInfo_h
-#define  ${name}PrintInfo_h
+#ifndef  ${PACKAGE_NAME}_${name}PrintInfo_h
+#define  ${PACKAGE_NAME}_${name}PrintInfo_h
 
 #include "${incfolder}${name}Collection.h"
 

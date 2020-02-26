@@ -1,5 +1,5 @@
-#ifndef ${name}_H
-#define ${name}_H
+#ifndef ${PACKAGE_NAME}_${name}_H
+#define ${PACKAGE_NAME}_${name}_H
 $includes
 #include <vector>
 #include <iostream>

@@ -1,5 +1,5 @@
-#ifndef ${name}OBJ_H
-#define ${name}OBJ_H
+#ifndef ${PACKAGE_NAME}_${name}OBJ_H
+#define ${PACKAGE_NAME}_${name}OBJ_H
 
 // std includes
 #include <atomic>

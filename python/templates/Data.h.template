@@ -1,5 +1,5 @@
-#ifndef ${name}DATA_H
-#define ${name}DATA_H
+#ifndef ${PACKAGE_NAME}_${name}DATA_H
+#define ${PACKAGE_NAME}_${name}DATA_H
 
 $includes
 

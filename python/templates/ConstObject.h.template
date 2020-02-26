@@ -1,5 +1,5 @@
-#ifndef Const${name}_H
-#define Const${name}_H
+#ifndef ${PACKAGE_NAME}_Const${name}_H
+#define ${PACKAGE_NAME}_Const${name}_H
 $includes
 #include <vector>
 #include "podio/ObjectID.h"
