@@ -1,7 +1,7 @@
 //AUTOMATICALLY GENERATED - DO NOT EDIT
 
-#ifndef ${name}Collection_H
-#define  ${name}Collection_H
+#ifndef ${PACKAGE_NAME}_${name}Collection_H
+#define ${PACKAGE_NAME}_${name}Collection_H
 
 #include <string>
 #include <vector>

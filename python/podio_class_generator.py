@@ -1055,6 +1055,7 @@ class ClassGenerator(object):
     def fill_templates(self, category, substitutions):
       # add common include subfolder if required    
       substitutions['incfolder'] = '' if not self.includeSubfolder else self.package_name + '/'
+      substitutions['PACKAGE_NAME'] = self.package_name.upper()
       # "Data" denotes the real class;
       # only headers and the FN should not contain Data
       if category == "Data":
