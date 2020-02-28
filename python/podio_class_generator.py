@@ -158,7 +158,7 @@ class ClassGenerator(object):
                 if is_data:  # avoid having warnings twice
                     self.warnings.append("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
             elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
-                raise Exception("'%s' defines an array type. Array types are not supported yet." % (classname, klass))
+                raise Exception("'%s' defines an array type %s. Array types are not supported yet." % (classname, klass))
             else:
                 raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
         # get rid of duplicates:
