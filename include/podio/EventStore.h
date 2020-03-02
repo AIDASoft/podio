@@ -5,6 +5,7 @@
 #include <vector>
 #include <type_traits>
 #include <set>
+#include <map>
 
 // podio specific includes
 #include "podio/CollectionIDTable.h"
@@ -74,6 +75,8 @@ namespace podio {
 
     CollectionIDTable* getCollectionIDTable() const {return m_table;};
 
+    std::map<std::string, std::string>* getRunParameters() const {return m_runparameters;};
+
     virtual bool isValid() const final;
 
   private:
@@ -91,6 +94,7 @@ namespace podio {
     mutable std::vector<CollectionBase*> m_cachedCollections;
     IReader* m_reader;
     CollectionIDTable* m_table;
+    std::map<std::string, std::string>* m_runparameters;
   };
 
 

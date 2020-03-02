@@ -49,6 +49,9 @@ class ROOTReader : public IReader {
     /// Read CollectionIDTable from ROOT file
     CollectionIDTable* getCollectionIDTable() override final {return m_table;}
 
+    /// Return RunParameters read from ROOT file
+    std::map<std::string, std::string>* getRunParameters() override final {return m_runparameters;}
+
     /// Returns number of entries in the TTree
     unsigned getEntries() const;
 
@@ -71,6 +74,7 @@ class ROOTReader : public IReader {
     std::vector<Input> m_inputs;
     std::map<std::string, std::pair<TClass*,TClass*> > m_storedClasses;
     CollectionIDTable* m_table;
+    std::map<std::string, std::string>* m_runparameters;
     TChain* m_chain;
     unsigned m_eventNumber;
 };

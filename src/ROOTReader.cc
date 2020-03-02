@@ -101,8 +101,10 @@ namespace podio {
       m_chain->Add(filename.c_str());
     }
     CollectionIDTable* l_table = new CollectionIDTable();
+    std::map<std::string, std::string>* l_runparameters = new std::map<std::string, std::string>();
     auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
     metadatatree->SetBranchAddress("CollectionIDs",&l_table);
+    metadatatree->SetBranchAddress("RunParameters",&l_runparameters);
     metadatatree->GetEntry(0);
     auto l_names = l_table->names();
     std::vector<int> l_collectionIDs;
@@ -111,6 +113,7 @@ namespace podio {
 
     }
     m_table = new CollectionIDTable(l_collectionIDs, l_names);
+    m_runparameters = l_runparameters;
   }
 
   void ROOTReader::closeFile(){

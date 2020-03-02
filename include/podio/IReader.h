@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <iostream>
 
@@ -27,6 +28,8 @@ class IReader {
     virtual CollectionBase* readCollection(const std::string& name) = 0;
     /// Get CollectionIDTable of read-in data
     virtual CollectionIDTable* getCollectionIDTable() = 0;
+    /// Get RunParameters of read-in data
+    virtual std::map<std::string, std::string>* getRunParameters() = 0;
     //TODO: decide on smart-pointers for passing of objects
     /// Check if reader is valid
     virtual bool isValid() const = 0;

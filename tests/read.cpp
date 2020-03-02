@@ -26,6 +26,11 @@ int glob = 0;
 
 void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
+  auto params = store.getRunParameters();
+  if ((*params)["RunNumber"] != "1") {
+    throw std::runtime_error("Expected RunParameter 'RunNumber' to be '1'");
+  }
+
   auto& failing = store.get<ExampleClusterCollection>("notthere");
   if(failing.isValid() == true) {
     throw std::runtime_error("Collection 'notthere' should not be valid");

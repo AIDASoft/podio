@@ -8,7 +8,8 @@ namespace podio {
 
   EventStore::EventStore() :
     m_reader(nullptr),
-    m_table(new CollectionIDTable())
+    m_table(new CollectionIDTable()),
+    m_runparameters(new std::map<std::string, std::string>())
   {
     m_cachedCollections.resize(128) ; // allow for a sufficiently large initial number of collections
   }
@@ -125,6 +126,7 @@ namespace podio {
   void EventStore::setReader(IReader* reader){
     m_reader = reader;
     setCollectionIDTable(reader->getCollectionIDTable());
+    m_runparameters = reader->getRunParameters();
   }
 
 

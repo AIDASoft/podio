@@ -27,6 +27,9 @@ void write(std::string outfilename) {
 
   auto store = podio::EventStore();
   auto writer = podio::ROOTWriter(outfilename, &store);
+  // write run-level parameters
+  auto params = store.getRunParameters();
+  params->insert({"RunNumber", "1"});
 
   auto& info       = store.create<EventInfoCollection>("info");
   auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
