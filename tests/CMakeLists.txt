@@ -5,9 +5,22 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
+# we need to boostrap the data model, so this has to be executed in the cmake run
 execute_process(
+  COMMAND ${CMAKE_COMMAND} -E echo "Creating TestDataModel"
   COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+# This ensures that we re-run the class generator if the yaml file is touched
+# the command is run if datalayout.yaml is newer then selection.xml
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/tests/src/selection.xml  # we specify one output file so this doesn't always run
+  COMMENT "Re-Creating TestDataModel"
+  MAIN_DEPENDENCY datalayout.yaml
+  # This removal ensures selection.xml is newer than datalayout.yaml, other wise this command always runs
+  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_SOURCE_DIR}/tests/src/selection.xml
+  COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  )
 
 
 file(GLOB sources src/*.cc)
@@ -19,7 +32,7 @@ add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${header
 target_link_libraries(TestDataModel podio::podio)
 target_include_directories(TestDataModel PUBLIC
   ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/datamodel
+  ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 PODIO_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml
   OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}TestDataModel${CMAKE_SHARED_LIBRARY_SUFFIX}

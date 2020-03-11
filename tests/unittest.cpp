@@ -10,14 +10,14 @@
 #include "podio/EventStore.h"
 
 // Test data types
-#include "EventInfoCollection.h"
-#include "ExampleClusterCollection.h"
-#include "ExampleForCyclicDependency1Collection.h"
-#include "ExampleForCyclicDependency2Collection.h"
-#include "ExampleHitCollection.h"
-#include "ExampleWithComponent.h"
-#include "ExampleWithOneRelation.h"
-#include "ExampleWithOneRelationCollection.h"
+#include "datamodel/EventInfoCollection.h"
+#include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleForCyclicDependency1Collection.h"
+#include "datamodel/ExampleForCyclicDependency2Collection.h"
+#include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleWithComponent.h"
+#include "datamodel/ExampleWithOneRelation.h"
+#include "datamodel/ExampleWithOneRelationCollection.h"
 
 TEST_CASE("AutoDelete") {
   auto store = podio::EventStore();

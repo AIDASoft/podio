@@ -1,15 +1,15 @@
 // Data model
-#include "EventInfoCollection.h"
-#include "ExampleMCCollection.h"
-#include "ExampleHitCollection.h"
-#include "ExampleClusterCollection.h"
-#include "ExampleReferencingTypeCollection.h"
-#include "ExampleWithOneRelationCollection.h"
-#include "ExampleWithVectorMemberCollection.h"
-#include "ExampleWithComponentCollection.h"
-#include "ExampleWithNamespaceCollection.h"
-#include "ExampleWithARelationCollection.h"
-#include "ExampleWithStringCollection.h"
+#include "datamodel/EventInfoCollection.h"
+#include "datamodel/ExampleMCCollection.h"
+#include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleReferencingTypeCollection.h"
+#include "datamodel/ExampleWithOneRelationCollection.h"
+#include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/ExampleWithComponentCollection.h"
+#include "datamodel/ExampleWithNamespaceCollection.h"
+#include "datamodel/ExampleWithARelationCollection.h"
+#include "datamodel/ExampleWithStringCollection.h"
 
 // STL
 #include <iostream>
