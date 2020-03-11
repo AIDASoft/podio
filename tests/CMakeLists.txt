@@ -5,6 +5,11 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
+execute_process(
+  COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+
 file(GLOB sources src/*.cc)
 file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
@@ -31,10 +36,6 @@ foreach( sourcefile ${executables} )
 endforeach( sourcefile ${executables} )
 
 #--- Adding tests --------------------------------------------------------------
-# uncomment this to actually run the EDM generation in the tests
-add_test(NAME generate-edm
-	 COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel --dryrun
-	 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_test(NAME write COMMAND write)
 # The following directories need to be added to the LD_LIBRARY_PATH:
@@ -63,9 +64,3 @@ set_property(TEST pyunittest
 set_property(TEST pyunittest PROPERTY DEPENDS write)
 
 add_test(NAME unittest COMMAND unittest)
-
-# Fail tests if there is any error in the output
-set_tests_properties(generate-edm write read read-multiple pyunittest unittest
-    PROPERTIES FAIL_REGULAR_EXPRESSION "[^a-z]Error;ERROR;Failed"
-)
-
