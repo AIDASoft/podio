@@ -83,13 +83,14 @@ class ClassGenerator(object):
             # self.create_PrintInfo(name, components)
 
     def print_report(self):
-        if self.verbose:
-            pkl = open(os.path.join(thisdir, "figure.txt"))
-            figure = pickle.load(pkl)
-            text = _text_ % (self.yamlfile,
-                             len(self.created_classes),
-                             self.install_dir
-                             )
+        if not self.verbose:
+            return
+        pkl = open(os.path.join(thisdir, "figure.txt"))
+        figure = pickle.load(pkl)
+        text = _text_ % (self.yamlfile,
+                         len(self.created_classes),
+                         self.install_dir
+                         )
         cntr = 0
         print
         for figline, summaryline in zip(figure, text.splitlines()):
