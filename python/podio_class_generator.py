@@ -39,7 +39,7 @@ class ClassGenerator(object):
         self.created_classes = []
         self.requested_classes = []
         self.reader = PodioConfigReader(yamlfile)
-        self.warnings = []
+        self.warnings = set()
         self.component_members = OrderedDict()
         self.dryrun = dryrun
 
@@ -137,7 +137,7 @@ class ClassGenerator(object):
                                             % (klass, name, description))
             if "std::string" == klass:
                 datatype_dict["includes"].add("#include <string>")
-                self.warnings.append("%s defines a string member %s, that spoils the PODness"
+                self.warnings.add("%s defines a string member %s, that spoils the PODness"
                                      % (classname, klass))
             elif klass in self.buildin_types:
                 pass
@@ -157,7 +157,7 @@ class ClassGenerator(object):
             elif "vector" in klass:
                 datatype_dict["includes"].add("#include <vector>")
                 if is_data:  # avoid having warnings twice
-                    self.warnings.append("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
+                    self.warnings.add("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
             elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
                 raise Exception("'%s' defines an array type %s. Array types are not supported yet." % (classname, klass))
             else:
@@ -1143,5 +1143,6 @@ if __name__ == "__main__":
   gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
   gen.configure_clang_format(options.clangformat)
   gen.process()
-  for warning in gen.warnings:
+  if gen.verbose:
+    for warning in gen.warnings:
       print warning
