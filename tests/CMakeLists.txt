@@ -11,24 +11,21 @@ execute_process(
   COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
-# This ensures that we re-run the class generator if the yaml file is touched
-# the command is run if datalayout.yaml is newer then selection.xml
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/tests/src/selection.xml  # we specify one output file so this doesn't always run
-  COMMENT "Re-Creating TestDataModel"
-  MAIN_DEPENDENCY datalayout.yaml
-  # This removal ensures selection.xml is newer than datalayout.yaml, other wise this command always runs
-  COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_SOURCE_DIR}/tests/src/selection.xml
-  COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  )
-
-
 file(GLOB sources src/*.cc)
 file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
+add_custom_target(createTestDataModel
+  COMMENT "Re-Creating TestDataModel"
+  DEPENDS datalayout.yaml
+  BYPRODUCTS ${sources} ${headers}
+  COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py --quiet tests/datalayout.yaml tests datamodel
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  )
+
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
+add_dependencies(TestDataModel createTestDataModel)
 target_link_libraries(TestDataModel podio::podio)
 target_include_directories(TestDataModel PUBLIC
   ${CMAKE_SOURCE_DIR}/include
