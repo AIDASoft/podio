@@ -11,7 +11,7 @@
 #include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithStringCollection.h"
 #include "datamodel/ExampleWithArrayCollection.h"
-#include "datamodel/StructWithArray.h"
+
 
 // STL
 #include <iostream>
