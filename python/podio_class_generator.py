@@ -490,8 +490,6 @@ class ClassGenerator(object):
         if "includes" in extra:
             extraIncludes = set(extra["includes"].split('\n'))
             datatype["includes"].update(extraIncludes)
-            if self.verbose:
-                print " ***** adding includes : " ,  extraIncludes , "to" ,  datatype["includes"]
 
 
       ostream_implementation += "  return o ;\n}\n"
