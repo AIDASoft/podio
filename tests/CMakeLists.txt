@@ -5,27 +5,12 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
-# we need to boostrap the data model, so this has to be executed in the cmake run
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E echo "Creating TestDataModel"
-  COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py tests/datalayout.yaml tests datamodel
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources)
 
-file(GLOB sources src/*.cc)
-file(GLOB headers datamodel/*.h)
 file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
-add_custom_target(createTestDataModel
-  COMMENT "Re-Creating TestDataModel"
-  DEPENDS datalayout.yaml
-  BYPRODUCTS ${sources} ${headers}
-  COMMAND python ${CMAKE_SOURCE_DIR}/python/podio_class_generator.py --quiet tests/datalayout.yaml tests datamodel
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  )
-
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
-add_dependencies(TestDataModel createTestDataModel)
 target_link_libraries(TestDataModel podio::podio)
 target_include_directories(TestDataModel PUBLIC
   ${CMAKE_SOURCE_DIR}/include
