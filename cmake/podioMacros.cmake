@@ -96,3 +96,50 @@ function(PODIO_GENERATE_DICTIONARY dictionary)
   endif()
 
 endfunction()
+
+
+#---------------------------------------------------------------------------------------------------
+#---PODIO_GENERATE_DATAMODEL( datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES
+#      OUTPUT_FOLDER      output_directory
+#   )
+#
+#   Arguments:
+#      datamodel            Name of the datamodel to be created. a TARGET "create${datamodel}" will be created
+#      YAML_FILE            The path to the yaml file describing the datamodel
+#      RETURN_HEADERS       variable that will be filled with the list of created headers files: ${datamodel}/*.h
+#      RETURN_SOURCES       variable that will be filled with the list of created source files : src/*.cc
+#   Parameters:
+#      OUTPUT_FOLDER        OPTIONAL: The folder in which the output files should be placed
+#                           Default is ${CMAKE_CURRENT_SOURCE_DIR}
+#  )
+#
+# Note that the create_${datamodel} target will always be called, but if the YAML_FILE has not changed
+# this is essentially a no-op, and should not cause re-compilation.
+#---------------------------------------------------------------------------------------------------
+function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
+  IF(NOT ARG_OUTPUT_FOLDER)
+    SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
+  ENDIF()
+  # we need to boostrap the data model, so this has to be executed in the cmake run
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E echo "Creating \"${datamodel}\" data model"
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
+  file(GLOB headers ${ARG_OUTPUT_FOLDER}/${datamodel}/*.h)
+  file(GLOB sources ${ARG_OUTPUT_FOLDER}/src/*.cc)
+
+  set (${RETURN_HEADERS} ${headers} PARENT_SCOPE)
+  set (${RETURN_SOURCES} ${sources} PARENT_SCOPE)
+
+  add_custom_target(create_${datamodel}
+    COMMENT "Re-Creating \"${datamodel}\" data model"
+    DEPENDS ${YAML_FILE}
+    BYPRODUCTS ${sources} ${headers}
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
+endfunction()
