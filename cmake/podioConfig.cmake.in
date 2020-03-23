@@ -2,6 +2,7 @@
 
 set_and_check(podio_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 set_and_check(podio_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
+set_and_check(podio_PYTHON_DIR "@PACKAGE_podio_PYTHON_INSTALLDIR@")
 
 include(CMakeFindDependencyMacro)
 find_dependency(ROOT @ROOT_VERSION@)

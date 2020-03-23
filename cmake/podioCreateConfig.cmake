@@ -14,7 +14,7 @@ export(EXPORT podioTargets NAMESPACE podio:: FILE ${PROJECT_BINARY_DIR}/podioTar
 configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/podioConfig.cmake.in
                               ${PROJECT_BINARY_DIR}/podioConfig.cmake
                               INSTALL_DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${PROJECT_NAME}
-                              PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
+                              PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR podio_PYTHON_INSTALLDIR)
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/podioConfig.cmake
