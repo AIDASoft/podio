@@ -1,3 +1,21 @@
+###############################################################################
+# PODIO CMAKE CONFIG
+#
+# Exported Targets
+#
+#  podio::podio         Base library for podio
+#  podio::podioDict     Root Dictionary for base podio classes
+#  podio::podioRootIO
+#         RootWriter and RootReader classes, needed for python,
+#         contains podio::podio and podio::podioDict and the
+#         required ROOT:: libraries
+#
+# Macros: see podioMacros.cmake for complete documentation
+#
+#  PODIO_GENERATE_DATAMODEL
+#  PODIO_GENERATE_ROOTDICT
+#
+###############################################################################
 @PACKAGE_INIT@
 
 set_and_check(podio_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
