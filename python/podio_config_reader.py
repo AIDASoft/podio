@@ -9,9 +9,12 @@ import re
 
 from collections import OrderedDict
 
+
 def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
+
     class OrderedLoader(Loader):
         pass
+
     def construct_mapping(loader, node):
         loader.flatten_mapping(node)
         return object_pairs_hook(loader.construct_pairs(node))
@@ -28,23 +31,22 @@ class ClassDefinitionValidator(object):
     """
 
     valid_keys = (
-      "Description",
-      "Author",
-      "Members",
-      "VectorMembers",
-      "OneToOneRelations",
-      "OneToManyRelations",
-      "TransientMembers",
-      "Typedefs",
-      "ExtraCode",
-      "ConstExtraCode"
-    )
+        "Description",
+        "Author",
+        "Members",
+        "VectorMembers",
+        "OneToOneRelations",
+        "OneToManyRelations",
+        "TransientMembers",
+        "Typedefs",
+        "ExtraCode",
+        "ConstExtraCode"
+        )
 
     # regex to get std::array definition: one group for type, one for length,
     # one for comment (this one is for members of datatypes)
-    full_array_re = re.compile(' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *(\S+) *\/\/ *(.+)')
-    array_re = re.compile(' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *')
-
+    full_array_re = re.compile(r' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *(\S+) *\/\/ *(.+)')
+    array_re = re.compile(r' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *')
 
     buildin_types = ["int", "long", "float", "double",
                      "unsigned int", "unsigned", "unsigned long",
@@ -95,26 +97,24 @@ class ClassDefinitionValidator(object):
         """
         klass, name, comment = "", "", ""
         array_match = re.match(self.full_array_re, string)
-        if not array_match is None:
+        if array_match is not None:
             name, comment = array_match.group(3), array_match.group(4)
             typ = array_match.group(1)
-            if not typ in self.buildin_types and not typ in self.components.keys():
+            if typ not in self.buildin_types and typ not in list(self.components.keys()):
                 raise Exception("%s defines an array of disallowed type %s"
                                 % (string, typ))
             klass = "std::array<{typ}, {length}>".format(
                 typ=typ, length=array_match.group(2)
-            )
+                )
         else:
             comment = string.split("//")[1]
-            rest    = string.split("//")[0].split()
-            name = rest[ len(rest)-1 ]
-            klass = ' '.join( rest[:len(rest)-1] )
+            rest = string.split("//")[0].split()
+            name = rest[len(rest) - 1]
+            klass = ' '.join(rest[:len(rest) - 1])
         return {"name": name,
                 "type": klass,
                 "description": comment
                 }
-
-
 
     def check_component(self, name, definition):
         """
@@ -123,11 +123,11 @@ class ClassDefinitionValidator(object):
         """
         for mem in definition.keys():
             klass = definition[mem]
-            if not (mem == "ExtraCode" or klass in self.buildin_types \
-                    or klass in self.components.keys()):
+            if not (mem == "ExtraCode" or klass in self.buildin_types or
+                    klass in self.components.keys()):
                 array_match = re.match(self.array_re, klass)
                 builtin_array = False
-                if not array_match is None:
+                if array_match is not None:
                     typ = array_match.group(1)
                     if typ in self.buildin_types or typ in self.components.keys():
                         builtin_array = True
@@ -190,10 +190,10 @@ class PodioConfigReader(object):
                         datatype[category] = []
                 if "ExtraCode" in value:
                     datatype["ExtraCode"] = self.handle_extracode(
-                                                value["ExtraCode"])
+                        value["ExtraCode"])
                 if "ConstExtraCode" in value:
                     datatype["ConstExtraCode"] = self.handle_extracode(
-                                                     value["ConstExtraCode"])
+                        value["ConstExtraCode"])
                 self.datatypes[klassname] = datatype
         if "options" in content.keys():
             for option, value in iteritems(content["options"]):
