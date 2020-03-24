@@ -26,6 +26,5 @@ jobs:
       run: |
         docker run -it --name CI_container -v /home/runner/work/podio/podio:/Package -e VIEW=${{ matrix.LCG }} -v /cvmfs:/cvmfs -d clicdp/cc7-lcg96b /bin/bash
     - name: Compile and test
-      continue-on-error: ${{matrix.LCG == 'LCG_96bpython3/x86_64-centos7-gcc8-opt' }}
       run: |
         docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
