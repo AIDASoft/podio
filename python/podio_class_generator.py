@@ -1,4 +1,9 @@
- #!/usr/bin/env python
+   #!/usr/bin/env python
+
+from __future__ import absolute_import, unicode_literals, print_function
+from io import open
+from six import iteritems
+from six import iterkeys
 
 from collections import OrderedDict
 
@@ -50,8 +55,8 @@ class ClassGenerator(object):
         try:
             cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
         except subprocess.CalledProcessError:
-            print "ERROR: Cannot find clang-format executable"
-            print "       Please make sure it is in the PATH."
+            print("ERROR: Cannot find clang-format executable")
+            print("       Please make sure it is in the PATH.")
             self.clang_format = []
             return
         self.clang_format = [cformat_exe, "-style=file", "-fallback-style=llvm"]
@@ -68,14 +73,14 @@ class ClassGenerator(object):
 
     def process_components(self, content):
         self.requested_classes += content.keys()
-        for name, components in content.iteritems():
+        for name, components in iteritems(content):
             self.create_component(name, components["Members"])
 
     def process_datatypes(self, content):
-        for name in content.iterkeys():
+        for name in iterkeys(content):
             self.requested_classes.append(name)
             self.requested_classes.append("%sData" % name)
-        for name, components in content.iteritems():
+        for name, components in iteritems(content):
             self.create_data(name, components)
             self.create_class(name, components)
             self.create_collection(name, components)
@@ -85,21 +90,21 @@ class ClassGenerator(object):
     def print_report(self):
         if not self.verbose:
             return
-        pkl = open(os.path.join(thisdir, "figure.txt"))
+        pkl = open(os.path.join(thisdir, "figure.txt"), 'rb')
         figure = pickle.load(pkl)
         text = _text_ % (self.yamlfile,
                          len(self.created_classes),
                          self.install_dir
                          )
         cntr = 0
-        print
+        print()
         for figline, summaryline in zip(figure, text.splitlines()):
             cntr += 1
-            print figline + summaryline
-        for i in xrange(cntr, len(figure)):
-            print figure[i]
-        print "     'Homage to the Square' - Josef Albers"
-        print
+            print(figline + summaryline)
+        for i in range(cntr, len(figure)):
+            print(figure[i])
+        print("     'Homage to the Square' - Josef Albers")
+        print()
 
     def get_template(self, filename):
         templatefile = os.path.join(self.template_dir, filename)
@@ -252,14 +257,14 @@ class ClassGenerator(object):
           klassname = klass
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
-            if mnamespace not in forward_declarations_namespace.keys():
+            if mnamespace not in list(forward_declarations_namespace.keys()):
               forward_declarations_namespace[mnamespace] = []
 
           forward_declarations_namespace[mnamespace] += ["class %s;\n" %(klassname)]
           forward_declarations_namespace[mnamespace] += ["class Const%s;\n" %(klassname)]
           includes_cc.add(self._build_include(klassname))
 
-      for nsp in forward_declarations_namespace.iterkeys():
+      for nsp in iterkeys(forward_declarations_namespace):
         if nsp != "":
           forward_declarations += "namespace %s {\n" % nsp
         forward_declarations += "".join(forward_declarations_namespace[nsp])
@@ -299,7 +304,7 @@ class ClassGenerator(object):
         if( self.getSyntax ):
           gname = "get" + name[:1].upper() + name[1:]
           sname = "set" + name[:1].upper() + name[1:]
-        if name in all_members.keys():
+        if name in list(all_members.keys()):
           raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" % (name, classname, all_members[name]))
         all_members[name] = classname
 
@@ -472,17 +477,17 @@ class ClassGenerator(object):
       extracode = ""
       constextracode_declarations = ""
       constextracode = ""
-      if definition.has_key("ExtraCode"):
+      if "ExtraCode" in definition:
         extra = definition["ExtraCode"]
-        if( extra.has_key("declaration")):
+        if "declaration" in extra:
             extracode_declarations = extra["declaration"].replace("{name}",rawclassname)
-        if( extra.has_key("implementation")):
+        if "implementation" in extra:
             extracode = extra["implementation"].replace("{name}",rawclassname)
-        if( extra.has_key("const_declaration")):
+        if "const_declaration" in extra:
             constextracode_declarations = extra["const_declaration"].replace("{name}","Const"+rawclassname)
             extracode_declarations += "\n"
             extracode_declarations += extra["const_declaration"]
-        if( extra.has_key("const_implementation")):
+        if "const_implementation" in extra:
             constextracode = extra["const_implementation"].replace("{name}","Const"+rawclassname)
             extracode += "\n"
             extracode += extra["const_implementation"].replace("{name}",rawclassname)
@@ -582,14 +587,12 @@ class ClassGenerator(object):
         if t in comps.keys():
           nCompMem = 0
           compMemStr += ' ['
-          #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
           for cm in comps[t]["Members"]:
             if cm != 'ExtraCode':
               nCompMem += 1
               compMemStr += ('%s,' % cm )
           compMemStr += ']'
           colW *=  nCompMem
-          #print " found component: " , name , t , comps[ t ] , " #members: " , nCompMem
         colName = name[:colW-2]
         colName += compMemStr
         colName +=":"
@@ -876,7 +879,7 @@ class ClassGenerator(object):
           else:
             members += " ::%s::%s %s;\n" %(mnamespace, klassname, name)
             self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
-          if self.reader.components.has_key(klass):
+          if klass in self.reader.components:
               includes.add(self._build_include(klassname))
           if "std::array" in klass:
               includes.add("#include <array>")
@@ -934,7 +937,7 @@ class ClassGenerator(object):
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
             klassWithQualifier = "::"+mnamespace+"::Const"+klassname
-            if mnamespace not in forward_declarations_namespace.keys():
+            if mnamespace not in list(forward_declarations_namespace.keys()):
               forward_declarations_namespace[mnamespace] = []
           else:
             klassWithQualifier = "Const"+klass
@@ -956,7 +959,7 @@ class ClassGenerator(object):
             set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
           delete_singlerelations+="\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
-      for nsp in forward_declarations_namespace.iterkeys():
+      for nsp in iterkeys(forward_declarations_namespace):
         if nsp != "":
           forward_declarations += "namespace %s {" % nsp
         forward_declarations += "".join(forward_declarations_namespace[nsp])
@@ -1143,4 +1146,4 @@ if __name__ == "__main__":
   gen.process()
   if gen.verbose:
     for warning in gen.warnings:
-      print warning
+      print(warning)

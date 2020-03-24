@@ -1,3 +1,8 @@
+
+from __future__ import absolute_import, unicode_literals, print_function
+from io import open
+from six import iteritems
+
 import yaml
 import copy
 import re
@@ -78,8 +83,8 @@ class ClassDefinitionValidator(object):
             theType = member["type"]
             return  # TODO
             if theType not in self.buildin_types and \
-               theType not in self.datatypes.keys() and \
-               theType not in self.components.keys():
+               theType not in list(self.datatypes.keys()) and \
+               theType not in list(self.components.keys()):
                 raise Exception("%s defines a member of not allowed type %s"
                                 % (name, theType))
 
@@ -132,7 +137,7 @@ class ClassDefinitionValidator(object):
                                     "which is not allowed in a component!")
 
     def check_components(self, components):
-        for klassname, value in components.iteritems():
+        for klassname, value in iteritems(components):
             self.check_component(klassname, value)
 
 
@@ -161,11 +166,11 @@ class PodioConfigReader(object):
         validator = ClassDefinitionValidator(content)
         if "components" in content.keys():
             validator.check_components(content["components"])
-            for klassname, value in content["components"].iteritems():
+            for klassname, value in iteritems(content["components"]):
                 component = {"Members": value}
                 self.components[klassname] = component
         if "datatypes" in content:
-            for klassname, value in content["datatypes"].iteritems():
+            for klassname, value in iteritems(content["datatypes"]):
                 validator.check_datatype(klassname, value)
                 datatype = {}
                 datatype["Description"] = value["Description"]
@@ -191,5 +196,5 @@ class PodioConfigReader(object):
                                                      value["ConstExtraCode"])
                 self.datatypes[klassname] = datatype
         if "options" in content.keys():
-            for option, value in content["options"].iteritems():
+            for option, value in iteritems(content["options"]):
                 self.options[option] = value
