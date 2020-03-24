@@ -1,3 +1,6 @@
+
+from __future__ import absolute_import, unicode_literals, print_function
+
 import unittest
 from EventStore import EventStore
 import os
@@ -90,7 +93,7 @@ class EventStoreTestCase(unittest.TestCase):
             numbers.append(evinfo[0].Number())
         self.assertEqual(iev+1, 2*events.GetEntries())
         # testing that numbers is [0, .. 1999, 0, .. 1999]
-        self.assertEqual(numbers, range(events.GetEntries())*2)
+        self.assertEqual(numbers, list(range(events.GetEntries()))*2)
         # trying to go to an event beyond the last one
         self.assertRaises(ValueError, self.store.__getitem__,
                           4001)
@@ -116,6 +119,6 @@ if __name__ == "__main__":
     # creating example file for the tests
     if not os.path.isfile('example.root'):
         write = '{podio}/tests/write'.format(podio=os.environ['PODIO'])
-        print write
+        print(write)
         call(write)
     unittest.main()

@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 # flake8: noqa
 declarations = {}
 implementations = {}
