@@ -1,18 +1,17 @@
 
-from __future__ import absolute_import, unicode_literals, print_function
+from __future__ import print_function, absolute_import, unicode_literals
 
 import unittest
 from EventStore import EventStore
 import os
 
 from ROOT import TFile
-from ROOT import ExampleHit, ConstExampleHit
 
 
 class EventStoreTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.filename = 'example.root'
+        self.filename = str('example.root')
         self.assertTrue(os.path.isfile(self.filename))
         self.store = EventStore([self.filename])
 
@@ -42,7 +41,6 @@ class EventStoreTestCase(unittest.TestCase):
         self.assertEqual(hits[0].energy(), 23.)
         hits[0].energy(10)
         self.assertEqual(hits[0].energy(), 10)  # oops
-        # self.assertEqual(type(hits[0]), ConstExampleHit) # should be True
 
     def test_one_to_many(self):
         clusters = self.store.get("clusters")
@@ -86,17 +84,16 @@ class EventStoreTestCase(unittest.TestCase):
         self.store = EventStore([self.filename,
                                  self.filename])
         rootfile = TFile(self.filename)
-        events = rootfile.Get('events')
+        events = rootfile.Get(str('events'))
         numbers = []
         for iev, event in enumerate(self.store):
             evinfo = self.store.get("info")
             numbers.append(evinfo[0].Number())
-        self.assertEqual(iev+1, 2*events.GetEntries())
+        self.assertEqual(iev + 1, 2 * events.GetEntries())
         # testing that numbers is [0, .. 1999, 0, .. 1999]
-        self.assertEqual(numbers, list(range(events.GetEntries()))*2)
+        self.assertEqual(numbers, list(range(events.GetEntries())) * 2)
         # trying to go to an event beyond the last one
-        self.assertRaises(ValueError, self.store.__getitem__,
-                          4001)
+        self.assertRaises(ValueError, self.store.__getitem__, 4001)
         # this is in the first event in the second file,
         # so its event number should be 0.
         self.assertEqual(self.store[2000].get("info")[0].Number(), 0)
@@ -110,11 +107,11 @@ class EventStoreTestCase(unittest.TestCase):
         '''Test that non-accessible files are gracefully handled.'''
         with self.assertRaises(ValueError):
             self.store = EventStore('foo.root')
-        
+
+
 if __name__ == "__main__":
     from ROOT import gSystem
     from subprocess import call
-    import os
     gSystem.Load("libTestDataModel")
     # creating example file for the tests
     if not os.path.isfile('example.root'):
