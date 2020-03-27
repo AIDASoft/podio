@@ -252,14 +252,14 @@ class ClassGenerator(object):
         klassname = klass
         if "::" in klass:
           mnamespace, klassname = klass.split("::")
-          if mnamespace not in list(forward_declarations_namespace.keys()):
+          if mnamespace not in forward_declarations_namespace:
             forward_declarations_namespace[mnamespace] = []
 
         forward_declarations_namespace[mnamespace] += ["class %s;\n" % (klassname)]
         forward_declarations_namespace[mnamespace] += ["class Const%s;\n" % (klassname)]
         includes_cc.add(self._build_include(klassname))
 
-    for nsp in forward_declarations_namespace.keys():
+    for nsp in forward_declarations_namespace:
       if nsp != "":
         forward_declarations += "namespace %s {\n" % nsp
       forward_declarations += "".join(forward_declarations_namespace[nsp])
@@ -299,7 +299,7 @@ class ClassGenerator(object):
       if(self.getSyntax):
         gname = "get" + name[:1].upper() + name[1:]
         sname = "set" + name[:1].upper() + name[1:]
-      if name in list(all_members.keys()):
+      if name in all_members:
         raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" %
                         (name, classname, all_members[name]))
       all_members[name] = classname
@@ -347,7 +347,7 @@ class ClassGenerator(object):
           sub_members = self.component_members[klass]
           for sub_member in sub_members:
             comp_member_class, comp_member_name = sub_member
-            if comp_member_name in all_members.keys():
+            if comp_member_name in all_members:
               raise Exception("'%s' clashes with another member name in class '%s'"
                               "(defined in the component '%s' and '%s')" % (
                                   comp_member_name, classname, name, all_members[comp_member_name]))
@@ -607,7 +607,7 @@ class ClassGenerator(object):
       colW = numColWidth + 2
       comps = self.reader.components
       compMemStr = ""
-      if t in comps.keys():
+      if t in comps:
         nCompMem = 0
         compMemStr += ' ['
         for cm in comps[t]["Members"]:
@@ -963,7 +963,7 @@ class ClassGenerator(object):
         if "::" in klass:
           mnamespace, klassname = klass.split("::")
           klassWithQualifier = "::" + mnamespace + "::Const" + klassname
-          if mnamespace not in list(forward_declarations_namespace.keys()):
+          if mnamespace not in forward_declarations_namespace:
             forward_declarations_namespace[mnamespace] = []
         else:
           klassWithQualifier = "Const" + klass
@@ -985,7 +985,7 @@ class ClassGenerator(object):
           set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
         delete_singlerelations += "\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
-    for nsp in forward_declarations_namespace.keys():
+    for nsp in forward_declarations_namespace:
       if nsp != "":
         forward_declarations += "namespace %s {" % nsp
       forward_declarations += "".join(forward_declarations_namespace[nsp])
