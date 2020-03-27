@@ -71,7 +71,7 @@ class ClassDefinitionValidator(object):
     def check_datatype(self, name, definition):
         self.check_keys(name, definition)
         for category in ("Author", "Description"):
-            if category not in definition.keys():
+            if category not in definition:
                 raise Exception("%s does not define '%s'." % (name, category))
         for category in ("Members", "OneToOneRelations", "OneToManyRelations"):
             if category in definition:
@@ -120,15 +120,15 @@ class ClassDefinitionValidator(object):
         Check that components only contain simple types
         or other components
         """
-        for mem in definition.keys():
+        for mem in definition:
             klass = definition[mem]
             if not (mem == "ExtraCode" or klass in self.buildin_types or
-                    klass in self.components.keys()):
+                    klass in self.components):
                 array_match = re.match(self.array_re, klass)
                 builtin_array = False
                 if array_match is not None:
                     typ = array_match.group(1)
-                    if typ in self.buildin_types or typ in self.components.keys():
+                    if typ in self.buildin_types or typ in self.components:
                         builtin_array = True
                 if not builtin_array:
                     raise Exception("'%s' defines a member of a type '%s'"
@@ -163,7 +163,7 @@ class PodioConfigReader(object):
         stream = open(self.yamlfile, "r")
         content = ordered_load(stream, yaml.SafeLoader)
         validator = ClassDefinitionValidator(content)
-        if "components" in content.keys():
+        if "components" in content:
             validator.check_components(content["components"])
             for klassname, value in content["components"].items():
                 component = {"Members": value}
@@ -194,6 +194,6 @@ class PodioConfigReader(object):
                     datatype["ConstExtraCode"] = self.handle_extracode(
                         value["ConstExtraCode"])
                 self.datatypes[klassname] = datatype
-        if "options" in content.keys():
+        if "options" in content:
             for option, value in content["options"].items():
                 self.options[option] = value
