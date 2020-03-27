@@ -85,8 +85,8 @@ class ClassDefinitionValidator(object):
             theType = member["type"]
             return  # TODO
             if theType not in self.buildin_types and \
-               theType not in list(self.datatypes.keys()) and \
-               theType not in list(self.components.keys()):
+               theType not in self.datatypes and \
+               theType not in self.components:
                 raise Exception("%s defines a member of not allowed type %s"
                                 % (name, theType))
 
@@ -100,7 +100,7 @@ class ClassDefinitionValidator(object):
         if array_match is not None:
             name, comment = array_match.group(3), array_match.group(4)
             typ = array_match.group(1)
-            if typ not in self.buildin_types and typ not in list(self.components.keys()):
+            if typ not in self.buildin_types and typ not in self.components:
                 raise Exception("%s defines an array of disallowed type %s"
                                 % (string, typ))
             klass = "std::array<{typ}, {length}>".format(
@@ -137,7 +137,7 @@ class ClassDefinitionValidator(object):
                                     "which is not allowed in a component!")
 
     def check_components(self, components):
-        for klassname, value in iteritems(components):
+        for klassname, value in components.items():
             self.check_component(klassname, value)
 
 
@@ -166,11 +166,11 @@ class PodioConfigReader(object):
         validator = ClassDefinitionValidator(content)
         if "components" in content.keys():
             validator.check_components(content["components"])
-            for klassname, value in iteritems(content["components"]):
+            for klassname, value in content["components"].items():
                 component = {"Members": value}
                 self.components[klassname] = component
         if "datatypes" in content:
-            for klassname, value in iteritems(content["datatypes"]):
+            for klassname, value in content["datatypes"].items():
                 validator.check_datatype(klassname, value)
                 datatype = {}
                 datatype["Description"] = value["Description"]
@@ -196,5 +196,5 @@ class PodioConfigReader(object):
                         value["ConstExtraCode"])
                 self.datatypes[klassname] = datatype
         if "options" in content.keys():
-            for option, value in iteritems(content["options"]):
+            for option, value in content["options"].items():
                 self.options[option] = value
