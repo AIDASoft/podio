@@ -15,7 +15,6 @@ target_link_libraries(TestDataModel podio::podio ROOT::Core)
 target_include_directories(TestDataModel PUBLIC
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${ROOT_INCLUDE_DIRS}
   )
 
 PODIO_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml
