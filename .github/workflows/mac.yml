@@ -1,0 +1,22 @@
+name: compile
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: macos-10.15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download ROOT
+      run: |
+        curl -O https://root.cern/download/root_v6.20.02.macosx64-10.15-clang110.tar.gz
+        tar xf root_v6.20.02.macosx64-10.15-clang110.tar.gz
+    - name: Compile and test
+      run: |
+        source root/bin/thisroot.sh
+        mkdir build install
+        cd build
+        cmake -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_CXX_STANDARD=17  -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " ..
+        make -j4 --keep-going
+        make install
+        ctest --output-on-failure
