@@ -11,7 +11,7 @@ file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
-target_link_libraries(TestDataModel podio::podio)
+target_link_libraries(TestDataModel podio::podio ROOT::Core)
 target_include_directories(TestDataModel PUBLIC
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/
