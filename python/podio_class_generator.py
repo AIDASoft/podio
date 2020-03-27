@@ -2,8 +2,10 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 from io import open
-from six import iteritems
-from six import iterkeys
+try:
+  from itertools import zip_longest
+except ImportError:
+  from itertools import izip_longest as zip_longest
 
 from collections import OrderedDict
 
@@ -73,14 +75,14 @@ class ClassGenerator(object):
 
   def process_components(self, content):
     self.requested_classes += content.keys()
-    for name, components in iteritems(content):
+    for name, components in content.items():
       self.create_component(name, components["Members"])
 
   def process_datatypes(self, content):
-    for name in iterkeys(content):
+    for name in content:
       self.requested_classes.append(name)
       self.requested_classes.append("%sData" % name)
-    for name, components in iteritems(content):
+    for name, components in content.items():
       self.create_data(name, components)
       self.create_class(name, components)
       self.create_collection(name, components)
@@ -96,13 +98,9 @@ class ClassGenerator(object):
                      len(self.created_classes),
                      self.install_dir
                      )
-    cntr = 0
     print()
-    for figline, summaryline in zip(figure, text.splitlines()):
-      cntr += 1
+    for figline, summaryline in zip_longest(figure, text.splitlines(), fillvalue=''):
       print(figline + summaryline)
-    for i in range(cntr, len(figure)):
-      print(figure[i])
     print("     'Homage to the Square' - Josef Albers")
     print()
 
@@ -261,7 +259,7 @@ class ClassGenerator(object):
         forward_declarations_namespace[mnamespace] += ["class Const%s;\n" % (klassname)]
         includes_cc.add(self._build_include(klassname))
 
-    for nsp in iterkeys(forward_declarations_namespace):
+    for nsp in forward_declarations_namespace.keys():
       if nsp != "":
         forward_declarations += "namespace %s {\n" % nsp
       forward_declarations += "".join(forward_declarations_namespace[nsp])
@@ -987,7 +985,7 @@ class ClassGenerator(object):
           set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
         delete_singlerelations += "\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
 
-    for nsp in iterkeys(forward_declarations_namespace):
+    for nsp in forward_declarations_namespace.keys():
       if nsp != "":
         forward_declarations += "namespace %s {" % nsp
       forward_declarations += "".join(forward_declarations_namespace[nsp])
