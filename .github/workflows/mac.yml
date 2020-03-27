@@ -11,6 +11,7 @@ jobs:
       run: |
         curl -O https://root.cern/download/root_v6.20.02.macosx64-10.15-clang110.tar.gz
         tar xf root_v6.20.02.macosx64-10.15-clang110.tar.gz
+        pip install -r requirements.txt
     - name: Compile and test
       run: |
         source root/bin/thisroot.sh
