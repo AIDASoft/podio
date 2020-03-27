@@ -1,7 +1,6 @@
 
 from __future__ import absolute_import, unicode_literals, print_function
 from io import open
-from six import iteritems
 
 import yaml
 import copy
