@@ -9,8 +9,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Download ROOT
       run: |
-        curl -O https://root.cern/download/root_v6.20.02.macosx64-10.15-clang110.tar.gz
-        tar xf root_v6.20.02.macosx64-10.15-clang110.tar.gz
+        curl -O https://lcd-data.web.cern.ch/lcd-data/ROOT/root_v6.20.02.macosx64-10.15-clang110_Xcode113_19D76.tar.gz
+        tar xf root_v6.20.02.macosx64-10.15-clang110_Xcode113_19D76.tar.gz
         pip install -r requirements.txt
     - name: Compile and test
       run: |
