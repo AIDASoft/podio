@@ -162,7 +162,8 @@ class ClassGenerator(object):
         if is_data:  # avoid having warnings twice
           self.warnings.add("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
       elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
-        raise Exception("'%s' defines an array type %s. Array types are not supported yet." % (classname, klass))
+        raise Exception("'%s' defines an array type %s. Array types are not supported yet." %
+                        (classname, klass))
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
     # get rid of duplicates:
@@ -304,7 +305,8 @@ class ClassGenerator(object):
                         (name, classname, all_members[name]))
       all_members[name] = classname
 
-      getter_declarations += declarations["member_getter"].format(type=klass, name=name, fname=gname, description=desc)
+      getter_declarations += declarations["member_getter"].format(
+          type=klass, name=name, fname=gname, description=desc)
       getter_implementations += implementations["member_getter"].format(
           type=klass, classname=rawclassname, name=name, fname=gname)
       if klass in self.buildin_types:
@@ -336,7 +338,8 @@ class ClassGenerator(object):
         ostream_implementation += '  o << std::endl ;\n'
       else:
         ostream_implementation += ('  o << " %s : " << value.%s() << std::endl ;\n' % (name, gname))
-        setter_declarations += declarations["member_class_refsetter"].format(type=klass, name=name, description=desc)
+        setter_declarations += declarations["member_class_refsetter"].format(
+            type=klass, name=name, description=desc)
         setter_implementations += implementations["member_class_refsetter"].format(
             type=klass, classname=rawclassname, name=name, fname=sname)
         setter_declarations += declarations["member_class_setter"].format(
@@ -362,13 +365,15 @@ class ClassGenerator(object):
                                        (comp_member_name, comp_gname))
 
             getter_declarations += declarations["pod_member_getter"].format(
-                type=comp_member_class, name=comp_member_name, fname=comp_gname, compname=name, description=desc)
+                type=comp_member_class, name=comp_member_name, fname=comp_gname,
+                compname=name, description=desc)
             getter_implementations += implementations["pod_member_getter"].format(
                 type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname,
                 compname=name, description=desc)
             if comp_member_class in self.buildin_types:
               setter_declarations += declarations["pod_member_builtin_setter"].format(
-                  type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                  type=comp_member_class, name=comp_member_name, fname=comp_sname,
+                  compname=name, description=desc)
               setter_implementations += implementations["pod_member_builtin_setter"].format(
                   type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname,
                   compname=name, description=desc)
@@ -379,7 +384,8 @@ class ClassGenerator(object):
                   type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname,
                   compname=name, description=desc)
               setter_declarations += declarations["pod_member_class_setter"].format(
-                  type=comp_member_class, name=comp_member_name, fname=comp_sname, compname=name, description=desc)
+                  type=comp_member_class, name=comp_member_name, fname=comp_sname,
+                  compname=name, description=desc)
               setter_implementations += implementations["pod_member_class_setter"].format(
                   type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name,
                   compname=name, description=desc)
@@ -453,7 +459,8 @@ class ClassGenerator(object):
                        }
       constructor_implementation = self.evaluate_template("Object.constructor.cc.template", substitutions)
       constructor_declaration = "  %s(%s);\n" % (rawclassname, constructor_signature)
-      ConstConstructor_implementation = self.evaluate_template("ConstObject.constructor.cc.template", substitutions)
+      ConstConstructor_implementation = self.evaluate_template(
+          "ConstObject.constructor.cc.template", substitutions)
       ConstConstructor_declaration = "Const%s(%s);\n" % (rawclassname, constructor_signature)
 
     # handle one-to-many relations
@@ -497,7 +504,8 @@ class ClassGenerator(object):
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
       references += string.Template(references_template).substitute(substitutions)
       references_members += "std::vector<%s>* m_%s; ///< transient \n" % (refvector["type"], refvector["name"])
-      ConstReferences_declarations += string.Template(ConstReferences_declarations_template).substitute(substitutions)
+      ConstReferences_declarations += string.Template(
+          ConstReferences_declarations_template).substitute(substitutions)
       ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
 
     # handle user provided extra code
@@ -658,7 +666,8 @@ class ClassGenerator(object):
         # FIXME check if it compiles with :: for both... then delete this.
         relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
         relations += declarations["relation_collection"].format(namespace=mnamespace, type=klassname, name=name)
-        initializers += implementations["ctor_list_relation"].format(namespace=mnamespace, type=klassname, name=name)
+        initializers += implementations["ctor_list_relation"].format(
+            namespace=mnamespace, type=klassname, name=name)
 
         constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::create
@@ -672,7 +681,8 @@ class ClassGenerator(object):
         push_back_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
         # relation handling in ::prepareForWrite
         prepareforwritinghead += "\tint {name}_index =0;\n".format(name=name)
-        prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template", substitutions)
+        prepareforwritingbody += self.evaluate_template(
+            "CollectionPrepareForWriting.cc.template", substitutions)
         # relation handling in ::settingReferences
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template", substitutions)
         prepareafterread += "\t\tobj->m_%s = m_rel_%s;" % (name, name)
@@ -700,7 +710,8 @@ class ClassGenerator(object):
         # includes
         includes.add(self._build_include(klassname + 'Collection'))
         # constructor call
-        initializers += implementations["ctor_list_relation"].format(namespace=mnamespace, type=klassname, name=name)
+        initializers += implementations["ctor_list_relation"].format(
+            namespace=mnamespace, type=klassname, name=name)
         # member
         relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
         constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
@@ -712,7 +723,8 @@ class ClassGenerator(object):
         prepareforwriting_refmembers += implementations["prep_writing_relations"].format(
             name=name, i=(counter + nOfRefVectors))
         # relation handling in ::settingReferences
-        prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template", substitutions)
+        prepareafterread_refmembers += self.evaluate_template(
+            "CollectionSetSingleReference.cc.template", substitutions)
 
         get_name = name
         if(self.getSyntax):
@@ -737,8 +749,8 @@ class ClassGenerator(object):
       destructorbody += "\tif(m_vec_{name} != nullptr) delete m_vec_{name};\n".format(name=name)
       clear_relations += "\tm_vec_{name}->clear();\n".format(name=name)
       clear_relations += "\tm_vecs_{name}.clear();\n".format(name=name)
-      prepareforwritinghead += "\tint {name}_size = std::accumulate( m_entries.begin(), m_entries.end(), 0, ".format(
-          name=name)
+      prepareforwritinghead += "\tint {name}_size = ".format(name=name)
+      prepareforwritinghead += "std::accumulate( m_entries.begin(), m_entries.end(), 0, "
       prepareforwritinghead += "[](int sum, const {rawclassname}Obj*  obj)".format(rawclassname=rawclassname)
       prepareforwritinghead += "{{ return sum + obj->m_{name}->size();}} );\n".format(name=name)
       prepareforwritinghead += "\tm_vec_{name}->reserve( {name}_size );\n".format(name=name)
@@ -789,7 +801,8 @@ class ClassGenerator(object):
   def create_PrintInfo(self, classname, definition):
     namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
 
-    toFormattingStrings = {"char": "3", "unsigned char": "3", "long": "11", "longlong": "22", "bool": "1", "int": ""}
+    toFormattingStrings = {"char": "3", "unsigned char": "3",
+                           "long": "11", "longlong": "22", "bool": "1", "int": ""}
     formats = {"char": 3, "unsigned char": 3, "long": 11, "longlong": 22, "bool": 1, }
 
     outputSingleObject = 'o << "' + classname + ':" << std::endl; \n     o << '
@@ -813,13 +826,15 @@ class ClassGenerator(object):
         findMaximum += "    " + name + "Width = 1 ; \n "
         findMaximum += "     for(int i = 0 ; i < value.size(); i++){ \n"
         findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n"
-        findMaximum += "            if(" + name + "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
+        findMaximum += "            if(" + name + \
+            "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
         findMaximum += "               " + name + "Max = value[i].get" + name[:1].upper() + name[1:] + "();"
         findMaximum += "\n            } \n"
         findMaximum += "\n         } \n"
         findMaximum += "         else if( -" + name + \
             "Max / 10 > value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
-        findMaximum += "             " + name + "Max = - value[i].get" + name[:1].upper() + name[1:] + "() * 10; "
+        findMaximum += "             " + name + \
+            "Max = - value[i].get" + name[:1].upper() + name[1:] + "() * 10; "
         findMaximum += "\n         } \n"
         findMaximum += "     } \n"
         setFormats += "\n    while(" + name + "Max != 0){ \n"
@@ -980,7 +995,8 @@ class ClassGenerator(object):
           forward_declarations_namespace[mnamespace] += ['class Const%s;\n' % (klassname)]
           includes_cc.add(self._build_include("%sConst" % klassname))
           initialize_relations += ", m_%s(nullptr)\n" % (name)
-          # for deep copy initialise as nullptr and set in copy ctor body if copied object has non-trivial relation
+          # for deep copy initialise as nullptr and set in copy ctor body
+          # if copied object has non-trivial relation
           deepcopy_relations += ", m_%s(nullptr)" % (name)
           set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
         delete_singlerelations += "\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
@@ -1053,7 +1069,8 @@ class ClassGenerator(object):
       if klass not in self.buildin_types:
         substitutions["type"] = "class %s" % klass
       implementation += self.evaluate_template("CollectionReturnArray.cc.template", substitutions)
-      declaration += "\ttemplate<size_t arraysize>\n\tconst std::array<%s,arraysize> %s() const;\n" % (klass, name)
+      declaration += "\ttemplate<size_t arraysize>\n\t" \
+          "const std::array<%s,arraysize> %s() const;\n" % (klass, name)
     return declaration, implementation
 
   def write_file(self, name, content):
