@@ -1,3 +1,55 @@
+# v00-10
+
+* 2020-04-03 Frank Gaede ([PR#81](https://github.com/aidasoft/podio/pull/81))
+  - make compatible with macos and clang
+    - use `-Wl,-undefined,dynamic_lookup` w/ AppleClang
+        - make the same, default behavior on linux explicit w/ `-Wl,--allow-shlib-undefined`
+    -  add ROOT::Core to TestDataModel library
+
+* 2020-04-03 Marko Petric ([PR#80](https://github.com/aidasoft/podio/pull/80))
+  - add a macOS test to GitHub actions
+
+* 2020-04-03 Valentin Volkl ([PR#75](https://github.com/aidasoft/podio/pull/75))
+  - Fixes in python code for 2-3 compatibility
+
+* 2020-03-23 Andre Sailer ([PR#74](https://github.com/aidasoft/podio/pull/74))
+  - Fix exception when podio_class_generator is called with -q/--quiet
+  - Printout about includes only in verbose mode
+  - Do not print warnings in quiet mode
+  - Print each warning only once
+
+* 2020-03-23 Andre Sailer ([PR#73](https://github.com/aidasoft/podio/pull/73))
+  * Added PODIO_GENERATE_DATAMODEL Cmake macro to call the class generator at the right time. see podioMacros for the signature
+
+* 2020-03-11 Marko Petric ([PR#72](https://github.com/aidasoft/podio/pull/72))
+  - Update CI to use GitHub actions
+  - Add test against a Python 3 LCG view
+  - Remove travis
+  - Add tests for Python 3 compatibility and flake8
+
+* 2020-03-11 Andre Sailer ([PR#70](https://github.com/aidasoft/podio/pull/70))
+  - ClassGenerator: add option "includeSubfolder", to always use `#include "\<packagename\>/\<object\>.h" etc. if set to "True"
+  - Added sorting and "uniquing" of include lists. Some duplicates still occur because two different lists are used on occasion 
+  - Added $PACKAGE_NAME_ to include guards
+
+* 2020-03-11 Andre Sailer ([PR#69](https://github.com/aidasoft/podio/pull/69))
+  -  Move all Root dependencies (RootReader, RootWriter) of the podio Library into podioRootIO, rename podioDict to podioDict
+
+* 2020-02-17 Andre Sailer ([PR#68](https://github.com/aidasoft/podio/pull/68))
+  - Add podioMacros.cmake to contain PODIO_GENERATE_DICTIONARY
+
+* 2020-02-17 Andre Sailer ([PR#67](https://github.com/aidasoft/podio/pull/67))
+  - Change Yaml loader to preserve order of members as given in the yaml
+
+* 2020-02-17 Andre Sailer ([PR#65](https://github.com/aidasoft/podio/pull/65))
+  - podio_class_generator:  only write files if their content changed
+
+* 2019-10-15 Valentin Volkl ([PR#64](https://github.com/aidasoft/podio/pull/64))
+  - Add `BUILD_TESTS` CMake option for building tests
+
+* 2019-10-15 Pere Mato ([PR#63](https://github.com/aidasoft/podio/pull/63))
+  - Fix to avoid deprecated STL classes in C++17
+
 # v00-09-02
 
 * 2019-09-27 Frank Gaede ([PR#60](https://github.com/AIDASoft/podio/pull/60))
