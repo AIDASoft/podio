@@ -10,6 +10,7 @@ SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 SET( ${PROJECT_NAME}_VERSION_MINOR 10 )
 SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
 
+SET( ${PROJECT_NAME}_VERSION  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}" )
 
 #--- Define basic build settings -----------------------------------------------
 # Provides install directory variables as defined for GNU software
