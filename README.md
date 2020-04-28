@@ -30,9 +30,9 @@ Install ROOT 6.08.06 (or later) and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
 
-### Python 2.7
+### Python > 2.7
 
-Check the python version by doing:
+Podio works with both python 2 and python3. Check your python version by doing:
 
     python --version
 
@@ -99,6 +99,17 @@ reading it again in C++,
 and reading it again in python,
 
     python ../tests/read.py
+
+## Installing using SPACK
+
+A recipe for building podio is included with the [spack package manager](https://github.com/spack/spack/blob/develop/var/spack/repos/builtin/packages/podio/package.py), so podio can also installed with:
+
+```
+spack install podio
+
+```
+
+Note that if you do not have any previous installations or registered system packages, this will compile ROOT and all its dependencies, which may be time-consuming.
 
 ## Modifying the data model
 
