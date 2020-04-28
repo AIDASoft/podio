@@ -86,7 +86,11 @@ include(cmake/podioMacros.cmake)
 include(CTest)
 
 #--- enable CPack --------------------------------------------------------------
-include(cmake/podioCPack.cmake)
+
+option(ENABLE_CPACK "Whether or not to use cpack config" OFF)
+if(ENABLE_CPACK)
+  include(cmake/podioCPack.cmake)
+endif()
 
 #--- target for Doxygen documentation ------------------------------------------
 if(CREATE_DOC)
