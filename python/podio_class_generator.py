@@ -486,8 +486,7 @@ class ClassGenerator(object):
 
       if(self.getSyntax):
         get_relation = "get" + relationName[:1].upper() + relationName[1:]
-        # drop the 's' at the end !??
-        add_relation = "add" + relationName[:1].upper() + relationName[1:len(relationName) - 1]
+        add_relation = "addTo" + relationName[:1].upper() + relationName[1:]
 
       ostream_implementation += ('  o << " %s : " ;\n' % relationName)
       ostream_implementation += ('  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName)
