@@ -13,9 +13,9 @@ Please submit feature requests and bugs to
  - [Advanced Topics](./doc/advanced_topics.md)
  - [Contributing](./doc/contributing.md)
 
-Browse the API documentation created with Doxygen at
+<!-- Browse the API documentation created with Doxygen at -->
 
-[http://fccsw.web.cern.ch/fccsw/podio/index.html](http://fccsw.web.cern.ch/fccsw/podio/index.html).
+<!-- [http://fccsw.web.cern.ch/fccsw/podio/index.html](http://fccsw.web.cern.ch/fccsw/podio/index.html). -->
 
 ## Prerequisites
 
@@ -90,15 +90,36 @@ To see a list of options, do this in the build-directory:
 
 The examples are for creating a file "example.root",
 
-    ../install/tests/write
+    tests/write
 
-reading it again in C++,
+and reading it again in C++,
 
-    ../install/tests/read
+    tests/read
 
-and reading it again in python,
+It is also possible to read the file again using the
+[`tests/read.py`](tests/read.py) script. Make sure to have run `init.sh`
+and `env.sh` first. Additionally you have to make `ROOT` aware of
+`libTestDataModel.so` to be able to read in the data types defined there. There
+are two ways to do that. First it is possible to add the directory to the
+`LD_LIBRARY_PATH`
 
-    python ../tests/read.py
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/tests
+
+Secondly it is also possible to explicitly load the library via `ROOT` in the
+script by adding the following lines *after* the imports from `__future__`
+
+```python
+import os
+BUILD_PATH = os.getcwd()
+
+import ROOT
+ROOT.gSystem.Load(os.path.join(BUILD_PATH, 'tests/libTestDataModel.so'))
+```
+
+Either of the two versions allows you to now read the `example.root` file again
+using
+
+     python ../tests/read.py
 
 ## Installing using SPACK
 
@@ -106,7 +127,6 @@ A recipe for building podio is included with the [spack package manager](https:/
 
 ```
 spack install podio
-
 ```
 
 Note that if you do not have any previous installations or registered system packages, this will compile ROOT and all its dependencies, which may be time-consuming.
@@ -131,6 +151,6 @@ The generation script has the following additional options:
 - `--dryrun` (`-d`): Only run the generation logic and validate yaml, do not write files to disk
 
 ## Running tests
-After compilation and installation (!) you can run rudimentary tests with
+After compilation you can run rudimentary tests with
 
     make test
