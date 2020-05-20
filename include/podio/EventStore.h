@@ -9,6 +9,9 @@
 // podio specific includes
 #include "podio/CollectionIDTable.h"
 #include "podio/ICollectionProvider.h"
+#include "podio/IMetaDataProvider.h"
+#include "podio/GenericParameters.h"
+
 
 /**
 This is an *example* event store
@@ -26,7 +29,7 @@ namespace podio {
   class CollectionBase;
   class IReader;
 
-  class EventStore : public ICollectionProvider {
+  class EventStore : public ICollectionProvider, public IMetaDataProvider {
 
   public:
     /// Collection entry. Each collection is identified by a name
@@ -76,6 +79,15 @@ namespace podio {
 
     virtual bool isValid() const final;
 
+    virtual GenericParameters* getRunMetaData(int runID) const override ;
+
+    /// return the event meta data for the event with runID and evtID
+    virtual GenericParameters* getEventMetaData(int runID, int evtID) const override ;
+
+    /// return the collection meta data for the given colID
+    virtual GenericParameters* getCollectionMetaData(int colID) const override ;
+
+
   private:
 
     /// get the collection of given name; returns true if successfull
@@ -91,6 +103,10 @@ namespace podio {
     mutable std::vector<CollectionBase*> m_cachedCollections;
     IReader* m_reader;
     CollectionIDTable* m_table;
+    typedef std::pair<int,int> ipair ;
+    mutable std::map<int,GenericParameters*>   m_runMD ;
+    mutable std::map<ipair,GenericParameters*> m_evtMD ;
+    mutable std::map<int,GenericParameters*>   m_colMD ;
   };
 
 
