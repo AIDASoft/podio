@@ -89,6 +89,30 @@ namespace podio {
     }
     return false;
   }
+  
+  GenericParameters* EventStore::getRunMetaData(int runID) const {
+    auto it = m_runMD.find( runID ) ;
+    if( it != m_runMD.end() )
+      return it->second ;
+
+    GenericParameters* tmp=new GenericParameters ;
+    m_runMD.insert( std::make_pair(runID , tmp )  ) ;
+    
+    if( m_reader != nullptr ){
+      // read event from file
+      // ...
+    } 
+
+    return tmp ;
+  } ;
+  
+  GenericParameters* EventStore::getEventMetaData(int runID, int evtID) const {
+    return nullptr ;
+  } ;
+
+  GenericParameters* EventStore::getCollectionMetaData(int colID) const {
+    return nullptr ;
+  } ;
 
   void EventStore::clearCollections(){
     for (auto& coll : m_collections){
