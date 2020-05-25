@@ -11,7 +11,12 @@ unamestr=`uname`
 if [[ "$unamestr" == 'Linux' ]]; then
 	echo $LD_LIBRARY_PATH | grep $PODIO/lib >& /dev/null
 	if [ $? == "1" ]; then
-		export LD_LIBRARY_PATH=$PODIO/lib:$LD_LIBRARY_PATH
+    # RedHat based put the libraries into lib64
+    if [ -d $PODIO/lib64 ]; then
+      export LD_LIBRARY_PATH=$PODIO/lib64:$LD_LIBRARY_PATH
+    else
+      export LD_LIBRARY_PATH=$PODIO/lib:$LD_LIBRARY_PATH
+    fi
 	fi
 elif [[ "$unamestr" == 'Darwin' ]]; then
   # This currenty does not work on OS X as DYLD_LIBRARY_PATH is ignored
