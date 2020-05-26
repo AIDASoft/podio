@@ -38,7 +38,10 @@ namespace podio {
     virtual bool  setReferences(const ICollectionProvider* collectionProvider) = 0;
 
     /// set collection ID
-    virtual void  setID(unsigned id) = 0;
+    virtual void setID(unsigned id) = 0;
+
+    /// get collection ID
+    virtual unsigned getID() const = 0;
 
     /// set I/O buffer
     virtual void  setBuffer(void*) = 0;
