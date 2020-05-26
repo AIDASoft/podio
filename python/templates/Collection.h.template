@@ -106,6 +106,10 @@ public:
     );
   };
 
+  unsigned getID() const override final {
+    return m_collectionID ;
+  }
+
   bool isValid() const override final {
     return m_isValid;
   }
