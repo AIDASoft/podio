@@ -20,6 +20,21 @@ namespace podio {
     evt_metadatatree->GetEntry(m_eventNumber);
     return emd ;
   }
+  std::map<int,GenericParameters>* ROOTReader::readCollectionMetaData(){
+    auto* emd = new std::map<int,GenericParameters> ;
+    auto col_metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("col_metadata"));
+    col_metadatatree->SetBranchAddress("colMD",&emd);
+    col_metadatatree->GetEntry(0);
+    return emd ;
+  }
+  std::map<int,GenericParameters>* ROOTReader::readRunMetaData(){
+    auto* emd = new std::map<int,GenericParameters> ;
+    auto run_metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("run_metadata"));
+    run_metadatatree->SetBranchAddress("runMD",&emd);
+    run_metadatatree->GetEntry(0);
+    return emd ;
+  }
+
 
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
     // has the collection already been constructed?
@@ -116,13 +131,7 @@ namespace podio {
     std::vector<int> l_collectionIDs;
     for (auto name: l_names) {
       l_collectionIDs.push_back(l_table->collectionID(name));
-
     }
-
-    // auto evtMDtree = static_cast<TTree*>(m_chain->GetFile()->Get("eventmetadata"));
-    // evtMDtree->SetBranchAddress("evtMD", m_store->getEvtMetaDataMap() );
-    // evtMDtree->GetEntry(0);
-
 
     m_table = new CollectionIDTable(l_collectionIDs, l_names);
   }

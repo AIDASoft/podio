@@ -35,7 +35,7 @@ namespace podio {
     virtual void  prepareAfterRead() = 0;
 
     /// initialize references after read
-    virtual bool  setReferences(const ICollectionProvider* collectionProvider) = 0;
+    virtual bool setReferences(const ICollectionProvider* collectionProvider) = 0;
 
     /// set collection ID
     virtual void setID(unsigned id) = 0;

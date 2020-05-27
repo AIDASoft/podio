@@ -100,26 +100,22 @@ namespace podio {
   }
   
   GenericParameters* EventStore::getRunMetaData(int runID) const {
-    auto it = m_runMDMap.find( runID ) ;
-    if( it != m_runMDMap.end() )
-      return it->second ;
 
-    GenericParameters* tmp=new GenericParameters ;
-    m_runMDMap.insert( std::make_pair(runID , tmp )  ) ;
-
-    return tmp ;
+    if( m_runMDMap.empty() && m_reader != nullptr ){
+      RunMDMap* tmp = m_reader->readRunMetaData() ;
+      m_runMDMap = *tmp ;
+    }
+    return &m_runMDMap[ runID ] ;
   } ;
   
 
   GenericParameters* EventStore::getCollectionMetaData(int colID) const {
-    auto it = m_colMDMap.find( colID ) ;
-    if( it != m_colMDMap.end() )
-      return it->second ;
 
-    GenericParameters* tmp=new GenericParameters ;
-    m_colMDMap.insert( std::make_pair(colID , tmp )  ) ;
-
-    return tmp ;
+    if( m_colMDMap.empty() && m_reader != nullptr ){
+      ColMDMap* tmp = m_reader->readCollectionMetaData() ;
+      m_colMDMap = *tmp ;
+    }
+    return &m_colMDMap[ colID ] ;
   } ;
 
   void EventStore::clearCollections(){

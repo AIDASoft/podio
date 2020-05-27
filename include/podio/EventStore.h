@@ -29,10 +29,8 @@ namespace podio {
   class CollectionBase;
   class IReader;
 
-  typedef std::pair<int,int> ipair ;
-  typedef std::map<int,GenericParameters*>    RunMDMap;
-  typedef std::map<ipair,GenericParameters*>  EvtMDMap;
-  typedef std::map<int,GenericParameters*>    ColMDMap;
+  typedef std::map<int,GenericParameters>    RunMDMap;
+  typedef std::map<int,GenericParameters>    ColMDMap;
 
   class EventStore : public ICollectionProvider, public IMetaDataProvider {
 
