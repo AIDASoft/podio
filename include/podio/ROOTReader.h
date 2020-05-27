@@ -24,7 +24,7 @@ class EventStore;
 class CollectionBase;
 class Registry;
 class CollectionIDTable;
-
+class GenericParameters;
 /**
 This class has the function to read available data from disk
 and to prepare collections and buffers.
@@ -65,6 +65,9 @@ class ROOTReader : public IReader {
 
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name) override final;
+
+    /// read event meta data for current event
+    GenericParameters* readEventMetaData() override final ;
 
   private:
     typedef std::pair<CollectionBase*, std::string> Input;

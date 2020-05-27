@@ -67,6 +67,12 @@ void write(std::string outfilename) {
     auto item1 = EventInfo();
     item1.Number(i);
     info.push_back(item1);
+
+    auto* evtMD = store.getEventMetaData() ;
+    evtMD->setValue( "UserEventWeight" , (float) 100.*i ) ;
+    std::stringstream ss ; ss << " event_number_" << i ;
+    evtMD->setValue( "UserEventName" , ss.str() ) ;
+
     auto hit1 = ExampleHit( 0xbad, 0.,0.,0.,23.+i);
     auto hit2 = ExampleHit( 0xcaffee,1.,0.,0.,12.+i);
 

@@ -15,8 +15,14 @@ namespace podio {
     m_store(store),
     m_file(new TFile(filename.c_str(),"RECREATE","data file")),
     m_datatree(new TTree("events","Events tree")),
-    m_metadatatree(new TTree("metadata", "Metadata tree"))
-  {}
+    m_metadatatree(new TTree("metadata", "Metadata tree")),
+    m_evtMDtree(new TTree("evt_metadata", "Event metadata tree")),
+    m_colMDtree(new TTree("col_metadata", "Collection metadata tree")),
+    m_runMDtree(new TTree("run_metadata", "Run metadata tree"))
+  {
+
+    m_evtMDtree->Branch("evtMD", "GenericParameters", m_store->getEventMetaData() ) ;
+  }
 
   ROOTWriter::~ROOTWriter(){
     delete m_file;
@@ -27,12 +33,14 @@ namespace podio {
       coll->prepareForWrite();
     }
     m_datatree->Fill();
+    m_evtMDtree->Fill();
   }
 
   void ROOTWriter::finish(){
     // now we want to safe the metadata
     m_metadatatree->Branch("CollectionIDs",m_store->getCollectionIDTable());
     m_metadatatree->Fill();
+
     m_file->Write();
     m_file->Close();
   }

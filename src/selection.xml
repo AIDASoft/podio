@@ -1,5 +1,13 @@
 <lcgdict>
-    <selection>
+  <selection>
+    <class name="podio::GenericParameters"/>
+    <class name="podio::IntVec"/>
+    <class name="podio::FloatVec"/>
+    <class name="podio::StringVec"/>
+    <class name="podio::IntMap"/>
+    <class name="podio::FloatMap"/>
+    <class name="podio::StringMap"/>
+    <class name="podio::EvtMDMap"/>
     <class name="podio::CollectionBase"/>
     <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>

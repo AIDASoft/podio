@@ -9,9 +9,17 @@
 #include "podio/ROOTReader.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/CollectionBase.h"
+#include "podio/GenericParameters.h"
 
 namespace podio {
 
+  GenericParameters* ROOTReader::readEventMetaData(){
+    GenericParameters* emd = new GenericParameters() ;
+    auto evt_metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("evt_metadata"));
+    evt_metadatatree->SetBranchAddress("evtMD",&emd);
+    evt_metadatatree->GetEntry(m_eventNumber);
+    return emd ;
+  }
 
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
     // has the collection already been constructed?
@@ -110,6 +118,12 @@ namespace podio {
       l_collectionIDs.push_back(l_table->collectionID(name));
 
     }
+
+    // auto evtMDtree = static_cast<TTree*>(m_chain->GetFile()->Get("eventmetadata"));
+    // evtMDtree->SetBranchAddress("evtMD", m_store->getEvtMetaDataMap() );
+    // evtMDtree->GetEntry(0);
+
+
     m_table = new CollectionIDTable(l_collectionIDs, l_names);
   }
 

@@ -34,6 +34,10 @@ namespace podio {
     TFile* m_file;
     TTree* m_datatree;
     TTree* m_metadatatree;
+    TTree* m_runMDtree;
+    TTree* m_evtMDtree;
+    TTree* m_colMDtree;
+    GenericParameters* m_evtMD ;
     std::vector<CollectionBase*> m_storedCollections;
 
   };
