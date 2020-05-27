@@ -7,7 +7,6 @@
 namespace podio {
 
   EventStore::EventStore() :
-    m_reader(nullptr),
     m_table(new CollectionIDTable())
   {
     m_cachedCollections.resize(128) ; // allow for a sufficiently large initial number of collections
@@ -89,35 +88,45 @@ namespace podio {
     }
     return false;
   }
+
+  GenericParameters* EventStore::getEventMetaData() const {
+
+    if( m_reader != nullptr ){
+      m_evtMD.clear() ;
+      GenericParameters* tmp = m_reader->readEventMetaData() ;
+      m_evtMD = *tmp ;
+    }
+    return &m_evtMD ;
+  }
   
   GenericParameters* EventStore::getRunMetaData(int runID) const {
-    auto it = m_runMD.find( runID ) ;
-    if( it != m_runMD.end() )
+    auto it = m_runMDMap.find( runID ) ;
+    if( it != m_runMDMap.end() )
       return it->second ;
 
     GenericParameters* tmp=new GenericParameters ;
-    m_runMD.insert( std::make_pair(runID , tmp )  ) ;
-    
-    if( m_reader != nullptr ){
-      // read event from file
-      // ...
-    } 
+    m_runMDMap.insert( std::make_pair(runID , tmp )  ) ;
 
     return tmp ;
   } ;
   
-  GenericParameters* EventStore::getEventMetaData(int runID, int evtID) const {
-    return nullptr ;
-  } ;
 
   GenericParameters* EventStore::getCollectionMetaData(int colID) const {
-    return nullptr ;
+    auto it = m_colMDMap.find( colID ) ;
+    if( it != m_colMDMap.end() )
+      return it->second ;
+
+    GenericParameters* tmp=new GenericParameters ;
+    m_colMDMap.insert( std::make_pair(colID , tmp )  ) ;
+
+    return tmp ;
   } ;
 
   void EventStore::clearCollections(){
     for (auto& coll : m_collections){
       coll.second->clear();
     }
+    m_evtMD.clear() ;
   }
 
   void EventStore::clear(){
@@ -129,6 +138,7 @@ namespace podio {
       delete coll;
     }
     clearCaches();
+
   }
 
   void EventStore::clearCaches() {
