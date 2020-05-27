@@ -3,6 +3,7 @@
 #include <iostream>
 #include <exception>
 #include <cassert>
+#include <sstream>
 
 // podio specific includes
 #include "podio/EventStore.h"
@@ -25,6 +26,21 @@ int glob = 0;
 
 
 void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
+
+  auto* evtMD = store.getEventMetaData() ;
+  float evtWeight = evtMD->getFloatVal( "UserEventWeight" ) ;
+  if( evtWeight != (float) 100.*eventNum ){
+    std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float) 100.*eventNum << std::endl ;
+    throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
+  }
+  std::stringstream ss ; ss << " event_number_" << eventNum ;
+  std::string evtName = evtMD->getStringVal( "UserEventName" ) ;
+  if( evtName != ss.str() ){
+    std::cout << " read UserEventName: " << evtName << " - expected : " << ss.str() << std::endl ;
+    throw std::runtime_error("Couldn't read event meta data parameters 'UserEventName'");
+  }
+
+
 
   auto& failing = store.get<ExampleClusterCollection>("notthere");
   if(failing.isValid() == true) {
