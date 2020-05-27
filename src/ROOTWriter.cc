@@ -21,7 +21,7 @@ namespace podio {
     m_runMDtree(new TTree("run_metadata", "Run metadata tree"))
   {
 
-    m_evtMDtree->Branch("evtMD", "GenericParameters", m_store->getEventMetaData() ) ;
+    m_evtMDtree->Branch("evtMD", "GenericParameters", m_store->eventMetaDataPtr() ) ;
   }
 
   ROOTWriter::~ROOTWriter(){
