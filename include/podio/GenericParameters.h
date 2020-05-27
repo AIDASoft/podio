@@ -109,6 +109,12 @@ namespace podio {
      */
     virtual void setValues(const std::string & key, const StringVec & values);
 
+    /// erase all elements
+    void clear() {
+      _intMap.clear();
+      _floatMap.clear();
+      _stringMap.clear();
+    }
 
   protected:
 
