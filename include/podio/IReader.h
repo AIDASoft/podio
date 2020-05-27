@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <iostream>
 
@@ -30,6 +31,8 @@ class IReader {
     virtual CollectionIDTable* getCollectionIDTable() = 0;
     /// read event meta data from file
     virtual GenericParameters* readEventMetaData()=0 ;
+    virtual std::map<int,GenericParameters>* readCollectionMetaData()=0 ;
+    virtual std::map<int,GenericParameters>* readRunMetaData()=0 ;
     //TODO: decide on smart-pointers for passing of objects
     /// Check if reader is valid
     virtual bool isValid() const = 0;

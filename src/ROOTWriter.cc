@@ -41,6 +41,11 @@ namespace podio {
     m_metadatatree->Branch("CollectionIDs",m_store->getCollectionIDTable());
     m_metadatatree->Fill();
 
+    m_colMDtree->Branch("colMD", "std::map<int,podio::GenericParameters>", m_store->getColMetaDataMap() ) ;
+    m_colMDtree->Fill();
+    m_runMDtree->Branch("runMD", "std::map<int,podio::GenericParameters>", m_store->getRunMetaDataMap() ) ;
+    m_runMDtree->Fill();
+
     m_file->Write();
     m_file->Close();
   }

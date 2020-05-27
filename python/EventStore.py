@@ -4,6 +4,8 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from ROOT import gSystem
 gSystem.Load("libpodioRootIO")  # noqa: E402
+gSystem.Load("libpodioDict")  # noqa: E402
+gSystem.Load("libTestDataModel.so")
 from ROOT import podio
 
 

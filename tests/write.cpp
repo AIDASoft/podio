@@ -73,6 +73,10 @@ void write(std::string outfilename) {
     std::stringstream ss ; ss << " event_number_" << i ;
     evtMD->setValue( "UserEventName" , ss.str() ) ;
 
+
+    auto* colMD = store.getCollectionMetaData( hits.getID() );
+    colMD->setValue("CellIDEncodingString","system:8,barrel:3,layer:6,slice:5,x:-16,y:-16");
+
     auto hit1 = ExampleHit( 0xbad, 0.,0.,0.,23.+i);
     auto hit2 = ExampleHit( 0xcaffee,1.,0.,0.,12.+i);
 

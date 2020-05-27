@@ -7,7 +7,7 @@
     <class name="podio::IntMap"/>
     <class name="podio::FloatMap"/>
     <class name="podio::StringMap"/>
-    <class name="podio::EvtMDMap"/>
+    <class name="std::map<int,podio::GenericParameters>"/>
     <class name="podio::CollectionBase"/>
     <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>

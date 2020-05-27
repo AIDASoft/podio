@@ -69,6 +69,12 @@ class ROOTReader : public IReader {
     /// read event meta data for current event
     GenericParameters* readEventMetaData() override final ;
 
+  /// read the collection meta data
+    std::map<int,GenericParameters>* readCollectionMetaData() override final ;
+
+  /// read the run meta data
+    std::map<int,GenericParameters>* readRunMetaData() override final ;
+
   private:
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;

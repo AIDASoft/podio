@@ -57,6 +57,18 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
     throw std::runtime_error("Collection 'strings' should be present.");
   }
 
+  // read collection meta data
+  auto& hits = store.get<ExampleHitCollection>("hits");
+  auto* colMD = store.getCollectionMetaData( hits.getID() );
+  std::string es = colMD->getStringVal("CellIDEncodingString") ;
+  if( es != std::string("system:8,barrel:3,layer:6,slice:5,x:-16,y:-16") ){
+    std::cout << " meta data from collection 'hits' with id = " <<  hits.getID()
+	      << " read CellIDEncodingString: " << es << " - expected : system:8,barrel:3,layer:6,slice:5,x:-16,y:-16"
+	      << std::endl ;
+    throw std::runtime_error("Couldn't read event meta data parameters 'CellIDEncodingString'");
+  }
+
+
   auto& clusters = store.get<ExampleClusterCollection>("clusters");
   if(clusters.isValid()){
     auto cluster = clusters[0];
