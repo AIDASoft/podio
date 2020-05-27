@@ -83,18 +83,19 @@ namespace podio {
     virtual bool isValid() const final;
 
     /// return the event meta data for the current event
-    virtual GenericParameters* getEventMetaData() const override ;
+    virtual GenericParameters& getEventMetaData() const override ;
 
     /// return the run meta data for the given runID
-    virtual GenericParameters* getRunMetaData(int runID) const override ;
+    virtual GenericParameters& getRunMetaData(int runID) const override ;
 
     /// return the collection meta data for the given colID
-    virtual GenericParameters* getCollectionMetaData(int colID) const override ;
+    virtual GenericParameters& getCollectionMetaData(int colID) const override ;
 
     RunMDMap* getRunMetaDataMap() const {return &m_runMDMap ; }
     ColMDMap* getColMetaDataMap() const {return &m_colMDMap ; }
+    GenericParameters* eventMetaDataPtr() const {return &m_evtMD; }
 
-  private:
+   private:
 
     /// get the collection of given name; returns true if successfull
     bool doGet(const std::string& name, CollectionBase*& collection, bool setReferences = true) const;

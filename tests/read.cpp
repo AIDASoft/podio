@@ -27,14 +27,14 @@ int glob = 0;
 
 void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
-  auto* evtMD = store.getEventMetaData() ;
-  float evtWeight = evtMD->getFloatVal( "UserEventWeight" ) ;
+  auto evtMD = store.getEventMetaData() ;
+  float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
   if( evtWeight != (float) 100.*eventNum ){
     std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float) 100.*eventNum << std::endl ;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
   }
   std::stringstream ss ; ss << " event_number_" << eventNum ;
-  std::string evtName = evtMD->getStringVal( "UserEventName" ) ;
+  std::string evtName = evtMD.getStringVal( "UserEventName" ) ;
   if( evtName != ss.str() ){
     std::cout << " read UserEventName: " << evtName << " - expected : " << ss.str() << std::endl ;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventName'");
@@ -59,8 +59,8 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
   // read collection meta data
   auto& hits = store.get<ExampleHitCollection>("hits");
-  auto* colMD = store.getCollectionMetaData( hits.getID() );
-  std::string es = colMD->getStringVal("CellIDEncodingString") ;
+  auto colMD = store.getCollectionMetaData( hits.getID() );
+  std::string es = colMD.getStringVal("CellIDEncodingString") ;
   if( es != std::string("system:8,barrel:3,layer:6,slice:5,x:-16,y:-16") ){
     std::cout << " meta data from collection 'hits' with id = " <<  hits.getID()
 	      << " read CellIDEncodingString: " << es << " - expected : system:8,barrel:3,layer:6,slice:5,x:-16,y:-16"

@@ -89,33 +89,33 @@ namespace podio {
     return false;
   }
 
-  GenericParameters* EventStore::getEventMetaData() const {
+  GenericParameters& EventStore::getEventMetaData() const {
 
     if( m_reader != nullptr ){
       m_evtMD.clear() ;
       GenericParameters* tmp = m_reader->readEventMetaData() ;
       m_evtMD = *tmp ;
     }
-    return &m_evtMD ;
+    return m_evtMD ;
   }
   
-  GenericParameters* EventStore::getRunMetaData(int runID) const {
+  GenericParameters& EventStore::getRunMetaData(int runID) const {
 
     if( m_runMDMap.empty() && m_reader != nullptr ){
       RunMDMap* tmp = m_reader->readRunMetaData() ;
       m_runMDMap = *tmp ;
     }
-    return &m_runMDMap[ runID ] ;
+    return m_runMDMap[ runID ] ;
   } ;
   
 
-  GenericParameters* EventStore::getCollectionMetaData(int colID) const {
+  GenericParameters& EventStore::getCollectionMetaData(int colID) const {
 
     if( m_colMDMap.empty() && m_reader != nullptr ){
       ColMDMap* tmp = m_reader->readCollectionMetaData() ;
       m_colMDMap = *tmp ;
     }
-    return &m_colMDMap[ colID ] ;
+    return m_colMDMap[ colID ] ;
   } ;
 
   void EventStore::clearCollections(){
