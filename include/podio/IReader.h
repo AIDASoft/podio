@@ -18,6 +18,7 @@ namespace podio {
 
 class CollectionBase;
 class CollectionIDTable;
+class GenericParameters;
 
 class IReader {
   public:
@@ -27,6 +28,8 @@ class IReader {
     virtual CollectionBase* readCollection(const std::string& name) = 0;
     /// Get CollectionIDTable of read-in data
     virtual CollectionIDTable* getCollectionIDTable() = 0;
+    /// read event meta data from file
+    virtual GenericParameters* readEventMetaData()=0 ;
     //TODO: decide on smart-pointers for passing of objects
     /// Check if reader is valid
     virtual bool isValid() const = 0;
