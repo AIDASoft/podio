@@ -29,6 +29,11 @@ namespace podio {
   class CollectionBase;
   class IReader;
 
+  typedef std::pair<int,int> ipair ;
+  typedef std::map<int,GenericParameters*>    RunMDMap;
+  typedef std::map<ipair,GenericParameters*>  EvtMDMap;
+  typedef std::map<int,GenericParameters*>    ColMDMap;
+
   class EventStore : public ICollectionProvider, public IMetaDataProvider {
 
   public:
@@ -79,14 +84,17 @@ namespace podio {
 
     virtual bool isValid() const final;
 
-    virtual GenericParameters* getRunMetaData(int runID) const override ;
+    /// return the event meta data for the current event
+    virtual GenericParameters* getEventMetaData() const override ;
 
-    /// return the event meta data for the event with runID and evtID
-    virtual GenericParameters* getEventMetaData(int runID, int evtID) const override ;
+    /// return the run meta data for the given runID
+    virtual GenericParameters* getRunMetaData(int runID) const override ;
 
     /// return the collection meta data for the given colID
     virtual GenericParameters* getCollectionMetaData(int colID) const override ;
 
+    RunMDMap* getRunMetaDataMap() const {return &m_runMDMap ; }
+    ColMDMap* getColMetaDataMap() const {return &m_colMDMap ; }
 
   private:
 
@@ -101,12 +109,12 @@ namespace podio {
     mutable CollContainer m_collections;
     mutable std::vector<const CollectionBase*> m_failedRetrieves;
     mutable std::vector<CollectionBase*> m_cachedCollections;
-    IReader* m_reader;
+    IReader* m_reader=nullptr;
     CollectionIDTable* m_table;
-    typedef std::pair<int,int> ipair ;
-    mutable std::map<int,GenericParameters*>   m_runMD ;
-    mutable std::map<ipair,GenericParameters*> m_evtMD ;
-    mutable std::map<int,GenericParameters*>   m_colMD ;
+
+    mutable GenericParameters  m_evtMD ;
+    mutable RunMDMap m_runMDMap ;
+    mutable ColMDMap m_colMDMap ;
   };
 
 
