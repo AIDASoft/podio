@@ -122,6 +122,49 @@ Collections can be retrieved explicitly:
 
 Or implicitly when following an object reference. In both cases the access to data that has been retrieved is `const`.
 
+
+### User defined Meta Data
+
+Sometimes it is necessary or useful to store additional data that is not directly foreseen in the EDM.
+This could be configuration parameters of simulation jobs, or parameter descriptions like cell-ID encoding etc. PODIO currently allows to store such meta data in terms of a `GenericParameters` class that
+holds an arbitrary number of named parameters of type `int, float, string` or vectors if these.
+Meta data can be stored and retrieved from the `EventStore` for runs, collections and events via
+the three methods:
+```
+virtual GenericParameters& EventStore::getRunMetaData(int runID);
+virtual GenericParameters& EventStore::getEventMetaData();
+virtual GenericParameters& EventStore::getCollectionMetaData(int colID);
+```
+
+- example for writing event data:
+```
+auto& evtMD = store.getEventMetaData() ;
+evtMD.setValue( "UserEventWeight" , (float) 100.*i ) ;
+```
+- example for reading event data:
+```
+auto& evtMD = store.getEventMetaData() ;
+float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
+
+```
+
+- example for writing collection meta data:
+
+```
+auto& hits = store.create<ExampleHitCollection>("hits");
+// ...
+auto& colMD = store.getCollectionMetaData( hits.getID() );
+colMD.setValue("CellIDEncodingString","system:8,barrel:3,layer:6,slice:5,x:-16,y:-16");
+```
+
+- example for reading collection meta data
+
+```
+auto colMD = store.getCollectionMetaData( hits.getID() );
+std::string es = colMD.getStringVal("CellIDEncodingString") ;
+```
+
+
 #### Python Interface
 
 The class `EventStore` provides all the necessary (read) access to event files. It can be used as follows:
