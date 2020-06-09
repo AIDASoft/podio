@@ -53,6 +53,11 @@ namespace podio {
     template<typename T>
     bool get(const std::string& name, const T*& collection);
 
+    /// access a collection by name. returns true if successful
+    template<typename T>
+    bool get(const std::string& name, T*& collection);
+
+
     /// fast access to cached collections
     CollectionBase* getFast(int id) const{
       return ( m_cachedCollections.size() > id ? m_cachedCollections[id] : nullptr ) ;
@@ -129,6 +134,17 @@ T& EventStore::create(const std::string& name) {
 
 template<typename T>
 bool EventStore::get(const std::string& name, const T*& collection){
+  //  static_assert(std::is_base_of<podio::CollectionBase,T>::value,
+  //              "DataStore only contains types inheriting from CollectionBase");
+  CollectionBase* tmp(0);
+  doGet(name, tmp);
+  collection = static_cast<T*>(tmp);
+  if (collection != nullptr) { return true;}
+  return false;
+}
+
+template<typename T>
+bool EventStore::get(const std::string& name, T*& collection){
   //  static_assert(std::is_base_of<podio::CollectionBase,T>::value,
   //              "DataStore only contains types inheriting from CollectionBase");
   CollectionBase* tmp(0);
