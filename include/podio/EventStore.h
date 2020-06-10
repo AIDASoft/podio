@@ -1,10 +1,12 @@
 #ifndef ALBERS_EVENTSTORE_H
 #define ALBERS_EVENTSTORE_H
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <type_traits>
 #include <set>
+#include <iostream>
 
 // podio specific includes
 #include "podio/CollectionIDTable.h"
@@ -143,13 +145,10 @@ template<typename T>
 const T& EventStore::get(const std::string& name) {
   const T* tmp(0);
   auto success = this->get(name,tmp);
-  if (success==true){
-    return *tmp;
-  } else {
-    tmp = new T();
-    m_failedRetrieves.push_back(tmp);
-    return *tmp;
+  if (!success) {
+    throw std::runtime_error("No collection \'" + name + "\' is present in the EventStore");
   }
+  return *tmp;
 }
 
 } //namespace

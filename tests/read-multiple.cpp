@@ -30,11 +30,6 @@ int glob = 0;
 
 void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
-  auto& failing = store.get<ExampleClusterCollection>("notthere");
-  if(failing.isValid() == true) {
-    throw std::runtime_error("Collection 'notthere' should not be valid");
-  };
-
   auto& strings = store.get<ExampleWithStringCollection>("strings");
   if(strings.isValid()){
     auto string = strings[0];

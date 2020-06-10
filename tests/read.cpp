@@ -1,4 +1,5 @@
 // STL
+#include <stdexcept>
 #include <vector>
 #include <iostream>
 #include <exception>
@@ -39,13 +40,6 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
     std::cout << " read UserEventName: " << evtName << " - expected : " << ss.str() << std::endl ;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventName'");
   }
-
-
-
-  auto& failing = store.get<ExampleClusterCollection>("notthere");
-  if(failing.isValid() == true) {
-    throw std::runtime_error("Collection 'notthere' should not be valid");
-  };
 
   auto& strings = store.get<ExampleWithStringCollection>("strings");
   if(strings.isValid()){

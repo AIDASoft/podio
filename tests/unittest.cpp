@@ -1,5 +1,6 @@
 // STL
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
 // catch
@@ -273,4 +274,9 @@ TEST_CASE("Equality") {
   auto returned_cluster = rel.cluster();
   REQUIRE(cluster == returned_cluster);
   REQUIRE(returned_cluster == cluster);
+}
+
+TEST_CASE("NonPresentCollection") {
+  auto store = podio::EventStore();
+  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
 }
