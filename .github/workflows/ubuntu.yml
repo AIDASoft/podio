@@ -1,0 +1,22 @@
+name: ubuntu
+
+on: [push, pull_request]
+
+jobs:
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    container: rootproject/root-ubuntu
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Dependencies
+      run: |
+        apt update
+        apt -y install python3-yaml python-is-python3
+    - name: Compile and test
+      run: |
+        mkdir build install
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=../install
+        make -j `getconf _NPROCESSORS_ONLN`
+        make install
+        ctest --output-on-failure
