@@ -41,43 +41,12 @@ SET(headers
   ${CMAKE_SOURCE_DIR}/include/podio/PythonEventStore.h
   )
 PODIO_GENERATE_DICTIONARY(podioDict ${headers} SELECTION selection.xml
-  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}podio${CMAKE_SHARED_LIBRARY_SUFFIX}
+  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}podioDict${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
 # prevent generating dictionary twice
 set_target_properties(podioDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
-# check if the linker supports as needed or not
-set(STORE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
-include(CheckCCompilerFlag)
-set(CMAKE_REQUIRED_FLAGS "-Wl,--no-as-needed")
-check_c_compiler_flag("" TEST_NO_AS_NEEDED)
-if(TEST_NO_AS_NEEDED)
-    message(STATUS "Linker supports: -Wl,--no-as-needed")
-else()
-    message(STATUS "Linker does not support: -Wl,--no-as-needed")
-endif()
-set(CMAKE_REQUIRED_FLAGS "-Wl,--as-needed")
-check_c_compiler_flag("" TEST_AS_NEEDED)
-if(TEST_AS_NEEDED)
-    message(STATUS "Linker supports: -Wl,--as-needed")
-else()
-    message(STATUS "Linker does not support: -Wl,--as-needed")
-endif()
-set(CMAKE_REQUIRED_FLAGS ${STORE_REQUIRED_FLAGS})
-
 target_sources(podioDict PRIVATE podioDict.cxx)
-# ROOT IO without the Dict does not work, so we link RootIO against the Dict
-# need to disable as needed if linker supports it
-if(TEST_NO_AS_NEEDED AND TEST_AS_NEEDED)
-  target_link_libraries(podioRootIO
-    PRIVATE
-      -Wl,--push-state,--no-as-needed podioDict -Wl,--pop-state
-    INTERFACE
-      podioDict
-     )
- else()
-   target_link_libraries(podioRootIO PUBLIC podioDict)
- endif()
 
 # Install the Targets and Headers
 install(TARGETS podio podioDict podioRootIO
@@ -87,5 +56,5 @@ install(TARGETS podio podioDict podioRootIO
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodio_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
