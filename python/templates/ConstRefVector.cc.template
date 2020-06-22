@@ -6,8 +6,8 @@ std::vector<${relationtype}>::const_iterator Const${classname}::${relation}_begi
 
 std::vector<${relationtype}>::const_iterator Const${classname}::${relation}_end() const {
   auto ret_value = m_obj->m_${relation}->begin();
-  std::advance(ret_value, m_obj->data.${relation}_end-1);
-  return ++ret_value;
+  std::advance(ret_value, m_obj->data.${relation}_end);
+  return ret_value;
 }
 
 unsigned int Const${classname}::${relation}_size() const {
