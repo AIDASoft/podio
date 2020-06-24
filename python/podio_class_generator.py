@@ -493,7 +493,13 @@ class ClassGenerator(object):
 
       ostream_implementation += ('  o << " %s : " ;\n' % relationName)
       ostream_implementation += ('  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName)
-      ostream_implementation += ('    o << value.%s(i) << " " ; \n' % get_relation)
+      # If the reference is of the same type as the class we have to avoid
+      # running into a possible infinite loop when printing. Hence, print only
+      # the id instead of the whole referenced object
+      if reltype == classname:
+        ostream_implementation += ('    o << value.%s(i).id() << " " ; \n' % get_relation)
+      else:
+        ostream_implementation += ('    o << value.%s(i) << " " ; \n' % get_relation)
       ostream_implementation += '  o << std::endl ;\n'
 
       substitutions = {"relation": relationName,
