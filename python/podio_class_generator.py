@@ -478,7 +478,10 @@ class ClassGenerator(object):
       relnamespace, reltype, _, __ = self.demangle_classname(refvector["type"])
       relationtype = refvector["type"]
       if relationtype not in self.buildin_types and relationtype not in self.reader.components:
-        relationtype = relnamespace + "::Const" + reltype
+        relationtype = relnamespace
+        if relnamespace:
+          relationtype += "::"
+        relationtype += "Const" + reltype
 
       relationName = refvector["name"]
       get_relation = relationName
