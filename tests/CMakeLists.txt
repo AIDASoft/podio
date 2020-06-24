@@ -29,7 +29,6 @@ foreach( sourcefile ${executables} )
   add_executable( ${name} ${sourcefile} )
   target_link_libraries( ${name} TestDataModel podio::podioRootIO)
 endforeach( sourcefile ${executables} )
-
 #--- Adding tests --------------------------------------------------------------
 
 add_test(NAME write COMMAND write)
@@ -49,6 +48,11 @@ set_property(TEST read-multiple PROPERTY ENVIRONMENT
              LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
              ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST read-multiple PROPERTY DEPENDS write)
+
+add_test(NAME relation_range COMMAND relation_range)
+set_property(TEST relation_range PROPERTY ENVIRONMENT
+  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+  ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 
 add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_SOURCE_DIR}/python)
 set_property(TEST pyunittest
