@@ -58,4 +58,9 @@ set_property(TEST pyunittest
                       ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST pyunittest PROPERTY DEPENDS write)
 
+add_test(NAME ostream_operator COMMAND ostream_operator)
+set_property(TEST ostream_operator PROPERTY ENVIRONMENT
+  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+  ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
+
 add_test(NAME unittest COMMAND unittest)
