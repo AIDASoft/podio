@@ -272,6 +272,7 @@ class ClassGenerator(object):
     refvectors = definition["OneToManyRelations"]
     if len(refvectors) != 0:
       datatype["includes"].add("#include <vector>")
+      datatype["includes"].add('#include "podio/RelationRange.h"')
     for item in refvectors:
       klass = item["type"]
       if klass in self.requested_classes:
@@ -434,6 +435,7 @@ class ClassGenerator(object):
     vectormembers = definition["VectorMembers"]
     if len(vectormembers) != 0:
       datatype["includes"].add("#include <vector>")
+      datatype["includes"].add('#include "podio/RelationRange.h"')
     for item in vectormembers:
       klass = item["type"]
       if klass not in self.buildin_types and klass not in self.reader.components:

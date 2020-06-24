@@ -25,3 +25,11 @@ ${relationtype} ${classname}::${get_relation}(unsigned int index) const {
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }
+
+podio::RelationRange<${relationtype}> ${classname}::${get_relation}() const {
+  auto begin = m_obj->m_${relation}->begin();
+  std::advance(begin, m_obj->data.${relation}_begin);
+  auto end = m_obj->m_${relation}->begin();
+  std::advance(end, m_obj->data.${relation}_end);
+  return {begin, end};
+}
