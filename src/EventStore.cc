@@ -61,7 +61,7 @@ namespace podio {
 
   bool EventStore::doGet(const std::string& name, CollectionBase*& collection, bool setReferences) const {
     auto result = std::find_if(begin(m_collections), end(m_collections),
-                               [name](const CollPair& item)->bool { return name==item.first; }
+                               [&name](const CollPair& item)->bool { return name==item.first; }
     );
     if (result != end(m_collections)){
       auto tmp = result->second;
@@ -147,7 +147,7 @@ namespace podio {
 
   bool EventStore::collectionRegistered(const std::string& name) const {
     auto result = std::find_if(begin(m_collections), end(m_collections),
-                               [name](const CollPair& item)->bool { return name==item.first; }
+                               [&name](const CollPair& item)->bool { return name==item.first; }
     );
     return (result != end(m_collections));
   }

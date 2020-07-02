@@ -39,7 +39,7 @@ namespace podio {
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
     // has the collection already been constructed?
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
-        [name](ROOTReader::Input t){ return t.second == name;});
+        [&name](ROOTReader::Input t){ return t.second == name;});
     if (p != end(m_inputs)){
       return p->first;
     }
@@ -129,7 +129,7 @@ namespace podio {
     metadatatree->GetEntry(0);
     auto l_names = l_table->names();
     std::vector<int> l_collectionIDs;
-    for (auto name: l_names) {
+    for (const auto& name: l_names) {
       l_collectionIDs.push_back(l_table->collectionID(name));
     }
 
