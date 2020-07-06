@@ -42,15 +42,37 @@ class ClassDefinitionValidator(object):
       "ConstExtraCode"
       )
 
-  # regex to get std::array definition: one group for type, one for length,
-  # one for comment (this one is for members of datatypes)
-  full_array_re = re.compile(r' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *(\S+) *\/\/ *(.+)')
-  array_re = re.compile(r' *std::array *<([a-zA-Z0-9:]+) *, *([0-9]+)> *')
-
   buildin_types = ["int", "long", "float", "double",
                    "unsigned int", "unsigned", "unsigned long",
                    "short", "bool", "long long",
                    "unsigned long long", "std::string"]
+
+  # Doing this with regex is non-ideal, but we should be able to at least
+  # enforce something that will yield valid c++ identifiers even if we might not
+  # cover all possibilities that are admitted by the c++ standard
+
+  # A type can either start with a double colon, or a character (types starting
+  # with _ are technically allowed, but partially reserved for compilers)
+  # Additionally we have to take int account the possible whitespaces in the
+  # builtin types above. Currently this is done by simple brute-forcing
+  type_str = r'((?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*|{builtin_re})'.format(
+      builtin_re=r'|'.join((r'(?:{})'.format(t)) for t in buildin_types))
+
+  # Names can be almost anything as long as it doesn't start with a digit and
+  # doesn't contain anything fancy
+  name_str = r'([a-zA-Z_]+\w*)'
+  # Comments can be anything after //
+  # stripping of trailing whitespaces is done later as it is hard to do with regex
+  comment_str = r'\/\/ *(.*)'
+  # std::array declaration with some whitespace distribution freedom
+  array_str = r' *std::array *< *{typ} *, *([0-9]+) *>'.format(typ=type_str)
+
+  array_re = re.compile(array_str)
+  full_array_re = re.compile(r'{array} *{name} *{comment}'.format(
+      array=array_str, name=name_str, comment=comment_str))
+  member_re = re.compile(r' *{typ} +{name} *{comment}'.format(
+      typ=type_str, name=name_str, comment=comment_str))
+
 
   def __init__(self, configuration):
     self.components = OrderedDict()
@@ -80,7 +102,7 @@ class ClassDefinitionValidator(object):
 
   def check_members(self, name, members):
     for item in members:
-      member = self.parseMember(item)
+      member = self.parse_member(item)
       theType = member["type"]
       return  # TODO
       if theType not in self.buildin_types and \
@@ -89,51 +111,47 @@ class ClassDefinitionValidator(object):
         raise Exception("%s defines a member of not allowed type %s"
                         % (name, theType))
 
-  def parseMember(self, string):
+  def parse_member(self, string):
     """
-    extract klass, name, and comment from
-    - int name // comment
+    extract type, name, and description from
+    - type name // description
+
+    returns a dictionary with these three keys and the extracted values (stripped)
     """
-    klass, name, comment = "", "", ""
-    array_match = re.match(self.full_array_re, string)
+    array_match = self.full_array_re.match(string)
     if array_match is not None:
-      name, comment = array_match.group(3), array_match.group(4)
-      typ = array_match.group(1)
+      typ, size, name, comment = array_match.groups()
+
       if typ not in self.buildin_types and typ not in self.components:
         raise Exception("%s defines an array of disallowed type %s"
                         % (string, typ))
-      klass = "std::array<{typ}, {length}>".format(
-          typ=typ, length=array_match.group(2)
-          )
-    else:
-      comment = string.split("//")[1]
-      rest = string.split("//")[0].split()
-      name = rest[len(rest) - 1]
-      klass = ' '.join(rest[:len(rest) - 1])
-    return {"name": name,
-            "type": klass,
-            "description": comment
-            }
+      klass = "std::array<{typ}, {size}>".format(typ=typ, size=size)
+      return {'name': name, 'type': klass, 'description': comment.strip()}
+
+    member_match = self.member_re.match(string)
+    if member_match:
+      klass, name, comment = member_match.groups()
+      return {'name': name, 'type': klass, 'description': comment.strip()}
+
+    raise Exception('%s is not a valid member definition' % string)
+
 
   def check_component(self, name, definition):
     """
     Check that components only contain simple types
     or other components
     """
-    for mem in definition:
-      klass = definition[mem]
+    for mem, klass in definition.items():
       if not (mem == "ExtraCode" or klass in self.buildin_types or
               klass in self.components):
         array_match = re.match(self.array_re, klass)
-        builtin_array = False
         if array_match is not None:
           typ = array_match.group(1)
-          if typ in self.buildin_types or typ in self.components:
-            builtin_array = True
-        if not builtin_array:
-          raise Exception("'%s' defines a member of a type '%s'"
-                          % (name, klass) +
-                          "which is not allowed in a component!")
+          if typ not in self.buildin_types and typ not in self.components:
+            raise Exception("'%s' defines a member of a type '%s'"
+                            % (name, klass) +
+                            "which is not allowed in a component!")
+
 
   def check_components(self, components):
     for klassname, value in components.items():
@@ -183,7 +201,7 @@ class PodioConfigReader(object):
           definitions = []
           if category in value:
             for definition in value[category]:
-              definitions.append(validator.parseMember(definition))
+              definitions.append(validator.parse_member(definition))
             datatype[category] = definitions
           else:
             datatype[category] = []
