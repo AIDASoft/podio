@@ -1157,43 +1157,36 @@ class ClassGenerator(object):
 
 ##########################
 if __name__ == "__main__":
-  from optparse import OptionParser
-  usage = """usage: %prog [options] <description.yaml> <targetdir> <packagename>
-    Given a <description.yaml>
-    it creates data classes
-    and a LinkDef.h file in
-    the specified <targetdir>:
-      <packagename>/*.h
-      src/*.cc
-"""
-  parser = OptionParser(usage)
-  parser.add_option("-q", "--quiet",
-                    action="store_false", dest="verbose", default=True,
-                    help="Don't write a report to screen")
-  parser.add_option("-d", "--dryrun",
-                    action="store_true", dest="dryrun", default=False,
-                    help="Do not actually write datamodel files")
-  parser.add_option("-c", "--clangformat", dest="clangformat",
-                    action="store_true", default=False,
-                    help="Apply clang-format when generating code (with -style=file)")
-  (options, args) = parser.parse_args()
+  import argparse
+  parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
+                                   'the necessary c++ files in the target directory')
 
-  if len(args) != 3:
-    parser.error("incorrect number of arguments")
+  parser.add_argument('description', help='yaml file describing the datamodel')
+  parser.add_argument('targetdir', help='Target directory where the generated data classes will be put. '
+                      'Header files will be put under <targetdir>/<packagename>/*.h. '
+                      'Source files will be put under <targetdir>/src/*.cc')
+  parser.add_argument('packagename', help='Name of the package.')
 
-  # create output directories if they do not exist
-  install_path = args[1]
-  project = args[2]
-  directory = os.path.join(install_path, "src")
-  if not os.path.exists(directory):
-    os.makedirs(directory)
-  directory = os.path.join(install_path, project)
+  parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True,
+                      help='Don\'t write a report to screen')
+  parser.add_argument('-d', '--dryrun', action='store_true', default=False,
+                      help='Do not actually write datamodel files')
+  parser.add_argument('-c', '--clangformat', action='store_true', default=False,
+                      help='Apply clang-format when generating code (with -style=file)')
 
-  if not os.path.exists(directory):
-    os.makedirs(directory)
+  args = parser.parse_args()
 
-  gen = ClassGenerator(args[0], args[1], args[2], verbose=options.verbose, dryrun=options.dryrun)
-  gen.configure_clang_format(options.clangformat)
+  install_path = args.targetdir
+  project = args.packagename
+
+  for sub_dir in ('src', project):
+    directory = os.path.join(install_path, sub_dir)
+    if not os.path.exists(directory):
+      os.makedirs(directory)
+
+  gen = ClassGenerator(args.description, args.targetdir, args.packagename,
+                       verbose=args.verbose, dryrun=args.dryrun)
+  gen.configure_clang_format(args.clangformat)
   gen.process()
   if gen.verbose:
     for warning in gen.warnings:
