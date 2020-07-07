@@ -31,6 +31,23 @@ _text_ = """
   your first example!
 """
 
+def demangle_classname(classname):
+  namespace_open = ""
+  namespace_close = ""
+  namespace = ""
+  rawclassname = ""
+  if "::" in classname:
+    cnameparts = classname.split("::")
+    if len(cnameparts) > 2:
+      raise Exception("'%s' defines a type with nested namespaces. Not supported, yet." % classname)
+    namespace, rawclassname = cnameparts
+    namespace_open = "namespace %s {" % namespace
+    namespace_close = "} // namespace %s" % namespace
+  else:
+    rawclassname = classname
+  return namespace, rawclassname, namespace_open, namespace_close
+
+
 
 class ClassGenerator(object):
 
@@ -171,26 +188,11 @@ class ClassGenerator(object):
     # get rid of duplicates:
     return datatype_dict
 
-  def demangle_classname(self, classname):
-    namespace_open = ""
-    namespace_close = ""
-    namespace = ""
-    rawclassname = ""
-    if "::" in classname:
-      cnameparts = classname.split("::")
-      if len(cnameparts) > 2:
-        raise Exception("'%s' defines a type with nested namespaces. Not supported, yet." % classname)
-      namespace, rawclassname = cnameparts
-      namespace_open = "namespace %s {" % namespace
-      namespace_close = "} // namespace %s" % namespace
-    else:
-      rawclassname = classname
-    return namespace, rawclassname, namespace_open, namespace_close
 
   def create_data(self, classname, definition):
     # check whether all member types are known
     # and prepare include directives
-    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     data = self.process_datatype(classname, definition)
 
@@ -221,7 +223,7 @@ class ClassGenerator(object):
     self.created_classes.append(classname + "Data")
 
   def create_class(self, classname, definition):
-    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     includes_cc = set()
     forward_declarations = ""
@@ -412,7 +414,7 @@ class ClassGenerator(object):
       desc = member["description"]
       mnamespace = ""
       klassname = klass
-      mnamespace, klassname, _, __ = self.demangle_classname(klass)
+      mnamespace, klassname, _, __ = demangle_classname(klass)
 
       gname = name
       sname = name
@@ -479,7 +481,7 @@ class ClassGenerator(object):
     ConstReferences_template = self.get_template("ConstRefVector.cc.template")
 
     for refvector in refvectors + definition["VectorMembers"]:
-      relnamespace, reltype, _, __ = self.demangle_classname(refvector["type"])
+      relnamespace, reltype, _, __ = demangle_classname(refvector["type"])
       relationtype = refvector["type"]
       if relationtype not in self.buildin_types and relationtype not in self.reader.components:
         relationtype = relnamespace
@@ -586,7 +588,7 @@ class ClassGenerator(object):
       self.created_classes.append("Const%s" % classname)
 
   def create_collection(self, classname, definition):
-    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     members = definition["Members"]
     constructorbody = ""
@@ -670,7 +672,7 @@ class ClassGenerator(object):
                          "class": klass,
                          "name": name}
 
-        mnamespace, klassname, _, __ = self.demangle_classname(klass)
+        mnamespace, klassname, _, __ = demangle_classname(klass)
 
         # includes
         includes.add(self._build_include(klassname + 'Collection'))
@@ -811,7 +813,7 @@ class ClassGenerator(object):
     self.created_classes.append("%sCollection" % classname)
 
   def create_PrintInfo(self, classname, definition):
-    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     toFormattingStrings = {"char": "3", "unsigned char": "3",
                            "long": "11", "longlong": "22", "bool": "1", "int": ""}
@@ -902,7 +904,7 @@ class ClassGenerator(object):
         Components can only contain simple data types and no user
         defined ones
     """
-    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     includes = set()
     members = ""
@@ -965,7 +967,7 @@ class ClassGenerator(object):
     """ Create an obj class containing all information
         relevant for a given object.
     """
-    namespace, rawclassname, namespace_open, namespace_close = self.demangle_classname(classname)
+    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     relations = ""
     includes = set()
