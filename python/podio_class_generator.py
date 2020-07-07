@@ -1112,35 +1112,29 @@ class ClassGenerator(object):
     # add common include subfolder if required
     substitutions['incfolder'] = '' if not self.includeSubfolder else self.package_name + '/'
     substitutions['PACKAGE_NAME'] = self.package_name.upper()
-    # "Data" denotes the real class;
-    # only headers and the FN should not contain Data
-    if category == "Data":
-      FN = "Data"
-      endings = ("h")
-    elif category == "Obj":
-      FN = "Obj"
-      endings = ("h", "cc")
-    elif category == "Component":
-      FN = ""
-      endings = ("h")
-    elif category == "Object":
-      FN = ""
-      endings = ("h", "cc")
-    elif category == "ConstObject":
-      FN = "Const"
-      endings = ("h", "cc")
-    elif category == "PrintInfo":
-      FN = "PrintInfo"
-      endings = ("h")
-    else:
-      FN = category
-      endings = ("h", "cc")
+
+    # depending on which category is passed different naming conventions apply
+    # for the generated files. Additionally not all categories need source files.
+    # Listing the special cases here
+    fn_base = {
+      'Data': 'Data',
+      'Obj': 'Obj',
+      'ConstObject': 'Const',
+      'PrintInfo': 'PrintInfo',
+      'Object': '',
+      'Component': ''
+    }.get(category, category)
+
+    endings = {
+      'Data': ('h',),
+      'Component': ('h',),
+      'PrintInfo': ('h',)
+    }.get(category, ('h', 'cc'))
+
     for ending in endings:
       templatefile = "%s.%s.template" % (category, ending)
-      templatefile = os.path.join(self.template_dir, templatefile)
-      template = open(templatefile, "r").read()
-      content = string.Template(template).substitute(substitutions).expandtabs(2)
-      filename = "%s%s.%s" % (substitutions["name"], FN, ending)
+      content = self.evaluate_template(templatefile, substitutions)
+      filename = "%s%s.%s" % (substitutions["name"], fn_base, ending)
       self.write_file(filename, content)
 
   def _build_include(self, classname):
