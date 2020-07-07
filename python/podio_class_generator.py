@@ -48,6 +48,17 @@ def demangle_classname(classname):
   return namespace, rawclassname, namespace_open, namespace_close
 
 
+def get_clang_format():
+  """Check if clang format is available and if so get the list of arguments to
+  invoke it via subprocess.Popen"""
+  try:
+    cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
+    return [cformat_exe, "-style=file", "-fallback-style=llvm"]
+  except subprocess.CalledProcessError:
+    print("ERROR: Cannot find clang-format executable")
+    print("       Please make sure it is in the PATH.")
+    return []
+
 
 class ClassGenerator(object):
 
@@ -72,19 +83,8 @@ class ClassGenerator(object):
     self.include_subfolder = self.reader.options["includeSubfolder"]
     self.expose_pod_members = self.reader.options["exposePODMembers"]
 
+    self.clang_format = []
 
-  def configure_clang_format(self, apply):
-    if not apply:
-      self.clang_format = []
-      return
-    try:
-      cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
-    except subprocess.CalledProcessError:
-      print("ERROR: Cannot find clang-format executable")
-      print("       Please make sure it is in the PATH.")
-      self.clang_format = []
-      return
-    self.clang_format = [cformat_exe, "-style=file", "-fallback-style=llvm"]
 
   def process(self):
     self.process_components(self.reader.components)
@@ -1184,7 +1184,8 @@ if __name__ == "__main__":
 
   gen = ClassGenerator(args.description, args.targetdir, args.packagename,
                        verbose=args.verbose, dryrun=args.dryrun)
-  gen.configure_clang_format(args.clangformat)
+  if args.clangformat:
+    gen.clang_format = get_clang_format()
   gen.process()
   if gen.verbose:
     for warning in gen.warnings:
