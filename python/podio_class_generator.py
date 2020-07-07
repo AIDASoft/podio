@@ -60,6 +60,28 @@ def get_clang_format():
     return []
 
 
+def ostream_component(comp_members, classname, osname='o', valname='value'):
+  """Define the inline ostream operator for component structs"""
+  ostream = ['inline std::ostream& operator<<( std::ostream& {o}, const {classname}& {value} ) {{']
+
+  for klass, name in comp_members:
+    arr_match = ClassDefinitionValidator.array_re.search(klass)
+    if arr_match:
+      size = arr_match.group(2)
+      ostream.append('  for (int i = 0; i < {size}; ++i) {{{{'.format(size=size))
+      ostream.append('    {{o}} << {{value}}.{name}[i] << "|";'.format(name=name))
+      ostream.append('  }}')
+      ostream.append('  {o} << " ";')
+    else:
+      ostream.append('  {{o}} << {{value}}.{name} << " ";'.format(name=name))
+
+  ostream.append('  return {o};')
+  ostream.append('}}\n')
+  return '\n'.join(ostream).format(
+    o=osname, classname=classname, value=valname
+  )
+
+
 class ClassGenerator(object):
 
   def __init__(self, yamlfile, install_dir, package_name,
@@ -909,21 +931,10 @@ class ClassGenerator(object):
     includes = set()
     members = ""
     extracode_declarations = ""
-    ostreamComponents = ""
     self.component_members[classname] = []
-
-    ostreamComponents += "inline std::ostream& operator<<( std::ostream& o,const " + classname + "& value ){ \n"
 
     for name, klass in components.items():
       if(name != "ExtraCode"):
-
-        if not klass.startswith("std::array"):
-          ostreamComponents += ('  o << value.%s << " " ;\n' % name)
-        else:
-          arrsize = klass[klass.rfind(',') + 1: klass.rfind('>')]
-          ostreamComponents += '  for(int i=0,N=' + arrsize + ';i<N;++i)\n'
-          ostreamComponents += ('      o << value.%s[i] << "|" ;\n' % name)
-          ostreamComponents += '  o << "  " ;\n'
         klassname = klass
         mnamespace = ""
         if "::" in klass:
@@ -948,10 +959,7 @@ class ClassGenerator(object):
         extracode_declarations = klass.get("declaration", "")
         includes.update(set(klass.get("includes", "").split('\n')))
 
-    ostreamComponents += "  return o ;\n"
-    ostreamComponents += "}\n"
-
-    substitutions = {"ostreamComponents": ostreamComponents,
+    substitutions = {"ostreamComponents": ostream_component(self.component_members[classname], classname),
                      "includes": self._join_set(includes),
                      "members": members,
                      "extracode_declarations": extracode_declarations,
@@ -962,6 +970,7 @@ class ClassGenerator(object):
                      }
     self.fill_templates("Component", substitutions)
     self.created_classes.append(classname)
+
 
   def create_obj(self, classname, definition):
     """ Create an obj class containing all information
