@@ -136,7 +136,7 @@ class ClassGenerator(object):
       klass = member["type"]
       name = member["name"]
       description = member["description"]
-      datatype_dict["members"].append("  %s %s;  ///<%s"
+      datatype_dict["members"].append("  %s %s;  ///< %s"
                                       % (klass, name, description))
       if "std::string" == klass:
         datatype_dict["includes"].add("#include <string>")
