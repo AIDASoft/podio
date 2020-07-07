@@ -65,8 +65,8 @@ class ClassGenerator(object):
 
   def process(self):
     self.reader.read()
-    self.getSyntax = self.reader.options["getSyntax"]
-    self.includeSubfolder = self.reader.options["includeSubfolder"]
+    self.get_syntax = self.reader.options["getSyntax"]
+    self.include_subfolder = self.reader.options["includeSubfolder"]
     self.expose_pod_members = self.reader.options["exposePODMembers"]
     self.process_components(self.reader.components)
     self.process_datatypes(self.reader.datatypes)
@@ -298,7 +298,7 @@ class ClassGenerator(object):
       klass = member["type"]
       desc = member["description"]
       gname, sname = name, name
-      if(self.getSyntax):
+      if(self.get_syntax):
         gname = "get" + name[:1].upper() + name[1:]
         sname = "set" + name[:1].upper() + name[1:]
       if name in all_members:
@@ -358,7 +358,7 @@ class ClassGenerator(object):
             all_members[comp_member_name] = " member '" + name + "'"
             # use mystructMember with camel case as name to avoid clashes
             comp_gname, comp_sname = comp_member_name, comp_member_name
-            if self.getSyntax:
+            if self.get_syntax:
               comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
               comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
 
@@ -414,7 +414,7 @@ class ClassGenerator(object):
 
       gname = name
       sname = name
-      if self.getSyntax:
+      if self.get_syntax:
         gname = "get" + name[:1].upper() + name[1:]
         sname = "set" + name[:1].upper() + name[1:]
       ostream_implementation += ('  o << " %s : " << value.%s().id() << std::endl ;\n' % (name, gname))
@@ -489,7 +489,7 @@ class ClassGenerator(object):
       get_relation = relationName
       add_relation = "add" + relationName
 
-      if(self.getSyntax):
+      if(self.get_syntax):
         get_relation = "get" + relationName[:1].upper() + relationName[1:]
         add_relation = "addTo" + relationName[:1].upper() + relationName[1:]
 
@@ -641,7 +641,7 @@ class ClassGenerator(object):
         colName += " "
       ostream_header_string += colName
 
-      if(self.getSyntax):
+      if(self.get_syntax):
         name = "get" + name[:1].upper() + name[1:]
       if not t.startswith("std::array"):
         ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % (numColWidth, name))
@@ -698,7 +698,7 @@ class ClassGenerator(object):
         prepareafterread += "\t\tobj->m_%s = m_rel_%s;" % (name, name)
 
         get_name = name
-        if(self.getSyntax):
+        if(self.get_syntax):
           get_name = "get" + name[:1].upper() + name[1:]
         ostream_implementation += ('  o << "     %s : " ;\n' % name)
         ostream_implementation += ('  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name)
@@ -737,7 +737,7 @@ class ClassGenerator(object):
             "CollectionSetSingleReference.cc.template", substitutions)
 
         get_name = name
-        if(self.getSyntax):
+        if(self.get_syntax):
           get_name = "get" + name[:1].upper() + name[1:]
         ostream_implementation += ('  o << "     %s : " ;\n' % name)
         ostream_implementation += ('  o << v[i].%s().id() << std::endl;\n' % get_name)
@@ -748,7 +748,7 @@ class ClassGenerator(object):
       name = item["name"]
       klass = item["type"]
       get_name = name
-      if(self.getSyntax):
+      if(self.get_syntax):
         get_name = "get" + name[:1].upper() + name[1:]
 
       vecmembers += declarations["vecmembers"].format(type=klass, name=name)
@@ -1110,7 +1110,7 @@ class ClassGenerator(object):
 
   def fill_templates(self, category, substitutions):
     # add common include subfolder if required
-    substitutions['incfolder'] = '' if not self.includeSubfolder else self.package_name + '/'
+    substitutions['incfolder'] = '' if not self.include_subfolder else self.package_name + '/'
     substitutions['PACKAGE_NAME'] = self.package_name.upper()
 
     # depending on which category is passed different naming conventions apply
@@ -1139,7 +1139,7 @@ class ClassGenerator(object):
 
   def _build_include(self, classname):
     """Return the include statement."""
-    if self.includeSubfolder:
+    if self.include_subfolder:
       classname = os.path.join(self.package_name, classname)
     return '#include "%s.h"' % classname
 
