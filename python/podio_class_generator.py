@@ -45,10 +45,16 @@ class ClassGenerator(object):
     self.buildin_types = ClassDefinitionValidator.buildin_types
     self.created_classes = []
     self.requested_classes = []
-    self.reader = PodioConfigReader(yamlfile)
     self.warnings = set()
     self.component_members = OrderedDict()
     self.dryrun = dryrun
+
+    self.reader = PodioConfigReader(yamlfile)
+    self.reader.read()
+    self.get_syntax = self.reader.options["getSyntax"]
+    self.include_subfolder = self.reader.options["includeSubfolder"]
+    self.expose_pod_members = self.reader.options["exposePODMembers"]
+
 
   def configure_clang_format(self, apply):
     if not apply:
@@ -64,10 +70,6 @@ class ClassGenerator(object):
     self.clang_format = [cformat_exe, "-style=file", "-fallback-style=llvm"]
 
   def process(self):
-    self.reader.read()
-    self.get_syntax = self.reader.options["getSyntax"]
-    self.include_subfolder = self.reader.options["includeSubfolder"]
-    self.expose_pod_members = self.reader.options["exposePODMembers"]
     self.process_components(self.reader.components)
     self.process_datatypes(self.reader.datatypes)
     self.create_selection_xml()
