@@ -1093,7 +1093,7 @@ class ClassGenerator(object):
     if not self.dryrun:
       if self.clang_format:
         cfproc = subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        content = cfproc.communicate(input=content)[0]
+        content = cfproc.communicate(input=content.encode())[0].decode()
       existing_content = ''
       if os.path.exists(fullname):
         existing_content = open(fullname, 'r').read()
