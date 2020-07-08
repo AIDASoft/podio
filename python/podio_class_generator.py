@@ -8,6 +8,7 @@ except ImportError:
   from itertools import izip_longest as zip_longest
 
 from collections import OrderedDict
+from copy import deepcopy
 
 import os
 import string
@@ -127,8 +128,10 @@ class ClassGenerator(object):
       self.requested_classes.append("%sData" % name)
 
     for name, components in content.items():
-      self.create_data(name, components)
-      self.create_class(name, components)
+      datatype = self._process_datatype(name, components)
+
+      self.create_data(name, components, datatype)
+      self.create_class(name, components, datatype)
       self.create_collection(name, components)
       self.create_obj(name, components)
       # self.create_PrintInfo(name, components)
@@ -177,7 +180,9 @@ class ClassGenerator(object):
     content = string.Template(template).substitute({"classes": content})
     self.write_file("selection.xml", content)
 
-  def process_datatype(self, classname, definition, is_data=False):
+
+  def _process_datatype(self, classname, definition):
+    """Check whether all members are known and prepare include directories"""
     datatype_dict = {
       "description": definition["Description"],
       "author": definition["Author"],
@@ -214,9 +219,8 @@ class ClassGenerator(object):
 
       elif "vector" in klass:
         datatype_dict["includes"].add("#include <vector>")
-        if is_data:  # avoid having warnings twice
-          self.warnings.add("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
-      elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
+        self.warnings.add("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
+      elif "[" in klass:
         raise Exception("'%s' defines an array type %s. Array types are not supported yet." %
                         (classname, klass))
 
@@ -228,11 +232,8 @@ class ClassGenerator(object):
     return datatype_dict
 
 
-  def create_data(self, classname, definition):
-    # check whether all member types are known
-    # and prepare include directives
-    data = self.process_datatype(classname, definition)
-
+  def create_data(self, classname, definition, datatype):
+    data = deepcopy(datatype) # avoid having outside side-effects
     # now handle the vector-members
     vectormembers = definition["VectorMembers"]
     for vectormember in vectormembers:
@@ -260,7 +261,9 @@ class ClassGenerator(object):
     self.fill_templates("Data", substitutions)
     self.created_classes.append(classname + "Data")
 
-  def create_class(self, classname, definition):
+
+  def create_class(self, classname, definition, datatype):
+    datatype = deepcopy(datatype) # avoid having outside side-effects
     namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     includes_cc = set()
@@ -275,10 +278,6 @@ class ClassGenerator(object):
     ConstGetter_implementations = ""
     ostream_declaration = ""
     ostream_implementation = ""
-
-    # check whether all member types are known
-    # and prepare include directives
-    datatype = self.process_datatype(classname, definition, False)
 
     datatype["includes"].add(self._build_include(rawclassname + "Data"))
 
