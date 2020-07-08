@@ -17,15 +17,15 @@ from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
-_text_ = """
+REPORT_TEXT = """
   PODIO Data Model
   ================
   Used
-    %s
+    {yamlfile}
   to create
-    %s classes
+    {nclasses} classes
   in
-    %s/
+    {installdir}/
   Read instructions in
   the HOWTO.TXT to run
   your first example!
@@ -133,20 +133,24 @@ class ClassGenerator(object):
       self.create_obj(name, components)
       # self.create_PrintInfo(name, components)
 
+
   def print_report(self):
     if not self.verbose:
       return
-    pkl = open(os.path.join(thisdir, "figure.txt"), 'rb')
-    figure = pickle.load(pkl)
-    text = _text_ % (self.yamlfile,
-                     len(self.created_classes),
-                     self.install_dir
-                     )
+
+    text = REPORT_TEXT.format(yamlfile=self.yamlfile,
+                               nclasses=len(self.created_classes),
+                               installdir=self.install_dir)
+
+    with open(os.path.join(thisdir, "figure.txt"), 'rb') as pkl:
+      figure = pickle.load(pkl)
+
     print()
     for figline, summaryline in zip_longest(figure, text.splitlines(), fillvalue=''):
       print(figline + summaryline)
     print("     'Homage to the Square' - Josef Albers")
     print()
+
 
   def get_template(self, filename):
     templatefile = os.path.join(self.template_dir, filename)
