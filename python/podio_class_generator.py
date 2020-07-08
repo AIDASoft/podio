@@ -160,7 +160,8 @@ class ClassGenerator(object):
 
   def get_template(self, filename):
     templatefile = os.path.join(self.template_dir, filename)
-    return open(templatefile, "r").read()
+    with open(templatefile, 'r') as tempfile:
+      return tempfile.read()
 
 
   def create_selection_xml(self):
@@ -176,7 +177,7 @@ class ClassGenerator(object):
 
     templatefile = os.path.join(self.template_dir,
                                 "selection.xml.template")
-    template = open(templatefile, "r").read()
+    template = self.get_template(templatefile)
     content = string.Template(template).substitute({"classes": content})
     self.write_file("selection.xml", content)
 
@@ -1129,18 +1130,26 @@ class ClassGenerator(object):
       if self.clang_format:
         cfproc = subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         content = cfproc.communicate(input=content.encode())[0].decode()
-      existing_content = ''
-      if os.path.exists(fullname):
-        existing_content = open(fullname, 'r').read()
-      if existing_content != content:
-        open(fullname, 'w').write(content)
+
+      try:
+        with open(fullname, 'r') as f:
+          existing_content = f.read()
+          changed = existing_content != content
+      except FileNotFoundError:
+        changed = True
+
+      if changed:
+        with open(fullname, 'w') as f:
+          f.write(content)
+
 
   def evaluate_template(self, filename, substitutions):
     """ reads in a given template, evaluates it
         and returns result
     """
     templatefile = os.path.join(self.template_dir, filename)
-    template = open(templatefile, "r").read()
+    with open(templatefile, 'r') as tempfile:
+      template = tempfile.read()
     return string.Template(template).substitute(substitutions)
 
   def fill_templates(self, category, substitutions):
