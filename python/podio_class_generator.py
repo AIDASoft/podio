@@ -120,9 +120,12 @@ class ClassGenerator(object):
       self.create_component(name, components["Members"])
 
   def process_datatypes(self, content):
+    # First have to fill the requested classes before the actual generation can
+    # start
     for name in content:
       self.requested_classes.append(name)
       self.requested_classes.append("%sData" % name)
+
     for name, components in content.items():
       self.create_data(name, components)
       self.create_class(name, components)
@@ -167,37 +170,40 @@ class ClassGenerator(object):
     self.write_file("selection.xml", content)
 
   def process_datatype(self, classname, definition, is_data=False):
-    datatype_dict = {}
-    datatype_dict["description"] = definition["Description"]
-    datatype_dict["author"] = definition["Author"]
-    datatype_dict["includes"] = set()
-    datatype_dict["members"] = []
-    members = definition["Members"]
-    for member in members:
+    datatype_dict = {
+      "description": definition["Description"],
+      "author": definition["Author"],
+      "includes": set(),
+      "members": []
+    }
+    for member in definition["Members"]:
       klass = member["type"]
       name = member["name"]
       description = member["description"]
       datatype_dict["members"].append("  %s %s;  ///< %s"
                                       % (klass, name, description))
-      if "std::string" == klass:
-        datatype_dict["includes"].add("#include <string>")
-        self.warnings.add("%s defines a string member %s, that spoils the PODness"
-                          % (classname, klass))
-      elif klass in self.buildin_types:
-        pass
-      elif klass in self.requested_classes:
-        if "::" in klass:
-          namespace, klassname = klass.split("::")
-          datatype_dict["includes"].add(self._build_include(klassname))
-        else:
-          datatype_dict["includes"].add(self._build_include(klass))
-      elif "std::array" in klass:
+
+      array_match = ClassDefinitionValidator.array_re.search(klass)
+      if array_match:
         datatype_dict["includes"].add("#include <array>")
-        array_type = klass.split("<")[1].split(",")[0]
+        array_type = array_match.group(1)
         if array_type not in self.buildin_types:
           if "::" in array_type:
             array_type = array_type.split("::")[1]
           datatype_dict["includes"].add(self._build_include(array_type))
+
+      elif "std::string" == klass:
+        datatype_dict["includes"].add("#include <string>")
+        self.warnings.add("%s defines a string member %s, that spoils the PODness"
+                          % (classname, klass))
+
+      elif klass in self.requested_classes:
+        if "::" in klass:
+          _, klassname = klass.split("::")
+          datatype_dict["includes"].add(self._build_include(klassname))
+        else:
+          datatype_dict["includes"].add(self._build_include(klass))
+
       elif "vector" in klass:
         datatype_dict["includes"].add("#include <vector>")
         if is_data:  # avoid having warnings twice
@@ -205,6 +211,9 @@ class ClassGenerator(object):
       elif "[" in klass and is_data:  # FIXME: is this only true ofr PODs?
         raise Exception("'%s' defines an array type %s. Array types are not supported yet." %
                         (classname, klass))
+
+      elif klass in self.buildin_types:
+        pass
       else:
         raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
     # get rid of duplicates:
@@ -214,8 +223,6 @@ class ClassGenerator(object):
   def create_data(self, classname, definition):
     # check whether all member types are known
     # and prepare include directives
-    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-
     data = self.process_datatype(classname, definition)
 
     # now handle the vector-members
@@ -232,6 +239,7 @@ class ClassGenerator(object):
       data["members"].append("  unsigned int %s_begin;" % (name))
       data["members"].append("  unsigned int %s_end;" % (name))
 
+    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
     substitutions = {"includes": self._join_set(data["includes"]),
                      "members": "\n".join(data["members"]),
                      "name": rawclassname,
