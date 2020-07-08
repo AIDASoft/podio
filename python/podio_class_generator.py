@@ -139,8 +139,8 @@ class ClassGenerator(object):
       return
 
     text = REPORT_TEXT.format(yamlfile=self.yamlfile,
-                               nclasses=len(self.created_classes),
-                               installdir=self.install_dir)
+                              nclasses=len(self.created_classes),
+                              installdir=self.install_dir)
 
     with open(os.path.join(thisdir, "figure.txt"), 'rb') as pkl:
       figure = pickle.load(pkl)
@@ -151,10 +151,14 @@ class ClassGenerator(object):
     print("     'Homage to the Square' - Josef Albers")
     print()
 
+    for warning in self.warnings:
+      print(warning)
+
 
   def get_template(self, filename):
     templatefile = os.path.join(self.template_dir, filename)
     return open(templatefile, "r").read()
+
 
   def create_selection_xml(self):
     content = ""
@@ -1215,6 +1219,3 @@ if __name__ == "__main__":
   if args.clangformat:
     gen.clang_format = get_clang_format()
   gen.process()
-  if gen.verbose:
-    for warning in gen.warnings:
-      print(warning)
