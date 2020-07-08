@@ -926,42 +926,48 @@ class ClassGenerator(object):
         Components can only contain simple data types and no user
         defined ones
     """
-    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-
     includes = set()
-    members = ""
-    extracode_declarations = ""
-    self.component_members[classname] = []
+    members = []
 
     for name, klass in components.items():
-      if(name != "ExtraCode"):
-        klassname = klass
-        mnamespace = ""
+      if name != "ExtraCode":
         if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-        if mnamespace == "":
-          members += "  %s %s;\n" % (klassname, name)
-          self.component_members[classname].append([klassname, name])
+          namespace, klassname = klass.split("::") # TODO: is this all covered by validation?
+          scoped_type = '::{namespace}::{type}'.format(namespace=namespace, type=klassname)
+          members.append([scoped_type, name])
         else:
-          members += " ::%s::%s %s;\n" % (mnamespace, klassname, name)
-          self.component_members[classname].append(["::%s::%s" % (mnamespace, klassname), name])
+          klassname = klass
+          members.append([klass, name])
+
+        # Handle includes
         if klass in self.reader.components:
           includes.add(self._build_include(klassname))
-        if "std::array" in klass:
-          includes.add("#include <array>")
-          array_type = klass.split("<")[1].split(",")[0]
+
+        # TODO: Move to own function?
+        array_match = ClassDefinitionValidator.array_re.search(klass)
+        if array_match:
+          includes.add('#include <array>')
+          array_type = array_match.group(1)
           if array_type not in self.buildin_types:
             if "::" in array_type:
               array_type = array_type.split("::")[1]
             includes.add(self._build_include(array_type))
-      else:
-        # handle user provided extra code
-        extracode_declarations = klass.get("declaration", "")
-        includes.update(set(klass.get("includes", "").split('\n')))
 
-    substitutions = {"ostreamComponents": ostream_component(self.component_members[classname], classname),
+
+      # handle user provided extra code
+      if 'ExtraCode' in components:
+        extracode = components['ExtraCode']
+        extracode_declarations = extracode.get("declaration", "")
+        includes.update(set(extracode.get("includes", "").split('\n')))
+      else:
+        extracode_declarations = ""
+
+      members_decl = '\n'.join(('  {t} {n};'.format(t=typ, n=name) for (typ, name) in members))
+
+    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
+    substitutions = {"ostreamComponents": ostream_component(members, classname),
                      "includes": self._join_set(includes),
-                     "members": members,
+                     "members": members_decl,
                      "extracode_declarations": extracode_declarations,
                      "name": rawclassname,
                      "package_name": self.package_name,
@@ -969,6 +975,7 @@ class ClassGenerator(object):
                      "namespace_close": namespace_close
                      }
     self.fill_templates("Component", substitutions)
+    self.component_members[classname] = members
     self.created_classes.append(classname)
 
 
