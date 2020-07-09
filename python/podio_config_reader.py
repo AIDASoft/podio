@@ -142,8 +142,12 @@ class ClassDefinitionValidator(object):
     or other components
     """
     for mem, klass in definition.items():
-      if not (mem == "ExtraCode" or klass in self.buildin_types or
-              klass in self.components):
+      if mem == 'ExtraCode':
+        if any(d in klass for d in ['const_declaration', 'implementation']):
+          raise Exception("'const_declaration' or 'implementation' field found in the 'ExtraCode' "
+                          " of component '{name}', which is not allowed".format(name=name))
+
+      elif not klass in self.buildin_types or klass in self.components:
         array_match = re.match(self.array_re, klass)
         if array_match is not None:
           typ = array_match.group(1)
@@ -151,11 +155,6 @@ class ClassDefinitionValidator(object):
             raise Exception("'%s' defines a member of a type '%s'"
                             % (name, klass) +
                             "which is not allowed in a component!")
-
-
-  def check_components(self, components):
-    for klassname, value in components.items():
-      self.check_component(klassname, value)
 
 
 class PodioConfigReader(object):
@@ -177,15 +176,33 @@ class PodioConfigReader(object):
   def handle_extracode(definition):
     return copy.deepcopy(definition)
 
+
+  @staticmethod
+  def _read_component(definition):
+    """Read the component and put it into a similar structure as the datatypes, i.e.
+    a dict with a 'Members' and an 'ExtraCode' field for easier handling
+    afterwards
+    """
+    component = {'Members': {}}
+    for name, klass in definition.items():
+      if name == 'ExtraCode':
+        component['ExtraCode'] = klass
+      else:
+        component['Members'][name] = klass
+
+    return component
+
+
   def read(self):
     stream = open(self.yamlfile, "r")
     content = ordered_load(stream, yaml.SafeLoader)
     validator = ClassDefinitionValidator(content)
+
     if "components" in content:
-      validator.check_components(content["components"])
       for klassname, value in content["components"].items():
-        component = {"Members": value}
-        self.components[klassname] = component
+        validator.check_component(klassname, value)
+        self.components[klassname] = self._read_component(value)
+
     if "datatypes" in content:
       for klassname, value in content["datatypes"].items():
         validator.check_datatype(klassname, value)
