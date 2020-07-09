@@ -171,9 +171,11 @@ class PodioConfigReader(object):
         # use subfolder when including package header files
         "includeSubfolder": False,
         }
+    self.validator = None
+
 
   @staticmethod
-  def handle_extracode(definition):
+  def _handle_extracode(definition):
     return copy.deepcopy(definition)
 
 
@@ -193,42 +195,45 @@ class PodioConfigReader(object):
     return component
 
 
+  def _read_datatype(self, value):
+    """Read the datatype and put it into an easily digestible format"""
+    datatype = {}
+    datatype["Description"] = value["Description"]
+    datatype["Author"] = value["Author"]
+
+    for category in ("Members",
+                     "VectorMembers",
+                     "OneToOneRelations",
+                     "OneToManyRelations",
+                     "TransientMembers",
+                     "Typedefs"):
+      definitions = []
+      for definition in value.get(category, {}):
+        definitions.append(self.validator.parse_member(definition))
+      datatype[category] = definitions
+
+    for category in ("ExtraCode", "ConstExtraCode"):
+      if category in value:
+        datatype[category] = PodioConfigReader._handle_extracode(value[category])
+
+    return datatype
+
+
   def read(self):
     stream = open(self.yamlfile, "r")
     content = ordered_load(stream, yaml.SafeLoader)
-    validator = ClassDefinitionValidator(content)
+    self.validator = ClassDefinitionValidator(content)
 
     if "components" in content:
       for klassname, value in content["components"].items():
-        validator.check_component(klassname, value)
+        self.validator.check_component(klassname, value)
         self.components[klassname] = self._read_component(value)
 
     if "datatypes" in content:
       for klassname, value in content["datatypes"].items():
-        validator.check_datatype(klassname, value)
-        datatype = {}
-        datatype["Description"] = value["Description"]
-        datatype["Author"] = value["Author"]
-        for category in ("Members",
-                         "VectorMembers",
-                         "OneToOneRelations",
-                         "OneToManyRelations",
-                         "TransientMembers",
-                         "Typedefs"):
-          definitions = []
-          if category in value:
-            for definition in value[category]:
-              definitions.append(validator.parse_member(definition))
-            datatype[category] = definitions
-          else:
-            datatype[category] = []
-        if "ExtraCode" in value:
-          datatype["ExtraCode"] = self.handle_extracode(
-              value["ExtraCode"])
-        if "ConstExtraCode" in value:
-          datatype["ConstExtraCode"] = self.handle_extracode(
-              value["ConstExtraCode"])
-        self.datatypes[klassname] = datatype
+        self.validator.check_datatype(klassname, value)
+        self.datatypes[klassname] = self._read_datatype(value)
+
     if "options" in content:
       for option, value in content["options"].items():
         self.options[option] = value
