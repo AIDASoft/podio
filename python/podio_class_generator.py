@@ -117,8 +117,8 @@ class ClassGenerator(object):
 
   def process_components(self, content):
     self.requested_classes += content.keys()
-    for name, components in content.items():
-      self.create_component(name, components["Members"])
+    for name, component in content.items():
+      self.create_component(name, component)
 
   def process_datatypes(self, content):
     # First have to fill the requested classes before the actual generation can
@@ -937,7 +937,7 @@ class ClassGenerator(object):
     self.fill_templates("PrintInfo", substitutions)
     self.created_classes.append(classname)
 
-  def create_component(self, classname, components):
+  def create_component(self, classname, component):
     """ Create a component class to be used within the data types
         Components can only contain simple data types and no user
         defined ones
@@ -945,40 +945,39 @@ class ClassGenerator(object):
     includes = set()
     members = []
 
-    for name, klass in components.items():
-      if name != "ExtraCode":
-        if "::" in klass:
-          namespace, klassname = klass.split("::") # TODO: is this all covered by validation?
-          scoped_type = '::{namespace}::{type}'.format(namespace=namespace, type=klassname)
-          members.append([scoped_type, name])
-        else:
-          klassname = klass
-          members.append([klass, name])
+    for name, klass in component['Members'].items():
+      if "::" in klass:
+        namespace, klassname = klass.split("::") # TODO: is this all covered by validation?
+        scoped_type = '::{namespace}::{type}'.format(namespace=namespace, type=klassname)
+        members.append([scoped_type, name])
+      else:
+        klassname = klass
+        members.append([klass, name])
 
-        # Handle includes
-        if klass in self.reader.components:
-          includes.add(self._build_include(klassname))
+      # Handle includes
+      if klass in self.reader.components:
+        includes.add(self._build_include(klassname))
 
-        # TODO: Move to own function?
-        array_match = ClassDefinitionValidator.array_re.search(klass)
-        if array_match:
-          includes.add('#include <array>')
-          array_type = array_match.group(1)
-          if array_type not in self.buildin_types:
-            if "::" in array_type:
-              array_type = array_type.split("::")[1]
+      # TODO: Move to own function?
+      array_match = ClassDefinitionValidator.array_re.search(klass)
+      if array_match:
+        includes.add('#include <array>')
+        array_type = array_match.group(1)
+        if array_type not in self.buildin_types:
+          if "::" in array_type:
+            array_type = array_type.split("::")[1]
             includes.add(self._build_include(array_type))
 
 
-      # handle user provided extra code
-      if 'ExtraCode' in components:
-        extracode = components['ExtraCode']
-        extracode_declarations = extracode.get("declaration", "")
-        includes.update(set(extracode.get("includes", "").split('\n')))
-      else:
-        extracode_declarations = ""
+    # handle user provided extra code
+    if 'ExtraCode' in component:
+      extracode = component['ExtraCode']
+      extracode_declarations = extracode.get("declaration", "")
+      includes.update(set(extracode.get("includes", "").split('\n')))
+    else:
+      extracode_declarations = ""
 
-      members_decl = '\n'.join(('  {t} {n};'.format(t=typ, n=name) for (typ, name) in members))
+    members_decl = '\n'.join(('  {t} {n};'.format(t=typ, n=name) for (typ, name) in members))
 
     _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
     substitutions = {"ostreamComponents": ostream_component(members, classname),
