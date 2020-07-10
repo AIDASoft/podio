@@ -49,6 +49,13 @@ def demangle_classname(classname):
   return namespace, rawclassname, namespace_open, namespace_close
 
 
+def remove_namespace(full_type):
+    """Get the type after potentially removing the namespace from the name"""
+    if '::'in full_type:
+      return full_type.split('::')[1]
+    return full_type
+
+
 def get_clang_format():
   """Check if clang format is available and if so get the list of arguments to
   invoke it via subprocess.Popen"""
@@ -65,16 +72,14 @@ def ostream_component(comp_members, classname, osname='o', valname='value'):
   """Define the inline ostream operator for component structs"""
   ostream = ['inline std::ostream& operator<<( std::ostream& {o}, const {classname}& {value} ) {{']
 
-  for klass, name in comp_members:
-    arr_match = ClassDefinitionValidator.array_re.search(klass)
-    if arr_match:
-      size = arr_match.group(2)
-      ostream.append('  for (int i = 0; i < {size}; ++i) {{{{'.format(size=size))
-      ostream.append('    {{o}} << {{value}}.{name}[i] << "|";'.format(name=name))
+  for member in comp_members:
+    if member.is_array:
+      ostream.append('  for (int i = 0; i < {size}; ++i) {{{{'.format(size=member.array_size))
+      ostream.append('    {{o}} << {{value}}.{name}[i] << "|";'.format(name=member.name))
       ostream.append('  }}')
       ostream.append('  {o} << " ";')
     else:
-      ostream.append('  {{o}} << {{value}}.{name} << " ";'.format(name=name))
+      ostream.append('  {{o}} << {{value}}.{name} << " ";'.format(name=member.name))
 
   ostream.append('  return {o};')
   ostream.append('}}\n')
@@ -191,20 +196,13 @@ class ClassGenerator(object):
       "members": []
     }
     for member in definition["Members"]:
-      klass = member["type"]
-      name = member["name"]
-      description = member["description"]
-      datatype_dict["members"].append("  %s %s;  ///< %s"
-                                      % (klass, name, description))
+      datatype_dict["members"].append(str(member))
+      klass = member.full_type
 
-      array_match = ClassDefinitionValidator.array_re.search(klass)
-      if array_match:
+      if member.is_array:
         datatype_dict["includes"].add("#include <array>")
-        array_type = array_match.group(1)
-        if array_type not in self.buildin_types:
-          if "::" in array_type:
-            array_type = array_type.split("::")[1]
-          datatype_dict["includes"].add(self._build_include(array_type))
+        if member.array_type not in self.buildin_types:
+          datatype_dict["includes"].add(self._build_include(remove_namespace(member.array_type)))
 
       elif "std::string" == klass:
         datatype_dict["includes"].add("#include <string>")
@@ -212,13 +210,9 @@ class ClassGenerator(object):
                           % (classname, klass))
 
       elif klass in self.requested_classes:
-        if "::" in klass:
-          _, klassname = klass.split("::")
-          datatype_dict["includes"].add(self._build_include(klassname))
-        else:
-          datatype_dict["includes"].add(self._build_include(klass))
+        datatype_dict["includes"].add(self._build_include(remove_namespace(klass)))
 
-      elif "vector" in klass:
+      elif "std::vector" in klass:
         datatype_dict["includes"].add("#include <vector>")
         self.warnings.add("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
       elif "[" in klass:
@@ -234,18 +228,19 @@ class ClassGenerator(object):
 
 
   def create_data(self, classname, definition, datatype):
+    """Create the Data"""
     data = deepcopy(datatype) # avoid having outside side-effects
     # now handle the vector-members
     vectormembers = definition["VectorMembers"]
     for vectormember in vectormembers:
-      name = vectormember["name"]
+      name = vectormember.name
       data["members"].append("  unsigned int %s_begin;" % name)
       data["members"].append("  unsigned int %s_end;" % (name))
 
     # now handle the one-to-many relations
     refvectors = definition["OneToManyRelations"]
     for refvector in refvectors:
-      name = refvector["name"]
+      name = refvector.name
       data["members"].append("  unsigned int %s_begin;" % (name))
       data["members"].append("  unsigned int %s_end;" % (name))
 
@@ -289,7 +284,7 @@ class ClassGenerator(object):
     # check on-to-one relations and prepare include directives
     oneToOneRelations = definition["OneToOneRelations"]
     for member in oneToOneRelations:
-      klass = member["type"]
+      klass = member.full_type
       if klass in self.requested_classes:
         mnamespace = ""
         klassname = klass
@@ -316,29 +311,28 @@ class ClassGenerator(object):
       datatype["includes"].add("#include <vector>")
       datatype["includes"].add('#include "podio/RelationRange.h"')
     for item in refvectors:
-      klass = item["type"]
+      klass = item.full_type
       if klass in self.requested_classes:
         if "::" in klass:
           mnamespace, klassname = klass.split("::")
           datatype["includes"].add(self._build_include(klassname))
         else:
           datatype["includes"].add(self._build_include(klass))
-      elif "std::array" in klass:
+
+      elif item.is_array:
         datatype["includes"].add("#include <array>")
-        array_type = klass.split("<")[1].split(",")[0]
-        if array_type not in self.buildin_types:
-          if "::" in array_type:
-            array_type = array_type.split("::")[1]
-          datatype["includes"].add(self._build_include(array_type))
+        if item.array_type not in self.buildin_types:
+          datatype["includes"].add(self._build_include(item.array_type))
+
       else:
         raise Exception("'%s' declares a non-allowed many-relation to '%s'!" % (classname, klass))
 
     # handle standard members
     all_members = OrderedDict()
     for member in definition["Members"]:
-      name = member["name"]
-      klass = member["type"]
-      desc = member["description"]
+      name = member.name
+      klass = member.full_type
+      desc = member.description
       gname, sname = name, name
       if(self.get_syntax):
         gname = "get" + name[:1].upper() + name[1:]
@@ -358,12 +352,12 @@ class ClassGenerator(object):
         setter_implementations += implementations["member_builtin_setter"].format(
             type=klass, classname=rawclassname, name=name, fname=sname)
         ostream_implementation += ('  o << " %s : " << value.%s() << std::endl ;\n' % (name, gname))
-      elif klass.startswith("std::array"):
+      elif member.is_array:
         setter_declarations += declarations["member_builtin_setter"].format(
             type=klass, name=name, fname=sname, description=desc)
         setter_implementations += implementations["member_builtin_setter"].format(
             type=klass, classname=rawclassname, name=name, fname=sname)
-        item_class = klass.split("<")[1].split(",")[0].strip()
+        item_class = member.array_type
         setter_declarations += declarations["array_builtin_setter"].format(
             type=item_class, name=name, fname=sname, description=desc)
         setter_implementations += implementations["array_builtin_setter"].format(
@@ -374,9 +368,8 @@ class ClassGenerator(object):
             type=item_class, classname=rawclassname, name=name, fname=gname)
         ConstGetter_implementations += implementations["const_array_member_getter"].format(
             type=item_class, classname=rawclassname, name=name, fname=gname, description=desc)
-        arrsize = klass[klass.rfind(',') + 1: klass.rfind('>')]
         ostream_implementation += ('  o << " %s : " ;\n' % (name))
-        ostream_implementation += '  for(int i=0,N=' + arrsize + ';i<N;++i)\n'
+        ostream_implementation += '  for(int i=0,N=' + member.array_size + ';i<N;++i)\n'
         ostream_implementation += ('      o << value.%s()[i] << "|" ;\n' % gname)
         ostream_implementation += '  o << std::endl ;\n'
       else:
@@ -447,9 +440,9 @@ class ClassGenerator(object):
 
     # one-to-one relations
     for member in oneToOneRelations:
-      name = member["name"]
-      klass = member["type"]
-      desc = member["description"]
+      name = member.name
+      klass = member.full_type
+      desc = member.description
       mnamespace = ""
       klassname = klass
       mnamespace, klassname, _, __ = demangle_classname(klass)
@@ -479,7 +472,7 @@ class ClassGenerator(object):
       datatype["includes"].add("#include <vector>")
       datatype["includes"].add('#include "podio/RelationRange.h"')
     for item in vectormembers:
-      klass = item["type"]
+      klass = item.full_type
       if klass not in self.buildin_types and klass not in self.reader.components:
         raise Exception("'%s' declares a non-allowed vector member of type '%s'!" % (classname, klass))
       if klass in self.reader.components:
@@ -519,15 +512,15 @@ class ClassGenerator(object):
     ConstReferences_template = self.get_template("ConstRefVector.cc.template")
 
     for refvector in refvectors + definition["VectorMembers"]:
-      relnamespace, reltype, _, __ = demangle_classname(refvector["type"])
-      relationtype = refvector["type"]
+      relnamespace, reltype, _, __ = demangle_classname(refvector.full_type)
+      relationtype = refvector.full_type
       if relationtype not in self.buildin_types and relationtype not in self.reader.components:
         relationtype = relnamespace
         if relnamespace:
           relationtype += "::"
         relationtype += "Const" + reltype
 
-      relationName = refvector["name"]
+      relationName = refvector.name
       get_relation = relationName
       add_relation = "add" + relationName
 
@@ -555,7 +548,7 @@ class ClassGenerator(object):
                        }
       references_declarations += string.Template(references_declarations_template).substitute(substitutions)
       references += string.Template(references_template).substitute(substitutions)
-      references_members += "std::vector<%s>* m_%s; ///< transient \n" % (refvector["type"], refvector["name"])
+      references_members += "std::vector<%s>* m_%s; ///< transient \n" % (refvector.full_type, refvector.name)
       ConstReferences_declarations += string.Template(
           ConstReferences_declarations_template).substitute(substitutions)
       ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
@@ -662,8 +655,8 @@ class ClassGenerator(object):
     ostream_implementation += (' << std::setw(%i) ' % numColWidth)
     ostream_implementation += ' << v[i].id() << " " '
     for m in members:
-      name = m["name"]
-      t = m["type"]
+      name = m.name
+      t = m.full_type
       colW = numColWidth + 2
       comps = self.reader.components
       compMemStr = ""
@@ -685,7 +678,7 @@ class ClassGenerator(object):
 
       if(self.get_syntax):
         name = "get" + name[:1].upper() + name[1:]
-      if not t.startswith("std::array"):
+      if not m.is_array:
         ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % (numColWidth, name))
     ostream_implementation += '  << std::endl;\n'
     ostream_implementation = ostream_implementation.replace("{header_string}", ostream_header_string)
@@ -704,8 +697,8 @@ class ClassGenerator(object):
       clear_relations += "\tfor (auto& pointer : m_refCollections) { pointer->clear(); }\n"
 
       for counter, item in enumerate(refvectors):
-        name = item["name"]
-        klass = item["type"]
+        name = item.name
+        klass = item.full_type
         substitutions = {"counter": counter,
                          "class": klass,
                          "name": name}
@@ -748,8 +741,8 @@ class ClassGenerator(object):
         ostream_implementation += '  o << std::endl ;\n'
 
       for counter, item in enumerate(refmembers):
-        name = item["name"]
-        klass = item["type"]
+        name = item.name
+        klass = item.full_type
         mnamespace = ""
         klassname = klass
         if "::" in klass:
@@ -787,8 +780,8 @@ class ClassGenerator(object):
     if len(vectormembers) > 0:
       includes.add('#include <numeric>')
     for counter, item in enumerate(vectormembers):
-      name = item["name"]
-      klass = item["type"]
+      name = item.name
+      klass = item.full_type
       get_name = name
       if(self.get_syntax):
         get_name = "get" + name[:1].upper() + name[1:]
@@ -943,33 +936,18 @@ class ClassGenerator(object):
         defined ones
     """
     includes = set()
-    members = []
 
-    for name, klass in component['Members'].items():
-      if "::" in klass:
-        namespace, klassname = klass.split("::") # TODO: is this all covered by validation?
-        scoped_type = '::{namespace}::{type}'.format(namespace=namespace, type=klassname)
-        members.append([scoped_type, name])
-      else:
-        klassname = klass
-        members.append([klass, name])
+    for member in component['Members']:
+      if member.full_type in self.reader.components:
+        includes.add(self._build_include(remove_namespace(member.full_type)))
 
-      # Handle includes
-      if klass in self.reader.components:
-        includes.add(self._build_include(klassname))
-
-      # TODO: Move to own function?
-      array_match = ClassDefinitionValidator.array_re.search(klass)
-      if array_match:
+      if member.is_array:
         includes.add('#include <array>')
-        array_type = array_match.group(1)
-        if array_type not in self.buildin_types:
-          if "::" in array_type:
-            array_type = array_type.split("::")[1]
-            includes.add(self._build_include(array_type))
+        if member.array_type in self.reader.components:
+          includes.add(self._build_include(remove_namespace(member.array_type)))
 
+    members_decl = '\n'.join(('  {}'.format(m) for m in component['Members']))
 
-    # handle user provided extra code
     if 'ExtraCode' in component:
       extracode = component['ExtraCode']
       extracode_declarations = extracode.get("declaration", "")
@@ -977,10 +955,8 @@ class ClassGenerator(object):
     else:
       extracode_declarations = ""
 
-    members_decl = '\n'.join(('  {t} {n};'.format(t=typ, n=name) for (typ, name) in members))
-
     _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-    substitutions = {"ostreamComponents": ostream_component(members, classname),
+    substitutions = {"ostreamComponents": ostream_component(component['Members'], classname),
                      "includes": self._join_set(includes),
                      "members": members_decl,
                      "extracode_declarations": extracode_declarations,
@@ -990,7 +966,7 @@ class ClassGenerator(object):
                      "namespace_close": namespace_close
                      }
     self.fill_templates("Component", substitutions)
-    self.component_members[classname] = members
+    self.component_members[classname] = [(m.full_type, m.name) for m in component['Members']]
     self.created_classes.append(classname)
 
 
@@ -1015,8 +991,8 @@ class ClassGenerator(object):
     # do includes and forward declarations for
     # oneToOneRelations and do proper cleanups
     for item in singleRelations:
-      name = item["name"]
-      klass = item["type"]
+      name = item.name
+      klass = item.full_type
       klassname = klass
       mnamespace = ""
       if klass not in self.buildin_types:
@@ -1057,8 +1033,8 @@ class ClassGenerator(object):
       includes.add("#include <vector>")
 
     for item in refvectors + definition["VectorMembers"]:
-      name = item["name"]
-      klass = item["type"]
+      name = item.name
+      klass = item.full_type
       if klass not in self.buildin_types:
         if klass not in self.reader.components:
           if "::" in klass:
@@ -1105,8 +1081,8 @@ class ClassGenerator(object):
     implementation = ""
     declaration = ""
     for member in members:
-      name = member["name"]
-      klass = member["type"]
+      name = member.name
+      klass = member.full_type
       substitutions = {"classname": classname,
                        "member": name,
                        "type": klass

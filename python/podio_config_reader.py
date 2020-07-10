@@ -8,6 +8,39 @@ import re
 
 from collections import OrderedDict
 
+class MemberVariable(object):
+  """Simple class to hold information about a member variable"""
+  def __init__(self, **kwargs):
+    self.name = kwargs.pop('name', '')
+    self.full_type = kwargs.pop('type', '')
+    self.description = kwargs.pop('description', '')
+
+    is_array = kwargs.pop('is_array', False)
+    self.array_type = kwargs.pop('array_type', None)
+    self.array_size = kwargs.pop('array_size', None)
+    if is_array and not (self.array_type and self.array_size):
+      array_match = ClassDefinitionValidator.array_re.match(self.full_type)
+      if array_match:
+        self.array_type, self.array_size = array_match.groups()
+      else:
+        raise ValueError("Trying to construct MemberVariable with 'is_array' but 'type' "
+                         "is not a valid array definition")
+
+    self.is_array = is_array or (self.array_type is not None and self.array_size is not None)
+    if self.is_array:
+      self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
+
+    if kwargs:
+      raise ValueError("Unused kwargs in MemberVariable: {}".format(kwargs.keys()))
+
+
+  def __str__(self):
+    """string representation"""
+    definition = r'{} {};'.format(self.full_type, self.name)
+    if self.description:
+      definition += r' ///< {}'.format(self.description)
+    return definition
+
 
 def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
 
@@ -103,7 +136,7 @@ class ClassDefinitionValidator(object):
   def check_members(self, name, members):
     for item in members:
       member = self.parse_member(item)
-      theType = member["type"]
+      theType = member.full_type
       return  # TODO
       if theType not in self.buildin_types and \
          theType not in self.datatypes and \
@@ -126,12 +159,13 @@ class ClassDefinitionValidator(object):
         raise Exception("%s defines an array of disallowed type %s"
                         % (string, typ))
       klass = "std::array<{typ}, {size}>".format(typ=typ, size=size)
-      return {'name': name, 'type': klass, 'description': comment.strip()}
+      return MemberVariable(**{'name': name, 'type': klass, 'description': comment.strip(),
+                               'is_array': True})
 
     member_match = self.member_re.match(string)
     if member_match:
       klass, name, comment = member_match.groups()
-      return {'name': name, 'type': klass, 'description': comment.strip()}
+      return MemberVariable(**{'name': name, 'type': klass, 'description': comment.strip()})
 
     raise Exception('%s is not a valid member definition' % string)
 
@@ -185,12 +219,13 @@ class PodioConfigReader(object):
     a dict with a 'Members' and an 'ExtraCode' field for easier handling
     afterwards
     """
-    component = {'Members': {}}
+    component = {'Members': []}
     for name, klass in definition.items():
       if name == 'ExtraCode':
         component['ExtraCode'] = klass
       else:
-        component['Members'][name] = klass
+        component['Members'].append(MemberVariable(name=name, type=klass,
+                                                   is_array='std::array' in klass))
 
     return component
 
