@@ -14,6 +14,8 @@ class MemberVariable(object):
     self.name = kwargs.pop('name', '')
     self.full_type = kwargs.pop('type', '')
     self.description = kwargs.pop('description', '')
+    self.is_builtin = False
+    self.is_builtin_array = False
 
     is_array = kwargs.pop('is_array', False)
     self.array_type = kwargs.pop('array_type', None)
@@ -29,6 +31,9 @@ class MemberVariable(object):
     self.is_array = is_array or (self.array_type is not None and self.array_size is not None)
     if self.is_array:
       self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
+      self.is_builtin_array = self.array_type in ClassDefinitionValidator.buildin_types
+
+    self.is_builtin = self.full_type in ClassDefinitionValidator.buildin_types
 
     if kwargs:
       raise ValueError("Unused kwargs in MemberVariable: {}".format(kwargs.keys()))

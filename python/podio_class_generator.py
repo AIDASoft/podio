@@ -88,6 +88,191 @@ def ostream_component(comp_members, classname, osname='o', valname='value'):
   )
 
 
+def get_set_names(name, use_get):
+  """Get the names for the get/set functions, depending on whether a get/set
+  should be prepended
+  """
+  if not use_get:
+    return name, name
+
+  caps_name = name[0].upper() + name[1:]
+  return [s + caps_name for s in ["get", "set"]]
+
+
+def get_set_relations(name, use_get):
+  """Function names for get/setting of relations depending on whether 'get'-syntax is used"""
+  if not use_get:
+    return name, 'add' + name
+
+  caps_name = name[0].upper() + name[1:]
+  return ['get' + caps_name, 'addTo' + caps_name]
+
+
+def _format(string, **replacements):
+  """Do 'format'-like replacements of the passed key-value pairs in strings that
+  also contain other curly-braces"""
+  res_string = string
+  for key, repl in replacements.items():
+    res_string = res_string.replace('{' + key + '}', repl)
+  return res_string
+
+
+def get_extra_code(classname, definition):
+  """Get the extra code from a datatype definition"""
+  extra_code = {'decl': "", 'const_decl': "", 'code': "", 'const_code': "", 'includes': set()}
+
+  extra = definition.get('ExtraCode', {})
+  if not extra:
+    return extra_code
+
+  extra_code['decl'] = _format(extra.get('declaration', ''), name=classname)
+  extra_code['code'] = _format(extra.get('implementation', ''), name=classname)
+
+  if 'const_declaration' in extra:
+    extra_code['const_decl'] = _format(extra['const_declaration'], name='Const' + classname)
+    extra_code['decl'] += '\n' + _format(extra['const_declaration'], name=classname)
+
+  if 'const_implementation' in extra:
+    extra_code['const_code'] = _format(extra['const_implementation'], name='Const' + classname)
+    extra_code['code'] += '\n' + _format(extra['const_implementation'], name=classname)
+
+  extra_code['includes'].update(extra.get('includes', '').split('\n'))
+
+  return extra_code
+
+
+class GetterSetterGenerator(object):
+  """Class for generating getter / setter methods"""
+  def __init__(self, get_syntax):
+    """Decide here whether the 'get'-syntax should be used"""
+    self.get_syntax = get_syntax
+
+  @staticmethod
+  def _get_format_pattern_func(default_replacements):
+    """Get a format function that has some default replacements and can additionally
+    take some more replacements that override the defaults"""
+    def _format_pattern(pattern_str, **replacements):
+      """format the given string updating the default_replacements as necessary"""
+      # make the arguments to this override the defaults if need be
+      repls = deepcopy(default_replacements)
+      repls.update(replacements)
+      return pattern_str.format(**repls)
+
+    return _format_pattern
+
+  @staticmethod
+  def _make_return_dict(getter_decls, getter_impls, setter_decls, setter_impls, const_getter_impls):
+    """Put all the generation code into a dict to have some structure. Arguments can
+    either be a list of strings or just plain strings"""
+    return {
+      'decl': {
+        'get': ''.join(getter_decls),
+        'set': ''.join(setter_decls)
+      }, 'impl': {
+        'get': ''.join(getter_impls),
+        'set': ''.join(setter_impls),
+        'const_get': ''.join(const_getter_impls)
+      }
+    }
+
+
+  def get_set_members(self, member, classname, components=None):
+    """Create the getters and setters for members of the class if components are
+    passed the members of the components will also be exposed"""
+    default_replacements = {
+      'type': member.full_type,
+      'name': member.name,
+      'description': member.description,
+      'classname': classname
+    }
+    _format_pattern = self._get_format_pattern_func(default_replacements)
+    getname, setname = get_set_names(member.name, self.get_syntax)
+
+    getter_decls = []
+    getter_impls = []
+    setter_decls = []
+    setter_impls = []
+    const_getter_impls = []
+
+    getter_decls.append(_format_pattern(declarations["member_getter"], fname=getname))
+    getter_impls.append(_format_pattern(implementations["member_getter"], fname=getname))
+    const_getter_impls.append(_format_pattern(implementations["const_member_getter"], fname=getname))
+
+    if member.is_builtin or member.is_array:
+      setter_decls.append(_format_pattern(declarations["member_builtin_setter"], fname=setname))
+      setter_impls.append(_format_pattern(implementations["member_builtin_setter"], fname=setname))
+
+      if member.is_array:
+        # common replacements
+        repls = {'type': member.array_type, 'fname': getname}
+        getter_decls.append(_format_pattern(declarations["array_member_getter"], **repls))
+        getter_impls.append(_format_pattern(implementations["array_member_getter"], **repls))
+        const_getter_impls.append(_format_pattern(implementations["const_array_member_getter"], **repls))
+
+        repls['fname'] = setname
+        setter_decls.append(_format_pattern(declarations["array_builtin_setter"], **repls))
+        setter_impls.append(_format_pattern(implementations["array_builtin_setter"], **repls))
+
+    else:
+      setter_decls.append(_format_pattern(declarations["member_class_refsetter"], fname=setname))
+      setter_impls.append(_format_pattern(implementations["member_class_refsetter"], fname=setname))
+
+      setter_decls.append(_format_pattern(declarations["member_class_setter"], fname=setname))
+      setter_impls.append(_format_pattern(implementations["member_class_setter"], fname=setname))
+
+      if components is not None:
+        for sub_member in components[member.full_type]['Members']:
+          getname, setname = get_set_names(sub_member.name, self.get_syntax)
+
+          repls = {'type': sub_member.full_type, 'name': sub_member.name,
+                   'fname': getname, 'compname': member.name}
+          getter_decls.append(_format_pattern(declarations["pod_member_getter"], **repls))
+          getter_impls.append(_format_pattern(implementations["pod_member_getter"], **repls))
+          const_getter_impls.append(_format_pattern(implementations["const_pod_member_getter"], **repls))
+
+          repls['fname'] = setname
+          if sub_member.is_builtin:
+            setter_decls.append(_format_pattern(declarations["pod_member_builtin_setter"], **repls))
+            setter_impls.append(_format_pattern(implementations["pod_member_builtin_setter"], **repls))
+
+          else:
+            setter_decls.append(_format_pattern(declarations["pod_member_class_refsetter"], **repls))
+            setter_impls.append(_format_pattern(implementations["pod_member_class_refsetter"], **repls))
+
+            setter_decls.append(_format_pattern(declarations["pod_member_class_setter"], **repls))
+            setter_impls.append(_format_pattern(implementations["pod_member_class_setter"], **repls))
+
+    # give this thing a minimum amount structure
+    return self._make_return_dict(getter_decls, getter_impls,
+                                  setter_decls, setter_impls, const_getter_impls)
+
+
+  def get_set_relation(self, relation, classname):
+    """Create getters and setters for 'OneToOneRelations'"""
+    namespace, cls, _, _ = demangle_classname(relation.full_type)
+    _, rawclassname, _, _ = demangle_classname(classname)
+    default_replacements = {
+      'name': relation.name,
+      'description': relation.description,
+      'classname': rawclassname,
+      'namespace': namespace,
+      'type': cls
+    }
+    _format_pattern = self._get_format_pattern_func(default_replacements)
+
+    getname, setname = get_set_names(relation.name, self.get_syntax)
+
+    getter_decl = _format_pattern(declarations['one_rel_getter'], fname=getname)
+    getter_impl = _format_pattern(implementations['one_rel_getter'], fname=getname)
+    const_getter_impl = _format_pattern(implementations['const_one_rel_getter'], fname=getname)
+
+    setter_decl = _format_pattern(declarations['one_rel_setter'], fname=setname)
+    setter_impl = _format_pattern(implementations['one_rel_setter'], fname=setname)
+
+    return self._make_return_dict(getter_decl, getter_impl,
+                                  setter_decl, setter_impl, const_getter_impl)
+
+
 class ClassGenerator(object):
 
   def __init__(self, yamlfile, install_dir, package_name,
@@ -112,6 +297,7 @@ class ClassGenerator(object):
     self.expose_pod_members = self.reader.options["exposePODMembers"]
 
     self.clang_format = []
+    self.get_set_generator = GetterSetterGenerator(self.get_syntax)
 
 
   def process(self):
@@ -258,13 +444,122 @@ class ClassGenerator(object):
     self.created_classes.append(classname + "Data")
 
 
+  def _process_fwd_declarations(self, relations):
+    """Process the forward declarations and includes for a oneToOneRelation"""
+    fwd_decls = {"": []}
+    includes = set()
+
+    for member in relations:
+      if member.full_type in self.requested_classes:
+        namespace, klassname, _, _ = demangle_classname(member.full_type)
+        if namespace not in fwd_decls:
+          fwd_decls[namespace] = []
+        fwd_decls[namespace].append(klassname)
+
+        includes.add(self._build_include(klassname))
+
+    forward_declaration = []
+    for nsp, classes in fwd_decls.items():
+      nsp_fwd = []
+      if nsp:
+        nsp_fwd.append('namespace {} {{'.format(nsp))
+
+      for cls in classes:
+        nsp_fwd.append('class {};'.format(cls))
+        nsp_fwd.append('class Const{};'.format(cls))
+
+      if nsp:
+        nsp_fwd.append('}\n')
+
+      forward_declaration.append('\n'.join(nsp_fwd))
+
+    return includes, '\n'.join(forward_declaration)
+
+
+  def _get_includes(self, member):
+    """Get the additional includes for a given member"""
+    includes = set()
+    if member.full_type in self.requested_classes:
+      includes.add(self._build_include(remove_namespace(member.full_type)))
+
+    elif member.is_array:
+      includes.add('#include <array>')
+      if member.array_type not in self.buildin_types:
+        includes.add(self._build_include(remove_namespace(member.array_type)))
+
+    return includes
+
+
+  def _ostream_class(self, class_members, multi_relations, single_relations, classname,
+                     osname='o', valname='value'):
+    """ostream operator overload declaration and implementation for a given class"""
+    decl = "std::ostream& operator<<( std::ostream& {o}, const Const{classname}& {value} );\n"
+
+    impl = [decl.replace(';\n', ' {{')] # double brace for surviving .format
+    impl.append('  {o} << " id: " << {value}.id() << \'\\n\';')
+
+    for member in class_members:
+      getname, _ = get_set_names(member.name, self.get_syntax)
+      _fmt = lambda x: x.format(name=member.name, getname=getname, size=member.array_size)
+      if member.is_array:
+        impl.append(_fmt('  {{o}} << " {name} : ";'))
+        impl.append(_fmt('  for (int i = 0; i < {size}; ++i) {{{{')) # have to survive format twice
+        impl.append(_fmt('    {{o}} << {{value}}.{getname}()[i] << "|" ;'))
+        impl.append('  }}')
+        impl.append('  {o} << \'\\n\';')
+      else:
+        impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
+
+      if self.expose_pod_members and member.full_type not in self.buildin_types and not member.is_array:
+        for sub_member in self.component_members[member.full_type]:
+          getname, _ = get_set_names(sub_member.name, self.get_syntax)
+          _fmt = lambda x: x.format(name=member.name, getname=getname)
+          impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
+
+    for relation in single_relations:
+      getname, _ = get_set_relations(relation.name, self.get_syntax)
+      impl.append('  {{o}} << " {name} : " << {{value}}.{getname}().id() << \'\\n\';'.format(
+        name=relation.name, getname=getname))
+
+    for relation in multi_relations:
+      getname, _ = get_set_relations(relation.name, self.get_syntax)
+      _fmt = lambda x: x.format(name=relation.name, getname=getname)
+      impl.append(_fmt('  {{o}} << " {name} : " ;'))
+      impl.append(_fmt('  for (unsigned i = 0; i < {{value}}.{name}_size(); ++i) {{{{'))
+      # If the reference is of the same type as the class we have to avoid
+      # running into a possible infinite loop when printing. Hence, print only
+      # the id instead of the whole referenced object
+      if remove_namespace(relation.full_type) == classname:
+        impl.append(_fmt('     {{o}} << {{value}}.{getname}(i).id() << " ";'))
+      else:
+        impl.append(_fmt('     {{o}} << {{value}}.{getname}(i) << " ";'))
+      impl.append('  }}')
+      impl.append('  {o} << \'\\n\';')
+
+
+    impl.append('  return {o};')
+    impl.append('}}') # to survive .format
+    return (decl.format(classname=classname, o=osname, value=valname),
+            '\n'.join(impl).format(classname=classname, o=osname, value=valname))
+
+
   def create_class(self, classname, definition, datatype):
+    """Create all files necessary for a given class"""
     datatype = deepcopy(datatype) # avoid having outside side-effects
     namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
-    includes_cc = set()
-    forward_declarations = ""
-    forward_declarations_namespace = {"": []}
+    datatype["includes"].add(self._build_include(rawclassname + "Data"))
+
+    refvectors = definition["OneToManyRelations"]
+    if refvectors:
+      datatype["includes"].add("#include <vector>")
+      datatype["includes"].add('#include "podio/RelationRange.h"')
+    for item in refvectors:
+      if item.full_type not in self.requested_classes and not item.is_array:
+        raise Exception("'%s' declares a non-allowed many-relation to '%s'!" % (classname, item.full_type))
+
+      datatype["includes"].update(self._get_includes(item))
+
     getter_implementations = ""
     setter_implementations = ""
     getter_declarations = ""
@@ -272,166 +567,34 @@ class ClassGenerator(object):
     constructor_signature = ""
     constructor_body = ""
     ConstGetter_implementations = ""
-    ostream_declaration = ""
-    ostream_implementation = ""
 
-    datatype["includes"].add(self._build_include(rawclassname + "Data"))
-
-    ostream_declaration = ("std::ostream& operator<<( std::ostream& o,const Const%s& value );\n" % rawclassname)
-    ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const Const%s& value ){\n" % rawclassname)
-    ostream_implementation += '  o << " id : " << value.id() << std::endl ;\n'
-
-    # check on-to-one relations and prepare include directives
-    oneToOneRelations = definition["OneToOneRelations"]
-    for member in oneToOneRelations:
-      klass = member.full_type
-      if klass in self.requested_classes:
-        mnamespace = ""
-        klassname = klass
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-          if mnamespace not in forward_declarations_namespace:
-            forward_declarations_namespace[mnamespace] = []
-
-        forward_declarations_namespace[mnamespace] += ["class %s;\n" % (klassname)]
-        forward_declarations_namespace[mnamespace] += ["class Const%s;\n" % (klassname)]
-        includes_cc.add(self._build_include(klassname))
-
-    for nsp in forward_declarations_namespace:
-      if nsp != "":
-        forward_declarations += "namespace %s {\n" % nsp
-      forward_declarations += "".join(forward_declarations_namespace[nsp])
-      if nsp != "":
-        forward_declarations += "}\n"
-
-    # check one-to-many relations for consistency
-    # and prepare include directives
-    refvectors = definition["OneToManyRelations"]
-    if len(refvectors) != 0:
-      datatype["includes"].add("#include <vector>")
-      datatype["includes"].add('#include "podio/RelationRange.h"')
-    for item in refvectors:
-      klass = item.full_type
-      if klass in self.requested_classes:
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-          datatype["includes"].add(self._build_include(klassname))
-        else:
-          datatype["includes"].add(self._build_include(klass))
-
-      elif item.is_array:
-        datatype["includes"].add("#include <array>")
-        if item.array_type not in self.buildin_types:
-          datatype["includes"].add(self._build_include(item.array_type))
-
-      else:
-        raise Exception("'%s' declares a non-allowed many-relation to '%s'!" % (classname, klass))
-
+    components = self.reader.components if self.expose_pod_members else None
     # handle standard members
     all_members = OrderedDict()
     for member in definition["Members"]:
       name = member.name
       klass = member.full_type
-      desc = member.description
-      gname, sname = name, name
-      if(self.get_syntax):
-        gname = "get" + name[:1].upper() + name[1:]
-        sname = "set" + name[:1].upper() + name[1:]
       if name in all_members:
         raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" %
                         (name, classname, all_members[name]))
       all_members[name] = classname
 
-      getter_declarations += declarations["member_getter"].format(
-          type=klass, name=name, fname=gname, description=desc)
-      getter_implementations += implementations["member_getter"].format(
-          type=klass, classname=rawclassname, name=name, fname=gname)
-      if klass in self.buildin_types:
-        setter_declarations += declarations["member_builtin_setter"].format(
-            type=klass, name=name, fname=sname, description=desc)
-        setter_implementations += implementations["member_builtin_setter"].format(
-            type=klass, classname=rawclassname, name=name, fname=sname)
-        ostream_implementation += ('  o << " %s : " << value.%s() << std::endl ;\n' % (name, gname))
-      elif member.is_array:
-        setter_declarations += declarations["member_builtin_setter"].format(
-            type=klass, name=name, fname=sname, description=desc)
-        setter_implementations += implementations["member_builtin_setter"].format(
-            type=klass, classname=rawclassname, name=name, fname=sname)
-        item_class = member.array_type
-        setter_declarations += declarations["array_builtin_setter"].format(
-            type=item_class, name=name, fname=sname, description=desc)
-        setter_implementations += implementations["array_builtin_setter"].format(
-            type=item_class, classname=rawclassname, name=name, fname=sname)
-        getter_declarations += declarations["array_member_getter"].format(
-            type=item_class, name=name, fname=gname, description=desc)
-        getter_implementations += implementations["array_member_getter"].format(
-            type=item_class, classname=rawclassname, name=name, fname=gname)
-        ConstGetter_implementations += implementations["const_array_member_getter"].format(
-            type=item_class, classname=rawclassname, name=name, fname=gname, description=desc)
-        ostream_implementation += ('  o << " %s : " ;\n' % (name))
-        ostream_implementation += '  for(int i=0,N=' + member.array_size + ';i<N;++i)\n'
-        ostream_implementation += ('      o << value.%s()[i] << "|" ;\n' % gname)
-        ostream_implementation += '  o << std::endl ;\n'
-      else:
-        ostream_implementation += ('  o << " %s : " << value.%s() << std::endl ;\n' % (name, gname))
-        setter_declarations += declarations["member_class_refsetter"].format(
-            type=klass, name=name, description=desc)
-        setter_implementations += implementations["member_class_refsetter"].format(
-            type=klass, classname=rawclassname, name=name, fname=sname)
-        setter_declarations += declarations["member_class_setter"].format(
-            type=klass, name=name, fname=sname, description=desc)
-        setter_implementations += implementations["member_class_setter"].format(
-            type=klass, classname=rawclassname, name=name, fname=sname)
-        if self.expose_pod_members:
-          sub_members = self.component_members[klass]
-          for sub_member in sub_members:
-            comp_member_class, comp_member_name = sub_member
-            if comp_member_name in all_members:
-              raise Exception("'%s' clashes with another member name in class '%s'"
-                              "(defined in the component '%s' and '%s')" % (
-                                  comp_member_name, classname, name, all_members[comp_member_name]))
-            all_members[comp_member_name] = " member '" + name + "'"
-            # use mystructMember with camel case as name to avoid clashes
-            comp_gname, comp_sname = comp_member_name, comp_member_name
-            if self.get_syntax:
-              comp_gname = "get" + comp_member_name[:1].upper() + comp_member_name[1:]
-              comp_sname = "set" + comp_member_name[:1].upper() + comp_member_name[1:]
+      if self.expose_pod_members and klass not in self.buildin_types and not member.is_array:
+        for sub_member in self.component_members[member.full_type]:
+          if sub_member.name in all_members:
+            raise Exception("'%s' clashes with another member name in class '%s'"
+                            "(defined in the component '%s' and '%s')" % (
+                              sub_member.name, classname, name, all_members[sub_member.name]))
 
-            ostream_implementation += ('  o << " %s : " << value.%s() << std::endl ;\n' %
-                                       (comp_member_name, comp_gname))
+          all_members[sub_member.name] = "member '" + name + "'"
 
-            getter_declarations += declarations["pod_member_getter"].format(
-                type=comp_member_class, name=comp_member_name, fname=comp_gname,
-                compname=name, description=desc)
-            getter_implementations += implementations["pod_member_getter"].format(
-                type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname,
-                compname=name, description=desc)
-            if comp_member_class in self.buildin_types:
-              setter_declarations += declarations["pod_member_builtin_setter"].format(
-                  type=comp_member_class, name=comp_member_name, fname=comp_sname,
-                  compname=name, description=desc)
-              setter_implementations += implementations["pod_member_builtin_setter"].format(
-                  type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname,
-                  compname=name, description=desc)
-            else:
-              setter_declarations += declarations["pod_member_class_refsetter"].format(
-                  type=comp_member_class, name=comp_member_name, compname=name, description=desc)
-              setter_implementations += implementations["pod_member_class_refsetter"].format(
-                  type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_sname,
-                  compname=name, description=desc)
-              setter_declarations += declarations["pod_member_class_setter"].format(
-                  type=comp_member_class, name=comp_member_name, fname=comp_sname,
-                  compname=name, description=desc)
-              setter_implementations += implementations["pod_member_class_setter"].format(
-                  type=comp_member_class, classname=rawclassname, fname=comp_sname, name=comp_member_name,
-                  compname=name, description=desc)
-            ConstGetter_implementations += implementations["const_pod_member_getter"].format(
-                type=comp_member_class, classname=rawclassname, name=comp_member_name, fname=comp_gname,
-                compname=name, description=desc)
+      getters_setters = self.get_set_generator.get_set_members(member, rawclassname, components)
+      getter_declarations += getters_setters['decl']['get']
+      getter_implementations += getters_setters['impl']['get']
+      ConstGetter_implementations += getters_setters['impl']['const_get']
 
-      # Getter for the Const variety of this datatype
-      ConstGetter_implementations += implementations["const_member_getter"].format(
-          type=klass, classname=rawclassname, name=name, fname=gname, description=desc)
+      setter_declarations += getters_setters['decl']['set']
+      setter_implementations += getters_setters['impl']['set']
 
       # set up signature
       constructor_signature += "%s %s," % (klass, name)
@@ -439,33 +602,15 @@ class ClassGenerator(object):
       constructor_body += "  m_obj->data.%s = %s;" % (name, name)
 
     # one-to-one relations
-    for member in oneToOneRelations:
-      name = member.name
-      klass = member.full_type
-      desc = member.description
-      mnamespace = ""
-      klassname = klass
-      mnamespace, klassname, _, __ = demangle_classname(klass)
+    for member in definition["OneToOneRelations"]:
+      getters_setters = self.get_set_generator.get_set_relation(member, classname)
+      getter_declarations += getters_setters['decl']['get']
+      getter_implementations += getters_setters['impl']['get']
+      ConstGetter_implementations += getters_setters['impl']['const_get']
 
-      gname = name
-      sname = name
-      if self.get_syntax:
-        gname = "get" + name[:1].upper() + name[1:]
-        sname = "set" + name[:1].upper() + name[1:]
-      ostream_implementation += ('  o << " %s : " << value.%s().id() << std::endl ;\n' % (name, gname))
-
-      setter_declarations += declarations["one_rel_setter"].format(
-          name=name, fname=sname, namespace=mnamespace, type=klassname, description=desc)
-      setter_implementations += implementations["one_rel_setter"].format(
-          name=name, fname=sname, namespace=mnamespace, type=klassname, classname=rawclassname)
-
-      getter_declarations += declarations["one_rel_getter"].format(
-          name=name, fname=gname, namespace=mnamespace, type=klassname, description=desc)
-      getter_implementations += implementations["one_rel_getter"].format(
-          name=name, fname=gname, namespace=mnamespace, type=klassname, classname=rawclassname)
-      ConstGetter_implementations += implementations["const_one_rel_getter"].format(
-          name=name, fname=gname, namespace=mnamespace, type=klassname, classname=rawclassname, description=desc)
-
+      setter_declarations += getters_setters['decl']['set']
+      setter_implementations += getters_setters['impl']['set']
+     
     # handle vector members
     vectormembers = definition["VectorMembers"]
     if len(vectormembers) != 0:
@@ -476,11 +621,8 @@ class ClassGenerator(object):
       if klass not in self.buildin_types and klass not in self.reader.components:
         raise Exception("'%s' declares a non-allowed vector member of type '%s'!" % (classname, klass))
       if klass in self.reader.components:
-        if "::" in klass:
-          namespace, klassname = klass.split("::")
-          datatype["includes"].add(self._build_include(klassname))
-        else:
-          datatype["includes"].add(self._build_include(klass))
+        datatype["includes"].add(self._build_include(remove_namespace(klass)))
+
 
     # handle constructor from values
     constructor_signature = constructor_signature.rstrip(",")
@@ -521,23 +663,8 @@ class ClassGenerator(object):
         relationtype += "Const" + reltype
 
       relationName = refvector.name
-      get_relation = relationName
-      add_relation = "add" + relationName
 
-      if(self.get_syntax):
-        get_relation = "get" + relationName[:1].upper() + relationName[1:]
-        add_relation = "addTo" + relationName[:1].upper() + relationName[1:]
-
-      ostream_implementation += ('  o << " %s : " ;\n' % relationName)
-      ostream_implementation += ('  for(unsigned i=0,N=value.%s_size(); i<N ; ++i)\n' % relationName)
-      # If the reference is of the same type as the class we have to avoid
-      # running into a possible infinite loop when printing. Hence, print only
-      # the id instead of the whole referenced object
-      if reltype == classname:
-        ostream_implementation += ('    o << value.%s(i).id() << " " ; \n' % get_relation)
-      else:
-        ostream_implementation += ('    o << value.%s(i) << " " ; \n' % get_relation)
-      ostream_implementation += '  o << std::endl ;\n'
+      get_relation, add_relation = get_set_relations(relationName, self.get_syntax)
 
       substitutions = {"relation": relationName,
                        "get_relation": get_relation,
@@ -553,31 +680,19 @@ class ClassGenerator(object):
           ConstReferences_declarations_template).substitute(substitutions)
       ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
 
-    # handle user provided extra code
-    extracode_declarations = ""
-    extracode = ""
-    constextracode_declarations = ""
-    constextracode = ""
-    if "ExtraCode" in definition:
-      extra = definition["ExtraCode"]
-      if "declaration" in extra:
-        extracode_declarations = extra["declaration"].replace("{name}", rawclassname)
-      if "implementation" in extra:
-        extracode = extra["implementation"].replace("{name}", rawclassname)
-      if "const_declaration" in extra:
-        constextracode_declarations = extra["const_declaration"].replace("{name}", "Const" + rawclassname)
-        extracode_declarations += "\n"
-        extracode_declarations += extra["const_declaration"]
-      if "const_implementation" in extra:
-        constextracode = extra["const_implementation"].replace("{name}", "Const" + rawclassname)
-        extracode += "\n"
-        extracode += extra["const_implementation"].replace("{name}", rawclassname)
-      # TODO: add loading of code from external files
-      if "includes" in extra:
-        extraIncludes = set(extra["includes"].split('\n'))
-        datatype["includes"].update(extraIncludes)
+    extra_code = get_extra_code(rawclassname, definition)
+    extracode_declarations = extra_code['decl']
+    extracode = extra_code['code']
+    constextracode_declarations = extra_code['const_decl']
+    constextracode = extra_code['const_code']
+    datatype['includes'].update(extra_code['includes'])
 
-    ostream_implementation += "  return o ;\n}\n"
+
+    ostream_declaration, ostream_implementation = self._ostream_class(
+      definition['Members'], refvectors + definition['VectorMembers'],
+      definition['OneToOneRelations'], rawclassname)
+
+    includes_cc, forward_declarations = self._process_fwd_declarations(definition["OneToOneRelations"])
 
     substitutions = {"includes": self._join_set(datatype["includes"]),
                      "includes_cc": self._join_set(includes_cc),
@@ -617,6 +732,7 @@ class ClassGenerator(object):
       self.created_classes.append("%s::Const%s" % (namespace, rawclassname))
     else:
       self.created_classes.append("Const%s" % classname)
+
 
   def create_collection(self, classname, definition):
     namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
@@ -676,8 +792,9 @@ class ClassGenerator(object):
         colName += " "
       ostream_header_string += colName
 
-      if(self.get_syntax):
-        name = "get" + name[:1].upper() + name[1:]
+
+      name, _ = get_set_names(name, self.get_syntax)
+
       if not m.is_array:
         ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % (numColWidth, name))
     ostream_implementation += '  << std::endl;\n'
@@ -732,9 +849,8 @@ class ClassGenerator(object):
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template", substitutions)
         prepareafterread += "\t\tobj->m_%s = m_rel_%s;" % (name, name)
 
-        get_name = name
-        if(self.get_syntax):
-          get_name = "get" + name[:1].upper() + name[1:]
+        get_name, _ = get_set_names(name, self.get_syntax)
+
         ostream_implementation += ('  o << "     %s : " ;\n' % name)
         ostream_implementation += ('  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name)
         ostream_implementation += ('    o << v[i].%s(j).id() << " " ; \n' % get_name)
@@ -771,9 +887,8 @@ class ClassGenerator(object):
         prepareafterread_refmembers += self.evaluate_template(
             "CollectionSetSingleReference.cc.template", substitutions)
 
-        get_name = name
-        if(self.get_syntax):
-          get_name = "get" + name[:1].upper() + name[1:]
+        get_name, _ = get_set_names(name, self.get_syntax)
+
         ostream_implementation += ('  o << "     %s : " ;\n' % name)
         ostream_implementation += ('  o << v[i].%s().id() << std::endl;\n' % get_name)
 
@@ -782,9 +897,7 @@ class ClassGenerator(object):
     for counter, item in enumerate(vectormembers):
       name = item.name
       klass = item.full_type
-      get_name = name
-      if(self.get_syntax):
-        get_name = "get" + name[:1].upper() + name[1:]
+      get_name, _ = get_set_names(name, self.get_syntax)
 
       vecmembers += declarations["vecmembers"].format(type=klass, name=name)
       constructorbody += "\tm_vecmem_info.push_back( std::make_pair( \"{type}\", &m_vec_{name} )) ; \n".format(
@@ -966,7 +1079,7 @@ class ClassGenerator(object):
                      "namespace_close": namespace_close
                      }
     self.fill_templates("Component", substitutions)
-    self.component_members[classname] = [(m.full_type, m.name) for m in component['Members']]
+    self.component_members[classname] = component['Members']
     self.created_classes.append(classname)
 
 
