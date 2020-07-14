@@ -283,11 +283,8 @@ class ClassGenerator(object):
     self.package_name = package_name
     self.template_dir = os.path.join(thisdir, "templates")
     self.verbose = verbose
-    self.buildin_types = ClassDefinitionValidator.buildin_types
     self.created_classes = []
     self.requested_classes = []
-    self.warnings = set()
-    self.component_members = OrderedDict()
     self.dryrun = dryrun
 
     self.reader = PodioConfigReader(yamlfile)
@@ -295,6 +292,7 @@ class ClassGenerator(object):
     self.get_syntax = self.reader.options["getSyntax"]
     self.include_subfolder = self.reader.options["includeSubfolder"]
     self.expose_pod_members = self.reader.options["exposePODMembers"]
+    self.warnings = self.reader.warnings
 
     self.clang_format = []
     self.get_set_generator = GetterSetterGenerator(self.get_syntax)
@@ -387,28 +385,16 @@ class ClassGenerator(object):
 
       if member.is_array:
         datatype_dict["includes"].add("#include <array>")
-        if member.array_type not in self.buildin_types:
+        if not member.is_builtin_array:
           datatype_dict["includes"].add(self._build_include(remove_namespace(member.array_type)))
 
-      elif "std::string" == klass:
-        datatype_dict["includes"].add("#include <string>")
-        self.warnings.add("%s defines a string member %s, that spoils the PODness"
-                          % (classname, klass))
+      for stl_type in ClassDefinitionValidator.allowed_stl_types:
+        if klass.startswith('std::' + stl_type):
+          datatype_dict["includes"].add('#include <{}>'.format(stl_type))
 
-      elif klass in self.requested_classes:
+      if klass in self.requested_classes:
         datatype_dict["includes"].add(self._build_include(remove_namespace(klass)))
 
-      elif "std::vector" in klass:
-        datatype_dict["includes"].add("#include <vector>")
-        self.warnings.add("%s defines a vector member %s, that spoils the PODness" % (classname, klass))
-      elif "[" in klass:
-        raise Exception("'%s' defines an array type %s. Array types are not supported yet." %
-                        (classname, klass))
-
-      elif klass in self.buildin_types:
-        pass
-      else:
-        raise Exception("'%s' defines a member of a type '%s' that is not (yet) declared!" % (classname, klass))
     # get rid of duplicates:
     return datatype_dict
 
@@ -484,7 +470,7 @@ class ClassGenerator(object):
 
     elif member.is_array:
       includes.add('#include <array>')
-      if member.array_type not in self.buildin_types:
+      if not member.is_builtin_array:
         includes.add(self._build_include(remove_namespace(member.array_type)))
 
     return includes
@@ -510,8 +496,8 @@ class ClassGenerator(object):
       else:
         impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
 
-      if self.expose_pod_members and member.full_type not in self.buildin_types and not member.is_array:
-        for sub_member in self.component_members[member.full_type]:
+      if self.expose_pod_members and not member.is_builtin and not member.is_array:
+        for sub_member in self.reader.components[member.full_type]['Members']:
           getname, _ = get_set_names(sub_member.name, self.get_syntax)
           _fmt = lambda x: x.format(name=member.name, getname=getname)
           impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
@@ -555,9 +541,6 @@ class ClassGenerator(object):
       datatype["includes"].add("#include <vector>")
       datatype["includes"].add('#include "podio/RelationRange.h"')
     for item in refvectors:
-      if item.full_type not in self.requested_classes and not item.is_array:
-        raise Exception("'%s' declares a non-allowed many-relation to '%s'!" % (classname, item.full_type))
-
       datatype["includes"].update(self._get_includes(item))
 
     getter_implementations = ""
@@ -570,23 +553,9 @@ class ClassGenerator(object):
 
     components = self.reader.components if self.expose_pod_members else None
     # handle standard members
-    all_members = OrderedDict()
     for member in definition["Members"]:
       name = member.name
       klass = member.full_type
-      if name in all_members:
-        raise Exception("'%s' clashes with another member name in class '%s', previously defined in %s" %
-                        (name, classname, all_members[name]))
-      all_members[name] = classname
-
-      if self.expose_pod_members and klass not in self.buildin_types and not member.is_array:
-        for sub_member in self.component_members[member.full_type]:
-          if sub_member.name in all_members:
-            raise Exception("'%s' clashes with another member name in class '%s'"
-                            "(defined in the component '%s' and '%s')" % (
-                              sub_member.name, classname, name, all_members[sub_member.name]))
-
-          all_members[sub_member.name] = "member '" + name + "'"
 
       getters_setters = self.get_set_generator.get_set_members(member, rawclassname, components)
       getter_declarations += getters_setters['decl']['get']
@@ -613,15 +582,12 @@ class ClassGenerator(object):
      
     # handle vector members
     vectormembers = definition["VectorMembers"]
-    if len(vectormembers) != 0:
+    if vectormembers:
       datatype["includes"].add("#include <vector>")
       datatype["includes"].add('#include "podio/RelationRange.h"')
     for item in vectormembers:
-      klass = item.full_type
-      if klass not in self.buildin_types and klass not in self.reader.components:
-        raise Exception("'%s' declares a non-allowed vector member of type '%s'!" % (classname, klass))
-      if klass in self.reader.components:
-        datatype["includes"].add(self._build_include(remove_namespace(klass)))
+      if item.full_type in self.reader.components:
+        datatype["includes"].add(self._build_include(remove_namespace(item.full_type)))
 
 
     # handle constructor from values
@@ -656,11 +622,9 @@ class ClassGenerator(object):
     for refvector in refvectors + definition["VectorMembers"]:
       relnamespace, reltype, _, __ = demangle_classname(refvector.full_type)
       relationtype = refvector.full_type
-      if relationtype not in self.buildin_types and relationtype not in self.reader.components:
-        relationtype = relnamespace
-        if relnamespace:
-          relationtype += "::"
-        relationtype += "Const" + reltype
+
+      if not refvector.is_builtin and relationtype not in self.reader.components:
+        relationtype = relnamespace + "::Const" + reltype
 
       relationName = refvector.name
 
@@ -1079,7 +1043,6 @@ class ClassGenerator(object):
                      "namespace_close": namespace_close
                      }
     self.fill_templates("Component", substitutions)
-    self.component_members[classname] = component['Members']
     self.created_classes.append(classname)
 
 
@@ -1108,7 +1071,7 @@ class ClassGenerator(object):
       klass = item.full_type
       klassname = klass
       mnamespace = ""
-      if klass not in self.buildin_types:
+      if not item.is_builtin:
         if "::" in klass:
           mnamespace, klassname = klass.split("::")
           klassWithQualifier = "::" + mnamespace + "::Const" + klassname
@@ -1124,7 +1087,7 @@ class ClassGenerator(object):
       else:
         relations += "  Const%s* m_%s;\n" % (klassname, name)
 
-      if klass not in self.buildin_types:
+      if not item.is_builtin:
         if klass != classname:
           forward_declarations_namespace[mnamespace] += ['class Const%s;\n' % (klassname)]
           includes_cc.add(self._build_include("%sConst" % klassname))
@@ -1148,7 +1111,7 @@ class ClassGenerator(object):
     for item in refvectors + definition["VectorMembers"]:
       name = item.name
       klass = item.full_type
-      if klass not in self.buildin_types:
+      if not item.is_builtin:
         if klass not in self.reader.components:
           if "::" in klass:
             mnamespace, klassname = klass.split("::")
@@ -1200,7 +1163,7 @@ class ClassGenerator(object):
                        "member": name,
                        "type": klass
                        }
-      if klass not in self.buildin_types:
+      if not member.is_builtin:
         substitutions["type"] = "class %s" % klass
       implementation += self.evaluate_template("CollectionReturnArray.cc.template", substitutions)
       declaration += "\ttemplate<size_t arraysize>\n\t" \
