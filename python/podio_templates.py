@@ -27,8 +27,8 @@ implementations["array_member_getter"] = "\tconst {type}& {classname}::{fname}(s
 
 # conceptually getting a non-const ref is a setter:
 declarations["member_class_refsetter"] = "\t/// Get reference to the {description}\n"
-declarations["member_class_refsetter"] += "\t{type}& {name}();\n"
-implementations["member_class_refsetter"] = "\t{type}& {classname}::{name}() {{ return m_obj->data.{name}; }}\n"
+declarations["member_class_refsetter"] += "\t{type}& {fname}();\n"
+implementations["member_class_refsetter"] = "\t{type}& {classname}::{fname}() {{ return m_obj->data.{name}; }}\n"
 
 declarations["member_class_setter"] = "\t/// Set the {description}\n"
 declarations["member_class_setter"] += "\tvoid {fname}(class {type} value);\n"
