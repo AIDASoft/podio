@@ -7,7 +7,6 @@ try:
 except ImportError:
   from itertools import izip_longest as zip_longest
 
-from collections import OrderedDict
 from copy import deepcopy
 
 import os
@@ -113,7 +112,7 @@ class ClassGenerator(object):
       self.requested_classes.append("%sData" % name)
 
     for name, components in content.items():
-      datatype = self._process_datatype(name, components)
+      datatype = self._process_datatype(components)
 
       self.create_data(name, components, datatype)
       self.create_class(name, components, datatype)
@@ -167,7 +166,7 @@ class ClassGenerator(object):
     self.write_file("selection.xml", content)
 
 
-  def _process_datatype(self, classname, definition):
+  def _process_datatype(self, definition):
     """Check whether all members are known and prepare include directories"""
     datatype_dict = {
       "description": definition["Description"],
@@ -375,7 +374,7 @@ class ClassGenerator(object):
 
       setter_declarations += getters_setters['decl']['set']
       setter_implementations += getters_setters['impl']['set']
-     
+
     # handle vector members
     vectormembers = definition["VectorMembers"]
     if vectormembers:
@@ -495,7 +494,7 @@ class ClassGenerator(object):
 
 
   def create_collection(self, classname, definition):
-    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
+    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     members = definition["Members"]
     constructorbody = ""
@@ -552,9 +551,7 @@ class ClassGenerator(object):
         colName += " "
       ostream_header_string += colName
 
-
       name, _ = get_set_names(name, self.get_syntax)
-
       if not m.is_array:
         ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % (numColWidth, name))
     ostream_implementation += '  << std::endl;\n'
@@ -717,7 +714,7 @@ class ClassGenerator(object):
     self.created_classes.append("%sCollection" % classname)
 
   def create_PrintInfo(self, classname, definition):
-    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
+    _, rawclassname, _, _ = demangle_classname(classname)
 
     toFormattingStrings = {"char": "3", "unsigned char": "3",
                            "long": "11", "longlong": "22", "bool": "1", "int": ""}
@@ -846,7 +843,7 @@ class ClassGenerator(object):
     """ Create an obj class containing all information
         relevant for a given object.
     """
-    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
+    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     relations = ""
     includes = set()
