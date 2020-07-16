@@ -8,69 +8,10 @@ import re
 
 from collections import OrderedDict
 
-class MemberVariable(object):
-  """Simple class to hold information about a member variable"""
-  def __init__(self, **kwargs):
-    self.name = kwargs.pop('name', '')
-    self.full_type = kwargs.pop('type', '')
-    self.description = kwargs.pop('description', '')
-    self.is_builtin = False
-    self.is_builtin_array = False
-
-    is_array = kwargs.pop('is_array', False)
-    self.array_type = kwargs.pop('array_type', None)
-    self.array_size = kwargs.pop('array_size', None)
-    if is_array and not (self.array_type and self.array_size):
-      array_match = MemberParser.array_re.match(self.full_type)
-      if array_match:
-        self.array_type, self.array_size = array_match.groups()
-      else:
-        raise ValueError("Trying to construct MemberVariable with 'is_array' but 'type' "
-                         "is not a valid array definition")
-
-    self.is_array = is_array or (self.array_type is not None and self.array_size is not None)
-    if self.is_array:
-      self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
-      self.is_builtin_array = self.array_type in MemberParser.builtin_types
-
-    self.is_builtin = self.full_type in MemberParser.builtin_types
-
-    if kwargs:
-      raise ValueError("Unused kwargs in MemberVariable: {}".format(kwargs.keys()))
-
-
-  def __str__(self):
-    """string representation"""
-    # Make sure to include scope-operator if necessary
-    # TODO: Make sure that this really does cover all use-cases
-    scoped_type = self.full_type
-    # if '::' in self.full_type:
-    #   namespace, klassname = self.full_type.split('::')
-    #   scoped_type = '::{namespace}::{type}'.format(namespace=namespace, type=klassname)
-
-    definition = r'{} {};'.format(scoped_type, self.name)
-    if self.description:
-      definition += r' ///< {}'.format(self.description)
-    return definition
-
-
-class DefinitionError(Exception):
-  """Exception raised by the ClassDefinitionValidator for invalid definitions.
-  Mainly here to distinguish it from plain exceptions that are otherwise raised.
-  In this way this makes it possible to selectively catch exceptions related to
-  the datamodel definition without also catching all the rest which might point
-  to another problem
-  """
-  pass
-
+from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
 
 class MemberParser(object):
   """Class to parse member variables from strings without doing too much validation"""
-  builtin_types = ["int", "long", "float", "double",
-                   "unsigned int", "unsigned", "unsigned long",
-                   "short", "bool", "long long",
-                   "unsigned long long", "std::string"]
-
   # Doing this with regex is non-ideal, but we should be able to at least
   # enforce something that will yield valid c++ identifiers even if we might not
   # cover all possibilities that are admitted by the c++ standard
@@ -80,7 +21,7 @@ class MemberParser(object):
   # Additionally we have to take int account the possible whitespaces in the
   # builtin types above. Currently this is done by simple brute-forcing
   type_str = r'((?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*|{builtin_re})'.format(
-      builtin_re=r'|'.join((r'(?:{})'.format(t)) for t in builtin_types))
+      builtin_re=r'|'.join((r'(?:{})'.format(t)) for t in BUILTIN_TYPES))
   type_re = re.compile(type_str)
 
   # Names can be almost anything as long as it doesn't start with a digit and
@@ -378,14 +319,14 @@ class PodioConfigReader(object):
         valid_name = MemberParser.name_re.match(name)
         c_style_array = re.search(r'\[.*\]', klass)
         if valid_type and valid_name and not c_style_array:
-          component['Members'].append(MemberVariable(name=name, type=klass,
-                                                     is_array='std::array' in klass))
+          array_match = MemberParser.array_re.match(klass)
+          if array_match:
+            component['Members'].append(MemberVariable(name=name, array_type=array_match.group(1),
+                                                       array_size=array_match.group(2)))
+          else:
+            component['Members'].append(MemberVariable(name=name, type=klass))
         else:
           raise DefinitionError("'{}: {}' is not a valid member definition".format(name, klass))
-
-        if not MemberParser.type_re.match(klass) or '[' in klass:
-          raise DefinitionError("'{}' ")
-
 
     return component
 
