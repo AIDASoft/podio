@@ -91,6 +91,7 @@ class ClassGenerator(object):
     self.warnings = self.reader.warnings
 
     self.clang_format = []
+    self._template_cache = {}
 
 
   def process(self):
@@ -142,10 +143,14 @@ class ClassGenerator(object):
       print(warning)
 
 
-  def get_template(self, filename):
-    templatefile = os.path.join(self.template_dir, filename)
-    with open(templatefile, 'r') as tempfile:
-      return tempfile.read()
+  def _get_template(self, filename):
+    """Get the template from the filename"""
+    if filename not in self._template_cache:
+      templatefile = os.path.join(self.template_dir, filename)
+      with open(templatefile, 'r') as tempfile:
+        self._template_cache[filename] = tempfile.read()
+
+    return self._template_cache[filename]
 
 
   def create_selection_xml(self):
@@ -161,7 +166,7 @@ class ClassGenerator(object):
 
     templatefile = os.path.join(self.template_dir,
                                 "selection.xml.template")
-    template = self.get_template(templatefile)
+    template = self._get_template(templatefile)
     content = string.Template(template).substitute({"classes": content})
     self.write_file("selection.xml", content)
 
@@ -322,6 +327,73 @@ class ClassGenerator(object):
             '\n'.join(impl).format(classname=classname, o=osname, value=valname))
 
 
+  def _constructor_class(self, members, classname):
+    """Generate the signature and body of the constructor for the given class (and
+    its Const version)"""
+    signature, body = [], []
+    for member in members:
+      signature.append('{type} {name}'.format(type=member.full_type, name=member.name))
+      body.append('  m_obj->data.{name} = {name};'.format(name=member.name))
+
+    decl, const_decl, impl, const_impl = '', '', '', ''
+    if signature:
+      signature = ', '.join(signature)
+      decl = '{klass}({signature});'.format(klass=classname, signature=signature)
+      const_decl = 'Const{klass}({signature});'.format(klass=classname, signature=signature)
+
+      body = '\n'.join(body)
+      substitutions = {
+        'name': classname,
+        'signature': signature,
+        'constructor': body
+      }
+      impl = self.evaluate_template('Object.constructor.cc.template', substitutions)
+      const_impl = self.evaluate_template('ConstObject.constructor.cc.template', substitutions)
+
+    return {
+      'decl': decl,
+      'const_decl': const_decl,
+      'impl': impl,
+      'const_impl': const_impl
+    }
+
+
+  def _relation_handling_class(self, relations, classname):
+    """Generate the code to do the relation handling of a class"""
+    impl, decl, const_impl, const_decl = '', '', '', ''
+    members = []
+
+    for relation in relations:
+      relationtype = relation.full_type
+      if not relation.is_builtin and relation.full_type not in self.reader.components:
+        relationtype = relation.namespace + '::Const' + relation.bare_type
+
+      get_relation, set_relation = relation.getter_setter_names(self.get_syntax, is_relation=True)
+      substitutions = {
+        'relation': relation.name,
+        'get_relation': get_relation,
+        'add_relation': set_relation,
+        'relationtype': relationtype,
+        'classname': classname,
+        'package_name': self.package_name
+      }
+
+      decl += self.evaluate_template('RefVector.h.template', substitutions)
+      impl += self.evaluate_template('RefVector.cc.template', substitutions)
+      const_decl += self.evaluate_template('ConstRefVector.h.template', substitutions)
+      const_impl += self.evaluate_template('ConstRefVector.cc.template', substitutions)
+
+      members.append('std::vector<{type}>* m_{name} ///< transient'
+                     .format(type=relation.full_type, name=relation.name))
+
+    return {
+      'impl': impl,
+      'decl': decl,
+      'const_impl': const_impl,
+      'const_decl': const_decl,
+      'members': '\n'.join(members)
+    }
+
   def create_class(self, classname, definition, datatype):
     """Create all files necessary for a given class"""
     datatype = deepcopy(datatype) # avoid having outside side-effects
@@ -340,16 +412,11 @@ class ClassGenerator(object):
     setter_implementations = ""
     getter_declarations = ""
     setter_declarations = ""
-    constructor_signature = ""
-    constructor_body = ""
     ConstGetter_implementations = ""
 
     components = self.reader.components if self.expose_pod_members else None
     # handle standard members
     for member in definition["Members"]:
-      name = member.name
-      klass = member.full_type
-
       getters_setters = generate_get_set_member(member, rawclassname, self.get_syntax, components)
       getter_declarations += getters_setters['decl']['get']
       getter_implementations += getters_setters['impl']['get']
@@ -357,11 +424,6 @@ class ClassGenerator(object):
 
       setter_declarations += getters_setters['decl']['set']
       setter_implementations += getters_setters['impl']['set']
-
-      # set up signature
-      constructor_signature += "%s %s," % (klass, name)
-      # constructor
-      constructor_body += "  m_obj->data.%s = %s;" % (name, name)
 
     # one-to-one relations
     for member in definition["OneToOneRelations"]:
@@ -382,57 +444,18 @@ class ClassGenerator(object):
       if item.full_type in self.reader.components:
         datatype["includes"].add(self._build_include(item.bare_type))
 
-
-    # handle constructor from values
-    constructor_signature = constructor_signature.rstrip(",")
-    if constructor_signature == "":
-      constructor_implementation = ""
-      constructor_declaration = ""
-      ConstConstructor_declaration = ""
-      ConstConstructor_implementation = ""
-    else:
-      substitutions = {"name": rawclassname,
-                       "constructor": constructor_body,
-                       "signature": constructor_signature
-                       }
-      constructor_implementation = self.evaluate_template("Object.constructor.cc.template", substitutions)
-      constructor_declaration = "  %s(%s);\n" % (rawclassname, constructor_signature)
-      ConstConstructor_implementation = self.evaluate_template(
-          "ConstObject.constructor.cc.template", substitutions)
-      ConstConstructor_declaration = "Const%s(%s);\n" % (rawclassname, constructor_signature)
-
-    # handle one-to-many relations
-    references_members = ""
-    references_declarations = ""
-    references = ""
-    ConstReferences_declarations = ""
-    ConstReferences = ""
-    references_template = self.get_template("RefVector.cc.template")
-    references_declarations_template = self.get_template("RefVector.h.template")
-    ConstReferences_declarations_template = self.get_template("ConstRefVector.h.template")
-    ConstReferences_template = self.get_template("ConstRefVector.cc.template")
-
-    for refvector in refvectors + definition["VectorMembers"]:
-      relationtype = refvector.full_type
-
-      if not refvector.is_builtin and refvector.full_type not in self.reader.components:
-        relationtype = refvector.namespace + "::Const" + refvector.bare_type
-
-      get_relation, add_relation = refvector.getter_setter_names(self.get_syntax, is_relation=True)
-
-      substitutions = {"relation": refvector.name,
-                       "get_relation": get_relation,
-                       "add_relation": add_relation,
-                       "relationtype": relationtype,
-                       "classname": rawclassname,
-                       "package_name": self.package_name
-                       }
-      references_declarations += string.Template(references_declarations_template).substitute(substitutions)
-      references += string.Template(references_template).substitute(substitutions)
-      references_members += "std::vector<%s>* m_%s; ///< transient \n" % (refvector.full_type, refvector.name)
-      ConstReferences_declarations += string.Template(
-          ConstReferences_declarations_template).substitute(substitutions)
-      ConstReferences += string.Template(ConstReferences_template).substitute(substitutions)
+    constructor = self._constructor_class(definition['Members'], rawclassname)
+    constructor_declaration = constructor['decl']
+    constructor_implementation = constructor['impl']
+    ConstConstructor_declaration = constructor['const_decl']
+    ConstConstructor_implementation = constructor['const_impl']
+   
+    reference_code = self._relation_handling_class(refvectors + definition['VectorMembers'], rawclassname)
+    references_members = reference_code['members']
+    references_declarations = reference_code['decl']
+    references = reference_code['impl']
+    ConstReferences_declarations = reference_code['const_decl']
+    ConstReferences = reference_code['const_impl']
 
     extra_code = get_extra_code(rawclassname, definition)
     extracode_declarations = extra_code['decl']
@@ -985,9 +1008,7 @@ class ClassGenerator(object):
     """ reads in a given template, evaluates it
         and returns result
     """
-    templatefile = os.path.join(self.template_dir, filename)
-    with open(templatefile, 'r') as tempfile:
-      template = tempfile.read()
+    template = self._get_template(filename)
     return string.Template(template).substitute(substitutions)
 
   def fill_templates(self, category, substitutions):
