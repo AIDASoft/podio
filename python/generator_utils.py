@@ -8,50 +8,37 @@ from copy import deepcopy
 
 from podio_templates import declarations, implementations
 
+
+def _get_namespace_class(full_type):
+  """Get the namespace and the unqualified classname from the full type. Raise a
+  DefinitionError if a nested namespace is found"""
+  cnameparts = full_type.split('::')
+  if len(cnameparts) > 2:
+    raise DefinitionError("'{}' is a type with a nested namespace. not supperted, yet.".format(full_type))
+  if len(cnameparts) == 2:
+    return cnameparts
+
+  return "", full_type
+
+
 def demangle_classname(classname):
   """Get the namespace, classname as well as opening and closing statements (for
   the namespace) from the full classname"""
-  namespace_open = ""
-  namespace_close = ""
-  namespace = ""
-  rawclassname = ""
-  if "::" in classname:
-    cnameparts = classname.split("::")
-    if len(cnameparts) > 2:
-      raise Exception("'%s' defines a type with nested namespaces. Not supported, yet." % classname)
-    namespace, rawclassname = cnameparts
-    namespace_open = "namespace %s {" % namespace
-    namespace_close = "} // namespace %s" % namespace
+  namespace, rawclassname = _get_namespace_class(classname)
+  if namespace:
+    namespace_open = "namespace {} {{".format(namespace)
+    namespace_close = "}} // namespace {}".format(namespace)
   else:
-    rawclassname = classname
+    namespace_open, namespace_close = "", ""
+
   return namespace, rawclassname, namespace_open, namespace_close
 
 
-def remove_namespace(full_type):
-  """Get the type after potentially removing the namespace from the name"""
-  if '::'in full_type:
-    return full_type.split('::')[1]
-  return full_type
-
-
-def get_set_names(name, use_get):
-  """Get the names for the get/set functions, depending on whether a get/set
-  should be prepended
-  """
-  if not use_get:
-    return name, name
-
-  caps_name = name[0].upper() + name[1:]
-  return [s + caps_name for s in ["get", "set"]]
-
-
-def get_set_relations(name, use_get):
-  """Function names for get/setting of relations depending on whether 'get'-syntax is used"""
-  if not use_get:
-    return name, 'add' + name
-
-  caps_name = name[0].upper() + name[1:]
-  return ['get' + caps_name, 'addTo' + caps_name]
+def _prefix_name(name, prefix):
+  """Prefix the name and capitalize the first letter if the prefix is not empty"""
+  if prefix:
+    return prefix + name[0].upper() + name[1:]
+  return name
 
 
 def _format(string, **replacements):
@@ -125,7 +112,7 @@ def generate_get_set_member(member, classname, get_syntax, components=None):
     'classname': classname
   }
   _format_pattern = _get_format_pattern_func(default_replacements)
-  getname, setname = get_set_names(member.name, get_syntax)
+  getname, setname = member.getter_setter_names(get_syntax)
 
   getter_decls = []
   getter_impls = []
@@ -161,7 +148,7 @@ def generate_get_set_member(member, classname, get_syntax, components=None):
 
     if components is not None:
       for sub_member in components[member.full_type]['Members']:
-        getname, setname = get_set_names(sub_member.name, get_syntax)
+        getname, setname = sub_member.getter_setter_names(get_syntax)
 
         repls = {'type': sub_member.full_type, 'name': sub_member.name,
                  'fname': getname, 'compname': member.name}
@@ -197,7 +184,7 @@ def generate_get_set_relation(relation, classname, get_syntax):
   }
   _format_pattern = _get_format_pattern_func(default_replacements)
 
-  getname, setname = get_set_names(relation.name, get_syntax)
+  getname, setname = relation.getter_setter_names(get_syntax)
 
   getter_decl = _format_pattern(declarations['one_rel_getter'], fname=getname)
   getter_impl = _format_pattern(implementations['one_rel_getter'], fname=getname)
@@ -235,9 +222,16 @@ class MemberVariable(object):
     self.is_builtin = False
     self.is_builtin_array = False
     self.is_array = False
+    # ensure that this will break somewhere if requested but not set
+    self.namespace, self.bare_type = None, None
+    self.array_namespace, self.array_bare_type = None, None
 
     self.array_type = kwargs.pop('array_type', None)
     self.array_size = kwargs.pop('array_size', None)
+
+    if kwargs:
+      raise ValueError("Unused kwargs in MemberVariable: {}".format(kwargs.keys()))
+
     if self.array_type is not None and self.array_size is not None:
       self.is_array = True
       self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
@@ -245,20 +239,52 @@ class MemberVariable(object):
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
 
-    if kwargs:
-      raise ValueError("Unused kwargs in MemberVariable: {}".format(kwargs.keys()))
+    if self.is_array:
+      self.array_namespace, self.array_bare_type = _get_namespace_class(self.array_type)
+    else:
+      self.namespace, self.bare_type = _get_namespace_class(self.full_type)
+      if self.namespace == 'std':
+        self.namespace = ""
+        self.bare_type = self.full_type
 
 
   def __str__(self):
     """string representation"""
     # Make sure to include scope-operator if necessary
     # TODO: Make sure that this really does cover all use-cases
-    scoped_type = self.full_type
-    # if '::' in self.full_type:
-    #   namespace, klassname = self.full_type.split('::')
-    #   scoped_type = '::{namespace}::{type}'.format(namespace=namespace, type=klassname)
+    if self.namespace:
+      scoped_type = '::{}::{}'.format(self.namespace, self.bare_type)
+    else:
+      scoped_type = self.full_type
 
     definition = r'{} {};'.format(scoped_type, self.name)
     if self.description:
       definition += r' ///< {}'.format(self.description)
     return definition
+
+
+  def getter_name(self, get_syntax):
+    """Get the getter name of the variable"""
+    if not get_syntax:
+      return self.name
+    return _prefix_name(self.name, "get")
+
+  def setter_name(self, get_syntax, is_relation=False):
+    """Get the setter name of the variable"""
+    if is_relation:
+      if not get_syntax:
+        return 'add' + self.name
+      else:
+        return _prefix_name(self.name, 'addTo')
+
+    else:
+      if not get_syntax:
+        return self.name
+      else:
+        return _prefix_name(self.name, 'set')
+
+  def getter_setter_names(self, get_syntax, is_relation=False):
+    """Get the names for the get/set functions, depending on whether a get/set
+    should be prepended
+    """
+    return self.getter_name(get_syntax), self.setter_name(get_syntax, is_relation)
