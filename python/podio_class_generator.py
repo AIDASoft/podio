@@ -16,7 +16,7 @@ import subprocess
 from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 from generator_utils import (
-  demangle_classname, remove_namespace, get_set_names, get_set_relations, get_extra_code,
+  demangle_classname, get_extra_code,
   generate_get_set_member, generate_get_set_relation
 )
 
@@ -181,14 +181,14 @@ class ClassGenerator(object):
       if member.is_array:
         datatype_dict["includes"].add("#include <array>")
         if not member.is_builtin_array:
-          datatype_dict["includes"].add(self._build_include(remove_namespace(member.array_type)))
+          datatype_dict["includes"].add(self._build_include(member.array_bare_type))
 
       for stl_type in ClassDefinitionValidator.allowed_stl_types:
         if klass.startswith('std::' + stl_type):
           datatype_dict["includes"].add('#include <{}>'.format(stl_type))
 
       if klass in self.requested_classes:
-        datatype_dict["includes"].add(self._build_include(remove_namespace(klass)))
+        datatype_dict["includes"].add(self._build_include(member.bare_type))
 
     # get rid of duplicates:
     return datatype_dict
@@ -232,12 +232,10 @@ class ClassGenerator(object):
 
     for member in relations:
       if member.full_type in self.requested_classes:
-        namespace, klassname, _, _ = demangle_classname(member.full_type)
-        if namespace not in fwd_decls:
-          fwd_decls[namespace] = []
-        fwd_decls[namespace].append(klassname)
-
-        includes.add(self._build_include(klassname))
+        if member.namespace not in fwd_decls:
+          fwd_decls[member.namespace] = []
+        fwd_decls[member.namespace].append(member.bare_type)
+        includes.add(self._build_include(member.bare_type))
 
     forward_declaration = []
     for nsp, classes in fwd_decls.items():
@@ -261,12 +259,12 @@ class ClassGenerator(object):
     """Get the additional includes for a given member"""
     includes = set()
     if member.full_type in self.requested_classes:
-      includes.add(self._build_include(remove_namespace(member.full_type)))
+      includes.add(self._build_include(member.bare_type))
 
     elif member.is_array:
       includes.add('#include <array>')
       if not member.is_builtin_array:
-        includes.add(self._build_include(remove_namespace(member.array_type)))
+        includes.add(self._build_include(member.array_bare_type))
 
     return includes
 
@@ -280,7 +278,7 @@ class ClassGenerator(object):
     impl.append('  {o} << " id: " << {value}.id() << \'\\n\';')
 
     for member in class_members:
-      getname, _ = get_set_names(member.name, self.get_syntax)
+      getname = member.getter_name(self.get_syntax)
       _fmt = lambda x: x.format(name=member.name, getname=getname, size=member.array_size)
       if member.is_array:
         impl.append(_fmt('  {{o}} << " {name} : ";'))
@@ -293,24 +291,24 @@ class ClassGenerator(object):
 
       if self.expose_pod_members and not member.is_builtin and not member.is_array:
         for sub_member in self.reader.components[member.full_type]['Members']:
-          getname, _ = get_set_names(sub_member.name, self.get_syntax)
+          getname = sub_member.getter_name(self.get_syntax)
           _fmt = lambda x: x.format(name=member.name, getname=getname)
           impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
 
     for relation in single_relations:
-      getname, _ = get_set_relations(relation.name, self.get_syntax)
+      getname = relation.getter_name(self.get_syntax)
       impl.append('  {{o}} << " {name} : " << {{value}}.{getname}().id() << \'\\n\';'.format(
         name=relation.name, getname=getname))
 
     for relation in multi_relations:
-      getname, _ = get_set_relations(relation.name, self.get_syntax)
+      getname = relation.getter_name(self.get_syntax)
       _fmt = lambda x: x.format(name=relation.name, getname=getname)
       impl.append(_fmt('  {{o}} << " {name} : " ;'))
       impl.append(_fmt('  for (unsigned i = 0; i < {{value}}.{name}_size(); ++i) {{{{'))
       # If the reference is of the same type as the class we have to avoid
       # running into a possible infinite loop when printing. Hence, print only
       # the id instead of the whole referenced object
-      if remove_namespace(relation.full_type) == classname:
+      if relation.bare_type == classname:
         impl.append(_fmt('     {{o}} << {{value}}.{getname}(i).id() << " ";'))
       else:
         impl.append(_fmt('     {{o}} << {{value}}.{getname}(i) << " ";'))
@@ -382,7 +380,7 @@ class ClassGenerator(object):
       datatype["includes"].add('#include "podio/RelationRange.h"')
     for item in vectormembers:
       if item.full_type in self.reader.components:
-        datatype["includes"].add(self._build_include(remove_namespace(item.full_type)))
+        datatype["includes"].add(self._build_include(item.bare_type))
 
 
     # handle constructor from values
@@ -415,17 +413,14 @@ class ClassGenerator(object):
     ConstReferences_template = self.get_template("ConstRefVector.cc.template")
 
     for refvector in refvectors + definition["VectorMembers"]:
-      relnamespace, reltype, _, __ = demangle_classname(refvector.full_type)
       relationtype = refvector.full_type
 
-      if not refvector.is_builtin and relationtype not in self.reader.components:
-        relationtype = relnamespace + "::Const" + reltype
+      if not refvector.is_builtin and refvector.full_type not in self.reader.components:
+        relationtype = refvector.namespace + "::Const" + refvector.bare_type
 
-      relationName = refvector.name
+      get_relation, add_relation = refvector.getter_setter_names(self.get_syntax, is_relation=True)
 
-      get_relation, add_relation = get_set_relations(relationName, self.get_syntax)
-
-      substitutions = {"relation": relationName,
+      substitutions = {"relation": refvector.name,
                        "get_relation": get_relation,
                        "add_relation": add_relation,
                        "relationtype": relationtype,
@@ -551,7 +546,7 @@ class ClassGenerator(object):
         colName += " "
       ostream_header_string += colName
 
-      name, _ = get_set_names(name, self.get_syntax)
+      name = m.getter_name(self.get_syntax)
       if not m.is_array:
         ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % (numColWidth, name))
     ostream_implementation += '  << std::endl;\n'
@@ -577,16 +572,16 @@ class ClassGenerator(object):
                          "class": klass,
                          "name": name}
 
-        mnamespace, klassname, _, __ = demangle_classname(klass)
-
         # includes
-        includes.add(self._build_include(klassname + 'Collection'))
+        includes.add(self._build_include(item.bare_type + 'Collection'))
 
         # FIXME check if it compiles with :: for both... then delete this.
-        relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
-        relations += declarations["relation_collection"].format(namespace=mnamespace, type=klassname, name=name)
+        relations += declarations["relation"].format(
+          namespace=item.namespace, type=item.bare_type, name=name)
+        relations += declarations["relation_collection"].format(
+          namespace=item.namespace, type=item.bare_type, name=name)
         initializers += implementations["ctor_list_relation"].format(
-            namespace=mnamespace, type=klassname, name=name)
+            namespace=item.namespace, type=item.bare_type, name=name)
 
         constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
         # relation handling in ::create
@@ -606,7 +601,7 @@ class ClassGenerator(object):
         setreferences += self.evaluate_template("CollectionSetReferences.cc.template", substitutions)
         prepareafterread += "\t\tobj->m_%s = m_rel_%s;" % (name, name)
 
-        get_name, _ = get_set_names(name, self.get_syntax)
+        get_name = item.getter_name(self.get_syntax)
 
         ostream_implementation += ('  o << "     %s : " ;\n' % name)
         ostream_implementation += ('  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name)
@@ -616,10 +611,9 @@ class ClassGenerator(object):
       for counter, item in enumerate(refmembers):
         name = item.name
         klass = item.full_type
-        mnamespace = ""
-        klassname = klass
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
+        mnamespace = item.namespace
+        klassname = item.bare_type
+
         substitutions = {"counter": counter + nOfRefVectors,
                          "class": klass,
                          "rawclass": klassname,
@@ -644,7 +638,7 @@ class ClassGenerator(object):
         prepareafterread_refmembers += self.evaluate_template(
             "CollectionSetSingleReference.cc.template", substitutions)
 
-        get_name, _ = get_set_names(name, self.get_syntax)
+        get_name = item.getter_name(self.get_syntax)
 
         ostream_implementation += ('  o << "     %s : " ;\n' % name)
         ostream_implementation += ('  o << v[i].%s().id() << std::endl;\n' % get_name)
@@ -654,7 +648,7 @@ class ClassGenerator(object):
     for counter, item in enumerate(vectormembers):
       name = item.name
       klass = item.full_type
-      get_name, _ = get_set_names(name, self.get_syntax)
+      get_name = item.getter_name(self.get_syntax)
 
       vecmembers += declarations["vecmembers"].format(type=klass, name=name)
       constructorbody += "\tm_vecmem_info.push_back( std::make_pair( \"{type}\", &m_vec_{name} )) ; \n".format(
@@ -809,12 +803,12 @@ class ClassGenerator(object):
 
     for member in component['Members']:
       if member.full_type in self.reader.components:
-        includes.add(self._build_include(remove_namespace(member.full_type)))
+        includes.add(self._build_include(member.bare_type))
 
       if member.is_array:
         includes.add('#include <array>')
         if member.array_type in self.reader.components:
-          includes.add(self._build_include(remove_namespace(member.array_type)))
+          includes.add(self._build_include(member.bare_type))
 
     members_decl = '\n'.join(('  {}'.format(m) for m in component['Members']))
 
