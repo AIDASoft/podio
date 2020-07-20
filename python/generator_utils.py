@@ -196,6 +196,27 @@ def generate_get_set_relation(relation, classname, get_syntax):
   return _make_return_dict(getter_decl, getter_impl, setter_decl, setter_impl, const_getter_impl)
 
 
+def constructor_destructor_collection(relations, references, vectormembers):
+  """Generate the constructor and destructor bodys for a collection"""
+  constructor = []
+  destructor = []
+
+  if relations or references:
+    destructor.append('  for (auto& pointer : m_refCollections) { if (pointer) delete pointer; }')
+
+  for relation in relations + references:
+    destructor.append(implementations["destroy_relations"].format(name=relation.name))
+    constructor.append('  m_refCollections.push_back(new std::vector<podio::ObjectID>());')
+
+  for vecmem in vectormembers:
+    destructor.append('  if (m_vec_{name}) delete m_vec_{name};'.format(name=vecmem.name))
+    repls = {'type': vecmem.full_type, 'name': vecmem.name}
+    constructor.append('  m_vecmem_info.emplace_back("{type}", &m_vec_{name});'.format(**repls))
+    constructor.append('  m_vec_{name} = new std::vector<{type}>();'.format(**repls))
+
+  return '\n'.join(constructor), '\n'.join(destructor)
+
+
 class DefinitionError(Exception):
   """Exception raised by the ClassDefinitionValidator for invalid definitions.
   Mainly here to distinguish it from plain exceptions that are otherwise raised.
