@@ -1,8 +1,10 @@
-// standard includes
-#include <stdexcept>
+#include "${incfolder}${name}Collection.h"
+
 ${includes}
 
-#include "${incfolder}${name}Collection.h"
+// standard includes
+#include <stdexcept>
+#include <iomanip>
 
 ${namespace_open}
 

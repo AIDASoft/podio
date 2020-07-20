@@ -3,23 +3,22 @@
 #ifndef ${PACKAGE_NAME}_${name}Collection_H
 #define ${PACKAGE_NAME}_${name}Collection_H
 
-#include <string>
-#include <vector>
-#include <deque>
-#include <array>
-#include <algorithm>
-#include <iostream>
-#include <iomanip>
+// datamodel specific includes
+#include "${incfolder}${name}Data.h"
+#include "${incfolder}${name}.h"
+#include "${incfolder}${name}Obj.h"
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 
-// datamodel specific includes
-#include "${incfolder}${name}Data.h"
-#include "${incfolder}${name}.h"
-#include "${incfolder}${name}Obj.h"
+#include <string>
+#include <vector>
+#include <deque>
+#include <array>
+#include <algorithm>
+#include <iostream>
 
 ${namespace_open}
 typedef std::vector<${name}Data> ${name}DataContainer;
