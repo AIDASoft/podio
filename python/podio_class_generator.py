@@ -16,8 +16,8 @@ import subprocess
 from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 from generator_utils import (
-  demangle_classname, get_extra_code,
-  generate_get_set_member, generate_get_set_relation
+  demangle_classname, get_extra_code, generate_get_set_member, generate_get_set_relation,
+  constructor_destructor_collection
 )
 
 thisdir = os.path.dirname(os.path.abspath(__file__))
@@ -449,7 +449,7 @@ class ClassGenerator(object):
     constructor_implementation = constructor['impl']
     ConstConstructor_declaration = constructor['const_decl']
     ConstConstructor_implementation = constructor['const_impl']
-   
+
     reference_code = self._relation_handling_class(refvectors + definition['VectorMembers'], rawclassname)
     references_members = reference_code['members']
     references_declarations = reference_code['decl']
@@ -511,15 +511,83 @@ class ClassGenerator(object):
       self.created_classes.append("Const%s" % classname)
 
 
+  def _ostream_collection(self, classname, members, relations, references, vectormembers,
+                          osname='o', valname='v'):
+    """Ostream operator implementation and declaration for collections"""
+    # create colum based output for data members using scientific format
+    decl = "std::ostream& operator<<( std::ostream& {o},const {classname}Collection& {value});\n"
+    col_width = 12
+    header_str = "{{:{width}}}".format(width=col_width).format('id:')
+
+    impl = [decl.replace(';\n', '{{')]
+    impl.append('  const std::ios::fmtflags old_flags = {o}.flags();')
+    impl.append('  {o} << "{header_string}" << std::endl;')
+    impl.append('  for (int i = 0; i < {value}.size(); ++i) {{')
+    impl.append('    {o} << std::scientific << std::showpos')
+    impl.append('      << std::setw({w}) << {{value}}[i].id() << " "'.format(w=col_width))
+
+    for member in members:
+      # TODO: Also handle array members properly
+      if member.is_array:
+        continue
+      # column header
+      col_w = col_width + 2
+      comp_str = "" # print component names if they are present
+      if member.full_type in self.reader.components:
+        comps = [c.name for c in self.reader.components[member.full_type]['Members']]
+        comp_str = '[ {}]'.format(', '.join(comps))
+        col_w *= len(comps)
+
+      header_str += '{{:{width}}}'.format(width=col_w).format(
+        member.name + ' :' + comp_str
+      )
+
+      getname = member.getter_name(self.get_syntax)
+      impl.append('      << std::setw({w}) << {{value}}[i].{name}() << " "'.format(w=col_w, name=getname))
+
+    impl.append('      << std::endl;\n')
+
+    for relation in relations:
+      getname = relation.getter_name(self.get_syntax)
+      print_name = '{{:{width}}}'.format(width=col_width).format(relation.name)
+      impl.append('    {{o}} << "{name} : ";'.format(name=print_name))
+      impl.append('    for (unsigned j = 0, N = {{value}}[i].{name}_size(); j < N; ++j) {{{{'.format(name=relation.name))
+      impl.append('      {{o}} << {{value}}[i].{gname}(j).id() << " ";'.format(gname=getname))
+      impl.append('    }}')
+      impl.append('    {o} << std::endl;\n')
+
+
+    for reference in references:
+      getname = reference.getter_name(self.get_syntax)
+      print_name = '{{:{width}}}'.format(width=col_width).format(reference.name)
+      impl.append('    {{o}} << "{name} : ";'.format(name=print_name))
+      impl.append('    {{o}} << {{value}}[i].{gname}().id() << std::endl;'.format(gname=getname))
+
+    for vecmem in vectormembers:
+      getname = vecmem.getter_name(self.get_syntax)
+      print_name = '{{:{width}}}'.format(width=col_width).format(vecmem.name)
+      impl.append('    {{o}} << "{name} : ";'.format(name=print_name))
+      impl.append('    for (unsigned j = 0, N = {{value}}[i].{name}_size(); j < N; ++j) {{{{'.format(name=vecmem.name))
+      impl.append('      {{o}} << {{value}}[i].{gname}(j) << " ";'.format(gname=getname))
+      impl.append('    }}')
+      impl.append('    {o} << std::endl;\n')
+
+    impl.append('  }}') # for loop
+
+    impl.append('  {o}.flags(old_flags);')
+    impl.append('  return {o};')
+    impl.append('}}')
+    return (decl.format(classname=classname, o=osname, value=valname),
+            '\n'.join(impl).format(classname=classname, header_string=header_str,
+                                   o=osname, value=valname))
+
+
   def create_collection(self, classname, definition):
     _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     members = definition["Members"]
-    constructorbody = ""
-    destructorbody = ""
     prepareforwritinghead = ""
     prepareforwritingbody = ""
-    vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(rawclassname, members)
     setreferences = ""
     prepareafterread = ""
     includes = set()
@@ -530,177 +598,95 @@ class ClassGenerator(object):
     push_back_relations = ""
     prepareafterread_refmembers = ""
     prepareforwriting_refmembers = ""
-    vecmembers = ""
-    # ------------------ create ostream operator --------------------------
-    # create colum based output for data members using scientific format
-    #
-    numColWidth = 12
-    ostream_header_string = "id:"
-    while len(ostream_header_string) < numColWidth + 1:
-      ostream_header_string += " "
-
-    ostream_declaration = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v);\n" % rawclassname)
-    ostream_implementation = ("std::ostream& operator<<( std::ostream& o,const %sCollection& v){\n" % rawclassname)
-    ostream_implementation += '  std::ios::fmtflags old_flags = o.flags() ; \n'
-    ostream_implementation += '  o << "{header_string}" << std::endl ;\n '
-    ostream_implementation += '  for(int i = 0; i < v.size(); i++){\n'
-    ostream_implementation += '     o << std::scientific << std::showpos '
-    ostream_implementation += (' << std::setw(%i) ' % numColWidth)
-    ostream_implementation += ' << v[i].id() << " " '
-    for m in members:
-      name = m.name
-      t = m.full_type
-      colW = numColWidth + 2
-      comps = self.reader.components
-      compMemStr = ""
-      if t in comps:
-        nCompMem = 0
-        compMemStr += ' ['
-        for cm in comps[t]["Members"]:
-          if cm != 'ExtraCode':
-            nCompMem += 1
-            compMemStr += ('%s,' % cm)
-        compMemStr += ']'
-        colW *= nCompMem
-      colName = name[:colW - 2]
-      colName += compMemStr
-      colName += ":"
-      while len(colName) < colW:
-        colName += " "
-      ostream_header_string += colName
-
-      name = m.getter_name(self.get_syntax)
-      if not m.is_array:
-        ostream_implementation += (' << std::setw(%i) << v[i].%s() << " "' % (numColWidth, name))
-    ostream_implementation += '  << std::endl;\n'
-    ostream_implementation = ostream_implementation.replace("{header_string}", ostream_header_string)
-
-    # ----------------------------------------------------------------------
 
     refmembers = definition["OneToOneRelations"]
     refvectors = definition["OneToManyRelations"]
-    vectormembers = definition["VectorMembers"]
-    nOfRefVectors = len(refvectors)
-    nOfRefMembers = len(refmembers)
-    if nOfRefVectors + nOfRefMembers > 0:
-      # member initialization
-      # constructorbody += "\tm_refCollections = new podio::CollRefCollection();\n"
-      destructorbody += "\tfor (auto& pointer : m_refCollections) { if (pointer != nullptr) delete pointer; }\n"
+
+    if refmembers or refvectors:
       clear_relations += "\tfor (auto& pointer : m_refCollections) { pointer->clear(); }\n"
 
-      for counter, item in enumerate(refvectors):
-        name = item.name
-        klass = item.full_type
-        substitutions = {"counter": counter,
-                         "class": klass,
-                         "name": name}
+    for irel, relation in enumerate(refvectors):
+      includes.add(self._build_include(relation.bare_type + 'Collection'))
 
-        # includes
-        includes.add(self._build_include(item.bare_type + 'Collection'))
+      substitutions = {
+        'name': relation.name, 'type': relation.bare_type, 'namespace': relation.namespace,
+        'class': relation.full_type, 'counter': irel
+      }
+      _fmt = lambda s: s.format(**substitutions)
 
-        # FIXME check if it compiles with :: for both... then delete this.
-        relations += declarations["relation"].format(
-          namespace=item.namespace, type=item.bare_type, name=name)
-        relations += declarations["relation_collection"].format(
-          namespace=item.namespace, type=item.bare_type, name=name)
-        initializers += implementations["ctor_list_relation"].format(
-            namespace=item.namespace, type=item.bare_type, name=name)
+      relations += _fmt(declarations["relation"])
+      relations += _fmt(declarations["relation_collection"])
+      initializers += _fmt(implementations["ctor_list_relation"])
 
-        constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
-        # relation handling in ::create
-        create_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
-        # relation handling in ::clear
-        clear_relations += implementations["clear_relations_vec"].format(name=name)
-        clear_relations += implementations["clear_relations"].format(name=name)
-        # relation handling in dtor:
-        destructorbody += implementations["destroy_relations"].format(name=name)
-        # relation handling in push_back
-        push_back_relations += "\tm_rel_{name}_tmp.push_back(obj->m_{name});\n".format(name=name)
-        # relation handling in ::prepareForWrite
-        prepareforwritinghead += "\tint {name}_index =0;\n".format(name=name)
-        prepareforwritingbody += self.evaluate_template(
-            "CollectionPrepareForWriting.cc.template", substitutions)
-        # relation handling in ::settingReferences
-        setreferences += self.evaluate_template("CollectionSetReferences.cc.template", substitutions)
-        prepareafterread += "\t\tobj->m_%s = m_rel_%s;" % (name, name)
+      create_relations += _fmt("\tm_rel_{name}_tmp.push_back(obj->m_{name});\n")
+      # relation handling in ::clear
+      clear_relations += _fmt(implementations["clear_relations_vec"])
+      clear_relations += _fmt(implementations["clear_relations"])
+      # relation handling in push_back
+      push_back_relations += _fmt("\tm_rel_{name}_tmp.push_back(obj->m_{name});\n")
+      # relation handling in ::prepareForWrite
+      prepareforwritinghead += _fmt("\tint {name}_index =0;\n")
+      prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template", substitutions)
+      # relation handling in ::settingReferences
+      setreferences += self.evaluate_template("CollectionSetReferences.cc.template", substitutions)
+      prepareafterread += _fmt("\t\tobj->m_{name} = m_rel_{name};")
 
-        get_name = item.getter_name(self.get_syntax)
 
-        ostream_implementation += ('  o << "     %s : " ;\n' % name)
-        ostream_implementation += ('  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name)
-        ostream_implementation += ('    o << v[i].%s(j).id() << " " ; \n' % get_name)
-        ostream_implementation += '  o << std::endl ;\n'
+    n_relations = len(refvectors)
+    for iref, reference in enumerate(refmembers):
+      includes.add(self._build_include(reference.bare_type + 'Collection'))
 
-      for counter, item in enumerate(refmembers):
-        name = item.name
-        klass = item.full_type
-        mnamespace = item.namespace
-        klassname = item.bare_type
+      substitutions = {
+        'counter': n_relations + iref, 'i': n_relations + iref, 'rawclass': reference.bare_type,
+        'name': reference.name, 'type': reference.bare_type, 'namespace': reference.namespace,
+        'class': reference.full_type,
+      }
+      _fmt = lambda s: s.format(**substitutions)
 
-        substitutions = {"counter": counter + nOfRefVectors,
-                         "class": klass,
-                         "rawclass": klassname,
-                         "name": name}
+      # constructor call
+      initializers += _fmt(implementations["ctor_list_relation"])
+      # member
+      relations += _fmt(declarations["relation"])
+      # relation handling in ::clear
+      clear_relations += _fmt(implementations["clear_relations"])
+      # relation handling in ::prepareForWrite
+      prepareforwriting_refmembers += _fmt(implementations["prep_writing_relations"])
+      # relation handling in ::settingReferences
+      prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template", substitutions)
 
-        # includes
-        includes.add(self._build_include(klassname + 'Collection'))
-        # constructor call
-        initializers += implementations["ctor_list_relation"].format(
-            namespace=mnamespace, type=klassname, name=name)
-        # member
-        relations += declarations["relation"].format(namespace=mnamespace, type=klassname, name=name)
-        constructorbody += "\tm_refCollections.push_back(new std::vector<podio::ObjectID>());\n"
-        # relation handling in ::clear
-        clear_relations += implementations["clear_relations"].format(name=name)
-        # relation handling in dtor:
-        destructorbody += implementations["destroy_relations"].format(name=name)
-        # relation handling in ::prepareForWrite
-        prepareforwriting_refmembers += implementations["prep_writing_relations"].format(
-            name=name, i=(counter + nOfRefVectors))
-        # relation handling in ::settingReferences
-        prepareafterread_refmembers += self.evaluate_template(
-            "CollectionSetSingleReference.cc.template", substitutions)
-
-        get_name = item.getter_name(self.get_syntax)
-
-        ostream_implementation += ('  o << "     %s : " ;\n' % name)
-        ostream_implementation += ('  o << v[i].%s().id() << std::endl;\n' % get_name)
-
-    if len(vectormembers) > 0:
+    vectormembers = definition["VectorMembers"]
+    vecmembers = ""
+    if vectormembers:
       includes.add('#include <numeric>')
-    for counter, item in enumerate(vectormembers):
-      name = item.name
-      klass = item.full_type
-      get_name = item.getter_name(self.get_syntax)
+    for item in vectormembers:
+      substitutions = {'name': item.name, 'type': item.full_type, 'rawclassname': rawclassname}
+      _fmt = lambda s: s.format(**substitutions)
 
-      vecmembers += declarations["vecmembers"].format(type=klass, name=name)
-      constructorbody += "\tm_vecmem_info.push_back( std::make_pair( \"{type}\", &m_vec_{name} )) ; \n".format(
-          type=klass, name=name)
-      constructorbody += "\tm_vec_{name} = new std::vector<{type}>() ;\n".format(type=klass, name=name)
-      create_relations += "\tm_vecs_{name}.push_back(obj->m_{name});\n".format(name=name)
-      destructorbody += "\tif(m_vec_{name} != nullptr) delete m_vec_{name};\n".format(name=name)
-      clear_relations += "\tm_vec_{name}->clear();\n".format(name=name)
-      clear_relations += "\tm_vecs_{name}.clear();\n".format(name=name)
-      prepareforwritinghead += "\tint {name}_size = ".format(name=name)
+      vecmembers += _fmt(declarations["vecmembers"])
+      create_relations += _fmt("\tm_vecs_{name}.push_back(obj->m_{name});\n")
+      clear_relations += _fmt("\tm_vec_{name}->clear();\n")
+      clear_relations += _fmt("\tm_vecs_{name}.clear();\n")
+      prepareforwritinghead += _fmt("\tint {name}_size = ")
       prepareforwritinghead += "std::accumulate( m_entries.begin(), m_entries.end(), 0, "
-      prepareforwritinghead += "[](int sum, const {rawclassname}Obj*  obj)".format(rawclassname=rawclassname)
-      prepareforwritinghead += "{{ return sum + obj->m_{name}->size();}} );\n".format(name=name)
-      prepareforwritinghead += "\tm_vec_{name}->reserve( {name}_size );\n".format(name=name)
-      prepareforwritinghead += "\tint {name}_index =0;\n".format(name=name)
+      prepareforwritinghead += _fmt("[](int sum, const {rawclassname}Obj*  obj)")
+      prepareforwritinghead += _fmt("{{ return sum + obj->m_{name}->size();}} );\n")
+      prepareforwritinghead += _fmt("\tm_vec_{name}->reserve( {name}_size );\n")
+      prepareforwritinghead += _fmt("\tint {name}_index =0;\n")
 
       prepareforwritingbody += self.evaluate_template(
-          "CollectionPrepareForWritingVecMember.cc.template", {"name": name})
-      push_back_relations += "\tm_vecs_{name}.push_back(obj->m_{name});\n".format(name=name)
+          "CollectionPrepareForWritingVecMember.cc.template", substitutions)
+      push_back_relations += _fmt("\tm_vecs_{name}.push_back(obj->m_{name});\n")
 
-      prepareafterread += "\t\tobj->m_{name} = m_vec_{name};\n".format(name=name)
+      prepareafterread += _fmt("\t\tobj->m_{name} = m_vec_{name};\n")
 
-      ostream_implementation += ('  o << "     %s : " ;\n' % name)
-      ostream_implementation += ('  for(unsigned j=0,N=v[i].%s_size(); j<N ; ++j)\n' % name)
-      ostream_implementation += ('    o << v[i].%s(j) << " " ; \n' % get_name)
-      ostream_implementation += '  o << std::endl ;\n'
+    vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(rawclassname, members)
 
-    ostream_implementation += '  }\no.flags(old_flags);\n'
-    ostream_implementation += "  return o ;\n}\n"
+    ostream_declaration, ostream_implementation = self._ostream_collection(
+      rawclassname, definition['Members'], definition['OneToManyRelations'],
+      definition['OneToOneRelations'], definition['VectorMembers'])
+
+    constructorbody, destructorbody = constructor_destructor_collection(
+      definition['OneToManyRelations'], definition['OneToOneRelations'], definition['VectorMembers'])
 
     substitutions = {"name": rawclassname,
                      "classname": classname,
