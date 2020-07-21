@@ -2,9 +2,10 @@
 from __future__ import absolute_import, unicode_literals, print_function
 from io import open
 
-import yaml
 import copy
 import re
+import warnings
+import yaml
 
 from collections import OrderedDict
 
@@ -19,9 +20,11 @@ class MemberParser(object):
   # A type can either start with a double colon, or a character (types starting
   # with _ are technically allowed, but partially reserved for compilers)
   # Additionally we have to take int account the possible whitespaces in the
-  # builtin types above. Currently this is done by simple brute-forcing
-  type_str = r'((?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*|{builtin_re})'.format(
-      builtin_re=r'|'.join((r'(?:{})'.format(t)) for t in BUILTIN_TYPES))
+  # builtin types above. Currently this is done by simple brute-forcing.
+  # To "ensure" that the builtin matching is greedy and picks up as much as
+  # possible, sort the types by their length in descending order
+  builtin_str = r'|'.join(r'(?:{})'.format(t) for t in sorted(BUILTIN_TYPES, key=len, reverse=True))
+  type_str = r'({builtin_re}|(?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*)'.format(builtin_re=builtin_str)
   type_re = re.compile(type_str)
 
   # Names can be almost anything as long as it doesn't start with a digit and
@@ -41,20 +44,56 @@ class MemberParser(object):
   member_re = re.compile(r' *{typ} +{name} *{comment}'.format(
       typ=type_str, name=name_str, comment=comment_str))
 
+  # For cases where we don't require a description
+  bare_member_re = re.compile(r' *{typ} +{name}'.format(typ=type_str, name=name_str))
+  bare_array_re = re.compile(r' *{array} +{name}'.format(array=array_str, name=name_str))
 
-  def parse(self, string):
-    """Parse the passed string"""
-    array_match = self.full_array_re.match(string)
-    if array_match is not None:
-      typ, size, name, comment = array_match.groups()
-      return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip())
-
-    member_match = self.member_re.match(string)
-    if member_match:
-      klass, name, comment = member_match.groups()
-      return MemberVariable(name=name, type=klass, description=comment.strip())
+  @staticmethod
+  def _parse_with_regexps(string, regexps_callbacks):
+    """Parse the string using the passed regexps and corresponding callbacks that
+    take the match and return a MemberVariable from it"""
+    for rgx, callback in regexps_callbacks:
+      match = rgx.match(string)
+      if match is not None:
+        return callback(match)
 
     raise DefinitionError("'%s' is not a valid member definition" % string)
+
+  @staticmethod
+  def _full_array_conv(match):
+    typ, size, name, comment = match.groups()
+    return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip())
+
+  @staticmethod
+  def _full_member_conv(match):
+    klass, name, comment = match.groups()
+    return MemberVariable(name=name, type=klass, description=comment.strip())
+
+  @staticmethod
+  def _bare_array_conv(match):
+    typ, size, name = match.groups()
+    return MemberVariable(name=name, array_type=typ, array_size=size)
+
+  @staticmethod
+  def _bare_member_conv(match):
+    klass, name = match.groups()
+    return MemberVariable(name=name, type=klass)
+
+
+  def parse(self, string, require_description=True):
+    """Parse the passed string"""
+    matchers_cbs = [
+      (self.full_array_re, self._full_array_conv),
+      (self.member_re, self._full_member_conv)
+    ]
+
+    if not require_description:
+      matchers_cbs.extend((
+        (self.bare_array_re, self._bare_array_conv),
+        (self.bare_member_re, self._bare_member_conv)
+      ))
+
+    return self._parse_with_regexps(string, matchers_cbs)
 
 
 class ClassDefinitionValidator(object):
@@ -128,9 +167,14 @@ class ClassDefinitionValidator(object):
   def _check_components(self):
     """Check the components"""
     for name, component in self.components.items():
+      for field in component:
+        if field not in ['Members', 'ExtraCode']:
+          raise DefinitionError("{} defines a '{}' field which is not allowed for a component"
+                                .format(name, field))
+
       if 'ExtraCode' in component:
-        for key in ('const_declaration', 'implementation', 'const_implementation'):
-          if key in component['ExtraCode']:
+        for key in component['ExtraCode']:
+          if key not in ('declaration', 'includes'):
             raise DefinitionError("'{}' field found in 'ExtraCode' of component '{}'."
                                   " Only 'declaration' and 'includes' are allowed here".format(key, name))
 
@@ -142,7 +186,6 @@ class ClassDefinitionValidator(object):
         if not is_builtin and not is_component:
           raise DefinitionError("{} defines a member of type '{}' which is not allowed in components"
                                 .format(member.name, member.full_type))
-
 
   def _check_datatypes(self):
     """Check the datatypes"""
@@ -303,13 +346,34 @@ class PodioConfigReader(object):
   def _handle_extracode(definition):
     return copy.deepcopy(definition)
 
-
   @staticmethod
-  def _read_component(definition):
+  def _read_component_old_definition(definition):
     """Read the component and put it into a similar structure as the datatypes, i.e.
     a dict with a 'Members' and an 'ExtraCode' field for easier handling
     afterwards
     """
+    WARNING_TEXT = """
+
+    You are using the deprecated old style of defining components:
+
+    components:
+      ExampleComponent:
+        x : int
+        ExtraCode:
+          declaration: "// some code here"
+
+    This option will be removed with version 1.0.
+    Switch to the new style of defining components (consistent with datatypes definitions):
+
+    components:
+      ExampleComponent:
+        Members:
+          - int x // an optional description here
+        ExtraCode:
+          declaration: "// some code here"
+
+    """
+    warnings.warn(WARNING_TEXT, FutureWarning, stacklevel=3)
     component = {'Members': []}
     for name, klass in definition.items():
       if name == 'ExtraCode':
@@ -328,6 +392,32 @@ class PodioConfigReader(object):
         else:
           raise DefinitionError("'{}: {}' is not a valid member definition".format(name, klass))
 
+    return component
+
+  def _read_component(self, definition):
+    """Read the component and put it into an easily digestible format.
+
+    Currently handles two versions of syntax:
+    - One that is different than the one used for datatypes, deprecated and
+    planned for removal with 1.0
+    - A consistent one with the syntax for datatypes, with slightly less
+    capabilities
+    """
+    # Very basic check here to differentiate between old and new style component
+    # definitions
+    if "Members" not in definition:
+      return self._read_component_old_definition(definition)
+
+    component = {}
+    for name, category in definition.items():
+      if name == 'Members':
+        component['Members'] = []
+        for member in definition[name]:
+          # for components we do not require a description in the members
+          component['Members'].append(self.member_parser.parse(member, False))
+      else:
+        component[name] = copy.deepcopy(category)
+   
     return component
 
 
