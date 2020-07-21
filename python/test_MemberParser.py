@@ -102,6 +102,29 @@ class MemberParserTest(unittest.TestCase):
         parser.parse(inp)
 
 
+  def test_parse_valid_no_description(self):
+    parser = MemberParser()
+
+    parsed = parser.parse('unsigned long long aLongWithoutDescription', False)
+    self.assertEqual(parsed.full_type, 'unsigned long long')
+    self.assertEqual(parsed.name, 'aLongWithoutDescription')
+    self.assertEqual(str(parsed), 'unsigned long long aLongWithoutDescription;')
+
+    parsed = parser.parse('std::array<unsigned long, 123> unDescribedArray', False)
+    self.assertEqual(parsed.full_type, 'std::array<unsigned long, 123>')
+    self.assertEqual(parsed.name, 'unDescribedArray')
+    self.assertEqual(parsed.array_type, 'unsigned long')
+    self.assertTrue(parsed.is_builtin_array)
+
+    parsed = parser.parse('unsigned long longWithReallyStupidName', False)
+    self.assertEqual(parsed.full_type, 'unsigned long')
+    self.assertEqual(parsed.name, 'longWithReallyStupidName')
+
+    parsed = parser.parse('NonBuiltIn aType // descriptions are not ignored even though they are not required', False)
+    self.assertEqual(parsed.full_type, 'NonBuiltIn')
+    self.assertEqual(parsed.name, 'aType')
+    self.assertEqual(parsed.description, 'descriptions are not ignored even though they are not required')
+
 
 if __name__ == '__main__':
   unittest.main()

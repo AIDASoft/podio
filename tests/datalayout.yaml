@@ -30,6 +30,13 @@ components :
   ex2::NamespaceInNamespaceStruct:
     data : ex2::NamespaceStruct
 
+  NewStyleComponent:
+    Members:
+      - int someInteger // with a description
+      - float someFloatWithoutDescription
+    ExtraCode:
+      declaration: "double fooBar() const { return someInteger * someFloatWithoutDescription; }"
+
 datatypes :
 
   EventInfo:
