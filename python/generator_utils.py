@@ -251,7 +251,7 @@ class MemberVariable(object):
     self.array_size = kwargs.pop('array_size', None)
 
     if kwargs:
-      raise ValueError("Unused kwargs in MemberVariable: {}".format(kwargs.keys()))
+      raise ValueError("Unused kwargs in MemberVariable: {}".format(list(kwargs.keys())))
 
     if self.array_type is not None and self.array_size is not None:
       self.is_array = True
