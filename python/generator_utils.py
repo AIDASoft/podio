@@ -52,24 +52,25 @@ def _format(string, **replacements):
 
 def get_extra_code(classname, definition):
   """Get the extra code from a datatype definition"""
-  extra_code = {'decl': "", 'const_decl': "", 'code': "", 'const_code': "", 'includes': set()}
+  extra_code = {'decl': "", 'const_decl': "", 'impl': "", 'const_impl': "", 'includes': set()}
 
   extra = definition.get('ExtraCode', {})
-  if not extra:
+  const_extra = definition.get('ConstExtraCode', {})
+  if not extra and not const_extra:
     return extra_code
 
   extra_code['decl'] = _format(extra.get('declaration', ''), name=classname)
-  extra_code['code'] = _format(extra.get('implementation', ''), name=classname)
+  extra_code['impl'] = _format(extra.get('implementation', ''), name=classname)
 
-  if 'const_declaration' in extra:
-    extra_code['const_decl'] = _format(extra['const_declaration'], name='Const' + classname)
-    extra_code['decl'] += '\n' + _format(extra['const_declaration'], name=classname)
+  extra_code['const_decl'] = _format(const_extra.get('declaration', ''), name='Const' + classname)
+  extra_code['decl'] += '\n' + _format(const_extra.get('declaration', ''), name=classname)
 
-  if 'const_implementation' in extra:
-    extra_code['const_code'] = _format(extra['const_implementation'], name='Const' + classname)
-    extra_code['code'] += '\n' + _format(extra['const_implementation'], name=classname)
+  extra_code['const_impl'] = _format(const_extra.get('implementation', ''), name='Const' + classname)
+  extra_code['impl'] += '\n' + _format(const_extra.get('implementation', ''), name=classname)
 
+  # For the moment join the includes for both cases
   extra_code['includes'].update(extra.get('includes', '').split('\n'))
+  extra_code['includes'].update(const_extra.get('includes', '').split('\n'))
 
   return extra_code
 

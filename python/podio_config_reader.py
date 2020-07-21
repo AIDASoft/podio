@@ -117,20 +117,17 @@ class ClassDefinitionValidator(object):
   )
   valid_extra_datatype_keys = (
     "ExtraCode",
-    # "ConstExtraCode"    # not used anywhere in class generator
+    "ConstExtraCode"
   )
 
   # documented but not yet implemented
   not_yet_implemented_keys = (
     "TransientMembers",
     "Typedefs",
-    "ConstExtraCode"
   )
 
   valid_extra_code_keys = (
-    "declaration", "const_declaration",
-    "implementation", "const_implementation",
-    "includes"
+    "declaration", "implementation", "includes"
   )
   # documented but not yet implemented
   not_yet_implemented_extra_code = (

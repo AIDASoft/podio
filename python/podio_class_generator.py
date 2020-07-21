@@ -462,9 +462,9 @@ class ClassGenerator(object):
 
     extra_code = get_extra_code(rawclassname, definition)
     extracode_declarations = extra_code['decl']
-    extracode = extra_code['code']
+    extracode = extra_code['impl']
     constextracode_declarations = extra_code['const_decl']
-    constextracode = extra_code['const_code']
+    constextracode = extra_code['const_impl']
     datatype['includes'].update(extra_code['includes'])
 
 
