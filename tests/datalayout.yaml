@@ -9,10 +9,11 @@ options :
 
 components :
   SimpleStruct:
-    x : int
-    y : int
-    z : int
-    p: std::array<int, 4>
+    Members:
+      - int x
+      - int y
+      - int z
+      - std::array<int, 4> p
     # can also add c'tors:
     ExtraCode :
       declaration: "
@@ -21,21 +22,17 @@ components :
       "
 
   NotSoSimpleStruct:
-    data : SimpleStruct
+    Members:
+      - SimpleStruct data // component members can have descriptions
 
   ex2::NamespaceStruct:
-    x : int
-    y : int
+    Members:
+      - int x
+      - int y
 
   ex2::NamespaceInNamespaceStruct:
-    data : ex2::NamespaceStruct
-
-  NewStyleComponent:
     Members:
-      - int someInteger // with a description
-      - float someFloatWithoutDescription
-    ExtraCode:
-      declaration: "double fooBar() const { return someInteger * someFloatWithoutDescription; }"
+      - ex2::NamespaceStruct data
 
 datatypes :
 
