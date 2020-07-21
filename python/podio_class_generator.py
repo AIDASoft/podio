@@ -7,6 +7,9 @@ try:
 except ImportError:
   from itertools import izip_longest as zip_longest
 
+# for python2 compatible FileNotFoundError handling
+import errno
+
 from copy import deepcopy
 
 import os
@@ -982,7 +985,13 @@ class ClassGenerator(object):
         with open(fullname, 'r') as f:
           existing_content = f.read()
           changed = existing_content != content
-      except FileNotFoundError:
+
+      except EnvironmentError as e:
+        # If we deprecate python2 support, FileNotFoundError becomes available
+        # and this can be using it. For now we keep it compatible with both
+        # versions
+        if e.errno != errno.ENOENT:
+          raise
         changed = True
 
       if changed:
