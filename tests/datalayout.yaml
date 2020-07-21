@@ -42,9 +42,10 @@ datatypes :
     Members :
      - int Number // event number
     ExtraCode :
-       const_declaration: "int getNumber() const; "
-       const_implementation: "int {name}::getNumber() const { return Number(); } "
        declaration: "void setNumber(int n) { Number( n ) ; } "
+    ConstExtraCode:
+      declaration: "int getNumber() const;"
+      implementation: "int {name}::getNumber() const { return Number(); }"
 
   ExampleHit :
     Description : "Example Hit"
