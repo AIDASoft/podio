@@ -269,7 +269,6 @@ class MemberVariable(object):
         self.namespace = ""
         self.bare_type = self.full_type
 
-
   def __str__(self):
     """string representation"""
     # Make sure to include scope-operator if necessary
