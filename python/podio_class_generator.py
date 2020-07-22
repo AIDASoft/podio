@@ -20,7 +20,7 @@ from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 from generator_utils import (
   demangle_classname, get_extra_code, generate_get_set_member, generate_get_set_relation,
-  constructor_destructor_collection
+  constructor_destructor_collection, get_fmt_func
 )
 
 thisdir = os.path.dirname(os.path.abspath(__file__))
@@ -198,7 +198,7 @@ class ClassGenerator(object):
 
   def create_data(self, classname, definition, datatype):
     """Create the Data"""
-    data = deepcopy(datatype) # avoid having outside side-effects
+    data = deepcopy(datatype)  # avoid having outside side-effects
     # now handle the vector-members
     vectormembers = definition["VectorMembers"]
     for vectormember in vectormembers:
@@ -280,15 +280,15 @@ class ClassGenerator(object):
     """ostream operator overload declaration and implementation for a given class"""
     decl = "std::ostream& operator<<( std::ostream& {o}, const Const{classname}& {value} );\n"
 
-    impl = [decl.replace(';\n', ' {{')] # double brace for surviving .format
+    impl = [decl.replace(';\n', ' {{')]  # double brace for surviving .format
     impl.append('  {o} << " id: " << {value}.id() << \'\\n\';')
 
     for member in class_members:
       getname = member.getter_name(self.get_syntax)
-      _fmt = lambda x: x.format(name=member.name, getname=getname, size=member.array_size)
+      _fmt = get_fmt_func(name=member.name, getname=getname, size=member.array_size)
       if member.is_array:
         impl.append(_fmt('  {{o}} << " {name} : ";'))
-        impl.append(_fmt('  for (int i = 0; i < {size}; ++i) {{{{')) # have to survive format twice
+        impl.append(_fmt('  for (int i = 0; i < {size}; ++i) {{{{'))  # have to survive format twice
         impl.append(_fmt('    {{o}} << {{value}}.{getname}()[i] << "|" ;'))
         impl.append('  }}')
         impl.append('  {o} << \'\\n\';')
@@ -298,7 +298,7 @@ class ClassGenerator(object):
       if self.expose_pod_members and not member.is_builtin and not member.is_array:
         for sub_member in self.reader.components[member.full_type]['Members']:
           getname = sub_member.getter_name(self.get_syntax)
-          _fmt = lambda x: x.format(name=member.name, getname=getname)
+          _fmt = get_fmt_func(name=member.name, getname=getname)
           impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
 
     for relation in single_relations:
@@ -308,7 +308,7 @@ class ClassGenerator(object):
 
     for relation in multi_relations:
       getname = relation.getter_name(self.get_syntax)
-      _fmt = lambda x: x.format(name=relation.name, getname=getname)
+      _fmt = get_fmt_func(name=relation.name, getname=getname)
       impl.append(_fmt('  {{o}} << " {name} : " ;'))
       impl.append(_fmt('  for (unsigned i = 0; i < {{value}}.{name}_size(); ++i) {{{{'))
       # If the reference is of the same type as the class we have to avoid
@@ -321,9 +321,8 @@ class ClassGenerator(object):
       impl.append('  }}')
       impl.append('  {o} << \'\\n\';')
 
-
     impl.append('  return {o};')
-    impl.append('}}') # to survive .format
+    impl.append('}}')  # to survive .format
     return (decl.format(classname=classname, o=osname, value=valname),
             '\n'.join(impl).format(classname=classname, o=osname, value=valname))
 
@@ -395,7 +394,7 @@ class ClassGenerator(object):
 
   def create_class(self, classname, definition, datatype):
     """Create all files necessary for a given class"""
-    datatype = deepcopy(datatype) # avoid having outside side-effects
+    datatype = deepcopy(datatype)  # avoid having outside side-effects
     namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
     datatype["includes"].add(self._build_include(rawclassname + "Data"))
@@ -529,7 +528,7 @@ class ClassGenerator(object):
         continue
       # column header
       col_w = col_width + 2
-      comp_str = "" # print component names if they are present
+      comp_str = ""  # print component names if they are present
       if member.full_type in self.reader.components:
         comps = [c.name for c in self.reader.components[member.full_type]['Members']]
         comp_str = '[ {}]'.format(', '.join(comps))
@@ -548,11 +547,11 @@ class ClassGenerator(object):
       getname = relation.getter_name(self.get_syntax)
       print_name = '{{:{width}}}'.format(width=col_width).format(relation.name)
       impl.append('    {{o}} << "{name} : ";'.format(name=print_name))
-      impl.append('    for (unsigned j = 0, N = {{value}}[i].{name}_size(); j < N; ++j) {{{{'.format(name=relation.name))
+      impl.append('    for (unsigned j = 0, N = {{value}}[i].{name}_size(); j < N; ++j) {{{{'
+                  .format(name=relation.name))
       impl.append('      {{o}} << {{value}}[i].{gname}(j).id() << " ";'.format(gname=getname))
       impl.append('    }}')
       impl.append('    {o} << std::endl;\n')
-
 
     for reference in references:
       getname = reference.getter_name(self.get_syntax)
@@ -569,7 +568,7 @@ class ClassGenerator(object):
       impl.append('    }}')
       impl.append('    {o} << std::endl;\n')
 
-    impl.append('  }}') # for loop
+    impl.append('  }}')  # for loop
 
     impl.append('  {o}.flags(old_flags);')
     impl.append('  return {o};')
@@ -608,7 +607,7 @@ class ClassGenerator(object):
         'name': relation.name, 'type': relation.bare_type, 'namespace': relation.namespace,
         'class': relation.full_type, 'counter': irel
       }
-      _fmt = lambda s: s.format(**substitutions)
+      _fmt = get_fmt_func(**substitutions)
 
       relations += _fmt(declarations["relation"])
       relations += _fmt(declarations["relation_collection"])
@@ -636,7 +635,7 @@ class ClassGenerator(object):
         'name': reference.name, 'type': reference.bare_type, 'namespace': reference.namespace,
         'class': reference.full_type,
       }
-      _fmt = lambda s: s.format(**substitutions)
+      _fmt = get_fmt_func(**substitutions)
 
       # constructor call
       initializers += _fmt(implementations["ctor_list_relation"])
@@ -655,7 +654,7 @@ class ClassGenerator(object):
       includes.add('#include <numeric>')
     for item in vectormembers:
       substitutions = {'name': item.name, 'type': item.full_type, 'rawclassname': rawclassname}
-      _fmt = lambda s: s.format(**substitutions)
+      _fmt = get_fmt_func(**substitutions)
 
       vecmembers += _fmt(declarations["vecmembers"])
       create_relations += _fmt("\tm_vecs_{name}.push_back(obj->m_{name});\n")
@@ -869,7 +868,7 @@ class ClassGenerator(object):
           delete_singlerelations += "\t\tif (m_{name} != nullptr) delete m_{name};\n".format(name=item.name)
 
           includes_cc.add(self._build_include("%sConst" % item.bare_type))
-     
+
     forward_declarations = self._concat_fwd_declarations(forward_declarations_namespace)
 
     _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
@@ -891,7 +890,7 @@ class ClassGenerator(object):
         else:
           includes.add(self._build_include(item.bare_type))
 
-      _fmt = lambda s: s.format(name=item.name, type=qualified_class)
+      _fmt = get_fmt_func(name=item.name, type=qualified_class)
       relations += _fmt("\tstd::vector<{type}>* m_{name};\n")
       initialize_relations += _fmt(", m_{name}(new std::vector<{type}>())")
       deepcopy_relations += _fmt(", m_{name}(new std::vector<{type}>(*(other.m_{name})))")
