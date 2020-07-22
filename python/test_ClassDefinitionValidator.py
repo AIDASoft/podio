@@ -10,6 +10,7 @@ from copy import deepcopy
 
 from podio_config_reader import ClassDefinitionValidator, MemberVariable, DefinitionError
 
+
 class ClassDefinitionValidatorTest(unittest.TestCase):
   def setUp(self):
     valid_component_members = [
@@ -60,7 +61,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     except exceptions:
       self.fail(message.format(func.__name__))
 
-
   def test_component_invalid_extra_code(self):
     component = deepcopy(self.valid_component)
     component['Component']['ExtraCode']['const_declaration'] = '// not even valid c++ passes here'
@@ -71,7 +71,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     component['Component']['ExtraCode']['const_implementation'] = '// it does not either here'
     with self.assertRaises(DefinitionError):
       self.validator.validate(component, {}, False)
-
 
   def test_component_invalid_member(self):
     # non-builin type
@@ -85,7 +84,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     component['Component']['Members'].append(MemberVariable(array_type='NonBuiltinType', array_size=3))
     with self.assertRaises(DefinitionError):
       self.validator.validate(component, {}, False)
-
 
   def test_component_valid_members(self):
     self._assert_no_exception(DefinitionError, '{} should not raise for a valid component',
@@ -101,7 +99,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     self.valid_component['Component']['Author'] = 'An invalid field for a component'
     with self.assertRaises(DefinitionError):
       self.validator.validate(self.valid_component, {}, False)
-
 
   def test_datatype_valid_members(self):
     self._assert_no_exception(DefinitionError, '{} should not raise for a valid datatype',
@@ -136,7 +133,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     self._assert_no_exception(DefinitionError, '{} should allow for almost empty datatypes',
                               self.validator.validate, {}, datatype, False)
 
-
   def test_datatype_invalid_definitions(self):
     for required in ('Author', 'Description'):
       datatype = deepcopy(self.valid_datatype)
@@ -153,7 +149,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     datatype['InvalidCategory'] = {'key': 'invalid value'}
     with self.assertRaises(DefinitionError):
       self.validator.validate({}, datatype, False)
-
 
   def test_datatype_invalid_members(self):
     datatype = deepcopy(self.valid_datatype)
@@ -174,7 +169,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     with self.assertRaises(DefinitionError):
       self.validator.validate(self.valid_component, datatype, True)
 
-
   def test_datatype_valid_many_relations(self):
     self.valid_datatype['DataType']['OneToManyRelations'] = [
       MemberVariable(type='DataType', name='selfRelation')
@@ -192,7 +186,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
     self._assert_no_exception(DefinitionError, '{} should validate a valid relation',
                               self.validator.validate, self.valid_component, self.valid_datatype, False)
-
 
   def test_datatype_invalid_many_relations(self):
     datatype = deepcopy(self.valid_datatype)
@@ -214,7 +207,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     with self.assertRaises(DefinitionError):
       self.validator.validate({}, datatype, False)
 
-
   def test_datatype_valid_vector_members(self):
     self.valid_datatype['DataType']['VectorMembers'] = [
       MemberVariable(type='int', name='someInt')
@@ -230,7 +222,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                               '{} should validate component VectorMembers',
                               self.validator.validate, self.valid_component, self.valid_datatype, False)
 
-
   def test_datatype_invalid_vector_members(self):
     datatype = deepcopy(self.valid_datatype)
     datatype['DataType']['VectorMembers'] = [MemberVariable(type='DataType', name='invalid')]
@@ -240,7 +231,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     datatype['Brian'] = {
       'Author': 'Graham Chapman',
       'Description': 'Not the messiah, a very naughty boy',
-      'VectorMembers':  [
+      'VectorMembers': [
         MemberVariable(type='DataType', name='invalid',
                        description='also non-self relations are not allowed')
       ]

@@ -9,6 +9,7 @@ import unittest
 
 from podio_config_reader import MemberParser
 
+
 class MemberParserTest(unittest.TestCase):
   def setUp(self):
     pass
@@ -74,7 +75,6 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.name, r'anArray')
     self.assertEqual(parsed.description, r'with a top level type')
 
-
   def test_parse_invalid(self):
     # setup an empty parser
     parser = MemberParser()
@@ -84,7 +84,7 @@ class MemberParserTest(unittest.TestCase):
         r'int anIntWithoutDescription',
         r'__someType name // an illformed type',
         r'double 1WrongNamedDouble // an invalid name',
-        r'std::array<double, 3>', # array without name and description
+        r'std::array<double, 3>',  # array without name and description
         r'std::array<double, 2> // an array without a name',
         r'std::array<int, 2> anArrayWithoutDescription',
         r'std::array<__foo, 3> anArray // with invalid type',
@@ -100,7 +100,6 @@ class MemberParserTest(unittest.TestCase):
     for inp in invalid_inputs:
       with self.assertRaises(Exception):
         parser.parse(inp)
-
 
   def test_parse_valid_no_description(self):
     parser = MemberParser()

@@ -88,6 +88,11 @@ def _get_format_pattern_func(default_replacements):
   return _format_pattern
 
 
+def get_fmt_func(**replacements):
+  """Wraper that works with kwargs"""
+  return _get_format_pattern_func(replacements)
+
+
 def _make_return_dict(getter_decls, getter_impls, setter_decls, setter_impls, const_getter_impls):
   """Put all the generation code into a dict to have some structure. Arguments can
   either be a list of strings or just plain strings"""

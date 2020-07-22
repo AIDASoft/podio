@@ -245,7 +245,7 @@ class ClassDefinitionValidator(object):
   def _check_keys(self, classname, definition):
     """Check the keys of a datatype"""
     allowed_keys = self.required_datatype_keys + self.valid_datatype_member_keys + self.valid_extra_datatype_keys
-      # Give some more info for not yet implemented features
+    # Give some more info for not yet implemented features
     invalid_keys = [k for k in definition.keys() if k not in allowed_keys]
     if invalid_keys:
       not_yet_impl = [k for k in invalid_keys if k in self.not_yet_implemented_keys]
@@ -272,7 +272,7 @@ class ClassDefinitionValidator(object):
           not_yet_impl = ''
 
         raise DefinitionError("{} defines invalid 'ExtraCode' categories: {} (not yet implemented: {})"
-                        .format(classname, invalid_keys, not_yet_impl))
+                              .format(classname, invalid_keys, not_yet_impl))
 
   def _fill_defaults(self, definition):
     """Fill some of the fields with empty defaults in order to make it easier to
@@ -403,7 +403,7 @@ class PodioConfigReader(object):
           component['Members'].append(self.member_parser.parse(member, False))
       else:
         component[name] = copy.deepcopy(category)
-   
+
     return component
 
   def _read_datatype(self, value):
