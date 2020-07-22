@@ -232,6 +232,24 @@ class ClassGenerator(object):
     self.fill_templates("Data", substitutions)
     self.created_classes.append(classname + "Data")
 
+  @staticmethod
+  def _concat_fwd_declarations(fwd_decls):
+    """Concatenate all the forward declarations"""
+    forward_declaration = []
+    for nsp, classes in fwd_decls.items():
+      nsp_fwd = []
+      if nsp:
+        nsp_fwd.append('namespace {} {{'.format(nsp))
+
+      for cls in classes:
+        nsp_fwd.append('class {};'.format(cls))
+
+      if nsp:
+        nsp_fwd.append('}\n')
+
+      forward_declaration.append('\n'.join(nsp_fwd))
+
+    return '\n'.join(forward_declaration)
 
   def _process_fwd_declarations(self, relations):
     """Process the forward declarations and includes for a oneToOneRelation"""
@@ -243,24 +261,12 @@ class ClassGenerator(object):
         if member.namespace not in fwd_decls:
           fwd_decls[member.namespace] = []
         fwd_decls[member.namespace].append(member.bare_type)
+        fwd_decls[member.namespace].append('Const' + member.bare_type)
         includes.add(self._build_include(member.bare_type))
 
-    forward_declaration = []
-    for nsp, classes in fwd_decls.items():
-      nsp_fwd = []
-      if nsp:
-        nsp_fwd.append('namespace {} {{'.format(nsp))
+    forward_declaration = self._concat_fwd_declarations(fwd_decls)
 
-      for cls in classes:
-        nsp_fwd.append('class {};'.format(cls))
-        nsp_fwd.append('class Const{};'.format(cls))
-
-      if nsp:
-        nsp_fwd.append('}\n')
-
-      forward_declaration.append('\n'.join(nsp_fwd))
-
-    return includes, '\n'.join(forward_declaration)
+    return includes, forward_declaration
 
 
   def _get_includes(self, member):
@@ -849,93 +855,64 @@ class ClassGenerator(object):
     """ Create an obj class containing all information
         relevant for a given object.
     """
-    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-
     relations = ""
-    includes = set()
     includes_cc = set()
-    forward_declarations = ""
     forward_declarations_namespace = {"": []}
     initialize_relations = ""
     set_relations = ""
     deepcopy_relations = ""
     delete_relations = ""
     delete_singlerelations = ""
-    refvectors = definition["OneToManyRelations"]
-    singleRelations = definition["OneToOneRelations"]
+
     # do includes and forward declarations for
     # oneToOneRelations and do proper cleanups
-    for item in singleRelations:
-      name = item.name
-      klass = item.full_type
-      klassname = klass
-      mnamespace = ""
+    for item in definition["OneToOneRelations"]:
       if not item.is_builtin:
-        if "::" in klass:
-          mnamespace, klassname = klass.split("::")
-          klassWithQualifier = "::" + mnamespace + "::Const" + klassname
-          if mnamespace not in forward_declarations_namespace:
-            forward_declarations_namespace[mnamespace] = []
-        else:
-          klassWithQualifier = "Const" + klass
-      else:
-        klassWithQualifier = klass
+        relations += '{}* m_{};\n'.format(item.as_const(), item.name)
 
-      if mnamespace != "":
-        relations += "  ::%s::Const%s* m_%s;\n" % (mnamespace, klassname, name)
-      else:
-        relations += "  Const%s* m_%s;\n" % (klassname, name)
+        if item.full_type != classname:
+          if item.namespace not in forward_declarations_namespace:
+            forward_declarations_namespace[item.namespace] = []
+          forward_declarations_namespace[item.namespace].append('Const' + item.bare_type)
 
-      if not item.is_builtin:
-        if klass != classname:
-          forward_declarations_namespace[mnamespace] += ['class Const%s;\n' % (klassname)]
-          includes_cc.add(self._build_include("%sConst" % klassname))
-          initialize_relations += ", m_%s(nullptr)\n" % (name)
+          set_relations += implementations["set_relations"].format(
+            name=item.name, klass=item.as_const())
+          initialize_relations += ", m_%s(nullptr)\n" % (item.name)
           # for deep copy initialise as nullptr and set in copy ctor body
           # if copied object has non-trivial relation
-          deepcopy_relations += ", m_%s(nullptr)" % (name)
-          set_relations += implementations["set_relations"].format(name=name, klass=klassWithQualifier)
-        delete_singlerelations += "\t\tif (m_%s != nullptr) delete m_%s;\n" % (name, name)
+          deepcopy_relations += ", m_%s(nullptr)" % (item.name)
+          delete_singlerelations += "\t\tif (m_{name} != nullptr) delete m_{name};\n".format(name=item.name)
 
-    for nsp in forward_declarations_namespace:
-      if nsp != "":
-        forward_declarations += "namespace %s {" % nsp
-      forward_declarations += "".join(forward_declarations_namespace[nsp])
-      if nsp != "":
-        forward_declarations += "}\n"
+          includes_cc.add(self._build_include("%sConst" % item.bare_type))
+     
+    forward_declarations = self._concat_fwd_declarations(forward_declarations_namespace)
 
-    if len(refvectors + definition["VectorMembers"]) != 0:
+    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
+    includes = set()
+
+    refvectors = definition["OneToManyRelations"]
+    vecmembers = definition["VectorMembers"]
+    if refvectors or vecmembers:
       includes.add("#include <vector>")
 
-    for item in refvectors + definition["VectorMembers"]:
-      name = item.name
-      klass = item.full_type
+    for item in refvectors + vecmembers:
+      qualified_class = item.full_type
       if not item.is_builtin:
-        if klass not in self.reader.components:
-          if "::" in klass:
-            mnamespace, klassname = klass.split("::")
-            klassWithQualifier = "::" + mnamespace + "::Const" + klassname
-          else:
-            klassWithQualifier = "Const" + klass
-        else:
-          klassWithQualifier = klass
-        relations += "\tstd::vector<%s>* m_%s;\n" % (klassWithQualifier, name)
-        initialize_relations += ", m_%s(new std::vector<%s>())" % (name, klassWithQualifier)
-        deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" % (name, klassWithQualifier, name)
-        if klass == classname:
+        if item.full_type not in self.reader.components:
+          qualified_class = item.as_const()
+
+        if item.full_type == classname:
           includes_cc.add(self._build_include(rawclassname))
         else:
-          if "::" in klass:
-            mnamespace, klassname = klass.split("::")
-            includes.add(self._build_include(klassname))
-          else:
-            includes.add(self._build_include(klass))
-      else:
-        relations += "\tstd::vector<%s>* m_%s;\n" % (klass, name)
-        initialize_relations += ", m_%s(new std::vector<%s>())" % (name, klass)
-        deepcopy_relations += ", m_%s(new std::vector<%s>(*(other.m_%s)))" % (name, klass, name)
+          includes.add(self._build_include(item.bare_type))
 
-      delete_relations += "\t\tdelete m_%s;\n" % (name)
+      _fmt = lambda s: s.format(name=item.name, type=qualified_class)
+      relations += _fmt("\tstd::vector<{type}>* m_{name};\n")
+      initialize_relations += _fmt(", m_{name}(new std::vector<{type}>())")
+      deepcopy_relations += _fmt(", m_{name}(new std::vector<{type}>(*(other.m_{name})))")
+
+      delete_relations += "\t\tdelete m_%s;\n" % (item.name)
+
     substitutions = {"name": rawclassname,
                      "includes": self._join_set(includes),
                      "includes_cc": self._join_set(includes_cc),
