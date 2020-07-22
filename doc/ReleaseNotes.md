@@ -1,3 +1,48 @@
+# v00-11
+
+* 2020-07-21 tmadlener ([PR#101](https://github.com/aidasoft/podio/pull/101))
+  - Fix bug where `ConstObject` with empty `OneToManyRelations` give an invalid iterator range, #100
+
+* 2020-06-23 Andre Sailer ([PR#99](https://github.com/aidasoft/podio/pull/99))
+  - Point to libpodioDict.so instead of libpodio.so in rootmap file
+
+* 2020-06-03 Frank Gaede ([PR#92](https://github.com/aidasoft/podio/pull/92))
+  - implement reading/writing of meta data for runs, events and collections
+       - based on GenericParameters that hold named parameters of type `int, float, string` or vectors if these (copied from `lcio::LCParameters`)
+       - meta data for the three types is always written 
+       - it is read only on request
+  - example for writing:
+  ```
+     auto& evtMD = store.getEventMetaData() ;
+      evtMD.setValue( "UserEventWeight" , (float) 100.*i ) ;
+  ```
+  - example for reading:
+  ```
+    auto& evtMD = store.getEventMetaData() ;
+    float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
+  
+  ```
+  - addresses #49
+
+* 2020-05-26 Andre Sailer ([PR#91](https://github.com/aidasoft/podio/pull/91))
+  - Ensure podioRootIO is linked against podioDict even when linker uses as-needed by default, fixes #90
+
+* 2020-05-26 Thomas Madlener ([PR#89](https://github.com/aidasoft/podio/pull/89))
+  - Updated README and env.sh to reflect changes in install process
+
+* 2020-05-12 Valentin Volkl ([PR#88](https://github.com/aidasoft/podio/pull/88))
+  - change add relation naming addXxxx -> addToXxxxs
+
+* 2020-05-12 Valentin Volkl ([PR#87](https://github.com/aidasoft/podio/pull/87))
+  - update minimum required CMake version to 3.8
+  - remove obsolete Jenkinsfile
+  - make CPack config optional: cmake variable ENABLE_CPACK defaults to OFF
+  - update Readme with Spack instructions
+
+* 2020-04-14 Frank Gaede ([PR#83](https://github.com/aidasoft/podio/pull/83))
+  - allow automatic change of version in CMakeLists.txt
+    - fixes #82
+
 # v00-10
 
 * 2020-04-03 Frank Gaede ([PR#81](https://github.com/aidasoft/podio/pull/81))
