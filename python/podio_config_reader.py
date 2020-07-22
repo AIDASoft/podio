@@ -11,6 +11,7 @@ from collections import OrderedDict
 
 from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
 
+
 class MemberParser(object):
   """Class to parse member variables from strings without doing too much validation"""
   # Doing this with regex is non-ideal, but we should be able to at least
@@ -79,7 +80,6 @@ class MemberParser(object):
     klass, name = match.groups()
     return MemberVariable(name=name, type=klass)
 
-
   def parse(self, string, require_description=True):
     """Parse the passed string"""
     matchers_cbs = [
@@ -143,12 +143,10 @@ class ClassDefinitionValidator(object):
     self.expose_pod_members = False
     self.warnings = set()
 
-
   def _clear(self):
     """Reset all the internal state such that one instance can be used for multiple
     validations"""
     self.warnings = set()
-
 
   def validate(self, components, datatypes, expose_pod_members):
     """Validate the datamodel"""
@@ -159,7 +157,6 @@ class ClassDefinitionValidator(object):
 
     self._check_components()
     self._check_datatypes()
-
 
   def _check_components(self):
     """Check the components"""
@@ -194,12 +191,10 @@ class ClassDefinitionValidator(object):
       self._fill_defaults(definition)
       self._check_datatype(name, definition)
 
-
   def _check_datatype(self, classname, definition):
     """Check that a datatype only defines valid types and relations"""
     self._check_members(classname, definition.get("Members", []))
     self._check_relations(classname, definition)
-
 
   def _check_members(self, classname, members):
     """Check the members of a class for name clashes or undefined classes"""
@@ -233,7 +228,6 @@ class ClassDefinitionValidator(object):
 
           all_members[sub_member.name] = "member '{}'".format(member.name)
 
-
   def _check_relations(self, classname, definition):
     """Check the relations of a class"""
     many_relations = definition.get("OneToManyRelations", [])
@@ -247,7 +241,6 @@ class ClassDefinitionValidator(object):
       if not vecmem.is_builtin and vecmem.full_type not in self.components:
         raise DefinitionError("'{}' declares a non-allowed vector member of type '{}'"
                               .format(classname, vecmem.full_type))
-
 
   def _check_keys(self, classname, definition):
     """Check the keys of a datatype"""
@@ -264,11 +257,9 @@ class ClassDefinitionValidator(object):
       raise DefinitionError("'{}' defines invalid categories: {}{}"
                             .format(classname, invalid_keys, not_yet_impl))
 
-
     for key in self.required_datatype_keys:
       if key not in definition:
         raise DefinitionError("'{}' does not define '{}'".format(classname, key))
-
 
     if 'ExtraCode' in definition:
       extracode = definition['ExtraCode']
@@ -282,7 +273,6 @@ class ClassDefinitionValidator(object):
 
         raise DefinitionError("{} defines invalid 'ExtraCode' categories: {} (not yet implemented: {})"
                         .format(classname, invalid_keys, not_yet_impl))
-
 
   def _fill_defaults(self, definition):
     """Fill some of the fields with empty defaults in order to make it easier to
@@ -337,7 +327,6 @@ class PodioConfigReader(object):
         "includeSubfolder": False,
         }
     self.warnings = set()
-
 
   @staticmethod
   def _handle_extracode(definition):
@@ -417,7 +406,6 @@ class PodioConfigReader(object):
    
     return component
 
-
   def _read_datatype(self, value):
     """Read the datatype and put it into an easily digestible format"""
     datatype = {}
@@ -432,7 +420,6 @@ class PodioConfigReader(object):
         datatype[category] = copy.deepcopy(definition)
 
     return datatype
-
 
   def read(self):
     stream = open(self.yamlfile, "r")

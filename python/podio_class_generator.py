@@ -96,7 +96,6 @@ class ClassGenerator(object):
     self.clang_format = []
     self._template_cache = {}
 
-
   def process(self):
     self.process_components(self.reader.components)
     self.process_datatypes(self.reader.datatypes)
@@ -124,7 +123,6 @@ class ClassGenerator(object):
       self.create_obj(name, components)
       # self.create_PrintInfo(name, components)
 
-
   def print_report(self):
     if not self.verbose:
       return
@@ -145,7 +143,6 @@ class ClassGenerator(object):
     for warning in self.warnings:
       print(warning)
 
-
   def _get_template(self, filename):
     """Get the template from the filename"""
     if filename not in self._template_cache:
@@ -154,7 +151,6 @@ class ClassGenerator(object):
         self._template_cache[filename] = tempfile.read()
 
     return self._template_cache[filename]
-
 
   def create_selection_xml(self):
     content = ""
@@ -172,7 +168,6 @@ class ClassGenerator(object):
     template = self._get_template(templatefile)
     content = string.Template(template).substitute({"classes": content})
     self.write_file("selection.xml", content)
-
 
   def _process_datatype(self, definition):
     """Check whether all members are known and prepare include directories"""
@@ -200,7 +195,6 @@ class ClassGenerator(object):
 
     # get rid of duplicates:
     return datatype_dict
-
 
   def create_data(self, classname, definition, datatype):
     """Create the Data"""
@@ -268,7 +262,6 @@ class ClassGenerator(object):
 
     return includes, forward_declaration
 
-
   def _get_includes(self, member):
     """Get the additional includes for a given member"""
     includes = set()
@@ -281,7 +274,6 @@ class ClassGenerator(object):
         includes.add(self._build_include(member.array_bare_type))
 
     return includes
-
 
   def _ostream_class(self, class_members, multi_relations, single_relations, classname,
                      osname='o', valname='value'):
@@ -335,7 +327,6 @@ class ClassGenerator(object):
     return (decl.format(classname=classname, o=osname, value=valname),
             '\n'.join(impl).format(classname=classname, o=osname, value=valname))
 
-
   def _constructor_class(self, members, classname):
     """Generate the signature and body of the constructor for the given class (and
     its Const version)"""
@@ -365,7 +356,6 @@ class ClassGenerator(object):
       'impl': impl,
       'const_impl': const_impl
     }
-
 
   def _relation_handling_class(self, relations, classname):
     """Generate the code to do the relation handling of a class"""
@@ -473,7 +463,6 @@ class ClassGenerator(object):
     constextracode = extra_code['const_impl']
     datatype['includes'].update(extra_code['includes'])
 
-
     ostream_declaration, ostream_implementation = self._ostream_class(
       definition['Members'], refvectors + definition['VectorMembers'],
       definition['OneToOneRelations'], rawclassname)
@@ -518,7 +507,6 @@ class ClassGenerator(object):
       self.created_classes.append("%s::Const%s" % (namespace, rawclassname))
     else:
       self.created_classes.append("Const%s" % classname)
-
 
   def _ostream_collection(self, classname, members, relations, references, vectormembers,
                           osname='o', valname='v'):
@@ -590,7 +578,6 @@ class ClassGenerator(object):
             '\n'.join(impl).format(classname=classname, header_string=header_str,
                                    o=osname, value=valname))
 
-
   def create_collection(self, classname, definition):
     _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
 
@@ -639,7 +626,6 @@ class ClassGenerator(object):
       # relation handling in ::settingReferences
       setreferences += self.evaluate_template("CollectionSetReferences.cc.template", substitutions)
       prepareafterread += _fmt("\t\tobj->m_{name} = m_rel_{name};")
-
 
     n_relations = len(refvectors)
     for iref, reference in enumerate(refmembers):
@@ -850,7 +836,6 @@ class ClassGenerator(object):
     self.fill_templates("Component", substitutions)
     self.created_classes.append(classname)
 
-
   def create_obj(self, classname, definition):
     """ Create an obj class containing all information
         relevant for a given object.
@@ -974,7 +959,6 @@ class ClassGenerator(object):
       if changed:
         with open(fullname, 'w') as f:
           f.write(content)
-
 
   def evaluate_template(self, filename, substitutions):
     """ reads in a given template, evaluates it
