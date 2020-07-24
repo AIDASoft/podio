@@ -848,14 +848,14 @@ class ClassGenerator(object):
     # oneToOneRelations and do proper cleanups
     for item in definition["OneToOneRelations"]:
       if not item.is_builtin:
-        relations += '{}* m_{};\n'.format(item.as_const(), item.name)
+        relations += '{}* m_{};\n'.format(item.as_qualified_const(), item.name)
 
         if item.full_type != classname:
           if item.namespace not in forward_declarations_namespace:
             forward_declarations_namespace[item.namespace] = []
           forward_declarations_namespace[item.namespace].append('Const' + item.bare_type)
 
-          set_relations += implementations["set_relations"].format(name=item.name, klass=item.as_const())
+          set_relations += implementations["set_relations"].format(name=item.name, klass=item.as_qualified_const())
           initialize_relations += ", m_%s(nullptr)\n" % (item.name)
           # for deep copy initialise as nullptr and set in copy ctor body
           # if copied object has non-trivial relation
@@ -878,7 +878,7 @@ class ClassGenerator(object):
       qualified_class = item.full_type
       if not item.is_builtin:
         if item.full_type not in self.reader.components:
-          qualified_class = item.as_const()
+          qualified_class = item.as_qualified_const()
 
         if item.full_type == classname:
           includes_cc.add(self._build_include(rawclassname))

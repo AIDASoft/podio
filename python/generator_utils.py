@@ -292,12 +292,16 @@ class MemberVariable(object):
     return definition
 
   def as_const(self):
-    """string representation for the ConstType"""
+    """Get the Const name for the type without any namespace"""
     if self.is_array or self.is_builtin:
       raise ValueError('Trying to get the Const version of a builtin or array member')
+    return 'Const{}'.format(self.bare_type)
+
+  def as_qualified_const(self):
+    """string representation for the ConstType including namespace"""
     if self.namespace:
-      return '::{nsp}::Const{cls}'.format(nsp=self.namespace, cls=self.bare_type)
-    return 'Const{cls}'.format(cls=self.bare_type)
+      return '::{nsp}::{cls}'.format(nsp=self.namespace, cls=self.as_const())
+    return self.as_const()
 
   def getter_name(self, get_syntax):
     """Get the getter name of the variable"""
