@@ -16,7 +16,10 @@ def _get_namespace_class(full_type):
   if len(cnameparts) > 2:
     raise DefinitionError("'{}' is a type with a nested namespace. not supperted, yet.".format(full_type))
   if len(cnameparts) == 2:
-    return cnameparts
+    # If in std namespace, consider that to be part of the type instead and only
+    # split namespace if that is not the case
+    if cnameparts[0] != 'std':
+      return cnameparts
 
   return "", full_type
 
@@ -243,6 +246,22 @@ BUILTIN_TYPES = ["int", "long", "float", "double",
                  "unsigned long long", "std::string"]
 
 
+class DataType(object):
+  """Simple class to hold information about a datatype or component that is
+  defined in the datamodel."""
+  def __init__(self, klass):
+    self.full_type = klass
+    self.namespace, self.bare_type = _get_namespace_class(self.full_type)
+
+  def __str__(self):
+    if self.namespace:
+      scoped_type = '::{}::{}'.format(self.namespace, self.bare_type)
+    else:
+      scoped_type = self.full_type
+
+    return scoped_type
+
+
 class MemberVariable(object):
   """Simple class to hold information about a member variable"""
   def __init__(self, name, **kwargs):
@@ -268,15 +287,20 @@ class MemberVariable(object):
       self.is_builtin_array = self.array_type in BUILTIN_TYPES
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
+    # For usage in constructor signatures
     self.signature = self.full_type + ' ' + self.name
+    # If used in a relation context. NOTE: The generator might still adapt this
+    # depending on other criteria. Here it is just filled with a sane default
+    # that works if none of these criteria are met
+    self.relation_type = self.full_type
+
+    # Needed in case the PODs are exposed
+    self.sub_members = None
 
     if self.is_array:
       self.array_namespace, self.array_bare_type = _get_namespace_class(self.array_type)
     else:
       self.namespace, self.bare_type = _get_namespace_class(self.full_type)
-      if self.namespace == 'std':
-        self.namespace = ""
-        self.bare_type = self.full_type
 
   def __str__(self):
     """string representation"""

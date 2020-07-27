@@ -1,0 +1,177 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/collections.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}Collection_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}Collection_H
+
+// datamodel specific includes
+#include "{{ incfolder }}{{ class.bare_type }}Data.h"
+#include "{{ incfolder }}{{ class.bare_type }}.h"
+#include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+
+// podio specific includes
+#include "podio/ICollectionProvider.h"
+#include "podio/CollectionBase.h"
+#include "podio/CollectionIDTable.h"
+
+#include <string>
+#include <vector>
+#include <deque>
+#include <array>
+#include <algorithm>
+#include <ostream>
+
+{{ utils.namespace_open(class.namespace) }}
+
+using {{ class.bare_type }}DataContainer = std::vector<{{ class.bare_type }}Data>;
+using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }}Obj*>;
+
+class {{ class.bare_type }}CollectionIterator {
+public:
+  {{ class.bare_type }}CollectionIterator(int index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+
+  bool operator!=(const {{ class.bare_type }}CollectionIterator& x) const {
+    return m_index != x.m_index; // TODO: may not be complete
+  }
+
+  const {{ class.bare_type }} operator*() const;
+  const {{ class.bare_type }}* operator->() const;
+  const {{ class.bare_type }}CollectionIterator& operator++() const;
+
+private:
+  mutable int m_index;
+  mutable {{ class.bare_type }} m_object;
+  const {{ class.bare_type }}ObjPointerContainer* m_collection;
+};
+
+/**
+A Collection is identified by an ID.
+*/
+class {{ class.bare_type }}Collection : public podio::CollectionBase {
+
+public:
+  using const_iterator = const {{ class.bare_type }}CollectionIterator;
+
+  {{ class.bare_type }}Collection();
+//  {{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
+//  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, int collectionID);
+  ~{{ class.bare_type }}Collection();
+
+  void clear() override final;
+
+  /// operator to allow pointer like calling of members a la LCIO
+  {{ class.bare_type }}Collection* operator->() { return ({{ class.bare_type }}Collection*) this; }
+
+  /// Append a new object to the collection, and return this object.
+  {{ class.bare_type }} create();
+
+  /// Append a new object to the collection, and return this object.
+  /// Initialized with the parameters given
+  template<typename... Args>
+  {{ class.bare_type }} create(Args&&... args);
+
+  /// number of elements in the collection
+  size_t size() const override final;
+
+  /// fully qualified type name of elements - with namespace
+  std::string getValueTypeName() const override { return std::string("{{ class | trim(':') }}"); }
+
+  /// Returns the const object of given index
+  const {{ class.bare_type }} operator[](unsigned int index) const;
+  /// Returns the object of a given index
+  {{ class.bare_type }} operator[](unsigned int index);
+  /// Returns the const object of given index
+  const {{ class.bare_type }} at(unsigned int index) const;
+  /// Returns the object of given index
+  {{ class.bare_type }} at(unsigned int index);
+
+
+  /// Append object to the collection
+  void push_back(Const{{class.bare_type}} object);
+
+  void prepareForWrite() override final;
+  void prepareAfterRead() override final;
+  void setBuffer(void* address) override final;
+  bool setReferences(const podio::ICollectionProvider* collectionProvider) override final;
+
+  podio::CollRefCollection* referenceCollections() override final { return &m_refCollections; }
+
+  podio::VectorMembersInfo* vectorMembers() override { return &m_vecmem_info; }
+
+  void setID(unsigned ID) override final {
+    m_collectionID = ID;
+    std::for_each(m_entries.begin(),m_entries.end(),
+                  [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<int>(ID)}; }
+    );
+  };
+
+  unsigned getID() const override final {
+    return m_collectionID;
+  }
+
+  bool isValid() const override final {
+    return m_isValid;
+  }
+
+  // support for the iterator protocol
+  const const_iterator begin() const {
+    return const_iterator(0, &m_entries);
+  }
+  const const_iterator end() const {
+    return const_iterator(m_entries.size(), &m_entries);
+  }
+
+  /// returns the address of the pointer to the data buffer
+  void* getBufferAddress() override final { return (void*)&m_data; }
+
+  /// Returns the pointer to the data buffer
+  std::vector<{{ class.bare_type }}Data>* _getBuffer() { return m_data; }
+
+{% for member in Members %}
+  template<size_t arraysize>
+  const std::array<{{ member.full_type }}, arraysize> {{ member.name }}() const;
+{% endfor %}
+
+private:
+  bool m_isValid;
+  int m_collectionID;
+  {{ class.bare_type }}ObjPointerContainer m_entries;
+
+  // members to handle 1-to-N-relations
+{% for relation in OneToManyRelations %}
+  std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
+  std::vector<std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>*> m_rel_{{ relation.name }}_tmp; ///< Relation buffer for internal book-keeping
+{% endfor %}
+{% for relation in OneToOneRelations %}
+  std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
+{% endfor %}
+
+  // members to handle vector members
+{% for member in VectorMembers %}
+  std::vector<{{ member.full_type }}>* m_vec_{{ member.name }}; /// combined vector of all objects in collection
+  std::vector<std::vector<{{ member.full_type }}>*> m_vecs_{{ member.name }}; /// pointers to individual member vectors
+{% endfor %}
+  // members to handle streaming
+  podio::CollRefCollection m_refCollections;
+  podio::VectorMembersInfo m_vecmem_info;
+  {{ class.bare_type }}DataContainer* m_data;
+};
+
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& v);
+
+template<typename... Args>
+{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... args) {
+  const int size = m_entries.size();
+  auto obj = new {{ class.bare_type }}Obj({size, m_collectionID}, {args...});
+  m_entries.push_back(obj);
+  return {{ class.bare_type }}(obj);
+}
+
+{% for member in Members %}
+{{ macros.vectorized_access(class, member) }}
+{% endfor %}
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

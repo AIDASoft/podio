@@ -17,7 +17,7 @@ components :
     # can also add c'tors:
     ExtraCode :
       declaration: "
-      SimpleStruct() : x(0),y(0),z(0) {}
+      SimpleStruct() : x(0),y(0),z(0) {}\n
       SimpleStruct( const int* v) : x(v[0]),y(v[1]),z(v[2]) {}
       "
 

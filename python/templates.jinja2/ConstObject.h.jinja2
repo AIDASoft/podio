@@ -1,0 +1,47 @@
+{% import "macros/declarations.jinja2" as macros %}
+{% import "macros/utils.jinja2" as utils %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_Const{{ class.bare_type }}_H
+#define {{ package_name.upper() }}_Const{{ class.bare_type }}_H
+
+#include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+
+{% for include in includes %}
+{{ include }}
+{% endfor %}
+#include "podio/ObjectID.h"
+
+{{ utils.forward_decls(forward_declarations) }}
+
+{{ utils.namespace_open(class.namespace) }}
+
+class {{ class.bare_type }};
+class {{ class.bare_type }}Collection;
+class {{ class.bare_type }}CollectionIterator;
+
+{{ macros.class_description(class.bare_type, Description, Author, prefix='Const') }}
+class Const{{ class.bare_type }} {
+
+  friend {{ class.bare_type }};
+  friend {{ class.bare_type }}Collection;
+  friend {{ class.bare_type }}CollectionIterator;
+
+public:
+{{ macros.constructors_destructors(class.bare_type, Members, prefix='Const') }}
+
+public:
+
+{{ macros.member_getters(Members, use_get_syntax) }}
+{{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}
+{{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax) }}
+{{ utils.if_present(ConstExtraCode, "declaration") }}
+{{ macros.common_object_funcs(class.bare_type, prefix='Const') }}
+
+private:
+  {{ class.bare_type }}Obj* m_obj;
+};
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

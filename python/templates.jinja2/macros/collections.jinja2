@@ -1,0 +1,124 @@
+{% macro vectorized_access(class, member) %}
+template<size_t arraysize>
+const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collection::{{ member.name }}() const {
+  std::array<{{ member.full_type }}, arraysize> tmp;
+  const auto valid_size = std::min(arraysize, m_entries.size());
+  for (unsigned i = 0; i < valid_size; ++i) {
+    tmp[i] = m_entries[i]->data.{{ member.name }};
+  }
+  return tmp;
+}
+{% endmacro %}
+
+
+{% macro clear_relation(relation) %}
+  for (auto& item : (*m_rel_{{ relation.name }})) { item.unlink(); }
+  m_rel_{{ relation.name }}->clear();
+{% endmacro %}
+
+{% macro _relation_index_handling(relation) %}
+    (*m_data)[i].{{ relation.name }}_begin = {{ relation.name }}_index;
+    (*m_data)[i].{{ relation.name }}_end += {{ relation.name }}_index;
+    {{ relation.name }}_index = (*m_data)[i].{{ relation.name }}_end;
+{%- endmacro %}
+
+
+{% macro prepare_for_write_multi_relation(relation, index) %}
+{{ _relation_index_handling(relation) }}
+    for (const auto& it : (*m_rel_{{ relation.name }}_tmp[i])) {
+      if (it.getObjectID().index == podio::ObjectID::untracked) {
+        throw std::runtime_error("Trying to persistify untracked object");
+      }
+      m_refCollections[{{ index }}]->emplace_back(it.getObjectID());
+      m_rel_{{ relation.name }}->push_back(it);
+    }
+{% endmacro %}
+
+
+{% macro prepare_for_write_vector_member(member) %}
+{{ _relation_index_handling(member) }}
+    for (const auto& it : (*m_vecs_{{ member.name }}[i])) { m_vec_{{ member.name }}->push_back(it); }
+{% endmacro %}
+
+
+{% macro prepare_for_write_single_relation(relation, index, start_index) %}
+{% set real_index = start_index + index %}
+  for (auto& obj : m_entries) {
+    if (obj->m_{{ relation.name }}) {
+      m_refCollections[{{ real_index }}]->emplace_back(obj->m_{{ relation.name }}->getObjectID());
+    } else {
+       m_refCollections[{{ real_index }}]->push_back({podio::ObjectID::invalid, podio::ObjectID::invalid});
+    }
+  }
+{% endmacro %}
+
+{% macro _get_collection(type) %}
+      CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID, coll);
+      {{ type }}Collection* tmp_coll = static_cast<{{ type }}Collection*>(coll);
+{%- endmacro %}
+
+{% macro set_references_multi_relation(relation, index) %}
+  for (unsigned int i = 0, size = m_refCollections[{{ index }}]->size(); i != size; ++i) {
+    const auto id = (*m_refCollections[{{ index }}])[i];
+    if (id.index != podio::ObjectID::invalid) {
+{{ _get_collection(relation.full_type) }}
+      const auto tmp = (*tmp_coll)[id.index];
+      m_rel_{{ relation.name }}->emplace_back(tmp);
+    } else {
+      m_rel_{{ relation.name }}->emplace_back(nullptr);
+    }
+  }
+{% endmacro %}
+
+
+{% macro set_reference_single_relation(relation, index, start_index) %}
+{% set real_index = index + start_index %}
+  for (unsigned int i = 0, size = m_entries.size(); i != size; ++i) {
+    const auto id = (*m_refCollections[{{ real_index }}])[i];
+    if (id.index != podio::ObjectID::invalid) {
+  {{ _get_collection(relation.full_type) }}
+      m_entries[i]->m_{{ relation.name }} = new Const{{ relation.bare_type }}((*tmp_coll)[id.index]);
+    } else {
+      m_entries[i]->m_{{ relation.name }} = nullptr;
+    }
+  }
+{% endmacro %}
+
+
+{% macro ostream_operator(class, members, single_relations, multi_relations, vector_members, get_syntax) %}
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& v) {
+{% set col_width = 12 %}
+  const auto old_flags = o.flags();
+
+  for (size_t i = 0; i < v.size(); ++i) {
+    o << std::scientific << std::showpos << std::setw({{ col_width }}) << v[i].id() << " ";
+
+
+{% for relation in multi_relations %}
+    o << "{{ relation.name | truncate(col_width, True, '') }} : ";
+    for (unsigned j = 0, N = v[i].{{ relation.name }}_size(); j < N; ++j) {
+      o << v[i].{{ relation.getter_name(get_syntax) }}(j).id() << " ";
+    }
+    o << std::endl;
+{% endfor %}
+
+{% for relation in single_relations %}
+    o << "{{ relation.name | truncate(col_width, True, '') }} : ";
+    o << v[i].{{ relation.getter_name(get_syntax) }}().id() << std::endl;
+{% endfor %}
+
+{% for member in vector_members %}
+    o << "{{ member.name | truncate(col_width, True, '') }} : ";
+    for (unsigned j = 0, N = v[i].{{ member.name }}_size(); j < N; ++j) {
+      o << v[i].{{ member.getter_name(get_syntax) }}(j) << " ";
+    }
+    o << std::endl;
+{% endfor %}
+
+  }
+
+  o.flags(old_flags);
+  return o;
+}
+{%- endmacro %}
