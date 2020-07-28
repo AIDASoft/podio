@@ -16,7 +16,7 @@ void ${classname}::${add_relation}(${relationtype} component) {
 }
 
 unsigned int ${classname}::${relation}_size() const {
-  return (m_obj->data.${relation}_end-m_obj->data.${relation}_begin);
+  return (m_obj->data.${relation}_end - m_obj->data.${relation}_begin);
 }
 
 ${relationtype} ${classname}::${get_relation}(unsigned int index) const {

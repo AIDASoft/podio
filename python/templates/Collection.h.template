@@ -18,7 +18,7 @@
 #include <deque>
 #include <array>
 #include <algorithm>
-#include <iostream>
+#include <ostream>
 
 ${namespace_open}
 typedef std::vector<${name}Data> ${name}DataContainer;
@@ -59,8 +59,8 @@ public:
 
   void clear() override final;
 
-  /// operator to allow pointer like calling of members a la LCIO  \n     
-  ${name}Collection* operator->() { return (${name}Collection*) this ; }
+  /// operator to allow pointer like calling of members a la LCIO
+  ${name}Collection* operator->() { return (${name}Collection*) this; }
 
   /// Append a new object to the collection, and return this object.
   ${name} create();
@@ -71,10 +71,10 @@ public:
   ${name} create(Args&&... args);
 
   /// number of elements in the collection
-  int size() const override final ;
+  size_t size() const override final;
 
   /// fully qualified type name of elements - with namespace
-  std::string getValueTypeName() const override { return std::string("${classname}") ; } ;
+  std::string getValueTypeName() const override { return std::string("${classname}"); }
 
   /// Returns the const object of given index
   const ${name} operator[](unsigned int index) const;
@@ -94,19 +94,19 @@ public:
   void setBuffer(void* address) override final;
   bool setReferences(const podio::ICollectionProvider* collectionProvider) override final;
 
-  podio::CollRefCollection* referenceCollections() override final { return &m_refCollections;};
+  podio::CollRefCollection* referenceCollections() override final { return &m_refCollections; }
 
-  podio::VectorMembersInfo* vectorMembers() override {return &m_vecmem_info ; }
+  podio::VectorMembersInfo* vectorMembers() override { return &m_vecmem_info; }
 
   void setID(unsigned ID) override final {
     m_collectionID = ID;
     std::for_each(m_entries.begin(),m_entries.end(),
-                 [ID](${name}Obj* obj){obj->id = {obj->id.index,static_cast<int>(ID)}; }
+                 [ID] (${name}Obj* obj) { obj->id = {obj->id.index, static_cast<int>(ID)}; }
     );
   };
 
   unsigned getID() const override final {
-    return m_collectionID ;
+    return m_collectionID;
   }
 
   bool isValid() const override final {
@@ -122,10 +122,10 @@ public:
   }
 
   /// returns the address of the pointer to the data buffer
-  void* getBufferAddress() override final { return (void*)&m_data;};
+  void* getBufferAddress() override final { return (void*)&m_data; }
 
   /// returns the pointer to the data buffer
-  std::vector<${name}Data>* _getBuffer() { return m_data;};
+  std::vector<${name}Data>* _getBuffer() { return m_data; }
 
    ${vectorized_access_declaration}
 
@@ -139,7 +139,7 @@ ${relations}
 ${vecmembers}
   // members to handle streaming
   podio::CollRefCollection m_refCollections;
-  podio::VectorMembersInfo m_vecmem_info ;
+  podio::VectorMembersInfo m_vecmem_info;
   ${name}DataContainer* m_data;
 };
 
@@ -148,7 +148,7 @@ ${ostream_declaration}
 template<typename... Args>
 ${name}  ${name}Collection::create(Args&&... args){
   int size = m_entries.size();
-  auto obj = new ${name}Obj({size,m_collectionID},{args...});
+  auto obj = new ${name}Obj({size, m_collectionID}, {args...});
   m_entries.push_back(obj);
   return ${name}(obj);
 }

@@ -1,4 +1,4 @@
-   (*m_data)[i].${name}_begin=${name}_index;
-   (*m_data)[i].${name}_end+=${name}_index;
+   (*m_data)[i].${name}_begin = ${name}_index;
+   (*m_data)[i].${name}_end += ${name}_index;
    ${name}_index = (*m_data)[i].${name}_end;
-   for(auto it : (*m_vecs_${name}[i])) { m_vec_${name}->push_back(it); }
+   for(const auto& it : (*m_vecs_${name}[i])) { m_vec_${name}->push_back(it); }

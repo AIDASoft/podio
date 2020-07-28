@@ -14,7 +14,7 @@ ${name}Collection::${name}Collection() : m_isValid(false), m_collectionID(0), m_
 
 ${name}Collection::~${name}Collection() {
   clear();
-  if (m_data != nullptr) delete m_data;
+  if (m_data) delete m_data;
   ${destructorbody}
 }
 
@@ -34,13 +34,12 @@ ${name} ${name}Collection::at(unsigned int index) {
   return ${name}(m_entries.at(index));
 }
 
-int  ${name}Collection::size() const {
+size_t ${name}Collection::size() const {
   return m_entries.size();
 }
 
 ${name} ${name}Collection::create(){
-  auto obj = new ${name}Obj();
-  m_entries.emplace_back(obj);
+  auto obj = m_entries.emplace_back(new ${name}Obj());
 ${create_relations}
   obj->id = {int(m_entries.size()-1),m_collectionID};
   return ${name}(obj);
@@ -56,8 +55,8 @@ ${clear_relations}
 void ${name}Collection::prepareForWrite(){
   auto size = m_entries.size();
   m_data->reserve(size);
-  for (auto& obj : m_entries) {m_data->push_back(obj->data); }
-  for (auto& pointer : m_refCollections) {pointer->clear(); } 
+  for (auto& obj : m_entries) { m_data->push_back(obj->data); }
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
 $prepareforwritinghead
   for(int i=0, size = m_data->size(); i != size; ++i){
 $prepareforwritingbody
@@ -68,7 +67,7 @@ $prepareforwriting_refmembers
 void ${name}Collection::prepareAfterRead(){
   int index = 0;
   for (auto& data : *m_data){
-    auto obj = new ${name}Obj({index,m_collectionID}, data);
+    auto obj = new ${name}Obj({index, m_collectionID}, data);
     $prepareafterread
     m_entries.emplace_back(obj);
     ++index;
@@ -86,7 +85,7 @@ void ${name}Collection::push_back(Const${name} object){
   int size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {
-      obj->id = {size,m_collectionID};
+      obj->id = {size, m_collectionID};
       m_entries.push_back(obj);
       ${push_back_relations}
   } else {
@@ -95,7 +94,7 @@ void ${name}Collection::push_back(Const${name} object){
 }
 
 void ${name}Collection::setBuffer(void* address){
-  if (m_data != nullptr) delete m_data;
+  if (m_data) delete m_data;
   m_data = static_cast<${name}DataContainer*>(address);
 }
 

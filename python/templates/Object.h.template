@@ -1,16 +1,19 @@
 #ifndef ${PACKAGE_NAME}_${name}_H
 #define ${PACKAGE_NAME}_${name}_H
-$includes
-#include <vector>
-#include <iostream>
-#include <iomanip>
-#include "podio/ObjectID.h"
-
-//forward declarations
-$forward_declarations
 
 #include "${incfolder}${name}Const.h"
 #include "${incfolder}${name}Obj.h"
+
+$includes
+
+#include "podio/ObjectID.h"
+
+#include <vector>
+#include <ostream>
+#include <iomanip>
+
+//forward declarations
+$forward_declarations
 
 ${namespace_open}
 
@@ -59,7 +62,7 @@ $extracode_declarations
   void unlink(){m_obj = nullptr;}
 
   bool operator==(const ${name}& other) const {
-    return (m_obj==other.m_obj);
+    return (m_obj == other.m_obj);
   }
 
   bool operator==(const Const${name}& other) const;
@@ -67,10 +70,10 @@ $extracode_declarations
 // less comparison operator, so that objects can be e.g. stored in sets.
 //  friend bool operator< (const ${name}& p1,
 //       const ${name}& p2 );
-  bool operator<(const ${name}& other) const { return m_obj < other.m_obj  ; }
+  bool operator<(const ${name}& other) const { return m_obj < other.m_obj; }
 
 
-  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index  ;  } 
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index; }
 
   const podio::ObjectID getObjectID() const;
 

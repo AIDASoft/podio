@@ -53,7 +53,7 @@ namespace podio {
     virtual bool isValid() const = 0;
 
     /// number of elements in the collection
-    virtual int size() const = 0;
+    virtual size_t size() const = 0;
 
     /// fully qualified type name of elements - with namespace
     virtual std::string getValueTypeName() const = 0;
