@@ -19,9 +19,9 @@ import subprocess
 from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
 from podio_templates import declarations, implementations
 from generator_utils import (
-  demangle_classname, get_extra_code, generate_get_set_member, generate_get_set_relation,
-  constructor_destructor_collection, get_fmt_func
-)
+    demangle_classname, get_extra_code, generate_get_set_member, generate_get_set_relation,
+    constructor_destructor_collection, get_fmt_func
+    )
 
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -67,9 +67,7 @@ def ostream_component(comp_members, classname, osname='o', valname='value'):
 
   ostream.append('  return {o};')
   ostream.append('}}\n')
-  return '\n'.join(ostream).format(
-    o=osname, classname=classname, value=valname
-  )
+  return '\n'.join(ostream).format(o=osname, classname=classname, value=valname)
 
 
 class ClassGenerator(object):
@@ -172,11 +170,11 @@ class ClassGenerator(object):
   def _process_datatype(self, definition):
     """Check whether all members are known and prepare include directories"""
     datatype_dict = {
-      "description": definition["Description"],
-      "author": definition["Author"],
-      "includes": set(),
-      "members": []
-    }
+        "description": definition["Description"],
+        "author": definition["Author"],
+        "includes": set(),
+        "members": []
+        }
     for member in definition["Members"]:
       datatype_dict["members"].append(str(member))
       klass = member.full_type
@@ -304,7 +302,7 @@ class ClassGenerator(object):
     for relation in single_relations:
       getname = relation.getter_name(self.get_syntax)
       impl.append('  {{o}} << " {name} : " << {{value}}.{getname}().id() << \'\\n\';'.format(
-        name=relation.name, getname=getname))
+          name=relation.name, getname=getname))
 
     for relation in multi_relations:
       getname = relation.getter_name(self.get_syntax)
@@ -342,19 +340,19 @@ class ClassGenerator(object):
 
       body = '\n'.join(body)
       substitutions = {
-        'name': classname,
-        'signature': signature,
-        'constructor': body
-      }
+          'name': classname,
+          'signature': signature,
+          'constructor': body
+          }
       impl = self.evaluate_template('Object.constructor.cc.template', substitutions)
       const_impl = self.evaluate_template('ConstObject.constructor.cc.template', substitutions)
 
     return {
-      'decl': decl,
-      'const_decl': const_decl,
-      'impl': impl,
-      'const_impl': const_impl
-    }
+        'decl': decl,
+        'const_decl': const_decl,
+        'impl': impl,
+        'const_impl': const_impl
+        }
 
   def _relation_handling_class(self, relations, classname):
     """Generate the code to do the relation handling of a class"""
@@ -368,13 +366,13 @@ class ClassGenerator(object):
 
       get_relation, set_relation = relation.getter_setter_names(self.get_syntax, is_relation=True)
       substitutions = {
-        'relation': relation.name,
-        'get_relation': get_relation,
-        'add_relation': set_relation,
-        'relationtype': relationtype,
-        'classname': classname,
-        'package_name': self.package_name
-      }
+          'relation': relation.name,
+          'get_relation': get_relation,
+          'add_relation': set_relation,
+          'relationtype': relationtype,
+          'classname': classname,
+          'package_name': self.package_name
+          }
 
       decl += self.evaluate_template('RefVector.h.template', substitutions)
       impl += self.evaluate_template('RefVector.cc.template', substitutions)
@@ -385,12 +383,12 @@ class ClassGenerator(object):
                      .format(type=relation.full_type, name=relation.name))
 
     return {
-      'impl': impl,
-      'decl': decl,
-      'const_impl': const_impl,
-      'const_decl': const_decl,
-      'members': '\n'.join(members)
-    }
+        'impl': impl,
+        'decl': decl,
+        'const_impl': const_impl,
+        'const_decl': const_decl,
+        'members': '\n'.join(members)
+        }
 
   def create_class(self, classname, definition, datatype):
     """Create all files necessary for a given class"""
@@ -463,8 +461,8 @@ class ClassGenerator(object):
     datatype['includes'].update(extra_code['includes'])
 
     ostream_declaration, ostream_implementation = self._ostream_class(
-      definition['Members'], refvectors + definition['VectorMembers'],
-      definition['OneToOneRelations'], rawclassname)
+        definition['Members'], refvectors + definition['VectorMembers'],
+        definition['OneToOneRelations'], rawclassname)
 
     includes_cc, forward_declarations = self._process_fwd_declarations(definition["OneToOneRelations"])
 
@@ -534,9 +532,7 @@ class ClassGenerator(object):
         comp_str = '[ {}]'.format(', '.join(comps))
         col_w *= len(comps)
 
-      header_str += '{{:{width}}}'.format(width=col_w).format(
-        member.name + ' :' + comp_str
-      )
+      header_str += '{{:{width}}}'.format(width=col_w).format(member.name + ' :' + comp_str)
 
       getname = member.getter_name(self.get_syntax)
       impl.append('      << std::setw({w}) << {{value}}[i].{name}() << " "'.format(w=col_w, name=getname))
@@ -604,9 +600,9 @@ class ClassGenerator(object):
       includes.add(self._build_include(relation.bare_type + 'Collection'))
 
       substitutions = {
-        'name': relation.name, 'type': relation.bare_type, 'namespace': relation.namespace,
-        'class': relation.full_type, 'counter': irel
-      }
+          'name': relation.name, 'type': relation.bare_type, 'namespace': relation.namespace,
+          'class': relation.full_type, 'counter': irel
+          }
       _fmt = get_fmt_func(**substitutions)
 
       relations += _fmt(declarations["relation"])
@@ -631,10 +627,10 @@ class ClassGenerator(object):
       includes.add(self._build_include(reference.bare_type + 'Collection'))
 
       substitutions = {
-        'counter': n_relations + iref, 'i': n_relations + iref, 'rawclass': reference.bare_type,
-        'name': reference.name, 'type': reference.bare_type, 'namespace': reference.namespace,
-        'class': reference.full_type,
-      }
+          'counter': n_relations + iref, 'i': n_relations + iref, 'rawclass': reference.bare_type,
+          'name': reference.name, 'type': reference.bare_type, 'namespace': reference.namespace,
+          'class': reference.full_type,
+          }
       _fmt = get_fmt_func(**substitutions)
 
       # constructor call
@@ -676,11 +672,11 @@ class ClassGenerator(object):
     vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(rawclassname, members)
 
     ostream_declaration, ostream_implementation = self._ostream_collection(
-      rawclassname, definition['Members'], definition['OneToManyRelations'],
-      definition['OneToOneRelations'], definition['VectorMembers'])
+        rawclassname, definition['Members'], definition['OneToManyRelations'],
+        definition['OneToOneRelations'], definition['VectorMembers'])
 
     constructorbody, destructorbody = constructor_destructor_collection(
-      definition['OneToManyRelations'], definition['OneToOneRelations'], definition['VectorMembers'])
+        definition['OneToManyRelations'], definition['OneToOneRelations'], definition['VectorMembers'])
 
     substitutions = {"name": rawclassname,
                      "classname": classname,
@@ -859,8 +855,7 @@ class ClassGenerator(object):
             forward_declarations_namespace[item.namespace] = []
           forward_declarations_namespace[item.namespace].append('Const' + item.bare_type)
 
-          set_relations += implementations["set_relations"].format(
-            name=item.name, klass=item.as_const())
+          set_relations += implementations["set_relations"].format(name=item.name, klass=item.as_const())
           initialize_relations += ", m_%s(nullptr)\n" % (item.name)
           # for deep copy initialise as nullptr and set in copy ctor body
           # if copied object has non-trivial relation
@@ -975,19 +970,19 @@ class ClassGenerator(object):
     # for the generated files. Additionally not all categories need source files.
     # Listing the special cases here
     fn_base = {
-      'Data': 'Data',
-      'Obj': 'Obj',
-      'ConstObject': 'Const',
-      'PrintInfo': 'PrintInfo',
-      'Object': '',
-      'Component': ''
-    }.get(category, category)
+        'Data': 'Data',
+        'Obj': 'Obj',
+        'ConstObject': 'Const',
+        'PrintInfo': 'PrintInfo',
+        'Object': '',
+        'Component': ''
+        }.get(category, category)
 
     endings = {
-      'Data': ('h',),
-      'Component': ('h',),
-      'PrintInfo': ('h',)
-    }.get(category, ('h', 'cc'))
+        'Data': ('h',),
+        'Component': ('h',),
+        'PrintInfo': ('h',)
+        }.get(category, ('h', 'cc'))
 
     for ending in endings:
       templatefile = "%s.%s.template" % (category, ending)

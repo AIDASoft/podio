@@ -17,7 +17,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
         MemberVariable(type='int', name='anInt'),
         MemberVariable(type='float', name='aFloat'),
         MemberVariable(array_type='int', array_size='4', name='anArray')
-    ]
+        ]
 
     self.valid_component = {
         'Component': {
@@ -25,14 +25,14 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
             'ExtraCode': {
                 'includes': '#include "someFancyHeader.h"',
                 'declaration': 'we do not validate if this is valid c++'
+                }
             }
         }
-    }
 
     valid_datatype_members = [
         MemberVariable(type='float', name='energy', description='energy [GeV]'),
         MemberVariable(array_type='int', array_size='5', description='some Array')
-    ]
+        ]
 
     self.valid_datatype = {
         'DataType': {
@@ -43,14 +43,14 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                 'includes': '#include <whatever> not checking for valid c++',
                 'declaration': 'not necessarily valid c++',
                 'implementation': 'still not checked for c++ validity',
-            },
+                },
             'ConstExtraCode': {
                 'declaration': 'also not checked for valid c++',
                 'implementation': 'nothing has changed',
                 'includes': '#include <something_else> this will appear in both includes!'
+                }
             }
         }
-    }
 
     self.validator = ClassDefinitionValidator()
 
@@ -91,7 +91,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
     self.valid_component['SecondComponent'] = {
         'Members': [MemberVariable(array_type='Component', array_size='10', name='referToOtheComponent')]
-    }
+        }
     self._assert_no_exception(DefinitionError, '{} should allow for component members in components',
                               self.validator.validate, self.valid_component, {}, False)
 
@@ -126,10 +126,10 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                               self.valid_component, self.valid_datatype, False)
 
     datatype = {
-      'DataTypeWithoutMembers': {
-        'Author': 'Anonymous', 'Description': 'A pretty useless Datatype as it is'
-      }
-    }
+        'DataTypeWithoutMembers': {
+            'Author': 'Anonymous', 'Description': 'A pretty useless Datatype as it is'
+            }
+        }
     self._assert_no_exception(DefinitionError, '{} should allow for almost empty datatypes',
                               self.validator.validate, {}, datatype, False)
 
@@ -171,18 +171,18 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
   def test_datatype_valid_many_relations(self):
     self.valid_datatype['DataType']['OneToManyRelations'] = [
-      MemberVariable(type='DataType', name='selfRelation')
-    ]
+        MemberVariable(type='DataType', name='selfRelation')
+        ]
     self._assert_no_exception(DefinitionError,
                               '{} should allow for relations of datatypes to themselves',
                               self.validator.validate, {}, self.valid_datatype, False)
 
     self.valid_datatype['BlackKnight'] = {
-      'Author': 'John Cleese',
-      'Description': 'Tis but a scratch',
-      'Members': [MemberVariable(type='int', name='counter', description='number of arms')],
-      'OneToManyRelations': [MemberVariable(type='DataType', name='relation', description='soo many relations')]
-    }
+        'Author': 'John Cleese',
+        'Description': 'Tis but a scratch',
+        'Members': [MemberVariable(type='int', name='counter', description='number of arms')],
+        'OneToManyRelations': [MemberVariable(type='DataType', name='relation', description='soo many relations')]
+        }
 
     self._assert_no_exception(DefinitionError, '{} should validate a valid relation',
                               self.validator.validate, self.valid_component, self.valid_datatype, False)
@@ -202,22 +202,18 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
     datatype = deepcopy(self.valid_datatype)
     datatype['DataType']['OneToManyRelations'] = [
-      MemberVariable(array_type='int', array_size='42', name='arrayRelation')
-    ]
+        MemberVariable(array_type='int', array_size='42', name='arrayRelation')
+        ]
     with self.assertRaises(DefinitionError):
       self.validator.validate({}, datatype, False)
 
   def test_datatype_valid_vector_members(self):
-    self.valid_datatype['DataType']['VectorMembers'] = [
-      MemberVariable(type='int', name='someInt')
-    ]
+    self.valid_datatype['DataType']['VectorMembers'] = [MemberVariable(type='int', name='someInt')]
     self._assert_no_exception(DefinitionError,
                               '{} should validate builtin VectorMembers',
                               self.validator.validate, {}, self.valid_datatype, False)
 
-    self.valid_datatype['DataType']['VectorMembers'] = [
-      MemberVariable(type='Component', name='components')
-    ]
+    self.valid_datatype['DataType']['VectorMembers'] = [MemberVariable(type='Component', name='components')]
     self._assert_no_exception(DefinitionError,
                               '{} should validate component VectorMembers',
                               self.validator.validate, self.valid_component, self.valid_datatype, False)
@@ -229,20 +225,20 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
       self.validator.validate({}, datatype, False)
 
     datatype['Brian'] = {
-      'Author': 'Graham Chapman',
-      'Description': 'Not the messiah, a very naughty boy',
-      'VectorMembers': [
-        MemberVariable(type='DataType', name='invalid',
-                       description='also non-self relations are not allowed')
-      ]
-    }
+        'Author': 'Graham Chapman',
+        'Description': 'Not the messiah, a very naughty boy',
+        'VectorMembers': [
+            MemberVariable(type='DataType', name='invalid',
+                           description='also non-self relations are not allowed')
+            ]
+        }
     with self.assertRaises(DefinitionError):
       self.validator.validate({}, datatype, False)
 
     datatype = deepcopy(self.valid_datatype)
     datatype['DataType']['VectorMembers'] = [
-      MemberVariable(type='Component', name='component',
-                     description='not working because component will not be part of the datamodel we pass')]
+        MemberVariable(type='Component', name='component',
+                       description='not working because component will not be part of the datamodel we pass')]
     with self.assertRaises(DefinitionError):
       self.validator.validate({}, datatype, False)
 

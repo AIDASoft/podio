@@ -83,15 +83,15 @@ class MemberParser(object):
   def parse(self, string, require_description=True):
     """Parse the passed string"""
     matchers_cbs = [
-      (self.full_array_re, self._full_array_conv),
-      (self.member_re, self._full_member_conv)
-    ]
+        (self.full_array_re, self._full_array_conv),
+        (self.member_re, self._full_member_conv)
+        ]
 
     if not require_description:
       matchers_cbs.extend((
-        (self.bare_array_re, self._bare_array_conv),
-        (self.bare_member_re, self._bare_member_conv)
-      ))
+          (self.bare_array_re, self._bare_array_conv),
+          (self.bare_member_re, self._bare_member_conv)
+          ))
 
     return self._parse_with_regexps(string, matchers_cbs)
 
@@ -104,35 +104,31 @@ class ClassDefinitionValidator(object):
   # components make it possible to more easily check that in the
   # _check_components method
   required_datatype_keys = (
-    "Description",
-    "Author",
-  )
+      "Description",
+      "Author",
+      )
   valid_datatype_member_keys = (
-    "Members",
-    "VectorMembers",
-    "OneToOneRelations",
-    "OneToManyRelations",
-    # "TransientMembers", # not used anywhere in class generator
-    # "Typedefs",         # not used anywhere in class generator
-  )
+      "Members",
+      "VectorMembers",
+      "OneToOneRelations",
+      "OneToManyRelations",
+      # "TransientMembers", # not used anywhere in class generator
+      # "Typedefs",         # not used anywhere in class generator
+      )
   valid_extra_datatype_keys = (
-    "ExtraCode",
-    "ConstExtraCode"
-  )
+      "ExtraCode",
+      "ConstExtraCode"
+      )
 
   # documented but not yet implemented
   not_yet_implemented_keys = (
-    "TransientMembers",
-    "Typedefs",
-  )
+      "TransientMembers",
+      "Typedefs",
+      )
 
-  valid_extra_code_keys = (
-    "declaration", "implementation", "includes"
-  )
+  valid_extra_code_keys = ("declaration", "implementation", "includes")
   # documented but not yet implemented
-  not_yet_implemented_extra_code = (
-    'declarationFile', 'implementationFile'
-  )
+  not_yet_implemented_extra_code = ('declarationFile', 'implementationFile')
 
   # stl types that are allowed to appear (other than array)
   allowed_stl_types = ('string',)
