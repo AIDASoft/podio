@@ -11,12 +11,12 @@ std::vector<${relationtype}>::const_iterator Const${classname}::${relation}_end(
 }
 
 unsigned int Const${classname}::${relation}_size() const {
-  return (m_obj->data.${relation}_end-m_obj->data.${relation}_begin);
+  return (m_obj->data.${relation}_end - m_obj->data.${relation}_begin);
 }
 
 ${relationtype} Const${classname}::${get_relation}(unsigned int index) const {
   if (${relation}_size() > index) {
-    return m_obj->m_${relation}->at(m_obj->data.${relation}_begin+index);
+    return m_obj->m_${relation}->at(m_obj->data.${relation}_begin + index);
   }
   else throw std::out_of_range ("index out of bounds for existing references");
 }

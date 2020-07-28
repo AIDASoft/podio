@@ -288,7 +288,7 @@ class ClassGenerator(object):
       _fmt = get_fmt_func(name=member.name, getname=getname, size=member.array_size)
       if member.is_array:
         impl.append(_fmt('  {{o}} << " {name} : ";'))
-        impl.append(_fmt('  for (int i = 0; i < {size}; ++i) {{{{'))  # have to survive format twice
+        impl.append(_fmt('  for (size_t i = 0; i < {size}; ++i) {{{{'))  # have to survive format twice
         impl.append(_fmt('    {{o}} << {{value}}.{getname}()[i] << "|" ;'))
         impl.append('  }}')
         impl.append('  {o} << \'\\n\';')
@@ -518,7 +518,7 @@ class ClassGenerator(object):
     impl = [decl.replace(';\n', '{{')]
     impl.append('  const std::ios::fmtflags old_flags = {o}.flags();')
     impl.append('  {o} << "{header_string}" << std::endl;')
-    impl.append('  for (int i = 0; i < {value}.size(); ++i) {{')
+    impl.append('  for (size_t i = 0; i < {value}.size(); ++i) {{')
     impl.append('    {o} << std::scientific << std::showpos')
     impl.append('      << std::setw({w}) << {{value}}[i].id() << " "'.format(w=col_width))
 
