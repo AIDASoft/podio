@@ -95,7 +95,7 @@ class MemberParserTest(unittest.TestCase):
         r'unsigned long int uLongInt // technically valid c++, but not in our builtin list'
         r'::std::array<float, 2> a // technically valid c++, but breaks class generation'
         r':: std :: array<int, 3> arr // also technically valid c++ but not in our case'
-    ]
+        ]
 
     for inp in invalid_inputs:
       with self.assertRaises(Exception):

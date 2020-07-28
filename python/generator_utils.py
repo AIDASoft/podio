@@ -97,26 +97,27 @@ def _make_return_dict(getter_decls, getter_impls, setter_decls, setter_impls, co
   """Put all the generation code into a dict to have some structure. Arguments can
   either be a list of strings or just plain strings"""
   return {
-    'decl': {
-      'get': ''.join(getter_decls),
-      'set': ''.join(setter_decls)
-    }, 'impl': {
-      'get': ''.join(getter_impls),
-      'set': ''.join(setter_impls),
-      'const_get': ''.join(const_getter_impls)
-    }
-  }
+      'decl': {
+          'get': ''.join(getter_decls),
+          'set': ''.join(setter_decls)
+          },
+      'impl': {
+          'get': ''.join(getter_impls),
+          'set': ''.join(setter_impls),
+          'const_get': ''.join(const_getter_impls)
+          }
+      }
 
 
 def generate_get_set_member(member, classname, get_syntax, components=None):
   """Create the getters and setters for members of the class if components are
   passed the members of the components will also be exposed"""
   default_replacements = {
-    'type': member.full_type,
-    'name': member.name,
-    'description': member.description,
-    'classname': classname
-  }
+      'type': member.full_type,
+      'name': member.name,
+      'description': member.description,
+      'classname': classname
+      }
   _format_pattern = _get_format_pattern_func(default_replacements)
   getname, setname = member.getter_setter_names(get_syntax)
 
@@ -182,12 +183,12 @@ def generate_get_set_relation(relation, classname, get_syntax):
   """Create getters and setters for 'OneToOneRelations'"""
   namespace, cls, _, _ = demangle_classname(relation.full_type)
   default_replacements = {
-    'name': relation.name,
-    'description': relation.description,
-    'classname': classname,
-    'namespace': namespace,
-    'type': cls
-  }
+      'name': relation.name,
+      'description': relation.description,
+      'classname': classname,
+      'namespace': namespace,
+      'type': cls
+      }
   _format_pattern = _get_format_pattern_func(default_replacements)
 
   getname, setname = relation.getter_setter_names(get_syntax)
