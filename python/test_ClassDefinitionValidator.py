@@ -31,7 +31,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
     valid_datatype_members = [
         MemberVariable(type='float', name='energy', description='energy [GeV]'),
-        MemberVariable(array_type='int', array_size='5', description='some Array')
+        MemberVariable(array_type='int', array_size='5', name='anArray', description='some Array')
         ]
 
     self.valid_datatype = {
@@ -81,7 +81,8 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
     # non-builtin array that is also not in another component
     component = deepcopy(self.valid_component)
-    component['Component']['Members'].append(MemberVariable(array_type='NonBuiltinType', array_size=3))
+    component['Component']['Members'].append(
+      MemberVariable(array_type='NonBuiltinType', array_size=3, name='complexArray'))
     with self.assertRaises(DefinitionError):
       self.validator.validate(component, {}, False)
 

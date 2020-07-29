@@ -245,8 +245,8 @@ BUILTIN_TYPES = ["int", "long", "float", "double",
 
 class MemberVariable(object):
   """Simple class to hold information about a member variable"""
-  def __init__(self, **kwargs):
-    self.name = kwargs.pop('name', '')
+  def __init__(self, name, **kwargs):
+    self.name = name
     self.full_type = kwargs.pop('type', '')
     self.description = kwargs.pop('description', '')
     self.is_builtin = False
@@ -268,6 +268,7 @@ class MemberVariable(object):
       self.is_builtin_array = self.array_type in BUILTIN_TYPES
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
+    self.signature = self.full_type + ' ' + self.name
 
     if self.is_array:
       self.array_namespace, self.array_bare_type = _get_namespace_class(self.array_type)
