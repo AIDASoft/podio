@@ -147,8 +147,10 @@ def generate_get_set_member(member, classname, get_syntax, components=None):
       setter_impls.append(_format_pattern(implementations["array_builtin_setter"], **repls))
 
   else:
-    setter_decls.append(_format_pattern(declarations["member_class_refsetter"], fname=setname))
-    setter_impls.append(_format_pattern(implementations["member_class_refsetter"], fname=setname))
+    # To be compatible with previously generated code, the get/set naming scheme
+    # is not used for getting the non-const references
+    setter_decls.append(_format_pattern(declarations["member_class_refsetter"], fname=member.name))
+    setter_impls.append(_format_pattern(implementations["member_class_refsetter"], fname=member.name))
 
     setter_decls.append(_format_pattern(declarations["member_class_setter"], fname=setname))
     setter_impls.append(_format_pattern(implementations["member_class_setter"], fname=setname))
