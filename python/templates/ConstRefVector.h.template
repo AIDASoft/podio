@@ -1,5 +1,0 @@
-  unsigned int ${relation}_size() const;
-  ${relationtype} ${get_relation}(unsigned int) const;
-  std::vector<${relationtype}>::const_iterator ${relation}_begin() const;
-  std::vector<${relationtype}>::const_iterator ${relation}_end() const;
-  podio::RelationRange<${relationtype}> ${get_relation}() const;

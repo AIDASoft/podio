@@ -1,9 +1,0 @@
-template<size_t arraysize>
-const std::array<${type}, arraysize> ${classname}Collection::${member}() const {
-  std::array<${type}, arraysize> tmp;
-  const auto valid_size = std::min(arraysize, m_entries.size());
-  for (unsigned i = 0; i < valid_size; ++i){
-    tmp[i] = m_entries[i]->data.${member};
- }
- return tmp;
-}
