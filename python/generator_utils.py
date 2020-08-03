@@ -4,6 +4,7 @@ Module holding some generator utility functions
 """
 from __future__ import unicode_literals, absolute_import, print_function
 
+
 def _get_namespace_class(full_type):
   """Get the namespace and the unqualified classname from the full type. Raise a
   DefinitionError if a nested namespace is found"""
@@ -17,6 +18,7 @@ def _get_namespace_class(full_type):
       return cnameparts
 
   return "", full_type
+
 
 def _prefix_name(name, prefix):
   """Prefix the name and capitalize the first letter if the prefix is not empty"""

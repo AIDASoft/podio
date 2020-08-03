@@ -205,7 +205,6 @@ class ClassGenerator(object):
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
 
-
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
     fwd_declarations = {}

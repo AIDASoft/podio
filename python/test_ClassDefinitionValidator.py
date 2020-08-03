@@ -82,7 +82,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     # non-builtin array that is also not in another component
     component = deepcopy(self.valid_component)
     component['Component']['Members'].append(
-      MemberVariable(array_type='NonBuiltinType', array_size=3, name='complexArray'))
+        MemberVariable(array_type='NonBuiltinType', array_size=3, name='complexArray'))
     with self.assertRaises(DefinitionError):
       self.validator.validate(component, {}, False)
 
