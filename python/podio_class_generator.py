@@ -200,15 +200,10 @@ class ClassGenerator(object):
     """Process one datatype"""
     datatype = self._preprocess_datatype(name, definition)
     self._fill_templates('Data', datatype)
-
-    # temporary for the moment
     self._fill_templates('Object', datatype)
     self._fill_templates('ConstObject', datatype)
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
-
-    # TODO
-    # - Collections
 
 
   def _preprocess_for_obj(self, datatype):
@@ -241,8 +236,8 @@ class ClassGenerator(object):
           includes.add(self._build_include(relation.bare_type))
 
     datatype['forward_declarations_obj'] = fwd_declarations
-    datatype['includes_obj'] = includes
-    datatype['includes_cc_obj'] = includes_cc
+    datatype['includes_obj'] = self._sort_includes(includes)
+    datatype['includes_cc_obj'] = self._sort_includes(includes_cc)
 
   def _preprocess_for_class(self, datatype):
     """Do the preprocessing that is necessary for the classes and Const classes"""
@@ -280,8 +275,8 @@ class ClassGenerator(object):
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
     includes.update(datatype.get('ConstExtraCode', {}).get('includes', '').split('\n'))
 
-    datatype['includes'] = includes
-    datatype['includes_cc'] = includes_cc
+    datatype['includes'] = self._sort_includes(includes)
+    datatype['includes_cc'] = self._sort_includes(includes_cc)
     datatype['forward_declarations'] = fwd_declarations
 
   def _preprocess_for_collection(self, datatype):
@@ -293,7 +288,7 @@ class ClassGenerator(object):
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')
 
-    datatype['includes_coll_cc'] = includes_cc
+    datatype['includes_coll_cc'] = self._sort_includes(includes_cc)
 
     # the ostream operator needs a bit of help from the python side in the form
     # of some pre processing but also in the form of formatting, both are done
@@ -361,7 +356,7 @@ class ClassGenerator(object):
       if self._needs_include(member):
         includes.add(self._build_include(member.bare_type))
 
-    return includes
+    return self._sort_includes(includes)
 
   def _needs_include(self, member):
     """Check whether the member needs an include from within the datamodel"""
@@ -379,11 +374,15 @@ class ClassGenerator(object):
       classname = os.path.join(self.package_name, classname)
     return '#include "%s.h"' % classname
 
-  @staticmethod
-  def _sort_includes(includes):
+  def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
-    # TODO actually implement the sorting. Currently just weeding out empty strings
-    return [e for e in includes if e]
+    package_includes = sorted(i for i in includes if self.package_name in i)
+    podio_includes = sorted(i for i in includes if 'podio' in i)
+    stl_includes = sorted(i for i in includes if '<' in i and '>' in i)
+    # TODO: check whether there are includes that fulfill more than one of the
+    # above conditions?
+
+    return package_includes + podio_includes + stl_includes
 
 
 if __name__ == "__main__":
