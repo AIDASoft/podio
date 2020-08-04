@@ -75,7 +75,7 @@ public:
   size_t size() const override final;
 
   /// fully qualified type name of elements - with namespace
-  std::string getValueTypeName() const override { return std::string("{{ class | trim(':') }}"); }
+  std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
 
   /// Returns the const object of given index
   const {{ class.bare_type }} operator[](unsigned int index) const;
