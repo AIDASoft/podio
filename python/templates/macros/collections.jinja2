@@ -86,17 +86,26 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
 {% endmacro %}
 
 
-{% macro ostream_operator(class, members, single_relations, multi_relations, vector_members, get_syntax) %}
+{% macro ostream_operator(class, members, single_relations, multi_relations, vector_members, get_syntax, settings) %}
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& v) {
 {% set col_width = 12 %}
   const auto old_flags = o.flags();
+  o << "{{ 'id' | ostream_collection_header(col_width=col_width) }}:
+{%- for header in settings.header_contents -%}
+  {{ header | ostream_collection_header(col_width=col_width) }}:
+{%- endfor -%}" << '\n';
 
   for (size_t i = 0; i < v.size(); ++i) {
-    o << std::scientific << std::showpos << std::setw({{ col_width }}) << v[i].id() << " ";
-
+    o << std::scientific << std::showpos << std::setw({{ col_width }}) << v[i].id() << " "
+{% for member in members %}
+{% if not member.is_array %}
+      << std::setw({{ col_width }}) << v[i].{{ member.getter_name(get_syntax) }}() << " "
+{% endif %}
+{% endfor %}
+      << std::endl;
 
 {% for relation in multi_relations %}
-    o << "{{ relation.name | truncate(col_width, True, '') }} : ";
+    o << "      {{ relation.name }} : ";
     for (unsigned j = 0, N = v[i].{{ relation.name }}_size(); j < N; ++j) {
       o << v[i].{{ relation.getter_name(get_syntax) }}(j).id() << " ";
     }
@@ -104,12 +113,12 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection&
 {% endfor %}
 
 {% for relation in single_relations %}
-    o << "{{ relation.name | truncate(col_width, True, '') }} : ";
+    o << "      {{ relation.name }} : ";
     o << v[i].{{ relation.getter_name(get_syntax) }}().id() << std::endl;
 {% endfor %}
 
 {% for member in vector_members %}
-    o << "{{ member.name | truncate(col_width, True, '') }} : ";
+    o << "      {{ member.name }} : ";
     for (unsigned j = 0, N = v[i].{{ member.name }}_size(); j < N; ++j) {
       o << v[i].{{ member.getter_name(get_syntax) }}(j) << " ";
     }

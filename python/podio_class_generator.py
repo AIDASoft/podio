@@ -9,6 +9,12 @@ from io import open
 import pickle
 from copy import deepcopy
 
+# collections.abc not available for python2, so again some special care here
+try:
+  from collections.abc import Mapping
+except ImportError:
+  from collections import Mapping
+
 try:
   from itertools import zip_longest
 except ImportError:
@@ -288,6 +294,43 @@ class ClassGenerator(object):
       includes_cc.add('#include <numeric>')
 
     datatype['includes_coll_cc'] = includes_cc
+
+    # the ostream operator needs a bit of help from the python side in the form
+    # of some pre processing but also in the form of formatting, both are done
+    # here.
+    # TODO: also handle array members properly. These are currently simply
+    # ignored
+    header_contents = []
+    for member in datatype['Members']:
+      header = {'name': member.name}
+      if member.full_type in self.reader.components:
+        comps = [c.name for c in self.reader.components[member.full_type]['Members']]
+        header['components'] = comps
+      header_contents.append(header)
+
+    def ostream_collection_header(member_header, col_width=12):
+      """Custom filter for the jinja2 templates to handle the ostream header that is
+      printed for the collections. Need this custom filter because it is easier
+      to implement the content dependent width in python than in jinja2.
+      """
+      if not isinstance(member_header, Mapping):
+        # Assume that we have a string and format it according to the width
+        return '{{:>{width}}}'.format(width=col_width).format(member_header)
+
+      components = member_header.get('components', None)
+      name = member_header['name']
+      if components is None:
+        return '{{:>{width}}}'.format(width=col_width).format(name)
+
+      n_comps = len(components)
+      comp_str = '[ {}]'.format(', '.join(components))
+      return '{{:>{width}}}'.format(width=col_width * n_comps).format(name + ' ' + comp_str)
+
+    datatype['ostream_collection_settings'] = {
+        'header_contents': header_contents
+        }
+    # Register the custom filter for it to become available in the templates
+    self.env.filters['ostream_collection_header'] = ostream_collection_header
 
   def _preprocess_datatype(self, name, definition):
     """Preprocess the datatype (building includes, etc.)"""

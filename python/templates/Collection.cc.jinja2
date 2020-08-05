@@ -205,6 +205,6 @@ const {{ iterator_type}}& {{ iterator_type }}::operator++() const {
 }
 
 {% endwith %}
-{{ macros.ostream_operator(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax) }}
+{{ macros.ostream_operator(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax, ostream_collection_settings) }}
 
 {{ utils.namespace_close(class.namespace) }}
