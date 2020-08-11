@@ -35,24 +35,25 @@ Install ROOT 6.08.06 (or later) and set up your ROOT environment:
 Podio works with both python 2 and python3. Check your python version by doing:
 
     python --version
+    
+#### python packages
 
-Check that the yaml python module is available
+Podio requires the `yaml` and `jinja2` python modules.
+Check that the `yaml` and `jinja2` python modules are available
 
     python
     >>> import yaml
+    >>> import jinja2
 
-If the import goes fine (no message), you're all set. If not, you need to install yaml. For that, you need to:
+If the import goes fine (no message), you're all set. If not, the necessary modules need to be installed. This is most easily done via (first install pip if you don't have it yet)
 
-1- install the C++ yaml library, which is used by the python module. On Mac OS, The easiest way to do that is to use homebrew (install homebrew if you don't have it yet):
+    pip install -r requirements.txt
+    
+In order for the `yaml` module to be working it might also be necessary to install the C++ yaml library. On Mac OS, The easiest way to do that is to use homebrew (install homebrew if you don't have it yet): 
 
     brew install libyaml
 
-2- install the python yaml module (first install pip if you don't have it yet)
-
-    pip install pyyaml
-
-Check that you can now import the yaml module in python.
-
+Check that you can now import the `yaml` and `jinja2` modules in python.
 
 ## Preparing the environment
 
