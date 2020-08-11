@@ -1,0 +1,52 @@
+{% macro namespace_open(nsp) %}
+{% if nsp %}
+namespace {{ nsp }} {
+{% endif %}
+{%- endmacro %}
+
+{% macro namespace_close(nsp) %}
+{% if nsp %}
+} // namespace {{ nsp }}
+{% endif %}
+{%- endmacro %}
+
+
+{% macro if_present(content, field) %}
+{% if content and content[field] %}
+{{ content[field] }}
+{% endif %}
+{%- endmacro %}
+
+
+{% macro if_present_with_replacement(content, field, old, new) %}
+{% if content and content[field] %}
+{{ content[field] | replace(old, new) }}
+{% endif %}
+{%- endmacro %}
+
+{% macro datamodel_includes(incfolder, type) %}
+// datamodel specific includes
+#include "{{ incfolder }}{{ type }}.h"
+#include "{{ incfolder }}{{ type }}Const.h"
+#include "{{ incfolder }}{{ type }}Obj.h"
+#include "{{ incfolder }}{{ type }}Data.h"
+#include "{{ incfolder }}{{ type }}Collection.h"
+{%- endmacro %}
+
+
+{%- macro forward_decls(fwd_decls) %}
+{% if fwd_decls %}
+// forward declarations
+{% endif %}
+{% for nsp, classes in fwd_decls.items() %}
+{% if nsp %}
+namespace {{ nsp }} {
+{% endif %}
+{% for class in classes %}
+class {{ class }};
+{% endfor %}
+{% if nsp %}
+}
+{% endif %}
+{% endfor %}
+{%- endmacro %}

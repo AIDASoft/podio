@@ -1,0 +1,129 @@
+{% macro class_description(type, description, author, prefix='', postfix='') %}
+/** @class {{ prefix }}{{ type }}{{ postfix }}
+ *  {{ description }}
+ *  @author: {{ author }}
+ */
+{%- endmacro %}
+
+
+{% macro member_getters(members, get_syntax) %}
+{%for member in members %}
+  /// Access the {{ member.description }}
+  const {{ member.full_type }}& {{ member.getter_name(get_syntax) }}() const;
+{% if member.is_array %}
+  /// Access item i of the {{ member.description }}
+  const {{ member.array_type }}& {{ member.getter_name(get_syntax) }}(size_t i) const;
+{%- endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+  /// Access the member of {{ member.description }}
+  const {{ sub_member.full_type }}& {{ sub_member.getter_name(get_sytnax) }}() const;
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endmacro %}
+
+
+{% macro member_setters(members, get_syntax) %}
+{% for member in members %}
+  /// Set the {{ member.description }}
+  void {{ member.setter_name(get_syntax) }}({{ member.full_type }} value);
+{% if member.is_array %}
+  void {{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value);
+{% endif %}
+{% if not member.is_builtin %}
+  /// Get reference to {{ member.description }}
+  {{ member.full_type }}& {{ member.name }}();
+{% endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+{% if sub_member.is_builtin %}
+  /// Set the member of {{ member.description }}
+  void {{ sub_member.setter_name(get_syntax) }}({{ sub_member.full_type }} value);
+{% else %}
+  /// Get reference to the member of {{ member.description }}
+  {{ sub_member.full_type }}& {{ sub_member.name }}();
+  /// Set the member of  {{ member.description }}
+  void {{ sub_member.setter_name(get_sytnax) }}({{ sub_member.full_type }} value);
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endmacro %}
+
+
+{% macro constructors_destructors(type, members, prefix='') %}
+{% set full_type = prefix + type %}
+  /// default constructor
+  {{  full_type }}();
+{% if members %}
+  {{  full_type }}({{ members | map(attribute='signature') | join(', ')  }});
+{% endif %}
+
+  /// constructor from existing {{ type }}Obj
+  {{  full_type }}({{ type }}Obj* obj);
+
+  /// copy constructor
+  {{  full_type }}(const {{  full_type }}& other);
+
+  /// copy-assignment operator
+  {{  full_type }}& operator=(const {{  full_type }}& other);
+
+  /// support cloning (deep-copy)
+  {{  full_type }} clone() const;
+
+  /// destructor
+  ~{{  full_type }}();
+{% endmacro %}
+
+
+{% macro common_object_funcs(type, prefix='') %}
+{% set full_type = prefix + type %}
+  /// check whether the object is actually available
+  bool isAvailable() const;
+  /// disconnect from {{ type }}Obj instance
+  void unlink() { m_obj = nullptr; }
+
+{% set inverse_type = type if prefix else 'Const' + type %}
+  bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }
+  bool operator==(const {{ inverse_type }}& other) const;
+
+  // less comparison operator, so that objects can be e.g. stored in sets.
+  bool operator<(const {{ full_type }}& other) const { return m_obj < other.m_obj; }
+
+  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index; }
+
+  const podio::ObjectID getObjectID() const;
+{%- endmacro %}
+
+
+{% macro single_relation_getters(relations, get_syntax) %}
+{% for relation in relations %}
+  /// Access the {{ relation.description }}
+  const {{ relation.relation_type }} {{ relation.getter_name(get_syntax) }}() const;
+{% endfor %}
+{%- endmacro %}
+
+
+{% macro single_relation_setters(relations, get_syntax) %}
+{% for relation in relations %}
+  /// Set the {{ relation.description }}
+  void {{ relation.setter_name(get_syntax) }}({{ relation.relation_type }} value);
+{% endfor %}
+{%- endmacro %}
+
+
+{% macro multi_relation_handling(relations, get_syntax, with_adder=False) %}
+{% for relation in relations %}
+{% if with_adder %}
+  void {{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.relation_type }});
+{% endif %}
+  unsigned int {{ relation.name }}_size() const;
+  {{ relation.relation_type }} {{ relation.getter_name(get_syntax) }}(unsigned int) const;
+  std::vector<{{ relation.relation_type }}>::const_iterator {{ relation.name }}_begin() const;
+  std::vector<{{ relation.relation_type }}>::const_iterator {{ relation.name }}_end() const;
+  podio::RelationRange<{{ relation.relation_type }}> {{ relation.getter_name(get_syntax) }}() const;
+{% endfor %}
+{%- endmacro %}

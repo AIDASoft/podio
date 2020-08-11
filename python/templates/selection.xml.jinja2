@@ -1,0 +1,31 @@
+{% macro class_selection(class, prefix='', postfix='') %}
+{% if class.namespace %}
+        <class name="std::vector<{{ class.namespace }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}>" />
+        <class name="{{ class.namespace }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}">
+{% else %}
+        <class name="std::vector<{{ prefix }}{{ class.bare_type }}{{ postfix }}>" />
+        <class name="{{ prefix }}{{ class.bare_type }}{{ postfix }}">
+{% endif %}
+            <field name="m_registry" transient="true"/>
+            <field name="m_container" transient="true"/>
+        </class>
+
+{% endmacro %}
+
+<lcgdict>
+    <selection>
+
+{% for class in components %}
+{{ class_selection(class) }}
+{% endfor %}
+
+{% for class in datatypes %}
+{{ class_selection(class, postfix='Data') }}
+{{ class_selection(class) }}
+{{ class_selection(class, prefix='Const') }}
+{{ class_selection(class, postfix='Collection') }}
+{{ class_selection(class, postfix='Obj') }}
+{% endfor %}
+
+    </selection>
+</lcgdict>

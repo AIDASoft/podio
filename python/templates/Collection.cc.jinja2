@@ -1,0 +1,210 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/collections.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}Collection.h"
+
+{% for include in includes_coll_cc %}
+{{ include }}
+{% endfor %}
+
+// standard includes
+#include <stdexcept>
+#include <iomanip>
+
+{{ utils.namespace_open(class.namespace) }}
+
+{% with collection_type = class.bare_type + 'Collection' %}
+{{ collection_type }}::{{ collection_type }}() :
+  m_isValid(false), m_collectionID(0), m_entries()
+{%- for relation in OneToManyRelations + OneToOneRelations %},
+  m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>())
+{%- endfor %},
+  m_data(new {{ class.bare_type }}DataContainer()) {
+{% for relation in OneToManyRelations + OneToOneRelations %}
+  m_refCollections.push_back(new std::vector<podio::ObjectID>());
+{% endfor %}
+{% for member in VectorMembers %}
+  m_vecmem_info.emplace_back("{{ member.full_type }}", &m_vec_{{ member.name }});
+  m_vec_{{ member.name }} = new std::vector<{{ member.full_type }}>();
+{% endfor %}
+}
+
+{{ collection_type }}::~{{ collection_type }}() {
+  clear();
+  if (m_data) delete m_data;
+{% if OneToManyRelations or OneToOneRelations %}
+  for (auto& pointer : m_refCollections) { if (pointer) delete pointer; }
+{% endif %}
+{% for relation in OneToManyRelations + OneToOneRelations %}
+  if (m_rel_{{ relation.name }}) delete m_rel_{{ relation.name }};
+{% endfor %}
+{% for member in VectorMembers %}
+  if (m_vec_{{ member.name }}) delete m_vec_{{ member.name }};
+{% endfor %}
+}
+
+const {{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
+  return {{ class.bare_type }}(m_entries[index]);
+}
+
+const {{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
+  return {{ class.bare_type }}(m_entries.at(index));
+}
+
+{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) {
+  return {{ class.bare_type }}(m_entries[index]);
+}
+
+{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) {
+  return {{ class.bare_type }}(m_entries.at(index));
+}
+
+size_t {{ collection_type }}::size() const {
+  return m_entries.size();
+}
+
+{{ class.bare_type }} {{ collection_type }}::create() {
+  auto obj = m_entries.emplace_back(new {{ class.bare_type }}Obj());
+{% for relation in OneToManyRelations %}
+  m_rel_{{ relation.name }}_tmp.push_back(obj->m_{{ relation.name }});
+{% endfor %}
+{% for member in VectorMembers %}
+  m_vecs_{{ member.name }}.push_back(obj->m_{{ member.name }});
+{% endfor %}
+
+  obj->id = {int(m_entries.size() - 1), m_collectionID};
+  return {{ class.bare_type }}(obj);
+}
+
+void {{ collection_type }}::clear() {
+  m_data->clear();
+{% if OneToManyRelations or OneToOneRelations %}
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
+{% endif %}
+{% for relation in OneToManyRelations %}
+  // clear relations to {{ relation.name }}. Make sure to unlink() the reference data as they may be gone already.
+  for (auto& pointer : m_rel_{{ relation.name }}_tmp) {
+    for (auto& item : *pointer) {
+      item.unlink();
+    }
+    delete pointer;
+  }
+  m_rel_{{ relation.name }}_tmp.clear();
+{{ macros.clear_relation(relation) }}
+{% endfor %}
+{% for relation in OneToOneRelations %}
+{{ macros.clear_relation(relation) }}
+{% endfor %}
+{% for member in VectorMembers %}
+  m_vec_{{ member.name }}->clear();
+  m_vecs_{{ member.name }}.clear();
+
+{% endfor %}
+  for (auto& obj : m_entries) { delete obj; }
+  m_entries.clear();
+}
+
+void {{ collection_type }}::prepareForWrite() {
+  const auto size = m_entries.size();
+  m_data->reserve(size);
+  for (auto& obj : m_entries) { m_data->push_back(obj->data); }
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
+
+{% for relation in OneToManyRelations %}
+  int {{ relation.name }}_index = 0;
+{% endfor %}
+{% for member in VectorMembers %}
+  const int {{ member.name }}_size = std::accumulate(m_entries.begin(), m_entries.end(), 0, [](int sum, const {{ class.bare_type }}Obj* obj) { return sum + obj->m_{{ member.name }}->size(); });
+  m_vec_{{ member.name }}->reserve({{ member.name }}_size);
+  int {{ member.name }}_index = 0;
+{% endfor %}
+
+{%- if OneToManyRelations or VectorMembers %}
+  for (int i = 0, size = m_data->size(); i != size; ++i) {
+{% for relation in OneToManyRelations %}
+{{ macros.prepare_for_write_multi_relation(relation, loop.index0) }}
+{% endfor %}
+{% for member in VectorMembers %}
+{{ macros.prepare_for_write_vector_member(member) }}
+{% endfor %}
+  }
+{%- endif %}
+
+{% for relation in OneToOneRelations %}
+{{ macros.prepare_for_write_single_relation(relation, loop.index0, OneToManyRelations | length) }}
+{% endfor %}
+}
+
+void {{ collection_type }}::prepareAfterRead() {
+  int index = 0;
+  for (auto& data : *m_data) {
+    auto obj = new {{ class.bare_type }}Obj({index, m_collectionID}, data);
+
+{% for relation in OneToManyRelations %}
+    obj->m_{{ relation.name }} = m_rel_{{ relation.name }};
+{% endfor %}
+{% for member in VectorMembers %}
+    obj->m_{{ member.name }} = m_vec_{{ member.name }};
+{% endfor %}
+    m_entries.emplace_back(obj);
+    ++index;
+  }
+  m_isValid = true;
+}
+
+bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {
+{% for relation in OneToManyRelations %}
+{{ macros.set_references_multi_relation(relation, loop.index0) }}
+{% endfor %}
+{% for relation in OneToOneRelations %}
+{{ macros.set_reference_single_relation(relation, loop.index0, OneToManyRelations | length) }}
+{% endfor %}
+
+  return true; //TODO: check success
+}
+
+void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
+  const int size = m_entries.size();
+  auto obj = object.m_obj;
+  if (obj->id.index == podio::ObjectID::untracked) {
+    obj->id = {size, m_collectionID};
+    m_entries.push_back(obj);
+
+{% for relation in OneToManyRelations %}
+    m_rel_{{ relation.name }}_tmp.push_back(obj->m_{{ relation.name }});
+{% endfor %}
+{% for member in VectorMembers %}
+    m_vecs_{{ member.name }}.push_back(obj->m_{{ member.name }});
+{% endfor %}
+  } else {
+    throw std::invalid_argument("Object already in a collection. Cannot add it to a second collection");
+  }
+}
+
+void {{ collection_type }}::setBuffer(void* address) {
+  if (m_data) delete m_data;
+  m_data = static_cast<{{ class.bare_type }}DataContainer*>(address);
+}
+{% endwith %}
+
+{% with iterator_type = class.bare_type + 'CollectionIterator' %}
+const {{ class.bare_type }} {{ iterator_type }}::operator*() const {
+  m_object.m_obj = (*m_collection)[m_index];
+  return m_object;
+}
+
+const {{ class.bare_type }}* {{ iterator_type }}::operator->() const {
+  m_object.m_obj = (*m_collection)[m_index];
+  return &m_object;
+}
+
+const {{ iterator_type}}& {{ iterator_type }}::operator++() const {
+  ++m_index;
+  return *this;
+}
+
+{% endwith %}
+{{ macros.ostream_operator(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax, ostream_collection_settings) }}
+
+{{ utils.namespace_close(class.namespace) }}

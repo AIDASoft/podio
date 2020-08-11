@@ -1,29 +1,32 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import, print_function
 
-from __future__ import absolute_import, unicode_literals, print_function
+import os
+import errno
+import subprocess
 from io import open
+import pickle
+from copy import deepcopy
+
+# collections.abc not available for python2, so again some special care here
+try:
+  from collections.abc import Mapping
+except ImportError:
+  from collections import Mapping
+
 try:
   from itertools import zip_longest
 except ImportError:
   from itertools import izip_longest as zip_longest
 
-# for python2 compatible FileNotFoundError handling
-import errno
+import jinja2
 
-from copy import deepcopy
-
-import os
-import string
-import pickle
-import subprocess
 from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
-from podio_templates import declarations, implementations
-from generator_utils import (
-    demangle_classname, get_extra_code, generate_get_set_member, generate_get_set_relation,
-    constructor_destructor_collection, get_fmt_func
-    )
+from generator_utils import DataType
 
-thisdir = os.path.dirname(os.path.abspath(__file__))
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 REPORT_TEXT = """
   PODIO Data Model
@@ -52,85 +55,50 @@ def get_clang_format():
     return []
 
 
-def ostream_component(comp_members, classname, osname='o', valname='value'):
-  """Define the inline ostream operator for component structs"""
-  ostream = ['inline std::ostream& operator<<( std::ostream& {o}, const {classname}& {value} ) {{']
-
-  for member in comp_members:
-    if member.is_array:
-      ostream.append('  for (int i = 0; i < {size}; ++i) {{{{'.format(size=member.array_size))
-      ostream.append('    {{o}} << {{value}}.{name}[i] << "|";'.format(name=member.name))
-      ostream.append('  }}')
-      ostream.append('  {o} << " ";')
-    else:
-      ostream.append('  {{o}} << {{value}}.{name} << " ";'.format(name=member.name))
-
-  ostream.append('  return {o};')
-  ostream.append('}}\n')
-  return '\n'.join(ostream).format(o=osname, classname=classname, value=valname)
-
-
 class ClassGenerator(object):
-
-  def __init__(self, yamlfile, install_dir, package_name,
-               verbose=True, dryrun=False):
-
-    self.yamlfile = yamlfile
+  def __init__(self, yamlfile, install_dir, package_name, verbose, dryrun):
     self.install_dir = install_dir
     self.package_name = package_name
-    self.template_dir = os.path.join(thisdir, "templates")
     self.verbose = verbose
-    self.created_classes = []
-    self.requested_classes = []
     self.dryrun = dryrun
+    self.yamlfile = yamlfile
 
     self.reader = PodioConfigReader(yamlfile)
     self.reader.read()
-    self.get_syntax = self.reader.options["getSyntax"]
     self.include_subfolder = self.reader.options["includeSubfolder"]
+
+    self.env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
+                                  keep_trailing_newline=True,
+                                  lstrip_blocks=True,
+                                  trim_blocks=True)
+
+    self.get_syntax = self.reader.options["getSyntax"]
+    self.incfolder = self.package_name + "/" if self.reader.options["includeSubfolder"] else ""
     self.expose_pod_members = self.reader.options["exposePODMembers"]
-    self.warnings = self.reader.warnings
 
     self.clang_format = []
-    self._template_cache = {}
 
   def process(self):
-    self.process_components(self.reader.components)
-    self.process_datatypes(self.reader.datatypes)
-    self.create_selection_xml()
+    for name, component in self.reader.components.items():
+      self._process_component(name, component)
+
+    for name, datatype in self.reader.datatypes.items():
+      self._process_datatype(name, datatype)
+
+    self._create_selection_xml()
     self.print_report()
-
-  def process_components(self, content):
-    self.requested_classes += content.keys()
-    for name, component in content.items():
-      self.create_component(name, component)
-
-  def process_datatypes(self, content):
-    # First have to fill the requested classes before the actual generation can
-    # start
-    for name in content:
-      self.requested_classes.append(name)
-      self.requested_classes.append("%sData" % name)
-
-    for name, components in content.items():
-      datatype = self._process_datatype(components)
-
-      self.create_data(name, components, datatype)
-      self.create_class(name, components, datatype)
-      self.create_collection(name, components)
-      self.create_obj(name, components)
-      # self.create_PrintInfo(name, components)
 
   def print_report(self):
     if not self.verbose:
       return
 
-    text = REPORT_TEXT.format(yamlfile=self.yamlfile,
-                              nclasses=len(self.created_classes),
-                              installdir=self.install_dir)
-
-    with open(os.path.join(thisdir, "figure.txt"), 'rb') as pkl:
+    with open(os.path.join(THIS_DIR, "figure.txt"), 'rb') as pkl:
       figure = pickle.load(pkl)
+
+    nclasses = 5 * len(self.reader.datatypes) + len(self.reader.components)
+    text = REPORT_TEXT.format(yamlfile=self.yamlfile,
+                              nclasses=nclasses,
+                              installdir=self.install_dir)
 
     print()
     for figline, summaryline in zip_longest(figure, text.splitlines(), fillvalue=''):
@@ -138,796 +106,13 @@ class ClassGenerator(object):
     print("     'Homage to the Square' - Josef Albers")
     print()
 
-    for warning in self.warnings:
-      print(warning)
-
-  def _get_template(self, filename):
-    """Get the template from the filename"""
-    if filename not in self._template_cache:
-      templatefile = os.path.join(self.template_dir, filename)
-      with open(templatefile, 'r') as tempfile:
-        self._template_cache[filename] = tempfile.read()
-
-    return self._template_cache[filename]
-
-  def create_selection_xml(self):
-    content = ""
-    for klass in self.created_classes:
-      # if not klass.endswith("Collection") or klass.endswith("Data"):
-      content += '          <class name="std::vector<%s>" />\n' % klass
-      content += """
-            <class name="%s">
-              <field name="m_registry" transient="true"/>
-              <field name="m_container" transient="true"/>
-            </class>\n""" % klass
-
-    templatefile = os.path.join(self.template_dir,
-                                "selection.xml.template")
-    template = self._get_template(templatefile)
-    content = string.Template(template).substitute({"classes": content})
-    self.write_file("selection.xml", content)
-
-  def _process_datatype(self, definition):
-    """Check whether all members are known and prepare include directories"""
-    datatype_dict = {
-        "description": definition["Description"],
-        "author": definition["Author"],
-        "includes": set(),
-        "members": []
-        }
-    for member in definition["Members"]:
-      datatype_dict["members"].append(str(member))
-      klass = member.full_type
-
-      if member.is_array:
-        datatype_dict["includes"].add("#include <array>")
-        if not member.is_builtin_array:
-          datatype_dict["includes"].add(self._build_include(member.array_bare_type))
-
-      for stl_type in ClassDefinitionValidator.allowed_stl_types:
-        if klass.startswith('std::' + stl_type):
-          datatype_dict["includes"].add('#include <{}>'.format(stl_type))
-
-      if klass in self.requested_classes:
-        datatype_dict["includes"].add(self._build_include(member.bare_type))
-
-    # get rid of duplicates:
-    return datatype_dict
-
-  def create_data(self, classname, definition, datatype):
-    """Create the Data"""
-    data = deepcopy(datatype)  # avoid having outside side-effects
-    # now handle the vector-members
-    vectormembers = definition["VectorMembers"]
-    for vectormember in vectormembers:
-      name = vectormember.name
-      data["members"].append("  unsigned int %s_begin;" % name)
-      data["members"].append("  unsigned int %s_end;" % (name))
-
-    # now handle the one-to-many relations
-    refvectors = definition["OneToManyRelations"]
-    for refvector in refvectors:
-      name = refvector.name
-      data["members"].append("  unsigned int %s_begin;" % (name))
-      data["members"].append("  unsigned int %s_end;" % (name))
-
-    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-    substitutions = {"includes": self._join_set(data["includes"]),
-                     "members": "\n".join(data["members"]),
-                     "name": rawclassname,
-                     "description": data["description"],
-                     "author": data["author"],
-                     "package_name": self.package_name,
-                     "namespace_open": namespace_open,
-                     "namespace_close": namespace_close
-                     }
-    self.fill_templates("Data", substitutions)
-    self.created_classes.append(classname + "Data")
-
-  @staticmethod
-  def _concat_fwd_declarations(fwd_decls):
-    """Concatenate all the forward declarations"""
-    forward_declaration = []
-    for nsp, classes in fwd_decls.items():
-      nsp_fwd = []
-      if nsp:
-        nsp_fwd.append('namespace {} {{'.format(nsp))
-
-      for cls in classes:
-        nsp_fwd.append('class {};'.format(cls))
-
-      if nsp:
-        nsp_fwd.append('}\n')
-
-      forward_declaration.append('\n'.join(nsp_fwd))
-
-    return '\n'.join(forward_declaration)
-
-  def _process_fwd_declarations(self, relations):
-    """Process the forward declarations and includes for a oneToOneRelation"""
-    fwd_decls = {"": []}
-    includes = set()
-
-    for member in relations:
-      if member.full_type in self.requested_classes:
-        if member.namespace not in fwd_decls:
-          fwd_decls[member.namespace] = []
-        fwd_decls[member.namespace].append(member.bare_type)
-        fwd_decls[member.namespace].append('Const' + member.bare_type)
-        includes.add(self._build_include(member.bare_type))
-
-    forward_declaration = self._concat_fwd_declarations(fwd_decls)
-
-    return includes, forward_declaration
-
-  def _get_includes(self, member):
-    """Get the additional includes for a given member"""
-    includes = set()
-    if member.full_type in self.requested_classes:
-      includes.add(self._build_include(member.bare_type))
-
-    elif member.is_array:
-      includes.add('#include <array>')
-      if not member.is_builtin_array:
-        includes.add(self._build_include(member.array_bare_type))
-
-    return includes
-
-  def _ostream_class(self, class_members, multi_relations, single_relations, classname,
-                     osname='o', valname='value'):
-    """ostream operator overload declaration and implementation for a given class"""
-    decl = "std::ostream& operator<<( std::ostream& {o}, const Const{classname}& {value} );\n"
-
-    impl = [decl.replace(';\n', ' {{')]  # double brace for surviving .format
-    impl.append('  {o} << " id: " << {value}.id() << \'\\n\';')
-
-    for member in class_members:
-      getname = member.getter_name(self.get_syntax)
-      _fmt = get_fmt_func(name=member.name, getname=getname, size=member.array_size)
-      if member.is_array:
-        impl.append(_fmt('  {{o}} << " {name} : ";'))
-        impl.append(_fmt('  for (size_t i = 0; i < {size}; ++i) {{{{'))  # have to survive format twice
-        impl.append(_fmt('    {{o}} << {{value}}.{getname}()[i] << "|" ;'))
-        impl.append('  }}')
-        impl.append('  {o} << \'\\n\';')
-      else:
-        impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
-
-      if self.expose_pod_members and not member.is_builtin and not member.is_array:
-        for sub_member in self.reader.components[member.full_type]['Members']:
-          getname = sub_member.getter_name(self.get_syntax)
-          _fmt = get_fmt_func(name=member.name, getname=getname)
-          impl.append(_fmt('  {{o}} << " {name} : " << {{value}}.{getname}() << \'\\n\';'))
-
-    for relation in single_relations:
-      getname = relation.getter_name(self.get_syntax)
-      impl.append('  {{o}} << " {name} : " << {{value}}.{getname}().id() << \'\\n\';'.format(
-          name=relation.name, getname=getname))
-
-    for relation in multi_relations:
-      getname = relation.getter_name(self.get_syntax)
-      _fmt = get_fmt_func(name=relation.name, getname=getname)
-      impl.append(_fmt('  {{o}} << " {name} : " ;'))
-      impl.append(_fmt('  for (unsigned i = 0; i < {{value}}.{name}_size(); ++i) {{{{'))
-      # If the reference is of the same type as the class we have to avoid
-      # running into a possible infinite loop when printing. Hence, print only
-      # the id instead of the whole referenced object
-      if relation.bare_type == classname:
-        impl.append(_fmt('     {{o}} << {{value}}.{getname}(i).id() << " ";'))
-      else:
-        impl.append(_fmt('     {{o}} << {{value}}.{getname}(i) << " ";'))
-      impl.append('  }}')
-      impl.append('  {o} << \'\\n\';')
-
-    impl.append('  return {o};')
-    impl.append('}}')  # to survive .format
-    return (decl.format(classname=classname, o=osname, value=valname),
-            '\n'.join(impl).format(classname=classname, o=osname, value=valname))
-
-  def _constructor_class(self, members, classname):
-    """Generate the signature and body of the constructor for the given class (and
-    its Const version)"""
-    signature, body = [], []
-    for member in members:
-      signature.append('{type} {name}'.format(type=member.full_type, name=member.name))
-      body.append('  m_obj->data.{name} = {name};'.format(name=member.name))
-
-    decl, const_decl, impl, const_impl = '', '', '', ''
-    if signature:
-      signature = ', '.join(signature)
-      decl = '{klass}({signature});'.format(klass=classname, signature=signature)
-      const_decl = 'Const{klass}({signature});'.format(klass=classname, signature=signature)
-
-      body = '\n'.join(body)
-      substitutions = {
-          'name': classname,
-          'signature': signature,
-          'constructor': body
-          }
-      impl = self.evaluate_template('Object.constructor.cc.template', substitutions)
-      const_impl = self.evaluate_template('ConstObject.constructor.cc.template', substitutions)
-
-    return {
-        'decl': decl,
-        'const_decl': const_decl,
-        'impl': impl,
-        'const_impl': const_impl
-        }
-
-  def _relation_handling_class(self, relations, classname):
-    """Generate the code to do the relation handling of a class"""
-    impl, decl, const_impl, const_decl = '', '', '', ''
-    members = []
-
-    for relation in relations:
-      relationtype = relation.full_type
-      if not relation.is_builtin and relation.full_type not in self.reader.components:
-        relationtype = relation.namespace + '::Const' + relation.bare_type
-
-      get_relation, set_relation = relation.getter_setter_names(self.get_syntax, is_relation=True)
-      substitutions = {
-          'relation': relation.name,
-          'get_relation': get_relation,
-          'add_relation': set_relation,
-          'relationtype': relationtype,
-          'classname': classname,
-          'package_name': self.package_name
-          }
-
-      decl += self.evaluate_template('RefVector.h.template', substitutions)
-      impl += self.evaluate_template('RefVector.cc.template', substitutions)
-      const_decl += self.evaluate_template('ConstRefVector.h.template', substitutions)
-      const_impl += self.evaluate_template('ConstRefVector.cc.template', substitutions)
-
-      members.append('std::vector<{type}>* m_{name} ///< transient'
-                     .format(type=relation.full_type, name=relation.name))
-
-    return {
-        'impl': impl,
-        'decl': decl,
-        'const_impl': const_impl,
-        'const_decl': const_decl,
-        'members': '\n'.join(members)
-        }
-
-  def create_class(self, classname, definition, datatype):
-    """Create all files necessary for a given class"""
-    datatype = deepcopy(datatype)  # avoid having outside side-effects
-    namespace, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-
-    datatype["includes"].add(self._build_include(rawclassname + "Data"))
-
-    refvectors = definition["OneToManyRelations"]
-    if refvectors:
-      datatype["includes"].add("#include <vector>")
-      datatype["includes"].add('#include "podio/RelationRange.h"')
-    for item in refvectors:
-      datatype["includes"].update(self._get_includes(item))
-
-    getter_implementations = ""
-    setter_implementations = ""
-    getter_declarations = ""
-    setter_declarations = ""
-    ConstGetter_implementations = ""
-
-    components = self.reader.components if self.expose_pod_members else None
-    # handle standard members
-    for member in definition["Members"]:
-      getters_setters = generate_get_set_member(member, rawclassname, self.get_syntax, components)
-      getter_declarations += getters_setters['decl']['get']
-      getter_implementations += getters_setters['impl']['get']
-      ConstGetter_implementations += getters_setters['impl']['const_get']
-
-      setter_declarations += getters_setters['decl']['set']
-      setter_implementations += getters_setters['impl']['set']
-
-    # one-to-one relations
-    for member in definition["OneToOneRelations"]:
-      getters_setters = generate_get_set_relation(member, rawclassname, self.get_syntax)
-      getter_declarations += getters_setters['decl']['get']
-      getter_implementations += getters_setters['impl']['get']
-      ConstGetter_implementations += getters_setters['impl']['const_get']
-
-      setter_declarations += getters_setters['decl']['set']
-      setter_implementations += getters_setters['impl']['set']
-
-    # handle vector members
-    vectormembers = definition["VectorMembers"]
-    if vectormembers:
-      datatype["includes"].add("#include <vector>")
-      datatype["includes"].add('#include "podio/RelationRange.h"')
-    for item in vectormembers:
-      if item.full_type in self.reader.components:
-        datatype["includes"].add(self._build_include(item.bare_type))
-
-    constructor = self._constructor_class(definition['Members'], rawclassname)
-    constructor_declaration = constructor['decl']
-    constructor_implementation = constructor['impl']
-    ConstConstructor_declaration = constructor['const_decl']
-    ConstConstructor_implementation = constructor['const_impl']
-
-    reference_code = self._relation_handling_class(refvectors + definition['VectorMembers'], rawclassname)
-    references_members = reference_code['members']
-    references_declarations = reference_code['decl']
-    references = reference_code['impl']
-    ConstReferences_declarations = reference_code['const_decl']
-    ConstReferences = reference_code['const_impl']
-
-    extra_code = get_extra_code(rawclassname, definition)
-    extracode_declarations = extra_code['decl']
-    extracode = extra_code['impl']
-    constextracode_declarations = extra_code['const_decl']
-    constextracode = extra_code['const_impl']
-    datatype['includes'].update(extra_code['includes'])
-
-    ostream_declaration, ostream_implementation = self._ostream_class(
-        definition['Members'], refvectors + definition['VectorMembers'],
-        definition['OneToOneRelations'], rawclassname)
-
-    includes_cc, forward_declarations = self._process_fwd_declarations(definition["OneToOneRelations"])
-
-    substitutions = {"includes": self._join_set(datatype["includes"]),
-                     "includes_cc": self._join_set(includes_cc),
-                     "forward_declarations": forward_declarations,
-                     "getters": getter_implementations,
-                     "getter_declarations": getter_declarations,
-                     "setters": setter_implementations,
-                     "setter_declarations": setter_declarations,
-                     "constructor_declaration": constructor_declaration,
-                     "constructor_implementation": constructor_implementation,
-                     "extracode": extracode,
-                     "extracode_declarations": extracode_declarations,
-                     "name": rawclassname,
-                     "description": datatype["description"],
-                     "author": datatype["author"],
-                     "relations": references,
-                     "relation_declarations": references_declarations,
-                     "relation_members": references_members,
-                     "package_name": self.package_name,
-                     "namespace_open": namespace_open,
-                     "namespace_close": namespace_close,
-                     "ostream_declaration": ostream_declaration,
-                     "ostream_implementation": ostream_implementation
-                     }
-    self.fill_templates("Object", substitutions)
-    self.created_classes.append(classname)
-
-    substitutions["constructor_declaration"] = ConstConstructor_declaration
-    substitutions["constructor_implementation"] = ConstConstructor_implementation
-    substitutions["relation_declarations"] = ConstReferences_declarations
-    substitutions["relations"] = ConstReferences
-    substitutions["getters"] = ConstGetter_implementations
-    substitutions["constextracode"] = constextracode
-    substitutions["constextracode_declarations"] = constextracode_declarations
-    self.fill_templates("ConstObject", substitutions)
-    if "::" in classname:
-      self.created_classes.append("%s::Const%s" % (namespace, rawclassname))
-    else:
-      self.created_classes.append("Const%s" % classname)
-
-  def _ostream_collection(self, classname, members, relations, references, vectormembers,
-                          osname='o', valname='v'):
-    """Ostream operator implementation and declaration for collections"""
-    # create colum based output for data members using scientific format
-    decl = "std::ostream& operator<<( std::ostream& {o},const {classname}Collection& {value});\n"
-    col_width = 12
-    header_str = "{{:{width}}}".format(width=col_width).format('id:')
-
-    impl = [decl.replace(';\n', '{{')]
-    impl.append('  const std::ios::fmtflags old_flags = {o}.flags();')
-    impl.append('  {o} << "{header_string}" << std::endl;')
-    impl.append('  for (size_t i = 0; i < {value}.size(); ++i) {{')
-    impl.append('    {o} << std::scientific << std::showpos')
-    impl.append('      << std::setw({w}) << {{value}}[i].id() << " "'.format(w=col_width))
-
-    for member in members:
-      # TODO: Also handle array members properly
-      if member.is_array:
-        continue
-      # column header
-      col_w = col_width + 2
-      comp_str = ""  # print component names if they are present
-      if member.full_type in self.reader.components:
-        comps = [c.name for c in self.reader.components[member.full_type]['Members']]
-        comp_str = '[ {}]'.format(', '.join(comps))
-        col_w *= len(comps)
-
-      header_str += '{{:{width}}}'.format(width=col_w).format(member.name + ' :' + comp_str)
-
-      getname = member.getter_name(self.get_syntax)
-      impl.append('      << std::setw({w}) << {{value}}[i].{name}() << " "'.format(w=col_w, name=getname))
-
-    impl.append('      << std::endl;\n')
-
-    for relation in relations:
-      getname = relation.getter_name(self.get_syntax)
-      print_name = '{{:{width}}}'.format(width=col_width).format(relation.name)
-      impl.append('    {{o}} << "{name} : ";'.format(name=print_name))
-      impl.append('    for (unsigned j = 0, N = {{value}}[i].{name}_size(); j < N; ++j) {{{{'
-                  .format(name=relation.name))
-      impl.append('      {{o}} << {{value}}[i].{gname}(j).id() << " ";'.format(gname=getname))
-      impl.append('    }}')
-      impl.append('    {o} << std::endl;\n')
-
-    for reference in references:
-      getname = reference.getter_name(self.get_syntax)
-      print_name = '{{:{width}}}'.format(width=col_width).format(reference.name)
-      impl.append('    {{o}} << "{name} : ";'.format(name=print_name))
-      impl.append('    {{o}} << {{value}}[i].{gname}().id() << std::endl;'.format(gname=getname))
-
-    for vecmem in vectormembers:
-      getname = vecmem.getter_name(self.get_syntax)
-      print_name = '{{:{width}}}'.format(width=col_width).format(vecmem.name)
-      impl.append('    {{o}} << "{name} : ";'.format(name=print_name))
-      impl.append('    for (unsigned j = 0, N = {{value}}[i].{name}_size(); j < N; ++j) {{{{'.format(name=vecmem.name))
-      impl.append('      {{o}} << {{value}}[i].{gname}(j) << " ";'.format(gname=getname))
-      impl.append('    }}')
-      impl.append('    {o} << std::endl;\n')
-
-    impl.append('  }}')  # for loop
-
-    impl.append('  {o}.flags(old_flags);')
-    impl.append('  return {o};')
-    impl.append('}}')
-    return (decl.format(classname=classname, o=osname, value=valname),
-            '\n'.join(impl).format(classname=classname, header_string=header_str,
-                                   o=osname, value=valname))
-
-  def create_collection(self, classname, definition):
-    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-
-    members = definition["Members"]
-    prepareforwritinghead = ""
-    prepareforwritingbody = ""
-    setreferences = ""
-    prepareafterread = ""
-    includes = set()
-    initializers = ""
-    relations = ""
-    create_relations = ""
-    clear_relations = ""
-    push_back_relations = ""
-    prepareafterread_refmembers = ""
-    prepareforwriting_refmembers = ""
-
-    refmembers = definition["OneToOneRelations"]
-    refvectors = definition["OneToManyRelations"]
-
-    if refmembers or refvectors:
-      clear_relations += "\tfor (auto& pointer : m_refCollections) { pointer->clear(); }\n"
-
-    for irel, relation in enumerate(refvectors):
-      includes.add(self._build_include(relation.bare_type + 'Collection'))
-
-      substitutions = {
-          'name': relation.name, 'type': relation.bare_type, 'namespace': relation.namespace,
-          'class': relation.full_type, 'counter': irel
-          }
-      _fmt = get_fmt_func(**substitutions)
-
-      relations += _fmt(declarations["relation"])
-      relations += _fmt(declarations["relation_collection"])
-      initializers += _fmt(implementations["ctor_list_relation"])
-
-      create_relations += _fmt("\tm_rel_{name}_tmp.push_back(obj->m_{name});\n")
-      # relation handling in ::clear
-      clear_relations += _fmt(implementations["clear_relations_vec"])
-      clear_relations += _fmt(implementations["clear_relations"])
-      # relation handling in push_back
-      push_back_relations += _fmt("\tm_rel_{name}_tmp.push_back(obj->m_{name});\n")
-      # relation handling in ::prepareForWrite
-      prepareforwritinghead += _fmt("\tint {name}_index =0;\n")
-      prepareforwritingbody += self.evaluate_template("CollectionPrepareForWriting.cc.template", substitutions)
-      # relation handling in ::settingReferences
-      setreferences += self.evaluate_template("CollectionSetReferences.cc.template", substitutions)
-      prepareafterread += _fmt("\t\tobj->m_{name} = m_rel_{name};")
-
-    n_relations = len(refvectors)
-    for iref, reference in enumerate(refmembers):
-      includes.add(self._build_include(reference.bare_type + 'Collection'))
-
-      substitutions = {
-          'counter': n_relations + iref, 'i': n_relations + iref, 'rawclass': reference.bare_type,
-          'name': reference.name, 'type': reference.bare_type, 'namespace': reference.namespace,
-          'class': reference.full_type,
-          }
-      _fmt = get_fmt_func(**substitutions)
-
-      # constructor call
-      initializers += _fmt(implementations["ctor_list_relation"])
-      # member
-      relations += _fmt(declarations["relation"])
-      # relation handling in ::clear
-      clear_relations += _fmt(implementations["clear_relations"])
-      # relation handling in ::prepareForWrite
-      prepareforwriting_refmembers += _fmt(implementations["prep_writing_relations"])
-      # relation handling in ::settingReferences
-      prepareafterread_refmembers += self.evaluate_template("CollectionSetSingleReference.cc.template", substitutions)
-
-    vectormembers = definition["VectorMembers"]
-    vecmembers = ""
-    if vectormembers:
-      includes.add('#include <numeric>')
-    for item in vectormembers:
-      substitutions = {'name': item.name, 'type': item.full_type, 'rawclassname': rawclassname}
-      _fmt = get_fmt_func(**substitutions)
-
-      vecmembers += _fmt(declarations["vecmembers"])
-      create_relations += _fmt("\tm_vecs_{name}.push_back(obj->m_{name});\n")
-      clear_relations += _fmt("\tm_vec_{name}->clear();\n")
-      clear_relations += _fmt("\tm_vecs_{name}.clear();\n")
-      prepareforwritinghead += _fmt("\tint {name}_size = ")
-      prepareforwritinghead += "std::accumulate( m_entries.begin(), m_entries.end(), 0, "
-      prepareforwritinghead += _fmt("[](int sum, const {rawclassname}Obj*  obj)")
-      prepareforwritinghead += _fmt("{{ return sum + obj->m_{name}->size();}} );\n")
-      prepareforwritinghead += _fmt("\tm_vec_{name}->reserve( {name}_size );\n")
-      prepareforwritinghead += _fmt("\tint {name}_index =0;\n")
-
-      prepareforwritingbody += self.evaluate_template(
-          "CollectionPrepareForWritingVecMember.cc.template", substitutions)
-      push_back_relations += _fmt("\tm_vecs_{name}.push_back(obj->m_{name});\n")
-
-      prepareafterread += _fmt("\t\tobj->m_{name} = m_vec_{name};\n")
-
-    vectorized_access_decl, vectorized_access_impl = self.prepare_vectorized_access(rawclassname, members)
-
-    ostream_declaration, ostream_implementation = self._ostream_collection(
-        rawclassname, definition['Members'], definition['OneToManyRelations'],
-        definition['OneToOneRelations'], definition['VectorMembers'])
-
-    constructorbody, destructorbody = constructor_destructor_collection(
-        definition['OneToManyRelations'], definition['OneToOneRelations'], definition['VectorMembers'])
-
-    substitutions = {"name": rawclassname,
-                     "classname": classname,
-                     "constructorbody": constructorbody,
-                     "destructorbody": destructorbody,
-                     "prepareforwritinghead": prepareforwritinghead,
-                     "prepareforwritingbody": prepareforwritingbody,
-                     "prepareforwriting_refmembers": prepareforwriting_refmembers,
-                     "setreferences": setreferences,
-                     "prepareafterread": prepareafterread,
-                     "prepareafterread_refmembers": prepareafterread_refmembers,
-                     "includes": self._join_set(includes),
-                     "initializers": initializers,
-                     "relations": relations,
-                     "create_relations": create_relations,
-                     "clear_relations": clear_relations,
-                     "push_back_relations": push_back_relations,
-                     "vecmembers": vecmembers,
-                     "package_name": self.package_name,
-                     "vectorized_access_declaration": vectorized_access_decl,
-                     "vectorized_access_implementation": vectorized_access_impl,
-                     "namespace_open": namespace_open,
-                     "namespace_close": namespace_close,
-                     "ostream_declaration": ostream_declaration,
-                     "ostream_implementation": ostream_implementation
-                     }
-    self.fill_templates("Collection", substitutions)
-    self.created_classes.append("%sCollection" % classname)
-
-  def create_PrintInfo(self, classname, definition):
-    _, rawclassname, _, _ = demangle_classname(classname)
-
-    toFormattingStrings = {"char": "3", "unsigned char": "3",
-                           "long": "11", "longlong": "22", "bool": "1", "int": ""}
-    formats = {"char": 3, "unsigned char": 3, "long": 11, "longlong": 22, "bool": 1, }
-
-    outputSingleObject = 'o << "' + classname + ':" << std::endl; \n     o << '
-    WidthIntegers = ""
-    widthOthers = ""
-    findMaximum = ""
-    setFormats = ""
-    formattedOutput = ""
-    tableHeader = ""
-    for member in definition["Members"]:
-      name = member["name"]
-      lengthName = len(name)
-      klass = member["type"]
-      if(klass in toFormattingStrings and not klass == "int"):
-        if(formats[klass] > lengthName):
-          widthOthers = widthOthers + "  int" + " " + name + "Width = " + toFormattingStrings[klass] + " ; \n"
-        else:
-          widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
-      elif klass == "int":
-        findMaximum += "\n    int " + name + "Max ; \n"
-        findMaximum += "    " + name + "Width = 1 ; \n "
-        findMaximum += "     for(int i = 0 ; i < value.size(); i++){ \n"
-        findMaximum += "         if( value[i].get" + name[:1].upper() + name[1:] + "() > 0 ){ \n"
-        findMaximum += "            if(" + name + \
-            "Max <  value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
-        findMaximum += "               " + name + "Max = value[i].get" + name[:1].upper() + name[1:] + "();"
-        findMaximum += "\n            } \n"
-        findMaximum += "\n         } \n"
-        findMaximum += "         else if( -" + name + \
-            "Max / 10 > value[i].get" + name[:1].upper() + name[1:] + "()){ \n"
-        findMaximum += "             " + name + \
-            "Max = - value[i].get" + name[:1].upper() + name[1:] + "() * 10; "
-        findMaximum += "\n         } \n"
-        findMaximum += "     } \n"
-        setFormats += "\n    while(" + name + "Max != 0){ \n"
-        setFormats += "       " + name + "Width++; \n       " + name + "Max = " + name + "Max / 10; \n    } \n"
-        setFormats += "   if(" + name + "Width < " + str(lengthName) + \
-            "){ " + name + "Width = " + str(lengthName) + ";} \n"
-        WidthIntegers = WidthIntegers + "  " + klass + " " + name + "Width = 1 ; \n"
-      elif(klass == "double" or klass == "float"):
-        if(lengthName > 12):
-          widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
-        else:
-          widthOthers = widthOthers + "  int" + " " + name + "Width = 12 ; \n"
-      elif(klass == "DoubleThree" or klass == "FloatThree"):
-        if(lengthName > 38):
-          widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
-        else:
-          widthOthers += "  int" + " " + name + "Width = 38 ; \n"
-      elif(klass == "IntTwo"):
-        if(lengthName > 24):
-          widthOthers = widthOthers + "  int" + " " + name + "Width = " + str(lengthName) + " ; \n"
-        else:
-          widthOthers += "  int" + " " + name + "Width = 24 ; \n"
-      else:
-        widthOthers = widthOthers + "  int" + " " + name + "Width = 38 ; \n"
-      if(klass != "StingVec"):
-        tableHeader += 'std::setw(' + classname + "PrintInfo::instance()." + \
-            name + 'Width) << "' + name + '" << "|" << '
-        if(klass == "DoubleThree" or klass == "FloatThree" or klass == "StringVec"):
-          formattedOutput += " value[i].get" + name[:1].upper() + name[1:] + '() << " "' + " << "
-        else:
-          formattedOutput += " std::setw(" + classname + "PrintInfo::instance()." + name + "Width)"
-          formattedOutput += " << value[i].get" + name[:1].upper() + name[1:] + '() << " "' + " << "
-          outputSingleObject += '"' + klass + '" << " " << "' + name + '" << " "' + \
-              " << value.get" + name[:1].upper() + name[1:] + '() << " "' + " << "
-
-    substitutions = {"name": rawclassname,
-                     "widthIntegers": WidthIntegers,
-                     "widthOthers": widthOthers,
-                     "findMaximum": findMaximum,
-                     "setFormats": setFormats,
-                     "formattedOutput": formattedOutput,
-                     "tableHeader": tableHeader,
-                     "outputSingleObject": outputSingleObject
-                     }
-
-    # TODO: add loading of code from external files
-
-    self.fill_templates("PrintInfo", substitutions)
-    self.created_classes.append(classname)
-
-  def create_component(self, classname, component):
-    """ Create a component class to be used within the data types
-        Components can only contain simple data types and no user
-        defined ones
-    """
-    includes = set()
-
-    for member in component['Members']:
-      if member.full_type in self.reader.components:
-        includes.add(self._build_include(member.bare_type))
-
-      if member.is_array:
-        includes.add('#include <array>')
-        if member.array_type in self.reader.components:
-          includes.add(self._build_include(member.bare_type))
-
-    members_decl = '\n'.join(('  {}'.format(m) for m in component['Members']))
-
-    if 'ExtraCode' in component:
-      extracode = component['ExtraCode']
-      extracode_declarations = extracode.get("declaration", "")
-      includes.update(set(extracode.get("includes", "").split('\n')))
-    else:
-      extracode_declarations = ""
-
-    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-    substitutions = {"ostreamComponents": ostream_component(component['Members'], classname),
-                     "includes": self._join_set(includes),
-                     "members": members_decl,
-                     "extracode_declarations": extracode_declarations,
-                     "name": rawclassname,
-                     "package_name": self.package_name,
-                     "namespace_open": namespace_open,
-                     "namespace_close": namespace_close
-                     }
-    self.fill_templates("Component", substitutions)
-    self.created_classes.append(classname)
-
-  def create_obj(self, classname, definition):
-    """ Create an obj class containing all information
-        relevant for a given object.
-    """
-    relations = ""
-    includes_cc = set()
-    forward_declarations_namespace = {"": []}
-    initialize_relations = ""
-    set_relations = ""
-    deepcopy_relations = ""
-    delete_relations = ""
-    delete_singlerelations = ""
-
-    # do includes and forward declarations for
-    # oneToOneRelations and do proper cleanups
-    for item in definition["OneToOneRelations"]:
-      if not item.is_builtin:
-        relations += '{}* m_{};\n'.format(item.as_const(), item.name)
-
-        if item.full_type != classname:
-          if item.namespace not in forward_declarations_namespace:
-            forward_declarations_namespace[item.namespace] = []
-          forward_declarations_namespace[item.namespace].append('Const' + item.bare_type)
-
-          set_relations += implementations["set_relations"].format(name=item.name, klass=item.as_const())
-          initialize_relations += ", m_%s(nullptr)\n" % (item.name)
-          # for deep copy initialise as nullptr and set in copy ctor body
-          # if copied object has non-trivial relation
-          deepcopy_relations += ", m_%s(nullptr)" % (item.name)
-          delete_singlerelations += "\t\tif (m_{name} != nullptr) delete m_{name};\n".format(name=item.name)
-
-          includes_cc.add(self._build_include("%sConst" % item.bare_type))
-
-    forward_declarations = self._concat_fwd_declarations(forward_declarations_namespace)
-
-    _, rawclassname, namespace_open, namespace_close = demangle_classname(classname)
-    includes = set()
-
-    refvectors = definition["OneToManyRelations"]
-    vecmembers = definition["VectorMembers"]
-    if refvectors or vecmembers:
-      includes.add("#include <vector>")
-
-    for item in refvectors + vecmembers:
-      qualified_class = item.full_type
-      if not item.is_builtin:
-        if item.full_type not in self.reader.components:
-          qualified_class = item.as_const()
-
-        if item.full_type == classname:
-          includes_cc.add(self._build_include(rawclassname))
-        else:
-          includes.add(self._build_include(item.bare_type))
-
-      _fmt = get_fmt_func(name=item.name, type=qualified_class)
-      relations += _fmt("\tstd::vector<{type}>* m_{name};\n")
-      initialize_relations += _fmt(", m_{name}(new std::vector<{type}>())")
-      deepcopy_relations += _fmt(", m_{name}(new std::vector<{type}>(*(other.m_{name})))")
-
-      delete_relations += "\t\tdelete m_%s;\n" % (item.name)
-
-    substitutions = {"name": rawclassname,
-                     "includes": self._join_set(includes),
-                     "includes_cc": self._join_set(includes_cc),
-                     "forward_declarations": forward_declarations,
-                     "relations": relations,
-                     "initialize_relations": initialize_relations,
-                     "deepcopy_relations": deepcopy_relations,
-                     "delete_relations": delete_relations,
-                     "delete_singlerelations": delete_singlerelations,
-                     "namespace_open": namespace_open,
-                     "namespace_close": namespace_close,
-                     "set_deepcopy_relations": set_relations
-                     }
-    self.fill_templates("Obj", substitutions)
-    self.created_classes.append(classname + "Obj")
-
-  def prepare_vectorized_access(self, classname, members):
-    implementation = ""
-    declaration = ""
-    for member in members:
-      name = member.name
-      klass = member.full_type
-      substitutions = {"classname": classname,
-                       "member": name,
-                       "type": klass
-                       }
-      if not member.is_builtin:
-        substitutions["type"] = "class %s" % klass
-      implementation += self.evaluate_template("CollectionReturnArray.cc.template", substitutions)
-      declaration += "\ttemplate<size_t arraysize>\n\t" \
-          "const std::array<%s,arraysize> %s() const;\n" % (klass, name)
-    return declaration, implementation
-
-  def write_file(self, name, content):
-    # dispatch headers to header dir, the rest to /src
-    # fullname = os.path.join(self.install_dir,self.package_name,name)
+  def _eval_template(self, template, data):
+    """Fill the specified template"""
+    return self.env.get_template(template).render(data)
+
+  def _write_file(self, name, content):
+    """Write the content to file. Dispatch to the correct directory depending on
+    whether it is a header or a .cc file."""
     if name.endswith("h"):
       fullname = os.path.join(self.install_dir, self.package_name, name)
     else:
@@ -954,18 +139,9 @@ class ClassGenerator(object):
         with open(fullname, 'w') as f:
           f.write(content)
 
-  def evaluate_template(self, filename, substitutions):
-    """ reads in a given template, evaluates it
-        and returns result
-    """
-    template = self._get_template(filename)
-    return string.Template(template).substitute(substitutions)
-
-  def fill_templates(self, category, substitutions):
-    # add common include subfolder if required
-    substitutions['incfolder'] = '' if not self.include_subfolder else self.package_name + '/'
-    substitutions['PACKAGE_NAME'] = self.package_name.upper()
-
+  @staticmethod
+  def _get_filenames_templates(template_base, name):
+    """Get the list of output filenames and corresponding template names"""
     # depending on which category is passed different naming conventions apply
     # for the generated files. Additionally not all categories need source files.
     # Listing the special cases here
@@ -976,19 +152,220 @@ class ClassGenerator(object):
         'PrintInfo': 'PrintInfo',
         'Object': '',
         'Component': ''
-        }.get(category, category)
+        }.get(template_base, template_base)
 
     endings = {
         'Data': ('h',),
         'Component': ('h',),
         'PrintInfo': ('h',)
-        }.get(category, ('h', 'cc'))
+        }.get(template_base, ('h', 'cc'))
 
+    fn_templates = []
     for ending in endings:
-      templatefile = "%s.%s.template" % (category, ending)
-      content = self.evaluate_template(templatefile, substitutions)
-      filename = "%s%s.%s" % (substitutions["name"], fn_base, ending)
-      self.write_file(filename, content)
+      template_name = '{fn}.{end}.jinja2'.format(fn=template_base, end=ending)
+      filename = '{name}{fn}.{end}'.format(fn=fn_base, name=name, end=ending)
+      fn_templates.append((filename, template_name))
+
+    return fn_templates
+
+  def _fill_templates(self, template_base, data):
+    """Fill the template and write the results to file"""
+    # Update the passed data with some global things that are the same for all
+    # files
+    data['package_name'] = self.package_name
+    data['use_get_syntax'] = self.get_syntax
+    data['incfolder'] = self.incfolder
+
+    for filename, template in self._get_filenames_templates(template_base, data['class'].bare_type):
+      self._write_file(filename, self._eval_template(template, data))
+
+  def _process_component(self, name, component):
+    """Process one component"""
+    includes = set()
+    if any(m.is_array for m in component['Members']):
+      includes.add('#include <array>')
+
+    for member in component['Members']:
+      if member.full_type in self.reader.components or member.array_type in self.reader.components:
+        includes.add(self._build_include(member.bare_type))
+
+    includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
+
+    component['includes'] = self._sort_includes(includes)
+    component['class'] = DataType(name)
+
+    self._fill_templates('Component', component)
+
+  def _process_datatype(self, name, definition):
+    """Process one datatype"""
+    datatype = self._preprocess_datatype(name, definition)
+    self._fill_templates('Data', datatype)
+    self._fill_templates('Object', datatype)
+    self._fill_templates('ConstObject', datatype)
+    self._fill_templates('Obj', datatype)
+    self._fill_templates('Collection', datatype)
+
+  def _preprocess_for_obj(self, datatype):
+    """Do the preprocessing that is necessary for the Obj classes"""
+    fwd_declarations = {}
+    includes, includes_cc = set(), set()
+
+    for relation in datatype['OneToOneRelations']:
+      if not relation.is_builtin:
+        relation.relation_type = relation.as_qualified_const()
+
+      if relation.full_type != datatype['class'].full_type:
+        if relation.namespace not in fwd_declarations:
+          fwd_declarations[relation.namespace] = []
+        fwd_declarations[relation.namespace].append('Const' + relation.bare_type)
+        includes_cc.add(self._build_include(relation.bare_type + 'Const'))
+
+    if datatype['VectorMembers'] or datatype['OneToManyRelations']:
+      includes.add('#include <vector>')
+      includes.add('#include "podio/RelationRange.h"')
+
+    for relation in datatype['VectorMembers'] + datatype['OneToManyRelations']:
+      if not relation.is_builtin:
+        if relation.full_type not in self.reader.components:
+          relation.relation_type = relation.as_qualified_const()
+
+        if relation.full_type == datatype['class'].full_type:
+          includes_cc.add(self._build_include(datatype['class'].bare_type))
+        else:
+          includes.add(self._build_include(relation.bare_type))
+
+    datatype['forward_declarations_obj'] = fwd_declarations
+    datatype['includes_obj'] = self._sort_includes(includes)
+    datatype['includes_cc_obj'] = self._sort_includes(includes_cc)
+
+  def _preprocess_for_class(self, datatype):
+    """Do the preprocessing that is necessary for the classes and Const classes"""
+    includes = set(datatype['includes_data'])
+    fwd_declarations = {}
+    includes_cc = set()
+
+    for member in datatype["Members"]:
+      if self.expose_pod_members and not member.is_builtin and not member.is_array:
+        member.sub_members = self.reader.components[member.full_type]['Members']
+
+    for relation in datatype['OneToOneRelations']:
+      if self._needs_include(relation):
+        if relation.namespace not in fwd_declarations:
+          fwd_declarations[relation.namespace] = []
+        fwd_declarations[relation.namespace].append(relation.bare_type)
+        fwd_declarations[relation.namespace].append('Const' + relation.bare_type)
+        includes_cc.add(self._build_include(relation.bare_type))
+
+    if datatype['VectorMembers'] or datatype['OneToManyRelations']:
+      includes.add('#include <vector>')
+
+    for relation in datatype['OneToManyRelations']:
+      if self._needs_include(relation):
+        includes.add(self._build_include(relation.bare_type))
+      elif relation.is_array:
+        includes.add('#include <array>')
+        if not relation.is_builtin_array:
+          includes.add(self._build_include(relation.array_bare_type))
+
+    for vectormember in datatype['VectorMembers']:
+      if vectormember.full_type in self.reader.components:
+        includes.add(self._build_include(vectormember.bare_type))
+
+    includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
+    includes.update(datatype.get('ConstExtraCode', {}).get('includes', '').split('\n'))
+
+    datatype['includes'] = self._sort_includes(includes)
+    datatype['includes_cc'] = self._sort_includes(includes_cc)
+    datatype['forward_declarations'] = fwd_declarations
+
+  def _preprocess_for_collection(self, datatype):
+    """Do the necessary preprocessing for the collection"""
+    includes_cc = set()
+    for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
+      includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
+
+    if datatype['VectorMembers']:
+      includes_cc.add('#include <numeric>')
+
+    datatype['includes_coll_cc'] = self._sort_includes(includes_cc)
+
+    # the ostream operator needs a bit of help from the python side in the form
+    # of some pre processing but also in the form of formatting, both are done
+    # here.
+    # TODO: also handle array members properly. These are currently simply
+    # ignored
+    header_contents = []
+    for member in datatype['Members']:
+      header = {'name': member.name}
+      if member.full_type in self.reader.components:
+        comps = [c.name for c in self.reader.components[member.full_type]['Members']]
+        header['components'] = comps
+      header_contents.append(header)
+
+    def ostream_collection_header(member_header, col_width=12):
+      """Custom filter for the jinja2 templates to handle the ostream header that is
+      printed for the collections. Need this custom filter because it is easier
+      to implement the content dependent width in python than in jinja2.
+      """
+      if not isinstance(member_header, Mapping):
+        # Assume that we have a string and format it according to the width
+        return '{{:>{width}}}'.format(width=col_width).format(member_header)
+
+      components = member_header.get('components', None)
+      name = member_header['name']
+      if components is None:
+        return '{{:>{width}}}'.format(width=col_width).format(name)
+
+      n_comps = len(components)
+      comp_str = '[ {}]'.format(', '.join(components))
+      return '{{:>{width}}}'.format(width=col_width * n_comps).format(name + ' ' + comp_str)
+
+    datatype['ostream_collection_settings'] = {
+        'header_contents': header_contents
+        }
+    # Register the custom filter for it to become available in the templates
+    self.env.filters['ostream_collection_header'] = ostream_collection_header
+
+  def _preprocess_datatype(self, name, definition):
+    """Preprocess the datatype (building includes, etc.)"""
+    # Make a copy here and add the preprocessing steps to that such that the
+    # original definition can be left untouched
+    data = deepcopy(definition)
+    data['class'] = DataType(name)
+    data['includes_data'] = self._get_member_includes(definition["Members"])
+    self._preprocess_for_class(data)
+    self._preprocess_for_obj(data)
+    self._preprocess_for_collection(data)
+
+    return data
+
+  def _get_member_includes(self, members):
+    """Process all members and gather the necessary includes"""
+    includes = set()
+    for member in members:
+      if member.is_array:
+        includes.add("#include <array>")
+        if not member.is_builtin_array:
+          includes.add(self._build_include(member.array_bare_type))
+
+      for stl_type in ClassDefinitionValidator.allowed_stl_types:
+        if member.full_type == 'std::' + stl_type:
+          includes.add("#include <{}>".format(stl_type))
+
+      if self._needs_include(member):
+        includes.add(self._build_include(member.bare_type))
+
+    return self._sort_includes(includes)
+
+  def _needs_include(self, member):
+    """Check whether the member needs an include from within the datamodel"""
+    return member.full_type in self.reader.components or member.full_type in self.reader.datatypes
+
+  def _create_selection_xml(self):
+    """Create the selection xml that is necessary for ROOT I/O"""
+    data = {'components': [DataType(c) for c in self.reader.components.keys()],
+            'datatypes': [DataType(d) for d in self.reader.datatypes.keys()]}
+    self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, classname):
     """Return the include statement."""
@@ -996,13 +373,17 @@ class ClassGenerator(object):
       classname = os.path.join(self.package_name, classname)
     return '#include "%s.h"' % classname
 
-  @staticmethod
-  def _join_set(aSet):
-    """Return newline-joined sorted set."""
-    return '\n'.join(sorted([inc.strip() for inc in aSet]))
+  def _sort_includes(self, includes):
+    """Sort the includes in order to try to have the std includes at the bottom"""
+    package_includes = sorted(i for i in includes if self.package_name in i)
+    podio_includes = sorted(i for i in includes if 'podio' in i)
+    stl_includes = sorted(i for i in includes if '<' in i and '>' in i)
+    # TODO: check whether there are includes that fulfill more than one of the
+    # above conditions?
+
+    return package_includes + podio_includes + stl_includes
 
 
-##########################
 if __name__ == "__main__":
   import argparse
   parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '

@@ -1,0 +1,62 @@
+{% import "macros/utils.jinja2" as utils %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+{% for include in includes_cc_obj %}
+{{ include }}
+{% endfor %}
+
+{%- macro single_relations_initialize(relations) -%}
+{%- for relation in relations %},
+  m_{{ relation.name }}(nullptr)
+{%- endfor %}
+{%- endmacro -%}
+
+
+{{ utils.namespace_open(class.namespace) }}
+{% with obj_type = class.bare_type + 'Obj' %}
+{{ obj_type }}::{{ obj_type }}() :
+{% raw %}  ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0}{% endraw %},
+  data(){{ single_relations_initialize(OneToOneRelations) }}
+{%- for relation in OneToManyRelations + VectorMembers %},
+  m_{{ relation.name }}(new std::vector<{{ relation.relation_type }}>())
+{%- endfor %}
+
+{  }
+
+{{ obj_type }}::{{ obj_type }}(const podio::ObjectID id, {{ class.bare_type }}Data data) :
+  ObjBase{id, 0}, data(data)
+{  }
+
+{{ obj_type }}::{{ obj_type }}(const {{ obj_type }}& other) :
+{% raw %}  ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0}{% endraw %},
+  data(other.data){{ single_relations_initialize(OneToOneRelations) }}
+{%- for relation in OneToManyRelations + VectorMembers %},
+  m_{{ relation.name }}(new std::vector<{{ relation.relation_type }}>(*(other.m_{{ relation.name }})))
+{%- endfor %}
+
+{
+{% for relation in OneToOneRelations %}
+  if (other.m_{{ relation.name }}) {
+    m_{{ relation.name }} = new {{ relation.relation_type }}(*(other.m_{{ relation.name }}));
+  }
+{% endfor %}
+}
+
+{{ obj_type }}::~{{ obj_type }}() {
+{% with multi_relations = OneToManyRelations + VectorMembers %}
+{%- if multi_relations %}
+  if (id.index == podio::ObjectID::untracked) {
+{% for relation in multi_relations %}
+    delete m_{{ relation.name }};
+{% endfor %}
+  }
+{% endif %}
+{%- endwith %}
+
+{% for relation in OneToOneRelations %}
+  if (m_{{ relation.name }}) delete m_{{ relation.name }};
+{% endfor %}
+}
+{% endwith %}
+{{ utils.namespace_close(class.namespace) }}

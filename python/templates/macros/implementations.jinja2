@@ -1,0 +1,208 @@
+{% macro constructors_destructors(type, members, prefix='') %}
+{% set full_type = prefix + type %}
+{{ full_type }}::{{ full_type }}() : m_obj(new {{ type }}Obj()) {
+  m_obj->acquire();
+}
+
+{% if members %}
+{{ full_type }}::{{ full_type }}({{ members | map(attribute='signature') | join(', ') }}) : m_obj(new {{ type }}Obj()) {
+  m_obj->acquire();
+{% for member in members %}
+  m_obj->data.{{ member.name }} = {{ member.name }};
+{% endfor %}
+}
+{% endif %}
+
+{{ full_type}}::{{ full_type }}(const {{ full_type }}& other) : m_obj(other.m_obj) {
+  m_obj->acquire();
+}
+
+{{  full_type }}& {{ full_type }}::operator=(const {{ full_type }}& other) {
+  if (m_obj) m_obj->release();
+  m_obj = other.m_obj;
+  return *this;
+}
+
+{{ full_type }}::{{ full_type }}( {{ type }}Obj* obj) : m_obj(obj) {
+  if (m_obj) m_obj->acquire();
+}
+
+{{ full_type }} {{ full_type }}::clone() const {
+  return {new {{ type }}Obj(*m_obj)};
+}
+
+{{ full_type }}::~{{ full_type }}() {
+  if (m_obj) m_obj->release();
+}
+{%- endmacro %}
+
+
+{% macro member_getters(class, members, get_syntax, prefix='') %}
+{% set class_type = prefix + class.bare_type %}
+{% for member in members %}
+const {{ member.full_type }}& {{ class_type }}::{{ member.getter_name(get_syntax) }}() const { return m_obj->data.{{ member.name }}; }
+{% if member.is_array %}
+const {{ member.array_type }}& {{ class_type }}::{{ member.getter_name(get_syntax) }}(size_t i) const { return m_obj->data.{{ member.name }}.at(i); }
+{% endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+const {{ sub_member.full_type }}& {{ class_type }}::{{ sub_member.getter_name(get_syntax) }}() const { return m_obj->data.{{ member.name }}.{{ sub_member.name }}; }
+{% endfor %}
+{%- endif %}
+{% endfor %}
+{%- endmacro %}
+
+
+{% macro member_setters(class, members, get_syntax) %}
+{% for member in members %}
+void {{ class.bare_type }}::{{ member.setter_name(get_syntax) }}({{ member.full_type }} value) { m_obj->data.{{ member.name }} = value; }
+{% if member.is_array %}
+void {{ class.bare_type }}::{{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value) { m_obj->data.{{ member.name }}.at(i) = value; }
+{% endif %}
+{% if not member.is_builtin %}
+{{ member.full_type }}& {{ class.bare_type }}::{{ member.name }}() { return m_obj->data.{{ member.name }}; }
+{% endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+void {{ class.bare_type }}::{{ sub_member.setter_name(get_syntax) }}({{ sub_member.full_type }} value) { m_obj->data.{{ member.name }}.{{ sub_member.name }} = value; }
+{% if not sub_member.is_builtin %}
+{{ sub_member.full_type }}& {{ class.bare_type }}::{{ sub_member.name }}() { return m_obj->data.{{ member.name }}.{{ sub_member.name }}; }
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{%- endmacro %}
+
+
+{% macro single_relation_getters(class, relations, get_syntax, prefix='') %}
+{% set class_type = prefix + class.bare_type %}
+{% for relation in relations %}
+const Const{{ relation.bare_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
+  if (!m_obj->m_{{ relation.name }}) {
+    return {{ relation.namespace }}::Const{{ relation.bare_type }}(nullptr);
+  }
+  return {{ relation.namespace }}::Const{{ relation.bare_type }}(*(m_obj->m_{{ relation.name }}));
+}
+
+{% endfor %}
+{%- endmacro %}
+
+
+{% macro single_relation_setters(class, relations, get_syntax) %}
+{% for relation in relations %}
+void {{ class.bare_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.namespace }}::Const{{ relation.bare_type }} value) {
+  if (m_obj->m_{{ relation.name }}) delete m_obj->m_{{ relation.name }};
+  m_obj->m_{{ relation.name }} = new Const{{ relation.bare_type }}(value);
+}
+
+{% endfor %}
+{%- endmacro %}
+
+
+{% macro multi_relation_handling(class, relations, get_syntax, prefix='', with_adder=False) %}
+{% set class_type = prefix + class.bare_type %}
+{% for relation in relations %}
+{% if with_adder %}
+void {{ class_type }}::{{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.relation_type }} component) {
+  m_obj->m_{{ relation.name }}->push_back(component);
+  m_obj->data.{{ relation.name }}_end++;
+}
+{% endif %}
+
+std::vector<{{ relation.relation_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_begin() const {
+  auto ret_value = m_obj->m_{{ relation.name }}->begin();
+  std::advance(ret_value, m_obj->data.{{ relation.name }}_begin);
+  return ret_value;
+}
+
+std::vector<{{ relation.relation_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_end() const {
+  auto ret_value = m_obj->m_{{ relation.name }}->begin();
+  std::advance(ret_value, m_obj->data.{{ relation.name }}_end);
+  return ret_value;
+}
+
+unsigned int {{ class_type }}::{{ relation.name }}_size() const {
+  return m_obj->data.{{ relation.name }}_end - m_obj->data.{{ relation.name }}_begin;
+}
+
+{{ relation.relation_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}(unsigned int index) const {
+  if ({{ relation.name }}_size() > index) {
+    return m_obj->m_{{ relation.name }}->at(m_obj->data.{{ relation.name }}_begin + index);
+  }
+  throw std::out_of_range("index out of bounds for existing references");
+}
+
+podio::RelationRange<{{ relation.relation_type }}> {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
+  auto begin = m_obj->m_{{ relation.name }}->begin();
+  std::advance(begin, m_obj->data.{{ relation.name }}_begin);
+  auto end = m_obj->m_{{ relation.name }}->begin();
+  std::advance(end, m_obj->data.{{ relation.name }}_end);
+  return {begin, end};
+}
+
+{% endfor %}
+{% endmacro %}
+
+
+{% macro common_object_funcs(class, prefix='') %}
+{% set full_type = prefix + class.bare_type %}
+bool {{ full_type }}::isAvailable() const {
+  if (m_obj) {
+    return true;
+  }
+  return false;
+}
+
+const podio::ObjectID {{ full_type }}::getObjectID() const {
+  if (m_obj) {
+    return m_obj->id;
+  }
+  return podio::ObjectID{podio::ObjectID::invalid, podio::ObjectID::invalid};
+}
+
+{% set inverse_type = class.bare_type if prefix else 'Const' + class.bare_type %}
+bool {{ full_type }}::operator==(const {{ inverse_type }}& other) const {
+  return m_obj == other.m_obj;
+}
+{%- endmacro %}
+
+
+{% macro ostream_operator(type, members, single_relations, multi_relations, get_syntax) %}
+std::ostream& operator<<(std::ostream& o, const Const{{ type }}& value) {
+  o << " id: " << value.id() << '\n';
+{% for member in members %}
+{% if member.is_array %}
+  o << " {{ member.name }} : ";
+  for (size_t i = 0; i < {{ member.array_size }}; ++i) {
+    o << value.{{ member.getter_name(get_syntax) }}()[i] << "|";
+  }
+  o << '\n';
+{% else %}
+  o << " {{ member.name }} : " << value.{{ member.getter_name(get_syntax) }}() << '\n';
+{% endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+  o << " {{ member.name }}: " << value.{{ sub_member.getter_name(get_syntax) }}() << '\n';
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+{% for relation in single_relations %}
+  o << " {{ relation.name }} : " << value.{{ relation.getter_name(get_syntax) }}().id() << '\n';
+{% endfor %}
+
+{% for relation in multi_relations %}
+  o << " {{ relation.name }} : ";
+  for (unsigned i = 0; i < value.{{ relation.name }}_size(); ++i) {
+{% if type == relation.bare_type %}
+    o << value.{{ relation.getter_name(get_syntax) }}(i).id() << " ";
+{% else %}
+    o << value.{{ relation.getter_name(get_syntax) }}(i) << " ";
+{% endif %}
+  }
+  o << '\n';
+{% endfor %}
+
+  return o;
+}
+{%- endmacro %}

@@ -1,0 +1,49 @@
+{% import "macros/utils.jinja2" as utils %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}OBJ_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}OBJ_H
+
+// data model specific includes
+#include "{{ incfolder }}{{ class.bare_type }}Data.h"
+{% for include in includes_obj %}
+{{ include }}
+{% endfor %}
+
+#include "podio/ObjBase.h"
+{% if OneToManyRelations or VectorMembers %}
+#include <vector>
+{%- endif %}
+
+{{ utils.forward_decls(forward_declarations_obj) }}
+
+{{ utils.namespace_open(class.namespace) }}
+class {{ class.bare_type }};
+class Const{{ class.bare_type }};
+
+{% with obj_type = class.bare_type + 'Obj' %}
+class {{ class.bare_type }}Obj : public podio::ObjBase {
+public:
+  /// constructor
+  {{ obj_type }}();
+  /// copy constructor (does a deep-copy of relation containers)
+  {{ obj_type }}(const {{ obj_type }}&);
+  /// constructor from ObjectID and {{ class.bare_type }}Data
+  /// does not initialize the internal relation containers
+  {{ obj_type }}(const podio::ObjectID id, {{ class.bare_type }}Data data);
+  virtual ~{{ obj_type }}();
+
+public:
+  {{ class.bare_type }}Data data;
+{% for relation in OneToOneRelations %}
+  {{ relation.relation_type }}* m_{{ relation.name }};
+{% endfor %}
+{% for relation in OneToManyRelations + VectorMembers %}
+  std::vector<{{ relation.relation_type }}>* m_{{ relation.name }};
+{% endfor %}
+};
+{% endwith %}
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

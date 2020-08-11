@@ -1,0 +1,57 @@
+{% import "macros/declarations.jinja2" as macros %}
+{% import "macros/utils.jinja2" as utils %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}_H
+
+#include "{{ incfolder }}{{ class.bare_type }}Const.h"
+#include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+
+{% for include in includes %}
+{{ include }}
+{% endfor %}
+#include "podio/ObjectID.h"
+#include <ostream>
+
+{{ utils.forward_decls(forward_declarations) }}
+
+{{ utils.namespace_open(class.namespace) }}
+
+class {{ class.bare_type }}Collection;
+class {{ class.bare_type }}CollectionIterator;
+class Const{{ class.bare_type }};
+
+{{ macros.class_description(class.bare_type, Description, Author) }}
+class {{ class.bare_type }} {
+
+  friend {{ class.bare_type }}Collection;
+  friend {{ class.bare_type }}CollectionIterator;
+  friend Const{{ class.bare_type }};
+
+public:
+
+{{ macros.constructors_destructors(class.bare_type, Members) }}
+  /// conversion to const object
+  operator Const{{ class.bare_type }}() const;
+
+public:
+
+{{ macros.member_getters(Members, use_get_syntax) }}
+{{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}
+{{ macros.member_setters(Members, use_get_syntax) }}
+{{ macros.single_relation_setters(OneToOneRelations, use_get_syntax) }}
+{{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax, with_adder=True) }}
+{{ utils.if_present(ExtraCode, "declaration") }}
+{{ utils.if_present(ConstExtraCode, "declaration") }}
+{{ macros.common_object_funcs(class.bare_type) }}
+
+private:
+  {{ class.bare_type }}Obj* m_obj;
+};
+
+std::ostream& operator<<(std::ostream& o, const Const{{ class.bare_type }}& value);
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif
