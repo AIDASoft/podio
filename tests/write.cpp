@@ -16,6 +16,7 @@
 // STL
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 // podio specific includes
 #include "podio/EventStore.h"
