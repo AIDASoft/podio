@@ -16,9 +16,6 @@ namespace podio {
     for (auto& coll : m_collections){
       delete coll.second;
     }
-    for (auto& coll : m_failedRetrieves){
-      delete coll;
-    }
   }
 
 
@@ -130,9 +127,7 @@ namespace podio {
       coll.second->clear();
       delete coll.second;
     }
-    for (auto& coll : m_failedRetrieves){
-      delete coll;
-    }
+
     clearCaches();
 
   }
@@ -142,7 +137,6 @@ namespace podio {
     m_cachedCollections.clear() ;
     m_cachedCollections.resize(128) ;
     m_retrievedIDs.clear();
-    m_failedRetrieves.clear();
   }
 
   bool EventStore::collectionRegistered(const std::string& name) const {

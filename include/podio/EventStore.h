@@ -108,7 +108,6 @@ namespace podio {
     // members
     mutable std::set<int> m_retrievedIDs;
     mutable CollContainer m_collections;
-    mutable std::vector<const CollectionBase*> m_failedRetrieves;
     mutable std::vector<CollectionBase*> m_cachedCollections;
     IReader* m_reader=nullptr;
     CollectionIDTable* m_table;
