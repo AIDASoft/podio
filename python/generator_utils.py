@@ -145,9 +145,3 @@ class MemberVariable(object):
         return self.name
       else:
         return _prefix_name(self.name, 'set')
-
-  def getter_setter_names(self, get_syntax, is_relation=False):
-    """Get the names for the get/set functions, depending on whether a get/set
-    should be prepended
-    """
-    return self.getter_name(get_syntax), self.setter_name(get_syntax, is_relation)
