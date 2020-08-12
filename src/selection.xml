@@ -4,9 +4,9 @@
     <class name="podio::IntVec"/>
     <class name="podio::FloatVec"/>
     <class name="podio::StringVec"/>
-    <class name="podio::IntMap"/>
-    <class name="podio::FloatMap"/>
-    <class name="podio::StringMap"/>
+    <class name="podio::GenericParameters::MapType<int>"/>
+    <class name="podio::GenericParameters::MapType<float>"/>
+    <class name="podio::GenericParameters::MapType<std::string>"/>
     <class name="std::map<int,podio::GenericParameters>"/>
     <class name="podio::CollectionBase"/>
     <class name="podio::CollectionIDTable">

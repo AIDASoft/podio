@@ -11,10 +11,6 @@ namespace podio {
   typedef std::vector<int> IntVec ;
   typedef std::vector<float> FloatVec ;
   typedef std::vector<std::string> StringVec ;
-  typedef std::map< std::string, IntVec >    IntMap ;
-  typedef std::map< std::string, FloatVec >  FloatMap ;
-  typedef std::map< std::string, StringVec > StringMap ;
-  
 
   /** GenericParameters objects allow to store generic named parameters of type
    *  int, float and string or vectors of these types. 
@@ -27,6 +23,14 @@ namespace podio {
    */
   
   class GenericParameters {
+  public:
+    template<typename T>
+    using MapType = std::map<std::string, std::vector<T>>;
+
+  private:
+    using IntMap = MapType<int>;
+    using FloatMap = MapType<float>;
+    using StringMap = MapType<std::string>;
 
   public: 
     
@@ -121,7 +125,7 @@ namespace podio {
     IntMap _intMap{} ;
     FloatMap _floatMap{} ;
     StringMap _stringMap{} ;
-    
+
   }; // class
 } // namespace podio
 #endif
