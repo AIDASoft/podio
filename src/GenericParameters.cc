@@ -4,126 +4,94 @@
 
 namespace podio{
 
+  template<typename T>
+  T getValFromMap(const GenericParameters::MapType<T>& map, const std::string& key) {
+    const auto it = map.find(key);
+    if (it == map.end()) return T{};
+    const auto& iv = it->second;
+    return iv[0];
+  }
+
+  // overload for string such that return by const ref is preferred
+  const std::string& getValFromMap(const GenericParameters::MapType<std::string>& map, const std::string& key) {
+    static const std::string empty("");
+    auto it = map.find(key);
+    if (it == map.end()) return empty;
+    const auto& iv = it->second;
+    return iv[0];
+  }
 
   int GenericParameters::getIntVal(const std::string & key) const {
-    
-    const auto it = _intMap.find( key ) ;
-
-    if( it == _intMap.end() )  return 0 ;
-
-    const auto &  iv =  it->second ;
-
-    return iv[0] ;
+    return getValFromMap(_intMap, key);
   }
 
   float GenericParameters::getFloatVal(const std::string & key) const {
-
-    const auto it = _floatMap.find( key ) ;
-
-    if( it == _floatMap.end() )  return 0 ;
-
-    const auto &  fv =  it->second ;
-
-    return fv[0] ;
+    return getValFromMap(_floatMap, key);
   }
 
   const std::string & GenericParameters::getStringVal(const std::string & key) const {
+    return getValFromMap(_stringMap, key);
+  }
 
-    static std::string empty("") ;
-    
-    const auto it = _stringMap.find( key ) ;
-    
-    if( it == _stringMap.end() )  return empty ;
-    
-    const auto &  sv =  it->second ;
-    
-    return sv[0] ;
+  template<typename T>
+  std::vector<T>& fillValsFromMap(const GenericParameters::MapType<T>& map, const std::string& key, std::vector<T>& values) {
+    auto it = map.find(key);
+    if (it != map.end()) {
+      values.insert(values.end(), it->second.begin(), it->second.end());
+    }
+    return values;
   }
 
   IntVec & GenericParameters::getIntVals(const std::string & key, IntVec & values) const {
-
-    const auto it = _intMap.find( key ) ;
-
-    if( it != _intMap.end() ) {
-      values.insert( values.end() , it->second.begin() , it->second.end() ) ;
-    }
-
-    return values ;
+    return fillValsFromMap(_intMap, key, values);
   }
 
   FloatVec & GenericParameters::getFloatVals(const std::string & key, FloatVec & values) const {
-
-    const auto it = _floatMap.find( key ) ;
-
-    if( it != _floatMap.end() ) {
-      values.insert( values.end() , it->second.begin() , it->second.end() ) ;
-    }
-    return values ;
+    return fillValsFromMap(_floatMap, key, values);
   }
 
   StringVec & GenericParameters::getStringVals(const std::string & key, StringVec & values) const {
-
-    const auto it = _stringMap.find( key ) ;
-
-    if( it != _stringMap.end() ) {
-      values.insert( values.end() , it->second.begin() , it->second.end() ) ;
-    }
-    return values ;
+    return fillValsFromMap(_stringMap, key, values);
   }
 
+  template<typename T>
+  const StringVec& getKeys(const GenericParameters::MapType<T>& map, StringVec& keys) {
+    std::transform(map.begin(), map.end(), std::back_inserter(keys),
+                   [] (auto const& pair) { return pair.first; });
+    return keys;
+  }
 
   const StringVec & GenericParameters::getIntKeys(StringVec & keys) const  {
-
-    std::transform( _intMap.begin() , _intMap.end() , back_inserter( keys )  ,
-		[](auto const& pair){ return pair.first; }) ;
-
-    return keys ;
+    return getKeys(_intMap, keys);
   }
 
   const StringVec & GenericParameters::getFloatKeys(StringVec & keys) const  {
-    
-    std::transform( _floatMap.begin() , _floatMap.end() , back_inserter( keys )  ,
-		[](auto const& pair){ return pair.first; }) ;
-
-    return keys ;
+    return getKeys(_floatMap, keys);
   }
 
   const StringVec & GenericParameters::getStringKeys(StringVec & keys) const  {
-
-    std::transform( _stringMap.begin() , _stringMap.end() , back_inserter( keys ),
-		    [](auto const& pair){ return pair.first; }) ;
-		    
-    return keys ;
+    return getKeys(_stringMap, keys);
   }
-  
-  int GenericParameters::getNInt(const std::string & key) const {
 
-    const auto it = _intMap.find( key ) ;
-
-    if( it == _intMap.end() )
+  template<typename T>
+  int getStoredElements(const GenericParameters::MapType<T>& map, const std::string& key) {
+    auto it = map.find( key ) ;
+    if( it == map.end() )
       return 0 ;
     else
       return it->second.size() ;
+  }
+
+  int GenericParameters::getNInt(const std::string & key) const {
+    return getStoredElements(_intMap, key);
   }
 
   int GenericParameters::getNFloat(const std::string & key) const {
-
-    const auto it = _floatMap.find( key ) ;
-
-    if( it == _floatMap.end() )  
-      return 0 ;
-    else
-      return it->second.size() ;
+    return getStoredElements(_floatMap, key);
   }
 
   int GenericParameters::getNString(const std::string & key) const {
-
-    const auto it = _stringMap.find( key ) ;
-
-    if( it == _stringMap.end() )  
-      return 0 ;
-    else
-      return it->second.size() ;
+    return getStoredElements(_stringMap, key);
   }
 
   void GenericParameters::setValue(const std::string & key, int value){
