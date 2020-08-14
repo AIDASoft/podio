@@ -43,7 +43,7 @@ namespace podio {
   private:
     std::vector<int>              m_collectionIDs;
     std::vector<std::string>      m_names;
-    mutable std::recursive_mutex  m_mutex;
+    mutable std::mutex  m_mutex;
   };
 
 
