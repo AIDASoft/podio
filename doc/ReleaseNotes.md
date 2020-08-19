@@ -1,3 +1,36 @@
+# v00-12
+
+* 2020-08-11 Frank Gaede ([PR#124](https://github.com/aidasoft/podio/pull/124))
+  - minor bug fix for macos:
+        - add `<sstream>` to write.cpp
+        - fixes #123
+
+* 2020-08-11 tmadlener ([PR#122](https://github.com/aidasoft/podio/pull/122))
+  - Update README to reflect the new requirements (i.e. `jinja2`)
+
+* 2020-08-11 tmadlener ([PR#121](https://github.com/aidasoft/podio/pull/121))
+  - Update Ubuntu CI script to install the python requirements via pip.
+
+* 2020-08-11 tmadlener ([PR#120](https://github.com/aidasoft/podio/pull/120))
+  - Use `jinja2` template engine to generate c++ code. This makes it possible to more cleanly separate the generation of the c++ code and all the necessary pre-processing. Now only the pre-processing is done in python, while the complete generation is done using `jinja2`. This should make it much easier to make changes to the generated c++ code.
+
+* 2020-08-05 tmadlener ([PR#117](https://github.com/aidasoft/podio/pull/117))
+  - Refactoring of the podio class generator to improve its readability. This refactoring is mainly focusing on reducing the size of some methods to make them easier to grasp as well as trying to more cleanly separate the validation of the inputs and the c++ code generation.  **The validation is stricter than the current version and will potentially break things. Specifically, the handling of `ExtraCode` and `ConstExtraCode` is now implemented according to the documentation.** In the previous version this has somewhat diverged from there. **The yaml declaration of `components` has been made equivalent to the ones of the `datatypes` but "old-style" definitions are still handled properly.** In the latter case a deprecation warning is emitted. **The generated c++ code is functionally equivalent, but not equal character by character.** The differences are mainly whitespace, but at some places also some of the generated code has been updated to more recent c++ capabilities. Additionally, some tests for the validation are added. They are not really exhaustive and should be considered to serve mainly documenting purposes for the moment.
+
+* 2020-08-03 tmadlener ([PR#107](https://github.com/aidasoft/podio/pull/107))
+  - Introduce range wrapper for OneToManyRelations and VectorMembers to allow range-based for loops
+
+* 2020-08-03 tmadlener ([PR#106](https://github.com/aidasoft/podio/pull/106))
+  - Fix the possibility of running into infinite loops in the ostream operator with cyclical references
+
+* 2020-08-03 Frank Gaede ([PR#102](https://github.com/aidasoft/podio/pull/102))
+  - add test example `read_and_write.cpp`
+       - simple use case for reading in an event an writing (parts of it) to another file
+       - currently fails with segmentation fault  (to be fixed)
+
+* 2020-08-03 Valentin Volkl ([PR#98](https://github.com/aidasoft/podio/pull/98))
+  - add ubuntu ci build
+
 # v00-11
 
 * 2020-07-21 tmadlener ([PR#101](https://github.com/aidasoft/podio/pull/101))
