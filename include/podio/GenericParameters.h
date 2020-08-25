@@ -118,9 +118,9 @@ namespace podio {
 
   protected:
 
-    mutable IntMap _intMap{} ;
-    mutable FloatMap _floatMap{} ;
-    mutable StringMap _stringMap{} ;
+    IntMap _intMap{} ;
+    FloatMap _floatMap{} ;
+    StringMap _stringMap{} ;
     
   }; // class
 } // namespace podio
