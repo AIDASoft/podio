@@ -52,40 +52,38 @@ namespace podio {
 
  void ROOTWriter::registerForWrite(const std::string& name){
     const podio::CollectionBase* tmp_coll(nullptr);
-    m_store->get(name, tmp_coll);
+    if (!m_store->get(name, tmp_coll)) {
+      return;
+      std::cerr << "no such collection to write, throw exception." << std::endl;
+    }
 
     podio::CollectionBase* coll = const_cast<CollectionBase*>(tmp_coll);
     std::string className( coll->getValueTypeName() ) ;
     std::string collClassName = "vector<"+className+"Data>";
 
-    if(coll==nullptr) {
-      std::cerr<<"no such collection to write, throw exception."<<std::endl;
-    }
-    else {
-      m_datatree->Branch(name.c_str(),  collClassName.c_str(), coll->getBufferAddress());
-      auto colls = coll->referenceCollections();
-      if (colls != nullptr){
+    m_datatree->Branch(name.c_str(),  collClassName.c_str(), coll->getBufferAddress());
+    auto colls = coll->referenceCollections();
+    if (colls != nullptr){
       int i = 0;
       for(auto& c : (*colls)){
         m_datatree->Branch((name+"#"+std::to_string(i)).c_str(),c);
         ++i;
       }
-      }
-// ---- vector members
-      auto vminfo = coll->vectorMembers();
-      if (vminfo != nullptr){
-      	int i = 0;
-      	for(auto& c : (*vminfo)){
-      	  std::string typeName = "vector<"+c.first+">" ;
-      	  void* add = c.second ;
-      	  m_datatree->Branch((name+"_"+std::to_string(i)).c_str(),
-      			     typeName.c_str(),
-      			     add);
-      	  ++i;
-      	}
-      }
-      m_storedCollections.emplace_back(coll);
     }
+// ---- vector members
+    auto vminfo = coll->vectorMembers();
+    if (vminfo != nullptr){
+      int i = 0;
+      for(auto& c : (*vminfo)){
+        std::string typeName = "vector<"+c.first+">" ;
+        void* add = c.second ;
+        m_datatree->Branch((name+"_"+std::to_string(i)).c_str(),
+                           typeName.c_str(),
+                           add);
+        ++i;
+      }
+    }
+    m_storedCollections.emplace_back(coll);
  }
 
 } // namespace
