@@ -50,11 +50,11 @@ namespace podio {
     m_file->Close();
   }
 
- void ROOTWriter::registerForWrite(const std::string& name){
+ bool ROOTWriter::registerForWrite(const std::string& name) {
     const podio::CollectionBase* tmp_coll(nullptr);
     if (!m_store->get(name, tmp_coll)) {
-      return;
       std::cerr << "no such collection to write, throw exception." << std::endl;
+      return false;
     }
 
     podio::CollectionBase* coll = const_cast<CollectionBase*>(tmp_coll);
@@ -84,6 +84,7 @@ namespace podio {
       }
     }
     m_storedCollections.emplace_back(coll);
+    return true;
  }
 
 } // namespace
