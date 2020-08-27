@@ -46,7 +46,7 @@ typedef std::map< std::string, ColWriterBase* > FunMap ;
     ~ASCIIWriter();
 
     template<typename T>
-    void registerForWrite(const std::string& name);
+    bool registerForWrite(const std::string& name);
     void writeEvent();
     void finish();
 
@@ -72,17 +72,18 @@ typedef std::map< std::string, ColWriterBase* > FunMap ;
   //}
 
   template<typename T>
-  void ASCIIWriter::registerForWrite(const std::string& name){
+  bool ASCIIWriter::registerForWrite(const std::string& name){
     const T* tmp_coll(nullptr);
     if(!m_store->get(name, tmp_coll)) {
       std::cerr<<"no such collection to write, throw exception."<<std::endl;
-      return;
+      return false;
     }
     T* coll = const_cast<T*>(tmp_coll);
 
     m_storedCollections.emplace_back(coll);
     m_collectionNames.emplace_back(name) ;
     m_map[ name ] = new ColWriter<T> ;
+    return true;
   }
 
 } //namespace

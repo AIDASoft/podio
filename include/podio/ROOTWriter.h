@@ -23,7 +23,7 @@ namespace podio {
     ROOTWriter(const std::string& filename, EventStore* store);
     ~ROOTWriter();
 
-    void registerForWrite(const std::string& name);
+    bool registerForWrite(const std::string& name);
     void writeEvent();
     void finish();
 
