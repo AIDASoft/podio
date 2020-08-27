@@ -74,12 +74,12 @@ typedef std::map< std::string, ColWriterBase* > FunMap ;
   template<typename T>
   void ASCIIWriter::registerForWrite(const std::string& name){
     const T* tmp_coll(nullptr);
-    m_store->get(name, tmp_coll);
+    if(!m_store->get(name, tmp_coll)) {
+      std::cerr<<"no such collection to write, throw exception."<<std::endl;
+      return;
+    }
     T* coll = const_cast<T*>(tmp_coll);
 
-    if(coll==nullptr) {
-      std::cerr<<"no such collection to write, throw exception."<<std::endl;
-    }
     m_storedCollections.emplace_back(coll);
     m_collectionNames.emplace_back(name) ;
     m_map[ name ] = new ColWriter<T> ;
