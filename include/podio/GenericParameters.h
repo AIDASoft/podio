@@ -32,86 +32,82 @@ namespace podio {
     using FloatMap = MapType<float>;
     using StringMap = MapType<std::string>;
 
-  public: 
-    
-    GenericParameters() = default; 
-    /// Destructor.
-    virtual ~GenericParameters() = default;
-    
+  public:
+   
     /** Returns the first integer value for the given key.
      */
-    virtual int getIntVal(const std::string & key) const  ;
+    int getIntVal(const std::string & key) const  ;
     
     /** Returns the first float value for the given key.
      */
-    virtual float getFloatVal(const std::string & key) const ;
+    float getFloatVal(const std::string & key) const ;
     
     /** Returns the first string value for the given key.
      */
-    virtual const std::string & getStringVal(const std::string & key) const ;
+    const std::string & getStringVal(const std::string & key) const ;
     
     /** Adds all integer values for the given key to values.
      *  Returns a reference to values for convenience.
      */
-    virtual IntVec & getIntVals(const std::string & key, IntVec & values) const ;
+    IntVec & getIntVals(const std::string & key, IntVec & values) const ;
     
     /** Adds all float values for the given key to values.
      *  Returns a reference to values for convenience.
      */
-    virtual FloatVec & getFloatVals(const std::string & key, FloatVec & values) const ;
+    FloatVec & getFloatVals(const std::string & key, FloatVec & values) const ;
     
     /** Adds all float values for the given key to values.
      *  Returns a reference to values for convenience.
      */
-    virtual  StringVec & getStringVals(const std::string & key, StringVec & values) const ;
+     StringVec & getStringVals(const std::string & key, StringVec & values) const ;
     
     /** Returns a list of all keys of integer parameters.
      */
-    virtual const StringVec & getIntKeys( StringVec & keys) const  ;
+    const StringVec & getIntKeys( StringVec & keys) const  ;
 
     /** Returns a list of all keys of float parameters.
      */
-    virtual const StringVec & getFloatKeys(StringVec & keys)  const ;
+    const StringVec & getFloatKeys(StringVec & keys)  const ;
 
     /** Returns a list of all keys of string parameters.
      */
-    virtual const StringVec & getStringKeys(StringVec & keys)  const ;
+    const StringVec & getStringKeys(StringVec & keys)  const ;
     
     /** The number of integer values stored for this key.
      */ 
-    virtual int getNInt(const std::string & key) const ;
+    int getNInt(const std::string & key) const ;
     
     /** The number of float values stored for this key.
      */ 
-    virtual int getNFloat(const std::string & key) const ;
+    int getNFloat(const std::string & key) const ;
     
     /** The number of string values stored for this key.
      */ 
-    virtual int getNString(const std::string & key) const ;
+    int getNString(const std::string & key) const ;
     
     /** Set integer value for the given key.
      */
-    virtual void setValue(const std::string & key, int value) ;
+    void setValue(const std::string & key, int value) ;
 
     /** Set float value for the given key.
      */
-    virtual void setValue(const std::string & key, float value) ;
+    void setValue(const std::string & key, float value) ;
 
     /** Set string value for the given key.
      */
-    virtual void setValue(const std::string & key, const std::string & value) ;
+    void setValue(const std::string & key, const std::string & value) ;
 
     /** Set integer values for the given key.
      */
-    virtual void setValues(const std::string & key, const IntVec & values);
+    void setValues(const std::string & key, const IntVec & values);
 
     /** Set float values for the given key.
      */
-    virtual void setValues(const std::string & key, const FloatVec & values);
+    void setValues(const std::string & key, const FloatVec & values);
 
     /** Set string values for the given key.
      */
-    virtual void setValues(const std::string & key, const StringVec & values);
+    void setValues(const std::string & key, const StringVec & values);
 
     /// erase all elements
     void clear() {
