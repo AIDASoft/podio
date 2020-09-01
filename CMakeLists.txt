@@ -95,6 +95,13 @@ if(ROOT_VERSION VERSION_LESS 6.14)
   set_property(TARGET ROOT::Core APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
 endif()
 
+#--- optionally build with SIO -------------------------------------------------
+find_package( SIO )
+if (SIO_FOUND)
+  MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
+  include_directories(${SIO_INCLUDE_DIRS})
+endif()
+
 #--- enable podio macros--------------------------------------------------------
 include(cmake/podioMacros.cmake)
 

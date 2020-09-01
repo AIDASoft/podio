@@ -4,6 +4,18 @@
 file(GLOB sources *.cc)
 SET(root_sources ${sources})
 
+# --- rm SIO stuff from library if not needed - fixme should go to sub dir ...
+if(NOT SIO_FOUND)
+  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOReader.cc)
+  list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOReader.h)
+  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOWriter.cc)
+  list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOWriter.h)
+  list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOBlock.h)
+endif()
+
+MESSAGE( STATUS " sources: ${sources}" )
+MESSAGE( STATUS " sources: ${headers}" )
+
 LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.* )
 LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.* )
 
@@ -29,7 +41,12 @@ add_library(podio::podioDict ALIAS podioDict)
 target_include_directories(podioDict PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree)
+if (SIO_FOUND)
+  target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree ${SIO_LIBRARIES})
+  target_link_libraries(podio PUBLIC ${SIO_LIBRARIES})
+else()
+  target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree)
+endif()
 
 SET(headers
   ${CMAKE_SOURCE_DIR}/include/podio/CollectionBase.h

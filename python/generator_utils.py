@@ -40,7 +40,7 @@ class DefinitionError(Exception):
 # Types considered to be builtin
 BUILTIN_TYPES = ["int", "long", "float", "double",
                  "unsigned int", "unsigned", "unsigned long",
-                 "short", "bool", "long long",
+                 "char", "short", "bool", "long long",
                  "unsigned long long", "std::string"]
 
 
