@@ -1,0 +1,50 @@
+{% import "macros/utils.jinja2" as utils %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}SIOBlock_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}SIOBlock_H
+
+#include "{{ incfolder}}{{ class.bare_type }}Collection.h"
+
+#include "podio/SIOBlock.h"
+
+#include <sio/api.h>
+#include <sio/version.h>
+#include <sio/io_device.h>
+
+#include <typeindex>
+#include <string>
+
+{{ utils.namespace_open(class.namespace) }}
+
+{% with block_class = class.bare_type + 'SIOBlock' %}
+class {{ block_class }}: public podio::SIOBlock {
+public:
+  {{ block_class }}() :
+  SIOBlock("{{ class.bare_type }}", sio::version::encode_version(0, 1)) {
+    podio::SIOBlockFactory::instance().registerBlockForCollection("{{class.full_type}}", this);
+  }
+
+  {{ block_class }}(const std::string& name) :
+  // SIOBlock(name + "__{{ class.bare_type }}", sio::version::encode_version(0, 1)) {}
+  SIOBlock(name, sio::version::encode_version(0, 1)) {}
+
+  // Read the particle data from the device
+  virtual void read(sio::read_device& device, sio::version_type version) override;
+
+  // Write the particle data to the device
+  virtual void write(sio::write_device& device) override;
+
+  virtual void createCollection() override {
+    setCollection(new {{ class.bare_type }}Collection);
+  }
+
+  SIOBlock* const create(const std::string& name) override { return new {{ block_class }}(name); }
+};
+
+static {{ block_class }} _dummy{{ block_class }};
+{% endwith %}
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

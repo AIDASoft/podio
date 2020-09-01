@@ -68,3 +68,11 @@ set_property(TEST ostream_operator PROPERTY ENVIRONMENT
   ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 
 add_test(NAME unittest COMMAND unittest)
+
+add_test(NAME write_sio COMMAND write_sio)
+set_property(TEST write_sio PROPERTY ENVIRONMENT
+  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
+
+add_test(NAME read_sio COMMAND read_sio)
+set_property(TEST read_sio PROPERTY ENVIRONMENT
+  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})

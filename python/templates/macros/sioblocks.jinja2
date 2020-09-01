@@ -1,0 +1,15 @@
+{% macro vector_member_write(member, index) %}
+    auto* vec{{ index }} = *reinterpret_cast<std::vector<{{ member.full_type }}>**>(vecMemInfo->at({{ index }}).second);
+    size = vec{{ index }}->size();
+    device.data(size);
+    podio::handlePODDataSIO(device, &(*vec{{ index }})[0], size);
+
+{% endmacro %}
+
+
+{% macro vector_member_read(member, index) %}
+    auto* vec{{ index }} = *reinterpret_cast<std::vector<{{ member.full_type }}>**>(vecMemInfo->at({{ index }}).second);
+    device.data(size);
+    vec{{ index }}->resize(size);
+    podio::handlePODDataSIO(device, &(*vec{{ index }})[0], size);
+{% endmacro %}

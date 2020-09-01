@@ -1,0 +1,90 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/sioblocks.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}SIOBlock.h"
+
+#include <sio/block.h>
+#include <sio/version.h>
+#include <sio/io_device.h>
+
+{% if not is_pod %}
+namespace podio {
+// Write a dedicated overload to operate on this class, since it defines non-pod members
+template<typename devT>
+void handlePODDataSIO(devT& device, {{ class.namespace }}::{{ class.bare_type }}Data* data, size_t size) {
+  for (size_t i = 0; i < size; ++i) {
+{% for member in Members %}
+    device.data(data[i].{{ member.name }});
+{% endfor %}
+
+{% for member in VectorMembers + OneToManyRelations %}
+    device.data(data[i].{{ member.name }}_begin);
+    device.data(data[i].{{ member.name }}_end);
+{% endfor %}
+  }
+}
+}
+{% endif %}
+
+{{ utils.namespace_open(class.namespace) }}
+{% with block_class = class.bare_type + 'SIOBlock' %}
+
+void {{ block_class }}::read(sio::read_device& device, sio::version_type vers) {
+
+  auto* dataVec = static_cast<{{ class.namespace }}::{{ class.bare_type }}Collection*>(_col)->_getBuffer();
+
+  unsigned size(0);
+  device.data( size );
+  dataVec->resize(size);
+
+  podio::handlePODDataSIO(device, &(*dataVec)[0], size);
+
+  //---- read ref collections -----
+  podio::CollRefCollection* refCols = _col->referenceCollections() ;
+  for( auto* refC : *refCols ){
+    device.data( size ) ;
+    refC->resize(size) ;
+    podio::handlePODDataSIO( device ,  &((*refC)[0]), size ) ;
+  }
+
+{% if VectorMembers %}
+  //---- read vector members
+  podio::VectorMembersInfo * vecMemInfo = _col->vectorMembers() ;
+
+{% for member in VectorMembers %}
+{{ macros.vector_member_read(member, loop.index0) }}
+{% endfor %}
+{% endif %}
+}
+
+void {{ block_class }}::write(sio::write_device& device) {
+  _col->prepareForWrite() ;
+
+  auto * dataVec = static_cast<{{ class.namespace }}::{{ class.bare_type}}Collection*>(_col)->_getBuffer() ;
+
+  unsigned size = dataVec->size() ;
+  device.data( size ) ;
+
+  podio::handlePODDataSIO( device ,  &(*dataVec)[0], size ) ;
+
+  //---- write ref collections -----
+  podio::CollRefCollection* refCols = _col->referenceCollections() ;
+  for( auto* refC : *refCols ){
+    size = refC->size() ;
+    device.data( size ) ;
+    podio::handlePODDataSIO( device ,  &((*refC)[0]), size ) ;
+  }
+
+{% if VectorMembers %}
+  //---- write vector members
+  podio::VectorMembersInfo * vecMemInfo = _col->vectorMembers() ;
+
+{% for member in VectorMembers %}
+{{ macros.vector_member_write(member, loop.index0) }}
+{% endfor %}
+{% endif %}
+}
+
+{% endwith %}
+{{ utils.namespace_close(class.namespace) }}
