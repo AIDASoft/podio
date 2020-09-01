@@ -31,37 +31,37 @@ PODIO_GENERATE_DICTIONARY(TestDataModelDict ${headers} SELECTION src/selection.x
 set_target_properties(TestDataModelDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(TestDataModelDict TestDataModel)
 
-file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
-
-foreach( sourcefile ${executables} )
+#--- small utility helper function to allow for a more terse definition of tests below
+function(CREATE_PODIO_TEST sourcefile needs_root)
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
-  target_link_libraries( ${name} TestDataModel TestDataModelDict podio::podioRootIO)
-endforeach( sourcefile ${executables} )
-#--- Adding tests --------------------------------------------------------------
+  add_test(NAME ${name} COMMAND ${name})
+  if (needs_root)
+    target_link_libraries(${name} TestDataModel TestDataModelDict podio::podioRootIO)
+    set_property(TEST ${name} PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
+  else()
+    target_link_libraries(${name} TestDataModel)
+    set_property(TEST ${name} PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
+  endif()
+endfunction()
 
-add_test(NAME write COMMAND write)
-# The following directories need to be added to the LD_LIBRARY_PATH:
-# - CMAKE_CURRENT_BINARY_DIR: contains the root dictionary and pcm files for TestDataModel
-# - CMAKE_BINARY_DIR/src: contains the root dictionary and pcm files for podio
-set_property(TEST write PROPERTY ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
+set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp)
+foreach( sourcefile ${root_dependent_tests} )
+  CREATE_PODIO_TEST(${sourcefile} 1)
+endforeach()
 
-add_test(NAME read COMMAND read)
-set_property(TEST read PROPERTY ENVIRONMENT
-             LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-             ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
+set(root_independent_tests ostream_operator.cpp unittest.cpp write_sio.cpp read_sio.cpp)
+foreach( sourcefile ${root_independent_tests} )
+  CREATE_PODIO_TEST(${sourcefile} 0)
+endforeach()
+
+#--- set some dependencies between the different tests to ensure input generating ones are run first
 set_property(TEST read PROPERTY DEPENDS write)
-
-add_test(NAME read-multiple COMMAND read-multiple)
-set_property(TEST read-multiple PROPERTY ENVIRONMENT
-             LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-             ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST read-multiple PROPERTY DEPENDS write)
-
-add_test(NAME relation_range COMMAND relation_range)
-set_property(TEST relation_range PROPERTY ENVIRONMENT
-  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-  ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
+set_property(TEST read_sio PROPERTY DEPENDS write_sio)
 
 add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_SOURCE_DIR}/python)
 set_property(TEST pyunittest
@@ -70,18 +70,3 @@ set_property(TEST pyunittest
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
                       ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST pyunittest PROPERTY DEPENDS write)
-
-add_test(NAME ostream_operator COMMAND ostream_operator)
-set_property(TEST ostream_operator PROPERTY ENVIRONMENT
-  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-  ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
-
-add_test(NAME unittest COMMAND unittest)
-
-add_test(NAME write_sio COMMAND write_sio)
-set_property(TEST write_sio PROPERTY ENVIRONMENT
-  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
-
-add_test(NAME read_sio COMMAND read_sio)
-set_property(TEST read_sio PROPERTY ENVIRONMENT
-  LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
