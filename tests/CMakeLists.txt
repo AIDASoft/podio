@@ -11,23 +11,32 @@ file(GLOB sources_utils utilities/*.cc)
 file(GLOB headers_utils utilities/*.h)
 
 add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
-target_link_libraries(TestDataModel podio::podio ROOT::Core)
+target_link_libraries(TestDataModel PUBLIC podio::podio)
 target_include_directories(TestDataModel PUBLIC
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/
   )
-PODIO_GENERATE_DICTIONARY(TestDataModel ${headers} SELECTION src/selection.xml
-  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}TestDataModel${CMAKE_SHARED_LIBRARY_SUFFIX}
+
+add_library(TestDataModelDict SHARED)
+target_link_libraries(TestDataModelDict PUBLIC TestDataModel podio::podio ROOT::Core)
+target_include_directories(TestDataModelDict PUBLIC
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/
+  ${ROOT_INCLUDE_DIRS}
+ )
+
+PODIO_GENERATE_DICTIONARY(TestDataModelDict ${headers} SELECTION src/selection.xml
+  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}TestDataModelDict${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
-set_target_properties(TestDataModel-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
-target_sources(TestDataModel PRIVATE TestDataModel.cxx)
+set_target_properties(TestDataModelDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+add_dependencies(TestDataModelDict TestDataModel)
 
 file(GLOB executables RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
 foreach( sourcefile ${executables} )
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
-  target_link_libraries( ${name} TestDataModel podio::podioRootIO)
+  target_link_libraries( ${name} TestDataModel TestDataModelDict podio::podioRootIO)
 endforeach( sourcefile ${executables} )
 #--- Adding tests --------------------------------------------------------------
 
