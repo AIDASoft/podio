@@ -68,6 +68,7 @@ endif()
 
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
+option(SIO_HANDLERS "Build the SIO block handlers and readers and writers." OFF)
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
@@ -96,10 +97,12 @@ if(ROOT_VERSION VERSION_LESS 6.14)
 endif()
 
 #--- optionally build with SIO -------------------------------------------------
-find_package( SIO )
-if (SIO_FOUND)
-  MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
-  include_directories(${SIO_INCLUDE_DIRS})
+if(SIO_HANDLERS)
+  find_package( SIO REQUIRED)
+  if (SIO_FOUND)
+    MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
+    include_directories(${SIO_INCLUDE_DIRS})
+  endif()
 endif()
 
 #--- enable podio macros--------------------------------------------------------

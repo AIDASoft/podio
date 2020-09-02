@@ -5,7 +5,7 @@ file(GLOB sources *.cc)
 SET(root_sources ${sources})
 
 # --- rm SIO stuff from library if not needed - fixme should go to sub dir ...
-if(NOT SIO_FOUND)
+if(NOT SIO_HANDLERS)
   list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOReader.cc)
   list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOReader.h)
   list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOWriter.cc)
@@ -42,7 +42,7 @@ add_library(podio::podioDict ALIAS podioDict)
 target_include_directories(podioDict PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-if (SIO_FOUND)
+if (SIO_HANDLERS)
   target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree ${SIO_LIBRARIES})
   target_link_libraries(podio PUBLIC ${SIO_LIBRARIES})
 else()
