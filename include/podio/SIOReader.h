@@ -41,7 +41,7 @@ namespace podio {
 
 
     // // read the meta data record
-    // void readMetaData();
+    void readMetaData();
 
     /// Read all collections requested
     void readEvent();

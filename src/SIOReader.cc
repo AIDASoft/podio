@@ -49,49 +49,49 @@ namespace podio {
   }
 
 
-  // void SIOReader::readMetaData(){
+  void SIOReader::readMetaData(){
 
-  //   m_info_buffer.clear() ;
-  //   m_rec_buffer.clear() ;
-  //   sio::record_info rec_info ;
+    m_info_buffer.clear() ;
+    m_rec_buffer.clear() ;
+    sio::record_info rec_info ;
 
-  //   sio::api::read_record_info( m_stream, rec_info, m_info_buffer ) ;
-  //   sio::api::read_record_data( m_stream, rec_info, m_rec_buffer ) ;
+    sio::api::read_record_info( m_stream, rec_info, m_info_buffer ) ;
+    sio::api::read_record_data( m_stream, rec_info, m_rec_buffer ) ;
 
-  //   sio::block_list blocks {} ;
-  //   blocks.push_back( std::shared_ptr<sio::block>( m_metaDataBlock ) ) ;
+    sio::block_list blocks {} ;
+    blocks.push_back( std::shared_ptr<sio::block>( m_metaDataBlock ) ) ;
 
-  //   sio::api::read_blocks( m_rec_buffer.span( 0, rec_info._data_length ), blocks ) ;
+    sio::api::read_blocks( m_rec_buffer.span( 0, rec_info._data_length ), blocks ) ;
 
-  //   for(auto& mb :  m_metaDataBlock->m_vec ){
-  //     std::string name = mb.name ;
-  //     std::string typeName = mb.typeName ;
-  //     int id = mb.colID;
+    for(auto& mb :  m_metaDataBlock->m_vec ){
+      std::string name = mb.name ;
+      std::string typeName = mb.typeName ;
+      int id = mb.colID;
 
-  //     // register sio block
-  //     auto blk = podio::SIOBlockFactory::instance().createBlock( typeName , name ) ;
+      // register sio block
+      auto blk = podio::SIOBlockFactory::instance().createBlock( typeName , name ) ;
 
-  //     blk->setCollectionProvider( m_store ) ;
+      blk->setCollectionProvider( m_store ) ;
 
-  //     m_blocks.push_back( blk ) ;
+      m_blocks.push_back( blk ) ;
 
-  //     m_inputs.push_back( std::make_pair( blk->getCollection() , name ) ) ;
+      m_inputs.push_back( std::make_pair( blk->getCollection() , name ) ) ;
 
-  //     // register collection with the store and then reset the ID to the one read from the file
-  //     CollectionBase* col = blk->getCollection() ;
-  //     m_store->registerCollection( name, col ) ;
-  //     col->setID( id )  ;
-  //   }
+      // register collection with the store and then reset the ID to the one read from the file
+      CollectionBase* col = blk->getCollection() ;
+      m_store->registerCollection( name, col ) ;
+      col->setID( id )  ;
+    }
 
 
-  // }
+  }
 
   void SIOReader::readEvent(){
 
-    // if( ! m_metaData ){
-    //   readMetaData() ;
-    //   m_metaData = true ;
-    // }
+    if( ! m_metaData ){
+      readMetaData() ;
+      m_metaData = true ;
+    }
 
     sio::record_info rec_info ;
     sio::api::read_record_info( m_stream, rec_info, m_info_buffer ) ;
