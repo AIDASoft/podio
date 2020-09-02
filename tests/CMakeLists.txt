@@ -54,6 +54,9 @@ foreach( sourcefile ${root_dependent_tests} )
 endforeach()
 
 set(root_independent_tests ostream_operator.cpp unittest.cpp write_sio.cpp read_sio.cpp)
+if (NOT SIO_FOUND)
+  list(FILTER ${root_independent_tests} EXCLUDE REGEX "sio")
+endif()
 foreach( sourcefile ${root_independent_tests} )
   CREATE_PODIO_TEST(${sourcefile} 0)
 endforeach()
@@ -61,7 +64,9 @@ endforeach()
 #--- set some dependencies between the different tests to ensure input generating ones are run first
 set_property(TEST read PROPERTY DEPENDS write)
 set_property(TEST read-multiple PROPERTY DEPENDS write)
-set_property(TEST read_sio PROPERTY DEPENDS write_sio)
+if (SIO_FOUND)
+  set_property(TEST read_sio PROPERTY DEPENDS write_sio)
+endif()
 
 add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_SOURCE_DIR}/python)
 set_property(TEST pyunittest
