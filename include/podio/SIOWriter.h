@@ -4,16 +4,14 @@
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
 
-#include <string>
-#include <vector>
-#include <iostream>
-
 // SIO specific includes
 #include <sio/definitions.h>
 #include <sio/exception.h>
 #include <sio/api.h>
 
-
+#include <string>
+#include <vector>
+#include <iostream>
 
 // forward declarations
 

@@ -1,10 +1,10 @@
-#include <sio/compression/zlib.h>
-
 // podio specific includes
 #include "podio/SIOReader.h"
 
 #include "podio/CollectionIDTable.h"
 #include "podio/CollectionBase.h"
+
+#include <sio/compression/zlib.h>
 
 namespace podio {
 
@@ -17,7 +17,7 @@ namespace podio {
     // }
 
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
-			  [name](SIOReader::Input t){ return t.second == name;});
+                          [&name](SIOReader::Input t){ return t.second == name;});
 
     return ( p != end(m_inputs) ?  p->first : nullptr ) ;
   }

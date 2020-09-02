@@ -1,12 +1,12 @@
-// SIO specifc includes
-#include "sio/block.h"
-#include "sio/compression/zlib.h"
-
 // podio specific includes
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
 #include "podio/SIOWriter.h"
 #include "podio/SIOBlock.h"
+
+// SIO specifc includes
+#include "sio/block.h"
+#include "sio/compression/zlib.h"
 
 namespace podio {
 
