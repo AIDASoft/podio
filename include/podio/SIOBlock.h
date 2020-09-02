@@ -1,21 +1,20 @@
 #ifndef SIOBlock_H
 #define SIOBlock_H
 
+#include <podio/CollectionBase.h>
+
 #include <sio/block.h>
 #include <sio/version.h>
 #include <sio/io_device.h>
 
-#include <podio/CollectionBase.h>
-
 #include <map>
 #include <string>
-
+#include <memory>
 
 namespace podio {
 
   template <typename devT, typename PODData>
   void handlePODDataSIO( devT &device , PODData* data, size_t size) {
-
     unsigned count =  size * sizeof(PODData) ;
     char* dataPtr = reinterpret_cast<char*> (data) ;
     device.data( dataPtr , count ) ;
@@ -23,49 +22,34 @@ namespace podio {
 
 
   /// helper struct for handling SIO blocks
-  struct SIOMetaData{
-    int colID ;
-    std::string name ;
-    std::string typeName ;
-  } ;
+  struct SIOMetaData {
+    int colID;
+    std::string name;
+    std::string typeName;
+  };
 
   // helper class for reading/writing meta data
-  class SIOMetaDataBlock: public sio::block{
+  class SIOMetaDataBlock: public sio::block {
 
   public:
-    std::vector<SIOMetaData> m_vec ;
+    std::vector<SIOMetaData> m_vec;
 
     SIOMetaDataBlock( const std::string &nam, sio::version_type vers) :
-      sio::block( nam, vers ){
+      sio::block( nam, vers ) {
     }
-    virtual void read( sio::read_device &device,
-		       sio::version_type vers ) override {
-      unsigned size(0);
-      device.data( size );
-      m_vec.resize(size);
-      for(unsigned i=0; i<size;++i){
-	device.data( m_vec[i].colID ) ;
-	device.data( m_vec[i].name ) ;
-	device.data( m_vec[i].typeName ) ;
-      }
-    }
-    virtual void write( sio::write_device &device ) override {
-      unsigned size = m_vec.size() ;
-      device.data( size );
-      for(unsigned i=0; i<size;++i){
-	device.data( m_vec[i].colID ) ;
-	device.data( m_vec[i].name ) ;
-	device.data( m_vec[i].typeName ) ;
-      }
-    }
-    void add(int id, std::string nam, std::string typ){
-      m_vec.push_back( {id,nam,typ} ) ;
-    }
-  } ;
 
+    virtual void read( sio::read_device &device, sio::version_type vers ) override;
+
+    virtual void write( sio::write_device &device ) override;
+
+    void add(int id, std::string nam, std::string typ) {
+      m_vec.push_back( {id, nam, typ} );
+    }
+
+  };
 
 /// Base class for sio::block handlers used with PODIO
-  class SIOBlock: public sio::block{
+  class SIOBlock: public sio::block {
 
   public:
 
@@ -89,7 +73,7 @@ namespace podio {
 
     void setReferences(){
       if(_store != nullptr)
-	_col->setReferences(_store);
+        _col->setReferences(_store);
     }
 
     virtual SIOBlock* const create(const std::string& name)=0 ;
@@ -105,48 +89,26 @@ namespace podio {
   };
 
 
-  typedef std::map<std::string,SIOBlock*> BlockMap ;
-
 /// factory for creating sio::blocks for a given type of EDM-collection
-  class SIOBlockFactory{
+  class SIOBlockFactory {
   private:
     SIOBlockFactory(){};
+
+    typedef std::map<std::string, SIOBlock*> BlockMap ;
     BlockMap  _map ;
   public:
-    void registerBlockForCollection(std::string type, SIOBlock* b){_map[type] = b ; }
+    void registerBlockForCollection(std::string type, SIOBlock* b){ _map[type] = b ; }
 
-    std::shared_ptr<SIOBlock> createBlock( const podio::CollectionBase* col, std::string name){
-      std::string typeStr =  col->getValueTypeName() ;
+    std::shared_ptr<SIOBlock> createBlock( const podio::CollectionBase* col, const std::string& name) const;
 
-      auto it=_map.find(typeStr) ;
-
-      if( it!= _map.end() ){
-	SIOBlock* blk= it->second->create( name ) ;
-	blk->setCollection( const_cast< podio::CollectionBase* > ( col ) ) ;
-	return  std::shared_ptr<SIOBlock>( blk ) ;
-      }else{
-	return nullptr;
-      }
-    }
     // return a block with a new collection (used for reading )
-    std::shared_ptr<SIOBlock> createBlock( std::string typeStr, std::string name){
-
-      auto it=_map.find(typeStr) ;
-
-      if( it!= _map.end() ){
-	SIOBlock* blk= it->second->create( name ) ;
-	blk->createCollection() ;
-	return  std::shared_ptr<SIOBlock>( blk ) ;
-      }else{
-	return nullptr;
-      }
-    }
+    std::shared_ptr<SIOBlock> createBlock( const std::string& typeStr, const std::string& name) const;
 
     static SIOBlockFactory& instance() {
       static SIOBlockFactory me ;
       return me ;
     }
-  } ;
+  };
 
 /// helper method for class name demangling
   inline std::string demangleClassName(std::string rawName){

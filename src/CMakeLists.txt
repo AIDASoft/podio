@@ -11,6 +11,7 @@ if(NOT SIO_FOUND)
   list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOWriter.cc)
   list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOWriter.h)
   list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOBlock.h)
+  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOBlock.cc)
 endif()
 
 MESSAGE( STATUS " sources: ${sources}" )
