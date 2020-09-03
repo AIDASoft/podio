@@ -19,44 +19,13 @@ namespace podio {
     if( not m_stream.is_open() ){
       SIO_THROW( sio::error_code::not_open, "Couldn't open output stream '" + filename + "'" ) ;
     }
-
-    m_metaDataBlock = new SIOMetaDataBlock( "meta_data" , sio::version::encode_version(0, 1) ) ;
   }
 
   SIOWriter::~SIOWriter(){
   }
 
-  void SIOWriter::writeMetaData(){
-
-    auto* table =  m_store->getCollectionIDTable() ;
-
-    std::cout << " writing meta data: \n" ;
-    for(auto b :  m_blocks){
-      std::string name = b->name() ;
-      std::string typeName = static_cast<SIOBlock*>(b.get())->getCollection()->getValueTypeName() ;
-      int id = table->collectionID( name ) ;
-      m_metaDataBlock->add( id , name , typeName  ) ;
-
-      std::cout << "\t " << id << ", " << name  << ", " << typeName << "\n" ;
-    }
-    // now write meta data record to file
-
-    m_buffer.clear() ;
-    sio::block_list blocks {} ;
-    blocks.push_back( std::shared_ptr<sio::block>( m_metaDataBlock ) ) ;
-
-    auto rec_info = sio::api::write_record( "metadata_record", m_buffer, blocks, 0 ) ;
-
-    sio::api::write_record( m_stream, m_buffer.span(), rec_info ) ;
-
-  }
 
   void SIOWriter::writeEvent(){
-
-    if( ! m_metaData ){
-      writeMetaData() ;
-      m_metaData = true ;
-    }
 
     m_buffer.clear() ;
     m_com_buffer.clear() ;
