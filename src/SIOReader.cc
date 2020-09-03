@@ -37,15 +37,15 @@ namespace podio {
 
   GenericParameters* SIOReader::readEventMetaData(){
     // TODO
-    return nullptr;
+    return new GenericParameters();
   }
   std::map<int,GenericParameters>* SIOReader::readCollectionMetaData(){
     // TODO
-    return nullptr;
+    return new std::map<int, GenericParameters>();
   }
   std::map<int,GenericParameters>* SIOReader::readRunMetaData(){
     // TODO
-    return nullptr;
+    return new std::map<int, GenericParameters>();
   }
 
 
