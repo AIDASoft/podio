@@ -13,23 +13,29 @@
 
 namespace podio {
 
+  std::pair<TTree*, unsigned> ROOTReader::getLocalTreeAndEntry(const std::string& treename) {
+    auto localEntry = m_chain->LoadTree(m_eventNumber);
+    auto* tree = static_cast<TTree*>(m_chain->GetFile()->Get(treename.c_str()));
+    return {tree, localEntry};
+  }
+
   GenericParameters* ROOTReader::readEventMetaData(){
     GenericParameters* emd = new GenericParameters() ;
-    auto evt_metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("evt_metadata"));
+    auto [evt_metadatatree, entry] = getLocalTreeAndEntry("evt_metadata");
     evt_metadatatree->SetBranchAddress("evtMD",&emd);
-    evt_metadatatree->GetEntry(m_eventNumber);
+    evt_metadatatree->GetEntry(entry);
     return emd ;
   }
   std::map<int,GenericParameters>* ROOTReader::readCollectionMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
-    auto col_metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("col_metadata"));
+    auto [col_metadatatree, dummy] = getLocalTreeAndEntry("col_metadata");
     col_metadatatree->SetBranchAddress("colMD",&emd);
     col_metadatatree->GetEntry(0);
     return emd ;
   }
   std::map<int,GenericParameters>* ROOTReader::readRunMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
-    auto run_metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("run_metadata"));
+    auto [run_metadatatree, dummy] = getLocalTreeAndEntry("run_metadata");
     run_metadatatree->SetBranchAddress("runMD",&emd);
     run_metadatatree->GetEntry(0);
     return emd ;
