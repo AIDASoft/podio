@@ -2,28 +2,6 @@
 
 namespace podio {
 
-  void SIOMetaDataBlock::read(sio::read_device& device, sio::version_type vers) {
-    unsigned size(0);
-    device.data( size );
-    m_vec.resize(size);
-    for(unsigned i=0; i<size;++i){
-      device.data( m_vec[i].colID );
-      device.data( m_vec[i].name );
-      device.data( m_vec[i].typeName );
-    }
-  }
-
-  void SIOMetaDataBlock::write(sio::write_device& device) {
-    unsigned size = m_vec.size() ;
-    device.data( size );
-    for(unsigned i = 0; i < size; ++i){
-      device.data( m_vec[i].colID );
-      device.data( m_vec[i].name );
-      device.data( m_vec[i].typeName );
-    }
-  }
-
-
   std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name) const {
     const auto it = _map.find(typeStr) ;
 

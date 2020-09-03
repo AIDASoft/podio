@@ -23,7 +23,6 @@
 namespace podio {
 
   class CollectionBase;
-  class Registry;
   class CollectionIDTable;
 
 /**
@@ -38,10 +37,6 @@ namespace podio {
     void openFile(const std::string& filename);
     void closeFile();
 
-
-
-    // // read the meta data record
-    void readMetaData();
 
     /// Read all collections requested
     void readEvent();
@@ -106,8 +101,6 @@ namespace podio {
     sio::buffer      m_unc_buffer{ sio::mbyte } ;
     sio::block_list  m_blocks {} ;
 
-    bool m_metaData = false ;
-    SIOMetaDataBlock* m_metaDataBlock=nullptr;
     EventStore* m_store=nullptr;
   };
 

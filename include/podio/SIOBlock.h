@@ -21,33 +21,6 @@ namespace podio {
   }
 
 
-  /// helper struct for handling SIO blocks
-  struct SIOMetaData {
-    int colID;
-    std::string name;
-    std::string typeName;
-  };
-
-  // helper class for reading/writing meta data
-  class SIOMetaDataBlock: public sio::block {
-
-  public:
-    std::vector<SIOMetaData> m_vec;
-
-    SIOMetaDataBlock( const std::string &nam, sio::version_type vers) :
-      sio::block( nam, vers ) {
-    }
-
-    virtual void read( sio::read_device &device, sio::version_type vers ) override;
-
-    virtual void write( sio::write_device &device ) override;
-
-    void add(int id, std::string nam, std::string typ) {
-      m_vec.push_back( {id, nam, typ} );
-    }
-
-  };
-
 /// Base class for sio::block handlers used with PODIO
   class SIOBlock: public sio::block {
 
