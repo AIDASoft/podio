@@ -42,7 +42,7 @@ namespace podio {
     void readEvent();
 
     /// Read CollectionIDTable from SIO file
-    CollectionIDTable* getCollectionIDTable() override final {return &m_table;}
+    CollectionIDTable* getCollectionIDTable() override final {return m_table;}
 
     /// Check if file is valid
     virtual bool isValid() const override final;
@@ -88,9 +88,11 @@ namespace podio {
     std::map<int,GenericParameters>* readRunMetaData() override final ;
 
   private:
+    void readCollectionIDTable();
+
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
-    CollectionIDTable m_table{};
+    CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
     int m_lastEvtRead{-1};
 

@@ -33,6 +33,9 @@ namespace podio {
     /// return registered names
     const std::vector<std::string>& names() const { return m_names; };
 
+    /// return the ids
+    const std::vector<int>& ids() const { return m_collectionIDs; }
+
     /// register new name to the table
     /// returns assigned collection ID
     int add(const std::string& name);

@@ -26,6 +26,13 @@ namespace podio {
 
 
   void SIOWriter::writeEvent(){
+    if (m_firstEvent) {
+      // Write the collectionIDs as a separate record at the beginning of the
+      // file. In this way they can easily be retrieved in the SIOReader without
+      // having to look for this specific record.
+      writeCollectionIDTable();
+      m_firstEvent = false;
+    }
 
     m_buffer.clear() ;
     m_com_buffer.clear() ;
@@ -46,11 +53,6 @@ namespace podio {
   }
 
   void SIOWriter::finish(){
-    // now we want to safe the metadata
-    // m_metadatatree->Branch("CollectionIDs",m_store->getCollectionIDTable());
-    // m_metadatatree->Fill();
-    // m_file->Write();
-
     m_stream.close() ;
   }
 
@@ -69,6 +71,22 @@ namespace podio {
       throw std::runtime_error( std::string("could not create SIOBlock for type: ")+typName ) ;
     }
     m_blocks.push_back(blk) ;
+  }
+
+  void SIOWriter::writeCollectionIDTable() {
+    m_buffer.clear();
+    m_com_buffer.clear();
+    sio::block_list blocks;
+    blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>(m_store->getCollectionIDTable()));
+
+    auto rec_info = sio::api::write_record("CollectionIDs", m_buffer, blocks, 0);
+
+    sio::zlib_compression compressor;
+    compressor.set_level(6);
+    sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
+
+    sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
+
   }
 
 } // namespace
