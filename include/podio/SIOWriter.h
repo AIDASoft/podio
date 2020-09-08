@@ -28,6 +28,8 @@ namespace podio {
     void finish();
 
   private:
+    void writeCollectionIDTable();
+
     // members
     std::string m_filename{};
     EventStore* m_store=nullptr;
@@ -36,6 +38,7 @@ namespace podio {
     sio::block_list  m_blocks {} ;
     sio::buffer m_buffer{ sio::mbyte } ;
     sio::buffer m_com_buffer{ sio::mbyte } ;
+    bool m_firstEvent{true};
   };
 
 } //namespace

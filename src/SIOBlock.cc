@@ -1,6 +1,20 @@
 #include "podio/SIOBlock.h"
 
 namespace podio {
+  void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type version) {
+    std::vector<std::string> names;
+    std::vector<int> ids;
+    device.data(names);
+    device.data(ids);
+
+    _table = new CollectionIDTable(ids, names);
+  }
+
+  void SIOCollectionIDTableBlock::write(sio::write_device& device) {
+    device.data(_table->names());
+    device.data(_table->ids());
+  }
+
 
   std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name) const {
     const auto it = _map.find(typeStr) ;

@@ -2,6 +2,7 @@
 #define SIOBlock_H
 
 #include <podio/CollectionBase.h>
+#include <podio/CollectionIDTable.h>
 
 #include <sio/block.h>
 #include <sio/version.h>
@@ -59,6 +60,27 @@ namespace podio {
     podio::CollectionBase*  _col{} ;
     podio::ICollectionProvider* _store{} ;
 
+  };
+
+  /**
+   * A dedicated block for handling the I/O of the CollectionIDTable
+   */
+  class SIOCollectionIDTableBlock : public sio::block {
+  public:
+    SIOCollectionIDTableBlock() :
+      sio::block("CollectionIDs", sio::version::encode_version(0, 1)) {}
+
+    SIOCollectionIDTableBlock(podio::CollectionIDTable* table) :
+      sio::block("CollectionIDs", sio::version::encode_version(0, 1)),
+      _table(table) {}
+
+    virtual void read(sio::read_device& device, sio::version_type version) override;
+    virtual void write(sio::write_device& device) override;
+
+    podio::CollectionIDTable* get() { return _table; }
+
+  private:
+    podio::CollectionIDTable* _table{nullptr};
   };
 
 

@@ -25,6 +25,7 @@ namespace podio {
 
   void SIOReader::openFile(const std::string& filename){
     m_stream.open( filename , std::ios::binary ) ;
+    readCollectionIDTable();
   }
 
 
@@ -82,5 +83,20 @@ namespace podio {
 //   m_inputs.clear();
  }
 
+  void SIOReader::readCollectionIDTable() {
+    sio::record_info rec_info;
+    sio::api::read_record_info(m_stream, rec_info, m_info_buffer);
+    sio::api::read_record_data(m_stream, rec_info, m_rec_buffer);
+
+    m_unc_buffer.resize(rec_info._uncompressed_length);
+    sio::zlib_compression compressor;
+    compressor.uncompress(m_rec_buffer.span(), m_unc_buffer);
+
+    sio::block_list blocks;
+    blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>());
+    sio::api::read_blocks(m_unc_buffer.span(), blocks);
+
+    m_table = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get())->get();
+  }
 
 } //namespace
