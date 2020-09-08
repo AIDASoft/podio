@@ -10,16 +10,15 @@ namespace podio {
 
 
   CollectionBase* SIOReader::readCollection(const std::string& name) {
-
-    // if( m_lastEvtRead != m_eventNumber ){
-    //   readEvent() ;
-    //   m_lastEvtRead = m_eventNumber ;
-    // }
-
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
-                          [&name](SIOReader::Input t){ return t.second == name;});
+                          [&name](const SIOReader::Input& t){ return t.second == name;});
 
-    return ( p != end(m_inputs) ?  p->first : nullptr ) ;
+    if (p != end(m_inputs)) {
+      p->first->prepareAfterRead();
+      return p->first;
+    }
+
+    return nullptr;
   }
 
 
@@ -34,9 +33,8 @@ namespace podio {
   }
 
 
-  GenericParameters* SIOReader::readEventMetaData(){
-    // TODO
-    return new GenericParameters();
+  GenericParameters* SIOReader::readEventMetaData() {
+    return m_eventMetaData->metadata;
   }
   std::map<int,GenericParameters>* SIOReader::readCollectionMetaData(){
     // TODO
@@ -49,6 +47,7 @@ namespace podio {
 
 
   void SIOReader::readEvent(){
+    m_eventMetaData->metadata = new GenericParameters(); // will be managed by EventStore (?)
 
     sio::record_info rec_info ;
     sio::api::read_record_info( m_stream, rec_info, m_info_buffer ) ;
@@ -60,11 +59,8 @@ namespace podio {
 
     sio::api::read_blocks( m_unc_buffer.span(), m_blocks ) ;
 
-    for( auto bl : m_blocks ){ // creates the object layer
-      static_cast<SIOBlock*>(bl.get())->prepareAfterRead();
-    }
-    for( auto bl : m_blocks ){  // resolves the references
-      static_cast<SIOBlock*>(bl.get())->setReferences();
+    for (auto& [collection, name] : m_inputs) {
+      collection->setID(m_table->collectionID(name));
     }
   }
 
@@ -96,7 +92,15 @@ namespace podio {
     blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>());
     sio::api::read_blocks(m_unc_buffer.span(), blocks);
 
-    m_table = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get())->get();
-  }
+    auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
+    m_table = idTableBlock->getTable();
+    const auto& typeNames = idTableBlock->getTypeNames();
 
+    for (size_t i = 0; i < typeNames.size(); ++i) {
+      auto blk = podio::SIOBlockFactory::instance().createBlock(typeNames[i], m_table->names()[i]);
+      m_blocks.push_back(blk);
+      m_inputs.emplace_back(std::make_pair(blk->getCollection(), m_table->names()[i]));
+    }
+
+  }
 } //namespace

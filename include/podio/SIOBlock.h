@@ -3,6 +3,8 @@
 
 #include <podio/CollectionBase.h>
 #include <podio/CollectionIDTable.h>
+#include <podio/GenericParameters.h>
+#include <podio/EventStore.h>
 
 #include <sio/block.h>
 #include <sio/version.h>
@@ -27,27 +29,16 @@ namespace podio {
 
   public:
 
-
     SIOBlock( const std::string &nam, sio::version_type vers) :
       sio::block( nam, vers ){
     }
 
     podio::CollectionBase* getCollection() { return _col; }
-    podio::ICollectionProvider* getCollectionProvider(){ return _store; }
 
     std::string name(){ return sio::block::name() ; }
 
-
     void setCollection(podio::CollectionBase* col) {
       _col = col ;
-    }
-    void setCollectionProvider(podio::ICollectionProvider* iCP ){ _store = iCP ; }
-
-    void prepareAfterRead(){ _col->prepareAfterRead(); }
-
-    void setReferences(){
-      if(_store != nullptr)
-        _col->setReferences(_store);
     }
 
     virtual SIOBlock* const create(const std::string& name)=0 ;
@@ -58,8 +49,6 @@ namespace podio {
   protected:
 
     podio::CollectionBase*  _col{} ;
-    podio::ICollectionProvider* _store{} ;
-
   };
 
   /**
@@ -70,17 +59,35 @@ namespace podio {
     SIOCollectionIDTableBlock() :
       sio::block("CollectionIDs", sio::version::encode_version(0, 1)) {}
 
-    SIOCollectionIDTableBlock(podio::CollectionIDTable* table) :
+    SIOCollectionIDTableBlock(podio::EventStore* store) :
       sio::block("CollectionIDs", sio::version::encode_version(0, 1)),
-      _table(table) {}
+      _store(store), _table(store->getCollectionIDTable()) {}
 
     virtual void read(sio::read_device& device, sio::version_type version) override;
     virtual void write(sio::write_device& device) override;
 
-    podio::CollectionIDTable* get() { return _table; }
+    podio::CollectionIDTable* getTable() { return _table; }
+    const std::vector<std::string>& getTypeNames() const { return _types; }
 
   private:
-    podio::CollectionIDTable* _table{nullptr};
+    podio::EventStore* _store{nullptr};
+    podio::CollectionIDTable* _table {nullptr};
+    std::vector<std::string> _types;
+  };
+
+
+  /**
+   * A block for handling the EventMeta data
+   */
+  class SIOEventMetaDataBlock : public sio::block {
+  public:
+    SIOEventMetaDataBlock() :
+      sio::block("EventMetaData", sio::version::encode_version(0, 1)) {}
+
+    virtual void read(sio::read_device& device, sio::version_type version) override;
+    virtual void write(sio::write_device& device) override;
+
+    podio::GenericParameters* metadata{nullptr};
   };
 
 
