@@ -7,7 +7,6 @@ int main(){
   auto store = podio::EventStore();
   reader.openFile("example.sio");
   store.setReader(&reader);
-  reader.setStore(&store);
 
   try{
     unsigned nEvents = 1410065408 ;
@@ -22,7 +21,8 @@ int main(){
 
       // only clear collections for re-use
       store.clearCollections();
-      // store.clear(); // this would delete the collections as well ...
+      store.clearCaches(); // Would be done in EventStore::clear
+      // store.clear();    // However, this would delete the collections as well ...
       reader.endOfEvent();
 
     }

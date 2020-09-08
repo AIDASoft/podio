@@ -116,6 +116,24 @@ namespace podio {
       _stringMap.clear();
     }
 
+    /**
+     * Get the internal int map (necessary for serialization with SIO)
+     */
+    const IntMap& getIntMap() const { return _intMap; }
+    IntMap& getIntMap() { return _intMap; }
+
+    /**
+     * Get the floaternal float map (necessary for serialization with SIO)
+     */
+    const FloatMap& getFloatMap() const { return _floatMap; }
+    FloatMap& getFloatMap() { return _floatMap; }
+
+    /**
+     * Get the stringernal string map (necessary for serialization with SIO)
+     */
+    const StringMap& getStringMap() const { return _stringMap; }
+    StringMap& getStringMap() { return _stringMap; }
+
   protected:
 
     IntMap _intMap{} ;

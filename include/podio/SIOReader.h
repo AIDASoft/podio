@@ -32,7 +32,11 @@ namespace podio {
   class SIOReader : public IReader {
     friend EventStore;
   public:
-    SIOReader() : m_eventNumber(0) {}
+    SIOReader() : m_eventNumber(0), m_eventMetaData(std::make_shared<SIOEventMetaDataBlock>()) {
+      // make sure that the first block is EventMetaData as it is also the first
+      // during wrting
+      m_blocks.push_back(m_eventMetaData);
+    }
     ~SIOReader();
     void openFile(const std::string& filename);
     void closeFile();
@@ -46,8 +50,6 @@ namespace podio {
 
     /// Check if file is valid
     virtual bool isValid() const override final;
-
-    void setStore(EventStore* store){ m_store = store; }
 
     // /// request the named collection of type T to be read and register with store
     // template<typename T>
@@ -96,14 +98,13 @@ namespace podio {
     int m_eventNumber{0};
     int m_lastEvtRead{-1};
 
+    std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
     sio::ifstream    m_stream{} ;
     sio::record_info m_rec_info{} ;
     sio::buffer      m_info_buffer{ sio::max_record_info_len } ;
     sio::buffer      m_rec_buffer{ sio::mbyte } ;
     sio::buffer      m_unc_buffer{ sio::mbyte } ;
     sio::block_list  m_blocks {} ;
-
-    EventStore* m_store=nullptr;
   };
 
 

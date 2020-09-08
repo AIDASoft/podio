@@ -12,13 +12,18 @@ namespace podio {
 
   SIOWriter::SIOWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),
-    m_store(store) {
+    m_store(store),
+    m_eventMetaData(std::make_shared<SIOEventMetaDataBlock>())
+  {
 
     m_stream.open( filename , std::ios::binary ) ;
 
     if( not m_stream.is_open() ){
       SIO_THROW( sio::error_code::not_open, "Couldn't open output stream '" + filename + "'" ) ;
     }
+
+    m_eventMetaData->metadata = m_store->eventMetaDataPtr();
+    m_blocks.push_back(m_eventMetaData);
   }
 
   SIOWriter::~SIOWriter(){
@@ -77,7 +82,7 @@ namespace podio {
     m_buffer.clear();
     m_com_buffer.clear();
     sio::block_list blocks;
-    blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>(m_store->getCollectionIDTable()));
+    blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>(m_store));
 
     auto rec_info = sio::api::write_record("CollectionIDs", m_buffer, blocks, 0);
 

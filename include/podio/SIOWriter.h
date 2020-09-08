@@ -3,6 +3,7 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
+#include "podio/SIOBlock.h"
 
 // SIO specific includes
 #include <sio/definitions.h>
@@ -34,6 +35,7 @@ namespace podio {
     std::string m_filename{};
     EventStore* m_store=nullptr;
 
+    std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData;
     sio::ofstream m_stream{} ;
     sio::block_list  m_blocks {} ;
     sio::buffer m_buffer{ sio::mbyte } ;
