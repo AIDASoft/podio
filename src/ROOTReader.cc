@@ -123,17 +123,10 @@ namespace podio {
     for (const auto& filename:  filenames) {
       m_chain->Add(filename.c_str());
     }
-    CollectionIDTable* l_table = new CollectionIDTable();
+    m_table = new CollectionIDTable();
     auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
-    metadatatree->SetBranchAddress("CollectionIDs",&l_table);
+    metadatatree->SetBranchAddress("CollectionIDs", &m_table);
     metadatatree->GetEntry(0);
-    auto l_names = l_table->names();
-    std::vector<int> l_collectionIDs;
-    for (const auto& name: l_names) {
-      l_collectionIDs.push_back(l_table->collectionID(name));
-    }
-
-    m_table = new CollectionIDTable(l_collectionIDs, l_names);
   }
 
   void ROOTReader::closeFile(){
