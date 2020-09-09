@@ -13,7 +13,9 @@ namespace podio {
   SIOWriter::SIOWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),
     m_store(store),
-    m_eventMetaData(std::make_shared<SIOEventMetaDataBlock>())
+    m_eventMetaData(std::make_shared<SIOEventMetaDataBlock>()),
+    m_runMetaData(std::make_shared<SIONumberedMetaDataBlock>("RunMetaData")),
+    m_collectionMetaData(std::make_shared<SIONumberedMetaDataBlock>("CollectionMetaData"))
   {
 
     m_stream.open( filename , std::ios::binary ) ;
@@ -24,6 +26,9 @@ namespace podio {
 
     m_eventMetaData->metadata = m_store->eventMetaDataPtr();
     m_blocks.push_back(m_eventMetaData);
+
+    m_runMetaData->data = m_store->getRunMetaDataMap();
+    m_collectionMetaData->data = m_store->getColMetaDataMap();
   }
 
   SIOWriter::~SIOWriter(){
@@ -58,6 +63,27 @@ namespace podio {
   }
 
   void SIOWriter::finish(){
+    m_buffer.clear();
+    m_com_buffer.clear();
+
+    sio::block_list blocks{};
+    blocks.push_back(m_runMetaData);
+
+    auto rec_info = sio::api::write_record(m_runMetaData->name(), m_buffer, blocks, 0);
+    sio::zlib_compression compressor;
+    compressor.set_level(6);
+    sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
+    sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
+
+    blocks.clear();
+    m_buffer.clear();
+    m_com_buffer.clear();
+
+    blocks.push_back(m_collectionMetaData);
+    rec_info = sio::api::write_record(m_collectionMetaData->name(), m_buffer, blocks, 0);
+    sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
+    sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
+
     m_stream.close() ;
   }
 

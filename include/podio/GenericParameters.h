@@ -123,13 +123,13 @@ namespace podio {
     IntMap& getIntMap() { return _intMap; }
 
     /**
-     * Get the floaternal float map (necessary for serialization with SIO)
+     * Get the internal float map (necessary for serialization with SIO)
      */
     const FloatMap& getFloatMap() const { return _floatMap; }
     FloatMap& getFloatMap() { return _floatMap; }
 
     /**
-     * Get the stringernal string map (necessary for serialization with SIO)
+     * Get the internal string map (necessary for serialization with SIO)
      */
     const StringMap& getStringMap() const { return _stringMap; }
     StringMap& getStringMap() { return _stringMap; }

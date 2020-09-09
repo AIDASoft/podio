@@ -74,6 +74,27 @@ namespace podio {
   }
 
 
+  void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type version) {
+    int size;
+    device.data(size);
+    while(size--) {
+      int id;
+      device.data(id);
+      GenericParameters params;
+      readGenericParameters(device, params);
+
+      data->emplace(id, std::move(params));
+    }
+  }
+
+  void SIONumberedMetaDataBlock::write(sio::write_device& device) {
+    device.data((int) data->size());
+    for (const auto& [id, params] : *data) {
+      device.data(id);
+      writeGenericParameters(device, params);
+    }
+  }
+
 
   std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name) const {
     const auto it = _map.find(typeStr) ;

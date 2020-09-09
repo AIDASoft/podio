@@ -41,6 +41,9 @@ namespace podio {
     sio::buffer m_buffer{ sio::mbyte } ;
     sio::buffer m_com_buffer{ sio::mbyte } ;
     bool m_firstEvent{true};
+
+    std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData;
+    std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData;
   };
 
 } //namespace
