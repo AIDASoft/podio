@@ -4,19 +4,14 @@
 file(GLOB sources *.cc)
 SET(root_sources ${sources})
 
-# --- rm SIO stuff from library if not needed - fixme should go to sub dir ...
-if(NOT SIO_HANDLERS)
-  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOReader.cc)
-  list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOReader.h)
-  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOWriter.cc)
-  list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOWriter.h)
-  list(REMOVE_ITEM headers ${CMAKE_SOURCE_DIR}/include/podio/SIOBlock.h)
-  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/SIOBlock.cc)
+# --- Store the sources for sio into a separate list
+if(SIO_HANDLERS)
+  SET(sio_sources ${sources})
+  LIST(FILTER sio_sources INCLUDE REGEX SIO.*)
 endif()
 
-MESSAGE( STATUS " sources: ${sources}" )
-MESSAGE( STATUS " sources: ${headers}" )
-
+# Remove SIO and ROOT related things from the core library
+LIST(FILTER sources EXCLUDE REGEX SIO.*)
 LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.* )
 LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.* )
 
@@ -42,12 +37,7 @@ add_library(podio::podioDict ALIAS podioDict)
 target_include_directories(podioDict PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-if (SIO_HANDLERS)
-  target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree ${SIO_LIBRARIES})
-  target_link_libraries(podio PUBLIC ${SIO_LIBRARIES})
-else()
-  target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree)
-endif()
+target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree)
 
 SET(headers
   ${CMAKE_SOURCE_DIR}/include/podio/CollectionBase.h
@@ -66,8 +56,16 @@ set_target_properties(podioDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 target_sources(podioDict PRIVATE podioDict.cxx)
 
+# SIO I/O library
+add_library(podioSioIO SHARED ${sio_sources})
+add_library(podio::podioSioIO ALIAS podioSioIO)
+target_include_directories(podio PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES})
+
 # Install the Targets and Headers
-install(TARGETS podio podioDict podioRootIO
+install(TARGETS podio podioDict podioRootIO podioSioIO
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 

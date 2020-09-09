@@ -7,10 +7,20 @@ endforeach()
 
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources)
 
-file(GLOB sources_utils utilities/*.cc)
-file(GLOB headers_utils utilities/*.h)
+if (SIO_HANDLERS)
+  # Filter out the sio block handlers to avoid polluting the TestDataModel lib
+  # with sio related things
+  SET(sio_headers ${headers})
+  SET(sio_sources ${sources})
 
-add_library(TestDataModel SHARED ${sources} ${sources_utils} ${headers} ${headers_utils})
+  LIST(FILTER headers EXCLUDE REGEX .*SIOBlock.h)
+  LIST(FILTER sio_headers INCLUDE REGEX .*SIOBlock.h)
+
+  LIST(FILTER sources EXCLUDE REGEX .*SIOBlock.cc)
+  LIST(FILTER sio_sources INCLUDE REGEX .*SIOBlock.cc)
+endif()
+
+add_library(TestDataModel SHARED ${sources} ${headers} )
 target_link_libraries(TestDataModel PUBLIC podio::podio)
 target_include_directories(TestDataModel PUBLIC
   ${CMAKE_SOURCE_DIR}/include
@@ -31,35 +41,50 @@ PODIO_GENERATE_DICTIONARY(TestDataModelDict ${headers} SELECTION src/selection.x
 set_target_properties(TestDataModelDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(TestDataModelDict TestDataModel)
 
+if (SIO_HANDLERS)
+  add_library(TestDataModelSioBlocks SHARED ${sio_sources} ${sio_headers})
+  target_link_libraries(TestDataModelSioBlocks PUBLIC podio::podio)
+  target_include_directories(TestDataModelSioBlocks PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/
+  )
+  # add_dependencies(TestDataModelSioBlocks TestDataModel)
+endif()
+
 #--- small utility helper function to allow for a more terse definition of tests below
-function(CREATE_PODIO_TEST sourcefile needs_root)
+function(CREATE_PODIO_TEST sourcefile additional_libs)
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
   add_test(NAME ${name} COMMAND ${name})
-  if (needs_root)
-    target_link_libraries(${name} TestDataModel TestDataModelDict podio::podioRootIO)
-    set_property(TEST ${name} PROPERTY ENVIRONMENT
+
+  target_link_libraries(${name} TestDataModel ${additional_libs})
+  set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
-  else()
-    target_link_libraries(${name} TestDataModel)
-    set_property(TEST ${name} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH})
-  endif()
+      ${additional_env}
+    )
 endfunction()
 
 set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp)
+set(root_libs TestDataModelDict podio::podioRootIO)
+set(root_env ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 foreach( sourcefile ${root_dependent_tests} )
-  CREATE_PODIO_TEST(${sourcefile} 1)
+  CREATE_PODIO_TEST(${sourcefile} "${root_libs}" ${root_env})
 endforeach()
 
-set(root_independent_tests ostream_operator.cpp unittest.cpp write_sio.cpp read_sio.cpp)
-if (NOT SIO_HANDLERS)
-  list(FILTER root_independent_tests EXCLUDE REGEX "sio")
-endif()
-foreach( sourcefile ${root_independent_tests} )
-  CREATE_PODIO_TEST(${sourcefile} 0)
+
+set(independent_tests ostream_operator.cpp unittest.cpp)
+foreach( sourcefile ${independent_tests} )
+  CREATE_PODIO_TEST(${sourcefile} "" "")
 endforeach()
+
+
+if (SIO_HANDLERS)
+  set(sio_dependent_tests write_sio.cpp read_sio.cpp )
+  set(sio_libs TestDataModelSioBlocks podio::podioSioIO)
+  foreach( sourcefile ${sio_dependent_tests} )
+    CREATE_PODIO_TEST(${sourcefile} "${sio_libs}" "")
+  endforeach()
+endif()
 
 #--- set some dependencies between the different tests to ensure input generating ones are run first
 set_property(TEST read PROPERTY DEPENDS write)
