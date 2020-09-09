@@ -32,15 +32,10 @@ namespace podio {
   class SIOReader : public IReader {
     friend EventStore;
   public:
-    SIOReader() : m_eventNumber(0), m_eventMetaData(std::make_shared<SIOEventMetaDataBlock>()) {
-      // make sure that the first block is EventMetaData as it is also the first
-      // during wrting
-      m_blocks.push_back(m_eventMetaData);
-    }
+    SIOReader();
     ~SIOReader();
     void openFile(const std::string& filename);
     void closeFile();
-
 
     /// Read all collections requested
     void readEvent();
@@ -81,16 +76,17 @@ namespace podio {
     CollectionBase* readCollection(const std::string& name) override final;
 
     /// read event meta data for current event
-    GenericParameters* readEventMetaData() override final ;
+    GenericParameters* readEventMetaData() override final { return m_eventMetaData->metadata; }
 
     /// read the collection meta data
-    std::map<int,GenericParameters>* readCollectionMetaData() override final ;
+    std::map<int,GenericParameters>* readCollectionMetaData() override final;
 
     /// read the run meta data
-    std::map<int,GenericParameters>* readRunMetaData() override final ;
+    std::map<int,GenericParameters>* readRunMetaData() override final;
 
   private:
     void readCollectionIDTable();
+    void readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock);
 
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
@@ -99,6 +95,9 @@ namespace podio {
     int m_lastEvtRead{-1};
 
     std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
+    std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData{};
+    std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData{};
+
     sio::ifstream    m_stream{} ;
     sio::record_info m_rec_info{} ;
     sio::buffer      m_info_buffer{ sio::max_record_info_len } ;

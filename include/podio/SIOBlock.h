@@ -90,6 +90,20 @@ namespace podio {
     podio::GenericParameters* metadata{nullptr};
   };
 
+  /**
+   * A block for handling the run and collection meta data
+   */
+  class SIONumberedMetaDataBlock : public sio::block {
+  public:
+    SIONumberedMetaDataBlock(const std::string& name) :
+      sio::block(name, sio::version::encode_version(0, 1)) {}
+
+    virtual void read(sio::read_device& device, sio::version_type version) override;
+    virtual void write(sio::write_device& device) override;
+
+    std::map<int, GenericParameters>* data{nullptr};
+  };
+
 
 /// factory for creating sio::blocks for a given type of EDM-collection
   class SIOBlockFactory {
