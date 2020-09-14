@@ -57,6 +57,7 @@ set_target_properties(podioDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 target_sources(podioDict PRIVATE podioDict.cxx)
 
 # SIO I/O library
+if(SIO_HANDLERS)
 add_library(podioSioIO SHARED ${sio_sources})
 add_library(podio::podioSioIO ALIAS podioSioIO)
 target_include_directories(podio PUBLIC
@@ -64,10 +65,18 @@ target_include_directories(podio PUBLIC
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES})
 
-# Install the Targets and Headers
-install(TARGETS podio podioDict podioRootIO podioSioIO
-  EXPORT podioTargets
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+  # Install the Targets and Headers
+  install(TARGETS podio podioDict podioRootIO podioSioIO
+    EXPORT podioTargets
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+else()
+  # Install the Targets and Headers
+  install(TARGETS podio podioDict podioRootIO
+    EXPORT podioTargets
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+endif()
+
+
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 install(FILES
