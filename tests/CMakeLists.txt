@@ -32,7 +32,6 @@ target_link_libraries(TestDataModelDict PUBLIC TestDataModel podio::podio ROOT::
 target_include_directories(TestDataModelDict PUBLIC
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/
-  ${ROOT_INCLUDE_DIRS}
  )
 
 PODIO_GENERATE_DICTIONARY(TestDataModelDict ${headers} SELECTION src/selection.xml
@@ -47,6 +46,7 @@ if (SIO_HANDLERS)
   target_include_directories(TestDataModelSioBlocks PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/
+    ${SIO_INCLUDE_DIRS}
   )
   # add_dependencies(TestDataModelSioBlocks TestDataModel)
 endif()
@@ -80,7 +80,7 @@ endforeach()
 
 if (SIO_HANDLERS)
   set(sio_dependent_tests write_sio.cpp read_sio.cpp )
-  set(sio_libs TestDataModelSioBlocks podio::podioSioIO)
+  set(sio_libs podio::podioSioIO)
   foreach( sourcefile ${sio_dependent_tests} )
     CREATE_PODIO_TEST(${sourcefile} "${sio_libs}" "")
   endforeach()
