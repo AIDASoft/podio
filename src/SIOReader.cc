@@ -21,6 +21,7 @@ namespace podio {
     // make sure that the first block is EventMetaData as it is also the first
     // during wrting
     m_blocks.push_back(m_eventMetaData);
+    auto& libLoader = SIOBlockLibraryLoader::instance();
   }
 
   CollectionBase* SIOReader::readCollection(const std::string& name) {

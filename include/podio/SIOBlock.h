@@ -153,5 +153,28 @@ namespace podio {
     return ( typeid(*(t)).name() );
   }
 
+
+  class SIOBlockLibraryLoader {
+  private:
+    SIOBlockLibraryLoader();
+    /**
+     * Load a library with the given name via dlopen
+     */
+    void loadLib(const std::string& libname);
+    /**
+     * Get all files that are found on LD_LIBRARY_PATH and that have "SioBlocks"
+     * in their name
+     */
+    static std::vector<std::string> getLibNames();
+
+    std::map<std::string, void*> _loadedLibs{};
+
+  public:
+    static SIOBlockLibraryLoader& instance() {
+      static SIOBlockLibraryLoader instance;
+      return instance;
+    }
+  };
+
 } // end namespace
 #endif

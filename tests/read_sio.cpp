@@ -1,8 +1,6 @@
 #include "read_test.h"
 #include "podio/SIOReader.h"
 
-#include "datamodel/EventInfoSIOBlock.h" // here to get the factory working properly
-
 int main(){
 //  auto reader = podio::SIOReader();
   podio::SIOReader reader; // SIOReader has no copy c'tor ...
