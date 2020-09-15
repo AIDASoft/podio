@@ -85,7 +85,8 @@ class ClassGenerator(object):
     for name, datatype in self.reader.datatypes.items():
       self._process_datatype(name, datatype)
 
-    self._create_selection_xml()
+    if 'ROOT' in self.reader.options['IOHandlers']:
+      self._create_selection_xml()
     self.print_report()
 
   def print_report(self):
@@ -206,7 +207,7 @@ class ClassGenerator(object):
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
 
-    if self.reader.options["createSIOHandlers"]:
+    if 'SIO' in self.reader.options["IOHandlers"]:
       self._fill_templates('SIOBlock', datatype)
 
   def _preprocess_for_obj(self, datatype):

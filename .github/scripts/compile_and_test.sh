@@ -9,7 +9,7 @@ else
     source /cvmfs/clicdp.cern.ch/iLCSoft/${VIEW}/init_ilcsoft.sh
     # Currently we need to "hack" the datalayout to actually generate SIO block handlers
     # TODO: handle this properly once the how is settled (see #131 for a discussion)
-    sed -i 's/\(createSIOHandlers:\) .*/\1 True/' /Package/tests/datalayout.yaml
+    sed -i 's/\(IOHandlers:\) .*/\1 ["ROOT", "SIO"]/' /Package/tests/datalayout.yaml
 fi
 
 cd /Package
