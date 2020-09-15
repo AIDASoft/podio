@@ -63,7 +63,7 @@ add_library(podio::podioSioIO ALIAS podioSioIO)
 target_include_directories(podio PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES})
+target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS})
 
   # Install the Targets and Headers
   install(TARGETS podio podioDict podioRootIO podioSioIO

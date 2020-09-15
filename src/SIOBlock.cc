@@ -1,6 +1,10 @@
 #include "podio/SIOBlock.h"
 
 #include <map>
+#include <dlfcn.h>
+#include <cstdlib>
+#include <sstream>
+#include <filesystem>
 
 namespace podio {
   void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type version) {
@@ -119,6 +123,50 @@ namespace podio {
     } else {
       return nullptr;
     }
+  }
+
+
+  SIOBlockLibraryLoader::SIOBlockLibraryLoader() {
+    for (const auto& lib : getLibNames()) {
+      loadLib(lib);
+    }
+  }
+
+  void SIOBlockLibraryLoader::loadLib(const std::string& libname) {
+    if (_loadedLibs.find(libname) != _loadedLibs.end()) {
+      std::cerr << "SIOBlocks library \'" << libname << "\' already loaded. Not loading it again" << std::endl;
+      return;
+    }
+
+    void* libhandle = dlopen(libname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+    if (libhandle) {
+      std::cout << "Loading SIOBlocks library \'" << libname << "\'" << std::endl;
+      _loadedLibs.insert({libname, libhandle});
+    } else {
+      std::cerr << "ERROR while loading SIOBlocks library \'" << libname << "\'" << std::endl;
+    }
+  }
+
+  std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
+    namespace fs = std::filesystem;
+
+    std::vector<std::string> libs;
+
+    std::string dir;
+    std::istringstream stream(std::getenv("LD_LIBRARY_PATH"));
+    while(std::getline(stream, dir, ':')) {
+      if (not fs::exists(dir)) continue;
+
+      for (auto& lib : fs::directory_iterator(dir)) {
+        const auto filename = lib.path().filename().string();
+        if (filename.find("SioBlocks") != std::string::npos) {
+          libs.emplace_back(std::move(filename));
+        }
+      }
+
+    }
+
+    return libs;
   }
 
 }
