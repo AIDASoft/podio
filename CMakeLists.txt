@@ -101,7 +101,6 @@ if(SIO_HANDLERS)
   find_package( SIO REQUIRED)
   if (SIO_FOUND)
     MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
-    include_directories(${SIO_INCLUDE_DIRS})
   endif()
 endif()
 

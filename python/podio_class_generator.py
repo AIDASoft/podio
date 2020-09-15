@@ -152,7 +152,7 @@ class ClassGenerator(object):
         'PrintInfo': 'PrintInfo',
         'Object': '',
         'Component': '',
-        'SIOBlock': 'SIOBlock'
+        'SIOBlock': 'SIOBlock',
         }.get(template_base, template_base)
 
     endings = {

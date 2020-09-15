@@ -58,25 +58,19 @@ target_sources(podioDict PRIVATE podioDict.cxx)
 
 # SIO I/O library
 if(SIO_HANDLERS)
-add_library(podioSioIO SHARED ${sio_sources})
-add_library(podio::podioSioIO ALIAS podioSioIO)
-target_include_directories(podio PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS})
-
-  # Install the Targets and Headers
-  install(TARGETS podio podioDict podioRootIO podioSioIO
-    EXPORT podioTargets
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-else()
-  # Install the Targets and Headers
-  install(TARGETS podio podioDict podioRootIO
-    EXPORT podioTargets
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+  add_library(podioSioIO SHARED ${sio_sources})
+  add_library(podio::podioSioIO ALIAS podioSioIO)
+  target_include_directories(podioSioIO PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    ${SIO_INCLUDE_DIRS})
+  target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS})
+  LIST(APPEND INSTALL_LIBRARIES podioSioIO)
 endif()
 
-
+install(TARGETS podio podioDict podioRootIO ${INSTALL_LIBRARIES}
+  EXPORT podioTargets
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 install(FILES
