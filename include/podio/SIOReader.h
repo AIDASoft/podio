@@ -46,29 +46,6 @@ namespace podio {
     /// Check if file is valid
     virtual bool isValid() const override final;
 
-    // /// request the named collection of type T to be read and register with store
-    // template<typename T>
-    // void registerCollection(const std::string& name, EventStore* store){
-
-    //   // create and register SIOBlock ...
-
-    //   T* col = new T ;
-    //   auto blk = podio::SIOBlockFactory::instance().createBlock( col, name ) ;
-
-    //   if(!blk){
-    // 	std::string typeName = demangleClassName( col ) ;
-    // 	throw std::runtime_error(" could not create block for type: "+typeName );
-    //   }
-
-    //   blk->setCollectionProvider( store ) ;
-
-    //   m_blocks.push_back( blk ) ;
-
-    //   store->registerCollection( name, col ) ;
-
-    //   m_table.add( name ) ;
-    // }
-
     void endOfEvent();
 
   private:
@@ -92,7 +69,6 @@ namespace podio {
     std::vector<Input> m_inputs;
     CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
-    int m_lastEvtRead{-1};
 
     std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
     std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData{};

@@ -3,5 +3,4 @@
 
 int main(int argc, char* argv[]){
   write<podio::SIOWriter>("example.sio");
-  write<podio::SIOWriter>("example1.sio");
 }
