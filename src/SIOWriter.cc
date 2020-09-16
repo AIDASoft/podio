@@ -49,9 +49,6 @@ namespace podio {
     m_buffer.clear() ;
     m_com_buffer.clear() ;
 
-    // for (auto& coll : m_storedCollections){
-    //   coll->prepareForWrite();
-    // }
     // write the record to the sio buffer
     auto rec_info = sio::api::write_record( "event_record", m_buffer, m_blocks, 0 ) ;
 
