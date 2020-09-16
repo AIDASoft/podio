@@ -68,7 +68,7 @@ endif()
 
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
-option(SIO_HANDLERS "Build the SIO block handlers and readers and writers." OFF)
+option(ENABLE_SIO "Build the SIO block handlers and readers and writers." OFF)
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
@@ -97,7 +97,7 @@ if(ROOT_VERSION VERSION_LESS 6.14)
 endif()
 
 #--- optionally build with SIO -------------------------------------------------
-if(SIO_HANDLERS)
+if(ENABLE_SIO)
   find_package( SIO REQUIRED)
   if (SIO_FOUND)
     MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )

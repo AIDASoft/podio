@@ -5,7 +5,7 @@ file(GLOB sources *.cc)
 SET(root_sources ${sources})
 
 # --- Store the sources for sio into a separate list
-if(SIO_HANDLERS)
+if(ENABLE_SIO)
   SET(sio_sources ${sources})
   LIST(FILTER sio_sources INCLUDE REGEX SIO.*)
 endif()
@@ -57,7 +57,7 @@ set_target_properties(podioDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 target_sources(podioDict PRIVATE podioDict.cxx)
 
 # SIO I/O library
-if(SIO_HANDLERS)
+if(ENABLE_SIO)
   add_library(podioSioIO SHARED ${sio_sources})
   add_library(podio::podioSioIO ALIAS podioSioIO)
   target_include_directories(podioSioIO PUBLIC

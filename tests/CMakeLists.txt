@@ -7,7 +7,7 @@ endforeach()
 
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources)
 
-if (SIO_HANDLERS)
+if (ENABLE_SIO)
   # Filter out the sio block handlers to avoid polluting the TestDataModel lib
   # with sio related things
   SET(sio_headers ${headers})
@@ -40,7 +40,7 @@ PODIO_GENERATE_DICTIONARY(TestDataModelDict ${headers} SELECTION src/selection.x
 set_target_properties(TestDataModelDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(TestDataModelDict TestDataModel)
 
-if (SIO_HANDLERS)
+if (ENABLE_SIO)
   add_library(TestDataModelSioBlocks SHARED ${sio_sources} ${sio_headers})
   target_link_libraries(TestDataModelSioBlocks PUBLIC podio::podio)
   target_include_directories(TestDataModelSioBlocks PUBLIC
@@ -78,7 +78,7 @@ foreach( sourcefile ${independent_tests} )
 endforeach()
 
 
-if (SIO_HANDLERS)
+if (ENABLE_SIO)
   set(sio_dependent_tests write_sio.cpp read_sio.cpp )
   set(sio_libs podio::podioSioIO)
   foreach( sourcefile ${sio_dependent_tests} )
@@ -89,7 +89,7 @@ endif()
 #--- set some dependencies between the different tests to ensure input generating ones are run first
 set_property(TEST read PROPERTY DEPENDS write)
 set_property(TEST read-multiple PROPERTY DEPENDS write)
-if (SIO_HANDLERS)
+if (ENABLE_SIO)
   set_property(TEST read_sio PROPERTY DEPENDS write_sio)
 endif()
 
