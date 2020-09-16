@@ -60,21 +60,19 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
   target_link_libraries(${name} TestDataModel ${additional_libs})
   set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-      ${additional_env}
     )
 endfunction()
 
 set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp)
 set(root_libs TestDataModelDict podio::podioRootIO)
-set(root_env ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 foreach( sourcefile ${root_dependent_tests} )
-  CREATE_PODIO_TEST(${sourcefile} "${root_libs}" ${root_env})
+  CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
 
 
 set(independent_tests ostream_operator.cpp unittest.cpp)
 foreach( sourcefile ${independent_tests} )
-  CREATE_PODIO_TEST(${sourcefile} "" "")
+  CREATE_PODIO_TEST(${sourcefile} "")
 endforeach()
 
 
@@ -82,7 +80,7 @@ if (ENABLE_SIO)
   set(sio_dependent_tests write_sio.cpp read_sio.cpp )
   set(sio_libs podio::podioSioIO)
   foreach( sourcefile ${sio_dependent_tests} )
-    CREATE_PODIO_TEST(${sourcefile} "${sio_libs}" "")
+    CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
   endforeach()
 endif()
 
