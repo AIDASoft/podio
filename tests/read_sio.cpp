@@ -15,16 +15,9 @@ int main(){
       if(i%1000==0)
         std::cout<<"reading event "<<i<<std::endl;
 
-      reader.readEvent() ;
-
       processEvent(store, true, i);
-
-      // only clear collections for re-use
-      store.clearCollections();
-      store.clearCaches(); // Would be done in EventStore::clear
-      // store.clear();    // However, this would delete the collections as well ...
+      store.clear();
       reader.endOfEvent();
-
     }
   }
   catch( sio::exception &e ) {

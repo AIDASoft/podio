@@ -53,7 +53,7 @@ namespace podio {
     CollectionBase* readCollection(const std::string& name) override final;
 
     /// read event meta data for current event
-    GenericParameters* readEventMetaData() override final { return m_eventMetaData->metadata; }
+    GenericParameters* readEventMetaData() override final;
 
     /// read the collection meta data
     std::map<int,GenericParameters>* readCollectionMetaData() override final;
@@ -64,11 +64,14 @@ namespace podio {
   private:
     void readCollectionIDTable();
     void readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock);
+    void createBlocks();
 
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
     CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
+    int m_lastEventRead{-1};
+    std::vector<std::string> m_typeNames;
 
     std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
     std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData{};
