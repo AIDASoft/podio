@@ -18,13 +18,14 @@ namespace podio {
     m_runMetaData(std::make_shared<SIONumberedMetaDataBlock>("RunMetaData")),
     m_collectionMetaData(std::make_shared<SIONumberedMetaDataBlock>("CollectionMetaData"))
   {
-    // make sure that the first block is EventMetaData as it is also the first
-    // during wrting
-    m_blocks.push_back(m_eventMetaData);
     auto& libLoader = SIOBlockLibraryLoader::instance();
   }
 
   CollectionBase* SIOReader::readCollection(const std::string& name) {
+    if (m_lastEventRead != m_eventNumber) {
+      readEvent();
+    }
+
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
                           [&name](const SIOReader::Input& t){ return t.second == name;});
 
@@ -56,6 +57,12 @@ namespace podio {
     return m_runMetaData->data;
   }
 
+  podio::GenericParameters* SIOReader::readEventMetaData() {
+    if (m_lastEventRead != m_eventNumber) {
+      readEvent();
+    }
+    return m_eventMetaData->metadata;
+  }
 
   void SIOReader::openFile(const std::string& filename){
     m_stream.open( filename , std::ios::binary ) ;
@@ -68,7 +75,9 @@ namespace podio {
   }
 
   void SIOReader::readEvent(){
-    m_eventMetaData->metadata = new GenericParameters(); // will be managed by EventStore (?)
+    // recreate the blocks, since the contents are owned and managed by the
+    // EventStore
+    createBlocks();
 
     // skip possible intermediate records that are not event data
     sio::api::go_to_record(m_stream, "event_record");
@@ -80,12 +89,13 @@ namespace podio {
     m_unc_buffer.resize( rec_info._uncompressed_length ) ;
     sio::zlib_compression compressor ;
     compressor.uncompress( m_rec_buffer.span(), m_unc_buffer ) ;
-
     sio::api::read_blocks( m_unc_buffer.span(), m_blocks ) ;
 
     for (auto& [collection, name] : m_inputs) {
       collection->setID(m_table->collectionID(name));
     }
+
+    m_lastEventRead = m_eventNumber;
   }
 
   bool SIOReader::isValid() const {
@@ -98,10 +108,24 @@ namespace podio {
     // TODO: who deletes the buffers?
   }
 
- void SIOReader::endOfEvent() {
-   ++m_eventNumber;
-//   m_inputs.clear();
- }
+  void SIOReader::endOfEvent() {
+    ++m_eventNumber;
+    m_blocks.clear();
+    m_inputs.clear();
+  }
+
+  void SIOReader::createBlocks() {
+    // make sure that the first block is EventMetaData as it is also the first
+    // during wrting
+    m_eventMetaData->metadata = new GenericParameters(); // will be managed by EventStore (?)
+    m_blocks.push_back(m_eventMetaData);
+
+    for (size_t i = 0; i < m_typeNames.size(); ++i) {
+      auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i]);
+      m_blocks.push_back(blk);
+      m_inputs.emplace_back(blk->getCollection(), m_table->names()[i]);
+    }
+  }
 
   void SIOReader::readCollectionIDTable() {
     sio::record_info rec_info;
@@ -118,14 +142,7 @@ namespace podio {
 
     auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
     m_table = idTableBlock->getTable();
-    const auto& typeNames = idTableBlock->getTypeNames();
-
-    for (size_t i = 0; i < typeNames.size(); ++i) {
-      auto blk = podio::SIOBlockFactory::instance().createBlock(typeNames[i], m_table->names()[i]);
-      m_blocks.push_back(blk);
-      m_inputs.emplace_back(std::make_pair(blk->getCollection(), m_table->names()[i]));
-    }
-
+    m_typeNames = idTableBlock->getTypeNames();
   }
 
   void SIOReader::readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock) {
