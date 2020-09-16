@@ -4,7 +4,11 @@
 #include <dlfcn.h>
 #include <cstdlib>
 #include <sstream>
-#include <filesystem>
+#ifdef USE_BOOST_FS
+ #include <boost/filesystem.hpp>
+#else
+ #include <filesystem>
+#endif
 
 namespace podio {
   void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type version) {
@@ -148,8 +152,11 @@ namespace podio {
   }
 
   std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
+#ifdef USE_BOOST_FS
+    namespace fs = boost::filesystem;
+#else
     namespace fs = std::filesystem;
-
+#endif
     std::vector<std::string> libs;
 
     std::string dir;
