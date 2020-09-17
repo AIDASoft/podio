@@ -7,13 +7,6 @@ gSystem.Load("libpodioRootIO")  # noqa: E402
 from ROOT import podio
 
 
-def iterator(self):
-  '''dynamically added iterator'''
-  entries = self.size()
-  for entry in range(entries):
-    yield self.at(entry)
-
-
 def size(self):
   return self.size()
 
@@ -67,12 +60,15 @@ class EventStore(object):
        name: name of the collection in the podio root file.
     '''
     coll = self.current_store.get(name)
-    # adding iterator generator to be able to loop on the collection
-    coll.__iter__ = iterator
     # adding length function
     coll.__len__ = size
     # enabling the use of [] notation on the collection
-    coll.__getitem__ = getitem
+    # cppyy defines the __getitem__ method if the underlying c++ class has an operator[]
+    # method. For some reason they do not conform to the usual signature and only
+    # pass one argument to the function they call. Here we simply check if we have to
+    # define the __getitem__ for the collection.
+    if not hasattr(coll, '__getitem__'):
+      coll.__getitem__ = getitem
     return coll
 
   def isValid(self):
