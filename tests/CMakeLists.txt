@@ -5,7 +5,8 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
-PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources)
+PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS})
 
 if (ENABLE_SIO)
   # Filter out the sio block handlers to avoid polluting the TestDataModel lib

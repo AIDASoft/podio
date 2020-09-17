@@ -98,12 +98,14 @@ endif()
 if(ROOT_VERSION VERSION_LESS 6.14)
   set_property(TARGET ROOT::Core APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
 endif()
+list(APPEND PODIO_IO_HANDLERS ROOT)
 
 #--- optionally build with SIO -------------------------------------------------
 if(ENABLE_SIO)
   find_package( SIO REQUIRED)
   if (SIO_FOUND)
     MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
+    list(APPEND PODIO_IO_HANDLERS SIO)
   endif()
 endif()
 

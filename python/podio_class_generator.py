@@ -56,9 +56,10 @@ def get_clang_format():
 
 
 class ClassGenerator(object):
-  def __init__(self, yamlfile, install_dir, package_name, verbose, dryrun):
+  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun):
     self.install_dir = install_dir
     self.package_name = package_name
+    self.io_handlers = io_handlers
     self.verbose = verbose
     self.dryrun = dryrun
     self.yamlfile = yamlfile
@@ -85,7 +86,7 @@ class ClassGenerator(object):
     for name, datatype in self.reader.datatypes.items():
       self._process_datatype(name, datatype)
 
-    if 'ROOT' in self.reader.options['IOHandlers']:
+    if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
     self.print_report()
 
@@ -207,7 +208,7 @@ class ClassGenerator(object):
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
 
-    if 'SIO' in self.reader.options["IOHandlers"]:
+    if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
 
   def _preprocess_for_obj(self, datatype):
@@ -400,6 +401,17 @@ class ClassGenerator(object):
     return package_includes + podio_includes + stl_includes
 
 
+def verify_io_handlers(handler):
+  """Briefly verify that all arguments passed as handlers are indeed valid"""
+  valid_handlers = (
+      'ROOT',
+      'SIO',
+      )
+  if handler in valid_handlers:
+    return handler
+  raise argparse.ArgumentError('{} is not a valid io handler'.format(handler))
+
+
 if __name__ == "__main__":
   import argparse
   parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
@@ -410,7 +422,8 @@ if __name__ == "__main__":
                       'Header files will be put under <targetdir>/<packagename>/*.h. '
                       'Source files will be put under <targetdir>/src/*.cc')
   parser.add_argument('packagename', help='Name of the package.')
-
+  parser.add_argument('iohandlers', help='The IO backend specific code that should be generated',
+                      type=verify_io_handlers, nargs='+')
   parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True,
                       help='Don\'t write a report to screen')
   parser.add_argument('-d', '--dryrun', action='store_true', default=False,
@@ -428,7 +441,7 @@ if __name__ == "__main__":
     if not os.path.exists(directory):
       os.makedirs(directory)
 
-  gen = ClassGenerator(args.description, args.targetdir, args.packagename,
+  gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers,
                        verbose=args.verbose, dryrun=args.dryrun)
   if args.clangformat:
     gen.clang_format = get_clang_format()

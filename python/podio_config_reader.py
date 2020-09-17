@@ -321,8 +321,6 @@ class PodioConfigReader(object):
         "exposePODMembers": True,
         # use subfolder when including package header files
         "includeSubfolder": False,
-        # which IOHandlers to generate
-        "IOHandlers": ['ROOT'],
         }
     self.warnings = set()
 

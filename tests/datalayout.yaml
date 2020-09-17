@@ -6,7 +6,6 @@ options :
   # should POD members be exposed with getters/setters in classes that have them as members?
   exposePODMembers: True
   includeSubfolder: True
-  IOHandlers: ["ROOT"] #,"SIO"]
 
 components :
   SimpleStruct:

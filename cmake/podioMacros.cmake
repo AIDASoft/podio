@@ -101,6 +101,7 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 #---PODIO_GENERATE_DATAMODEL( datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES
 #      OUTPUT_FOLDER      output_directory
+#      IO_BACKEND_HANDLERS  io_handlers
 #   )
 #
 #   Arguments:
@@ -111,20 +112,27 @@ endfunction()
 #   Parameters:
 #      OUTPUT_FOLDER        OPTIONAL: The folder in which the output files should be placed
 #                           Default is ${CMAKE_CURRENT_SOURCE_DIR}
+#      IO_BACKEND_HANDLERS  OPTIONAL: The I/O backend handlers that should be generated. The list is
+#                           passed directly to podio_class_generator.py and validated there
+#                           Default is ROOT
 #  )
 #
 # Note that the create_${datamodel} target will always be called, but if the YAML_FILE has not changed
 # this is essentially a no-op, and should not cause re-compilation.
 #---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "IO_BACKEND_HANDLERS" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
+  ENDIF()
+  IF(NOT ARG_IO_BACKEND_HANDLERS)
+    # At least build the ROOT selection.xml by default for now
+    SET(ARG_IO_BACKEND_HANDLERS "ROOT")
   ENDIF()
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E echo "Creating \"${datamodel}\" data model"
-    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel}
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
@@ -138,7 +146,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     COMMENT "Re-Creating \"${datamodel}\" data model"
     DEPENDS ${YAML_FILE}
     BYPRODUCTS ${sources} ${headers}
-    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel}
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
