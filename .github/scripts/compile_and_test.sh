@@ -7,9 +7,6 @@ if [ ${ENABLE_SIO} = "OFF" ]; then
     source /cvmfs/sft.cern.ch/lcg/views/${VIEW}/setup.sh
 else
     source /cvmfs/clicdp.cern.ch/iLCSoft/${VIEW}/init_ilcsoft.sh
-    # Currently we need to "hack" the datalayout to actually generate SIO block handlers
-    # TODO: handle this properly once the how is settled (see #131 for a discussion)
-    sed -i 's/\(IOHandlers:\) .*/\1 ["ROOT", "SIO"]/' /Package/tests/datalayout.yaml
 fi
 
 cd /Package
