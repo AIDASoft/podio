@@ -7,7 +7,11 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        LCG: ["LCG_96b/x86_64-centos7-gcc9-opt","LCG_96b/x86_64-centos7-gcc8-opt","LCG_96b/x86_64-centos7-clang8-opt","LCG_96bpython3/x86_64-centos7-gcc8-opt"]
+        LCG: ["LCG_96b/x86_64-centos7-gcc8-opt",
+              "LCG_97a/x86_64-centos7-gcc9-opt",
+              "LCG_98/x86_64-centos7-clang10-opt",
+              "LCG_98python3/x86_64-centos7-gcc9-opt",
+              "LCG_98python3/x86_64-centos7-gcc10-opt"]
     steps:
     - uses: actions/checkout@v2
     - name: Install CVMFS
