@@ -4,9 +4,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <type_traits>
 #include <set>
 #include <iostream>
+#include <memory>
 
 // podio specific includes
 #include "podio/CollectionIDTable.h"
@@ -80,7 +80,7 @@ namespace podio {
     /// set the reader
     void setReader(IReader* reader);
 
-    CollectionIDTable* getCollectionIDTable() const {return m_table;};
+    CollectionIDTable* getCollectionIDTable() const { return m_table.get(); }
 
     virtual bool isValid() const final;
 
@@ -103,14 +103,14 @@ namespace podio {
     bool doGet(const std::string& name, CollectionBase*& collection, bool setReferences = true) const;
     /// check if a collection of given name already exists
     bool collectionRegistered(const std::string& name) const;
-    void setCollectionIDTable(CollectionIDTable* table){if (m_table!=nullptr) delete m_table; m_table=table;};
+    void setCollectionIDTable(CollectionIDTable* table) { m_table.reset(table); }
 
     // members
     mutable std::set<int> m_retrievedIDs;
     mutable CollContainer m_collections;
     mutable std::vector<CollectionBase*> m_cachedCollections;
     IReader* m_reader=nullptr;
-    CollectionIDTable* m_table;
+    std::unique_ptr<CollectionIDTable> m_table;
 
     mutable GenericParameters  m_evtMD ;
     mutable RunMDMap m_runMDMap ;

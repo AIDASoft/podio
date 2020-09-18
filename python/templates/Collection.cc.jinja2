@@ -98,6 +98,7 @@ void {{ collection_type }}::clear() {
 {% endfor %}
 {% for member in VectorMembers %}
   m_vec_{{ member.name }}->clear();
+  for (auto& vec : m_vecs_{{ member.name }}) { delete vec; }
   m_vecs_{{ member.name }}.clear();
 
 {% endfor %}

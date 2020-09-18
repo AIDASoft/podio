@@ -91,7 +91,8 @@ namespace podio {
     if( m_reader != nullptr ){
       m_evtMD.clear() ;
       GenericParameters* tmp = m_reader->readEventMetaData() ;
-      m_evtMD = *tmp ;
+      m_evtMD = std::move(*tmp);
+      delete tmp;
     }
     return m_evtMD ;
   }
@@ -100,7 +101,8 @@ namespace podio {
 
     if( m_runMDMap.empty() && m_reader != nullptr ){
       RunMDMap* tmp = m_reader->readRunMetaData() ;
-      m_runMDMap = *tmp ;
+      m_runMDMap = std::move(*tmp) ;
+      delete tmp;
     }
     return m_runMDMap[ runID ] ;
   } ;
@@ -110,7 +112,8 @@ namespace podio {
 
     if( m_colMDMap.empty() && m_reader != nullptr ){
       ColMDMap* tmp = m_reader->readCollectionMetaData() ;
-      m_colMDMap = *tmp ;
+      m_colMDMap = std::move(*tmp) ;
+      delete tmp;
     }
     return m_colMDMap[ colID ] ;
   } ;
