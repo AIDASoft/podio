@@ -73,6 +73,22 @@ option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+
+# Check that root is compiled with a modern enough c++ standard
+get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
+if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES)
+  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17")
+endif()
+# Also verify that it has been built against the same python version as we are
+# using (that is if ROOT gives us the necessary tools)
+if (${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
+  set(Python_FIND_FRAMEWORK LAST)
+  find_package(Python COMPONENTS Development)
+  if (NOT ${Python_VERSION} EQUAL ${ROOT_PYTHON_VERSION})
+    message(WARNING "Python version used for buildig ROOT is different than the current python version: " ${ROOT_PYTHON_VERSION} " vs " ${Python_VERSION})
+  endif()
+endif()
+
 # ROOT only sets usage requirements from 6.14, so for
 # earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
 if(ROOT_VERSION VERSION_LESS 6.14)
