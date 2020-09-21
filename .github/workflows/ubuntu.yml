@@ -3,21 +3,28 @@ name: ubuntu
 on: [push, pull_request]
 
 jobs:
-  test-ubuntu:
-    runs-on: ubuntu-latest
-    container: rootproject/root-ubuntu
+  test:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        LCG: ["LCG_98/x86_64-ubuntu1804-gcc7-opt", "LCG_98/x86_64-ubuntu1804-gcc8-opt"]
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Dependencies
+    - name: Install CVMFS
       run: |
-        apt update
-        apt -y install python3-yaml python-is-python3 python3-pip
-        pip3 install -r requirements.txt
+        wget --no-check-certificate https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
+        sudo dpkg -i cvmfs-release-latest_all.deb
+        sudo apt-get update
+        sudo apt-get install cvmfs cvmfs-config-default
+        wget --no-check-certificate https://lcd-data.web.cern.ch/lcd-data/CernVM/default.local
+        sudo mkdir -p /etc/cvmfs
+        sudo mv default.local /etc/cvmfs/default.local
+        sudo cvmfs_config setup
+        ls /cvmfs/sft.cern.ch
+        ls /cvmfs/geant4.cern.ch
+    - name: Start container
+      run: |
+        docker run -it --name CI_container -v /home/runner/work/podio/podio:/Package -e VIEW=${{ matrix.LCG }} -v /cvmfs:/cvmfs -d ghcr.io/aidasoft/ubuntu18:latest /bin/bash
     - name: Compile and test
       run: |
-        mkdir build install
-        cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=../install
-        make -j `getconf _NPROCESSORS_ONLN`
-        make install
-        ctest --output-on-failure
+        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
