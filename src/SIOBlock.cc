@@ -4,7 +4,7 @@
 #include <dlfcn.h>
 #include <cstdlib>
 #include <sstream>
-#ifdef USE_BOOST_FS
+#ifdef USE_BOOST_FILESYSTEM
  #include <boost/filesystem.hpp>
 #else
  #include <filesystem>
@@ -152,7 +152,7 @@ namespace podio {
   }
 
   std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
-#ifdef USE_BOOST_FS
+#ifdef USE_BOOST_FILESYSTEM
     namespace fs = boost::filesystem;
 #else
     namespace fs = std::filesystem;

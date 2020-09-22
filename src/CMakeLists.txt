@@ -58,29 +58,14 @@ target_sources(podioDict PRIVATE podioDict.cxx)
 
 # SIO I/O library
 if(ENABLE_SIO)
-
-  if( USE_BOOST_FS )
-    find_package(boost)
-    add_definitions(-D USE_BOOST_FS)
-  endif()
-
   add_library(podioSioIO SHARED ${sio_sources})
   add_library(podio::podioSioIO ALIAS podioSioIO)
 
-  if(USE_BOOST_FS)
-    target_include_directories(podioSioIO PUBLIC
-      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-      ${SIO_INCLUDE_DIRS}
-      ${BOOST_INCLUDE_DIR})
-    target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS} boost_filesystem)
-  else()
-    target_include_directories(podioSioIO PUBLIC
-      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-      ${SIO_INCLUDE_DIRS})
-    target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS})
-  endif()
+  target_include_directories(podioSioIO PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    ${SIO_INCLUDE_DIRS})
+  target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
 
   LIST(APPEND INSTALL_LIBRARIES podioSioIO)
 endif()

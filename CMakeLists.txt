@@ -71,8 +71,6 @@ option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
 option(ENABLE_SIO "Build the SIO block handlers and readers and writers." OFF)
 
 
-option(USE_BOOST_FS "Use the boost filesystem library (in case your system does not yet have it)" OFF)
-
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -100,17 +98,18 @@ if(ROOT_VERSION VERSION_LESS 6.14)
 endif()
 list(APPEND PODIO_IO_HANDLERS ROOT)
 
-#--- optionally build with SIO -------------------------------------------------
+#--- enable podio macros--------------------------------------------------------
+include(cmake/podioMacros.cmake)
+
+# optionally build with SIO -------------------------------------------------
 if(ENABLE_SIO)
   find_package( SIO REQUIRED)
+  PODIO_CHECK_CPP_FS(PODIO_FS_LIBS)
   if (SIO_FOUND)
     MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
     list(APPEND PODIO_IO_HANDLERS SIO)
   endif()
 endif()
-
-#--- enable podio macros--------------------------------------------------------
-include(cmake/podioMacros.cmake)
 
 #--- enable unit testing capabilities ------------------------------------------
 include(CTest)
