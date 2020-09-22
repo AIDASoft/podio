@@ -51,10 +51,10 @@ class ROOTReader : public IReader {
     CollectionIDTable* getCollectionIDTable() override final {return m_table;}
 
     /// Returns number of entries in the TTree
-    unsigned getEntries() const;
+    unsigned getEntries() const override;
 
     /// Preparing to read next event
-    void endOfEvent();
+    void endOfEvent() override;
 
     /// Preparing to read a given event
     void goToEvent(unsigned evnum);

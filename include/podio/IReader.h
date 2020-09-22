@@ -33,6 +33,10 @@ class IReader {
     virtual GenericParameters* readEventMetaData()=0 ;
     virtual std::map<int,GenericParameters>* readCollectionMetaData()=0 ;
     virtual std::map<int,GenericParameters>* readRunMetaData()=0 ;
+    /// get the number of events available from this reader
+    virtual unsigned getEntries() const = 0;
+    /// Prepare the reader to read the next event
+    virtual void endOfEvent() = 0;
     //TODO: decide on smart-pointers for passing of objects
     /// Check if reader is valid
     virtual bool isValid() const = 0;

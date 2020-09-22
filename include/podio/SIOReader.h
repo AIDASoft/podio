@@ -43,10 +43,12 @@ namespace podio {
     /// Read CollectionIDTable from SIO file
     CollectionIDTable* getCollectionIDTable() override final {return m_table;}
 
+    unsigned getEntries() const override {return m_Entries; }
+
     /// Check if file is valid
     virtual bool isValid() const override final;
 
-    void endOfEvent();
+    void endOfEvent() override;
 
   private:
     /// Implementation for collection reading
@@ -71,6 +73,7 @@ namespace podio {
     CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
     int m_lastEventRead{-1};
+    unsigned m_Entries{0};
     std::vector<std::string> m_typeNames;
 
     std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
