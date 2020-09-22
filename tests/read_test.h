@@ -15,6 +15,7 @@
 
 // podio specific includes
 #include "podio/EventStore.h"
+#include "podio/IReader.h"
 
 // STL
 #include <vector>
@@ -220,6 +221,35 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
     }
   } else {
     throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
+  }
+}
+
+void run_read_test(podio::IReader& reader) {
+  auto store = podio::EventStore();
+  store.setReader(&reader);
+
+  const auto nEvents = reader.getEntries();
+
+  // Some information in the test files dpends directly on the index. In
+  // read-multiple, the same file is essentially read twice, so that at the file
+  // change the index which is used for testing has to start at 0 again. This
+  // function just wraps that. The magic number of 2000 is the number of events
+  // that are present in each file that is written in write
+  const auto correctIndex = [nEvents](unsigned index) {
+    if (nEvents > 2000) {
+      return index % (nEvents / 2);
+    }
+    return index;
+  };
+
+  for(unsigned i=0; i<nEvents; ++i) {
+
+    if(i%1000==0)
+      std::cout<<"reading event "<<i<<std::endl;
+
+    processEvent(store, true, correctIndex(i));
+    store.clear();
+    reader.endOfEvent();
   }
 }
 

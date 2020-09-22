@@ -67,6 +67,22 @@ namespace podio {
   void SIOReader::openFile(const std::string& filename){
     m_stream.open( filename , std::ios::binary ) ;
     readCollectionIDTable();
+
+    // TODO: this is currently just a really inefficient implementation to have
+    // feature parity with the ROOTReader and to implement the IReader interface
+    // correctly. For actual production calling this function might incur a
+    // significant delay.
+    try {
+      sio::api::go_to_record(m_stream, "event_record");
+      m_Entries++;
+    } catch (sio::exception& e) {
+      if (e.code() != sio::error_code::eof) {
+        SIO_RETHROW(e, e.code(), e.what());
+      }
+    }
+    // jump back to the start
+    m_stream.seekg(0);
+
   }
 
 
