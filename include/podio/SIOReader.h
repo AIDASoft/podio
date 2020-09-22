@@ -43,7 +43,7 @@ namespace podio {
     /// Read CollectionIDTable from SIO file
     CollectionIDTable* getCollectionIDTable() override final {return m_table;}
 
-    unsigned getEntries() const override {return m_Entries; }
+    unsigned getEntries() const override { return m_tocRecord.getNRecords("event_record"); }
 
     /// Check if file is valid
     virtual bool isValid() const override final;
@@ -63,6 +63,12 @@ namespace podio {
     /// read the run meta data
     std::map<int,GenericParameters>* readRunMetaData() override final;
 
+    /// read the TOC record
+    bool readFileTOCRecord();
+
+    /// reconstruct the TOC record from the file contents
+    void reconstructFileTOCRecord();
+
   private:
     void readCollectionIDTable();
     void readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock);
@@ -73,7 +79,6 @@ namespace podio {
     CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
     int m_lastEventRead{-1};
-    unsigned m_Entries{0};
     std::vector<std::string> m_typeNames;
 
     std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
@@ -86,6 +91,8 @@ namespace podio {
     sio::buffer      m_rec_buffer{ sio::mbyte } ;
     sio::buffer      m_unc_buffer{ sio::mbyte } ;
     sio::block_list  m_blocks {} ;
+
+    SIOFileTOCRecord m_tocRecord{};
   };
 
 

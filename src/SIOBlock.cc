@@ -4,6 +4,7 @@
 #include <dlfcn.h>
 #include <cstdlib>
 #include <sstream>
+#include <algorithm>
 #ifdef USE_BOOST_FILESYSTEM
  #include <boost/filesystem.hpp>
 #else
@@ -174,6 +175,49 @@ namespace podio {
     }
 
     return libs;
+  }
+
+
+  void SIOFileTOCRecord::addRecord(const std::string &name, PositionType startPos) {
+    auto it = std::find_if(m_recordMap.begin(), m_recordMap.end(),
+                           [&name](const auto& entry) { return entry.first == name; });
+
+    if (it == m_recordMap.end()) {
+      m_recordMap.push_back({name, {startPos}});
+    } else {
+      it->second.push_back(startPos);
+    }
+
+  }
+
+  size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
+    const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
+                                 [&name](const auto& entry) { return entry.first == name; });
+    if (it != m_recordMap.cend()) {
+      return it->second.size();
+    }
+    return 0;
+  }
+
+  void SIOFileTOCRecordBlock::read(sio::read_device& device, sio::version_type version) {
+    int size;
+    device.data(size);
+    while(size--) {
+      std::string name;
+      device.data(name);
+      std::vector<SIOFileTOCRecord::PositionType> positions;
+      device.data(positions);
+
+      record->m_recordMap.emplace_back(std::move(name), std::move(positions));
+    }
+  }
+
+  void SIOFileTOCRecordBlock::write(sio::write_device& device) {
+    device.data((int) record->m_recordMap.size());
+    for (const auto& [name, positions] : record->m_recordMap) {
+      device.data(name);
+      device.data(positions);
+    }
   }
 
 }
