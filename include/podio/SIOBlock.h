@@ -176,5 +176,44 @@ namespace podio {
     }
   };
 
+  namespace sio_helpers {
+    /// marker for showing that a TOC has been stored in the file
+    static constexpr uint32_t SIOTocMarker = 0xc001fea7;
+    /// the number of bits necessary to store the SIOTocMarker and the actual
+    /// position of the start of the SIOFileTOCRecord
+    static constexpr int SIOTocInfoSize = sizeof(uint64_t); // i.e. usually 8
+    /// The name of the TOCRecord
+    static constexpr const char* SIOTocRecordName = "podio_SIO_TOC_Record";
+
+    // should hopefully be enough for all practical purposes
+    using position_type = uint32_t;
+  }
+
+
+  class SIOFileTOCRecord {
+  public:
+    using PositionType = sio_helpers::position_type;
+    void addRecord(const std::string& name, PositionType startPos);
+
+    size_t getNRecords(const std::string& name) const;
+
+  private:
+    friend class SIOFileTOCRecordBlock;
+
+    using RecordListType = std::pair<std::string, std::vector<PositionType>>;
+    using MapType = std::vector<RecordListType>;
+
+    MapType m_recordMap{};
+  };
+
+  struct SIOFileTOCRecordBlock : public sio::block {
+      SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {}
+
+    virtual void read(sio::read_device& device, sio::version_type version) override;
+    virtual void write(sio::write_device& device) override;
+
+    SIOFileTOCRecord* record;
+  };
+
 } // end namespace
 #endif

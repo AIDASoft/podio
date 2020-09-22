@@ -59,6 +59,8 @@ namespace podio {
 
     // and now write record to the file !
     sio::api::write_record( m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info ) ;
+
+    m_tocRecord.addRecord("event_record", rec_info._file_start);
   }
 
   void SIOWriter::finish(){
@@ -74,6 +76,8 @@ namespace podio {
     sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
     sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
 
+    m_tocRecord.addRecord(m_runMetaData->name(), rec_info._file_start);
+
     blocks.clear();
     m_buffer.clear();
     m_com_buffer.clear();
@@ -82,6 +86,26 @@ namespace podio {
     rec_info = sio::api::write_record(m_collectionMetaData->name(), m_buffer, blocks, 0);
     sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
     sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
+
+    m_tocRecord.addRecord(m_collectionMetaData->name(), rec_info._file_start);
+
+    blocks.clear();
+    m_buffer.clear();
+    m_com_buffer.clear();
+
+    auto tocRecordBlock = std::make_shared<SIOFileTOCRecordBlock>();
+    tocRecordBlock->record = &m_tocRecord;
+    blocks.push_back(tocRecordBlock);
+
+    rec_info = sio::api::write_record(sio_helpers::SIOTocRecordName, m_buffer, blocks, 0);
+    sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
+    sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
+
+    // Now that we know the position of the TOC Record, put this information
+    // into a final marker that can be identified and interpreted when reading
+    // again
+    uint64_t finalWords = (((uint64_t) sio_helpers::SIOTocMarker) << 32) | ((uint64_t) rec_info._file_start & 0xffffffff);
+    m_stream.write(reinterpret_cast<char *>(&finalWords), sizeof(finalWords));
 
     m_stream.close() ;
   }
@@ -117,6 +141,7 @@ namespace podio {
 
     sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
 
+    m_tocRecord.addRecord("CollectionIDs", rec_info._file_start);
   }
 
 } // namespace

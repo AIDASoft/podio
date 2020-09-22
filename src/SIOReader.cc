@@ -68,21 +68,9 @@ namespace podio {
     m_stream.open( filename , std::ios::binary ) ;
     readCollectionIDTable();
 
-    // TODO: this is currently just a really inefficient implementation to have
-    // feature parity with the ROOTReader and to implement the IReader interface
-    // correctly. For actual production calling this function might incur a
-    // significant delay.
-    try {
-      sio::api::go_to_record(m_stream, "event_record");
-      m_Entries++;
-    } catch (sio::exception& e) {
-      if (e.code() != sio::error_code::eof) {
-        SIO_RETHROW(e, e.code(), e.what());
-      }
+    if (!readFileTOCRecord()) {
+      reconstructFileTOCRecord();
     }
-    // jump back to the start
-    m_stream.seekg(0);
-
   }
 
 
@@ -178,5 +166,63 @@ namespace podio {
     sio::api::read_blocks(m_unc_buffer.span(), blocks);
 
     m_stream.seekg(currPos);
+  }
+
+  void SIOReader::reconstructFileTOCRecord() {
+    try {
+      // use a simple unary predicate that always returns true, and hence skips
+      // over all records, but as a sideffect populates the tocRecord
+      sio::api::skip_records(m_stream,
+                             [&](const sio::record_info& rec_info) {
+                               m_tocRecord.addRecord(rec_info._name, rec_info._file_start);
+                               return true;
+                             });
+    } catch (sio::exception& e) {
+      if (e.code() != sio::error_code::eof) {
+        SIO_RETHROW(e, e.code(), e.what());
+      }
+    }
+
+    // rewind to the start of the file
+    m_stream.clear();
+    m_stream.seekg(0);
+  }
+
+  bool SIOReader::readFileTOCRecord() {
+    // Check if there is a dedicated marker at the end of the file that tells us
+    // where the TOC actually starts
+    m_stream.seekg(-sio_helpers::SIOTocInfoSize, std::ios_base::end);
+    uint64_t firstWords{0};
+    m_stream.read(reinterpret_cast<char*>(&firstWords), sizeof(firstWords));
+
+    const uint32_t marker = (firstWords >> 32) & 0xffffffff;
+    if (marker == sio_helpers::SIOTocMarker) {
+      const uint32_t position = firstWords & 0xffffffff;
+      m_stream.seekg(position);
+
+      sio::record_info rec_info;
+      sio::api::read_record_info(m_stream, rec_info, m_info_buffer);
+      sio::api::read_record_data(m_stream, rec_info, m_rec_buffer);
+
+      m_unc_buffer.resize(rec_info._uncompressed_length);
+      sio::zlib_compression compressor;
+      compressor.uncompress(m_rec_buffer.span(), m_unc_buffer);
+
+      sio::block_list blocks;
+      auto tocBlock = std::make_shared<SIOFileTOCRecordBlock>();
+      tocBlock->record = &m_tocRecord;
+      blocks.push_back(tocBlock);
+
+      sio::api::read_blocks(m_unc_buffer.span(), blocks);
+
+      m_unc_buffer.clear();
+      m_rec_buffer.clear();
+      m_stream.seekg(0);
+      return true;
+    }
+
+    m_stream.clear();
+    m_stream.seekg(0);
+    return false;
   }
 } //namespace
