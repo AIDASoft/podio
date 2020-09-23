@@ -1,6 +1,6 @@
 # HSF recommends 3.3 to support C/C++ compile features for C/C++11 across all
 # platforms
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.12)
 
 #--- Project name --------------------------------------------------------------
 project(podio)
