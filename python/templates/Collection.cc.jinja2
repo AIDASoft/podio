@@ -16,7 +16,7 @@
 
 {% with collection_type = class.bare_type + 'Collection' %}
 {{ collection_type }}::{{ collection_type }}() :
-  m_isValid(false), m_collectionID(0), m_entries()
+  m_isValid(false), m_isReadFromFile(false), m_collectionID(0), m_entries()
 {%- for relation in OneToManyRelations + OneToOneRelations %},
   m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>())
 {%- endfor %},
@@ -110,6 +110,11 @@ void {{ collection_type }}::prepareForWrite() {
   const auto size = m_entries.size();
   m_data->reserve(size);
   for (auto& obj : m_entries) { m_data->push_back(obj->data); }
+
+  // if the collection has been read from a file the rest of the information is
+  // already in the correct format and we have to skip it, since the temporary
+  // buffers are invalid
+  if (m_isReadFromFile) return;
   for (auto& pointer : m_refCollections) { pointer->clear(); }
 
 {% for relation in OneToManyRelations %}
@@ -156,6 +161,7 @@ void {{ collection_type }}::prepareAfterRead() {
   // have a redundant (but now useless) copy of the data
   m_data->clear();
   m_isValid = true;
+  m_isReadFromFile = true;
 }
 
 bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {

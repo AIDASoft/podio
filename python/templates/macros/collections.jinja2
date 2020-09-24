@@ -30,7 +30,6 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
         throw std::runtime_error("Trying to persistify untracked object");
       }
       m_refCollections[{{ index }}]->emplace_back(it.getObjectID());
-      m_rel_{{ relation.name }}->push_back(it);
     }
 {% endmacro %}
 
