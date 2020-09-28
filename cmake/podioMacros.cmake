@@ -190,7 +190,7 @@ endfunction()
 
 
 #---------------------------------------------------------------------------------------------------
-#---PODIO_ADD_ROOT_IO_LIBS( dict_name CORE_LIB HEADERS SELECTION_XML
+#---PODIO_ADD_ROOT_IO_DICT( dict_name CORE_LIB HEADERS SELECTION_XML
 #      OUTPUT_FOLDER output_directory
 #   )
 #
@@ -255,9 +255,10 @@ endfunction()
 #    SOURCES              The list of all source files created by PODIO_GENERATE_DATAMODEL
 #
 # Parameters:
-#    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}#---------------------------------------------------------------------------------------------------
+#    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
+#---------------------------------------------------------------------------------------------------
 function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
-   CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
