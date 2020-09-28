@@ -6,6 +6,7 @@ jobs:
   python:
     runs-on: ubuntu-18.04
     strategy:
+      fail-fast: false
       matrix:
         LCG: ["LCG_96b/x86_64-centos7-gcc9-opt"]
     steps:

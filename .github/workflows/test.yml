@@ -6,6 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-18.04
     strategy:
+      fail-fast: false
       matrix:
         LCG: ["LCG_96b/x86_64-centos7-gcc8-opt",
               "LCG_97a/x86_64-centos7-gcc9-opt",

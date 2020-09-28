@@ -6,6 +6,7 @@ jobs:
   compile:
     runs-on: macos-10.15
     strategy:
+      fail-fast: false
       matrix:
         LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt","LCG_97apython3/x86_64-mac1015-clang110-opt"]
     steps:
