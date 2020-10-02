@@ -39,7 +39,7 @@ public:
     setCollection(new {{ class.bare_type }}Collection);
   }
 
-  SIOBlock* const create(const std::string& name) override { return new {{ block_class }}(name); }
+  SIOBlock* create(const std::string& name) const override { return new {{ block_class }}(name); }
 };
 
 static {{ block_class }} _dummy{{ block_class }};

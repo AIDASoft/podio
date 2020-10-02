@@ -41,7 +41,7 @@ namespace podio {
       _col = col ;
     }
 
-    virtual SIOBlock* const create(const std::string& name)=0 ;
+    virtual SIOBlock* create(const std::string& name) const=0 ;
 
     // create a new collection for this block
     virtual void createCollection() = 0;
