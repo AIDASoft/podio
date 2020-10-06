@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <utility>
 
 // forward declarations
 class TClass;
@@ -76,6 +77,8 @@ class ROOTReader : public IReader {
     std::map<int,GenericParameters>* readRunMetaData() override final ;
 
   private:
+    std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
+
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs;
     std::map<std::string, std::pair<TClass*,TClass*> > m_storedClasses;
