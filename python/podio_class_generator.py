@@ -409,7 +409,7 @@ def verify_io_handlers(handler):
       )
   if handler in valid_handlers:
     return handler
-  raise argparse.ArgumentError('{} is not a valid io handler'.format(handler))
+  raise argparse.ArgumentTypeError('{} is not a valid io handler'.format(handler))
 
 
 if __name__ == "__main__":
