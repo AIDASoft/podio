@@ -68,7 +68,7 @@ endif()
 
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
-option(ENABLE_SIO "Build the SIO block handlers and readers and writers." OFF)
+option(ENABLE_SIO "Build SIO I/O support" OFF)
 
 
 #--- Declare ROOT dependency ---------------------------------------------------
