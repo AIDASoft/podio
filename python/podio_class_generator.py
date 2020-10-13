@@ -84,6 +84,7 @@ class ClassGenerator(object):
     self.expose_pod_members = self.reader.options["exposePODMembers"]
 
     self.clang_format = []
+    self.generated_files = []
 
   def process(self):
     for name, component in self.reader.components.items():
@@ -95,6 +96,8 @@ class ClassGenerator(object):
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
     self.print_report()
+
+    self._write_cmake_lists_file()
 
   def print_report(self):
     if not self.verbose:
@@ -126,6 +129,7 @@ class ClassGenerator(object):
     else:
       fullname = os.path.join(self.install_dir, "src", name)
     if not self.dryrun:
+      self.generated_files.append(fullname)
       if self.clang_format:
         cfproc = subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         content = cfproc.communicate(input=content.encode())[0].decode()
@@ -374,6 +378,36 @@ class ClassGenerator(object):
         includes.add(self._build_include(member.bare_type))
 
     return self._sort_includes(includes)
+
+  def _write_cmake_lists_file(self):
+    """Write the names of all generated header and src files into cmake lists"""
+    header_files = (f for f in self.generated_files if f.endswith('.h'))
+    src_files = (f for f in self.generated_files if f.endswith('.cc'))
+    xml_files = (f for f in self.generated_files if f.endswith('.xml'))
+
+    def _write_list(list_file, name, target_folder, files, comment):
+      """Write all files into a cmake variable using the target_folder as path to the
+      file"""
+      list_file.write(f'# {comment}\n')
+      list_file.write(f'SET({name}\n')
+      for full_file in files:
+        fname = os.path.basename(full_file)
+        list_file.write(f'  {os.path.join(target_folder, fname)}\n')
+
+      list_file.write(')\n')
+
+    with open(f'{self.install_dir}/podio_generated_files.cmake', 'w') as list_file:
+      list_file.write('# AUTOMATICALLY GENERATED FILE - DO NOT EDIT\n\n')
+
+      _write_list(list_file, 'headers', r'${ARG_OUTPUT_FOLDER}/${datamodel}',
+                  header_files, 'Generated header files')
+
+      _write_list(list_file, 'sources', r'${ARG_OUTPUT_FOLDER}/src',
+                  src_files, 'Generated source files')
+
+      _write_list(list_file, 'selection_xml', r'${ARG_OUTPUT_FOLDER}/src',
+                  xml_files, 'Generated xml files')
+
 
   @staticmethod
   def _is_pod_type(members):
