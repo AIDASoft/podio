@@ -21,10 +21,14 @@
 set_and_check(podio_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 set_and_check(podio_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
 set_and_check(podio_PYTHON_DIR "@PACKAGE_podio_PYTHON_INSTALLDIR@")
-set(podio_IO_HANDLERS "@PODIO_IO_HANDLERS@")
+set(PODIO_IO_HANDLERS "@PODIO_IO_HANDLERS@")
 
 include(CMakeFindDependencyMacro)
 find_dependency(ROOT @ROOT_VERSION@)
+
+if(@ENABLE_SIO@)
+  find_dependency(SIO)
+endif()
 
 if(NOT TARGET podio::podio)
   include("${CMAKE_CURRENT_LIST_DIR}/podioTargets.cmake")
