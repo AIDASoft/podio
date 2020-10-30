@@ -34,8 +34,8 @@ namespace podio {
   public:
     SIOReader();
     ~SIOReader();
-    void openFile(const std::string& filename);
-    void closeFile();
+    void openFile(const std::string& filename) override;
+    void closeFile() override;
 
     /// Read all collections requested
     void readEvent();
