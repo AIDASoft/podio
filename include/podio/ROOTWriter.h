@@ -7,16 +7,14 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
-// ROOT specific includes
-#include "TTree.h"
+#include <string_view>
+#include <utility>
 
 // forward declarations
 class TFile;
+class TTree;
 
 namespace podio {
-  class Registry;
-
   class ROOTWriter {
 
   public:
@@ -28,6 +26,10 @@ namespace podio {
     void finish();
 
   private:
+    using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
+    void createBranches(const std::vector<StoreCollection>& collections);
+    void setBranches(const std::vector<StoreCollection>& collections);
+
     // members
     std::string m_filename;
     EventStore* m_store;
@@ -39,7 +41,8 @@ namespace podio {
     TTree* m_colMDtree;
     GenericParameters* m_evtMD ;
     std::vector<CollectionBase*> m_storedCollections;
-
+    std::vector<std::string> m_collectionsToWrite;
+    bool m_firstEvent{true};
   };
 
 } //namespace
