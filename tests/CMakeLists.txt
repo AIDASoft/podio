@@ -25,7 +25,7 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
     )
 endfunction()
 
-set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp)
+set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp read_and_write.cpp)
 set(root_libs TestDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
@@ -39,7 +39,7 @@ endforeach()
 
 
 if (TARGET TestDataModelSioBlocks)
-  set(sio_dependent_tests write_sio.cpp read_sio.cpp )
+  set(sio_dependent_tests write_sio.cpp read_sio.cpp read_and_write_sio.cpp)
   set(sio_libs podio::podioSioIO)
   foreach( sourcefile ${sio_dependent_tests} )
     CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
