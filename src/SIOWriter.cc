@@ -24,8 +24,8 @@ namespace podio {
       SIO_THROW( sio::error_code::not_open, "Couldn't open output stream '" + filename + "'" ) ;
     }
 
+    // TODO: re-visit this once metadata handling is done in better defined way
     m_eventMetaData->metadata = m_store->eventMetaDataPtr();
-    m_blocks.push_back(m_eventMetaData);
 
     m_runMetaData->data = m_store->getRunMetaDataMap();
     m_collectionMetaData->data = m_store->getColMetaDataMap();
@@ -49,8 +49,10 @@ namespace podio {
     m_buffer.clear() ;
     m_com_buffer.clear() ;
 
+    auto blocks = createBlocks();
+
     // write the record to the sio buffer
-    auto rec_info = sio::api::write_record( "event_record", m_buffer, m_blocks, 0 ) ;
+    auto rec_info = sio::api::write_record( "event_record", m_buffer, blocks, 0 ) ;
 
     // use zlib to compress the record into another buffer
     sio::zlib_compression compressor ;
@@ -62,6 +64,22 @@ namespace podio {
 
     m_tocRecord.addRecord("event_record", rec_info._file_start);
   }
+
+
+  sio::block_list SIOWriter::createBlocks() const {
+    sio::block_list blocks;
+    blocks.emplace_back(m_eventMetaData);
+
+    for (const auto& name : m_collectionsToWrite) {
+      const podio::CollectionBase* col{nullptr};
+      m_store->get(name, col);
+
+      blocks.emplace_back(podio::SIOBlockFactory::instance().createBlock(col, name));
+    }
+
+    return blocks;
+  }
+
 
   void SIOWriter::finish(){
     m_buffer.clear();
@@ -118,13 +136,13 @@ namespace podio {
     if( !colB ){
       throw std::runtime_error( std::string("no such collection to write: ")+name ) ;
     }
-    auto blk = podio::SIOBlockFactory::instance().createBlock( colB, name ) ;
-
-    if( !blk ){
-      std::string typName = podio::demangleClassName( colB ) ;
+    // Check if we can instantiate the blocks here so that we can skip the checks later
+    if (auto blk = podio::SIOBlockFactory::instance().createBlock( colB, name ); !blk) {
+      const auto typName = colB->getValueTypeName();
       throw std::runtime_error( std::string("could not create SIOBlock for type: ")+typName ) ;
     }
-    m_blocks.push_back(blk) ;
+
+    m_collectionsToWrite.push_back(name);
   }
 
   void SIOWriter::writeCollectionIDTable() {

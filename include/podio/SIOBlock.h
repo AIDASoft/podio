@@ -126,33 +126,6 @@ namespace podio {
     }
   };
 
-/// helper method for class name demangling
-  inline std::string demangleClassName(std::string rawName){
-    std::string className( rawName );
-    size_t  pos = className.find_first_not_of("0123456789");
-    className.erase(0,pos);
-    // demangling the namespace: due to namespace additional characters were introduced:
-    // e.g. N3fcc18TrackHit
-    // remove any number+char before the namespace:
-    pos = className.find_first_of("0123456789");
-    if (pos != std::string::npos) {
-      size_t pos1 = className.find_first_not_of("0123456789", pos);
-      className.erase(0, pos1);
-    }
-    // replace any numbers between namespace and class with "::"
-    pos = className.find_first_of("0123456789");
-    if (pos != std::string::npos) {
-      size_t pos1 = className.find_first_not_of("0123456789", pos);
-      className.replace(pos, pos1-pos, "::");
-    }
-    return className ;
-  }
-
-  template <class T>
-  std::string demangleClassName(const T* t){
-    return ( typeid(*(t)).name() );
-  }
-
 
   class SIOBlockLibraryLoader {
   private:
