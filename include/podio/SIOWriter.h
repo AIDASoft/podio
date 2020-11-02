@@ -30,6 +30,7 @@ namespace podio {
 
   private:
     void writeCollectionIDTable();
+    sio::block_list createBlocks() const;
 
     // members
     std::string m_filename{};
@@ -37,7 +38,6 @@ namespace podio {
 
     std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData;
     sio::ofstream m_stream{} ;
-    sio::block_list  m_blocks {} ;
     sio::buffer m_buffer{ sio::mbyte } ;
     sio::buffer m_com_buffer{ sio::mbyte } ;
     bool m_firstEvent{true};
@@ -45,6 +45,7 @@ namespace podio {
     std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData;
     std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData;
     SIOFileTOCRecord m_tocRecord{};
+    std::vector<std::string> m_collectionsToWrite;
   };
 
 } //namespace
