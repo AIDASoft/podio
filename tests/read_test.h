@@ -155,7 +155,22 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
   auto& vecs = store.get<ExampleWithVectorMemberCollection>("WithVectorMember");
   if(vecs.isValid()) {
-    std::cout << vecs.size() << std::endl;
+    if (vecs.size() != 2) {
+      throw std::runtime_error("Collection 'WithVectorMember' should have two elements'");
+    }
+
+    for (auto vec : vecs) {
+      if (vec.count().size() != 2) {
+        throw std::runtime_error("Element of 'WithVectorMember' collection should have two elements in its 'count' vector");
+      }
+    }
+    if (vecs[0].count(0) != eventNum ||
+        vecs[0].count(1) != eventNum + 10 ||
+        vecs[1].count(0) != eventNum + 1 ||
+        vecs[1].count(1) != eventNum + 11) {
+        throw std::runtime_error("Element values of the 'count' vector in an element of the 'WithVectorMember' collection do not have the expected values");
+    }
+
     for( auto item : vecs )
       for (auto c = item.count_begin(), end = item.count_end(); c!=end; ++c){
           std::cout << "  Counter value " << (*c) << std::endl;
