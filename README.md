@@ -1,9 +1,5 @@
 # podio
 
-## Bug tracker
-Please submit feature requests and bugs to
-[https://sft.its.cern.ch/jira/projects/PODIO](https://sft.its.cern.ch/jira/projects/PODIO)
-
 ## Documentation
 
  - [Introduction](./doc/doc.md)
