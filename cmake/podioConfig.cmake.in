@@ -42,3 +42,7 @@ if(NOT TARGET podio::podio)
 endif()
 
 check_required_components(podio)
+
+get_property(TEST_PODIO_LIBRARY TARGET podio::podio PROPERTY LOCATION)
+find_package_handle_standard_args(podio DEFAULT_MSG CMAKE_CURRENT_LIST_FILE TEST_PODIO_LIBRARY)
+
