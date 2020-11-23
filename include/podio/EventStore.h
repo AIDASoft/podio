@@ -35,7 +35,9 @@ namespace podio {
   typedef std::map<int,GenericParameters>    ColMDMap;
 
   class EventStore : public ICollectionProvider, public IMetaDataProvider {
-
+    /// Make non-copyable
+    EventStore( const EventStore & ) = delete;
+    EventStore& operator=( const EventStore & ) = delete;
   public:
     /// Collection entry. Each collection is identified by a name
     typedef std::pair<std::string, CollectionBase*> CollPair;
