@@ -49,22 +49,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 message(STATUS "Setting C++ standard: '${CMAKE_CXX_STANDARD}'.")
 
-if (${APPLE})
-    set(CPP_STANDARD_FLAGS "-std=c++${CMAKE_CXX_STANDARD}\ -stdlib=libc++")
-    set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
-endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPP_STANDARD_FLAGS}")
+set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 
+option(PODIO_SET_RPATH "Link libraries with built-in RPATH (run-time search path)" OFF)
+include(cmake/podioBuild.cmake)
+podio_set_compiler_flags()
+podio_set_rpath()
 
-# allow undefined symbols in shared library - needed for PythonEventStore/ROOTReader 
-#
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,dynamic_lookup")
-elseif ( ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" ))
-    SET ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
-else()
-    MESSAGE( WARNING "We do not test with the ${CMAKE_CXX_COMPILER_ID} compiler, use at your own discretion" )
-endif()
 
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
