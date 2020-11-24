@@ -54,7 +54,8 @@ public:
   using const_iterator = const {{ class.bare_type }}CollectionIterator;
 
   {{ class.bare_type }}Collection();
-//  {{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
+  //{{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete; // deletion doesn't work w/ ROOT IO ! :-(
+  {{ class.bare_type }}Collection& operator=(const {{ class.bare_type}}Collection& ) = delete;
 //  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, int collectionID);
   ~{{ class.bare_type }}Collection();
 
