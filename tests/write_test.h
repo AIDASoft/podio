@@ -23,11 +23,8 @@
 #include <sstream>
 
 template<class WriterT>
-void write(std::string outfilename) {
+void write(podio::EventStore& store, WriterT& writer) {
   std::cout<<"start processing"<<std::endl;
-
-  auto store = podio::EventStore();
-  WriterT writer(outfilename, &store);
 
   auto& info       = store.create<EventInfoCollection>("info");
   auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
