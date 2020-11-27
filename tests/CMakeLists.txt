@@ -61,3 +61,9 @@ set_property(TEST pyunittest
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
                       ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST pyunittest PROPERTY DEPENDS write)
+
+add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
+target_link_libraries(check_benchmark_outputs ROOT::Tree)
+
+add_test(NAME check_benchmark_outputs COMMAND check_benchmark_outputs write_benchmark_root.root read_benchmark_root.root)
+set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_timed)
