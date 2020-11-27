@@ -4,7 +4,7 @@
 #include "podio/BenchmarkRecorder.h"
 
 int main() {
-  podio::benchmark::BenchmarkRecorder recorder("benchmark_file.root");
+  podio::benchmark::BenchmarkRecorder recorder("read_benchmark_root.root");
 
   podio::TimedReader<podio::ROOTReader> reader(recorder);
   reader.openFile("example_timed.root");
