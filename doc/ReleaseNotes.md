@@ -1,3 +1,58 @@
+# v00-13
+
+* 2020-12-03 Marko Petric ([PR#153](https://github.com/aidasoft/podio/pull/153))
+  - Set rpath for macOS and externalize compiler and linker flags
+  - Search for the same version of python as was used for building ROOT
+
+* 2020-12-03 Joseph C Wang ([PR#152](https://github.com/aidasoft/podio/pull/152))
+  - Make EventStore non-copyable
+
+* 2020-12-03 tmadlener ([PR#144](https://github.com/aidasoft/podio/pull/144))
+  - Decouple the writers and the EventStore to allow to write collections that have previously been read from a file.
+
+* 2020-11-24 Valentin Volkl ([PR#149](https://github.com/aidasoft/podio/pull/149))
+  - [cmake] add find_package_handle_standard_args() to podio config
+
+* 2020-11-18 Frank Gaede ([PR#147](https://github.com/aidasoft/podio/pull/147))
+  - fix for MacOs when using SIO I/O with podio
+        - need to link edm-core library to edm-sioBlocks library
+
+* 2020-11-10 Thomas Madlener ([PR#130](https://github.com/aidasoft/podio/pull/130))
+  - Add SIO as a second I/O backend (as alternative to ROOT) that can be enabled with `ENABLE_SIO`. If enabled, a separate `podioSioIO` library is built that allows reading and writing sio files. For serializing the different datatypes, additional code is generated to build an `SioBlocks` library that is loaded at runtime (if found somewhere on `LD_LIBRARY_PATH`). To facilitate the whole process at the cmake level, **new cmake functions** are provided to generate the core datamodel library **`PODIO_ADD_DATAMODEL_CORE_LIBRARY`**, to (conditionally) define the ROOT dictionary target **`PODIO_ADD_ROOT_IO_DICT`** and to (conditionally) define the Sio Blocks library target **`PODIO_ADD_SIO_IO_BLOCKS`**. The I/O backends that are supported by podio are exported via the **`PODIO_IO_HANDLERS`** list variable.
+  - `podio_generate_datamodel.py` now additionally takes the I/O handlers that should be generated as arguments. This is also reflected in an additional argument to `PODIO_GENERATE_DATAMODEL`. To have backwards compatibility, this additional argument defaults to ROOT in both cases and downstream packages should work as usual without changes.
+
+* 2020-10-06 tmadlener ([PR#133](https://github.com/aidasoft/podio/pull/133))
+  - Make `ROOTReader` handle file switches properly for meta data reading.
+
+* 2020-09-29 tmadlener ([PR#141](https://github.com/aidasoft/podio/pull/141))
+  - Update CI actions to use LCG 96, 97, 98 for mac, centos7 and ubuntu1804
+  - Make python bindings work with root 6.22 (and onwards)
+  - Make sure that root has been built with c++17 at the cmake stage
+  - Require at least CMake 3.12
+
+* 2020-09-18 tmadlener ([PR#134](https://github.com/aidasoft/podio/pull/134))
+  - Make the EventStore actually take ownership of the metadata passed to it by the readers. (see #139)
+  - Make the collections properly clean up data of VectorMembers (see #139)
+  - Fix small memory leak in the EventStore for the CollectionIDTable.
+
+* 2020-09-04 tmadlener ([PR#128](https://github.com/aidasoft/podio/pull/128))
+  - Fix a possible nullptr access in the Writers and make registerForWrite return a boolean to make it easier to check from the calling site.
+
+* 2020-09-04 tmadlener ([PR#127](https://github.com/aidasoft/podio/pull/127))
+  - cleanup of `GenericParameters` for meta data
+        - remove mutable from internal maps
+
+* 2020-09-04 tmadlener ([PR#126](https://github.com/aidasoft/podio/pull/126))
+  - No longer install python unittest files
+
+* 2020-09-04 tmadlener ([PR#125](https://github.com/aidasoft/podio/pull/125))
+  - improve CollectionIDTable
+         - previously used a std::recursive_mutex which is unnecessary in this case
+          - made whatever can be made const const and now use std::distance to calculate the index.
+
+* 2020-08-28 tmadlener ([PR#129](https://github.com/aidasoft/podio/pull/129))
+  - Reduce memory footprint by clearing intermediately used I/O buffers.
+
 # v00-12
 
 * 2020-08-11 Frank Gaede ([PR#124](https://github.com/aidasoft/podio/pull/124))
