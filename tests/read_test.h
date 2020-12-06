@@ -205,7 +205,7 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
   auto& copies = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("TestConstCopy");
   if (nmspaces.isValid() && copies.isValid()) {
-    for (int j = 0; j < nmspaces.size(); j++) {
+    for (size_t j = 0; j < nmspaces.size(); j++) {
       auto nmsp = nmspaces[j];
       auto cpy = copies[j];
       cpytest.push_back(nmsp.clone());

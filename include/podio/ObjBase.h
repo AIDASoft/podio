@@ -11,7 +11,7 @@ namespace podio {
   public:
 
     /// Constructor from ObjectID and initial object-count
-    ObjBase(ObjectID id, int i) : id(id) , ref_counter(i) {};
+    ObjBase(ObjectID id_, unsigned i) : id(id_) , ref_counter(i) {};
 
     /// checks whether object is "untracked" by a collection
     /// if yes, increases reference count
@@ -38,7 +38,7 @@ namespace podio {
 
   private:
     /// reference counter
-    std::atomic<int> ref_counter;
+    std::atomic<unsigned> ref_counter;
 
   };
 

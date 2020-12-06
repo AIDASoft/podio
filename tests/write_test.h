@@ -136,25 +136,25 @@ void write(std::string outfilename) {
     for( unsigned j=0,N=mcps.size();j<N;++j){
       p = mcps[j] ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-  int dIndex = it->getObjectID().index ;
+  size_t dIndex = it->getObjectID().index ;
   d = mcps[ dIndex ] ;
   d.addparents( p ) ;
       }
     }
     //-------- print relations for debugging:
-    for( auto p : mcps ){
-      std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
-      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
+    for( auto p1 : mcps ){
+      std::cout << " particle " << p1.getObjectID().index << " has daughters: " ;
+      for(auto it = p1.daughters_begin(), end = p1.daughters_end() ; it!=end ; ++it ){
   std::cout << " " << it->getObjectID().index ;
       }
       std::cout << "  and parents: " ;
-      for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
+      for(auto it = p1.parents_begin(), end = p1.parents_end() ; it!=end ; ++it ){
   std::cout << " " << it->getObjectID().index ;
       }
       std::cout << std::endl ;
 
       // make sure that this does not crash when we do it on a ConstExampleMC
-      ConstExampleMC constP{p};
+      ConstExampleMC constP{p1};
       std::cout << "The const particle still has the same relations: daughters: ";
       for (auto it = constP.daughters_begin(); it != constP.daughters_end(); ++it) {
         std::cout << " " << it->getObjectID().index;
@@ -240,7 +240,7 @@ void write(std::string outfilename) {
       }
       namesprels.push_back(rel);
     }
-    for (int j = 0; j < namesprels.size(); ++j) {
+    for (size_t j = 0; j < namesprels.size(); ++j) {
       cpytest.push_back(namesprels.at(j).clone());
     }
 
