@@ -87,7 +87,7 @@ datatypes :
     Description : "Type with a vector member"
     Author : "B. Hegner"
     VectorMembers:
-     - int count // various ADC counts
+     - unsigned count // various ADC counts
 
   ExampleWithOneRelation :
     Description : "Type with one relation member"

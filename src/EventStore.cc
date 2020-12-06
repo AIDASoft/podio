@@ -19,7 +19,7 @@ namespace podio {
   }
 
 
-  bool EventStore::get(int id, CollectionBase*& collection) const{
+  bool EventStore::get(unsigned id, CollectionBase*& collection) const{
     // see if we have a cached collection
     if( ( collection = getFast(id) )  != nullptr )
       return true ;

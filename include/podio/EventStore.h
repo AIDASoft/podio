@@ -58,12 +58,12 @@ namespace podio {
     bool get(const std::string& name, const T*& collection);
 
     /// fast access to cached collections
-    CollectionBase* getFast(int id) const{
+    CollectionBase* getFast(unsigned id) const{
       return ( m_cachedCollections.size() > id ? m_cachedCollections[id] : nullptr ) ;
     }
 
     /// access a collection by ID. returns true if successful
-    bool get(int id, CollectionBase*& coll) const override final;
+    bool get(unsigned id, CollectionBase*& coll) const override final;
 
     /// access a collection by name
     /// returns a collection w/ setting isValid to true if successful
