@@ -13,6 +13,9 @@ namespace podio {
   class RelationRange {
   public:
     using ConstIteratorType = typename std::vector<ReferenceType>::const_iterator;
+
+    RelationRange() = delete;
+
     RelationRange(ConstIteratorType begin, ConstIteratorType end) : m_begin(begin), m_end(end) {}
 
     /// begin of the range (necessary for range-based for loop)
@@ -21,6 +24,8 @@ namespace podio {
     ConstIteratorType end() const { return m_end; }
     /// convenience overload for size
     size_t size() const { return std::distance(m_begin, m_end); }
+    /// convenience overload to check if the range is empty
+    bool empty() const { return m_begin == m_end; }
   private:
     ConstIteratorType m_begin;
     ConstIteratorType m_end;

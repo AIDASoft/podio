@@ -129,7 +129,7 @@ void testExampleWithVectorMember()
   ex.addcount(2);
   ex.addcount(10);
 
-  ASSERT_EQUAL(ex.count().size(), 3, "vector member ragnehas wrong size");
+  ASSERT_EQUAL(ex.count().size(), 3, "vector member range has wrong size");
 
   std::vector<int> expected = {1, 2, 10};
   int index = 0;
@@ -160,6 +160,9 @@ void testExampleReferencingType()
 
     index++;
   }
+
+  ASSERT_CONDITION(!ex.Refs().empty(), "Relation range of element with relations should not be empty");
+  ASSERT_CONDITION(ex1.Refs().empty(), "Relation range of element with no relations should be empty");
 }
 
 void testWithIO()
