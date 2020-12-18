@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build_and_test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ILCSoft: ["lcg/97/nightly/x86_64-centos7-gcc9-opt"]
