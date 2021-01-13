@@ -278,12 +278,10 @@ function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
   ENDIF()
 
   add_library(${CORE_LIB}SioBlocks SHARED ${SOURCES} ${HEADERS})
-  target_link_libraries(${CORE_LIB}SioBlocks PUBLIC ${CORE_LIB} podio::podio podio::podioSioIO)
+  target_link_libraries(${CORE_LIB}SioBlocks PUBLIC ${CORE_LIB} podio::podio podio::podioSioIO SIO::sio)
   target_include_directories(${CORE_LIB}SioBlocks PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    ${SIO_INCLUDE_DIRS}
-    )
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 endfunction()
 
 

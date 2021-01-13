@@ -63,9 +63,8 @@ if(ENABLE_SIO)
 
   target_include_directories(podioSioIO PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    ${SIO_INCLUDE_DIRS})
-  target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+  target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
 
   LIST(APPEND INSTALL_LIBRARIES podioSioIO)
 endif()
