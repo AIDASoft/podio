@@ -17,8 +17,8 @@ jobs:
     - name: Install LCG dependencies
       run: |
         brew install ninja
-        brew cask install gfortran
-        brew cask install xquartz
+        brew install --cask gfortran
+        brew install --cask xquartz
     - name: Compile and test
       run: |
         source /Users/Shared/cvmfs/sft.cern.ch/lcg/views/${{ matrix.LCG }}/setup.sh
