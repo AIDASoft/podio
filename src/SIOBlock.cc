@@ -12,7 +12,7 @@
 #endif
 
 namespace podio {
-  void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type version) {
+  void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type) {
     std::vector<std::string> names;
     std::vector<int> ids;
     device.data(names);
@@ -74,7 +74,7 @@ namespace podio {
   }
 
 
-  void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type version) {
+  void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type) {
     readGenericParameters(device, *metadata);
   }
 
@@ -83,7 +83,7 @@ namespace podio {
   }
 
 
-  void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type version) {
+  void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type) {
     int size;
     device.data(size);
     while(size--) {
@@ -199,7 +199,7 @@ namespace podio {
     return 0;
   }
 
-  void SIOFileTOCRecordBlock::read(sio::read_device& device, sio::version_type version) {
+  void SIOFileTOCRecordBlock::read(sio::read_device& device, sio::version_type) {
     int size;
     device.data(size);
     while(size--) {

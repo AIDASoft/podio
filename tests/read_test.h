@@ -25,7 +25,7 @@
 #include <sstream>
 
 
-void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
+void processEvent(podio::EventStore& store, unsigned eventNum) {
 
   auto evtMD = store.getEventMetaData() ;
   float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
@@ -42,7 +42,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
 
   try {
-    auto& failing = store.get<ExampleClusterCollection>("notthere");
+    // not assigning to a variable, because it will remain unused, we just want
+    // the exception here
+    store.get<ExampleClusterCollection>("notthere");
   } catch(const std::runtime_error& err) {
     if (std::string(err.what()) != "No collection \'notthere\' is present in the EventStore") {
       throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
@@ -183,7 +185,7 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
   auto& comps = store.get<ExampleWithComponentCollection>("Component");
   if (comps.isValid()) {
     auto comp = comps[0];
-    int a = comp.component().data.x + comp.component().data.z;
+    int a[[maybe_unused]] = comp.component().data.x + comp.component().data.z;
   }
 
   auto& arrays = store.get<ExampleWithArrayCollection>("arrays");
@@ -263,7 +265,7 @@ void run_read_test(podio::IReader& reader) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
 
-    processEvent(store, true, correctIndex(i));
+    processEvent(store, correctIndex(i));
     store.clear();
     reader.endOfEvent();
   }

@@ -18,7 +18,7 @@ namespace podio {
     m_runMetaData(std::make_shared<SIONumberedMetaDataBlock>("RunMetaData")),
     m_collectionMetaData(std::make_shared<SIONumberedMetaDataBlock>("CollectionMetaData"))
   {
-    auto& libLoader = SIOBlockLibraryLoader::instance();
+    auto& libLoader[[maybe_unused]] = SIOBlockLibraryLoader::instance();
   }
 
   CollectionBase* SIOReader::readCollection(const std::string& name) {

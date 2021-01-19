@@ -64,7 +64,7 @@ void verifyBMFile(const char* fileName, const StringVec& setupBranches, const St
  * We can't really make any checks on the actual execution times, but we can at
  * least verify that the expected timing points are here.
  */
-int main(int argc, char* argv[]) {
+int main(int, char* argv[]) {
   const StringVec writeBMSetupBranches = {"constructor", "finish", "register_for_write"};
   const StringVec writeBMEventBranches = {"write_event"};
   verifyBMFile(argv[1], writeBMSetupBranches, writeBMEventBranches);

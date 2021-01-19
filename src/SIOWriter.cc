@@ -30,7 +30,7 @@ namespace podio {
     m_runMetaData->data = m_store->getRunMetaDataMap();
     m_collectionMetaData->data = m_store->getColMetaDataMap();
 
-    auto& libLoader = SIOBlockLibraryLoader::instance();
+    auto& libLoader[[maybe_unused]] = SIOBlockLibraryLoader::instance();
   }
 
   SIOWriter::~SIOWriter(){

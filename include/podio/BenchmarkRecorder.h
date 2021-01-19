@@ -68,8 +68,8 @@ public:
   BenchmarkRecorder operator=(const BenchmarkRecorder&) = delete;
 
   ~BenchmarkRecorder() {
-    for (auto& [name, tree] : m_recordTrees) {
-      tree.Write();
+    for (auto& tree : m_recordTrees) {
+      tree.second.Write();
     }
     m_recordFile->Write("", TObject::kWriteDelete);
     m_recordFile->Close();
