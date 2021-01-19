@@ -45,7 +45,7 @@ namespace podio {
     std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData;
     std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData;
     SIOFileTOCRecord m_tocRecord{};
-    std::vector<std::string> m_collectionsToWrite;
+    std::vector<std::string> m_collectionsToWrite{};
   };
 
 } //namespace

@@ -98,7 +98,7 @@ public:
 private:
   TFile* m_recordFile{nullptr};
   // Stable references outside!!
-  std::deque<std::pair<std::string, BenchmarkRecorderTree>> m_recordTrees;
+  std::deque<std::pair<std::string, BenchmarkRecorderTree>> m_recordTrees{};
 };
 
 }

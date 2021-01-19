@@ -12,13 +12,11 @@ namespace podio {
   public:
 
     /// default constructor
-    CollectionIDTable() :
-      m_collectionIDs(), m_names()
-    {};
+    CollectionIDTable() = default;
 
     /// constructor from existing ID:name mapping
-    CollectionIDTable(const std::vector<int> ids, std::vector<std::string> names) :
-      m_collectionIDs(ids), m_names(names)
+    CollectionIDTable(std::vector<int>&& ids, std::vector<std::string>&& names) :
+      m_collectionIDs(std::move(ids)), m_names(std::move(names))
     {};
 
     /// return collection ID for given name
@@ -44,9 +42,9 @@ namespace podio {
     void print() const;
 
   private:
-    std::vector<int>              m_collectionIDs;
-    std::vector<std::string>      m_names;
-    mutable std::mutex  m_mutex;
+    std::vector<int>              m_collectionIDs{};
+    std::vector<std::string>      m_names{};
+    mutable std::mutex  m_mutex{};
   };
 
 

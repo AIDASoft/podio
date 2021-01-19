@@ -19,7 +19,7 @@ namespace podio {
     device.data(ids);
     device.data(_types);
 
-    _table = new CollectionIDTable(ids, names);
+    _table = new CollectionIDTable(std::move(ids), std::move(names));
   }
 
   void SIOCollectionIDTableBlock::write(sio::write_device& device) {

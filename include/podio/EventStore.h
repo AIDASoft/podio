@@ -108,15 +108,15 @@ namespace podio {
     void setCollectionIDTable(CollectionIDTable* table) { m_table.reset(table); }
 
     // members
-    mutable std::set<int> m_retrievedIDs;
-    mutable CollContainer m_collections;
-    mutable std::vector<CollectionBase*> m_cachedCollections;
-    IReader* m_reader=nullptr;
+    mutable std::set<int> m_retrievedIDs{};
+    mutable CollContainer m_collections{};
+    mutable std::vector<CollectionBase*> m_cachedCollections{};
+    IReader* m_reader{nullptr};
     std::unique_ptr<CollectionIDTable> m_table;
 
-    mutable GenericParameters  m_evtMD ;
-    mutable RunMDMap m_runMDMap ;
-    mutable ColMDMap m_colMDMap ;
+    mutable GenericParameters m_evtMD{};
+    mutable RunMDMap m_runMDMap{};
+    mutable ColMDMap m_colMDMap{};
   };
 
 

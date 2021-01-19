@@ -14,7 +14,6 @@
 namespace podio {
 
   class CollectionBase;
-  class Registry;
 
   //std::function<void(CollectionBase*)> fun ;
   //std::map< std::string, std::function<void(CollectionBase*)>* > FunMap ;
@@ -59,9 +58,9 @@ typedef std::map< std::string, ColWriterBase* > FunMap ;
 
     std::ofstream* m_file;
 
-    std::vector<CollectionBase*> m_storedCollections;
-    std::vector<std::string> m_collectionNames ;
-    FunMap m_map ;
+    std::vector<CollectionBase*> m_storedCollections{};
+    std::vector<std::string> m_collectionNames{};
+    FunMap m_map{};
   };
 
   // int main () {

@@ -33,7 +33,7 @@ and to prepare collections and buffers.
 class ROOTReader : public IReader {
   friend EventStore;
   public:
-    ROOTReader() : m_eventNumber(0) {}
+    ROOTReader() = default;
     ~ROOTReader();
 
     //non-copyable
@@ -85,11 +85,11 @@ class ROOTReader : public IReader {
     std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
 
     typedef std::pair<CollectionBase*, std::string> Input;
-    std::vector<Input> m_inputs;
-    std::map<std::string, std::pair<TClass*,TClass*> > m_storedClasses;
-    CollectionIDTable* m_table;
-    TChain* m_chain;
-    unsigned m_eventNumber;
+    std::vector<Input> m_inputs{};
+    std::map<std::string, std::pair<TClass*,TClass*> > m_storedClasses{};
+    CollectionIDTable* m_table{nullptr};
+    TChain* m_chain{nullptr};
+    unsigned m_eventNumber{0};
 };
 
 template<typename T>

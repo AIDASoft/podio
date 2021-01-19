@@ -77,8 +77,8 @@ namespace podio {
 
   private:
     podio::EventStore* _store{nullptr};
-    podio::CollectionIDTable* _table {nullptr};
-    std::vector<std::string> _types;
+    podio::CollectionIDTable* _table{nullptr};
+    std::vector<std::string> _types{};
   };
 
 
@@ -120,10 +120,10 @@ namespace podio {
 /// factory for creating sio::blocks for a given type of EDM-collection
   class SIOBlockFactory {
   private:
-    SIOBlockFactory(){};
+    SIOBlockFactory() = default;
 
     typedef std::map<std::string, SIOBlock*> BlockMap ;
-    BlockMap  _map ;
+    BlockMap  _map{};
   public:
     void registerBlockForCollection(std::string type, SIOBlock* b){ _map[type] = b ; }
 
@@ -200,7 +200,7 @@ namespace podio {
     virtual void read(sio::read_device& device, sio::version_type version) override;
     virtual void write(sio::write_device& device) override;
 
-    SIOFileTOCRecord* record;
+    SIOFileTOCRecord* record{nullptr};
   };
 
 } // end namespace
