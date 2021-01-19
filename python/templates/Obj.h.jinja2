@@ -38,10 +38,10 @@ public:
 public:
   {{ class.bare_type }}Data data;
 {% for relation in OneToOneRelations %}
-  {{ relation.relation_type }}* m_{{ relation.name }};
+  {{ relation.relation_type }}* m_{{ relation.name }}{nullptr};
 {% endfor %}
 {% for relation in OneToManyRelations + VectorMembers %}
-  std::vector<{{ relation.relation_type }}>* m_{{ relation.name }};
+  std::vector<{{ relation.relation_type }}>* m_{{ relation.name }}{nullptr};
 {% endfor %}
 };
 {% endwith %}

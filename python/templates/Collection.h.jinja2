@@ -140,15 +140,15 @@ public:
 {% endfor %}
 
 private:
-  bool m_isValid;
+  bool m_isValid{false};
   bool m_isReadFromFile{false};
-  int m_collectionID;
+  int m_collectionID{0};
   {{ class.bare_type }}ObjPointerContainer m_entries;
 
   // members to handle 1-to-N-relations
 {% for relation in OneToManyRelations %}
   std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
-  std::vector<std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>*> m_rel_{{ relation.name }}_tmp; ///< Relation buffer for internal book-keeping
+  std::vector<std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>*> m_rel_{{ relation.name }}_tmp{}; ///< Relation buffer for internal book-keeping
 {% endfor %}
 {% for relation in OneToOneRelations %}
   std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
@@ -157,11 +157,11 @@ private:
   // members to handle vector members
 {% for member in VectorMembers %}
   std::vector<{{ member.full_type }}>* m_vec_{{ member.name }}; /// combined vector of all objects in collection
-  std::vector<std::vector<{{ member.full_type }}>*> m_vecs_{{ member.name }}; /// pointers to individual member vectors
+  std::vector<std::vector<{{ member.full_type }}>*> m_vecs_{{ member.name }}{}; /// pointers to individual member vectors
 {% endfor %}
   // members to handle streaming
-  podio::CollRefCollection m_refCollections;
-  podio::VectorMembersInfo m_vecmem_info;
+  podio::CollRefCollection m_refCollections{};
+  podio::VectorMembersInfo m_vecmem_info{};
   {{ class.bare_type }}DataContainer* m_data;
 };
 
