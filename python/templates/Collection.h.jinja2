@@ -29,7 +29,12 @@ using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }
 
 class {{ class.bare_type }}CollectionIterator {
 public:
-  {{ class.bare_type }}CollectionIterator(int index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+{% with iterator_type = class.bare_type + 'CollectionIterator' %}
+  {{ iterator_type }}(int index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+
+  {{ iterator_type }}(const {{ iterator_type }}&) = delete;
+  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = delete;
+{% endwith %}
 
   bool operator!=(const {{ class.bare_type }}CollectionIterator& x) const {
     return m_index != x.m_index; // TODO: may not be complete

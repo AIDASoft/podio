@@ -31,6 +31,8 @@ public:
   /// constructor from ObjectID and {{ class.bare_type }}Data
   /// does not initialize the internal relation containers
   {{ obj_type }}(const podio::ObjectID id, {{ class.bare_type }}Data data);
+  /// No assignment operator
+  {{ obj_type }}& operator=(const {{ obj_type }}&) = delete;
   virtual ~{{ obj_type }}();
 
 public:

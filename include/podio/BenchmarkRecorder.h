@@ -22,6 +22,7 @@ public:
   // Avoid some possible issues that could arise from copying by simply
   // disallowing it
   BenchmarkRecorderTree(const BenchmarkRecorderTree&) = delete;
+  BenchmarkRecorderTree& operator=(const BenchmarkRecorderTree&) = delete;
 
   BenchmarkRecorderTree(TFile* recFile, const std::string& name, const std::vector<std::string>& steps) :
     m_stepNames(steps), m_stepTimes(steps.size()) {
@@ -62,6 +63,9 @@ public:
   BenchmarkRecorder(const std::string& recFileName="podio_benchmark_file.root") {
     m_recordFile = new TFile(recFileName.c_str(), "recreate");
   }
+
+  BenchmarkRecorder(const BenchmarkRecorder&) = delete;
+  BenchmarkRecorder operator=(const BenchmarkRecorder&) = delete;
 
   ~BenchmarkRecorder() {
     for (auto& [name, tree] : m_recordTrees) {

@@ -32,6 +32,9 @@ namespace podio {
     SIOBlock( const std::string &nam, sio::version_type vers) :
       sio::block( nam, vers ){
     }
+    SIOBlock() = delete;
+    SIOBlock(const SIOBlock&) = delete;
+    SIOBlock& operator=(const SIOBlock&) = delete;
 
     podio::CollectionBase* getCollection() { return _col; }
 
@@ -63,6 +66,9 @@ namespace podio {
       sio::block("CollectionIDs", sio::version::encode_version(0, 1)),
       _store(store), _table(store->getCollectionIDTable()) {}
 
+    SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
+    SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
+
     virtual void read(sio::read_device& device, sio::version_type version) override;
     virtual void write(sio::write_device& device) override;
 
@@ -84,6 +90,9 @@ namespace podio {
     SIOEventMetaDataBlock() :
       sio::block("EventMetaData", sio::version::encode_version(0, 1)) {}
 
+    SIOEventMetaDataBlock(const SIOEventMetaDataBlock&) = delete;
+    SIOEventMetaDataBlock& operator=(const SIOEventMetaDataBlock&) = delete;
+
     virtual void read(sio::read_device& device, sio::version_type version) override;
     virtual void write(sio::write_device& device) override;
 
@@ -97,6 +106,9 @@ namespace podio {
   public:
     SIONumberedMetaDataBlock(const std::string& name) :
       sio::block(name, sio::version::encode_version(0, 1)) {}
+
+    SIONumberedMetaDataBlock(const SIONumberedMetaDataBlock&) = delete;
+    SIONumberedMetaDataBlock& operator=(const SIONumberedMetaDataBlock&) = delete;
 
     virtual void read(sio::read_device& device, sio::version_type version) override;
     virtual void write(sio::write_device& device) override;
@@ -171,7 +183,7 @@ namespace podio {
     size_t getNRecords(const std::string& name) const;
 
   private:
-    friend class SIOFileTOCRecordBlock;
+    friend struct SIOFileTOCRecordBlock;
 
     using RecordListType = std::pair<std::string, std::vector<PositionType>>;
     using MapType = std::vector<RecordListType>;
@@ -180,7 +192,10 @@ namespace podio {
   };
 
   struct SIOFileTOCRecordBlock : public sio::block {
-      SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {}
+    SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {}
+
+    SIOFileTOCRecordBlock(const SIOFileTOCRecordBlock&) = delete;
+    SIOFileTOCRecordBlock& operator=(const SIOFileTOCRecordBlock&) = delete;
 
     virtual void read(sio::read_device& device, sio::version_type version) override;
     virtual void write(sio::write_device& device) override;
