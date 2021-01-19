@@ -120,7 +120,7 @@ TEST_CASE("Invalid_refs") {
   cluster.addHits(hit2);
   try {
     clusters.prepareForWrite(); //should fail!
-  } catch (std::runtime_error){
+  } catch (std::runtime_error&){
     success = true;
   }
   REQUIRE(success);
@@ -278,5 +278,5 @@ TEST_CASE("Equality") {
 
 TEST_CASE("NonPresentCollection") {
   auto store = podio::EventStore();
-  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
+  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error&);
 }

@@ -24,6 +24,7 @@ namespace podio {
 
   struct ColWriterBase {
     virtual void writeCollection(CollectionBase*, std::ostream& )=0 ;
+    virtual ~ColWriterBase() = default;
   } ;
   
   template <class T>
