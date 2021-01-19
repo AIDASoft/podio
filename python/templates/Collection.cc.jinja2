@@ -109,8 +109,7 @@ void {{ collection_type }}::clear() {
 }
 
 void {{ collection_type }}::prepareForWrite() {
-  const auto size = m_entries.size();
-  m_data->reserve(size);
+  m_data->reserve(m_entries.size());
   for (auto& obj : m_entries) { m_data->push_back(obj->data); }
 
   // if the collection has been read from a file the rest of the information is

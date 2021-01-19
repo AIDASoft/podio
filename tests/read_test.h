@@ -87,8 +87,6 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
     // check that we can retrieve the correct parent daughter relation
     // set in write.cpp :
 
-    // particle 0 has particles 2,3,4 and 5 as daughters:
-    auto p = mcps[0] ;
 
     //-------- print relations for debugging:
     for( auto p : mcps ){
@@ -102,6 +100,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
       }
       std::cout << std::endl ;
     }
+
+    // particle 0 has particles 2,3,4 and 5 as daughters:
+    auto p = mcps[0] ;
 
     auto d0 = p.daughters(0) ;
     auto d1 = p.daughters(1) ;
@@ -136,9 +137,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
   auto& refs = store.get<ExampleReferencingTypeCollection>("refs");
   if(refs.isValid()){
     auto ref = refs[0];
-    for (auto j = ref.Clusters_begin(), end = ref.Clusters_end(); j!=end; ++j){
-      for (auto i = j->Hits_begin(), end = j->Hits_end(); i!=end; ++i){
-        //std::cout << "  Referenced object has an energy of " << i->energy() << std::endl;
+    for (auto cluster : ref.Clusters()) {
+      for (auto hit : cluster.Hits()) {
+        //std::cout << "  Referenced object has an energy of " << hit.energy() << std::endl;
       }
     }
   } else {

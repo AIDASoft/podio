@@ -105,7 +105,7 @@ namespace podio {
       delete tmp;
     }
     return m_runMDMap[ runID ] ;
-  } ;
+  }
   
 
   GenericParameters& EventStore::getCollectionMetaData(int colID) const {
@@ -116,7 +116,7 @@ namespace podio {
       delete tmp;
     }
     return m_colMDMap[ colID ] ;
-  } ;
+  }
 
   void EventStore::clearCollections(){
     for (auto& coll : m_collections){
