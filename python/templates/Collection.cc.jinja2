@@ -165,7 +165,7 @@ void {{ collection_type }}::prepareAfterRead() {
   m_isReadFromFile = true;
 }
 
-bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {
+bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% if OneToManyRelations or OneToOneRelations -%}collectionProvider{%- endif -%}) {
 {% for relation in OneToManyRelations %}
 {{ macros.set_references_multi_relation(relation, loop.index0) }}
 {% endfor %}

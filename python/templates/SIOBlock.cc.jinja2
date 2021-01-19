@@ -30,7 +30,7 @@ void handlePODDataSIO(devT& device, {{ class.namespace }}::{{ class.bare_type }}
 {{ utils.namespace_open(class.namespace) }}
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
-void {{ block_class }}::read(sio::read_device& device, sio::version_type vers) {
+void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
 
   auto* dataVec = static_cast<{{ class.namespace }}::{{ class.bare_type }}Collection*>(_col)->_getBuffer();
 
