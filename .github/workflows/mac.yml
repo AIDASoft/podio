@@ -17,7 +17,7 @@ jobs:
     - name: Install LCG dependencies
       run: |
         brew install ninja
-        brew install --cask gfortran
+        brew install gfortran
         brew install --cask xquartz
     - name: Compile and test
       run: |
