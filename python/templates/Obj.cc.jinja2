@@ -24,8 +24,8 @@
 
 {  }
 
-{{ obj_type }}::{{ obj_type }}(const podio::ObjectID id, {{ class.bare_type }}Data data) :
-  ObjBase{id, 0}, data(data)
+{{ obj_type }}::{{ obj_type }}(const podio::ObjectID id_, {{ class.bare_type }}Data data_) :
+  ObjBase{id_, 0}, data(data_)
 {  }
 
 {{ obj_type }}::{{ obj_type }}(const {{ obj_type }}& other) :
