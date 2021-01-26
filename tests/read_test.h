@@ -25,7 +25,7 @@
 #include <sstream>
 
 
-void processEvent(podio::EventStore& store, unsigned eventNum) {
+void processEvent(podio::EventStore& store, int eventNum) {
 
   auto evtMD = store.getEventMetaData() ;
   float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
@@ -208,7 +208,7 @@ void processEvent(podio::EventStore& store, unsigned eventNum) {
   auto& copies = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("TestConstCopy");
   if (nmspaces.isValid() && copies.isValid()) {
-    for (int j = 0; j < nmspaces.size(); j++) {
+    for (size_t j = 0; j < nmspaces.size(); j++) {
       auto nmsp = nmspaces[j];
       auto cpy = copies[j];
       cpytest.push_back(nmsp.clone());

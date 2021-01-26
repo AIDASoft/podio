@@ -233,7 +233,7 @@ void write(podio::EventStore& store, WriterT& writer) {
       }
       namesprels.push_back(rel);
     }
-    for (int j = 0; j < namesprels.size(); ++j) {
+    for (size_t j = 0; j < namesprels.size(); ++j) {
       cpytest.push_back(namesprels.at(j).clone());
     }
 

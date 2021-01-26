@@ -59,7 +59,7 @@ namespace podio {
 
     /// fast access to cached collections
     CollectionBase* getFast(int id) const{
-      return ( m_cachedCollections.size() > id ? m_cachedCollections[id] : nullptr ) ;
+      return ( m_cachedCollections.size() > (unsigned) id ? m_cachedCollections[id] : nullptr ) ;
     }
 
     /// access a collection by ID. returns true if successful

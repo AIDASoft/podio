@@ -31,7 +31,7 @@ bool verifyTree(TTree* tree, int expectedEntries, const StringVec& expectedBranc
     }
   }
 
-  if (branches->GetEntries() != expectedBranches.size()) {
+  if ((unsigned) branches->GetEntries() != expectedBranches.size()) {
     std::cerr << "Tree \'" << treeName << "\' has additional, unexpected branches" << std::endl;
     return false;
   }
