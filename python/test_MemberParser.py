@@ -107,7 +107,6 @@ class MemberParserTest(unittest.TestCase):
     parsed = parser.parse('unsigned long long aLongWithoutDescription', False)
     self.assertEqual(parsed.full_type, 'unsigned long long')
     self.assertEqual(parsed.name, 'aLongWithoutDescription')
-    self.assertEqual(str(parsed), 'unsigned long long aLongWithoutDescription;')
 
     parsed = parser.parse('std::array<unsigned long, 123> unDescribedArray', False)
     self.assertEqual(parsed.full_type, 'std::array<unsigned long, 123>')
@@ -123,6 +122,22 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.full_type, 'NonBuiltIn')
     self.assertEqual(parsed.name, 'aType')
     self.assertEqual(parsed.description, 'descriptions are not ignored even though they are not required')
+    self.assertTrue(not parsed.is_builtin)
+
+  def test_string_representation(self):
+    """Test that the string representation that is used in the jinja2 templates
+    includes the default initialization"""
+    parser = MemberParser()
+
+    parsed = parser.parse('unsigned long long var // description')
+    self.assertEqual(str(parsed), r'unsigned long long var{}; ///< description')
+
+    # Also works without a description
+    parsed = parser.parse('SomeType memberVar', False)
+    self.assertEqual(str(parsed), r'SomeType memberVar{};')
+
+    parsed = parser.parse('Type var//with very close comment')
+    self.assertEqual(str(parsed), r'Type var{}; ///< with very close comment')
 
 
 if __name__ == '__main__':
