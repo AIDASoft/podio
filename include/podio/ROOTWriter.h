@@ -39,7 +39,6 @@ namespace podio {
     TTree* m_runMDtree;
     TTree* m_evtMDtree;
     TTree* m_colMDtree;
-    GenericParameters* m_evtMD{};
     std::vector<CollectionBase*> m_storedCollections{};
     std::vector<std::string> m_collectionsToWrite{};
     bool m_firstEvent{true};

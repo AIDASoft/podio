@@ -52,7 +52,7 @@ namespace podio {
     virtual std::string getValueTypeName() const = 0;
 
     /// destructor
-    virtual ~CollectionBase(){};
+    virtual ~CollectionBase() = default;
 
     /// clear the collection and all internal states
     virtual void clear() = 0 ;
