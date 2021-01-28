@@ -50,16 +50,10 @@ private:
   const {{ class.bare_type }}ObjPointerContainer* m_collection;
 };
 
-// Cannot delete the copy-constructor, but having one triggers Weffc++ if there
-// are pointer members, so we very briefly disable it in order to suppress the
-// warning for the existing copy-constructor
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
 /**
 A Collection is identified by an ID.
 */
 class {{ class.bare_type }}Collection : public podio::CollectionBase {
-#pragma GCC diagnostic pop
 
 public:
   using const_iterator = const {{ class.bare_type }}CollectionIterator;
