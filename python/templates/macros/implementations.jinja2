@@ -77,11 +77,11 @@ void {{ class.bare_type }}::{{ sub_member.setter_name(get_syntax) }}({{ sub_memb
 {% macro single_relation_getters(class, relations, get_syntax, prefix='') %}
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
-const Const{{ relation.bare_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
+const {{ relation.relation_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
   if (!m_obj->m_{{ relation.name }}) {
-    return {{ relation.namespace }}::Const{{ relation.bare_type }}(nullptr);
+    return {{ relation.relation_type }}(nullptr);
   }
-  return {{ relation.namespace }}::Const{{ relation.bare_type }}(*(m_obj->m_{{ relation.name }}));
+  return {{ relation.relation_type }}(*(m_obj->m_{{ relation.name }}));
 }
 
 {% endfor %}
@@ -90,9 +90,9 @@ const Const{{ relation.bare_type }} {{ class_type }}::{{ relation.getter_name(ge
 
 {% macro single_relation_setters(class, relations, get_syntax) %}
 {% for relation in relations %}
-void {{ class.bare_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.namespace }}::Const{{ relation.bare_type }} value) {
+void {{ class.bare_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.relation_type }} value) {
   if (m_obj->m_{{ relation.name }}) delete m_obj->m_{{ relation.name }};
-  m_obj->m_{{ relation.name }} = new Const{{ relation.bare_type }}(value);
+  m_obj->m_{{ relation.name }} = new {{ relation.relation_type }}(value);
 }
 
 {% endfor %}
