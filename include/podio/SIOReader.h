@@ -34,6 +34,11 @@ namespace podio {
   public:
     SIOReader();
     ~SIOReader();
+
+    //make non-copyable
+    SIOReader(const SIOReader &) = delete;
+    SIOReader& operator=(const SIOReader &) = delete;
+
     void openFile(const std::string& filename) override;
     void closeFile() override;
 
