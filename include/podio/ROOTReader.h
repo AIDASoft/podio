@@ -35,6 +35,11 @@ class ROOTReader : public IReader {
   public:
     ROOTReader() : m_eventNumber(0) {}
     ~ROOTReader();
+
+    //non-copyable
+    ROOTReader(const ROOTReader &) = delete;
+    ROOTReader& operator=(const ROOTReader &) = delete;
+
     void openFile(const std::string& filename) override;
     void openFiles(const std::vector<std::string>& filenames);
     void closeFile() override;
