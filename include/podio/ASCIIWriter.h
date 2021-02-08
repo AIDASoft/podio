@@ -45,6 +45,10 @@ typedef std::map< std::string, ColWriterBase* > FunMap ;
     ASCIIWriter(const std::string& filename, EventStore* store);
     ~ASCIIWriter();
 
+    // non-copyable
+    ASCIIWriter(const ASCIIWriter&) = delete;
+    ASCIIWriter& operator=(const ASCIIWriter&) = delete;
+
     template<typename T>
     bool registerForWrite(const std::string& name);
     void writeEvent();

@@ -24,6 +24,10 @@ namespace podio {
     SIOWriter(const std::string& filename, EventStore* store);
     ~SIOWriter();
 
+    // non-copyable
+    SIOWriter(const SIOWriter&) = delete;
+    SIOWriter& operator=(const SIOWriter&) = delete;
+
     void registerForWrite(const std::string& name);
     void writeEvent();
     void finish();
