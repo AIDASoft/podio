@@ -80,6 +80,11 @@ function(PODIO_GENERATE_DICTIONARY dictionary)
     target_sources(${dictionary} PRIVATE ${gensrcdict})
   ENDIF()
   set(gensrcdict ${dictionary}.cxx PARENT_SCOPE)
+  set_source_files_properties(${gensrcdict}
+    PROPERTIES
+    GENERATED TRUE
+    COMPILE_FLAGS "-Wno-overlength-strings"
+    )
 
   #---roottest compability---------------------------------
   if(CMAKE_ROOTTEST_DICT)
