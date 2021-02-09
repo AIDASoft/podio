@@ -84,11 +84,11 @@ public:
   std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
 
   /// Returns the const object of given index
-  const {{ class.bare_type }} operator[](unsigned int index) const;
+  Const{{ class.bare_type }} operator[](unsigned int index) const;
   /// Returns the object of a given index
   {{ class.bare_type }} operator[](unsigned int index);
   /// Returns the const object of given index
-  const {{ class.bare_type }} at(unsigned int index) const;
+  Const{{ class.bare_type }} at(unsigned int index) const;
   /// Returns the object of given index
   {{ class.bare_type }} at(unsigned int index);
 
