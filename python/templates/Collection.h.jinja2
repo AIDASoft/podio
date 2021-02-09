@@ -14,7 +14,6 @@
 // podio specific includes
 #include "podio/ICollectionProvider.h"
 #include "podio/CollectionBase.h"
-#include "podio/CollectionIDTable.h"
 
 #include <string>
 #include <vector>
@@ -130,6 +129,8 @@ public:
 {% endfor %}
 
 private:
+  friend class {{ class.bare_type }}RefCollection;
+
   bool m_isValid{false};
   bool m_isReadFromFile{false};
   int m_collectionID{0};

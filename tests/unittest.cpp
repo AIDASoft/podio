@@ -13,10 +13,10 @@
 
 // Test data types
 #include "datamodel/EventInfoCollection.h"
-#include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleClusterRefCollection.h"
 #include "datamodel/ExampleForCyclicDependency1Collection.h"
 #include "datamodel/ExampleForCyclicDependency2Collection.h"
-#include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleHitRefCollection.h"
 #include "datamodel/ExampleWithComponent.h"
 #include "datamodel/ExampleWithOneRelation.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
@@ -402,6 +402,90 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
                 decltype(std::declval<ExampleClusterCollectionIterator>().operator->()),
                 ExampleCluster*>,
                 "CollectionIterator should only give access to mutable objects");
+
+  REQUIRE(true);
+}
+
+
+TEST_CASE("RefCollection basics", "[RefCollections]") {
+  auto clusterRefs = ExampleClusterRefCollection();
+  REQUIRE(clusterRefs.getValueTypeName() == "ExampleCluster");
+
+  // These will always be true!
+  REQUIRE(clusterRefs.getBufferAddress() == nullptr);
+  REQUIRE(clusterRefs.vectorMembers() == nullptr);
+  REQUIRE(clusterRefs.referenceCollections()->size() == 1);
+}
+
+TEST_CASE("RefCollection can handle references", "[RefCollection]") {
+  // Can only collect things that already live in a different colection
+  auto clusters = ExampleClusterCollection();
+  auto cluster = clusters.create();
+
+  auto clusterRefs = ExampleClusterRefCollection();
+  clusterRefs.push_back(cluster);
+
+  auto clusterRef = clusterRefs[0];
+  static_assert(std::is_same_v<decltype(clusterRef), decltype(cluster)>, "Elements that can be obtained from a collection and a reference collection should have the same type");
+
+  REQUIRE(clusterRef == cluster);
+
+  // These are "true" references, so changes should propagate
+  cluster.energy(42);
+  REQUIRE(clusterRef.energy() == 42);
+  // Also in the other directon
+  clusterRef.energy(-42);
+  REQUIRE(cluster.energy() == -42);
+}
+
+TEST_CASE("RefCollection is iterable", "[RefCollection]") {
+  auto hits = ExampleHitCollection();
+  auto hit1 = hits.create(0x42ULL,0.,0.,0.,0.);
+  auto hit2 = hits.create(0x42ULL,1.,1.,1.,1.);
+
+  auto hitRefs = ExampleHitRefCollection();
+  for (const auto h : hits) hitRefs.push_back(h);
+
+  // index-based looping / access
+  for (size_t i = 0; i < hitRefs.size(); ++i) {
+    REQUIRE(hitRefs[i].energy() == i);
+  }
+
+  // range-based for loop
+  int index = 0;
+  for (const auto h : hitRefs) {
+    REQUIRE(h.energy() == index++);
+  }
+}
+
+TEST_CASE("RefCollection does not accept untracked objects", "[RefCollection]") {
+  auto clusterRefs = ExampleClusterRefCollection();
+  auto cluster = ExampleCluster();
+  REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument&);
+}
+
+TEST_CASE("RefCollection is const-correct", "[RefCollection][const-correctness]") {
+  // some more dedicates static checks. Some of these are already implicitly
+  // covered in other test cases, but spelling them out can never hurt
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollection>()[0]),
+                ExampleCluster>,
+                "Indexed access into a RefCollection should give access to a mutable object");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<const ExampleClusterCollection>()[0]),
+                ConstExampleCluster>,
+                "Indexed access into a const RefCollection should give access to a Const object");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollection>().begin()),
+                ExampleClusterCollectionIterator>,
+                "RefCollections should have CollectionIterators");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<const ExampleClusterCollection>().end()),
+                ExampleClusterConstCollectionIterator>,
+                "const RefCollections should only have ConstCollectionIterators");
 
   REQUIRE(true);
 }

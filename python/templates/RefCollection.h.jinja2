@@ -1,0 +1,89 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/collections.jinja2" as coll_macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}RefCollection_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}RefCollection_H
+
+// datamodel specific includes
+#include "{{ incfolder }}{{ class.bare_type }}.h"
+#include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+#include "{{ incfolder }}{{ class.bare_type }}Collection.h"
+
+// podio specific includes
+#include "podio/ICollectionProvider.h"
+#include "podio/CollectionBase.h"
+
+#include <vector>
+
+{{ utils.namespace_open(class.namespace) }}
+
+/**
+ * A collection referencing objects in other collections
+ */
+{% with collection_type = class.bare_type + 'RefCollection' %}
+class {{ class.bare_type }}RefCollection : public podio::CollectionBase {
+public:
+
+  {{ collection_type }}();
+  {{ collection_type }}& operator=(const {{ collection_type }}&) = delete;
+  {{ collection_type }}(const {{ collection_type }}&) = delete;
+  ~{{ collection_type }}();
+
+  /// indexex access
+  Const{{ class.bare_type }} operator[](unsigned int index) const;
+  Const{{ class.bare_type }} at(unsigned int index) const;
+
+  {{ class.bare_type }} operator[](unsigned int index);
+  {{ class.bare_type }} at(unsigned int index);
+
+  // support for range-based for loops
+  using iterator = {{ class.bare_type }}CollectionIterator;
+  iterator begin() { return iterator(0, &m_entries); }
+  iterator end() { return iterator(m_entries.size(), &m_entries); }
+
+  using const_iterator = {{ class.bare_type }}ConstCollectionIterator;
+  const_iterator begin() const { return const_iterator(0, &m_entries); }
+  const_iterator end() const { return const_iterator(m_entries.size(), &m_entries); }
+
+  /// Append object to the collection
+  void push_back(Const{{ class.bare_type }} object);
+
+  void clear() override final;
+
+  /// number of elements in the collection
+  size_t size() const override final { return m_entries.size(); }
+
+  /// fully qualified type name of elements - with namespace
+  std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
+
+  void prepareForWrite() override final;
+  void prepareAfterRead() override final;
+  void setBuffer(void*) override final { /* nothing to do. collection doesn't store any data */ };
+  bool setReferences(const podio::ICollectionProvider* collectionProvider) override final;
+  podio::CollRefCollection* referenceCollections() override final { return &m_refCollections; }
+  podio::VectorMembersInfo* vectorMembers() override final { return nullptr; }
+
+  void setID(unsigned ID) override final { m_collectionID = ID; }
+
+  unsigned getID() const override final { return m_collectionID; }
+  bool isValid() const override final { return m_isValid; }
+
+  void* getBufferAddress() override final { return nullptr; /*  no data, no buffer */ }
+
+private:
+  bool m_isReadFromFile{false};
+  bool m_isValid{false};
+  int m_collectionID{0};
+
+  podio::CollRefCollection m_refCollections{};
+
+  // could be a vector here, but if we make it a deque we can re-use the
+  // CollectionIterator
+  std::deque<{{ class.bare_type }}Obj*> m_entries{};
+};
+{% endwith %}
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

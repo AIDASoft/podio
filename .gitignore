@@ -51,3 +51,7 @@ spack*
 *.exe
 *.out
 *.app
+
+# clangd cache and other LSP related files
+/.clangd/
+compile_commands.json

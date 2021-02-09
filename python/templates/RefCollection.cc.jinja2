@@ -1,0 +1,79 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/collections.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}RefCollection.h"
+
+{{ utils.namespace_open(class.namespace) }}
+
+{% with collection_type = class.bare_type + 'RefCollection' %}
+{{ collection_type }}::{{ collection_type }}() {
+  m_refCollections.push_back(new std::vector<podio::ObjectID>());
+}
+
+{{ collection_type }}::~{{ collection_type }}() {
+  clear();
+  // we don't own these objects, so we do not have to clean them up
+  m_entries.clear();
+
+  for (auto& pointer : m_refCollections) { if (pointer) delete pointer; }
+}
+
+Const{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
+  return Const{{ class.bare_type }}(m_entries[index]);
+}
+
+Const{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
+  return Const{{ class.bare_type }}(m_entries.at(index));
+}
+
+{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) {
+  return {{ class.bare_type }}(m_entries[index]);
+}
+
+{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) {
+  return {{ class.bare_type }}(m_entries.at(index));
+}
+
+void {{ collection_type }}::clear() {
+  m_entries.clear();
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
+}
+
+void {{ collection_type }}::prepareForWrite() {
+  // if this collection has been read from file there is nothing to do
+  if (m_isReadFromFile) return;
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
+
+  for (const auto* obj : m_entries) {
+    m_refCollections[0]->emplace_back(obj->id);
+  }
+}
+
+void {{ collection_type }}::prepareAfterRead() {
+  // really nothing to do here, since we have no data to operate on
+  m_isValid = true;
+  m_isReadFromFile = true;
+}
+
+bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {
+  for (const auto& id : *m_refCollections[0]) {
+    {{ macros.get_collection(class.full_type) }}
+    m_entries.push_back(tmp_coll->m_entries[id.index]);
+  }
+
+  return true; // TODO: actually do something to determine this
+}
+
+void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
+  const auto obj = object.m_obj;
+  if (obj->id.index < 0) {
+    throw std::invalid_argument("Object needs to be tracked by another collection in order for it to be storable in a RefCollection");
+  } else {
+    m_entries.push_back(obj);
+  }
+}
+
+{% endwith %}
+
+{{ utils.namespace_close(class.namespace) }}
