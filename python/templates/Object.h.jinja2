@@ -18,16 +18,12 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-class {{ class.bare_type }}Collection;
-class {{ class.bare_type }}CollectionIterator;
-class Const{{ class.bare_type }};
-
 {{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 
-  friend {{ class.bare_type }}Collection;
-  friend {{ class.bare_type }}CollectionIterator;
-  friend Const{{ class.bare_type }};
+  friend class {{ class.bare_type }}Collection;
+  friend class {{ class.bare_type }}CollectionIterator;
+  friend class Const{{ class.bare_type }};
 
 public:
 

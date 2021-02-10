@@ -1,5 +1,6 @@
 {% import "macros/utils.jinja2" as utils %}
 {% import "macros/collections.jinja2" as macros %}
+{% from "macros/iterator.jinja2" import iterator_declaration %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #ifndef {{ package_name.upper() }}_{{ class.bare_type }}Collection_H
@@ -27,28 +28,9 @@
 using {{ class.bare_type }}DataContainer = std::vector<{{ class.bare_type }}Data>;
 using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }}Obj*>;
 
-class {{ class.bare_type }}CollectionIterator {
-public:
-{% with iterator_type = class.bare_type + 'CollectionIterator' %}
-  {{ iterator_type }}(int index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+{{ iterator_declaration(class) }}
 
-  {{ iterator_type }}(const {{ iterator_type }}&) = delete;
-  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = delete;
-{% endwith %}
-
-  bool operator!=(const {{ class.bare_type }}CollectionIterator& x) const {
-    return m_index != x.m_index; // TODO: may not be complete
-  }
-
-  const {{ class.bare_type }} operator*() const;
-  const {{ class.bare_type }}* operator->() const;
-  const {{ class.bare_type }}CollectionIterator& operator++() const;
-
-private:
-  mutable int m_index;
-  mutable {{ class.bare_type }} m_object;
-  const {{ class.bare_type }}ObjPointerContainer* m_collection;
-};
+{{ iterator_declaration(class, prefix='Const') }}
 
 /**
 A Collection is identified by an ID.
@@ -56,7 +38,8 @@ A Collection is identified by an ID.
 class {{ class.bare_type }}Collection : public podio::CollectionBase {
 
 public:
-  using const_iterator = const {{ class.bare_type }}CollectionIterator;
+  using const_iterator = {{ class.bare_type }}ConstCollectionIterator;
+  using iterator = {{ class.bare_type }}CollectionIterator;
 
   {{ class.bare_type }}Collection();
   {{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete;
@@ -122,10 +105,16 @@ public:
   }
 
   // support for the iterator protocol
-  const const_iterator begin() const {
+  iterator begin() {
+    return iterator(0, &m_entries);
+  }
+  const_iterator begin() const {
     return const_iterator(0, &m_entries);
   }
-  const const_iterator end() const {
+  iterator end() {
+    return iterator(m_entries.size(), &m_entries);
+  }
+  const_iterator end() const {
     return const_iterator(m_entries.size(), &m_entries);
   }
 

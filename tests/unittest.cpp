@@ -134,13 +134,25 @@ TEST_CASE("Looping") {
   auto hit1 = coll.create(0xbadULL,0.,0.,0.,0.);
   auto hit2 = coll.create(0xcaffeeULL,1.,1.,1.,1.);
   for(auto i = coll.begin(), end = coll.end(); i != end; ++i) {
-    auto energy = i->energy();
+    i->energy(42); // make sure that we can indeed change the energy here for
+                   // non-const collections
   }
+  REQUIRE(hit1.energy() == 42);
+  REQUIRE(hit2.energy() == 42);
+
   for(int i = 0, end = coll.size(); i != end; ++i) {
-    auto energy = coll[i].energy();
+    coll[i].energy(i); // reset it back to the original value
   }
-  if ((coll[0].energy() != 0) || (coll[1].energy() != 1)) success = false;
-  REQUIRE(success);
+
+  REQUIRE(coll[0].energy() == 0);
+  REQUIRE(coll[1].energy() == 1);
+
+  auto& constColl = store.get<ExampleHitCollection>("name");
+  int index = 0;
+  for (auto hit : constColl) {
+    auto energy = hit.energy();
+    REQUIRE(energy == index++);
+  }
 }
 
 TEST_CASE("Notebook") {

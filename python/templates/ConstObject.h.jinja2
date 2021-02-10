@@ -16,16 +16,12 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-class {{ class.bare_type }};
-class {{ class.bare_type }}Collection;
-class {{ class.bare_type }}CollectionIterator;
-
 {{ macros.class_description(class.bare_type, Description, Author, prefix='Const') }}
 class Const{{ class.bare_type }} {
 
-  friend {{ class.bare_type }};
-  friend {{ class.bare_type }}Collection;
-  friend {{ class.bare_type }}CollectionIterator;
+  friend class {{ class.bare_type }};
+  friend class {{ class.bare_type }}Collection;
+  friend class {{ class.bare_type }}ConstCollectionIterator;
 
 public:
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Const') }}
