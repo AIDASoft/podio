@@ -218,15 +218,15 @@ void write(podio::EventStore& store, WriterT& writer) {
       auto rel = ex42::ExampleWithARelation();
       rel.number(0.5*j);
       auto exWithNamesp = ex42::ExampleWithNamespace();
-      exWithNamesp.data().x = i;
-      exWithNamesp.data().y = 1000*i;
+      exWithNamesp.component().x = i;
+      exWithNamesp.component().y = 1000*i;
       namesps.push_back(exWithNamesp);
       if (j != 3) { // also check for empty relations
         rel.ref(exWithNamesp);
         for (int k = 0; k < 5; k++) {
           auto namesp = ex42::ExampleWithNamespace();
           namesp.x(3*k);
-          namesp.data().y = k;
+          namesp.component().y = k;
           namesps.push_back(namesp);
           rel.addrefs(namesp);
         }

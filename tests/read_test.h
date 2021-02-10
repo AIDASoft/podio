@@ -213,8 +213,8 @@ void processEvent(podio::EventStore& store, int eventNum) {
       auto cpy = copies[j];
       cpytest.push_back(nmsp.clone());
       if (nmsp.ref().isAvailable()) {
-        if (nmsp.ref().data().x != cpy.ref().data().x || nmsp.ref().data().y != cpy.ref().data().y) {
-          throw std::runtime_error("Copied item has differing data in OneToOne referenced item.");
+        if (nmsp.ref().component().x != cpy.ref().component().x || nmsp.ref().component().y != cpy.ref().component().y) {
+          throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
         }
         // check direct accessors of POD sub members
         if (nmsp.ref().x() != cpy.ref().x()) {
@@ -229,8 +229,8 @@ void processEvent(podio::EventStore& store, int eventNum) {
       }
       auto cpy_it = cpy.refs_begin();
       for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
-        if (it->data().x != cpy_it->data().x || it->data().y != cpy_it->data().y) {
-          throw std::runtime_error("Copied item has differing data in OneToMany referenced item.");
+        if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
+          throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
         }
         if (!(it->getObjectID() == cpy_it->getObjectID())) {
           throw std::runtime_error("Copied item has wrong OneToMany references.");

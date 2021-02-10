@@ -129,7 +129,7 @@ datatypes :
     Description : "Type with namespace and namespaced member"
     Author : "Joschka Lingemann"
     Members:
-      - ex2::NamespaceStruct data // a component
+      - ex2::NamespaceStruct component // a component
 
   ex42::ExampleWithARelation :
     Description : "Type with namespace and namespaced relation"
