@@ -91,10 +91,10 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
 
     if (auto vminfo = coll->vectorMembers()) {
       int i = 0;
-      for (auto& [type, vec] : (*vminfo)) {
+      for (const auto& info : (*vminfo)) {
         const auto brName = name + "_" + std::to_string(i);
         auto* branch = m_datatree->GetBranch(brName.c_str());
-        branch->SetAddress(vec);
+        branch->SetAddress(info.second);
         i++;
       }
     }

@@ -28,14 +28,14 @@ namespace podio {
   }
   std::map<int,GenericParameters>* ROOTReader::readCollectionMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
-    auto [col_metadatatree, dummy] = getLocalTreeAndEntry("col_metadata");
+    auto* col_metadatatree = getLocalTreeAndEntry("col_metadata").first;
     col_metadatatree->SetBranchAddress("colMD",&emd);
     col_metadatatree->GetEntry(0);
     return emd ;
   }
   std::map<int,GenericParameters>* ROOTReader::readRunMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
-    auto [run_metadatatree, dummy] = getLocalTreeAndEntry("run_metadata");
+    auto* run_metadatatree = getLocalTreeAndEntry("run_metadata").first;
     run_metadatatree->SetBranchAddress("runMD",&emd);
     run_metadatatree->GetEntry(0);
     return emd ;
