@@ -12,6 +12,12 @@
 #include "podio/GenericParameters.h"
 
 namespace podio {
+  // test workaround function for 6.22/06 performance degradation
+  // see: https://root-forum.cern.ch/t/serious-degradation-of-i-o-performance-from-6-20-04-to-6-22-06/43584/10
+  template<class Tree>
+  TBranch* getBranch(Tree* chain, const char* name) {
+    return static_cast<TBranch*>(chain->GetListOfBranches()->FindObject(name));
+  }
 
   std::pair<TTree*, unsigned> ROOTReader::getLocalTreeAndEntry(const std::string& treename) {
     auto localEntry = m_chain->LoadTree(m_eventNumber);
@@ -22,21 +28,24 @@ namespace podio {
   GenericParameters* ROOTReader::readEventMetaData(){
     GenericParameters* emd = new GenericParameters() ;
     auto [evt_metadatatree, entry] = getLocalTreeAndEntry("evt_metadata");
-    evt_metadatatree->SetBranchAddress("evtMD",&emd);
+    auto* branch = getBranch(evt_metadatatree, "evtMD");
+    branch->SetAddress(&emd);
     evt_metadatatree->GetEntry(entry);
     return emd ;
   }
   std::map<int,GenericParameters>* ROOTReader::readCollectionMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
     auto* col_metadatatree = getLocalTreeAndEntry("col_metadata").first;
-    col_metadatatree->SetBranchAddress("colMD",&emd);
+    auto* branch = getBranch(col_metadatatree, "colMD");
+    branch->SetAddress(&emd);
     col_metadatatree->GetEntry(0);
     return emd ;
   }
   std::map<int,GenericParameters>* ROOTReader::readRunMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
     auto* run_metadatatree = getLocalTreeAndEntry("run_metadata").first;
-    run_metadatatree->SetBranchAddress("runMD",&emd);
+    auto* branch = getBranch(run_metadatatree, "runMD");
+    branch->SetAddress(&emd);
     run_metadatatree->GetEntry(0);
     return emd ;
   }
@@ -49,7 +58,8 @@ namespace podio {
     if (p != end(m_inputs)){
       return p->first;
     }
-    auto branch = m_chain->GetBranch(name.c_str());
+
+    auto branch = getBranch(m_chain, name.c_str());
     if (nullptr == branch) {
       return nullptr;
     }
@@ -91,7 +101,7 @@ namespace podio {
     // After switching trees in the chain, branch pointers get invalidated
     // so they need to be reassigned as well as addresses
     if(localEntry == 0){
-        branch = m_chain->GetBranch(name.c_str());
+        branch = getBranch(m_chain, name.c_str());
         branch->SetAddress(collection->getBufferAddress());
     }
     branch->GetEntry(localEntry);
@@ -100,7 +110,7 @@ namespace podio {
 
     if (refCollections != nullptr) {
       for (int i = 0, end = refCollections->size(); i!=end; ++i){
-        branch = m_chain->GetBranch((name+"#"+std::to_string(i)).c_str());
+        branch = getBranch(m_chain, (name+"#"+std::to_string(i)).c_str());
         branch->SetAddress(&(*refCollections)[i]);
         branch->GetEntry(localEntry);
       }
@@ -109,7 +119,7 @@ namespace podio {
     auto vecmeminfo = collection->vectorMembers();
     if (vecmeminfo != nullptr) {
       for (int i = 0, end = vecmeminfo->size(); i!=end; ++i){
-        branch = m_chain->GetBranch((name+"_"+std::to_string(i)).c_str());
+        branch = getBranch(m_chain, (name+"_"+std::to_string(i)).c_str());
         branch->SetAddress((*vecmeminfo)[i].second);
         branch->GetEntry(localEntry);
       }

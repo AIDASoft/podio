@@ -8,6 +8,12 @@
 #include "TTree.h"
 
 namespace podio {
+// test workaround function for 6.22/06 performance degradation
+  // see: https://root-forum.cern.ch/t/serious-degradation-of-i-o-performance-from-6-20-04-to-6-22-06/43584/10
+  template<class Tree>
+  TBranch* getBranch(Tree* chain, const char* name) {
+    return static_cast<TBranch*>(chain->GetListOfBranches()->FindObject(name));
+  }
 
   ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),
@@ -78,13 +84,15 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
 
 void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
   for (auto& [name, coll] : collections) {
-    m_datatree->SetBranchAddress(name.c_str(), coll->getBufferAddress());
+    auto* branch = getBranch(m_datatree, name.c_str());
+    branch->SetAddress(coll->getBufferAddress());
 
     if (auto refColls = coll->referenceCollections()) {
       int i = 0;
       for (auto& c : (*refColls)) {
         const auto brName = name + "#" + std::to_string(i);
-        m_datatree->SetBranchAddress(brName.c_str(), &c);
+        branch = getBranch(m_datatree, brName.c_str());
+        branch->SetAddress(&c);
         i++;
       }
     }
@@ -93,7 +101,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
       int i = 0;
       for (const auto& info : (*vminfo)) {
         const auto brName = name + "_" + std::to_string(i);
-        auto* branch = m_datatree->GetBranch(brName.c_str());
+        branch = getBranch(m_datatree, brName.c_str());
         branch->SetAddress(info.second);
         i++;
       }
