@@ -47,6 +47,73 @@ namespace podio {
     return emd ;
   }
 
+  CollectionBase* ROOTReader::getCollection(const std::pair<std::string, CollectionInfo>& collInfo) {
+    const auto name = collInfo.first;
+    const auto [theClass, collectionClass, index] = collInfo.second;
+    auto& branches = m_collectionBranches[index];
+
+    auto* buffer = theClass->New();
+    auto* collection = static_cast<CollectionBase*>(collectionClass->New());
+    // connect collection and branch
+    collection->setBuffer(buffer);
+
+    auto refCollections = collection->referenceCollections();
+    auto vecMembers = collection->vectorMembers();
+
+    const auto localEntry = m_chain->LoadTree(m_eventNumber);
+    // After switching trees in the chain, branch pointers get invalidated so
+    // they need to be reassigned.
+    // NOTE: passing the pointer to branch pointer as third argument
+    // automatically takes care of updating the branch pointer as necessary
+    if (localEntry == 0) {
+      m_chain->SetBranchAddress(name.c_str(), collection->getBufferAddress(), &branches.data);
+      // reference collections
+      if (refCollections) {
+        for (size_t i = 0; i < refCollections->size(); ++i) {
+          const auto brName = root_utils::refBranch(name, i);
+          m_chain->SetBranchAddress(brName.c_str(), &(*refCollections)[i], &branches.refs[i]);
+        }
+      }
+
+      // vector members
+      if (vecMembers) {
+        for (size_t i = 0; i < vecMembers->size(); ++i) {
+          const auto brName = root_utils::vecBranch(name, i);
+          m_chain->SetBranchAddress(brName.c_str(), (*vecMembers)[i].second, &branches.vecs[i]);
+        }
+      }
+    } else {
+      // Otherwise we simply set the addresses on the known branches
+      branches.data->SetAddress(collection->getBufferAddress());
+
+      if (refCollections) {
+        for (size_t i = 0; i < refCollections->size(); ++i) {
+          branches.refs[i]->SetAddress(&(*refCollections)[i]);
+        }
+      }
+
+      if (vecMembers) {
+        for (size_t i = 0; i < vecMembers->size(); ++i) {
+          branches.vecs[i]->SetAddress((*vecMembers)[i].second);
+        }
+      }
+    }
+
+    // Read all data
+    branches.data->GetEntry(localEntry);
+    for (auto* br : branches.refs) br->GetEntry(localEntry);
+    for (auto* br : branches.vecs) br->GetEntry(localEntry);
+
+    // do the unpacking
+    const auto id = m_table->collectionID(name);
+    collection->setID(id);
+    collection->prepareAfterRead();
+
+    m_inputs.emplace_back(std::make_pair(collection, name));
+
+    return collection;
+  }
+
 
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
     // has the collection already been constructed?
@@ -56,22 +123,16 @@ namespace podio {
       return p->first;
     }
 
-    auto branch = getBranch(m_chain, name.c_str());
-    if (nullptr == branch) {
-      return nullptr;
+    // Have we read this collection before? If so: use the cached information to
+    // speed up reading
+    if (const auto& info = m_storedClasses.find(name); info != m_storedClasses.end()) {
+      return getCollection(*info);
     }
 
-
-    // look for involved classes
-    TClass* theClass(nullptr);
-    TClass* collectionClass(nullptr);
-    auto result = m_storedClasses.find(name);
-    if (result != m_storedClasses.end()) {
-      theClass = result->second.first;
-      collectionClass = result->second.second;
-    } else {
-      auto dataClassName = branch->GetClassName();
-      theClass = gROOT->GetClass(dataClassName);
+    // Otherwise do some setup first
+    if (auto branch = getBranch(m_chain, name.c_str())) {
+      const std::string dataClassName = branch->GetClassName();
+      const auto* theClass = gROOT->GetClass(dataClassName.c_str());
       if (theClass == nullptr) return nullptr;
       // now create the transient collections
       // some workaround until gcc supports regex properly:
@@ -81,50 +142,35 @@ namespace podio {
       //getting "TypeCollection" out of "vector<TypeData>"
       auto classname = dataClassString.substr(start+1, end-start-5);
       auto collectionClassName = classname+"Collection";
-      collectionClass = gROOT->GetClass(collectionClassName.c_str());
+      const auto* collectionClass = gROOT->GetClass(collectionClassName.c_str());
       if (collectionClass == nullptr) return nullptr;
-      // cache classes found for future usage
-      m_storedClasses[name] = std::pair<TClass*,TClass*>(theClass, collectionClass);
-    }
-    // now create buffers and collections
-    void* buffer = theClass->New();
-    CollectionBase* collection = nullptr;
-    collection = static_cast<CollectionBase*>(collectionClass->New());
-    // connect buffer, collection and branch
-    collection->setBuffer(buffer);
-    branch->SetAddress(collection->getBufferAddress());
-    m_inputs.emplace_back(std::make_pair(collection,name));
-    Long64_t localEntry = m_chain->LoadTree(m_eventNumber);
-    // After switching trees in the chain, branch pointers get invalidated
-    // so they need to be reassigned as well as addresses
-    if(localEntry == 0){
-        branch = getBranch(m_chain, name.c_str());
-        branch->SetAddress(collection->getBufferAddress());
-    }
-    branch->GetEntry(localEntry);
-    // load the collections containing references
-    auto refCollections = collection->referenceCollections();
 
-    if (refCollections != nullptr) {
-      for (int i = 0, end = refCollections->size(); i!=end; ++i){
-        branch = getBranch(m_chain, (name+"#"+std::to_string(i)).c_str());
-        branch->SetAddress(&(*refCollections)[i]);
-        branch->GetEntry(localEntry);
+      root_utils::CollectionBranches branches;
+      branches.data = branch;
+
+      auto* collection = static_cast<CollectionBase*>(collectionClass->New());
+      if (auto refCollections = collection->referenceCollections()) {
+        for (size_t i = 0; i < refCollections->size(); ++i) {
+          const auto brName = root_utils::refBranch(name, i);
+          branches.refs.push_back(getBranch(m_chain, brName.c_str()));
+        }
       }
-    }
-    // load the collections containing vector members
-    auto vecmeminfo = collection->vectorMembers();
-    if (vecmeminfo != nullptr) {
-      for (int i = 0, end = vecmeminfo->size(); i!=end; ++i){
-        branch = getBranch(m_chain, (name+"_"+std::to_string(i)).c_str());
-        branch->SetAddress((*vecmeminfo)[i].second);
-        branch->GetEntry(localEntry);
+      if (auto vecMembers = collection->vectorMembers()) {
+        for (size_t i = 0; i < vecMembers->size(); ++i) {
+          const auto brName = root_utils::vecBranch(name, i);
+          branches.vecs.push_back(getBranch(m_chain, brName.c_str()));
+        }
       }
+
+      // cache the information
+      const auto collInfo = std::make_tuple(theClass, collectionClass, m_collectionIndex++);
+      m_storedClasses[name] = collInfo;
+      m_collectionBranches.push_back(branches);
+
+      return getCollection(std::make_pair(name, collInfo));
     }
-    auto id = m_table->collectionID(name);
-    collection->setID(id);
-    collection->prepareAfterRead();
-    return collection;
+
+    return nullptr;
   }
 
   void ROOTReader::openFile(const std::string& filename){

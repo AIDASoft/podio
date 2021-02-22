@@ -1,12 +1,15 @@
 #ifndef ROOTREADER_H
 #define ROOTREADER_H
 
+#include "podio/rootUtils.h"
+
 #include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <utility>
+#include <tuple>
 
 // forward declarations
 class TClass;
@@ -48,10 +51,6 @@ class ROOTReader : public IReader {
     /// Read all collections requested
     void readEvent();
 
-    /// get collection of name/type; returns true if successfull
-    template<typename T>
-    bool getCollection(const std::string& name, T*& collection);
-
     /// Read CollectionIDTable from ROOT file
     CollectionIDTable* getCollectionIDTable() override final {return m_table;}
 
@@ -81,26 +80,24 @@ class ROOTReader : public IReader {
   /// read the run meta data
     std::map<int,GenericParameters>* readRunMetaData() override final ;
 
+
   private:
     std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
+    using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
+
+    CollectionBase* getCollection(const std::pair<std::string, CollectionInfo>& collInfo);
 
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs{};
-    std::map<std::string, std::pair<TClass*,TClass*> > m_storedClasses{};
+
+    std::map<std::string, CollectionInfo> m_storedClasses{};
     CollectionIDTable* m_table{nullptr};
     TChain* m_chain{nullptr};
     unsigned m_eventNumber{0};
-};
 
-template<typename T>
-bool ROOTReader::getCollection(const std::string& name, T*& collection){
-  collection = dynamic_cast<T*>(readCollection(name));
-  if (collection != nullptr) {
-    return true;
-  } else {
-    return false;
-  }
-}
+    size_t m_collectionIndex = 0;
+    std::vector<root_utils::CollectionBranches> m_collectionBranches{};
+};
 
 } // namespace
 
