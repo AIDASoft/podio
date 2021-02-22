@@ -6,6 +6,7 @@
 // ROOT specifc includes
 #include "TFile.h"
 #include "TTree.h"
+#include "podio/rootUtils.h"
 
 namespace podio {
   ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
@@ -82,23 +83,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
   size_t iCollection = 0;
   for (auto& [name, coll] : collections) {
     const auto& branches = m_collectionBranches[iCollection];
-    branches.data->SetAddress(coll->getBufferAddress());
-
-    if (auto refColls = coll->referenceCollections()) {
-      int i = 0;
-      for (auto& c : (*refColls)) {
-        branches.refs[i]->SetAddress(&c);
-        i++;
-      }
-    }
-
-    if (auto vminfo = coll->vectorMembers()) {
-      int i = 0;
-      for (const auto& info : (*vminfo)) {
-        branches.vecs[i]->SetAddress(info.second);
-        i++;
-      }
-    }
+    root_utils::setCollectionAddresses(coll, branches);
 
     iCollection++;
   }

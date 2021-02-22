@@ -86,6 +86,7 @@ class ROOTReader : public IReader {
     using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
 
     CollectionBase* getCollection(const std::pair<std::string, CollectionInfo>& collInfo);
+    CollectionBase* readCollectionData(const root_utils::CollectionBranches& branches, CollectionBase* collection, Long64_t entry, const std::string& name);
 
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs{};
