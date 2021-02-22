@@ -10,14 +10,11 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/CollectionBase.h"
 #include "podio/GenericParameters.h"
+#include "podio/rootUtils.h"
+
 
 namespace podio {
-  // test workaround function for 6.22/06 performance degradation
-  // see: https://root-forum.cern.ch/t/serious-degradation-of-i-o-performance-from-6-20-04-to-6-22-06/43584/10
-  template<class Tree>
-  TBranch* getBranch(Tree* chain, const char* name) {
-    return static_cast<TBranch*>(chain->GetListOfBranches()->FindObject(name));
-  }
+  using root_utils::getBranch;
 
   std::pair<TTree*, unsigned> ROOTReader::getLocalTreeAndEntry(const std::string& treename) {
     auto localEntry = m_chain->LoadTree(m_eventNumber);

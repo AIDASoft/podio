@@ -8,13 +8,6 @@
 #include "TTree.h"
 
 namespace podio {
-// test workaround function for 6.22/06 performance degradation
-  // see: https://root-forum.cern.ch/t/serious-degradation-of-i-o-performance-from-6-20-04-to-6-22-06/43584/10
-  template<class Tree>
-  TBranch* getBranch(Tree* chain, const char* name) {
-    return static_cast<TBranch*>(chain->GetListOfBranches()->FindObject(name));
-  }
-
   ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),
     m_store(store),
@@ -56,15 +49,16 @@ void ROOTWriter::writeEvent(){
 
 void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections) {
   for (auto& [name, coll] : collections) {
+    root_utils::CollectionBranches branches;
     const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
-    m_datatree->Branch(name.c_str(), collClassName.c_str(), coll->getBufferAddress());
+    branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), coll->getBufferAddress());
 
     // reference collections
     if (auto refColls = coll->referenceCollections()) {
       int i = 0;
       for (auto& c : (*refColls)) {
-        const auto brName = name + "#" + std::to_string(i);
-        m_datatree->Branch(brName.c_str(), c);
+        const auto brName = root_utils::refBranch(name, i);
+        branches.refs.push_back(m_datatree->Branch(brName.c_str(), c));
         ++i;
       }
     }
@@ -74,25 +68,26 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
       int i = 0;
       for (auto& [type, vec] : (*vminfo)) {
         const auto typeName = "vector<" + type + ">";
-        const auto brName = name + "_" + std::to_string(i);
-        m_datatree->Branch(brName.c_str(), typeName.c_str(), vec);
+        const auto brName = root_utils::vecBranch(name, i);
+        branches.vecs.push_back(m_datatree->Branch(brName.c_str(), typeName.c_str(), vec));
         ++i;
       }
     }
+
+    m_collectionBranches.push_back(branches);
   }
 }
 
 void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
+  size_t iCollection = 0;
   for (auto& [name, coll] : collections) {
-    auto* branch = getBranch(m_datatree, name.c_str());
-    branch->SetAddress(coll->getBufferAddress());
+    const auto& branches = m_collectionBranches[iCollection];
+    branches.data->SetAddress(coll->getBufferAddress());
 
     if (auto refColls = coll->referenceCollections()) {
       int i = 0;
       for (auto& c : (*refColls)) {
-        const auto brName = name + "#" + std::to_string(i);
-        branch = getBranch(m_datatree, brName.c_str());
-        branch->SetAddress(&c);
+        branches.refs[i]->SetAddress(&c);
         i++;
       }
     }
@@ -100,12 +95,12 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
     if (auto vminfo = coll->vectorMembers()) {
       int i = 0;
       for (const auto& info : (*vminfo)) {
-        const auto brName = name + "_" + std::to_string(i);
-        branch = getBranch(m_datatree, brName.c_str());
-        branch->SetAddress(info.second);
+        branches.vecs[i]->SetAddress(info.second);
         i++;
       }
     }
+
+    iCollection++;
   }
 }
 
