@@ -46,48 +46,6 @@ namespace podio {
   }
 
 
-
-  CollectionBase* ROOTReader::getCollection(const std::pair<std::string, CollectionInfo>& collInfo) {
-    const auto name = collInfo.first;
-    const auto [theClass, collectionClass, index] = collInfo.second;
-    auto& branches = m_collectionBranches[index];
-
-    auto* collection = root_utils::prepareCollection(theClass, collectionClass);
-
-    auto refCollections = collection->referenceCollections();
-    auto vecMembers = collection->vectorMembers();
-
-    const auto localEntry = m_chain->LoadTree(m_eventNumber);
-    // After switching trees in the chain, branch pointers get invalidated so
-    // they need to be reassigned.
-    // NOTE: root 6.22/06 requires that we get completely new branches here,
-    // with 6.20/04 we could just re-set them
-    if (localEntry == 0) {
-      branches.data = root_utils::getBranch(m_chain, name.c_str());
-      // reference collections
-      if (refCollections) {
-        for (size_t i = 0; i < refCollections->size(); ++i) {
-          const auto brName = root_utils::refBranch(name, i);
-          branches.refs[i] = root_utils::getBranch(m_chain, brName.c_str());
-        }
-      }
-
-      // vector members
-      if (vecMembers) {
-        for (size_t i = 0; i < vecMembers->size(); ++i) {
-          const auto brName = root_utils::vecBranch(name, i);
-          branches.vecs[i] = root_utils::getBranch(m_chain, brName.c_str());
-        }
-      }
-    }
-
-    // set the addresses
-    root_utils::setCollectionAddresses(collection, branches);
-
-    return readCollectionData(branches, collection, localEntry, name);
-  }
-
-
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
     // has the collection already been constructed?
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
@@ -149,6 +107,44 @@ namespace podio {
     }
 
     return nullptr;
+  }
+
+  CollectionBase* ROOTReader::getCollection(const std::pair<std::string, CollectionInfo>& collInfo) {
+    const auto& name = collInfo.first;
+    const auto [theClass, collectionClass, index] = collInfo.second;
+    auto& branches = m_collectionBranches[index];
+
+    auto* collection = root_utils::prepareCollection(theClass, collectionClass);
+
+    const auto localEntry = m_chain->LoadTree(m_eventNumber);
+    // After switching trees in the chain, branch pointers get invalidated so
+    // they need to be reassigned.
+    // NOTE: root 6.22/06 requires that we get completely new branches here,
+    // with 6.20/04 we could just re-set them
+    if (localEntry == 0) {
+      branches.data = root_utils::getBranch(m_chain, name.c_str());
+
+      // reference collections
+      if (auto* refCollections = collection->referenceCollections()) {
+        for (size_t i = 0; i < refCollections->size(); ++i) {
+          const auto brName = root_utils::refBranch(name, i);
+          branches.refs[i] = root_utils::getBranch(m_chain, brName.c_str());
+        }
+      }
+
+      // vector members
+      if (auto* vecMembers = collection->vectorMembers()) {
+        for (size_t i = 0; i < vecMembers->size(); ++i) {
+          const auto brName = root_utils::vecBranch(name, i);
+          branches.vecs[i] = root_utils::getBranch(m_chain, brName.c_str());
+        }
+      }
+    }
+
+    // set the addresses
+    root_utils::setCollectionAddresses(collection, branches);
+
+    return readCollectionData(branches, collection, localEntry, name);
   }
 
   CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranches& branches, CollectionBase* collection, Long64_t entry, const std::string& name) {

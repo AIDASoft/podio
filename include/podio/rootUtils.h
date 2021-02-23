@@ -12,7 +12,7 @@
 
 namespace podio::root_utils {
 // test workaround function for 6.22/06 performance degradation
-  // see: https://root-forum.cern.ch/t/serious-degradation-of-i-o-performance-from-6-20-04-to-6-22-06/43584/10
+// see: https://root-forum.cern.ch/t/serious-degradation-of-i-o-performance-from-6-20-04-to-6-22-06/43584/10
 template<class Tree>
 TBranch* getBranch(Tree* chain, const char* name) {
   return static_cast<TBranch*>(chain->GetListOfBranches()->FindObject(name));

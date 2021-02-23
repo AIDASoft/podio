@@ -48,6 +48,11 @@ namespace podio {
     TTree* m_evtMDtree;
     TTree* m_colMDtree;
     std::vector<std::string> m_collectionsToWrite{};
+    // In order to avoid having to look up the branches from the datatree for
+    // every event, we cache them in this vector, that is populated the first
+    // time we write an event. Since the collections and their order do not
+    // change between events, the assocation between the collections to write
+    // and their branches is simply index based
     std::vector<root_utils::CollectionBranches> m_collectionBranches{};
 
     bool m_firstEvent{true};

@@ -83,19 +83,30 @@ class ROOTReader : public IReader {
 
   private:
     std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
+    // Information about the data vector as wall as the collection class type
+    // and the index in the collection branches cache vector
     using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
 
     CollectionBase* getCollection(const std::pair<std::string, CollectionInfo>& collInfo);
     CollectionBase* readCollectionData(const root_utils::CollectionBranches& branches, CollectionBase* collection, Long64_t entry, const std::string& name);
 
+    // cache collections that have been read already in a given event
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs{};
 
+    // cache the necessary information to more quickly construct and read each
+    // collection after it has been read the very first time
     std::map<std::string, CollectionInfo> m_storedClasses{};
+
     CollectionIDTable* m_table{nullptr};
     TChain* m_chain{nullptr};
     unsigned m_eventNumber{0};
 
+    // Similar to writing we cache the branches that belong to each collection
+    // in order to not having to look them up every event. However, for the
+    // reader we cannot guarantee a fixed order of collections as they are read
+    // on demand. Hence, we give each collection an index the first time it is
+    // read and we start caching the branches.
     size_t m_collectionIndex = 0;
     std::vector<root_utils::CollectionBranches> m_collectionBranches{};
 };
