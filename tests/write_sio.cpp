@@ -2,7 +2,7 @@
 #include "podio/SIOWriter.h"
 #include "podio/EventStore.h"
 
-int main(int argc, char* argv[]){
+int main(int, char**){
   podio::EventStore store;
   podio::SIOWriter writer("example.sio", &store);
 

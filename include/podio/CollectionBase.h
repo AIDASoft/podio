@@ -13,15 +13,8 @@ namespace podio {
   class ICollectionProvider;
   class CollectionBase;
 
-  typedef std::vector<std::pair<std::string,podio::CollectionBase*>> CollRegistry;
-  typedef std::vector<std::vector<podio::ObjectID>*> CollRefCollection;
-  typedef std::vector<std::pair<std::string,void*>> VectorMembersInfo;
-
-  //class CollectionBuffer {
-  //public:
-  //  void* data;
-  //  CollRefCollection* references;
-  //};
+  using CollRefCollection = std::vector<std::vector<podio::ObjectID>*>;
+  using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
 
   class CollectionBase {
   public:
@@ -59,7 +52,7 @@ namespace podio {
     virtual std::string getValueTypeName() const = 0;
 
     /// destructor
-    virtual ~CollectionBase(){};
+    virtual ~CollectionBase() = default;
 
     /// clear the collection and all internal states
     virtual void clear() = 0 ;

@@ -15,9 +15,9 @@ namespace podio {
     m_file(new TFile(filename.c_str(),"RECREATE","data file")),
     m_datatree(new TTree("events","Events tree")),
     m_metadatatree(new TTree("metadata", "Metadata tree")),
+    m_runMDtree(new TTree("run_metadata", "Run metadata tree")),
     m_evtMDtree(new TTree("evt_metadata", "Event metadata tree")),
-    m_colMDtree(new TTree("col_metadata", "Collection metadata tree")),
-    m_runMDtree(new TTree("run_metadata", "Run metadata tree"))
+    m_colMDtree(new TTree("col_metadata", "Collection metadata tree"))
   {
 
     m_evtMDtree->Branch("evtMD", "GenericParameters", m_store->eventMetaDataPtr() ) ;
@@ -91,10 +91,10 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
 
     if (auto vminfo = coll->vectorMembers()) {
       int i = 0;
-      for (auto& [type, vec] : (*vminfo)) {
+      for (const auto& info : (*vminfo)) {
         const auto brName = name + "_" + std::to_string(i);
         auto* branch = m_datatree->GetBranch(brName.c_str());
-        branch->SetAddress(vec);
+        branch->SetAddress(info.second);
         i++;
       }
     }

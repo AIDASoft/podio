@@ -22,6 +22,7 @@ public:
   // Avoid some possible issues that could arise from copying by simply
   // disallowing it
   BenchmarkRecorderTree(const BenchmarkRecorderTree&) = delete;
+  BenchmarkRecorderTree& operator=(const BenchmarkRecorderTree&) = delete;
 
   BenchmarkRecorderTree(TFile* recFile, const std::string& name, const std::vector<std::string>& steps) :
     m_stepNames(steps), m_stepTimes(steps.size()) {
@@ -63,9 +64,12 @@ public:
     m_recordFile = new TFile(recFileName.c_str(), "recreate");
   }
 
+  BenchmarkRecorder(const BenchmarkRecorder&) = delete;
+  BenchmarkRecorder operator=(const BenchmarkRecorder&) = delete;
+
   ~BenchmarkRecorder() {
-    for (auto& [name, tree] : m_recordTrees) {
-      tree.Write();
+    for (auto& tree : m_recordTrees) {
+      tree.second.Write();
     }
     m_recordFile->Write("", TObject::kWriteDelete);
     m_recordFile->Close();
@@ -94,7 +98,7 @@ public:
 private:
   TFile* m_recordFile{nullptr};
   // Stable references outside!!
-  std::deque<std::pair<std::string, BenchmarkRecorderTree>> m_recordTrees;
+  std::deque<std::pair<std::string, BenchmarkRecorderTree>> m_recordTrees{};
 };
 
 }

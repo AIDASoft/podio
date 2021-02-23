@@ -65,7 +65,7 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   ASSERT_CONDITION(collection[7].daughters().size() == 0 && collection[7].parents().size() == 0,
                    "RelationRange of empty collection is not empty");
   // alternatively check if a loop is entered
-  for (const auto& p: collection[7].daughters()) {
+  for (const auto& p[[maybe_unused]]: collection[7].daughters()) {
     throw std::runtime_error("Range based for loop entered on a supposedly empty range");
   }
 

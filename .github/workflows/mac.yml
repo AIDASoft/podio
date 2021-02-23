@@ -24,7 +24,7 @@ jobs:
         source /Users/Shared/cvmfs/sft.cern.ch/lcg/views/${{ matrix.LCG }}/setup.sh
         mkdir build install
         cd build
-        cmake  -GNinja -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_CXX_STANDARD=17  -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " ..
+        cmake  -GNinja -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_CXX_STANDARD=17  -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror" ..
         ninja -k 0
         ninja install
         ctest --output-on-failure

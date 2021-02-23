@@ -31,9 +31,9 @@ namespace podio {
       auto name = m_table->name(id);
       success = doGet(name, collection,true);
       if( collection != nullptr ){  // cache the collection for faster retreaval later
-	if( m_cachedCollections.size() < id + 1 )
-	  m_cachedCollections.resize( id+1 ) ;
-	m_cachedCollections[id] = collection ;
+        if( m_cachedCollections.size() < (unsigned) id + 1 )
+          m_cachedCollections.resize( id+1 ) ;
+        m_cachedCollections[id] = collection ;
       }
     } else {
       // collection already requested in recursive call
@@ -105,7 +105,7 @@ namespace podio {
       delete tmp;
     }
     return m_runMDMap[ runID ] ;
-  } ;
+  }
   
 
   GenericParameters& EventStore::getCollectionMetaData(int colID) const {
@@ -116,7 +116,7 @@ namespace podio {
       delete tmp;
     }
     return m_colMDMap[ colID ] ;
-  } ;
+  }
 
   void EventStore::clearCollections(){
     for (auto& coll : m_collections){

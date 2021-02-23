@@ -7,7 +7,7 @@ what trips it up
 from __future__ import print_function, absolute_import, unicode_literals
 import unittest
 
-from podio_config_reader import MemberParser
+from podio_config_reader import MemberParser, DefinitionError
 
 
 class MemberParserTest(unittest.TestCase):
@@ -58,6 +58,10 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.full_type, r'std::array<double, 4>')
     self.assertEqual(parsed.name, r'someArray')
     self.assertEqual(parsed.description, r'a comment')
+    self.assertTrue(not parsed.is_builtin)
+    self.assertTrue(parsed.is_builtin_array)
+    self.assertEqual(int(parsed.array_size), 4)
+    self.assertEqual(parsed.array_type, r'double')
 
     # an array definition as terse as possible
     parsed = parser.parse(r'std::array<int,2>anArray//with a comment')
@@ -74,6 +78,8 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.full_type, r'std::array<::GlobalType, 1>')
     self.assertEqual(parsed.name, r'anArray')
     self.assertEqual(parsed.description, r'with a top level type')
+    self.assertTrue(not parsed.is_builtin_array)
+    self.assertEqual(parsed.array_type, r'::GlobalType')
 
   def test_parse_invalid(self):
     # setup an empty parser
@@ -98,7 +104,7 @@ class MemberParserTest(unittest.TestCase):
         ]
 
     for inp in invalid_inputs:
-      with self.assertRaises(Exception):
+      with self.assertRaises(DefinitionError):
         parser.parse(inp)
 
   def test_parse_valid_no_description(self):
@@ -107,7 +113,6 @@ class MemberParserTest(unittest.TestCase):
     parsed = parser.parse('unsigned long long aLongWithoutDescription', False)
     self.assertEqual(parsed.full_type, 'unsigned long long')
     self.assertEqual(parsed.name, 'aLongWithoutDescription')
-    self.assertEqual(str(parsed), 'unsigned long long aLongWithoutDescription;')
 
     parsed = parser.parse('std::array<unsigned long, 123> unDescribedArray', False)
     self.assertEqual(parsed.full_type, 'std::array<unsigned long, 123>')
@@ -123,6 +128,22 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.full_type, 'NonBuiltIn')
     self.assertEqual(parsed.name, 'aType')
     self.assertEqual(parsed.description, 'descriptions are not ignored even though they are not required')
+    self.assertTrue(not parsed.is_builtin)
+
+  def test_string_representation(self):
+    """Test that the string representation that is used in the jinja2 templates
+    includes the default initialization"""
+    parser = MemberParser()
+
+    parsed = parser.parse('unsigned long long var // description')
+    self.assertEqual(str(parsed), r'unsigned long long var{}; ///< description')
+
+    # Also works without a description
+    parsed = parser.parse('SomeType memberVar', False)
+    self.assertEqual(str(parsed), r'SomeType memberVar{};')
+
+    parsed = parser.parse('Type var//with very close comment')
+    self.assertEqual(str(parsed), r'Type var{}; ///< with very close comment')
 
 
 if __name__ == '__main__':

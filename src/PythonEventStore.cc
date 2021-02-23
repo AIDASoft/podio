@@ -23,7 +23,7 @@ podio::PythonEventStore::PythonEventStore(const char* name) :
 
 podio::CollectionBase* podio::PythonEventStore::get(const char* name) {
   const podio::CollectionBase* coll(nullptr);
-  auto success = m_store.get(name, coll);
+  m_store.get(name, coll);
   return const_cast<podio::CollectionBase*>(coll);
 }
 

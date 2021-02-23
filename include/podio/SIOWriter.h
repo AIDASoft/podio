@@ -24,6 +24,10 @@ namespace podio {
     SIOWriter(const std::string& filename, EventStore* store);
     ~SIOWriter();
 
+    // non-copyable
+    SIOWriter(const SIOWriter&) = delete;
+    SIOWriter& operator=(const SIOWriter&) = delete;
+
     void registerForWrite(const std::string& name);
     void writeEvent();
     void finish();
@@ -45,7 +49,7 @@ namespace podio {
     std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData;
     std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData;
     SIOFileTOCRecord m_tocRecord{};
-    std::vector<std::string> m_collectionsToWrite;
+    std::vector<std::string> m_collectionsToWrite{};
   };
 
 } //namespace

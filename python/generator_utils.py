@@ -109,7 +109,7 @@ class MemberVariable(object):
     else:
       scoped_type = self.full_type
 
-    definition = r'{} {};'.format(scoped_type, self.name)
+    definition = r'{} {}{{}};'.format(scoped_type, self.name)
     if self.description:
       definition += r' ///< {}'.format(self.description)
     return definition

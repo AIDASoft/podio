@@ -31,15 +31,17 @@ public:
   /// constructor from ObjectID and {{ class.bare_type }}Data
   /// does not initialize the internal relation containers
   {{ obj_type }}(const podio::ObjectID id, {{ class.bare_type }}Data data);
+  /// No assignment operator
+  {{ obj_type }}& operator=(const {{ obj_type }}&) = delete;
   virtual ~{{ obj_type }}();
 
 public:
   {{ class.bare_type }}Data data;
 {% for relation in OneToOneRelations %}
-  {{ relation.relation_type }}* m_{{ relation.name }};
+  {{ relation.relation_type }}* m_{{ relation.name }}{nullptr};
 {% endfor %}
 {% for relation in OneToManyRelations + VectorMembers %}
-  std::vector<{{ relation.relation_type }}>* m_{{ relation.name }};
+  std::vector<{{ relation.relation_type }}>* m_{{ relation.name }}{nullptr};
 {% endfor %}
 };
 {% endwith %}

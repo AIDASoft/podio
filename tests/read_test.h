@@ -25,7 +25,7 @@
 #include <sstream>
 
 
-void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
+void processEvent(podio::EventStore& store, int eventNum) {
 
   auto evtMD = store.getEventMetaData() ;
   float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
@@ -42,7 +42,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
 
 
   try {
-    auto& failing = store.get<ExampleClusterCollection>("notthere");
+    // not assigning to a variable, because it will remain unused, we just want
+    // the exception here
+    store.get<ExampleClusterCollection>("notthere");
   } catch(const std::runtime_error& err) {
     if (std::string(err.what()) != "No collection \'notthere\' is present in the EventStore") {
       throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
@@ -87,8 +89,6 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
     // check that we can retrieve the correct parent daughter relation
     // set in write.cpp :
 
-    // particle 0 has particles 2,3,4 and 5 as daughters:
-    auto p = mcps[0] ;
 
     //-------- print relations for debugging:
     for( auto p : mcps ){
@@ -102,6 +102,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
       }
       std::cout << std::endl ;
     }
+
+    // particle 0 has particles 2,3,4 and 5 as daughters:
+    auto p = mcps[0] ;
 
     auto d0 = p.daughters(0) ;
     auto d1 = p.daughters(1) ;
@@ -136,9 +139,9 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
   auto& refs = store.get<ExampleReferencingTypeCollection>("refs");
   if(refs.isValid()){
     auto ref = refs[0];
-    for (auto j = ref.Clusters_begin(), end = ref.Clusters_end(); j!=end; ++j){
-      for (auto i = j->Hits_begin(), end = j->Hits_end(); i!=end; ++i){
-        //std::cout << "  Referenced object has an energy of " << i->energy() << std::endl;
+    for (auto cluster : ref.Clusters()) {
+      for (auto hit : cluster.Hits()) {
+        //std::cout << "  Referenced object has an energy of " << hit.energy() << std::endl;
       }
     }
   } else {
@@ -182,7 +185,7 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
   auto& comps = store.get<ExampleWithComponentCollection>("Component");
   if (comps.isValid()) {
     auto comp = comps[0];
-    int a = comp.component().data.x + comp.component().data.z;
+    int a[[maybe_unused]] = comp.component().data.x + comp.component().data.z;
   }
 
   auto& arrays = store.get<ExampleWithArrayCollection>("arrays");
@@ -205,13 +208,13 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
   auto& copies = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("TestConstCopy");
   if (nmspaces.isValid() && copies.isValid()) {
-    for (int j = 0; j < nmspaces.size(); j++) {
+    for (size_t j = 0; j < nmspaces.size(); j++) {
       auto nmsp = nmspaces[j];
       auto cpy = copies[j];
       cpytest.push_back(nmsp.clone());
       if (nmsp.ref().isAvailable()) {
-        if (nmsp.ref().data().x != cpy.ref().data().x || nmsp.ref().data().y != cpy.ref().data().y) {
-          throw std::runtime_error("Copied item has differing data in OneToOne referenced item.");
+        if (nmsp.ref().component().x != cpy.ref().component().x || nmsp.ref().component().y != cpy.ref().component().y) {
+          throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
         }
         // check direct accessors of POD sub members
         if (nmsp.ref().x() != cpy.ref().x()) {
@@ -226,8 +229,8 @@ void processEvent(podio::EventStore& store, bool verboser, unsigned eventNum) {
       }
       auto cpy_it = cpy.refs_begin();
       for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
-        if (it->data().x != cpy_it->data().x || it->data().y != cpy_it->data().y) {
-          throw std::runtime_error("Copied item has differing data in OneToMany referenced item.");
+        if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
+          throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
         }
         if (!(it->getObjectID() == cpy_it->getObjectID())) {
           throw std::runtime_error("Copied item has wrong OneToMany references.");
@@ -262,7 +265,7 @@ void run_read_test(podio::IReader& reader) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
 
-    processEvent(store, true, correctIndex(i));
+    processEvent(store, correctIndex(i));
     store.clear();
     reader.endOfEvent();
   }

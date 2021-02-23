@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+#include <type_traits>
 
 // catch
 #define CATCH_CONFIG_MAIN
@@ -120,7 +121,7 @@ TEST_CASE("Invalid_refs") {
   cluster.addHits(hit2);
   try {
     clusters.prepareForWrite(); //should fail!
-  } catch (std::runtime_error){
+  } catch (std::runtime_error&){
     success = true;
   }
   REQUIRE(success);
@@ -167,11 +168,18 @@ TEST_CASE("OneToOneRelations") {
 }
 
 TEST_CASE("Podness") {
-  REQUIRE(std::is_pod<ExampleClusterData>());
-  REQUIRE(std::is_pod<ExampleHitData>());
-  REQUIRE(std::is_pod<ExampleWithOneRelationData>());
+  // fail this already at compile time
+  static_assert(std::is_standard_layout_v<ExampleClusterData>, "Generated data classes do not have standard layout");
+  static_assert(std::is_trivially_copyable_v<ExampleClusterData>, "Generated data classes are not trivially copyable");
+  static_assert(std::is_standard_layout_v<ExampleHitData>, "Generated data classes do not have standard layout");
+  static_assert(std::is_trivially_copyable_v<ExampleHitData>, "Generated data classes are not trivially copyable");
+  static_assert(std::is_standard_layout_v<ExampleWithOneRelationData>, "Generated data classes do not have standard layout");
+  static_assert(std::is_trivially_copyable_v<ExampleWithOneRelationData>, "Generated data classes are not trivially copyable");
+
   // just to be sure the test does what it is supposed to do
-  REQUIRE_FALSE(std::is_pod<ExampleClusterObj>());
+  static_assert(not std::is_standard_layout_v<ExampleClusterObj>);
+  static_assert(not std::is_trivially_copyable_v<ExampleClusterObj>);
+  REQUIRE(true); // just to have this also show up at runtime
 }
 
 TEST_CASE("Referencing") {
@@ -278,5 +286,5 @@ TEST_CASE("Equality") {
 
 TEST_CASE("NonPresentCollection") {
   auto store = podio::EventStore();
-  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
+  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error&);
 }
