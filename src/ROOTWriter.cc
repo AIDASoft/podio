@@ -81,9 +81,9 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
 
 void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
   size_t iCollection = 0;
-  for (auto& [name, coll] : collections) {
+  for (auto& coll : collections) {
     const auto& branches = m_collectionBranches[iCollection];
-    root_utils::setCollectionAddresses(coll, branches);
+    root_utils::setCollectionAddresses(coll.second, branches);
 
     iCollection++;
   }
