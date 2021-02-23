@@ -139,7 +139,7 @@ To run the code generation script, do
     mkdir ../Tmp
     mkdir ../Tmp/data
     mkdir ../Tmp/src
-    python ../python/podio_class_generator.py ../examples/datalayout.yaml ../Tmp data
+    python ../python/podio_class_generator.py ../examples/datalayout.yaml ../Tmp data ROOT
 
 The generation script has the following additional options:
 
