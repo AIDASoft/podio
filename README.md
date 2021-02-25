@@ -1,5 +1,10 @@
 # podio
 
+[![linux](https://github.com/AIDASoft/podio/actions/workflows/test.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/test.yml)
+[![mac](https://github.com/AIDASoft/podio/actions/workflows/mac.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/mac.yml)
+[![ubuntu](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml)
+[![coverity](https://scan.coverity.com/projects/22634/badge.svg)](https://scan.coverity.com/projects/aidasoft-podio)
+
 ## Documentation
 
  - [Introduction](./doc/doc.md)
