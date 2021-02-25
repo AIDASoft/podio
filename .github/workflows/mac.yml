@@ -4,12 +4,16 @@ on: [push, pull_request]
 
 jobs:
   compile:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
+        sio: [OFF]
         LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt",
               "LCG_97apython3/x86_64-mac1015-clang110-opt"]
+        include:
+         - LCG: "LCG_99/x86_64-mac1015-clang120-opt"
+           sio: ON
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
@@ -19,4 +23,13 @@ jobs:
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
-          /bin/bash .github/scripts/compile_and_test.sh
+          mkdir build install
+          cd build
+          cmake -DENABLE_SIO=${{ matrix.sio }} \
+            -DCMAKE_INSTALL_PREFIX=../install \
+            -DCMAKE_CXX_STANDARD=17 \
+            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
+            -G Ninja ..
+          ninja -k0
+          ctest --output-on-failure
+          ninja install

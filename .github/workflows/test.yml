@@ -1,18 +1,21 @@
 name: linux
 
 on: [push, pull_request]
-
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        sio: [ON]
         LCG: ["LCG_99/x86_64-centos7-gcc8-opt",
               "LCG_99/x86_64-centos7-clang10-opt",
-              "LCG_99/x86_64-centos8-gcc10-opt",
-              "LCG_98python3/x86_64-centos7-gcc9-opt",
-              "LCG_98python3/x86_64-centos7-gcc10-opt"]
+              "LCG_99/x86_64-centos8-gcc10-opt"]
+        include:
+          - LCG: "LCG_98python3/x86_64-centos7-gcc9-opt"
+            sio: OFF
+          - LCG: "LCG_98python3/x86_64-centos7-gcc10-opt"
+            sio: OFF
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
@@ -20,4 +23,13 @@ jobs:
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
-          /bin/bash .github/scripts/compile_and_test.sh
+          mkdir build install
+          cd build
+          cmake -DENABLE_SIO=${{ matrix.sio }} \
+            -DCMAKE_INSTALL_PREFIX=../install \
+            -DCMAKE_CXX_STANDARD=17 \
+            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
+            -G Ninja ..
+          ninja -k0
+          ctest --output-on-failure
+          ninja install
