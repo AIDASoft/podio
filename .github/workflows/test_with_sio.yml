@@ -3,17 +3,30 @@ name: sio_io
 on: [push, pull_request]
 
 jobs:
-  build_and_test:
+  ilcsoft_nightlies:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ILCSoft: ["lcg/97/nightly/x86_64-centos7-gcc9-opt"]
+        LCG: ["LCG_99/x86_64-centos7-gcc10-opt",
+              "LCG_99/x86_64-ubuntu2004-gcc9-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - name: Start container
-      run: |
-        docker run -it --privileged --name CI_container -v /home/runner/work/podio/podio:/Package -e VIEW=${{ matrix.ILCSoft }} -e USE_SIO=ON -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
-    - name: Compile and test
-      run: |
-        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
+    - uses: aidasoft/run-lcg-view@v2
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          USE_SIO=ON /bin/bash .github/scripts/compile_and_test.sh
+
+  mac-os:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+      with:
+        cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'
+    - uses: aidasoft/run-lcg-view@v2
+      with:
+       release-platform: LCG_99/x86_64-mac1015-clang120-opt
+       run: |
+         USE_SIO=ON /bin/bash .github/scripts/compile_and_test.sh

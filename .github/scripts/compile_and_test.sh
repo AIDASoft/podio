@@ -2,14 +2,6 @@
 
 ENABLE_SIO=${USE_SIO:-OFF}
 
-# Depending on whether we need SIO or not setup the environment accordingly
-if [ ${ENABLE_SIO} = "OFF" ]; then
-    source /cvmfs/sft.cern.ch/lcg/views/${VIEW}/setup.sh
-else
-    source /cvmfs/clicdp.cern.ch/iLCSoft/${VIEW}/init_ilcsoft.sh
-fi
-
-cd /Package
 source init.sh
 mkdir build install
 cd build

@@ -8,23 +8,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt","LCG_97apython3/x86_64-mac1015-clang110-opt"]
+        LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt",
+              "LCG_97apython3/x86_64-mac1015-clang110-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
       with:
         cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'
-    - name: Install LCG dependencies
-      run: |
-        brew install ninja
-        brew install gfortran
-        brew install --cask xquartz
-    - name: Compile and test
-      run: |
-        source /Users/Shared/cvmfs/sft.cern.ch/lcg/views/${{ matrix.LCG }}/setup.sh
-        mkdir build install
-        cd build
-        cmake  -GNinja -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_CXX_STANDARD=17  -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror" ..
-        ninja -k 0
-        ninja install
-        ctest --output-on-failure
+    - uses: aidasoft/run-lcg-view@v2
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          /bin/bash .github/scripts/compile_and_test.sh
