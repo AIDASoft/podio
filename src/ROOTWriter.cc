@@ -1,3 +1,5 @@
+#include "rootUtils.h"
+
 // podio specific includes
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
@@ -6,7 +8,6 @@
 // ROOT specifc includes
 #include "TFile.h"
 #include "TTree.h"
-#include "podio/rootUtils.h"
 
 namespace podio {
   ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :

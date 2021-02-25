@@ -3,7 +3,7 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
-#include "podio/rootUtils.h"
+#include "podio/CollectionBranches.h"
 
 #include "TBranch.h"
 

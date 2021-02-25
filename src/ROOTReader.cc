@@ -1,3 +1,5 @@
+#include "rootUtils.h"
+
 // podio specific includes
 #include "podio/ROOTReader.h"
 #include "podio/CollectionIDTable.h"

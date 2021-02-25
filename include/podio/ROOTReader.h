@@ -1,7 +1,9 @@
 #ifndef ROOTREADER_H
 #define ROOTREADER_H
 
-#include "podio/rootUtils.h"
+#include "podio/ICollectionProvider.h"
+#include "podio/IReader.h"
+#include "podio/CollectionBranches.h"
 
 #include <algorithm>
 #include <map>
@@ -16,10 +18,6 @@ class TClass;
 class TFile;
 class TTree;
 class TChain;
-
-
-#include "podio/ICollectionProvider.h"
-#include "podio/IReader.h"
 
 
 namespace podio {
