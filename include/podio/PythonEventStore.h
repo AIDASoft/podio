@@ -13,7 +13,7 @@ public:
   PythonEventStore(const char* filename);
 
   /// access a collection.
-  podio::CollectionBase* get(const char* name);
+  const podio::CollectionBase* get(const char* name);
 
   /// signify end of event
   void endOfEvent();
