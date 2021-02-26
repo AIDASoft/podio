@@ -101,6 +101,17 @@ include(cmake/podioMacros.cmake)
 # optionally build with SIO -------------------------------------------------
 if(ENABLE_SIO)
   find_package( SIO REQUIRED)
+  # Targets from SIO only become available with v00-01 so we rig them here to be
+  # able to use them
+  if (SIO_VERSION VERSION_LESS 0.1)
+    message(STATUS "Found SIO without Targets, creating them on the fly")
+    add_library(SIO::sio SHARED IMPORTED)
+    set_target_properties(SIO::sio PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES ${SIO_INCLUDE_DIRS}
+      INTERFACE_LINK_LIBRARIES ${SIO_LIBRARIES}
+      IMPORTED_LOCATION ${SIO_LIBRARIES})
+  endif()
+
   PODIO_CHECK_CPP_FS(PODIO_FS_LIBS)
   if (SIO_FOUND)
     MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
