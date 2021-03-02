@@ -8,17 +8,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sio: [OFF]
-        LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt",
-              "LCG_97apython3/x86_64-mac1015-clang110-opt"]
+        sio: [ON]
+        LCG: ["LCG_99/x86_64-mac1015-clang120-opt",
+              "dev4/x86_64-mac1015-clang120-opt"]
         include:
-         - LCG: "LCG_99/x86_64-mac1015-clang120-opt"
-           sio: ON
+        - LCG: "LCG_98python3/x86_64-mac1015-clang110-opt"
+          sio: OFF
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
       with:
-        cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'
+        cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch,sft-nightlies.cern.ch'
     - uses: aidasoft/run-lcg-view@v2
       with:
         release-platform: ${{ matrix.LCG }}
