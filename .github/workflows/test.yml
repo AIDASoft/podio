@@ -10,12 +10,10 @@ jobs:
         sio: [ON]
         LCG: ["LCG_99/x86_64-centos7-gcc8-opt",
               "LCG_99/x86_64-centos7-clang10-opt",
-              "LCG_99/x86_64-centos8-gcc10-opt"]
-        include:
-          - LCG: "LCG_98python3/x86_64-centos7-gcc9-opt"
-            sio: OFF
-          - LCG: "LCG_98python3/x86_64-centos7-gcc10-opt"
-            sio: OFF
+              "LCG_99/x86_64-centos8-gcc10-opt",
+              "dev3/x86_64-centos7-clang10-opt",
+              "dev4/x86_64-centos7-gcc10-opt",
+              "dev4/x86_64-centos7-clang10-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2

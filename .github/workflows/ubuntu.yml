@@ -8,11 +8,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - LCG: "LCG_99/x86_64-ubuntu2004-gcc9-opt"
-          sio: ON
-        - LCG: "LCG_98python3/x86_64-ubuntu1804-gcc7-opt"
-          sio: OFF
+        sio: [ON]
+        LCG: ["LCG_99/x86_64-ubuntu2004-gcc9-opt",
+              "dev3/x86_64-ubuntu2004-gcc9-opt",
+              "dev4/x86_64-ubuntu2004-gcc9-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
