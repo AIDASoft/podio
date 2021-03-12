@@ -36,12 +36,9 @@ namespace podio {
   }
   
   void ASCIIWriter::finish(){
-    // // now we want to safe the metadata
-    // m_metadatatree->Branch("CollectionIDs",m_store->getCollectionIDTable());
-    // m_metadatatree->Fill();
-    // m_file->Write();
-    
+
     m_file->close();
+
   }
   
 } // namespace
