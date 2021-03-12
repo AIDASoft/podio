@@ -15,13 +15,6 @@ namespace podio {
 
   class CollectionBase;
 
-  //std::function<void(CollectionBase*)> fun ;
-  //std::map< std::string, std::function<void(CollectionBase*)>* > FunMap ;
-  //std::map< std::string, std::function<void()>& > FunMap ;
-  //typedef void* (CollectionBase*, std::ostream& ) FunPtr ;
-  //std::map< std::string, FunPtr > FunMap ;
-
-
   struct ColWriterBase {
     virtual void writeCollection(CollectionBase*, std::ostream& )=0 ;
     virtual ~ColWriterBase() = default;
@@ -68,12 +61,6 @@ typedef std::map< std::string, ColWriterBase* > FunMap ;
     FunMap m_map{};
   };
 
-  // int main () {
-  //   myfile.open ("example.txt");
-  //   myfile << "Writing this to a file.\n";
-  //   myfile.close();
-  //   return 0;
-  //}
 
   template<typename T>
   bool ASCIIWriter::registerForWrite(const std::string& name){
