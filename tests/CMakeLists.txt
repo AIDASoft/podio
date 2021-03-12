@@ -32,7 +32,7 @@ foreach( sourcefile ${root_dependent_tests} )
 endforeach()
 
 
-set(independent_tests ostream_operator.cpp unittest.cpp)
+set(independent_tests ostream_operator.cpp unittest.cpp write_ascii.cpp)
 foreach( sourcefile ${independent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "")
 endforeach()
