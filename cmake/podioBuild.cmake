@@ -42,6 +42,10 @@ endmacro(podio_set_rpath)
 macro(podio_set_compiler_flags)
   include(CheckCXXCompilerFlag)
 
+  # Store the default flags here, before we add all the warning, so that we can
+  # build Catch2 locally without them
+  SET(CXX_FLAGS_CMAKE_DEFAULTS "${CMAKE_CXX_FLAGS}")
+
   SET(COMPILER_FLAGS -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Wall -Wextra -pedantic -Weffc++)
 
   # AppleClang/Clang specific warning flags
