@@ -4,9 +4,7 @@
 #include <vector>
 #include <type_traits>
 
-// catch
-#define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include "catch2/catch_test_macros.hpp"
 
 // podio specific includes
 #include "podio/EventStore.h"
@@ -128,19 +126,17 @@ TEST_CASE("Invalid_refs") {
 }
 
 TEST_CASE("Looping") {
-  bool success = true;
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("name");
   auto hit1 = coll.create(0xbadULL,0.,0.,0.,0.);
   auto hit2 = coll.create(0xcaffeeULL,1.,1.,1.,1.);
   for(auto i = coll.begin(), end = coll.end(); i != end; ++i) {
-    auto energy = i->energy();
+    auto energy[[maybe_unused]] = i->energy();
   }
   for(int i = 0, end = coll.size(); i != end; ++i) {
     auto energy = coll[i].energy();
+    REQUIRE(energy == i);
   }
-  if ((coll[0].energy() != 0) || (coll[1].energy() != 1)) success = false;
-  REQUIRE(success);
 }
 
 TEST_CASE("Notebook") {
@@ -286,5 +282,5 @@ TEST_CASE("Equality") {
 
 TEST_CASE("NonPresentCollection") {
   auto store = podio::EventStore();
-  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error&);
+  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
 }
