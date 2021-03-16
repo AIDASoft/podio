@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: mixed-line-ending
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: 41ad32113ed5abe9c33a01f606b5eacf572b13e0
+    hooks:
+      - id: clang-format
+        args: [--style=file]
+        exclude: podioVersion.h
+  - repo: local
+    hooks:
+      - id: clang-tidy
+        name: clang-tidy
+        entry: clang-tidy -p compile_commands.json
+        types: [c++]
+        exclude: (tests/(datamodel|src)/*.(h|cc)|podioVersion.h)
+        language: system
+      - id: pylint
+        name: pylint
+        entry: 'pylint --rcfile=.github/scripts/podio.pylint.py3k.rc --py3k --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"'
+        types: [python]
+        language: system
+      - id: flake8
+        name: flake8
+        entry: flake8
+        types: [python]
+        language: system
