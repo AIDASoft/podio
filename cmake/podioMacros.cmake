@@ -137,10 +137,19 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     # At least build the ROOT selection.xml by default for now
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
   ENDIF()
+
+  set(CLANG_FORMAT_ARG "")
+  find_program(CLANG_FORMAT_EXE NAMES "clang-format")
+  find_file(CLANG_FORMAT_FILE .clang-format PATH ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
+  if(CLANG_FORMAT_EXE AND CLANG_FORMAT_FILE)
+    message(STATUS "Found .clang-format file and clang-format executable. Will pass it to podio class generator")
+    set(CLANG_FORMAT_ARG "--clangformat")
+  endif()
+
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E echo "Creating \"${datamodel}\" data model"
-    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
@@ -154,7 +163,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     COMMENT "Re-Creating \"${datamodel}\" data model"
     DEPENDS ${YAML_FILE}
     BYPRODUCTS ${sources} ${headers}
-    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${CLANG_FORMAT_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
