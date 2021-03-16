@@ -94,3 +94,62 @@ macro(podio_set_compiler_flags)
   endif()
 
 endmacro(podio_set_compiler_flags)
+
+#--- add sanitizer flags, depending on the setting of USE_SANITIZER and the
+#--- availability of the different sanitizers
+macro(ADD_SANITIZER_FLAGS)
+  if(USE_SANITIZER)
+    if(USE_SANITIZER MATCHES "Address;Undefined" OR USE_SANITIZE MATCHES "Undefined;Address")
+      message(STATUS "Building with Address and Undefined behavior sanitizers")
+      add_compile_options("-fsanitize=address,undefined")
+      add_link_options("-fsanitize=address,undefined")
+
+    elseif(USE_SANITIZER MATCHES "Address")
+      message(STATUS "Building with Address sanitizer")
+      add_compile_options("-fsanitize=address")
+      add_link_options("-fsanitize=address")
+
+    elseif(USE_SANITIZER MATCHES "Undefined")
+      message(STATUS "Building with Undefined behaviour sanitizer")
+      add_compile_options("-fsanitize=undefined")
+      add_link_options("-fsanitize=undefined")
+
+    elseif(USE_SANITIZER MATCHES "Thread")
+      message(STATUS "Building with Thread sanitizer")
+      add_compile_options("-fsanitize=thread")
+      add_link_options("-fsanitize=thread")
+
+    elseif(USE_SANITIZER MATCHES "Leak")
+      # Usually already part of Address sanitizer
+      message(STATUS "Building with Leak sanitizer")
+      add_compile_options("-fsanitize=leak")
+      add_link_options("-fsanitize=leak")
+
+    elseif(USE_SANITIZER MATCHES "Memory(WithOrigins)?")
+      if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        message(FATAL_ERROR "GCC does not have memory sanitizer support")
+      endif()
+      message(STATUS "Building with memory sanitizer")
+      add_compile_options("-fsanitize=memory")
+      add_link_options("-fsanitize=memory")
+      if(USE_SANITIZER MATCHES "MemoryWithOrigins")
+        message(STATUS "Adding origin tracking for memory sanitizer")
+        add_compile_options("-fsanitize-memory-track-origins")
+      endif()
+
+    else()
+      message(FATAL_ERROR "Unsupported value for USE_SANITIZER: ${USE_SANITIZER}")
+    endif()
+
+    # Set a few more flags if we have succesfully configured a sanitizer
+    # For nicer stack-traces in the output
+    add_compile_options("-fno-omit-frame-pointer")
+    # append_flag( CMAKE_CXX_FLAGS CMAKE_C_FLAGS)
+
+    # Make it even easier to interpret stack-traces
+    if(uppercase_CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+      add_compile_options("-O0")
+    endif()
+
+  endif(USE_SANITIZER)
+endmacro(ADD_SANITIZER_FLAGS)
