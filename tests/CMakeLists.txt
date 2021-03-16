@@ -71,6 +71,8 @@ else()
   FetchContent_MakeAvailable(Catch2)
   set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras ${CMAKE_MODULE_PATH})
 
+  # Disable clang-tidy on external contents
+  set_target_properties(Catch2 PROPERTIES CXX_CLANG_TIDY "")
 
   # Hack around the fact, that the include directories are not declared as
   # SYSTEM for the targets defined this way. Otherwise warnings can still occur
