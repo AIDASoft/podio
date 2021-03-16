@@ -100,6 +100,9 @@ function(PODIO_GENERATE_DICTIONARY dictionary)
     add_custom_target(${targetname} ALL DEPENDS ${gensrcdict})
   endif()
 
+  # We are not going to be able to fix these in any case, so disable clang-tidy
+  # for the generated dictionaries
+  set_target_properties(${dictionary} PROPERTIES CXX_CLANG_TIDY "")
 endfunction()
 
 
@@ -190,7 +193,11 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
-  set_target_properties(${lib_name} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+  set_target_properties(${lib_name} PROPERTIES
+    PUBLIC_HEADER "${HEADERS}"
+    CXX_CLANG_TIDY "" # Do not run clang-tidy on generated sources
+                      # TODO: Update generation to generate compliant code already
+    )
 endfunction()
 
 
@@ -282,6 +289,9 @@ function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
   target_include_directories(${CORE_LIB}SioBlocks PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+  # Disable clang-tidy on generated sources
+  set_target_properties(${CORE_LIB}SioBlocks PROPERTIES CXX_CLANG_TIDY "")
 endfunction()
 
 

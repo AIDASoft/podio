@@ -60,6 +60,9 @@ set(USE_SANITIZER ""
   CACHE STRING "Compile with a sanitizer. Options are Address, Memory, MemoryWithOrigin, Undefined, Thread, Leak, Address;Undefined")
 ADD_SANITIZER_FLAGS()
 
+option(CLANG_TIDY "Run clang-tidy after compilation." OFF)
+ADD_CLANG_TIDY()
+
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
 option(ENABLE_SIO "Build SIO I/O support" OFF)
