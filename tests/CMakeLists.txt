@@ -63,9 +63,13 @@ else()
 endif()
 
 CREATE_PODIO_TEST(unittest.cpp "Catch2::Catch2;Catch2::Catch2WithMain")
-include(Catch)
-catch_discover_tests(unittest WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
+if(NOT USE_SANITIZER MATCHES "Memory(WithOrigin)?")
+   # This can fail with memory sanitizer because it actually runs an executable.
+   # Hence, we enable this only for non memory-sanitizer runs
+   include(Catch)
+   catch_discover_tests(unittest WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+endif()
 
 if (TARGET TestDataModelSioBlocks)
   set(sio_dependent_tests write_sio.cpp read_sio.cpp read_and_write_sio.cpp write_timed_sio.cpp read_timed_sio.cpp)
