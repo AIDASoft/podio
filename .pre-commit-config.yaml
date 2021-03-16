@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        exclude: (doc/ReleaseNotes.md)
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: 'pylint --rcfile=.github/scripts/podio.pylint.py3k.rc --py3k --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"'
+        types: [python]
+        language: system
+      - id: flake8
+        name: flake8
+        entry: flake8
+        types: [python]
+        language: system
