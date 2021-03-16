@@ -138,6 +138,14 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
   ENDIF()
 
+  set(CLANG_FORMAT_ARG "")
+  find_program(CLANG_FORMAT_EXE NAMES "clang-format")
+  find_file(CLANG_FORMAT_FILE .clang-format PATH ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
+  if(CLANG_FORMAT_EXE AND CLANG_FORMAT_FILE)
+    message(STATUS "Found .clang-format file and clang-format executable. Will pass it to podio class generator")
+    set(CLANG_FORMAT_ARG "--clangformat")
+  endif()
+
   # Make sure that we re run the generation process everytime either the
   # templates or the yaml file changes.
   include(${podio_PYTHON_DIR}/templates/CMakeLists.txt)
@@ -153,7 +161,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   message(STATUS "Creating '${datamodel}' datamodel")
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
+    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE podio_generate_command_retval
     )
