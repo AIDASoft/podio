@@ -1,5 +1,5 @@
-#ifndef PODIO_TIMEDWRITER_H__
-#define PODIO_TIMEDWRITER_H__
+#ifndef PODIO_TIMEDWRITER_H
+#define PODIO_TIMEDWRITER_H
 
 #include "podio/BenchmarkRecorder.h"
 #include "podio/BenchmarkUtil.h"

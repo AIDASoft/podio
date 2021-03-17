@@ -1,5 +1,5 @@
-#ifndef ASCIIWRITER_H
-#define ASCIIWRITER_H
+#ifndef PODIO_ASCIIWRITER_H
+#define PODIO_ASCIIWRITER_H
 
 #include "podio/EventStore.h"
 
@@ -21,7 +21,7 @@ struct ColWriterBase {
 
 template <class T>
 struct ColWriter : public ColWriterBase {
-  void writeCollection(CollectionBase* c, std::ostream& o) {
+  void writeCollection(CollectionBase* c, std::ostream& o) override {
     T* col = static_cast<T*>(c);
     o << col->size() << std::endl;
     o << *col << std::endl;

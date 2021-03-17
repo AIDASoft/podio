@@ -57,7 +57,7 @@ void fillExampleMCCollection(ExampleMCCollection& collection) {
 // TODO: break up into smaller cases
 void doTestExampleMC(ExampleMCCollection const& collection) {
   // Empty
-  ASSERT_CONDITION(collection[7].daughters().size() == 0 && collection[7].parents().size() == 0,
+  ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
                    "RelationRange of empty collection is not empty");
   // alternatively check if a loop is entered
   for (const auto& p [[maybe_unused]] : collection[7].daughters()) {

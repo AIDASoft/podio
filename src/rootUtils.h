@@ -1,5 +1,5 @@
-#ifndef PODIO_ROOT_UTILS_H
-#define PODIO_ROOT_UTILS_H
+#ifndef PODIO_ROOT_UTILS_H // NOLINT: Cannot be easily handled by clang-tidy
+#define PODIO_ROOT_UTILS_H // NOLINT: Cannot be easily handled by clang-tidy
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBranches.h"

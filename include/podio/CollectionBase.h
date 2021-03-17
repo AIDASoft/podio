@@ -1,5 +1,5 @@
-#ifndef COLLECTIONBASE_H
-#define COLLECTIONBASE_H
+#ifndef PODIO_COLLECTIONBASE_H
+#define PODIO_COLLECTIONBASE_H
 
 #include <string>
 #include <utility>

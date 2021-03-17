@@ -1,5 +1,5 @@
-#ifndef PODIO_BENCHMARK_UTIL_H__
-#define PODIO_BENCHMARK_UTIL_H__
+#ifndef PODIO_BENCHMARKUTIL_H
+#define PODIO_BENCHMARKUTIL_H
 
 #include <chrono>
 #include <functional>

@@ -1,5 +1,5 @@
-#ifndef ROOTREADER_H
-#define ROOTREADER_H
+#ifndef PODIO_ROOTREADER_H
+#define PODIO_ROOTREADER_H
 
 #include "podio/CollectionBranches.h"
 #include "podio/ICollectionProvider.h"
@@ -35,7 +35,7 @@ class ROOTReader : public IReader {
 
 public:
   ROOTReader() = default;
-  ~ROOTReader();
+  ~ROOTReader() override = default;
 
   // non-copyable
   ROOTReader(const ROOTReader&) = delete;
@@ -50,7 +50,7 @@ public:
   void readEvent();
 
   /// Read CollectionIDTable from ROOT file
-  CollectionIDTable* getCollectionIDTable() override final { return m_table; }
+  CollectionIDTable* getCollectionIDTable() final { return m_table; }
 
   /// Returns number of entries in the TTree
   unsigned getEntries() const override;
@@ -62,20 +62,20 @@ public:
   void goToEvent(unsigned evnum);
 
   /// Check if TFile is valid
-  virtual bool isValid() const override final;
+  bool isValid() const final;
 
 private:
   /// Implementation for collection reading
-  CollectionBase* readCollection(const std::string& name) override final;
+  CollectionBase* readCollection(const std::string& name) final;
 
   /// read event meta data for current event
-  GenericParameters* readEventMetaData() override final;
+  GenericParameters* readEventMetaData() final;
 
   /// read the collection meta data
-  std::map<int, GenericParameters>* readCollectionMetaData() override final;
+  std::map<int, GenericParameters>* readCollectionMetaData() final;
 
   /// read the run meta data
-  std::map<int, GenericParameters>* readRunMetaData() override final;
+  std::map<int, GenericParameters>* readRunMetaData() final;
 
 private:
   std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);

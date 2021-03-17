@@ -1,5 +1,5 @@
-#ifndef IREADER_H
-#define IREADER_H
+#ifndef PODIO_IREADER_H
+#define PODIO_IREADER_H
 
 #include <algorithm>
 #include <map>
@@ -23,7 +23,7 @@ class GenericParameters;
 
 class IReader {
 public:
-  virtual ~IReader(){};
+  virtual ~IReader() = default;
   /// Read Collection of given name
   /// Does not set references yet.
   virtual CollectionBase* readCollection(const std::string& name) = 0;

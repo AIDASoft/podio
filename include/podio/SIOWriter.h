@@ -1,5 +1,5 @@
-#ifndef SIOWRITER_H
-#define SIOWRITER_H
+#ifndef PODIO_SIOWRITER_H
+#define PODIO_SIOWRITER_H
 
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
@@ -21,7 +21,7 @@ class SIOWriter {
 
 public:
   SIOWriter(const std::string& filename, EventStore* store);
-  ~SIOWriter();
+  ~SIOWriter() = default;
 
   // non-copyable
   SIOWriter(const SIOWriter&) = delete;

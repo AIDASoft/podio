@@ -1,5 +1,5 @@
-#ifndef PODIO_BENCHMARK_RECORDER_H__
-#define PODIO_BENCHMARK_RECORDER_H__
+#ifndef PODIO_BENCHMARKRECORDER_H
+#define PODIO_BENCHMARKRECORDER_H
 
 #include "podio/BenchmarkUtil.h"
 

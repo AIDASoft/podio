@@ -22,7 +22,7 @@ std::pair<TTree*, unsigned> ROOTReader::getLocalTreeAndEntry(const std::string& 
 }
 
 GenericParameters* ROOTReader::readEventMetaData() {
-  GenericParameters* emd = new GenericParameters();
+  auto* emd = new GenericParameters();
   auto [evt_metadatatree, entry] = getLocalTreeAndEntry("evt_metadata");
   auto* branch = root_utils::getBranch(evt_metadatatree, "evtMD");
   branch->SetAddress(&emd);
@@ -48,7 +48,8 @@ std::map<int, GenericParameters>* ROOTReader::readRunMetaData() {
 
 CollectionBase* ROOTReader::readCollection(const std::string& name) {
   // has the collection already been constructed?
-  auto p = std::find_if(begin(m_inputs), end(m_inputs), [&name](ROOTReader::Input t) { return t.second == name; });
+  auto p =
+      std::find_if(begin(m_inputs), end(m_inputs), [&name](const ROOTReader::Input& t) { return t.second == name; });
   if (p != end(m_inputs)) { return p->first; }
 
   // Have we read this collection before? If so: use the cached information to
@@ -190,12 +191,6 @@ void ROOTReader::readEvent() {
   //  }
 }
 bool ROOTReader::isValid() const { return m_chain->GetFile()->IsOpen() && !m_chain->GetFile()->IsZombie(); }
-
-ROOTReader::~ROOTReader() {
-  // delete all collections
-  // at the moment it is done in the EventStore;
-  // TODO: who deletes the buffers?
-}
 
 void ROOTReader::endOfEvent() {
   ++m_eventNumber;

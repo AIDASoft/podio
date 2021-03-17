@@ -1,5 +1,5 @@
-#ifndef OBJBASE_H
-#define OBJBASE_H
+#ifndef PODIO_OBJBASE_H
+#define PODIO_OBJBASE_H
 
 #include "podio/ObjectID.h"
 #include <atomic>
@@ -27,7 +27,7 @@ public:
   };
 
   /// destructor
-  virtual ~ObjBase(){};
+  virtual ~ObjBase() = default;
 
 public:
   /// ID of the object

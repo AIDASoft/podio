@@ -94,12 +94,6 @@ void SIOReader::readEvent() {
 
 bool SIOReader::isValid() const { return m_stream.good(); }
 
-SIOReader::~SIOReader() {
-  // delete all collections
-  // at the moment it is done in the EventStore;
-  // TODO: who deletes the buffers?
-}
-
 void SIOReader::endOfEvent() {
   ++m_eventNumber;
   m_blocks.clear();
@@ -137,7 +131,7 @@ void SIOReader::readCollectionIDTable() {
   m_typeNames = idTableBlock->getTypeNames();
 }
 
-void SIOReader::readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock) {
+void SIOReader::readMetaDataRecord(const std::shared_ptr<SIONumberedMetaDataBlock>& mdBlock) {
   const auto currPos = m_stream.tellg();
   sio::api::go_to_record(m_stream, mdBlock->name());
 

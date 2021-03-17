@@ -1,5 +1,5 @@
-#ifndef OBJECTID_H
-#define OBJECTID_H
+#ifndef PODIO_OBJECTID_H
+#define PODIO_OBJECTID_H
 
 namespace podio {
 

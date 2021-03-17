@@ -128,8 +128,8 @@ TEST_CASE("Looping") {
   auto& coll = store.create<ExampleHitCollection>("name");
   auto hit1 = coll.create(0xbadULL, 0., 0., 0., 0.);
   auto hit2 = coll.create(0xcaffeeULL, 1., 1., 1., 1.);
-  for (auto i = coll.begin(), end = coll.end(); i != end; ++i) {
-    auto energy [[maybe_unused]] = i->energy();
+  for (auto&& i : coll) {
+    auto energy [[maybe_unused]] = i.energy();
   }
   for (int i = 0, end = coll.size(); i != end; ++i) {
     auto energy = coll[i].energy();

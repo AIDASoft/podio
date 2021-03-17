@@ -1,5 +1,5 @@
-#ifndef ALBERS_PYTHONEVENTSTORE_H
-#define ALBERS_PYTHONEVENTSTORE_H
+#ifndef PODIO_PYTHONEVENTSTORE_H
+#define PODIO_PYTHONEVENTSTORE_H
 
 #include "podio/EventStore.h"
 #include "podio/ROOTReader.h"

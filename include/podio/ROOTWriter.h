@@ -1,5 +1,5 @@
-#ifndef ROOTWRITER_H
-#define ROOTWRITER_H
+#ifndef PODIO_ROOTWRITER_H
+#define PODIO_ROOTWRITER_H
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBranches.h"

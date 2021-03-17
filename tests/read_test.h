@@ -1,5 +1,5 @@
-#ifndef PODIO_TESTS_READ_TEST_H_
-#define PODIO_TESTS_READ_TEST_H_
+#ifndef PODIO_TESTS_READ_TEST_H // NOLINT: Cannot be easily handled by clang-tidy
+#define PODIO_TESTS_READ_TEST_H // NOLINT: Cannot be easily handled by clang-tidy
 // test data model
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
@@ -250,4 +250,4 @@ void run_read_test(podio::IReader& reader) {
   }
 }
 
-#endif // PODIO_TESTS_READ_TEST_H__
+#endif // _HOME_TMADLENER_WORK_PODIO_TESTS_READ_TEST_H

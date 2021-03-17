@@ -1,5 +1,5 @@
-#ifndef PODIO_TESTS_WRITE_TEST_H_
-#define PODIO_TESTS_WRITE_TEST_H_
+#ifndef PODIO_TESTS_WRITE_TEST_H // NOLINT: Cannot be easily handled by clang-tidy
+#define PODIO_TESTS_WRITE_TEST_H // NOLINT: Cannot be easily handled by clang-tidy
 
 // Data model
 #include "datamodel/EventInfoCollection.h"
@@ -230,8 +230,8 @@ void write(podio::EventStore& store, WriterT& writer) {
       }
       namesprels.push_back(rel);
     }
-    for (size_t j = 0; j < namesprels.size(); ++j) {
-      cpytest.push_back(namesprels.at(j).clone());
+    for (auto&& namesprel : namesprels) {
+      cpytest.push_back(namesprel.clone());
     }
 
     auto string = ExampleWithString("SomeString");
@@ -256,4 +256,4 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.finish();
 }
 
-#endif // __WRITE_TEST_H_
+#endif // _HOME_TMADLENER_WORK_PODIO_TESTS_WRITE_TEST_H
