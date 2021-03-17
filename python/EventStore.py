@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 from ROOT import gSystem
 gSystem.Load("libpodioRootIO")  # noqa: E402
-from ROOT import podio
+from ROOT import podio  # noqa: E402
 
 
 def size(self):
