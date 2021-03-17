@@ -1,7 +1,8 @@
 #include "read_test.h"
+
 #include "podio/ROOTReader.h"
 
-int main(){
+int main() {
   auto reader = podio::ROOTReader();
   reader.openFile("example.root");
 

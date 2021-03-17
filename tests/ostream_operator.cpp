@@ -1,14 +1,13 @@
-#include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleForCyclicDependency1.h"
 #include "datamodel/ExampleForCyclicDependency2.h"
+#include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleReferencingType.h"
 
 #include <iostream>
 
 // When using CTest for unit testing it is enough for this test to eventually
 // segfault
-int main(int, char**)
-{
+int main(int, char**) {
   ExampleMC mcp1;
   ExampleMC mcp2;
 

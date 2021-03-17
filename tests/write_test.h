@@ -3,43 +3,43 @@
 
 // Data model
 #include "datamodel/EventInfoCollection.h"
-#include "datamodel/ExampleMCCollection.h"
-#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleReferencingTypeCollection.h"
-#include "datamodel/ExampleWithOneRelationCollection.h"
-#include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/ExampleWithARelationCollection.h"
+#include "datamodel/ExampleWithArrayCollection.h"
 #include "datamodel/ExampleWithComponentCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
-#include "datamodel/ExampleWithARelationCollection.h"
+#include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithStringCollection.h"
-#include "datamodel/ExampleWithArrayCollection.h"
+#include "datamodel/ExampleWithVectorMemberCollection.h"
 
 #include "podio/EventStore.h"
 
 // STL
 #include <iostream>
-#include <vector>
 #include <sstream>
+#include <vector>
 
-template<class WriterT>
+template <class WriterT>
 void write(podio::EventStore& store, WriterT& writer) {
-  std::cout<<"start processing"<<std::endl;
+  std::cout << "start processing" << std::endl;
 
-  auto& info       = store.create<EventInfoCollection>("info");
-  auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
-  auto& hits       = store.create<ExampleHitCollection>("hits");
-  auto& clusters   = store.create<ExampleClusterCollection>("clusters");
-  auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");
-  auto& refs2      = store.create<ExampleReferencingTypeCollection>("refs2");
-  auto& comps      = store.create<ExampleWithComponentCollection>("Component");
-  auto& oneRels    = store.create<ExampleWithOneRelationCollection>("OneRelation");
-  auto& vecs       = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
-  auto& namesps    = store.create<ex42::ExampleWithNamespaceCollection>("WithNamespaceMember");
+  auto& info = store.create<EventInfoCollection>("info");
+  auto& mcps = store.create<ExampleMCCollection>("mcparticles");
+  auto& hits = store.create<ExampleHitCollection>("hits");
+  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+  auto& refs = store.create<ExampleReferencingTypeCollection>("refs");
+  auto& refs2 = store.create<ExampleReferencingTypeCollection>("refs2");
+  auto& comps = store.create<ExampleWithComponentCollection>("Component");
+  auto& oneRels = store.create<ExampleWithOneRelationCollection>("OneRelation");
+  auto& vecs = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
+  auto& namesps = store.create<ex42::ExampleWithNamespaceCollection>("WithNamespaceMember");
   auto& namesprels = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
-  auto& cpytest    = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
-  auto& strings    = store.create<ExampleWithStringCollection>("strings");
-  auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
+  auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
+  auto& strings = store.create<ExampleWithStringCollection>("strings");
+  auto& arrays = store.create<ExampleWithArrayCollection>("arrays");
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");
   writer.registerForWrite("hits");
@@ -57,26 +57,24 @@ void write(podio::EventStore& store, WriterT& writer) {
 
   unsigned nevents = 2000;
 
-  for(unsigned i=0; i<nevents; ++i) {
-    if(i % 1000 == 0) {
-      std::cout << "processing event " << i << std::endl;
-    }
+  for (unsigned i = 0; i < nevents; ++i) {
+    if (i % 1000 == 0) { std::cout << "processing event " << i << std::endl; }
 
     auto item1 = EventInfo();
     item1.Number(i);
     info.push_back(item1);
 
-    auto& evtMD = store.getEventMetaData() ;
-    evtMD.setValue( "UserEventWeight" , (float) 100.*i ) ;
-    std::stringstream ss ; ss << " event_number_" << i ;
-    evtMD.setValue( "UserEventName" , ss.str() ) ;
+    auto& evtMD = store.getEventMetaData();
+    evtMD.setValue("UserEventWeight", (float)100. * i);
+    std::stringstream ss;
+    ss << " event_number_" << i;
+    evtMD.setValue("UserEventName", ss.str());
 
+    auto& colMD = store.getCollectionMetaData(hits.getID());
+    colMD.setValue("CellIDEncodingString", "system:8,barrel:3,layer:6,slice:5,x:-16,y:-16");
 
-    auto& colMD = store.getCollectionMetaData( hits.getID() );
-    colMD.setValue("CellIDEncodingString","system:8,barrel:3,layer:6,slice:5,x:-16,y:-16");
-
-    auto hit1 = ExampleHit( 0xbad, 0.,0.,0.,23.+i);
-    auto hit2 = ExampleHit( 0xcaffee,1.,0.,0.,12.+i);
+    auto hit1 = ExampleHit(0xbad, 0., 0., 0., 23. + i);
+    auto hit2 = ExampleHit(0xcaffee, 1., 0., 0., 12. + i);
 
     hits.push_back(hit1);
     hits.push_back(hit2);
@@ -93,58 +91,58 @@ void write(podio::EventStore& store, WriterT& writer) {
     auto mcp8 = ExampleMC();
     auto mcp9 = ExampleMC();
 
-    mcps.push_back( mcp0 ) ;
-    mcps.push_back( mcp1 ) ;
-    mcps.push_back( mcp2 ) ;
-    mcps.push_back( mcp3 ) ;
-    mcps.push_back( mcp4 ) ;
-    mcps.push_back( mcp5 ) ;
-    mcps.push_back( mcp6 ) ;
-    mcps.push_back( mcp7 ) ;
-    mcps.push_back( mcp8 ) ;
-    mcps.push_back( mcp9 ) ;
+    mcps.push_back(mcp0);
+    mcps.push_back(mcp1);
+    mcps.push_back(mcp2);
+    mcps.push_back(mcp3);
+    mcps.push_back(mcp4);
+    mcps.push_back(mcp5);
+    mcps.push_back(mcp6);
+    mcps.push_back(mcp7);
+    mcps.push_back(mcp8);
+    mcps.push_back(mcp9);
 
-    auto mcp = mcps[0] ;
-    mcp.adddaughters( mcps[2] ) ;
-    mcp.adddaughters( mcps[3] ) ;
-    mcp.adddaughters( mcps[4] ) ;
-    mcp.adddaughters( mcps[5] ) ;
-    mcp = mcps[1] ;
-    mcp.adddaughters( mcps[2] ) ;
-    mcp.adddaughters( mcps[3] ) ;
-    mcp.adddaughters( mcps[4] ) ;
-    mcp.adddaughters( mcps[5] ) ;
-    mcp = mcps[2] ;
-    mcp.adddaughters( mcps[6] ) ;
-    mcp.adddaughters( mcps[7] ) ;
-    mcp.adddaughters( mcps[8] ) ;
-    mcp.adddaughters( mcps[9] ) ;
-    mcp = mcps[3] ;
-    mcp.adddaughters( mcps[6] ) ;
-    mcp.adddaughters( mcps[7] ) ;
-    mcp.adddaughters( mcps[8] ) ;
-    mcp.adddaughters( mcps[9] ) ;
+    auto mcp = mcps[0];
+    mcp.adddaughters(mcps[2]);
+    mcp.adddaughters(mcps[3]);
+    mcp.adddaughters(mcps[4]);
+    mcp.adddaughters(mcps[5]);
+    mcp = mcps[1];
+    mcp.adddaughters(mcps[2]);
+    mcp.adddaughters(mcps[3]);
+    mcp.adddaughters(mcps[4]);
+    mcp.adddaughters(mcps[5]);
+    mcp = mcps[2];
+    mcp.adddaughters(mcps[6]);
+    mcp.adddaughters(mcps[7]);
+    mcp.adddaughters(mcps[8]);
+    mcp.adddaughters(mcps[9]);
+    mcp = mcps[3];
+    mcp.adddaughters(mcps[6]);
+    mcp.adddaughters(mcps[7]);
+    mcp.adddaughters(mcps[8]);
+    mcp.adddaughters(mcps[9]);
 
     //--- now fix the parent relations
-    for( unsigned j=0,N=mcps.size();j<N;++j){
-      mcp = mcps[j] ;
-      for(auto p : mcp.daughters()) {
-        int dIndex = p.getObjectID().index ;
-        auto d = mcps[ dIndex ] ;
-        d.addparents( p ) ;
+    for (unsigned j = 0, N = mcps.size(); j < N; ++j) {
+      mcp = mcps[j];
+      for (auto p : mcp.daughters()) {
+        int dIndex = p.getObjectID().index;
+        auto d = mcps[dIndex];
+        d.addparents(p);
       }
     }
     //-------- print relations for debugging:
-    for( auto p : mcps ){
-      std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
-      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-  std::cout << " " << it->getObjectID().index ;
+    for (auto p : mcps) {
+      std::cout << " particle " << p.getObjectID().index << " has daughters: ";
+      for (auto it = p.daughters_begin(), end = p.daughters_end(); it != end; ++it) {
+        std::cout << " " << it->getObjectID().index;
       }
-      std::cout << "  and parents: " ;
-      for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
-  std::cout << " " << it->getObjectID().index ;
+      std::cout << "  and parents: ";
+      for (auto it = p.parents_begin(), end = p.parents_end(); it != end; ++it) {
+        std::cout << " " << it->getObjectID().index;
       }
-      std::cout << std::endl ;
+      std::cout << std::endl;
 
       // make sure that this does not crash when we do it on a ConstExampleMC
       ConstExampleMC constP{p};
@@ -156,13 +154,12 @@ void write(podio::EventStore& store, WriterT& writer) {
       for (auto it = constP.parents_begin(); it != constP.parents_end(); ++it) {
         std::cout << " " << it->getObjectID().index;
       }
-
     }
     //-------------------------------
 
-    auto cluster  = ExampleCluster();
-    auto clu0  = ExampleCluster();
-    auto clu1  = ExampleCluster();
+    auto cluster = ExampleCluster();
+    auto clu0 = ExampleCluster();
+    auto clu1 = ExampleCluster();
 
     clu0.addHits(hit1);
     clu0.energy(hit1.energy());
@@ -170,9 +167,9 @@ void write(podio::EventStore& store, WriterT& writer) {
     clu1.energy(hit2.energy());
     cluster.addHits(hit1);
     cluster.addHits(hit2);
-    cluster.energy(hit1.energy()+hit2.energy());
-    cluster.addClusters( clu0 ) ;
-    cluster.addClusters( clu1 ) ;
+    cluster.energy(hit1.energy() + hit2.energy());
+    cluster.addClusters(clu0);
+    cluster.addClusters(clu1);
 
     clusters.push_back(clu0);
     clusters.push_back(clu1);
@@ -207,25 +204,25 @@ void write(podio::EventStore& store, WriterT& writer) {
 
     auto vec = ExampleWithVectorMember();
     vec.addcount(i);
-    vec.addcount(i+10);
+    vec.addcount(i + 10);
     vecs.push_back(vec);
     auto vec1 = ExampleWithVectorMember();
-    vec1.addcount(i+1);
-    vec1.addcount(i+11);
+    vec1.addcount(i + 1);
+    vec1.addcount(i + 11);
     vecs.push_back(vec1);
 
     for (int j = 0; j < 5; j++) {
       auto rel = ex42::ExampleWithARelation();
-      rel.number(0.5*j);
+      rel.number(0.5 * j);
       auto exWithNamesp = ex42::ExampleWithNamespace();
       exWithNamesp.component().x = i;
-      exWithNamesp.component().y = 1000*i;
+      exWithNamesp.component().y = 1000 * i;
       namesps.push_back(exWithNamesp);
       if (j != 3) { // also check for empty relations
         rel.ref(exWithNamesp);
         for (int k = 0; k < 5; k++) {
           auto namesp = ex42::ExampleWithNamespace();
-          namesp.x(3*k);
+          namesp.x(3 * k);
           namesp.component().y = k;
           namesps.push_back(namesp);
           rel.addrefs(namesp);
@@ -258,6 +255,5 @@ void write(podio::EventStore& store, WriterT& writer) {
 
   writer.finish();
 }
-
 
 #endif // __WRITE_TEST_H_

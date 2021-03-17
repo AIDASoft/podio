@@ -1,8 +1,9 @@
 #include "write_test.h"
-#include "podio/SIOWriter.h"
-#include "podio/EventStore.h"
 
-int main(int, char**){
+#include "podio/EventStore.h"
+#include "podio/SIOWriter.h"
+
+int main(int, char**) {
   podio::EventStore store;
   podio::SIOWriter writer("example.sio", &store);
 

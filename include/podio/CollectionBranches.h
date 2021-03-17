@@ -17,6 +17,6 @@ struct CollectionBranches {
   std::vector<TBranch*> vecs{};
 };
 
-}
+} // namespace podio::root_utils
 
 #endif

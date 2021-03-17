@@ -1,8 +1,8 @@
 #include "read_test.h"
 
 #include "podio/EventStore.h"
-#include "podio/SIOWriter.h"
 #include "podio/SIOReader.h"
+#include "podio/SIOWriter.h"
 
 int main() {
   podio::SIOReader reader;
@@ -18,9 +18,8 @@ int main() {
   writer.registerForWrite("clusters");
 
   unsigned nEvents = reader.getEntries();
-  for(unsigned i=0; i<nEvents; ++i) {
-    if(i%1000==0)
-      std::cout<<"reading event "<<i<<std::endl;
+  for (unsigned i = 0; i < nEvents; ++i) {
+    if (i % 1000 == 0) std::cout << "reading event " << i << std::endl;
     processEvent(store, i);
 
     writer.writeEvent();

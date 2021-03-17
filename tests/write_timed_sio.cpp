@@ -1,8 +1,9 @@
 #include "write_test.h"
-#include "podio/SIOWriter.h"
-#include "podio/EventStore.h"
-#include "podio/TimedWriter.h"
+
 #include "podio/BenchmarkRecorder.h"
+#include "podio/EventStore.h"
+#include "podio/SIOWriter.h"
+#include "podio/TimedWriter.h"
 
 int main() {
   podio::benchmark::BenchmarkRecorder recorder("write_benchmark_sio.root");
