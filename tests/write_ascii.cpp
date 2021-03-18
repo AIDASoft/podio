@@ -125,13 +125,13 @@ int main(){
       }
     }
     //-------- print relations for debugging:
-    for( auto p : mcps ){
-      std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
-      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
+    for( auto _p : mcps ){
+      std::cout << " particle " << _p.getObjectID().index << " has daughters: " ;
+      for(auto it = _p.daughters_begin(), end = _p.daughters_end() ; it!=end ; ++it ){
 	std::cout << " " << it->getObjectID().index ;
       }
       std::cout << "  and parents: " ;
-      for(auto it = p.parents_begin(), end = p.parents_end() ; it!=end ; ++it ){
+      for(auto it = _p.parents_begin(), end = _p.parents_end() ; it!=end ; ++it ){
 	std::cout << " " << it->getObjectID().index ;
       }
       std::cout << std::endl ;
