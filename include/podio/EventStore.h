@@ -87,17 +87,17 @@ namespace podio {
     virtual bool isValid() const final;
 
     /// return the event meta data for the current event
-    virtual GenericParameters& getEventMetaData() const override ;
+    GenericParameters& getEventMetaData() override ;
 
     /// return the run meta data for the given runID
-    virtual GenericParameters& getRunMetaData(int runID) const override ;
+    GenericParameters& getRunMetaData(int runID) override ;
 
     /// return the collection meta data for the given colID
-    virtual GenericParameters& getCollectionMetaData(int colID) const override ;
+    GenericParameters& getCollectionMetaData(int colID) override ;
 
-    RunMDMap* getRunMetaDataMap() const {return &m_runMDMap ; }
-    ColMDMap* getColMetaDataMap() const {return &m_colMDMap ; }
-    GenericParameters* eventMetaDataPtr() const {return &m_evtMD; }
+    RunMDMap* getRunMetaDataMap() { return &m_runMDMap ; }
+    ColMDMap* getColMetaDataMap() { return &m_colMDMap ; }
+    GenericParameters* eventMetaDataPtr() { return &m_evtMD; }
 
    private:
 
@@ -114,9 +114,9 @@ namespace podio {
     IReader* m_reader{nullptr};
     std::unique_ptr<CollectionIDTable> m_table;
 
-    mutable GenericParameters m_evtMD{};
-    mutable RunMDMap m_runMDMap{};
-    mutable ColMDMap m_colMDMap{};
+    GenericParameters m_evtMD{};
+    RunMDMap m_runMDMap{};
+    ColMDMap m_colMDMap{};
   };
 
 

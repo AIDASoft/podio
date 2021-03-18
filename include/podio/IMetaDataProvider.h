@@ -17,13 +17,13 @@ namespace podio {
     virtual ~IMetaDataProvider(){};
 
     /// return the event meta data for the current event
-    virtual GenericParameters& getEventMetaData() const = 0;
+    virtual GenericParameters& getEventMetaData() = 0;
 
     /// return the run meta data for the given runID
-    virtual GenericParameters& getRunMetaData(int runID) const = 0;
+    virtual GenericParameters& getRunMetaData(int runID) = 0;
 
     /// return the collection meta data for the given colID
-    virtual GenericParameters& getCollectionMetaData(int colID) const = 0;
+    virtual GenericParameters& getCollectionMetaData(int colID) = 0;
   };
 
 } // namespace
