@@ -1,6 +1,53 @@
+
+# Build/install/test directories
 build
 install
-*pyc
-*~
 tests/src
 tests/datamodel
+
+# Python
+*pyc
+
+# Editor swap files
+*~
+*.swp
+
+# Data Files
+*.root
+*.dat
+
+# Spack build folders
+spack*
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
