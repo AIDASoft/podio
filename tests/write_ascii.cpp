@@ -190,8 +190,8 @@ int main(){
 
 
     auto namesp = ex42::ExampleWithNamespace();
-    namesp.data().x = 1;
-    namesp.data().y = i;
+    namesp.component().x = 1;
+    namesp.component().y = i;
     namesps.push_back(namesp);
 
     auto rel = ex42::ExampleWithARelation();
