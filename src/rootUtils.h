@@ -32,10 +32,9 @@ inline void setCollectionAddresses(podio::CollectionBase* collection, const Coll
     branches.data->SetAddress(buffer);
   }
 
-  if (auto refCollections = collection->referenceCollections()) {
-    for (size_t i = 0; i < refCollections->size(); ++i) {
-      branches.refs[i]->SetAddress(&(*refCollections)[i]);
-    }
+  auto refCollections = collection->referenceCollections();
+  for (size_t i = 0; i < refCollections->size(); ++i) {
+    branches.refs[i]->SetAddress(&(*refCollections)[i]);
   }
 
   if (auto vecMembers = collection->vectorMembers()) {
@@ -46,9 +45,11 @@ inline void setCollectionAddresses(podio::CollectionBase* collection, const Coll
 }
 
 inline CollectionBase* prepareCollection(const TClass* dataClass, const TClass* collectionClass) {
-  auto* buffer = dataClass->New();
   auto* collection = static_cast<CollectionBase*>(collectionClass->New());
-  collection->setBuffer(buffer);
+  if (dataClass) {
+    auto* buffer = dataClass->New();
+    collection->setBuffer(buffer);
+  }
   return collection;
 }
 

@@ -65,6 +65,8 @@ public:
   /// fully qualified type name of elements - with namespace
   std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
 
+  bool isReferenceCollection() const override { return false; }
+
   /// Returns the const object of given index
   Const{{ class.bare_type }} operator[](unsigned int index) const;
   /// Returns the object of a given index

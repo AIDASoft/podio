@@ -4,6 +4,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleMCCollection.h"
+#include "datamodel/ExampleMCRefCollection.h"
 #include "datamodel/ExampleReferencingTypeCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
@@ -20,6 +21,7 @@
 
 // STL
 #include <limits>
+#include <stdexcept>
 #include <vector>
 #include <iostream>
 #include <exception>
@@ -94,13 +96,37 @@ void processEvent(podio::EventStore& store, int eventNum) {
     throw std::runtime_error("Collection 'clusters' should be present");
   }
 
+  // ----------------- MCParticleRefCollection ----------------------
+  // Test this before the MCParticle collection to make sure it actually loads
+  // the referenced collection(s) if they are not already present
+  auto& mcpRefs = store.get<ExampleMCRefCollection>("mcParticleRefs");
+  if (!mcpRefs.isValid()) throw std::runtime_error("Collection 'mcParticleRefs' should be present");
 
+  for (auto p : mcpRefs) {
+    if ((p.id() % 2) == 0) {
+      throw std::runtime_error("MCParticleRefCollection should only contain elements with odd ids");
+    }
+    if ((unsigned)p.getObjectID().collectionID == mcpRefs.getID()) {
+      throw std::runtime_error("objects of a reference collection should have a different collectionID than the reference collection");
+    }
+  }
+
+  // Now we can do some more tests actually comparing the references to the MC Particles
   auto& mcps =  store.get<ExampleMCCollection>("mcparticles");
   if( mcps.isValid() ){
+    if (mcpRefs.size() != mcps.size() / 2) {
+      throw std::runtime_error("'mcParticleRefs' collection has wrong size");
+    }
+    for (size_t i = 0; i < mcpRefs.size(); ++i) {
+      std::cout << mcpRefs[i] << std::endl;
+      std::cout << mcps[i] << std::endl;
+      if (!(mcpRefs[i] == mcps[2 * i + 1])) {
+        throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
+      }
+    }
+
     // check that we can retrieve the correct parent daughter relation
     // set in write.cpp :
-
-
     //-------- print relations for debugging:
     for( auto p : mcps ){
       std::cout << " particle " << p.getObjectID().index << " has daughters: " ;
@@ -144,6 +170,7 @@ void processEvent(podio::EventStore& store, int eventNum) {
   } else {
     throw std::runtime_error("Collection 'mcparticles' should be present");
   }
+
 
 
   //std::cout << "Fetching collection 'refs'" << std::endl;

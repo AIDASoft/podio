@@ -10,8 +10,8 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TChain.h"
-#include "TROOT.h"
 #include "TTreeCache.h"
+#include "TClass.h"
 
 
 namespace podio {
@@ -30,6 +30,7 @@ namespace podio {
     evt_metadatatree->GetEntry(entry);
     return emd ;
   }
+
   std::map<int,GenericParameters>* ROOTReader::readCollectionMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
     auto* col_metadatatree = getLocalTreeAndEntry("col_metadata").first;
@@ -38,6 +39,7 @@ namespace podio {
     col_metadatatree->GetEntry(0);
     return emd ;
   }
+
   std::map<int,GenericParameters>* ROOTReader::readRunMetaData(){
     auto* emd = new std::map<int,GenericParameters> ;
     auto* run_metadatatree = getLocalTreeAndEntry("run_metadata").first;
@@ -51,63 +53,17 @@ namespace podio {
   CollectionBase* ROOTReader::readCollection(const std::string& name) {
     // has the collection already been constructed?
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
-        [&name](ROOTReader::Input t){ return t.second == name;});
+        [&name](const ROOTReader::Input& t){ return t.second == name;});
     if (p != end(m_inputs)){
       return p->first;
     }
 
-    // Have we read this collection before? If so: use the cached information to
-    // speed up reading
+    // Do we know about this collection? If so, read it otherwise we can do nothing
     if (const auto& info = m_storedClasses.find(name); info != m_storedClasses.end()) {
       return getCollection(*info);
     }
 
-    // Otherwise do some setup first and then directly read the collection
-    if (auto branch = root_utils::getBranch(m_chain, name.c_str())) {
-      const std::string dataClassName = branch->GetClassName();
-      const auto* theClass = gROOT->GetClass(dataClassName.c_str());
-      if (theClass == nullptr) return nullptr;
-      // now create the transient collections
-      // some workaround until gcc supports regex properly:
-      auto dataClassString = std::string(dataClassName);
-      auto start = dataClassString.find("<");
-      auto end   = dataClassString.find(">");
-      //getting "TypeCollection" out of "vector<TypeData>"
-      auto classname = dataClassString.substr(start+1, end-start-5);
-      auto collectionClassName = classname+"Collection";
-      const auto* collectionClass = gROOT->GetClass(collectionClassName.c_str());
-      if (collectionClass == nullptr) return nullptr;
-
-      // create the branches and cache them
-      root_utils::CollectionBranches branches;
-      branches.data = branch;
-
-      auto* collection = root_utils::prepareCollection(theClass, collectionClass);
-
-      if (auto refCollections = collection->referenceCollections()) {
-        for (size_t i = 0; i < refCollections->size(); ++i) {
-          const auto brName = root_utils::refBranch(name, i);
-          branches.refs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
-        }
-      }
-      if (auto vecMembers = collection->vectorMembers()) {
-        for (size_t i = 0; i < vecMembers->size(); ++i) {
-          const auto brName = root_utils::vecBranch(name, i);
-          branches.vecs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
-        }
-      }
-
-      // cache the information
-      const auto collInfo = std::make_tuple(theClass, collectionClass, m_collectionIndex++);
-      m_storedClasses[name] = collInfo;
-      m_collectionBranches.push_back(branches);
-
-      // connect the branches and the buffers
-      root_utils::setCollectionAddresses(collection, branches);
-
-      return readCollectionData(branches, collection, 0, name);
-    }
-
+    // Otherwise this collection is not stored in this file
     return nullptr;
   }
 
@@ -127,11 +83,10 @@ namespace podio {
       branches.data = root_utils::getBranch(m_chain, name.c_str());
 
       // reference collections
-      if (auto* refCollections = collection->referenceCollections()) {
-        for (size_t i = 0; i < refCollections->size(); ++i) {
-          const auto brName = root_utils::refBranch(name, i);
-          branches.refs[i] = root_utils::getBranch(m_chain, brName.c_str());
-        }
+      auto* refCollections = collection->referenceCollections();
+      for (size_t i = 0; i < refCollections->size(); ++i) {
+        const auto brName = root_utils::refBranch(name, i);
+        branches.refs[i] = root_utils::getBranch(m_chain, brName.c_str());
       }
 
       // vector members
@@ -143,7 +98,6 @@ namespace podio {
       }
     }
 
-    // set the addresses
     root_utils::setCollectionAddresses(collection, branches);
 
     return readCollectionData(branches, collection, localEntry, name);
@@ -151,7 +105,7 @@ namespace podio {
 
   CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranches& branches, CollectionBase* collection, Long64_t entry, const std::string& name) {
     // Read all data
-    branches.data->GetEntry(entry);
+    if (branches.data) branches.data->GetEntry(entry);
     for (auto* br : branches.refs) br->GetEntry(entry);
     for (auto* br : branches.vecs) br->GetEntry(entry);
 
@@ -164,6 +118,50 @@ namespace podio {
     return collection;
   }
 
+  void ROOTReader::createCollectionBranches(const std::vector<std::tuple<int, std::string, std::string>>& collInfo) {
+    size_t collectionIndex{0};
+
+    for (const auto& info : collInfo) {
+      const auto& [collID, bufferClassName, collectionClassName] = info;
+      // We only write collections that are in the collectionIDTable, so no need
+      // to check here
+      const auto name = m_table->name(collID);
+
+      root_utils::CollectionBranches branches{};
+
+      auto bufferClass = bufferClassName.empty() ? nullptr : TClass::GetClass(bufferClassName.c_str());
+      auto collectionClass = TClass::GetClass(collectionClassName.c_str());
+
+      // Need the collection here to get all the branches. Since we are not
+      // handing this one off to the EventStore, we have to manage it ourselves
+      auto collection = std::unique_ptr<podio::CollectionBase>(root_utils::prepareCollection(bufferClass, collectionClass));
+
+      if (not collection->isReferenceCollection()) {
+        // This branch is guaranteed to exist, since only collections that are
+        // also written to file are in the info metadata that we work with here
+        branches.data = root_utils::getBranch(m_chain, name.c_str());
+      }
+
+      auto refCollections = collection->referenceCollections();
+      for (size_t i = 0; i < refCollections->size(); ++i) {
+        const auto brName = root_utils::refBranch(name, i);
+        branches.refs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
+      }
+
+      if (auto vecMembers = collection->vectorMembers()) {
+        for (size_t i = 0; i < vecMembers->size(); ++i) {
+          const auto brName = root_utils::vecBranch(name, i);
+          branches.vecs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
+        }
+      }
+
+      m_storedClasses.emplace(
+        name, std::make_tuple(bufferClass, collectionClass, collectionIndex++)
+      );
+      m_collectionBranches.push_back(branches);
+    }
+  }
+
   void ROOTReader::openFile(const std::string& filename){
     openFiles({filename});
   }
@@ -173,10 +171,19 @@ namespace podio {
     for (const auto& filename:  filenames) {
       m_chain->Add(filename.c_str());
     }
-    m_table = new CollectionIDTable();
+    // read the meta data and build the collectionBranches cache
+    // NOTE: This is a small pessimization, if we do not read all collections
+    // afterwards, but it makes the handling much easier in general
     auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
+    // auto collectionInfo = std::make_unique<std::vector<std::tuple<int, TClass*, TClass*>>>();
+    auto collectionInfo = new std::vector<std::tuple<int, std::string, std::string>>;
+    m_table = new CollectionIDTable();
     metadatatree->SetBranchAddress("CollectionIDs", &m_table);
+    metadatatree->SetBranchAddress("CollectionTypeInfo", &collectionInfo);
     metadatatree->GetEntry(0);
+
+    createCollectionBranches(*collectionInfo);
+    delete collectionInfo;
   }
 
   void ROOTReader::closeFile(){

@@ -51,6 +51,9 @@ namespace podio {
     /// fully qualified type name of elements - with namespace
     virtual std::string getValueTypeName() const = 0;
 
+    /// Is this a reference collection
+    virtual bool isReferenceCollection() const = 0;
+
     /// destructor
     virtual ~CollectionBase() = default;
 

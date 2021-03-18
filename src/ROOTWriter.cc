@@ -9,6 +9,8 @@
 #include "TFile.h"
 #include "TTree.h"
 
+#include <tuple>
+
 namespace podio {
   ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),
@@ -52,17 +54,19 @@ void ROOTWriter::writeEvent(){
 void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections) {
   for (auto& [name, coll] : collections) {
     root_utils::CollectionBranches branches;
-    const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
-    branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), coll->getBufferAddress());
+    if (auto buffer = coll->getBufferAddress()) {
+      const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
+      branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), buffer);
+    }
+
 
     // reference collections
-    if (auto refColls = coll->referenceCollections()) {
-      int i = 0;
-      for (auto& c : (*refColls)) {
-        const auto brName = root_utils::refBranch(name, i);
-        branches.refs.push_back(m_datatree->Branch(brName.c_str(), c));
-        ++i;
-      }
+    auto refColls = coll->referenceCollections();
+    int iRef = 0;
+    for (auto& c : (*refColls)) {
+      const auto brName = root_utils::refBranch(name, iRef);
+      branches.refs.push_back(m_datatree->Branch(brName.c_str(), c));
+      ++iRef;
     }
 
     // vector members
@@ -92,8 +96,31 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
 
 
   void ROOTWriter::finish(){
-    // now we want to safe the metadata
-    m_metadatatree->Branch("CollectionIDs",m_store->getCollectionIDTable());
+    // now we want to safe the metadata. This includes info about the collection
+    // types as well as the collected types
+    const auto collIDTable = m_store->getCollectionIDTable();
+
+    std::vector<std::tuple<int, std::string, std::string>> collectionInfo;
+    collectionInfo.reserve(m_collectionsToWrite.size());
+    for (const auto& name : m_collectionsToWrite) {
+      const auto collID = collIDTable->collectionID(name);
+      const podio::CollectionBase* coll{nullptr};
+      // No check necessary, only registered collections possible
+      m_store->get(name, coll);
+      if (coll->isReferenceCollection()) {
+        // For reference collections we don't need the collected over type for
+        // "reconstruction" when reading
+        const std::string collType = coll->getValueTypeName() + "RefCollection";
+        collectionInfo.emplace_back(collID, "", std::move(collType));
+      } else {
+        const std::string type = "std::vector<" + coll->getValueTypeName() + "Data>";
+        const std::string collType = coll->getValueTypeName() + "Collection";
+        collectionInfo.emplace_back(collID, std::move(type), std::move(collType));
+      }
+    }
+
+    m_metadatatree->Branch("CollectionTypeInfo", &collectionInfo);
+    m_metadatatree->Branch("CollectionIDs", collIDTable);
     m_metadatatree->Fill();
 
     m_colMDtree->Branch("colMD", "std::map<int,podio::GenericParameters>", m_store->getColMetaDataMap() ) ;

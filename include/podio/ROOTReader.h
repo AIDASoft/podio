@@ -80,6 +80,8 @@ class ROOTReader : public IReader {
 
 
   private:
+    void createCollectionBranches(const std::vector<std::tuple<int, std::string, std::string>>& collInfo);
+
     std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
     // Information about the data vector as wall as the collection class type
     // and the index in the collection branches cache vector
