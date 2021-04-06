@@ -12,18 +12,29 @@
 #include "datamodel/ExampleWithStringCollection.h"
 #include "datamodel/ExampleWithNamespace.h"
 #include "datamodel/ExampleWithArrayCollection.h"
+#include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 
 // podio specific includes
 #include "podio/EventStore.h"
 #include "podio/IReader.h"
 
 // STL
+#include <limits>
 #include <vector>
 #include <iostream>
 #include <exception>
 #include <cassert>
 #include <sstream>
 
+template<typename FixedWidthT>
+bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
+  if (actual != expected) {
+    std::stringstream msg{};
+    msg << "fixed width integer (" << type << ") value is not as expected: " << actual << " vs " << expected;
+    throw std::runtime_error(msg.str());
+  }
+  return true;
+}
 
 void processEvent(podio::EventStore& store, int eventNum) {
 
@@ -240,6 +251,38 @@ void processEvent(podio::EventStore& store, int eventNum) {
   } else {
     throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
   }
+
+  const auto& fixedWidthInts = store.get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+  if (not fixedWidthInts.isValid() or fixedWidthInts.size() != 3) {
+    throw std::runtime_error("Collection \'fixedWidthInts\' should be present and have 3 elements");
+  }
+
+  auto maxValues = fixedWidthInts[0];
+  const auto& maxComps = maxValues.fixedWidthStruct();
+  check_fixed_width_value(maxValues.fixedI16(), std::numeric_limits<std::int16_t>::max(), "int16");
+  check_fixed_width_value(maxValues.fixedU32(), std::numeric_limits<std::uint32_t>::max(), "uint32");
+  check_fixed_width_value(maxValues.fixedU64(), std::numeric_limits<std::uint64_t>::max(), "uint64");
+  check_fixed_width_value(maxComps.fixedInteger64, std::numeric_limits<std::int64_t>::max(), "int64");
+  check_fixed_width_value(maxComps.fixedInteger32, std::numeric_limits<std::int32_t>::max(), "int32");
+  check_fixed_width_value(maxComps.fixedUnsigned16, std::numeric_limits<std::uint16_t>::max(), "uint16");
+
+  auto minValues = fixedWidthInts[1];
+  const auto& minComps = minValues.fixedWidthStruct();
+  check_fixed_width_value(minValues.fixedI16(), std::numeric_limits<std::int16_t>::min(), "int16");
+  check_fixed_width_value(minValues.fixedU32(), std::numeric_limits<std::uint32_t>::min(), "uint32");
+  check_fixed_width_value(minValues.fixedU64(), std::numeric_limits<std::uint64_t>::min(), "uint64");
+  check_fixed_width_value(minComps.fixedInteger64, std::numeric_limits<std::int64_t>::min(), "int64");
+  check_fixed_width_value(minComps.fixedInteger32, std::numeric_limits<std::int32_t>::min(), "int32");
+  check_fixed_width_value(minComps.fixedUnsigned16, std::numeric_limits<std::uint16_t>::min(), "uint16");
+
+  auto arbValues = fixedWidthInts[2];
+  const auto& arbComps = arbValues.fixedWidthStruct();
+  check_fixed_width_value(arbValues.fixedI16(), std::int16_t{-12345}, "int16");
+  check_fixed_width_value(arbValues.fixedU32(), std::uint32_t{1234567890}, "uint32");
+  check_fixed_width_value(arbValues.fixedU64(), std::uint64_t{1234567890123456789}, "uint64");
+  check_fixed_width_value(arbComps.fixedInteger64, std::int64_t{-1234567890123456789}, "int64");
+  check_fixed_width_value(arbComps.fixedInteger32, std::int32_t{-1234567890}, "int32");
+  check_fixed_width_value(arbComps.fixedUnsigned16, std::uint16_t{12345}, "uint16");
 }
 
 void run_read_test(podio::IReader& reader) {
