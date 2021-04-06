@@ -34,6 +34,12 @@ components :
     Members:
       - ex2::NamespaceStruct data
 
+  StructWithFixedWithTypes:
+    Members:
+      - uint16_t fixedUnsigned16 // unsigned int with exactly 16 bits
+      - std::int64_t fixedInteger64 // int with exactly 64 bits
+      - int32_t fixedInteger32 // int with exactly 32 bits
+
 datatypes :
 
   EventInfo:
@@ -151,3 +157,12 @@ datatypes :
       - std::array<int, 4> snail_case_array // snail case to test regex
       - std::array<int, 4> snail_case_Array3 // mixing things up for regex
       - std::array<ex2::NamespaceStruct, 4> structArray // an array containing structs
+
+  ExampleWithFixedWidthIntegers:
+    Description: "Datatype using fixed width integer types as members"
+    Author: "Thomas Madlener"
+    Members:
+      - std::int16_t fixedI16 // some integer with exactly 16 bits
+      - uint64_t fixedU64 // unsigned int with exactly 64 bits
+      - uint32_t fixedU32 // unsigned int with exactly 32 bits
+      - StructWithFixedWithTypes fixedWidthStruct // struct with more fixed width types
