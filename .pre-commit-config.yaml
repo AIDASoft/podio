@@ -19,7 +19,7 @@ repos:
         language: system
       - id: pylint
         name: pylint
-        entry: 'pylint --py3k --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"'
+        entry: 'pylint --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"'
         types: [python]
         language: system
       - id: flake8
