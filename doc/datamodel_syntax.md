@@ -28,10 +28,11 @@ A component is just a flat struct containing data. it can be defined via:
     components:
       # My example component
       MyComponent:
-        x : float
-        y : float
-        z : float
-        a : AnotherComponent
+        Members:
+          - float x
+          - float y
+          - float z
+          - AnotherComponent a
 ```
 
 ## Definition of custom data classes
@@ -113,7 +114,8 @@ Some customization of the generated code is possible through flags. These flags 
     components:
       # My simple component
       ExampleComponent:
-        x : int
+        Members:
+          - int x
     datatypes:
       ExampleType:
         Description: "My datatype with a component member"
