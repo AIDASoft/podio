@@ -3,6 +3,7 @@ repos:
     rev: v3.4.0
     hooks:
       - id: mixed-line-ending
+      - id: trailing-whitespace
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: 41ad32113ed5abe9c33a01f606b5eacf572b13e0
     hooks:
