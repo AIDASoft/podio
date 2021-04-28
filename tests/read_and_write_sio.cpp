@@ -19,7 +19,9 @@ int main() {
 
   unsigned nEvents = reader.getEntries();
   for (unsigned i = 0; i < nEvents; ++i) {
-    if (i % 1000 == 0) std::cout << "reading event " << i << std::endl;
+    if (i % 1000 == 0) {
+      std::cout << "reading event " << i << std::endl;
+    }
     processEvent(store, i);
 
     writer.writeEvent();

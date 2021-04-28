@@ -11,7 +11,9 @@ ASCIIWriter::ASCIIWriter(const std::string& filename, EventStore* store) :
   m_file->open(filename, std::ofstream::binary);
 }
 
-ASCIIWriter::~ASCIIWriter() { delete m_file; }
+ASCIIWriter::~ASCIIWriter() {
+  delete m_file;
+}
 
 void ASCIIWriter::writeEvent() {
 
@@ -30,6 +32,8 @@ void ASCIIWriter::writeEvent() {
   }
 }
 
-void ASCIIWriter::finish() { m_file->close(); }
+void ASCIIWriter::finish() {
+  m_file->close();
+}
 
 } // namespace podio

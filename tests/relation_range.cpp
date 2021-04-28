@@ -17,7 +17,9 @@
 
 #define ASSERT_CONDITION(condition, message)                                                                           \
   {                                                                                                                    \
-    if (!(condition)) { throw std::runtime_error(LOCATION() + std::string(": ") + message); }                          \
+    if (!(condition)) {                                                                                                \
+      throw std::runtime_error(LOCATION() + std::string(": ") + message);                                              \
+    }                                                                                                                  \
   }
 
 #define ASSERT_EQUAL(left, right, message)                                                                             \

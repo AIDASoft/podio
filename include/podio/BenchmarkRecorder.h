@@ -41,9 +41,13 @@ public:
     m_stepTimes[index] = std::chrono::duration_cast<TimingResolution>(time).count();
   }
 
-  void Fill() { m_recordTree->Fill(); }
+  void Fill() {
+    m_recordTree->Fill();
+  }
 
-  void Write() { m_recordTree->Write(); }
+  void Write() {
+    m_recordTree->Write();
+  }
 
 private:
   TTree* m_recordTree{nullptr};

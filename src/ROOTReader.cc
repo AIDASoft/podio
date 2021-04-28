@@ -50,17 +50,24 @@ CollectionBase* ROOTReader::readCollection(const std::string& name) {
   // has the collection already been constructed?
   auto p =
       std::find_if(begin(m_inputs), end(m_inputs), [&name](const ROOTReader::Input& t) { return t.second == name; });
-  if (p != end(m_inputs)) { return p->first; }
+  if (p != end(m_inputs)) {
+    return p->first;
+  }
 
   // Have we read this collection before? If so: use the cached information to
   // speed up reading
-  if (const auto& info = m_storedClasses.find(name); info != m_storedClasses.end()) { return getCollection(*info); }
+  if (const auto& info = m_storedClasses.find(name); info != m_storedClasses.end()) {
+    return getCollection(*info);
+  }
 
   // Otherwise do some setup first and then directly read the collection
   if (auto branch = root_utils::getBranch(m_chain, name.c_str())) {
     const std::string dataClassName = branch->GetClassName();
     const auto* theClass = gROOT->GetClass(dataClassName.c_str());
-    if (theClass == nullptr) return nullptr;
+    if (theClass == nullptr) {
+      return nullptr;
+    }
+
     // now create the transient collections
     // some workaround until gcc supports regex properly:
     auto dataClassString = std::string(dataClassName);
@@ -70,7 +77,9 @@ CollectionBase* ROOTReader::readCollection(const std::string& name) {
     auto classname = dataClassString.substr(start + 1, end - start - 5);
     auto collectionClassName = classname + "Collection";
     const auto* collectionClass = gROOT->GetClass(collectionClassName.c_str());
-    if (collectionClass == nullptr) return nullptr;
+    if (collectionClass == nullptr) {
+      return nullptr;
+    }
 
     // create the branches and cache them
     root_utils::CollectionBranches branches;
@@ -147,10 +156,12 @@ CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranc
                                                CollectionBase* collection, Long64_t entry, const std::string& name) {
   // Read all data
   branches.data->GetEntry(entry);
-  for (auto* br : branches.refs)
+  for (auto* br : branches.refs) {
     br->GetEntry(entry);
-  for (auto* br : branches.vecs)
+  }
+  for (auto* br : branches.vecs) {
     br->GetEntry(entry);
+  }
 
   // do the unpacking
   const auto id = m_table->collectionID(name);
@@ -161,7 +172,9 @@ CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranc
   return collection;
 }
 
-void ROOTReader::openFile(const std::string& filename) { openFiles({filename}); }
+void ROOTReader::openFile(const std::string& filename) {
+  openFiles({filename});
+}
 
 void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   m_chain = new TChain("events");
@@ -174,9 +187,13 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   metadatatree->GetEntry(0);
 }
 
-void ROOTReader::closeFile() { closeFiles(); }
+void ROOTReader::closeFile() {
+  closeFiles();
+}
 
-void ROOTReader::closeFiles() { delete m_chain; }
+void ROOTReader::closeFiles() {
+  delete m_chain;
+}
 
 void ROOTReader::readEvent() {
   m_chain->GetEntry(m_eventNumber);
@@ -190,14 +207,18 @@ void ROOTReader::readEvent() {
 
   //  }
 }
-bool ROOTReader::isValid() const { return m_chain->GetFile()->IsOpen() && !m_chain->GetFile()->IsZombie(); }
+bool ROOTReader::isValid() const {
+  return m_chain->GetFile()->IsOpen() && !m_chain->GetFile()->IsZombie();
+}
 
 void ROOTReader::endOfEvent() {
   ++m_eventNumber;
   m_inputs.clear();
 }
 
-unsigned ROOTReader::getEntries() const { return m_chain->GetEntries(); }
+unsigned ROOTReader::getEntries() const {
+  return m_chain->GetEntries();
+}
 
 void ROOTReader::goToEvent(unsigned eventNumber) {
   m_eventNumber = eventNumber;

@@ -18,7 +18,9 @@ EventStore::~EventStore() {
 
 bool EventStore::get(int id, CollectionBase*& collection) const {
   // see if we have a cached collection
-  if ((collection = getFast(id)) != nullptr) return true;
+  if ((collection = getFast(id)) != nullptr) {
+    return true;
+  }
 
   auto val = m_retrievedIDs.insert(id);
   bool success = false;
@@ -27,7 +29,9 @@ bool EventStore::get(int id, CollectionBase*& collection) const {
     auto name = m_table->name(id);
     success = doGet(name, collection, true);
     if (collection != nullptr) { // cache the collection for faster retreaval later
-      if (m_cachedCollections.size() < (unsigned)id + 1) m_cachedCollections.resize(id + 1);
+      if (m_cachedCollections.size() < (unsigned)id + 1) {
+        m_cachedCollections.resize(id + 1);
+      }
       m_cachedCollections[id] = collection;
     }
   } else {
@@ -47,7 +51,9 @@ void EventStore::registerCollection(const std::string& name, podio::CollectionBa
   coll->setID(id);
 }
 
-bool EventStore::isValid() const { return m_reader->isValid(); }
+bool EventStore::isValid() const {
+  return m_reader->isValid();
+}
 
 bool EventStore::doGet(const std::string& name, CollectionBase*& collection, bool setReferences) const {
   auto result = std::find_if(begin(m_collections), end(m_collections),
@@ -65,11 +71,15 @@ bool EventStore::doGet(const std::string& name, CollectionBase*& collection, boo
         tmp->setReferences(this);
         // check again whether collection exists
         // it may have been created on-demand already
-        if (collectionRegistered(name) == false) { m_collections.emplace_back(std::make_pair(name, tmp)); }
+        if (collectionRegistered(name) == false) {
+          m_collections.emplace_back(std::make_pair(name, tmp));
+        }
       }
     }
     collection = tmp;
-    if (tmp != nullptr) return true;
+    if (tmp != nullptr) {
+      return true;
+    }
   } else {
     return false;
   }

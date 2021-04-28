@@ -18,12 +18,18 @@ TBranch* getBranch(Tree* chain, const char* name) {
   return static_cast<TBranch*>(chain->GetListOfBranches()->FindObject(name));
 }
 
-inline std::string refBranch(const std::string& name, size_t index) { return name + "#" + std::to_string(index); }
+inline std::string refBranch(const std::string& name, size_t index) {
+  return name + "#" + std::to_string(index);
+}
 
-inline std::string vecBranch(const std::string& name, size_t index) { return name + "_" + std::to_string(index); }
+inline std::string vecBranch(const std::string& name, size_t index) {
+  return name + "_" + std::to_string(index);
+}
 
 inline void setCollectionAddresses(podio::CollectionBase* collection, const CollectionBranches& branches) {
-  if (auto buffer = collection->getBufferAddress()) { branches.data->SetAddress(buffer); }
+  if (auto buffer = collection->getBufferAddress()) {
+    branches.data->SetAddress(buffer);
+  }
 
   if (auto refCollections = collection->referenceCollections()) {
     for (size_t i = 0; i < refCollections->size(); ++i) {

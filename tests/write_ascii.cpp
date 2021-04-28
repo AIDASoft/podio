@@ -54,7 +54,9 @@ int main() {
   unsigned nevents = 1; // 2000;
 
   for (unsigned i = 0; i < nevents; ++i) {
-    if (i % 1000 == 0) { std::cout << "processing event " << i << std::endl; }
+    if (i % 1000 == 0) {
+      std::cout << "processing event " << i << std::endl;
+    }
 
     auto item1 = EventInfo();
     item1.Number(i);

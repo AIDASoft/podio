@@ -50,7 +50,9 @@ public:
   void readEvent();
 
   /// Read CollectionIDTable from ROOT file
-  CollectionIDTable* getCollectionIDTable() final { return m_table; }
+  CollectionIDTable* getCollectionIDTable() final {
+    return m_table;
+  }
 
   /// Returns number of entries in the TTree
   unsigned getEntries() const override;

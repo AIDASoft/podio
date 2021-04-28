@@ -21,7 +21,9 @@ SIOReader::SIOReader() :
 }
 
 CollectionBase* SIOReader::readCollection(const std::string& name) {
-  if (m_lastEventRead != m_eventNumber) { readEvent(); }
+  if (m_lastEventRead != m_eventNumber) {
+    readEvent();
+  }
 
   auto p =
       std::find_if(begin(m_inputs), end(m_inputs), [&name](const SIOReader::Input& t) { return t.second == name; });
@@ -55,7 +57,9 @@ std::map<int, GenericParameters>* SIOReader::readRunMetaData() {
 }
 
 podio::GenericParameters* SIOReader::readEventMetaData() {
-  if (m_lastEventRead != m_eventNumber) { readEvent(); }
+  if (m_lastEventRead != m_eventNumber) {
+    readEvent();
+  }
   return m_eventMetaData->metadata;
 }
 
@@ -63,10 +67,14 @@ void SIOReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
   readCollectionIDTable();
 
-  if (!readFileTOCRecord()) { reconstructFileTOCRecord(); }
+  if (!readFileTOCRecord()) {
+    reconstructFileTOCRecord();
+  }
 }
 
-void SIOReader::closeFile() { m_stream.close(); }
+void SIOReader::closeFile() {
+  m_stream.close();
+}
 
 void SIOReader::readEvent() {
   // recreate the blocks, since the contents are owned and managed by the
@@ -92,7 +100,9 @@ void SIOReader::readEvent() {
   m_lastEventRead = m_eventNumber;
 }
 
-bool SIOReader::isValid() const { return m_stream.good(); }
+bool SIOReader::isValid() const {
+  return m_stream.good();
+}
 
 void SIOReader::endOfEvent() {
   ++m_eventNumber;
@@ -159,7 +169,9 @@ void SIOReader::reconstructFileTOCRecord() {
       return true;
     });
   } catch (sio::exception& e) {
-    if (e.code() != sio::error_code::eof) { SIO_RETHROW(e, e.code(), e.what()); }
+    if (e.code() != sio::error_code::eof) {
+      SIO_RETHROW(e, e.code(), e.what());
+    }
   }
 
   // rewind to the start of the file

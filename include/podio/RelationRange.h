@@ -16,16 +16,25 @@ public:
 
   RelationRange() = delete;
 
-  RelationRange(ConstIteratorType begin, ConstIteratorType end) : m_begin(begin), m_end(end) {}
+  RelationRange(ConstIteratorType begin, ConstIteratorType end) : m_begin(begin), m_end(end) {
+  }
 
   /// begin of the range (necessary for range-based for loop)
-  ConstIteratorType begin() const { return m_begin; }
+  ConstIteratorType begin() const {
+    return m_begin;
+  }
   /// end of the range (necessary for range-based for loop)
-  ConstIteratorType end() const { return m_end; }
+  ConstIteratorType end() const {
+    return m_end;
+  }
   /// convenience overload for size
-  size_t size() const { return std::distance(m_begin, m_end); }
+  size_t size() const {
+    return std::distance(m_begin, m_end);
+  }
   /// convenience overload to check if the range is empty
-  bool empty() const { return m_begin == m_end; }
+  bool empty() const {
+    return m_begin == m_end;
+  }
 
 private:
   ConstIteratorType m_begin;

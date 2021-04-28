@@ -118,20 +118,32 @@ public:
   /**
    * Get the internal int map (necessary for serialization with SIO)
    */
-  const IntMap& getIntMap() const { return _intMap; }
-  IntMap& getIntMap() { return _intMap; }
+  const IntMap& getIntMap() const {
+    return _intMap;
+  }
+  IntMap& getIntMap() {
+    return _intMap;
+  }
 
   /**
    * Get the internal float map (necessary for serialization with SIO)
    */
-  const FloatMap& getFloatMap() const { return _floatMap; }
-  FloatMap& getFloatMap() { return _floatMap; }
+  const FloatMap& getFloatMap() const {
+    return _floatMap;
+  }
+  FloatMap& getFloatMap() {
+    return _floatMap;
+  }
 
   /**
    * Get the internal string map (necessary for serialization with SIO)
    */
-  const StringMap& getStringMap() const { return _stringMap; }
-  StringMap& getStringMap() { return _stringMap; }
+  const StringMap& getStringMap() const {
+    return _stringMap;
+  }
+  StringMap& getStringMap() {
+    return _stringMap;
+  }
 
 protected:
   IntMap _intMap{};

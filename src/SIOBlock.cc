@@ -30,7 +30,9 @@ void SIOCollectionIDTableBlock::write(sio::write_device& device) {
   typeNames.reserve(_table->ids().size());
   for (const int id : _table->ids()) {
     CollectionBase* tmp;
-    if (!_store->get(id, tmp)) { std::cerr << "ERROR during writing of CollectionID table" << std::endl; }
+    if (!_store->get(id, tmp)) {
+      std::cerr << "ERROR during writing of CollectionID table" << std::endl;
+    }
     typeNames.push_back(tmp->getValueTypeName());
   }
   device.data(typeNames);
@@ -74,7 +76,9 @@ void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type) {
   readGenericParameters(device, *metadata);
 }
 
-void SIOEventMetaDataBlock::write(sio::write_device& device) { writeGenericParameters(device, *metadata); }
+void SIOEventMetaDataBlock::write(sio::write_device& device) {
+  writeGenericParameters(device, *metadata);
+}
 
 void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type) {
   int size;
@@ -155,11 +159,15 @@ std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
   std::string dir;
   std::istringstream stream(std::getenv("LD_LIBRARY_PATH"));
   while (std::getline(stream, dir, ':')) {
-    if (not fs::exists(dir)) continue;
+    if (not fs::exists(dir)) {
+      continue;
+    }
 
     for (auto& lib : fs::directory_iterator(dir)) {
       const auto filename = lib.path().filename().string();
-      if (filename.find("SioBlocks") != std::string::npos) { libs.emplace_back(std::move(filename)); }
+      if (filename.find("SioBlocks") != std::string::npos) {
+        libs.emplace_back(std::move(filename));
+      }
     }
   }
 
@@ -180,7 +188,9 @@ void SIOFileTOCRecord::addRecord(const std::string& name, PositionType startPos)
 size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
   const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
                                [&name](const auto& entry) { return entry.first == name; });
-  if (it != m_recordMap.cend()) { return it->second.size(); }
+  if (it != m_recordMap.cend()) {
+    return it->second.size();
+  }
   return 0;
 }
 

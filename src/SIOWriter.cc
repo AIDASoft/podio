@@ -126,7 +126,9 @@ void SIOWriter::registerForWrite(const std::string& name) {
   const podio::CollectionBase* colB(nullptr);
   m_store->get(name, colB);
 
-  if (!colB) { throw std::runtime_error(std::string("no such collection to write: ") + name); }
+  if (!colB) {
+    throw std::runtime_error(std::string("no such collection to write: ") + name);
+  }
   // Check if we can instantiate the blocks here so that we can skip the checks later
   if (auto blk = podio::SIOBlockFactory::instance().createBlock(colB, name); !blk) {
     const auto typName = colB->getValueTypeName();

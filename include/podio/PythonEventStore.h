@@ -24,10 +24,16 @@ public:
   unsigned getEntries() const;
 
   /// is the input file accessible?
-  bool isZombie() const { return m_isZombie; }
+  bool isZombie() const {
+    return m_isZombie;
+  }
 
-  bool isValid() const { return m_reader.isValid(); }
-  void close() { m_reader.closeFiles(); }
+  bool isValid() const {
+    return m_reader.isValid();
+  }
+  void close() {
+    m_reader.closeFiles();
+  }
 
   /// list available collections
   const std::vector<std::string>& getCollectionNames() const;

@@ -24,7 +24,9 @@ ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
   m_evtMDtree->Branch("evtMD", "GenericParameters", m_store->eventMetaDataPtr());
 }
 
-ROOTWriter::~ROOTWriter() { delete m_file; }
+ROOTWriter::~ROOTWriter() {
+  delete m_file;
+}
 
 void ROOTWriter::writeEvent() {
   std::vector<StoreCollection> collections;

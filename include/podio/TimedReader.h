@@ -51,7 +51,9 @@ public:
   }
 
   /// read event meta data from file
-  GenericParameters* readEventMetaData() override { return runTimed(true, "read_ev_md", &IReader::readEventMetaData); }
+  GenericParameters* readEventMetaData() override {
+    return runTimed(true, "read_ev_md", &IReader::readEventMetaData);
+  }
 
   std::map<int, GenericParameters>* readCollectionMetaData() override {
     return runTimed(true, "read_coll_md", &IReader::readCollectionMetaData);
@@ -62,7 +64,9 @@ public:
   }
 
   /// get the number of events available from this reader
-  unsigned getEntries() const override { return runTimed(false, "get_entries", &IReader::getEntries); }
+  unsigned getEntries() const override {
+    return runTimed(false, "get_entries", &IReader::getEntries);
+  }
 
   /// Prepare the reader to read the next event
   void endOfEvent() override {
@@ -74,13 +78,17 @@ public:
   }
 
   // not benchmarking this one
-  bool isValid() const override { return m_reader.isValid(); }
+  bool isValid() const override {
+    return m_reader.isValid();
+  }
 
   void openFile(const std::string& filename) override {
     runVoidTimed(false, "open_file", &IReader::openFile, filename);
   }
 
-  void closeFile() override { runVoidTimed(false, "close_file", &IReader::closeFile); }
+  void closeFile() override {
+    runVoidTimed(false, "close_file", &IReader::closeFile);
+  }
 
 private:
   void recordTime(bool perEvent, const std::string& step, ClockT::duration duration) const {

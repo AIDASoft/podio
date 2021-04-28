@@ -45,9 +45,13 @@ public:
   void readEvent();
 
   /// Read CollectionIDTable from SIO file
-  CollectionIDTable* getCollectionIDTable() final { return m_table; }
+  CollectionIDTable* getCollectionIDTable() final {
+    return m_table;
+  }
 
-  unsigned getEntries() const override { return m_tocRecord.getNRecords("event_record"); }
+  unsigned getEntries() const override {
+    return m_tocRecord.getNRecords("event_record");
+  }
 
   /// Check if file is valid
   bool isValid() const final;

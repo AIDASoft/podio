@@ -53,7 +53,9 @@ void processEvent(podio::EventStore& store, int eventNum) {
   auto& strings = store.get<ExampleWithStringCollection>("strings");
   if (strings.isValid()) {
     auto string = strings[0];
-    if (string.theString() != "SomeString") { throw std::runtime_error("Couldn't read string properly"); }
+    if (string.theString() != "SomeString") {
+      throw std::runtime_error("Couldn't read string properly");
+    }
   } else {
     throw std::runtime_error("Collection 'strings' should be present.");
   }
@@ -104,10 +106,18 @@ void processEvent(podio::EventStore& store, int eventNum) {
     auto d2 = p.daughters(2);
     auto d3 = p.daughters(3);
 
-    if (!(d0 == mcps[2])) throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 ");
-    if (!(d1 == mcps[3])) throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 ");
-    if (!(d2 == mcps[4])) throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 ");
-    if (!(d3 == mcps[5])) throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 ");
+    if (!(d0 == mcps[2])) {
+      throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 ");
+    }
+    if (!(d1 == mcps[3])) {
+      throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 ");
+    }
+    if (!(d2 == mcps[4])) {
+      throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 ");
+    }
+    if (!(d3 == mcps[5])) {
+      throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 ");
+    }
 
     // particle 3 has particles 6,7,8 and 9 as daughters:
     p = mcps[3];
@@ -117,10 +127,18 @@ void processEvent(podio::EventStore& store, int eventNum) {
     d2 = p.daughters(2);
     d3 = p.daughters(3);
 
-    if (!(d0 == mcps[6])) throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 ");
-    if (!(d1 == mcps[7])) throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 ");
-    if (!(d2 == mcps[8])) throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 ");
-    if (!(d3 == mcps[9])) throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 ");
+    if (!(d0 == mcps[6])) {
+      throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 ");
+    }
+    if (!(d1 == mcps[7])) {
+      throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 ");
+    }
+    if (!(d2 == mcps[8])) {
+      throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 ");
+    }
+    if (!(d3 == mcps[9])) {
+      throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 ");
+    }
 
   } else {
     throw std::runtime_error("Collection 'mcparticles' should be present");
@@ -149,7 +167,9 @@ void processEvent(podio::EventStore& store, int eventNum) {
   //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
   auto& vecs = store.get<ExampleWithVectorMemberCollection>("WithVectorMember");
   if (vecs.isValid()) {
-    if (vecs.size() != 2) { throw std::runtime_error("Collection 'WithVectorMember' should have two elements'"); }
+    if (vecs.size() != 2) {
+      throw std::runtime_error("Collection 'WithVectorMember' should have two elements'");
+    }
 
     for (auto vec : vecs) {
       if (vec.count().size() != 2) {
@@ -163,10 +183,11 @@ void processEvent(podio::EventStore& store, int eventNum) {
                                "collection do not have the expected values");
     }
 
-    for (auto item : vecs)
+    for (auto item : vecs) {
       for (auto c = item.count_begin(), end = item.count_end(); c != end; ++c) {
         std::cout << "  Counter value " << (*c) << std::endl;
       }
+    }
   } else {
     throw std::runtime_error("Collection 'WithVectorMember' should be present");
   }
@@ -180,9 +201,15 @@ void processEvent(podio::EventStore& store, int eventNum) {
   auto& arrays = store.get<ExampleWithArrayCollection>("arrays");
   if (arrays.isValid() && arrays.size() != 0) {
     auto array = arrays[0];
-    if (array.myArray(1) != eventNum) { throw std::runtime_error("Array not properly set."); }
-    if (array.arrayStruct().data.p.at(2) != 2 * eventNum) { throw std::runtime_error("Array not properly set."); }
-    if (array.structArray(0).x != eventNum) { throw std::runtime_error("Array of struct not properly set."); }
+    if (array.myArray(1) != eventNum) {
+      throw std::runtime_error("Array not properly set.");
+    }
+    if (array.arrayStruct().data.p.at(2) != 2 * eventNum) {
+      throw std::runtime_error("Array not properly set.");
+    }
+    if (array.structArray(0).x != eventNum) {
+      throw std::runtime_error("Array of struct not properly set.");
+    }
   } else {
     throw std::runtime_error("Collection 'arrays' should be present");
   }
@@ -204,7 +231,9 @@ void processEvent(podio::EventStore& store, int eventNum) {
         if (nmsp.ref().x() != cpy.ref().x()) {
           throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
         }
-        if (nmsp.number() != cpy.number()) { throw std::runtime_error("Copied item has differing member."); }
+        if (nmsp.number() != cpy.number()) {
+          throw std::runtime_error("Copied item has differing member.");
+        }
         if (!(nmsp.ref().getObjectID() == cpy.ref().getObjectID())) {
           throw std::runtime_error("Copied item has wrong OneToOne references.");
         }
@@ -236,13 +265,17 @@ void run_read_test(podio::IReader& reader) {
   // function just wraps that. The magic number of 2000 is the number of events
   // that are present in each file that is written in write
   const auto correctIndex = [nEvents](unsigned index) {
-    if (nEvents > 2000) { return index % (nEvents / 2); }
+    if (nEvents > 2000) {
+      return index % (nEvents / 2);
+    }
     return index;
   };
 
   for (unsigned i = 0; i < nEvents; ++i) {
 
-    if (i % 1000 == 0) std::cout << "reading event " << i << std::endl;
+    if (i % 1000 == 0) {
+      std::cout << "reading event " << i << std::endl;
+    }
 
     processEvent(store, correctIndex(i));
     store.clear();

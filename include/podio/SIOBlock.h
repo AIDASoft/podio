@@ -27,16 +27,23 @@ void handlePODDataSIO(devT& device, PODData* data, size_t size) {
 class SIOBlock : public sio::block {
 
 public:
-  SIOBlock(const std::string& nam, sio::version_type vers) : sio::block(nam, vers) {}
+  SIOBlock(const std::string& nam, sio::version_type vers) : sio::block(nam, vers) {
+  }
   SIOBlock() = delete;
   SIOBlock(const SIOBlock&) = delete;
   SIOBlock& operator=(const SIOBlock&) = delete;
 
-  podio::CollectionBase* getCollection() { return _col; }
+  podio::CollectionBase* getCollection() {
+    return _col;
+  }
 
-  std::string name() { return sio::block::name(); }
+  std::string name() {
+    return sio::block::name();
+  }
 
-  void setCollection(podio::CollectionBase* col) { _col = col; }
+  void setCollection(podio::CollectionBase* col) {
+    _col = col;
+  }
 
   virtual SIOBlock* create(const std::string& name) const = 0;
 
@@ -52,12 +59,14 @@ protected:
  */
 class SIOCollectionIDTableBlock : public sio::block {
 public:
-  SIOCollectionIDTableBlock() : sio::block("CollectionIDs", sio::version::encode_version(0, 1)) {}
+  SIOCollectionIDTableBlock() : sio::block("CollectionIDs", sio::version::encode_version(0, 1)) {
+  }
 
   SIOCollectionIDTableBlock(podio::EventStore* store) :
       sio::block("CollectionIDs", sio::version::encode_version(0, 1)),
       _store(store),
-      _table(store->getCollectionIDTable()) {}
+      _table(store->getCollectionIDTable()) {
+  }
 
   SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
   SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
@@ -65,8 +74,12 @@ public:
   void read(sio::read_device& device, sio::version_type version) override;
   void write(sio::write_device& device) override;
 
-  podio::CollectionIDTable* getTable() { return _table; }
-  const std::vector<std::string>& getTypeNames() const { return _types; }
+  podio::CollectionIDTable* getTable() {
+    return _table;
+  }
+  const std::vector<std::string>& getTypeNames() const {
+    return _types;
+  }
 
 private:
   podio::EventStore* _store{nullptr};
@@ -79,7 +92,8 @@ private:
  */
 class SIOEventMetaDataBlock : public sio::block {
 public:
-  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 1)) {}
+  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 1)) {
+  }
 
   SIOEventMetaDataBlock(const SIOEventMetaDataBlock&) = delete;
   SIOEventMetaDataBlock& operator=(const SIOEventMetaDataBlock&) = delete;
@@ -95,7 +109,8 @@ public:
  */
 class SIONumberedMetaDataBlock : public sio::block {
 public:
-  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 1)) {}
+  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 1)) {
+  }
 
   SIONumberedMetaDataBlock(const SIONumberedMetaDataBlock&) = delete;
   SIONumberedMetaDataBlock& operator=(const SIONumberedMetaDataBlock&) = delete;
@@ -115,7 +130,9 @@ private:
   BlockMap _map{};
 
 public:
-  void registerBlockForCollection(const std::string& type, SIOBlock* b) { _map[type] = b; }
+  void registerBlockForCollection(const std::string& type, SIOBlock* b) {
+    _map[type] = b;
+  }
 
   std::shared_ptr<SIOBlock> createBlock(const podio::CollectionBase* col, const std::string& name) const;
 
@@ -180,7 +197,8 @@ private:
 };
 
 struct SIOFileTOCRecordBlock : public sio::block {
-  SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {}
+  SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {
+  }
 
   SIOFileTOCRecordBlock(const SIOFileTOCRecordBlock&) = delete;
   SIOFileTOCRecordBlock& operator=(const SIOFileTOCRecordBlock&) = delete;

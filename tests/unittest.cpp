@@ -40,7 +40,9 @@ TEST_CASE("Basics") {
   const ExampleHitCollection* coll2(nullptr);
   bool success = store.get("name", coll2);
   const ExampleHitCollection* coll3(nullptr);
-  if (store.get("wrongName", coll3) != false) success = false;
+  if (store.get("wrongName", coll3) != false) {
+    success = false;
+  }
   REQUIRE(success);
 }
 
@@ -67,7 +69,9 @@ TEST_CASE("Clearing") {
     oneRels.push_back(oneRel);
   }
   hits.clear();
-  if (hits.size() != 0) success = false;
+  if (hits.size() != 0) {
+    success = false;
+  }
   REQUIRE(success);
 }
 
@@ -77,7 +81,9 @@ TEST_CASE("Cloning") {
   hit.energy(30);
   auto hit2 = hit.clone();
   hit2.energy(20);
-  if (hit.energy() == hit2.energy()) success = false;
+  if (hit.energy() == hit2.energy()) {
+    success = false;
+  }
   auto cluster = ExampleCluster();
   cluster.addHits(hit);
   auto cluster2 = cluster.clone();
@@ -119,7 +125,9 @@ TEST_CASE("Invalid_refs") {
   cluster.addHits(hit2);
   try {
     clusters.prepareForWrite(); // should fail!
-  } catch (std::runtime_error&) { success = true; }
+  } catch (std::runtime_error&) {
+    success = true;
+  }
   REQUIRE(success);
 }
 
@@ -147,7 +155,9 @@ TEST_CASE("Notebook") {
   auto energies = hits.energy<10>();
   int index = 0;
   for (auto energy : energies) {
-    if (double(index) != energy) success = false;
+    if (double(index) != energy) {
+      success = false;
+    }
     ++index;
   }
   REQUIRE(success);
@@ -190,7 +200,9 @@ TEST_CASE("Referencing") {
   cluster.addHits(hit2);
   int index = 0;
   for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i != end; ++i) {
-    if (i->energy() != index) success = false;
+    if (i->energy() != index) {
+      success = false;
+    }
     ++index;
   }
   REQUIRE(success);

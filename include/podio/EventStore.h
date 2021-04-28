@@ -82,7 +82,9 @@ public:
   /// set the reader
   void setReader(IReader* reader);
 
-  CollectionIDTable* getCollectionIDTable() const { return m_table.get(); }
+  CollectionIDTable* getCollectionIDTable() const {
+    return m_table.get();
+  }
 
   bool isValid() const;
 
@@ -95,16 +97,24 @@ public:
   /// return the collection meta data for the given colID
   GenericParameters& getCollectionMetaData(int colID) const override;
 
-  RunMDMap* getRunMetaDataMap() const { return &m_runMDMap; }
-  ColMDMap* getColMetaDataMap() const { return &m_colMDMap; }
-  GenericParameters* eventMetaDataPtr() const { return &m_evtMD; }
+  RunMDMap* getRunMetaDataMap() const {
+    return &m_runMDMap;
+  }
+  ColMDMap* getColMetaDataMap() const {
+    return &m_colMDMap;
+  }
+  GenericParameters* eventMetaDataPtr() const {
+    return &m_evtMD;
+  }
 
 private:
   /// get the collection of given name; returns true if successfull
   bool doGet(const std::string& name, CollectionBase*& collection, bool setReferences = true) const;
   /// check if a collection of given name already exists
   bool collectionRegistered(const std::string& name) const;
-  void setCollectionIDTable(CollectionIDTable* table) { m_table.reset(table); }
+  void setCollectionIDTable(CollectionIDTable* table) {
+    m_table.reset(table);
+  }
 
   // members
   mutable std::set<int> m_retrievedIDs{};
@@ -135,7 +145,9 @@ bool EventStore::get(const std::string& name, const T*& collection) {
   CollectionBase* tmp{nullptr};
   doGet(name, tmp);
   collection = static_cast<T*>(tmp);
-  if (collection != nullptr) { return true; }
+  if (collection != nullptr) {
+    return true;
+  }
   return false;
 }
 
@@ -143,7 +155,9 @@ template <typename T>
 const T& EventStore::get(const std::string& name) {
   const T* tmp(0);
   auto success = this->get(name, tmp);
-  if (!success) { throw std::runtime_error("No collection \'" + name + "\' is present in the EventStore"); }
+  if (!success) {
+    throw std::runtime_error("No collection \'" + name + "\' is present in the EventStore");
+  }
   return *tmp;
 }
 
