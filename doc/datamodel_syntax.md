@@ -13,7 +13,9 @@ Instead, users can combine multiple `components` to build a to be used `datatype
 To allow the datatypes to be real PODs, the data stored within the data model are constrained to be
 POD-compatible data. Those are
 
- 1. basic types like int, double, etc
+ 1. basic types like int, double, etc as well as a limited set of fixed width
+    integers from `<cstdint>` (the `_leastN` or `_fastN` types as well as all
+    `8` bit types are not allowed).
  1. components built up from basic types or other components
  1. Fixed sized arrays of those types
 
