@@ -1,3 +1,5 @@
+#include "rootUtils.h"
+
 // podio specific includes
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
@@ -8,7 +10,6 @@
 #include "TTree.h"
 
 namespace podio {
-
   ROOTWriter::ROOTWriter(const std::string& filename, EventStore* store) :
     m_filename(filename),
     m_store(store),
@@ -50,15 +51,16 @@ void ROOTWriter::writeEvent(){
 
 void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections) {
   for (auto& [name, coll] : collections) {
+    root_utils::CollectionBranches branches;
     const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
-    m_datatree->Branch(name.c_str(), collClassName.c_str(), coll->getBufferAddress());
+    branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), coll->getBufferAddress());
 
     // reference collections
     if (auto refColls = coll->referenceCollections()) {
       int i = 0;
       for (auto& c : (*refColls)) {
-        const auto brName = name + "#" + std::to_string(i);
-        m_datatree->Branch(brName.c_str(), c);
+        const auto brName = root_utils::refBranch(name, i);
+        branches.refs.push_back(m_datatree->Branch(brName.c_str(), c));
         ++i;
       }
     }
@@ -68,36 +70,23 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
       int i = 0;
       for (auto& [type, vec] : (*vminfo)) {
         const auto typeName = "vector<" + type + ">";
-        const auto brName = name + "_" + std::to_string(i);
-        m_datatree->Branch(brName.c_str(), typeName.c_str(), vec);
+        const auto brName = root_utils::vecBranch(name, i);
+        branches.vecs.push_back(m_datatree->Branch(brName.c_str(), typeName.c_str(), vec));
         ++i;
       }
     }
+
+    m_collectionBranches.push_back(branches);
   }
 }
 
 void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
-  for (auto& [name, coll] : collections) {
-    m_datatree->SetBranchAddress(name.c_str(), coll->getBufferAddress());
+  size_t iCollection = 0;
+  for (auto& coll : collections) {
+    const auto& branches = m_collectionBranches[iCollection];
+    root_utils::setCollectionAddresses(coll.second, branches);
 
-    if (auto refColls = coll->referenceCollections()) {
-      int i = 0;
-      for (auto& c : (*refColls)) {
-        const auto brName = name + "#" + std::to_string(i);
-        m_datatree->SetBranchAddress(brName.c_str(), &c);
-        i++;
-      }
-    }
-
-    if (auto vminfo = coll->vectorMembers()) {
-      int i = 0;
-      for (const auto& info : (*vminfo)) {
-        const auto brName = name + "_" + std::to_string(i);
-        auto* branch = m_datatree->GetBranch(brName.c_str());
-        branch->SetAddress(info.second);
-        i++;
-      }
-    }
+    iCollection++;
   }
 }
 

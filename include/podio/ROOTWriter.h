@@ -3,6 +3,9 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
+#include "podio/CollectionBranches.h"
+
+#include "TBranch.h"
 
 #include <string>
 #include <vector>
@@ -30,6 +33,7 @@ namespace podio {
     void finish();
 
   private:
+
     using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
     void createBranches(const std::vector<StoreCollection>& collections);
     void setBranches(const std::vector<StoreCollection>& collections);
@@ -43,8 +47,14 @@ namespace podio {
     TTree* m_runMDtree;
     TTree* m_evtMDtree;
     TTree* m_colMDtree;
-    std::vector<CollectionBase*> m_storedCollections{};
     std::vector<std::string> m_collectionsToWrite{};
+    // In order to avoid having to look up the branches from the datatree for
+    // every event, we cache them in this vector, that is populated the first
+    // time we write an event. Since the collections and their order do not
+    // change between events, the assocation between the collections to write
+    // and their branches is simply index based
+    std::vector<root_utils::CollectionBranches> m_collectionBranches{};
+
     bool m_firstEvent{true};
   };
 
