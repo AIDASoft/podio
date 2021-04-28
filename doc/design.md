@@ -8,7 +8,7 @@ The driving considerations for the PODIO design are:
   1. The user does not do any explicit memory management
   1. Classes are generated using a higher-level abstraction and code generators
 
-The following sections give some more technical details and explanations for the design choices. 
+The following sections give some more technical details and explanations for the design choices.
 More concrete implementation details can be found in the doxygen documentation.
 
 ## Layout of Objects
@@ -18,7 +18,7 @@ The data model is based on four different kind of objects and layers, namely
  2. a transient object knowing about all data for a certain physics object, including inter-object references (e.g. `HitObject`),
  3. a plain-old-data (POD) type holding the persistent object information (e.g. `HitData`), and
  4. a user-visible collection containing the physics objects (e.g. `HitCollection`).
- 
+
 These layers are described in the following.
 
 ### The User Layer
@@ -50,8 +50,7 @@ As an end-user oriented library, PODIO provides only a limited support for struc
 ## Handling mutability
 
 Depending on the policy of the client of PODIO, data collections may be read-only after creation, or may be altered still.
-While the base assumption of PODIO is that once-created collections are immutable once leaving the scope of its creator, 
-it still allows for explicit `unfreezing` collections afterwards. 
+While the base assumption of PODIO is that once-created collections are immutable once leaving the scope of its creator,
+it still allows for explicit `unfreezing` collections afterwards.
 This feature has to handled with care, as it heavily impacts thread-safety.
 
- 

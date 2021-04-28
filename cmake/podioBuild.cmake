@@ -68,7 +68,7 @@ macro(podio_set_compiler_flags)
       message( STATUS "NOT Adding ${FLAG} to CXX_FLAGS" )
     ENDIF()
   ENDFOREACH()
-  
+
   # resolve which linker we use
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} -Wl,--version OUTPUT_VARIABLE stdout ERROR_QUIET)
   if("${stdout}" MATCHES "GNU ")
