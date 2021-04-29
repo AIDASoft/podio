@@ -1,15 +1,16 @@
+"""Unit tests for the EventStore class"""
 
 from __future__ import print_function, absolute_import, unicode_literals
 
+import os
 import unittest
 from EventStore import EventStore
-import os
 
 from ROOT import TFile
 
 
 class EventStoreTestCase(unittest.TestCase):
-
+  """EventStore unit tests"""
   def setUp(self):
     self.filename = str('example.root')
     self.assertTrue(os.path.isfile(self.filename))
@@ -20,7 +21,7 @@ class EventStoreTestCase(unittest.TestCase):
     self.assertEqual(self.store.current_store.getEntries(),
                      len(self.store))
     for iev, event in enumerate(self.store):
-      self.assertTrue(True)
+      self.assertTrue(event is not None)
       if iev > 5:
         break
 
@@ -86,10 +87,11 @@ class EventStoreTestCase(unittest.TestCase):
     rootfile = TFile(self.filename)
     events = rootfile.Get(str('events'))
     numbers = []
-    for iev, event in enumerate(self.store):
-      evinfo = self.store.get("info")
+    for event in self.store:
+      evinfo = event.get("info")
       numbers.append(evinfo[0].Number())
-    self.assertEqual(iev + 1, 2 * events.GetEntries())
+
+    self.assertEqual(len(numbers), 2 * events.GetEntries())
     # testing that numbers is [0, .. 1999, 0, .. 1999]
     self.assertEqual(numbers, list(range(events.GetEntries())) * 2)
     # trying to go to an event beyond the last one
@@ -115,7 +117,7 @@ if __name__ == "__main__":
   gSystem.Load("libTestDataModel")
   # creating example file for the tests
   if not os.path.isfile('example.root'):
-    write = '{podio}/tests/write'.format(podio=os.environ['PODIO'])
-    print(write)
-    call(write)
+    WRITE_CMD = '{podio}/tests/write'.format(podio=os.environ['PODIO'])
+    print(WRITE_CMD)
+    call(WRITE_CMD)
   unittest.main()

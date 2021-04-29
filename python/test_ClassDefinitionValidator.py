@@ -12,6 +12,7 @@ from podio_config_reader import ClassDefinitionValidator, MemberVariable, Defini
 
 
 class ClassDefinitionValidatorTest(unittest.TestCase):
+  """Unit tests for the ClassDefinitionValidator"""
   def setUp(self):
     valid_component_members = [
         MemberVariable(type='int', name='anInt'),

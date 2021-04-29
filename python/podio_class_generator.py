@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Podio class generator script"""
+
 from __future__ import unicode_literals, absolute_import, print_function
 
 import os
 import errno
 import subprocess
-from io import open
 import pickle
 from copy import deepcopy
 
@@ -55,7 +56,9 @@ def get_clang_format():
     return []
 
 
-class ClassGenerator(object):
+class ClassGenerator:
+  """The entry point for reading a datamodel definition and generating the
+  necessary source code from it."""
   def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun):
     self.install_dir = install_dir
     self.package_name = package_name
@@ -80,6 +83,7 @@ class ClassGenerator(object):
     self.clang_format = []
 
   def process(self):
+    """Run the actual generation"""
     for name, component in self.reader.components.items():
       self._process_component(name, component)
 
@@ -91,6 +95,7 @@ class ClassGenerator(object):
     self.print_report()
 
   def print_report(self):
+    """Print a summary report about the generated code"""
     if not self.verbose:
       return
 
@@ -125,8 +130,8 @@ class ClassGenerator(object):
         content = cfproc.communicate(input=content.encode())[0].decode()
 
       try:
-        with open(fullname, 'r') as f:
-          existing_content = f.read()
+        with open(fullname, 'r') as oldf:
+          existing_content = oldf.read()
           changed = existing_content != content
 
       except EnvironmentError as e:
@@ -138,8 +143,8 @@ class ClassGenerator(object):
         changed = True
 
       if changed:
-        with open(fullname, 'w') as f:
-          f.write(content)
+        with open(fullname, 'w') as newf:
+          newf.write(content)
 
   @staticmethod
   def _get_filenames_templates(template_base, name):
@@ -298,7 +303,7 @@ class ClassGenerator(object):
     # the ostream operator needs a bit of help from the python side in the form
     # of some pre processing but also in the form of formatting, both are done
     # here.
-    # TODO: also handle array members properly. These are currently simply
+    # TODO: also handle array members properly. These are currently simply  # pylint: disable=fixme
     # ignored
     header_contents = []
     for member in datatype['Members']:
@@ -395,8 +400,8 @@ class ClassGenerator(object):
     package_includes = sorted(i for i in includes if self.package_name in i)
     podio_includes = sorted(i for i in includes if 'podio' in i)
     stl_includes = sorted(i for i in includes if '<' in i and '>' in i)
-    # TODO: check whether there are includes that fulfill more than one of the
-    # above conditions?
+    # Are ther includes that fulfill more than one of the above conditions? Are
+    # there includes that fulfill none?
 
     return package_includes + podio_includes + stl_includes
 
@@ -414,6 +419,7 @@ def verify_io_handlers(handler):
 
 if __name__ == "__main__":
   import argparse
+  # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
   parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
                                    'the necessary c++ files in the target directory')
 
@@ -446,3 +452,5 @@ if __name__ == "__main__":
   if args.clangformat:
     gen.clang_format = get_clang_format()
   gen.process()
+
+  # pylint: enable=invalid-name
