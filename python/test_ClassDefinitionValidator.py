@@ -21,6 +21,7 @@ def make_dm(components, datatypes):
 
 
 class ClassDefinitionValidatorTest(unittest.TestCase):
+  """Unit tests for the ClassDefinitionValidator"""
   def setUp(self):
     valid_component_members = [
         MemberVariable(type='int', name='anInt'),

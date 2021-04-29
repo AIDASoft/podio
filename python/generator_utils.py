@@ -36,7 +36,6 @@ class DefinitionError(Exception):
   the datamodel definition without also catching all the rest which might point
   to another problem
   """
-  pass
 
 
 # Types considered to be builtin
@@ -70,7 +69,7 @@ def _is_fixed_width_type(type_name):
   return (False, False)
 
 
-class DataType(object):
+class DataType:
   """Simple class to hold information about a datatype or component that is
   defined in the datamodel."""
   def __init__(self, klass):
@@ -86,7 +85,7 @@ class DataType(object):
     return scoped_type
 
 
-class MemberVariable(object):
+class MemberVariable:
   """Simple class to hold information about a member variable"""
   def __init__(self, name, **kwargs):
     self.name = name
@@ -153,7 +152,6 @@ class MemberVariable(object):
   def __str__(self):
     """string representation"""
     # Make sure to include scope-operator if necessary
-    # TODO: Make sure that this really does cover all use-cases
     if self.namespace:
       scoped_type = '::{}::{}'.format(self.namespace, self.bare_type)
     else:
@@ -175,11 +173,8 @@ class MemberVariable(object):
     if is_relation:
       if not get_syntax:
         return 'add' + self.name
-      else:
-        return _prefix_name(self.name, 'addTo')
+      return _prefix_name(self.name, 'addTo')
 
-    else:
-      if not get_syntax:
-        return self.name
-      else:
-        return _prefix_name(self.name, 'set')
+    if not get_syntax:
+      return self.name
+    return _prefix_name(self.name, 'set')

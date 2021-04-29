@@ -1,18 +1,17 @@
+"""Datamodel yaml configuration file reading and validation utilities"""
 
 from __future__ import absolute_import, unicode_literals, print_function
-from io import open
 
 import copy
 import re
 import warnings
-import yaml
-
 from collections import OrderedDict
+import yaml
 
 from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
 
 
-class MemberParser(object):
+class MemberParser:
   """Class to parse member variables from strings without doing too much validation"""
   # Doing this with regex is non-ideal, but we should be able to at least
   # enforce something that will yield valid c++ identifiers even if we might not
@@ -62,21 +61,25 @@ class MemberParser(object):
 
   @staticmethod
   def _full_array_conv(match):
+    """MemberVariable construction for array members with a docstring"""
     typ, size, name, comment = match.groups()
     return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip())
 
   @staticmethod
   def _full_member_conv(match):
+    """MemberVariable construction for members with a docstring"""
     klass, name, comment = match.groups()
     return MemberVariable(name=name, type=klass, description=comment.strip())
 
   @staticmethod
   def _bare_array_conv(match):
+    """MemberVariable construction for array members without docstring"""
     typ, size, name = match.groups()
     return MemberVariable(name=name, array_type=typ, array_size=size)
 
   @staticmethod
   def _bare_member_conv(match):
+    """MemberVarible construction for members without docstring"""
     klass, name = match.groups()
     return MemberVariable(name=name, type=klass)
 
@@ -96,7 +99,7 @@ class MemberParser(object):
     return self._parse_with_regexps(string, matchers_cbs)
 
 
-class ClassDefinitionValidator(object):
+class ClassDefinitionValidator:
   """Validate the datamodel read from the input yaml file for the most obvious
   problems.
   """
@@ -295,21 +298,24 @@ class ClassDefinitionValidator(object):
         definition[field] = {}
 
 
-def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
-
-  class OrderedLoader(Loader):
-    pass
+def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):  # pylint: disable=invalid-name
+  """Load the yaml file such that the returned dictionary is in the same order as
+  it was in the file"""
+  class OrderedLoader(Loader):  # pylint: disable=too-many-ancestors
+    """Extend the passed yaml loader"""
 
   def construct_mapping(loader, node):
+    """Constructor function for insterting yaml objects into the dictionary"""
     loader.flatten_mapping(node)
     return object_pairs_hook(loader.construct_pairs(node))
+
   OrderedLoader.add_constructor(
       yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
       construct_mapping)
   return yaml.load(stream, OrderedLoader)
 
 
-class PodioConfigReader(object):
+class PodioConfigReader:
   """Config reader that does basic parsing of the member definitions and puts
   everything into a somewhat uniform structure without doing any fancy
   validation
@@ -332,6 +338,7 @@ class PodioConfigReader(object):
 
   @staticmethod
   def _handle_extracode(definition):
+    """Handle the extra code definition. Currently simply returning a copy"""
     return copy.deepcopy(definition)
 
   @staticmethod
@@ -340,7 +347,7 @@ class PodioConfigReader(object):
     a dict with a 'Members' and an 'ExtraCode' field for easier handling
     afterwards
     """
-    WARNING_TEXT = """
+    warning_text = """
 
     You are using the deprecated old style of defining components:
 
@@ -361,7 +368,7 @@ class PodioConfigReader(object):
           declaration: "// some code here"
 
     """
-    warnings.warn(WARNING_TEXT, FutureWarning, stacklevel=3)
+    warnings.warn(warning_text, FutureWarning, stacklevel=3)
     component = {'Members': []}
     for name, klass in definition.items():
       if name == 'ExtraCode':
@@ -424,6 +431,7 @@ class PodioConfigReader(object):
     return datatype
 
   def read(self):
+    """Read the datamodel definition from the yamlfile"""
     stream = open(self.yamlfile, "r")
     content = ordered_load(stream, yaml.SafeLoader)
 
