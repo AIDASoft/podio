@@ -18,7 +18,7 @@ a PR, as we only allow *rebase merges* for PRs.
 
 	 git clone https://github.com/AIDASoft/podio.git
 	 cd podio
-	
+
 - create a fork of the repository on the Github web page
   - if you have not yet done so earlier
 
@@ -29,11 +29,11 @@ a PR, as we only allow *rebase merges* for PRs.
 - create a new feature branch; choose a meaningful name
 
       git checkout -b <myNewBranch>
-	
+
 - make the changes to existing files (or add new ones) and frequently keep up to date with the master:
 
       git fetch origin; git rebase origin/master
-	
+
 
 - after having committed everything to your new branch, push it to your fork of PODIO:
 

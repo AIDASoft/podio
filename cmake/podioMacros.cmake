@@ -100,6 +100,9 @@ function(PODIO_GENERATE_DICTIONARY dictionary)
     add_custom_target(${targetname} ALL DEPENDS ${gensrcdict})
   endif()
 
+  # We are not going to be able to fix these in any case, so disable clang-tidy
+  # for the generated dictionaries
+  set_target_properties(${dictionary} PROPERTIES CXX_CLANG_TIDY "")
 endfunction()
 
 
@@ -134,10 +137,19 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     # At least build the ROOT selection.xml by default for now
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
   ENDIF()
+
+  set(CLANG_FORMAT_ARG "")
+  find_program(CLANG_FORMAT_EXE NAMES "clang-format")
+  find_file(CLANG_FORMAT_FILE .clang-format PATH ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
+  if(CLANG_FORMAT_EXE AND CLANG_FORMAT_FILE)
+    message(STATUS "Found .clang-format file and clang-format executable. Will pass it to podio class generator")
+    set(CLANG_FORMAT_ARG "--clangformat")
+  endif()
+
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E echo "Creating \"${datamodel}\" data model"
-    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
@@ -151,7 +163,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     COMMENT "Re-Creating \"${datamodel}\" data model"
     DEPENDS ${YAML_FILE}
     BYPRODUCTS ${sources} ${headers}
-    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
+    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${CLANG_FORMAT_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
@@ -190,7 +202,11 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
-  set_target_properties(${lib_name} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+  set_target_properties(${lib_name} PROPERTIES
+    PUBLIC_HEADER "${HEADERS}"
+    CXX_CLANG_TIDY "" # Do not run clang-tidy on generated sources
+                      # TODO: Update generation to generate compliant code already
+    )
 endfunction()
 
 
@@ -282,6 +298,9 @@ function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
   target_include_directories(${CORE_LIB}SioBlocks PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+  # Disable clang-tidy on generated sources
+  set_target_properties(${CORE_LIB}SioBlocks PROPERTIES CXX_CLANG_TIDY "")
 endfunction()
 
 

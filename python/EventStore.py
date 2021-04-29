@@ -1,21 +1,25 @@
-
+"""Python EventStore for reading files with podio generated datamodels"""
 
 from __future__ import absolute_import, unicode_literals, print_function
 
 from ROOT import gSystem
 gSystem.Load("libpodioRootIO")  # noqa: E402
-from ROOT import podio
+from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 
 def size(self):
+  """Override size function that can be attached as __len__ method to
+  collections"""
   return self.size()
 
 
 def getitem(self, key):
+  """Override getitem function that can be attached as __getitem__ method to
+  collections (see below why this is necessary sometimes)"""
   return self.at(key)
 
 
-class EventStore(object):
+class EventStore:
   '''Interface to events in an podio root file.
   Example of use:
   events = EventStore(["example.root", "example1.root"])
@@ -25,14 +29,13 @@ class EventStore(object):
           print "particle ", i, p.ID(), p.P4().Pt
   '''
 
-  def __init__(self, filenames, treename=None):
+  def __init__(self, filenames):
     '''Create an event list from the podio root file.
     Parameters:
        filenames: list of root files
                   you can of course provide a list containing a single
                   root file. you could use the glob module to get all
                   files matching a wildcard pattern.
-       treename: not used at the moment
     '''
     if isinstance(filenames, str):
       filenames = (filenames,)
@@ -72,6 +75,7 @@ class EventStore(object):
     return coll
 
   def isValid(self):
+    """Check if the EventStore is in a valid state"""
     return self.current_store is not None and self.current_store.isValid()
 
   # def __getattr__(self, name):
@@ -85,8 +89,7 @@ class EventStore(object):
     '''Returns the name of the current file.'''
     if self.current_store is None:
       return None
-    else:
-      return self.current_store.fname
+    return self.current_store.fname
 
   def __enter__(self):
     return self
@@ -98,9 +101,9 @@ class EventStore(object):
   def __iter__(self):
     '''iterate on events in the tree.
     '''
-    for nev, store in self.stores:
+    for _, store in self.stores:
       self.current_store = store
-      for entry in range(store.getEntries()):
+      for _ in range(store.getEntries()):
         yield store
         store.endOfEvent()
 
@@ -122,6 +125,6 @@ class EventStore(object):
   def __len__(self):
     '''Returns the total number of events in all files.'''
     nevts_all_files = 0
-    for nev, store in self.stores:
+    for nev, _ in self.stores:
       nevts_all_files += nev
     return nevts_all_files

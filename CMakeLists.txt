@@ -56,6 +56,12 @@ include(cmake/podioBuild.cmake)
 podio_set_compiler_flags()
 podio_set_rpath()
 
+set(USE_SANITIZER ""
+  CACHE STRING "Compile with a sanitizer. Options are Address, Memory, MemoryWithOrigin, Undefined, Thread, Leak, Address;Undefined")
+ADD_SANITIZER_FLAGS()
+
+option(CLANG_TIDY "Run clang-tidy after compilation." OFF)
+ADD_CLANG_TIDY()
 
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
@@ -121,6 +127,7 @@ endif()
 
 #--- enable unit testing capabilities ------------------------------------------
 include(CTest)
+option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" OFF)
 
 #--- enable CPack --------------------------------------------------------------
 

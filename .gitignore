@@ -51,3 +51,7 @@ spack*
 *.exe
 *.out
 *.app
+
+tests/src
+tests/datamodel
+/compile_commands.json
