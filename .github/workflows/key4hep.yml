@@ -1,27 +1,22 @@
-name: ubuntu
+name: key4hep
 
 on: [push, pull_request]
-
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        sio: [ON]
-        LCG: ["LCG_99/x86_64-ubuntu2004-gcc9-opt",
-              "dev3/x86_64-ubuntu2004-gcc9-opt",
-              "dev4/x86_64-ubuntu2004-gcc9-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v2
+    - uses: aidasoft/run-lcg-view@v3
       with:
-        release-platform: ${{ matrix.LCG }}
+        container: centos7
+        view-path: /cvmfs/sw.hsf.org/key4hep
         run: |
           mkdir build install
           cd build
-          cmake -DENABLE_SIO=${{ matrix.sio }} \
+          cmake -DENABLE_SIO=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \

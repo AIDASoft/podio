@@ -43,7 +43,7 @@ public:
 
   /// Read Collection of given name
   /// Does not set references yet.
-  virtual CollectionBase* readCollection(const std::string& name) {
+  virtual CollectionBase* readCollection(const std::string& name) override {
     const auto [result, duration] = benchmark::run_member_timed(m_reader, &IReader::readCollection, name);
     // since we cannot in general know how many collections there will be read
     // we simply sum up all the requests in an event and record that
@@ -52,30 +52,30 @@ public:
   }
 
   /// Get CollectionIDTable of read-in data
-  virtual CollectionIDTable* getCollectionIDTable() {
+  virtual CollectionIDTable* getCollectionIDTable() override {
     return runTimed(false, "read_collection_ids", &IReader::getCollectionIDTable);
   }
 
   /// read event meta data from file
-  virtual GenericParameters* readEventMetaData() {
+  virtual GenericParameters* readEventMetaData() override {
     return runTimed(true, "read_ev_md", &IReader::readEventMetaData);
   }
 
-  virtual std::map<int, GenericParameters>* readCollectionMetaData() {
+  virtual std::map<int, GenericParameters>* readCollectionMetaData() override {
     return runTimed(true, "read_coll_md", &IReader::readCollectionMetaData);
   }
 
-  virtual std::map<int, GenericParameters>* readRunMetaData() {
+  virtual std::map<int, GenericParameters>* readRunMetaData() override {
     return runTimed(true, "read_run_md", &IReader::readRunMetaData);
   }
 
   /// get the number of events available from this reader
-  virtual unsigned getEntries() const {
+  virtual unsigned getEntries() const override {
     return runTimed(false, "get_entries", &IReader::getEntries);
   }
 
   /// Prepare the reader to read the next event
-  virtual void endOfEvent() {
+  virtual void endOfEvent() override {
     runVoidTimed(true, "end_of_event", &IReader::endOfEvent);
 
     m_perEventTree.recordTime("read_collections", m_totalCollectionReadTime);
@@ -84,7 +84,7 @@ public:
   }
 
   // not benchmarking this one
-  virtual bool isValid() const { return m_reader.isValid(); }
+  virtual bool isValid() const override { return m_reader.isValid(); }
 
   virtual void openFile(const std::string& filename) override {
     runVoidTimed(false, "open_file", &IReader::openFile, filename);

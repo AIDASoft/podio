@@ -1,0 +1,20 @@
+name: coverity
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  run-coverity:
+    runs-on: ubuntu-latest
+    if: github.repository == 'AIDASoft/podio'
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: aidasoft/run-lcg-view@v2
+      with:
+        coverity-cmake-command: 'cmake -DCMAKE_CXX_STANDARD=17  -DENABLE_SIO=ON ..'
+        coverity-project: 'AIDASoft%2Fpodio'
+        coverity-project-token: ${{ secrets.PODIO_COVERITY_TOKEN }}
+        github-pat: ${{ secrets.READ_COVERITY_IMAGE }}
+        release-platform: "LCG_99/x86_64-centos7-gcc10-opt"

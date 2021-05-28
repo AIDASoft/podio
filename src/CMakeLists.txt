@@ -2,6 +2,7 @@
 # target usage requirements
 
 file(GLOB sources *.cc)
+LIST(APPEND sources ${CMAKE_CURRENT_SOURCE_DIR}/rootUtils.h)
 SET(root_sources ${sources})
 
 # --- Store the sources for sio into a separate list
@@ -12,8 +13,8 @@ endif()
 
 # Remove SIO and ROOT related things from the core library
 LIST(FILTER sources EXCLUDE REGEX SIO.*)
-LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.* )
-LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.* )
+LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.*|root.* )
+LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.*|root.* )
 
 # Main Library, no external dependencies
 add_library(podio SHARED ${sources})
@@ -63,9 +64,8 @@ if(ENABLE_SIO)
 
   target_include_directories(podioSioIO PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    ${SIO_INCLUDE_DIRS})
-  target_link_libraries(podioSioIO PUBLIC podio::podio ${SIO_LIBRARIES} ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+  target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
 
   LIST(APPEND INSTALL_LIBRARIES podioSioIO)
 endif()

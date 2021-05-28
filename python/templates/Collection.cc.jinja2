@@ -19,14 +19,16 @@
   m_isValid(false), m_isReadFromFile(false), m_collectionID(0), m_entries()
 {%- for relation in OneToManyRelations + OneToOneRelations %},
   m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>())
-{%- endfor %},
+{%- endfor %}
+{%- for member in VectorMembers %},
+  m_vec_{{ member.name }}(new std::vector<{{ member.full_type }}>())
+{%- endfor -%},
   m_data(new {{ class.bare_type }}DataContainer()) {
 {% for relation in OneToManyRelations + OneToOneRelations %}
   m_refCollections.push_back(new std::vector<podio::ObjectID>());
 {% endfor %}
 {% for member in VectorMembers %}
   m_vecmem_info.emplace_back("{{ member.full_type }}", &m_vec_{{ member.name }});
-  m_vec_{{ member.name }} = new std::vector<{{ member.full_type }}>();
 {% endfor %}
 }
 
@@ -107,8 +109,7 @@ void {{ collection_type }}::clear() {
 }
 
 void {{ collection_type }}::prepareForWrite() {
-  const auto size = m_entries.size();
-  m_data->reserve(size);
+  m_data->reserve(m_entries.size());
   for (auto& obj : m_entries) { m_data->push_back(obj->data); }
 
   // if the collection has been read from a file the rest of the information is
@@ -121,13 +122,13 @@ void {{ collection_type }}::prepareForWrite() {
   int {{ relation.name }}_index = 0;
 {% endfor %}
 {% for member in VectorMembers %}
-  const int {{ member.name }}_size = std::accumulate(m_entries.begin(), m_entries.end(), 0, [](int sum, const {{ class.bare_type }}Obj* obj) { return sum + obj->m_{{ member.name }}->size(); });
+  const auto {{ member.name }}_size = std::accumulate(m_entries.begin(), m_entries.end(), 0, [](size_t sum, const {{ class.bare_type }}Obj* obj) { return sum + obj->m_{{ member.name }}->size(); });
   m_vec_{{ member.name }}->reserve({{ member.name }}_size);
   int {{ member.name }}_index = 0;
 {% endfor %}
 
 {%- if OneToManyRelations or VectorMembers %}
-  for (int i = 0, size = m_data->size(); i != size; ++i) {
+  for (size_t i = 0, size = m_data->size(); i != size; ++i) {
 {% for relation in OneToManyRelations %}
 {{ macros.prepare_for_write_multi_relation(relation, loop.index0) }}
 {% endfor %}
@@ -164,7 +165,7 @@ void {{ collection_type }}::prepareAfterRead() {
   m_isReadFromFile = true;
 }
 
-bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {
+bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% if OneToManyRelations or OneToOneRelations -%}collectionProvider{%- endif -%}) {
 {% for relation in OneToManyRelations %}
 {{ macros.set_references_multi_relation(relation, loop.index0) }}
 {% endfor %}
@@ -176,10 +177,10 @@ bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* coll
 }
 
 void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
-  const int size = m_entries.size();
+  const auto size = m_entries.size();
   auto obj = object.m_obj;
   if (obj->id.index == podio::ObjectID::untracked) {
-    obj->id = {size, m_collectionID};
+    obj->id = {(int)size, m_collectionID};
     m_entries.push_back(obj);
 
 {% for relation in OneToManyRelations %}

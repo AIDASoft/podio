@@ -32,7 +32,7 @@ foreach( sourcefile ${root_dependent_tests} )
 endforeach()
 
 
-set(independent_tests ostream_operator.cpp unittest.cpp)
+set(independent_tests ostream_operator.cpp unittest.cpp write_ascii.cpp)
 foreach( sourcefile ${independent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "")
 endforeach()
@@ -56,6 +56,7 @@ endif()
 #--- set some dependencies between the different tests to ensure input generating ones are run first
 set_property(TEST read PROPERTY DEPENDS write)
 set_property(TEST read-multiple PROPERTY DEPENDS write)
+set_property(TEST read_and_write PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
 
 add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)

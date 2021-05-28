@@ -38,7 +38,7 @@ public:
   podio::EventStore m_store;
 
   /// set to true if input root file accessible, false otherwise
-  bool              m_isZombie;
+  bool              m_isZombie{true};
 };
 
 }

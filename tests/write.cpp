@@ -2,7 +2,7 @@
 #include "podio/ROOTWriter.h"
 #include "podio/EventStore.h"
 
-int main(int argc, char* argv[]){
+int main(int, char**){
   auto store = podio::EventStore();
   podio::ROOTWriter writer("example.root", &store);
   write(store, writer);

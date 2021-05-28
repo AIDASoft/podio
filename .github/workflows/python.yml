@@ -7,14 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        LCG: ["LCG_96b/x86_64-centos7-gcc9-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - name: Start container
-      run: |
-        docker run -it --privileged --name CI_container -v /home/runner/work/podio/podio:/Package -e VIEW=${{ matrix.LCG }} -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
-    - name: Run Python Checks
-      run: |
-        docker exec CI_container /bin/bash -c "./Package/.github/scripts/runPythonChecks.sh"
+    - uses: aidasoft/run-lcg-view@v2
+      with:
+        release-platform: LCG_99/x86_64-centos7-gcc10-opt
+        run: |
+          echo "RUNNING PYLINT PY3K CHECK" && \
+          find . -name "*.py" -exec pylint --rcfile=.github/scripts/podio.pylint.py3k.rc --py3k --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" {} + && \
+          echo "" && \
+          echo "RUNNING FLAKE8 CHECK" && \
+          find . -name "*.py" -exec flake8 {} +

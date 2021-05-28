@@ -104,38 +104,34 @@ void write(podio::EventStore& store, WriterT& writer) {
     mcps.push_back( mcp8 ) ;
     mcps.push_back( mcp9 ) ;
 
-    // --- add some daughter relations
-    auto p = ExampleMC();
-    auto d = ExampleMC();
-
-    p = mcps[0] ;
-    p.adddaughters( mcps[2] ) ;
-    p.adddaughters( mcps[3] ) ;
-    p.adddaughters( mcps[4] ) ;
-    p.adddaughters( mcps[5] ) ;
-    p = mcps[1] ;
-    p.adddaughters( mcps[2] ) ;
-    p.adddaughters( mcps[3] ) ;
-    p.adddaughters( mcps[4] ) ;
-    p.adddaughters( mcps[5] ) ;
-    p = mcps[2] ;
-    p.adddaughters( mcps[6] ) ;
-    p.adddaughters( mcps[7] ) ;
-    p.adddaughters( mcps[8] ) ;
-    p.adddaughters( mcps[9] ) ;
-    p = mcps[3] ;
-    p.adddaughters( mcps[6] ) ;
-    p.adddaughters( mcps[7] ) ;
-    p.adddaughters( mcps[8] ) ;
-    p.adddaughters( mcps[9] ) ;
+    auto mcp = mcps[0] ;
+    mcp.adddaughters( mcps[2] ) ;
+    mcp.adddaughters( mcps[3] ) ;
+    mcp.adddaughters( mcps[4] ) ;
+    mcp.adddaughters( mcps[5] ) ;
+    mcp = mcps[1] ;
+    mcp.adddaughters( mcps[2] ) ;
+    mcp.adddaughters( mcps[3] ) ;
+    mcp.adddaughters( mcps[4] ) ;
+    mcp.adddaughters( mcps[5] ) ;
+    mcp = mcps[2] ;
+    mcp.adddaughters( mcps[6] ) ;
+    mcp.adddaughters( mcps[7] ) ;
+    mcp.adddaughters( mcps[8] ) ;
+    mcp.adddaughters( mcps[9] ) ;
+    mcp = mcps[3] ;
+    mcp.adddaughters( mcps[6] ) ;
+    mcp.adddaughters( mcps[7] ) ;
+    mcp.adddaughters( mcps[8] ) ;
+    mcp.adddaughters( mcps[9] ) ;
 
     //--- now fix the parent relations
     for( unsigned j=0,N=mcps.size();j<N;++j){
-      p = mcps[j] ;
-      for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
-  int dIndex = it->getObjectID().index ;
-  d = mcps[ dIndex ] ;
-  d.addparents( p ) ;
+      mcp = mcps[j] ;
+      for(auto p : mcp.daughters()) {
+        int dIndex = p.getObjectID().index ;
+        auto d = mcps[ dIndex ] ;
+        d.addparents( p ) ;
       }
     }
     //-------- print relations for debugging:
@@ -222,22 +218,22 @@ void write(podio::EventStore& store, WriterT& writer) {
       auto rel = ex42::ExampleWithARelation();
       rel.number(0.5*j);
       auto exWithNamesp = ex42::ExampleWithNamespace();
-      exWithNamesp.data().x = i;
-      exWithNamesp.data().y = 1000*i;
+      exWithNamesp.component().x = i;
+      exWithNamesp.component().y = 1000*i;
       namesps.push_back(exWithNamesp);
       if (j != 3) { // also check for empty relations
         rel.ref(exWithNamesp);
         for (int k = 0; k < 5; k++) {
           auto namesp = ex42::ExampleWithNamespace();
           namesp.x(3*k);
-          namesp.data().y = k;
+          namesp.component().y = k;
           namesps.push_back(namesp);
           rel.addrefs(namesp);
         }
       }
       namesprels.push_back(rel);
     }
-    for (int j = 0; j < namesprels.size(); ++j) {
+    for (size_t j = 0; j < namesprels.size(); ++j) {
       cpytest.push_back(namesprels.at(j).clone());
     }
 

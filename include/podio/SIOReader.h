@@ -80,11 +80,11 @@ namespace podio {
     void createBlocks();
 
     typedef std::pair<CollectionBase*, std::string> Input;
-    std::vector<Input> m_inputs;
+    std::vector<Input> m_inputs{};
     CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
     int m_lastEventRead{-1};
-    std::vector<std::string> m_typeNames;
+    std::vector<std::string> m_typeNames{};
 
     std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
     std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData{};
