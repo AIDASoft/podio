@@ -13,7 +13,9 @@ Instead, users can combine multiple `components` to build a to be used `datatype
 To allow the datatypes to be real PODs, the data stored within the data model are constrained to be
 POD-compatible data. Those are
 
- 1. basic types like int, double, etc
+ 1. basic types like int, double, etc as well as a limited set of fixed width
+    integers from `<cstdint>` (the `_leastN` or `_fastN` types as well as all
+    `8` bit types are not allowed).
  1. components built up from basic types or other components
  1. Fixed sized arrays of those types
 
@@ -28,10 +30,11 @@ A component is just a flat struct containing data. it can be defined via:
     components:
       # My example component
       MyComponent:
-        x : float
-        y : float
-        z : float
-        a : AnotherComponent
+        Members:
+          - float x
+          - float y
+          - float z
+          - AnotherComponent a
 ```
 
 ## Definition of custom data classes
@@ -113,7 +116,8 @@ Some customization of the generated code is possible through flags. These flags 
     components:
       # My simple component
       ExampleComponent:
-        x : int
+        Members:
+          - int x
     datatypes:
       ExampleType:
         Description: "My datatype with a component member"

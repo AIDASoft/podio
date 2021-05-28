@@ -14,6 +14,7 @@
 #include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithStringCollection.h"
 #include "datamodel/ExampleWithArrayCollection.h"
+#include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 
 #include "podio/EventStore.h"
 
@@ -21,6 +22,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <limits>
 
 template<class WriterT>
 void write(podio::EventStore& store, WriterT& writer) {
@@ -40,6 +42,8 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& cpytest    = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
+  auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");
   writer.registerForWrite("hits");
@@ -54,6 +58,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.registerForWrite("WithNamespaceRelationCopy");
   writer.registerForWrite("strings");
   writer.registerForWrite("arrays");
+  writer.registerForWrite("fixedWidthInts");
 
   unsigned nevents = 2000;
 
@@ -251,6 +256,33 @@ void write(podio::EventStore& store, WriterT& writer) {
     array.myArray(1, i);
     array.arrayStruct(a);
     arrays.push_back(array);
+
+    auto maxValues = fixedWidthInts.create();
+    maxValues.fixedI16(std::numeric_limits<std::int16_t>::max()); // 2^(16 - 1) - 1 == 32767
+    maxValues.fixedU32(std::numeric_limits<std::uint32_t>::max()); // 2^32 - 1 == 4294967295
+    maxValues.fixedU64(std::numeric_limits<std::uint64_t>::max()); // 2^64 - 1 == 18446744073709551615
+    auto& maxComp = maxValues.fixedWidthStruct();
+    maxComp.fixedUnsigned16 = std::numeric_limits<std::uint16_t>::max(); // 2^16 - 1 == 65535
+    maxComp.fixedInteger64 = std::numeric_limits<std::int64_t>::max(); // 2^(64 -1) - 1 == 9223372036854775807
+    maxComp.fixedInteger32 = std::numeric_limits<std::int32_t>::max(); // 2^(32 - 1) - 1 == 2147483647
+
+    auto minValues = fixedWidthInts.create();
+    minValues.fixedI16(std::numeric_limits<std::int16_t>::min()); // -2^(16 - 1) == -32768
+    minValues.fixedU32(std::numeric_limits<std::uint32_t>::min()); // 0
+    minValues.fixedU64(std::numeric_limits<std::uint64_t>::min()); // 0
+    auto& minComp = minValues.fixedWidthStruct();
+    minComp.fixedUnsigned16 = std::numeric_limits<std::uint16_t>::min(); // 0
+    minComp.fixedInteger64 = std::numeric_limits<std::int64_t>::min(); // -2^(64 - 1) == -9223372036854775808
+    minComp.fixedInteger32 = std::numeric_limits<std::int32_t>::min(); // -2^(32 - 1) == -2147483648
+
+    auto arbValues = fixedWidthInts.create();
+    arbValues.fixedI16(-12345);
+    arbValues.fixedU32(1234567890);
+    arbValues.fixedU64(1234567890123456789);
+    auto& arbComp = arbValues.fixedWidthStruct();
+    arbComp.fixedUnsigned16 = 12345;
+    arbComp.fixedInteger32 = -1234567890;
+    arbComp.fixedInteger64 = -1234567890123456789ll;
 
     writer.writeEvent();
     store.clearCollections();

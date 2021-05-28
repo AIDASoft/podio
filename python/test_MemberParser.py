@@ -53,6 +53,32 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.name, r'uInt')
     self.assertEqual(parsed.description, r'an unsigned integer')
 
+    # Fixed width integers in their various forms that they can be spelled out
+    # and be considered valid in our case
+    parsed = parser.parse(r'std::int16_t qualified // qualified fixed width ints work')
+    self.assertEqual(parsed.full_type, r'std::int16_t')
+    self.assertEqual(parsed.name, r'qualified')
+    self.assertEqual(parsed.description, r'qualified fixed width ints work')
+    self.assertTrue(parsed.is_builtin)
+
+    parsed = parser.parse(r'std::uint64_t bits // fixed width integer types should work')
+    self.assertEqual(parsed.full_type, r'std::uint64_t')
+    self.assertEqual(parsed.name, r'bits')
+    self.assertEqual(parsed.description, r'fixed width integer types should work')
+    self.assertTrue(parsed.is_builtin)
+
+    parsed = parser.parse(r'int32_t fixedInt // fixed width signed integer should work')
+    self.assertEqual(parsed.full_type, r'std::int32_t')
+    self.assertEqual(parsed.name, r'fixedInt')
+    self.assertEqual(parsed.description, r'fixed width signed integer should work')
+    self.assertTrue(parsed.is_builtin)
+
+    parsed = parser.parse(r'uint16_t fixedUInt // fixed width unsigned int with 16 bits')
+    self.assertEqual(parsed.full_type, r'std::uint16_t')
+    self.assertEqual(parsed.name, r'fixedUInt')
+    self.assertEqual(parsed.description, r'fixed width unsigned int with 16 bits')
+    self.assertTrue(parsed.is_builtin)
+
     # an array definition with space everywhere it is allowed
     parsed = parser.parse(r'  std::array < double , 4 >   someArray   // a comment  ')
     self.assertEqual(parsed.full_type, r'std::array<double, 4>')
@@ -98,9 +124,15 @@ class MemberParserTest(unittest.TestCase):
         r'int another ill formed name // some comment'
 
         # Some examples of valid c++ that are rejected by the validation
-        r'unsigned long int uLongInt // technically valid c++, but not in our builtin list'
-        r'::std::array<float, 2> a // technically valid c++, but breaks class generation'
-        r':: std :: array<int, 3> arr // also technically valid c++ but not in our case'
+        r'unsigned long int uLongInt // technically valid c++, but not in our builtin list',
+        r'::std::array<float, 2> a // technically valid c++, but breaks class generation',
+        r':: std :: array<int, 3> arr // also technically valid c++ but not in our case',
+        r'int8_t disallowed // fixed width ints with 8 bits are often aliased to signed char',
+        r'uint8_t disallowed // fixed width unsigned ints with 8 bits are often aliased to unsigned char',
+        r'int_least32_t disallowed // only allow fixed width integers with exact widths',
+        r'uint_fast64_t disallowed // only allow fixed width integers with exact widths',
+        r'std::int_least16_t disallowed // also adding a std namespace here does not make these allowed',
+        r'std::uint_fast16_t disallowed // also adding a std namespace here does not make these allowed',
         ]
 
     for inp in invalid_inputs:

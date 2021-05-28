@@ -4,6 +4,8 @@ Module holding some generator utility functions
 """
 from __future__ import unicode_literals, absolute_import, print_function
 
+import re
+
 
 def _get_namespace_class(full_type):
   """Get the namespace and the unqualified classname from the full type. Raise a
@@ -42,6 +44,30 @@ BUILTIN_TYPES = ["int", "long", "float", "double",
                  "unsigned int", "unsigned", "unsigned long",
                  "char", "short", "bool", "long long",
                  "unsigned long long", "std::string"]
+
+# Fixed width types defined in <cstdint>. Omitting int8_t and uint8_t since they
+# are often only aliases for signed char and unsigned char, which tends to break
+# expectations towards the behavior of integer types. Also omitting the _fastN_t
+# and leastN_t since those are probably already covered by the usual integer
+# types. These fixed width types should only be used when necessary (e.g. as
+# basis for bit fields)
+ALLOWED_FIXED_WIDTH_TYPES = ["int16_t", "int32_t", "int64_t",
+                             "uint16_t", "uint32_t", "uint64_t"]
+
+# All fixed width integer types that may be defined in <cstdint>
+ALL_FIXED_WIDTH_TYPES_RGX = re.compile(r'u?int(_(fast|least))?(8|16|32|64)_t')
+
+
+def _is_fixed_width_type(type_name):
+  """Check if the passed type is an fixed width type and that it is allowed"""
+  # Remove the potentially present std:: namespace
+  if type_name.startswith('std::'):
+    type_name = type_name[5:]
+
+  if ALL_FIXED_WIDTH_TYPES_RGX.match(type_name):
+    return (True, type_name in ALLOWED_FIXED_WIDTH_TYPES)
+
+  return (False, False)
 
 
 class DataType(object):
@@ -85,6 +111,19 @@ class MemberVariable(object):
       self.is_builtin_array = self.array_type in BUILTIN_TYPES
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
+    # We still have to check if this type is a valid fixed width type that we
+    # also consider to be builtin types
+    if not self.is_builtin:
+      is_fw, valid_fw = _is_fixed_width_type(self.full_type)
+      if is_fw:
+        if not valid_fw:
+          raise DefinitionError(f'{self.full_type} is a fixed width integer type that is not allowed')
+
+        self.is_builtin = True
+        # "Normalize" the name by prepending it with the std namespace if necessary
+        if not self.full_type.startswith('std::'):
+          self.full_type = f'std::{self.full_type}'
+
     # For usage in constructor signatures
     self.signature = self.full_type + ' ' + self.name
     # If used in a relation context. NOTE: The generator might still adapt this
