@@ -161,7 +161,6 @@ void {{ collection_type }}::prepareAfterRead() {
   // at this point we are done with the I/O buffer and can safely clear it to not
   // have a redundant (but now useless) copy of the data
   m_data->clear();
-  m_isValid = true;
   m_isReadFromFile = true;
 }
 
