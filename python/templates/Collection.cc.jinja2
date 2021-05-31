@@ -1,5 +1,6 @@
 {% import "macros/utils.jinja2" as utils %}
 {% import "macros/collections.jinja2" as macros %}
+{% from "macros/iterator.jinja2" import iterator_definitions %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
@@ -46,12 +47,12 @@
 {% endfor %}
 }
 
-const {{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
-  return {{ class.bare_type }}(m_entries[index]);
+Const{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
+  return Const{{ class.bare_type }}(m_entries[index]);
 }
 
-const {{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
-  return {{ class.bare_type }}(m_entries.at(index));
+Const{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
+  return Const{{ class.bare_type }}(m_entries.at(index));
 }
 
 {{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) {
@@ -199,23 +200,10 @@ void {{ collection_type }}::setBuffer(void* address) {
 }
 {% endwith %}
 
-{% with iterator_type = class.bare_type + 'CollectionIterator' %}
-const {{ class.bare_type }} {{ iterator_type }}::operator*() const {
-  m_object.m_obj = (*m_collection)[m_index];
-  return m_object;
-}
+{{ iterator_definitions(class) }}
 
-const {{ class.bare_type }}* {{ iterator_type }}::operator->() const {
-  m_object.m_obj = (*m_collection)[m_index];
-  return &m_object;
-}
+{{ iterator_definitions(class, prefix='Const' ) }}
 
-const {{ iterator_type}}& {{ iterator_type }}::operator++() const {
-  ++m_index;
-  return *this;
-}
-
-{% endwith %}
 {{ macros.ostream_operator(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax, ostream_collection_settings) }}
 
 {{ utils.namespace_close(class.namespace) }}

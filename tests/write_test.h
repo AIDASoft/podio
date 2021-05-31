@@ -131,9 +131,10 @@ void write(podio::EventStore& store, WriterT& writer) {
     mcp.adddaughters( mcps[9] ) ;
 
     //--- now fix the parent relations
-    for( unsigned j=0,N=mcps.size();j<N;++j){
-      mcp = mcps[j] ;
-      for(auto p : mcp.daughters()) {
+    // use a range-based for loop here to see if we get mutable objects from the
+    // begin/end iterators
+    for (auto mc : mcps) {
+      for(auto p : mc.daughters()) {
         int dIndex = p.getObjectID().index ;
         auto d = mcps[ dIndex ] ;
         d.addparents( p ) ;

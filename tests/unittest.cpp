@@ -134,13 +134,25 @@ TEST_CASE("Looping") {
   auto hit1 = coll.create(0xbadULL,0.,0.,0.,0.);
   auto hit2 = coll.create(0xcaffeeULL,1.,1.,1.,1.);
   for(auto i = coll.begin(), end = coll.end(); i != end; ++i) {
-    auto energy = i->energy();
+    i->energy(42); // make sure that we can indeed change the energy here for
+                   // non-const collections
   }
+  REQUIRE(hit1.energy() == 42);
+  REQUIRE(hit2.energy() == 42);
+
   for(int i = 0, end = coll.size(); i != end; ++i) {
-    auto energy = coll[i].energy();
+    coll[i].energy(i); // reset it back to the original value
   }
-  if ((coll[0].energy() != 0) || (coll[1].energy() != 1)) success = false;
-  REQUIRE(success);
+
+  REQUIRE(coll[0].energy() == 0);
+  REQUIRE(coll[1].energy() == 1);
+
+  auto& constColl = store.get<ExampleHitCollection>("name");
+  int index = 0;
+  for (auto hit : constColl) {
+    auto energy = hit.energy();
+    REQUIRE(energy == index++);
+  }
 }
 
 TEST_CASE("Notebook") {
@@ -287,4 +299,109 @@ TEST_CASE("Equality") {
 TEST_CASE("NonPresentCollection") {
   auto store = podio::EventStore();
   REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error&);
+}
+
+TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
+  static_assert(std::is_same_v<
+                decltype(std::declval<const ExampleClusterCollection>()[0]),
+                ConstExampleCluster>,
+                "const collections should only have indexed access to Const objects");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<const ExampleClusterCollection>().at(0)),
+                ConstExampleCluster>,
+                "const collections should only have indexed access to Const objects");
+
+  REQUIRE(true);
+}
+
+TEST_CASE("const correct indexed access to collections", "[const-correctness]") {
+  auto store = podio::EventStore();
+  auto& collection = store.create<ExampleHitCollection>("irrelevant name");
+
+  static_assert(std::is_same_v<decltype(collection), ExampleHitCollection&>, "collection created by store should not be const");
+
+  static_assert(std::is_same_v<decltype(collection[0]), ExampleHit>,"non-const collections should have indexed access to mutable objects");
+ 
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollection>()[0]),
+                ExampleCluster>,
+                "collections should have indexed access to mutable objects");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollection>().at(0)),
+                ExampleCluster>,
+                "collections should have indexed access to mutable objects");
+
+  REQUIRE(true);
+}
+
+TEST_CASE("const correct iterators on const collections", "[const-correctness]") {
+  const auto collection = ExampleHitCollection();
+  // this essentially checks the whole "chain" from begin() / end() through
+  // iterator operators
+  for (auto hit : collection) {
+    static_assert(std::is_same_v<decltype(hit), ConstExampleHit>, "const collection iterators should only return Const objects");
+  }
+
+  // but we can exercise it in a detailed fashion as well to make it easier to
+  // spot where things fail, should they fail
+  static_assert(std::is_same_v<
+                decltype(std::declval<const ExampleHitCollection>().begin()),
+                ExampleHitConstCollectionIterator>,
+                "const collection begin() should return a ConstCollectionIterator");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<const ExampleHitCollection>().end()),
+                ExampleHitConstCollectionIterator>,
+                "const collection end() should return a ConstCollectionIterator");
+
+  static_assert(std::is_same_v<
+                decltype(*std::declval<const ExampleHitCollection>().begin()),
+                ConstExampleHit>,
+                "ConstCollectionIterator should only give access to Const objects");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleHitConstCollectionIterator>().operator->()),
+                ConstExampleHit*>,
+                "ConstCollectionIterator should only give access to Const objects");
+
+  REQUIRE(true);
+}
+
+TEST_CASE("const correct iterators on collections", "[const-correctness]") {
+
+  auto collection = ExampleClusterCollection();
+  for (auto cluster : collection) {
+    static_assert(std::is_same_v<decltype(cluster), ExampleCluster>, "collection iterators should return mutable objects");
+    cluster.energy(42); // this will necessarily also compile
+  }
+
+  // check the individual steps again from above, to see where things fail if they fail
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollection>().end()),
+                ExampleClusterCollectionIterator>,
+                "non const collection end() should return a CollectionIterator");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollection>().end()),
+                ExampleClusterCollectionIterator>,
+                "non const collection end() should return a CollectionIterator");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollection>().end()),
+                ExampleClusterCollectionIterator>,
+                "collection end() should return a CollectionIterator");
+
+  static_assert(std::is_same_v<
+                decltype(*std::declval<ExampleClusterCollection>().begin()),
+                ExampleCluster>,
+                "CollectionIterator should give access to mutable objects");
+
+  static_assert(std::is_same_v<
+                decltype(std::declval<ExampleClusterCollectionIterator>().operator->()),
+                ExampleCluster*>,
+                "CollectionIterator should only give access to mutable objects");
+
+  REQUIRE(true);
 }
