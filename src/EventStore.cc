@@ -86,7 +86,7 @@ namespace podio {
     return false;
   }
 
-  GenericParameters& EventStore::getEventMetaData() const {
+  GenericParameters& EventStore::getEventMetaData() {
 
     if( m_reader != nullptr ){
       m_evtMD.clear() ;
@@ -97,7 +97,7 @@ namespace podio {
     return m_evtMD ;
   }
   
-  GenericParameters& EventStore::getRunMetaData(int runID) const {
+  GenericParameters& EventStore::getRunMetaData(int runID) {
 
     if( m_runMDMap.empty() && m_reader != nullptr ){
       RunMDMap* tmp = m_reader->readRunMetaData() ;
@@ -108,7 +108,7 @@ namespace podio {
   }
   
 
-  GenericParameters& EventStore::getCollectionMetaData(int colID) const {
+  GenericParameters& EventStore::getCollectionMetaData(int colID) {
 
     if( m_colMDMap.empty() && m_reader != nullptr ){
       ColMDMap* tmp = m_reader->readCollectionMetaData() ;
