@@ -64,6 +64,10 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   // Empty
   ASSERT_CONDITION(collection[7].daughters().size() == 0 && collection[7].parents().size() == 0,
                    "RelationRange of empty collection is not empty");
+  // Equivalent but potentially quicker way of checking an empty collection
+  ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
+                   "RelationRange of empty collection is not empty");
+
   // alternatively check if a loop is entered
   for (const auto& p[[maybe_unused]]: collection[7].daughters()) {
     throw std::runtime_error("Range based for loop entered on a supposedly empty range");
@@ -77,6 +81,14 @@ void doTestExampleMC(ExampleMCCollection const& collection)
     ASSERT_EQUAL(p.PDG(), expectedPDG[index],
                  "ExampleMC daughters range points to wrong particle (by PDG)");
     index++;
+  }
+
+  // Check indexed access
+  const auto daughters = collection[0].daughters();
+  for (size_t i = 0; i < expectedPDG.size(); ++i) {
+    const auto daughter = daughters[i];
+    ASSERT_EQUAL(daughter.PDG(), expectedPDG[i],
+                 "ExampleMC daughter points to the wrong particle (by PDG)");
   }
 
   // mothers and daughters
@@ -96,6 +108,22 @@ void doTestExampleMC(ExampleMCCollection const& collection)
     ASSERT_EQUAL(p.PDG(), expectedPDG[index],
                  "ExampleMC parents range points to wrong particle (by PDG)");
     index++;
+  }
+
+  // Indexed access with range check
+  const auto parents = collection[2].parents();
+  for (size_t i = 0; i < expectedPDG.size(); ++i) {
+    const auto parent = parents.at(i);
+    ASSERT_EQUAL(parent.PDG(), expectedPDG[i],
+                 "ExampleMC parents points to the wrong particle (by PDG)");
+  }
+
+  try {
+    const auto parent = parents.at(3);
+    throw std::runtime_error("Trying to access out of bounds in a RelationRange::at should throw");
+  } catch (const std::out_of_range& err) {
+    ASSERT_EQUAL(err.what(), std::string("index out of bounds for RelationRange"),
+                 "Access out of bounds throws wrong exception");
   }
 
   // realistic case
@@ -120,7 +148,6 @@ void testExampleMC()
  fillExampleMCCollection(mcps);
  doTestExampleMC(mcps);
 }
-
 
 void testExampleWithVectorMember()
 {

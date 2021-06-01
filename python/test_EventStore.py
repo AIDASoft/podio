@@ -59,6 +59,18 @@ class EventStoreTestCase(unittest.TestCase):
     for hit in ref_hits:
       self.assertTrue(hit in hits)
 
+  def test_relation_range(self):
+    """Test that the RelationRange functionality is also accessible in python"""
+    clusters = self.store.get("clusters")
+    hits = self.store.get("hits")
+
+    for cluster in clusters:
+      sume = 0
+      for hit in cluster.Hits():
+        self.assertTrue(hit in hits)
+        sume += hit.energy()
+      self.assertEqual(cluster.energy(), sume)
+
   def test_hash(self):
     clusters = self.store.get("clusters")
     ref_hits = []
