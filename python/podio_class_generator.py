@@ -280,6 +280,14 @@ class ClassGenerator(object):
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
     includes.update(datatype.get('ConstExtraCode', {}).get('includes', '').split('\n'))
 
+    # When we have a relation to the same type we have the header that we are
+    # just generating in the includes. This would lead to a circular include, so
+    # remove "ourselves" again from the necessary includes
+    try:
+      includes.remove(self._build_include(datatype['class'].bare_type))
+    except KeyError:
+      pass
+
     datatype['includes'] = self._sort_includes(includes)
     datatype['includes_cc'] = self._sort_includes(includes_cc)
     datatype['forward_declarations'] = fwd_declarations
