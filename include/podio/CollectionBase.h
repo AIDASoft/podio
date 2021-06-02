@@ -1,29 +1,24 @@
 #ifndef COLLECTIONBASE_H
 #define COLLECTIONBASE_H
 
+#include "podio/ObjectID.h"
+#include "podio/CollectionBuffers.h"
+
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "podio/ObjectID.h"
+
 
 namespace podio {
   // forward declarations
-  class ObjectID;
   class ICollectionProvider;
-  class CollectionBase;
-
-  using CollRefCollection = std::vector<std::vector<podio::ObjectID>*>;
-  using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
 
   class CollectionBase {
   public:
     /// prepare buffers for serialization
-    virtual void  prepareForWrite() = 0;
+    virtual void prepareForWrite() = 0;
 
-    //virtual void  write(CollectionBuffer& buffer) = 0;
-    //virtual void  read(CollectionBuffer& buffer) = 0;
-    
     /// re-create collection from buffers after read
     virtual void  prepareAfterRead() = 0;
 
@@ -36,11 +31,10 @@ namespace podio {
     /// get collection ID
     virtual unsigned getID() const = 0;
 
-    /// set I/O buffer
-    virtual void  setBuffer(void*) = 0;
+    /// Get the collection buffers for this collection
+    virtual podio::CollectionBuffers getBuffers() = 0;
 
-    /// get address of the pointer to the I/O buffer
-    virtual void* getBufferAddress() = 0;
+    // virtual void setBuffers(const podio::CollectionBuffers& buffers) = 0;
 
     /// check for validity of the container after read
     virtual bool isValid() const = 0;
@@ -56,12 +50,6 @@ namespace podio {
 
     /// clear the collection and all internal states
     virtual void clear() = 0 ;
-
-    /// return the buffers containing the object-relation information
-    virtual CollRefCollection* referenceCollections() = 0;
-
-    /// return pointers to vector members
-    virtual VectorMembersInfo* vectorMembers() = 0;
   };
 
 } // namespace

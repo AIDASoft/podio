@@ -52,11 +52,12 @@ void ROOTWriter::writeEvent(){
 void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections) {
   for (auto& [name, coll] : collections) {
     root_utils::CollectionBranches branches;
+    const auto collBuffers = coll->getBuffers();
     const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
-    branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), coll->getBufferAddress());
+    branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), collBuffers.data);
 
     // reference collections
-    if (auto refColls = coll->referenceCollections()) {
+    if (auto refColls = collBuffers.references) {
       int i = 0;
       for (auto& c : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i);
@@ -66,7 +67,7 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
     }
 
     // vector members
-    if (auto vminfo = coll->vectorMembers()) {
+    if (auto vminfo = collBuffers.vectorMembers) {
       int i = 0;
       for (auto& [type, vec] : (*vminfo)) {
         const auto typeName = "vector<" + type + ">";

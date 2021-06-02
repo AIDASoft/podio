@@ -207,6 +207,7 @@ class ClassGenerator(object):
     self._fill_templates('ConstObject', datatype)
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
+    self._fill_templates('CollectionData', datatype)
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)

@@ -82,15 +82,17 @@ namespace podio {
       root_utils::CollectionBranches branches;
       branches.data = branch;
 
-      auto* collection = root_utils::prepareCollection(theClass, collectionClass);
+      auto* collection = static_cast<CollectionBase*>(collectionClass->New());
+      auto collBuffers = collection->getBuffers();
+      collBuffers.data = theClass->New();
 
-      if (auto refCollections = collection->referenceCollections()) {
+      if (auto refCollections = collBuffers.references) {
         for (size_t i = 0; i < refCollections->size(); ++i) {
           const auto brName = root_utils::refBranch(name, i);
           branches.refs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
         }
       }
-      if (auto vecMembers = collection->vectorMembers()) {
+      if (auto vecMembers = collBuffers.vectorMembers) {
         for (size_t i = 0; i < vecMembers->size(); ++i) {
           const auto brName = root_utils::vecBranch(name, i);
           branches.vecs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
@@ -116,7 +118,9 @@ namespace podio {
     const auto [theClass, collectionClass, index] = collInfo.second;
     auto& branches = m_collectionBranches[index];
 
-    auto* collection = root_utils::prepareCollection(theClass, collectionClass);
+    auto* collection = static_cast<CollectionBase*>(collectionClass->New());
+    auto collBuffers = collection->getBuffers();
+    collBuffers.data = theClass->New();
 
     const auto localEntry = m_chain->LoadTree(m_eventNumber);
     // After switching trees in the chain, branch pointers get invalidated so
@@ -127,7 +131,7 @@ namespace podio {
       branches.data = root_utils::getBranch(m_chain, name.c_str());
 
       // reference collections
-      if (auto* refCollections = collection->referenceCollections()) {
+      if (auto* refCollections = collBuffers.references) {
         for (size_t i = 0; i < refCollections->size(); ++i) {
           const auto brName = root_utils::refBranch(name, i);
           branches.refs[i] = root_utils::getBranch(m_chain, brName.c_str());
@@ -135,7 +139,7 @@ namespace podio {
       }
 
       // vector members
-      if (auto* vecMembers = collection->vectorMembers()) {
+      if (auto* vecMembers = collBuffers.vectorMembers) {
         for (size_t i = 0; i < vecMembers->size(); ++i) {
           const auto brName = root_utils::vecBranch(name, i);
           branches.vecs[i] = root_utils::getBranch(m_chain, brName.c_str());
