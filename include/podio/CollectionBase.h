@@ -50,6 +50,12 @@ namespace podio {
 
     /// clear the collection and all internal states
     virtual void clear() = 0 ;
+
+    /// check if this collection is a reference collection
+    virtual bool isReferenceCollection() const = 0;
+
+    /// declare this collection to be a reference collection
+    virtual void setReferenceCollection(bool setToRef=true) = 0;
   };
 
 } // namespace

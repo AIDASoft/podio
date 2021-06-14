@@ -49,20 +49,22 @@ public:
    */
   ~{{ class_type }}();
 
-  void clear();
+  void clear(bool isRefColl);
 
-  podio::CollectionBuffers getCollectionBuffers();
+  podio::CollectionBuffers getCollectionBuffers(bool isRefColl);
 
-  void prepareForWrite();
+  void prepareForWrite(bool isRefColl);
 
   void prepareAfterRead(int collectionID);
+
+  void makeReferenceCollection();
 
 {% if OneToManyRelations or VectorMembers %}
   void createRelations({{ class.bare_type }}Obj* obj);
 {% endif %}
 
 {% if OneToManyRelations or OneToOneRelations %}
-  void setReferences(const podio::ICollectionProvider* collectionProvider);
+  void setReferences(const podio::ICollectionProvider* collectionProvider, bool isRefColl);
 {% endif %}
 
 private:

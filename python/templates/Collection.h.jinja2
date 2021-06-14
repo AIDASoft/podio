@@ -64,6 +64,12 @@ public:
   /// fully qualified type name of elements - with namespace
   std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
 
+  bool isReferenceCollection() const final {
+    return m_isRefColl;
+  }
+
+  void setReferenceCollection(bool setToRef=true) final;
+
   /// Returns the object of given index
   Const{{ class.bare_type }} operator[](unsigned int index) const;
   /// Returns the object of a given index
@@ -122,8 +128,11 @@ public:
 {% endfor %}
 
 private:
+  friend class {{ class.bare_type }}CollectionData;
+
   bool m_isValid{false};
   bool m_isReadFromFile{false};
+  bool m_isRefColl{false};
   int m_collectionID{0};
   {{ class.bare_type }}CollectionData m_storage{};
 };

@@ -51,7 +51,7 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
   }
 {% endmacro %}
 
-{% macro _get_collection(type) %}
+{% macro get_collection(type) %}
       podio::CollectionBase* coll = nullptr;
       collectionProvider->get(id.collectionID, coll);
       {{ type }}Collection* tmp_coll = static_cast<{{ type }}Collection*>(coll);
@@ -61,7 +61,7 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
   for (unsigned int i = 0, size = m_refCollections[{{ index }}]->size(); i != size; ++i) {
     const auto id = (*m_refCollections[{{ index }}])[i];
     if (id.index != podio::ObjectID::invalid) {
-{{ _get_collection(relation.full_type) }}
+{{ get_collection(relation.full_type) }}
       const auto tmp = (*tmp_coll)[id.index];
       m_rel_{{ relation.name }}->emplace_back(tmp);
     } else {
@@ -76,7 +76,7 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
   for (unsigned int i = 0, size = entries.size(); i != size; ++i) {
     const auto id = (*m_refCollections[{{ real_index }}])[i];
     if (id.index != podio::ObjectID::invalid) {
-  {{ _get_collection(relation.full_type) }}
+  {{ get_collection(relation.full_type) }}
       entries[i]->m_{{ relation.name }} = new Const{{ relation.bare_type }}((*tmp_coll)[id.index]);
     } else {
       entries[i]->m_{{ relation.name }} = nullptr;

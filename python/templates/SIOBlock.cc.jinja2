@@ -3,6 +3,7 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "{{ incfolder }}{{ class.bare_type }}SIOBlock.h"
+#include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 
 #include <sio/block.h>
 #include <sio/io_device.h>
@@ -32,17 +33,18 @@ void handlePODDataSIO(devT& device, {{ class.namespace }}::{{ class.bare_type }}
 
 void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
   auto collBuffers = _col->getBuffers();
-  auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
-
-  unsigned size(0);
-  device.data( size );
-  dataVec->resize(size);
-
-  podio::handlePODDataSIO(device, &(*dataVec)[0], size);
+  if (not _col->isReferenceCollection()) {
+    auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
+    unsigned size(0);
+    device.data( size );
+    dataVec->resize(size);
+    podio::handlePODDataSIO(device, &(*dataVec)[0], size);
+  }
 
   //---- read ref collections -----
   auto* refCols = collBuffers.references;
   for( auto* refC : *refCols ){
+    unsigned size{0};
     device.data( size ) ;
     refC->resize(size) ;
     podio::handlePODDataSIO( device ,  &((*refC)[0]), size ) ;
@@ -51,6 +53,7 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
 {% if VectorMembers %}
   //---- read vector members
   auto* vecMemInfo = collBuffers.vectorMembers;
+  unsigned size{0};
 
 {% for member in VectorMembers %}
 {{ macros.vector_member_read(member, loop.index0) }}
@@ -61,17 +64,17 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
 void {{ block_class }}::write(sio::write_device& device) {
   _col->prepareForWrite() ;
   auto collBuffers = _col->getBuffers();
-  auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
-
-  unsigned size = dataVec->size() ;
-  device.data( size ) ;
-
-  podio::handlePODDataSIO( device ,  &(*dataVec)[0], size ) ;
+  if (not _col->isReferenceCollection()) {
+    auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
+    unsigned size = dataVec->size() ;
+    device.data( size ) ;
+    podio::handlePODDataSIO( device ,  &(*dataVec)[0], size ) ;
+  }
 
   //---- write ref collections -----
   auto* refCols = collBuffers.references;
   for( auto* refC : *refCols ){
-    size = refC->size() ;
+    unsigned size = refC->size() ;
     device.data( size ) ;
     podio::handlePODDataSIO( device ,  &((*refC)[0]), size ) ;
   }
@@ -79,11 +82,17 @@ void {{ block_class }}::write(sio::write_device& device) {
 {% if VectorMembers %}
   //---- write vector members
   auto* vecMemInfo = collBuffers.vectorMembers;
+  unsigned size{0};
 
 {% for member in VectorMembers %}
 {{ macros.vector_member_write(member, loop.index0) }}
 {% endfor %}
 {% endif %}
+}
+
+void {{ block_class }}::createCollection(const bool referenceCollection) {
+  setCollection(new {{ class.bare_type }}Collection);
+  _col->setReferenceCollection(referenceCollection);
 }
 
 {% endwith %}
