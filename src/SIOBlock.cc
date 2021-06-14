@@ -18,6 +18,7 @@ namespace podio {
     device.data(names);
     device.data(ids);
     device.data(_types);
+    device.data(_isRefColl);
 
     _table = new CollectionIDTable(std::move(ids), std::move(names));
   }
@@ -27,6 +28,7 @@ namespace podio {
     device.data(_table->ids());
 
     std::vector<std::string> typeNames;
+    std::vector<short> isRefColl;
     typeNames.reserve(_table->ids().size());
     for (const int id : _table->ids()) {
       CollectionBase* tmp;
@@ -34,8 +36,10 @@ namespace podio {
         std::cerr << "ERROR during writing of CollectionID table" << std::endl;
       }
       typeNames.push_back(tmp->getValueTypeName());
+      isRefColl.push_back(tmp->isReferenceCollection());
     }
     device.data(typeNames);
+    device.data(isRefColl);
   }
 
   template<typename MappedT>
@@ -105,12 +109,12 @@ namespace podio {
   }
 
 
-  std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name) const {
+  std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name, const bool isRefColl) const {
     const auto it = _map.find(typeStr) ;
 
     if( it != _map.end() ){
       auto blk = std::shared_ptr<SIOBlock>(it->second->create( name ));
-      blk->createCollection() ;
+      blk->createCollection(isRefColl) ;
       return blk;
     } else {
       return nullptr;

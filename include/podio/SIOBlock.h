@@ -47,7 +47,7 @@ namespace podio {
     virtual SIOBlock* create(const std::string& name) const=0 ;
 
     // create a new collection for this block
-    virtual void createCollection() = 0;
+    virtual void createCollection(const bool referenceCollection=false) = 0;
 
   protected:
 
@@ -74,11 +74,13 @@ namespace podio {
 
     podio::CollectionIDTable* getTable() { return _table; }
     const std::vector<std::string>& getTypeNames() const { return _types; }
+    const std::vector<short>& getRefCollectionBits() const { return _isRefColl; }
 
   private:
     podio::EventStore* _store{nullptr};
     podio::CollectionIDTable* _table{nullptr};
     std::vector<std::string> _types{};
+    std::vector<short> _isRefColl{};
   };
 
 
@@ -130,7 +132,7 @@ namespace podio {
     std::shared_ptr<SIOBlock> createBlock( const podio::CollectionBase* col, const std::string& name) const;
 
     // return a block with a new collection (used for reading )
-    std::shared_ptr<SIOBlock> createBlock( const std::string& typeStr, const std::string& name) const;
+    std::shared_ptr<SIOBlock> createBlock( const std::string& typeStr, const std::string& name, const bool isRefColl=false) const;
 
     static SIOBlockFactory& instance() {
       static SIOBlockFactory me ;

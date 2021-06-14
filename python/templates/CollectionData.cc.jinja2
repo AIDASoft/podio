@@ -3,6 +3,7 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "{{ incfolder }}{{ class.bare_type }}CollectionData.h"
+#include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 
 {% for include in includes_coll_cc %}
 {{ include }}
@@ -40,7 +41,16 @@
 {% endfor %}
 }
 
-void {{ class_type }}::clear() {
+void {{ class_type }}::clear(bool isRefColl) {
+  if (isRefColl) {
+    // We don't own the objects so no cleanup to do here
+    entries.clear();
+    // Clear the ObjectID I/O buffer
+    for (auto& pointer : m_refCollections) { pointer->clear(); }
+    return;
+  }
+
+  // Normal collections manage a bit more and have to clean up a bit more
   m_data->clear();
 {% if OneToManyRelations or OneToOneRelations %}
   for (auto& pointer : m_refCollections) { pointer->clear(); }
@@ -69,19 +79,29 @@ void {{ class_type }}::clear() {
   entries.clear();
 }
 
-podio::CollectionBuffers {{ class_type }}::getCollectionBuffers() {
+podio::CollectionBuffers {{ class_type }}::getCollectionBuffers(bool isRefColl) {
   return {
-    (void*)&m_data,
-    &m_refCollections,
+    isRefColl ? nullptr : (void*)&m_data,
+    &m_refCollections, // only need to store the ObjectIDs of the referenced objects
     &m_vecmem_info
   };
 }
 
-void {{ class_type }}::prepareForWrite() {
+void {{ class_type }}::prepareForWrite(bool isRefColl) {
+  for (auto& pointer : m_refCollections) { pointer->clear(); }
+
+  // If this is a reference collection use the relation storing mechanism to
+  // store the ObjectIDs of all referenced objects and nothing else
+  if (isRefColl) {
+    for (const auto* obj : entries) {
+      m_refCollections[0]->emplace_back(obj->id);
+    }
+    return;
+  }
+
+  // Normal collections have to store the data and all the relations
   m_data->reserve(entries.size());
   for (auto& obj : entries) { m_data->push_back(obj->data); }
-
-  for (auto& pointer : m_refCollections) { pointer->clear(); }
 
 {% for relation in OneToManyRelations %}
   int {{ relation.name }}_index = 0;
@@ -141,7 +161,16 @@ void {{ class_type }}::createRelations({{ class.bare_type }}Obj* obj) {
 {% endif %}
 
 {% if OneToManyRelations or OneToOneRelations %}
-void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {
+void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectionProvider, bool isRefColl) {
+  if (isRefColl) {
+    for (const auto& id : *m_refCollections[0]) {
+{{ macros.get_collection(class.full_type) }}
+      entries.push_back(tmp_coll->m_storage.entries[id.index]);
+    }
+    return;
+  }
+
+  // Normal collections have to resolve all relations
 {% for relation in OneToManyRelations %}
 {{ macros.set_references_multi_relation(relation, loop.index0) }}
 {% endfor %}
@@ -151,6 +180,31 @@ void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectio
 
 }
 {% endif %}
+
+void {{ class_type }}::makeReferenceCollection() {
+  // Reference collections do not need all the data buffers that normal
+  // collections need, so we can free them here
+  m_vecmem_info.clear();
+
+  delete m_data;
+  m_data = nullptr;
+
+{% for relation in OneToManyRelations + OneToOneRelations %}
+  delete m_rel_{{ relation.name }};
+  m_rel_{{ relation.name }} = nullptr;
+{% endfor %}
+{% for member in VectorMembers %}
+  delete m_vec_{{ member.name }};
+  m_vec_{{ member.name }} = nullptr;
+{% endfor %}
+
+  // Reference collections need one vector of ObjectIDs for I/O purposes.
+  for (auto& pointer : m_refCollections) {
+    delete pointer;
+  }
+  m_refCollections.resize(1);
+  m_refCollections[0] = new std::vector<podio::ObjectID>();
+}
 
 {% endwith %}
 

@@ -4,8 +4,6 @@
 #ifndef {{ package_name.upper() }}_{{ class.bare_type }}SIOBlock_H
 #define {{ package_name.upper() }}_{{ class.bare_type }}SIOBlock_H
 
-#include "{{ incfolder}}{{ class.bare_type }}Collection.h"
-
 #include "podio/SIOBlock.h"
 
 #include <sio/api.h>
@@ -35,9 +33,7 @@ public:
   // Write the particle data to the device
   virtual void write(sio::write_device& device) override;
 
-  virtual void createCollection() override {
-    setCollection(new {{ class.bare_type }}Collection);
-  }
+  virtual void createCollection(const bool referenceCollection=false) override;
 
   SIOBlock* create(const std::string& name) const override { return new {{ block_class }}(name); }
 };
