@@ -1,3 +1,75 @@
+# v00-13-01
+
+* 2021-06-03 Thomas Madlener ([PR#195](https://github.com/aidasoft/PODIO/pull/195))
+  - Fix possible circular and self-includes in generated header files.
+
+* 2021-06-03 Thomas Madlener ([PR#194](https://github.com/aidasoft/PODIO/pull/194))
+  - Make it possible to do indexed access on a `RelationRange`, making the interface more akin to a `const std::vector`
+
+* 2021-05-31 tmadlener ([PR#193](https://github.com/aidasoft/PODIO/pull/193))
+  - Make collection element access const correct.
+
+* 2021-05-31 Thomas Madlener ([PR#192](https://github.com/aidasoft/PODIO/pull/192))
+  - Fix const-correctness problems of meta data access via EventStore.
+
+* 2021-05-28 Benedikt Hegner ([PR#191](https://github.com/aidasoft/PODIO/pull/191))
+  - Fix bug in validity check so that transient and persistent collections are treated the same
+
+* 2021-05-28 Thomas Madlener ([PR#186](https://github.com/aidasoft/PODIO/pull/186))
+  - Add support for [fixed width integer type](https://en.cppreference.com/w/cpp/types/integer) members in components and datatypes.
+    - Now possible to use `int16_t`, `int32_t`, `int64_t`, `uint16_t`, `uint32_t` and `uint64_t` as members. Other fixed width integer types that are potentially defined in `<cstdint>` are not considered valid as the intended use case is really only fixed width integers for now. These are rejected at the datamodel validation step.
+    - Fixed width integers are considered to be "builtin" types for podio.
+
+* 2021-05-04 Valentin Volkl ([PR#189](https://github.com/aidasoft/PODIO/pull/189))
+  - [cmake] fix test dependencies: `read_and_write.cpp` reads the file `example.root` that is created by the write test. If the dependency is not declared, running the tests concurrently can lead to spurious test failures.
+
+* 2021-04-28 tmadlener ([PR#180](https://github.com/aidasoft/PODIO/pull/180))
+  - Improve the branch look-up logic in ROOTReader and ROOTWriter. Triggered by a performance degradation in v6.22/06, where this logic was changed inside ROOT and our use case was affected badly. All ROOT versions profit from these changes as it is in general more efficient than the previous implementation.
+
+* 2021-03-30 tmadlener ([PR#182](https://github.com/aidasoft/PODIO/pull/182))
+  - Use `run-lcg-view` github action and switch to more recent LCG releases to run CI.
+  - Update README to include status of CI
+
+* 2021-03-23 Valentin Volkl ([PR#185](https://github.com/aidasoft/PODIO/pull/185))
+  - extended .gitignore
+
+* 2021-03-23 Valentin Volkl ([PR#184](https://github.com/aidasoft/PODIO/pull/184))
+  - Clean up AsciiWriter comments
+
+* 2021-03-23 tmadlener ([PR#183](https://github.com/aidasoft/PODIO/pull/183))
+  - Use SIO targets in cmake, which are exported starting with v00-01 (iLCSoft/SIO#15)
+
+* 2021-02-23 Marko Petric ([PR#181](https://github.com/aidasoft/PODIO/pull/181))
+  - Add coverity nightly scan based on `run-lcg-view` action
+
+* 2021-02-23 tmadlener ([PR#175](https://github.com/aidasoft/PODIO/pull/175))
+  - Fully qualify return types for `OneToOneRelation` getters in generated .cc file for objects and `Const` objects. This fixes a bug described in https://github.com/AIDASoft/podio/issues/168#issuecomment-770751871 and now allows to mix different namespaces in the generated code. This allows to more easily extend already existing datamodels by compiling and linking against them.
+
+* 2021-02-23 Dmitry Romanov ([PR#173](https://github.com/aidasoft/PODIO/pull/173))
+  - Added IO Handler argument to schema generation example in README
+
+* 2021-02-23 tmadlener ([PR#171](https://github.com/aidasoft/PODIO/pull/171))
+  - Fix compiler warnings, that were uncovered by #153 and described in #170. Fix them in the core classes and also in the generated ones.
+  - Enforce no new warnings with `Werror` in the CI builds.
+
+* 2021-02-15 Joseph C Wang ([PR#156](https://github.com/aidasoft/PODIO/pull/156))
+  - Readers/writers are now noncopyable
+
+* 2021-02-02 Joseph C Wang ([PR#154](https://github.com/aidasoft/PODIO/pull/154))
+  - Disable operator = for collections so that it maintains one copy of collections, fixes #111
+
+* 2021-01-26 tmadlener ([PR#172](https://github.com/aidasoft/PODIO/pull/172))
+  - Fix deprecated `brew install` commands in mac workflow
+
+* 2020-12-18 tmadlener ([PR#165](https://github.com/aidasoft/PODIO/pull/165))
+  - Add a convenience `RelationRange::emtpy` function for easily checking whether a range is empty.
+
+* 2020-12-18 tmadlener ([PR#162](https://github.com/aidasoft/PODIO/pull/162))
+  - Fix cmake problem #161 on Ubuntu
+
+* 2020-12-18 tmadlener ([PR#155](https://github.com/aidasoft/PODIO/pull/155))
+  - Add some benchmarking tools, including `TimedReader` and `TimedWriter` decorators that allow to wrap (interface conforming) readers and writers and record the times different operations take. The times are recorded on two levels: setup times, like constructing a reader or "one-time" calls and per event times, for things that happen each event (e.g. `writeEvent` or `readCollection`). Additionally the `BenchmarkRecorder` in principle also allows to track additional things outside of these decorators.
+
 # v00-13
 
 * 2020-12-03 Marko Petric ([PR#153](https://github.com/aidasoft/podio/pull/153))
