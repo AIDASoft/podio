@@ -141,9 +141,20 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection&
 
 template<typename... Args>
 {{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... args) {
+  if (m_isRefColl) {
+    throw std::logic_error("Cannot create new elements on a reference collection");
+  }
   const int size = m_storage.entries.size();
-  auto obj = new {{ class.bare_type }}Obj({size, m_collectionID}, {args...});
+  auto obj = new {{ class.bare_type }}Obj({size, m_collectionID}, {std::forward<Args>(args)...});
   m_storage.entries.push_back(obj);
+
+{% if OneToManyRelations or VectorMembers %}
+  // Need to initialize the relation vectors manually for the {ObjectID, {{class.bare_type}}Data} constructor
+{% for relation in OneToManyRelations + VectorMembers %}
+  obj->m_{{ relation.name }} = new std::vector<{{ relation.relation_type }}>();
+{% endfor %}
+  m_storage.createRelations(obj);
+{% endif %}
   return {{ class.bare_type }}(obj);
 }
 

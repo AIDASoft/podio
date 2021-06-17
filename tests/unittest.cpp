@@ -212,6 +212,19 @@ TEST_CASE("Referencing") {
   REQUIRE(success);
 }
 
+TEST_CASE("VariadicCreate", "Test that objects created via the variadic create template function handle relations correctly") {
+  auto store = podio::EventStore();
+  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+
+  auto variadic_cluster = clusters.create(3.14f);
+  auto normal_cluster = clusters.create();
+  normal_cluster.energy(42);
+
+  variadic_cluster.addClusters(normal_cluster);
+  REQUIRE(variadic_cluster.Clusters_size() == 1);
+  REQUIRE(variadic_cluster.Clusters(0) == normal_cluster);
+}
+
 TEST_CASE("write_buffer") {
   bool success = true;
   auto store = podio::EventStore();
