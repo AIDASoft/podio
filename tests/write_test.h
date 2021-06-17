@@ -30,6 +30,8 @@ void write(podio::EventStore& store, WriterT& writer) {
 
   auto& info       = store.create<EventInfoCollection>("info");
   auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
+  auto& mcpsRefs   = store.create<ExampleMCCollection>("mcParticleRefs");
+  mcpsRefs.setReferenceCollection();
   auto& hits       = store.create<ExampleHitCollection>("hits");
   auto& clusters   = store.create<ExampleClusterCollection>("clusters");
   auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");
@@ -46,6 +48,7 @@ void write(podio::EventStore& store, WriterT& writer) {
 
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");
+  writer.registerForWrite("mcParticleRefs");
   writer.registerForWrite("hits");
   writer.registerForWrite("clusters");
   writer.registerForWrite("refs");
@@ -163,6 +166,18 @@ void write(podio::EventStore& store, WriterT& writer) {
         std::cout << " " << it->getObjectID().index;
       }
 
+    }
+    //-------------------------------
+
+    // ----------------- add all "odd" mc particles into a reference collection
+    for (auto p : mcps) {
+      if (p.id() % 2) {
+        mcpsRefs.push_back(p);
+      }
+    }
+
+    if (mcpsRefs.size() != mcps.size() / 2) {
+      throw std::runtime_error("The mcParticleRefs collection should now contain half as many elements as the mcparticles collection");
     }
     //-------------------------------
 
