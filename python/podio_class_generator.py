@@ -3,7 +3,6 @@
 from __future__ import unicode_literals, absolute_import, print_function
 
 import os
-import errno
 import sys
 import subprocess
 from io import open
@@ -56,6 +55,24 @@ def get_clang_format():
     return []
 
 
+def write_file_if_changed(filename, content, force_write=False):
+  """Write the file contents only if it has changed or if the file does not exist
+  yet. Return whether the file has been written or not"""
+  try:
+    with open(filename, 'r') as f:
+      existing_content = f.read()
+      changed = existing_content != content
+  except FileNotFoundError:
+    changed = True
+
+  if changed or force_write:
+    with open(filename, 'w') as f:
+      f.write(content)
+    return True
+
+  return False
+
+
 class ClassGenerator(object):
   def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun):
     self.install_dir = install_dir
@@ -85,6 +102,7 @@ class ClassGenerator(object):
 
     self.clang_format = []
     self.generated_files = []
+    self.any_changes = False
 
   def process(self):
     for name, component in self.reader.components.items():
@@ -134,22 +152,8 @@ class ClassGenerator(object):
         cfproc = subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         content = cfproc.communicate(input=content.encode())[0].decode()
 
-      try:
-        with open(fullname, 'r') as f:
-          existing_content = f.read()
-          changed = existing_content != content
-
-      except EnvironmentError as e:
-        # If we deprecate python2 support, FileNotFoundError becomes available
-        # and this can be using it. For now we keep it compatible with both
-        # versions
-        if e.errno != errno.ENOENT:
-          raise
-        changed = True
-
-      if changed:
-        with open(fullname, 'w') as f:
-          f.write(content)
+      changed = write_file_if_changed(fullname, content)
+      self.any_changes = changed or self.any_changes
 
   @staticmethod
   def _get_filenames_templates(template_base, name):
@@ -387,29 +391,35 @@ class ClassGenerator(object):
     src_files = (f for f in self.generated_files if f.endswith('.cc'))
     xml_files = (f for f in self.generated_files if f.endswith('.xml'))
 
-    def _write_list(list_file, name, target_folder, files, comment):
+    def _write_list(name, target_folder, files, comment):
       """Write all files into a cmake variable using the target_folder as path to the
       file"""
-      list_file.write(f'# {comment}\n')
-      list_file.write(f'SET({name}\n')
+      list_cont = []
+
+      list_cont.append(f'# {comment}')
+      list_cont.append(f'SET({name}')
       for full_file in files:
         fname = os.path.basename(full_file)
-        list_file.write(f'  {os.path.join(target_folder, fname)}\n')
+        list_cont.append(f'  {os.path.join(target_folder, fname)}')
 
-      list_file.write(')\n')
+      list_cont.append(')')
+      list_cont.append(f'SET_PROPERTY(SOURCE ${{{name}}} PROPERTY GENERATED TRUE)\n')
 
-    with open(f'{self.install_dir}/podio_generated_files.cmake', 'w') as list_file:
-      list_file.write('# AUTOMATICALLY GENERATED FILE - DO NOT EDIT\n\n')
+      return '\n'.join(list_cont)
 
-      _write_list(list_file, 'headers', r'${ARG_OUTPUT_FOLDER}/${datamodel}',
-                  header_files, 'Generated header files')
+    full_contents = ['#-- AUTOMATICALLY GENERATED FILE - DO NOT EDIT -- \n']
+    full_contents.append(_write_list('headers', r'${ARG_OUTPUT_FOLDER}/${datamodel}',
+                                     header_files, 'Generated header files'))
 
-      _write_list(list_file, 'sources', r'${ARG_OUTPUT_FOLDER}/src',
-                  src_files, 'Generated source files')
+    full_contents.append(_write_list('sources', r'${ARG_OUTPUT_FOLDER}/src',
+                                     src_files, 'Generated source files'))
 
-      _write_list(list_file, 'selection_xml', r'${ARG_OUTPUT_FOLDER}/src',
-                  xml_files, 'Generated xml files')
+    full_contents.append(_write_list('selection_xml', r'${ARG_OUTPUT_FOLDER}/src',
+                                     xml_files, 'Generated xml files'))
 
+    write_file_if_changed(f'{self.install_dir}/podio_generated_files.cmake',
+                          '\n'.join(full_contents),
+                          self.any_changes)
 
   @staticmethod
   def _is_pod_type(members):
