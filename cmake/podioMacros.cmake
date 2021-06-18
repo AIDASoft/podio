@@ -134,6 +134,16 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     # At least build the ROOT selection.xml by default for now
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
   ENDIF()
+
+  # Make sure that we re run the generation process everytime either the
+  # templates or the yaml file changes.
+  include(${podio_PYTHON_DIR}/templates/CMakeLists.txt)
+  set_property(
+    DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    ${YAML_FILE}
+    ${PODIO_TEMPLATES}
+  )
+
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E echo "Creating \"${datamodel}\" data model"
@@ -141,19 +151,11 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
-  file(GLOB headers ${ARG_OUTPUT_FOLDER}/${datamodel}/*.h)
-  file(GLOB sources ${ARG_OUTPUT_FOLDER}/src/*.cc)
+  # Get the generated headers and source files
+  include(${ARG_OUTPUT_FOLDER}/podio_generated_files.cmake)
 
   set (${RETURN_HEADERS} ${headers} PARENT_SCOPE)
   set (${RETURN_SOURCES} ${sources} PARENT_SCOPE)
-
-  add_custom_target(create_${datamodel}
-    COMMENT "Re-Creating \"${datamodel}\" data model"
-    DEPENDS ${YAML_FILE}
-    BYPRODUCTS ${sources} ${headers}
-    COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py --quiet ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    )
 
 endfunction()
 
