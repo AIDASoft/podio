@@ -51,3 +51,4 @@ spack*
 *.exe
 *.out
 *.app
+*podio_generated_files.cmake
