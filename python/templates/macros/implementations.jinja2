@@ -20,6 +20,7 @@
 {{  full_type }}& {{ full_type }}::operator=(const {{ full_type }}& other) {
   if (m_obj) m_obj->release();
   m_obj = other.m_obj;
+  m_obj->acquire();
   return *this;
 }
 
