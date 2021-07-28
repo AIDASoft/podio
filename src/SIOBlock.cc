@@ -18,7 +18,7 @@ namespace podio {
     device.data(names);
     device.data(ids);
     device.data(_types);
-    device.data(_isRefColl);
+    device.data(_isSubsetColl);
 
     _table = new CollectionIDTable(std::move(ids), std::move(names));
   }
@@ -28,7 +28,7 @@ namespace podio {
     device.data(_table->ids());
 
     std::vector<std::string> typeNames;
-    std::vector<short> isRefColl;
+    std::vector<short> isSubsetColl;
     typeNames.reserve(_table->ids().size());
     for (const int id : _table->ids()) {
       CollectionBase* tmp;
@@ -36,10 +36,10 @@ namespace podio {
         std::cerr << "ERROR during writing of CollectionID table" << std::endl;
       }
       typeNames.push_back(tmp->getValueTypeName());
-      isRefColl.push_back(tmp->isReferenceCollection());
+      isSubsetColl.push_back(tmp->isSubsetCollection());
     }
     device.data(typeNames);
-    device.data(isRefColl);
+    device.data(isSubsetColl);
   }
 
   template<typename MappedT>

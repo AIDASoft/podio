@@ -17,7 +17,7 @@
 
 {% with collection_type = class.bare_type + 'Collection' %}
 {{ collection_type }}::{{ collection_type }}() :
-  m_isValid(false), m_isReadFromFile(false), m_isRefColl(false), m_collectionID(0), m_storage() {}
+  m_isValid(false), m_isReadFromFile(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {}
 
 {{ collection_type }}::~{{ collection_type }}() {
   clear();
@@ -43,20 +43,20 @@ size_t {{ collection_type }}::size() const {
   return m_storage.entries.size();
 }
 
-void {{ collection_type }}::setReferenceCollection(bool setToRef) {
-  if (m_isRefColl != setToRef && !m_storage.entries.empty()) {
+void {{ collection_type }}::setSubsetCollection(bool setSubset) {
+  if (m_isSubsetColl != setSubset && !m_storage.entries.empty()) {
     throw std::logic_error("Cannot change the character of a collection that already contains elements");
   }
 
-  if (setToRef) {
-    m_storage.makeReferenceCollection();
+  if (setSubset) {
+    m_storage.makeSubsetCollection();
   }
-  m_isRefColl = setToRef;
+  m_isSubsetColl = setSubset;
 }
 
 {{ class.bare_type }} {{ collection_type }}::create() {
-  if (m_isRefColl) {
-    throw std::logic_error("Cannot create new elements on a reference collection");
+  if (m_isSubsetColl) {
+    throw std::logic_error("Cannot create new elements on a subset collection");
   }
 
   auto obj = m_storage.entries.emplace_back(new {{ class.bare_type }}Obj());
@@ -69,21 +69,21 @@ void {{ collection_type }}::setReferenceCollection(bool setToRef) {
 }
 
 void {{ collection_type }}::clear() {
-  m_storage.clear(m_isRefColl);
+  m_storage.clear(m_isSubsetColl);
 }
 
 void {{ collection_type }}::prepareForWrite() {
   // If the collection has been read from a file, there is nothing to do here
   if (m_isReadFromFile) return;
-  m_storage.prepareForWrite(m_isRefColl);
+  m_storage.prepareForWrite(m_isSubsetColl);
 }
 
 void {{ collection_type }}::prepareAfterRead() {
   // No need to go through this again if we have already done it
   if (m_isReadFromFile) return;
 
-  if (!m_isRefColl) {
-    // Reference collections do not store any data that would require post-processing
+  if (!m_isSubsetColl) {
+    // Subset collections do not store any data that would require post-processing
     m_storage.prepareAfterRead(m_collectionID);
   }
   m_isReadFromFile = true;
@@ -91,7 +91,7 @@ void {{ collection_type }}::prepareAfterRead() {
 
 bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% if OneToManyRelations or OneToOneRelations -%}collectionProvider{%- endif -%}) {
 {% if OneToManyRelations or OneToOneRelations %}
-  m_storage.setReferences(collectionProvider, m_isRefColl);
+  m_storage.setReferences(collectionProvider, m_isSubsetColl);
 {% endif %}
 
   return true; //TODO: check success
@@ -99,10 +99,10 @@ bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% i
 
 void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
   // We have to do different things here depending on whether this is a
-  // reference collection or not. A normal collection cannot collect objects
-  // that are already part of another collection, while a reference collection
+  // subset collection or not. A normal collection cannot collect objects
+  // that are already part of another collection, while a subset collection
   // can only collect such objects
-  if (!m_isRefColl) {
+  if (!m_isSubsetColl) {
     auto obj = object.m_obj;
     if (obj->id.index == podio::ObjectID::untracked) {
       const auto size = m_storage.entries.size();
@@ -117,7 +117,7 @@ void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
   } else {
     const auto obj = object.m_obj;
     if (obj->id.index < 0) {
-      throw std::invalid_argument("Object needs to be tracked by another collection in order for it to be storable in a reference collection");
+      throw std::invalid_argument("Object needs to be tracked by another collection in order for it to be storable in a subset collection");
     }
     m_storage.entries.push_back(obj);
     // No need to handle any relations here, since this is already done by the
@@ -126,7 +126,7 @@ void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
 }
 
 podio::CollectionBuffers {{ collection_type }}::getBuffers() {
-  return m_storage.getCollectionBuffers(m_isRefColl);
+  return m_storage.getCollectionBuffers(m_isSubsetColl);
 }
 
 // void {{ collection_type }}::setBuffers(const podio::CollectionBuffers& buffers) {

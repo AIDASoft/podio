@@ -419,33 +419,33 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
   REQUIRE(true);
 }
 
-TEST_CASE("Reference collection basics", "[reference-colls]") {
+TEST_CASE("Subset collection basics", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setReferenceCollection();
+  clusterRefs.setSubsetCollection();
 
   // The following will always be true
-  REQUIRE(clusterRefs.isReferenceCollection());
+  REQUIRE(clusterRefs.isSubsetCollection());
   const auto refCollBuffers = clusterRefs.getBuffers();
   REQUIRE(refCollBuffers.data == nullptr);
-  REQUIRE(refCollBuffers.vectorMembers->size() == 0u);
+  REQUIRE(refCollBuffers.vectorMembers->empty());
   REQUIRE(refCollBuffers.references->size() == 1u);
 }
 
-TEST_CASE("Reference collection can handle references", "[reference-colls]") {
+TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
    // Can only collect things that already live in a different colection
   auto clusters = ExampleClusterCollection();
   auto cluster = clusters.create();
 
   auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setReferenceCollection();
+  clusterRefs.setSubsetCollection();
   clusterRefs.push_back(cluster);
 
   auto clusterRef = clusterRefs[0];
-  static_assert(std::is_same_v<decltype(clusterRef), decltype(cluster)>, "Elements that can be obtained from a collection and a reference collection should have the same type");
+  static_assert(std::is_same_v<decltype(clusterRef), decltype(cluster)>, "Elements that can be obtained from a collection and a subset collection should have the same type");
 
   REQUIRE(clusterRef == cluster);
 
-  // These are "true" references, so changes should propagate
+  // These are "true" subsets, so changes should propagate
   cluster.energy(42);
   REQUIRE(clusterRef.energy() == 42);
   // Also in the other directon
@@ -453,13 +453,13 @@ TEST_CASE("Reference collection can handle references", "[reference-colls]") {
   REQUIRE(cluster.energy() == -42);
 }
 
-TEST_CASE("Collection iterators work with reference collections", "[reference-colls]") {
+TEST_CASE("Collection iterators work with subset collections", "[subset-colls]") {
   auto hits = ExampleHitCollection();
   auto hit1 = hits.create(0x42ULL,0.,0.,0.,0.);
   auto hit2 = hits.create(0x42ULL,1.,1.,1.,1.);
 
   auto hitRefs = ExampleHitCollection();
-  hitRefs.setReferenceCollection();
+  hitRefs.setSubsetCollection();
   for (const auto h : hits) hitRefs.push_back(h);
 
   // index-based looping / access
@@ -474,27 +474,27 @@ TEST_CASE("Collection iterators work with reference collections", "[reference-co
   }
 }
 
-TEST_CASE("Canont convert a normal collection into a reference collection", "[reference-colls]") {
+TEST_CASE("Canont convert a normal collection into a subset collection", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
   auto cluster = clusterRefs.create();
 
-  REQUIRE_THROWS_AS(clusterRefs.setReferenceCollection(), std::logic_error);
+  REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(), std::logic_error);
 }
 
-TEST_CASE("Cannot convert a reference collection into a normal collection", "[reference-colls]") {
+TEST_CASE("Cannot convert a subset collection into a normal collection", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setReferenceCollection();
+  clusterRefs.setSubsetCollection();
 
   auto clusters = ExampleClusterCollection();
   auto cluster = clusters.create();
   clusterRefs.push_back(cluster);
 
-  REQUIRE_THROWS_AS(clusterRefs.setReferenceCollection(false), std::logic_error);
+  REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(false), std::logic_error);
 }
 
-TEST_CASE("Reference collection only handles tracked objects", "[reference-colls]") {
+TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setReferenceCollection();
+  clusterRefs.setSubsetCollection();
   auto cluster = ExampleCluster();
 
   REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);

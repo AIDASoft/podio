@@ -101,7 +101,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
     const auto collIDTable = m_store->getCollectionIDTable();
     m_metadatatree->Branch("CollectionIDs", collIDTable);
 
-    // collectionID, collection type, reference collection
+    // collectionID, collection type, subset collection
     std::vector<std::tuple<int, std::string, bool>> collectionInfo;
     collectionInfo.reserve(m_collectionsToWrite.size());
     for (const auto& name : m_collectionsToWrite) {
@@ -110,7 +110,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
       // No check necessary, only registered collections possible
       m_store->get(name, coll);
       const auto collType = coll->getValueTypeName() + "Collection";
-      collectionInfo.emplace_back(collID, std::move(collType), coll->isReferenceCollection());
+      collectionInfo.emplace_back(collID, std::move(collType), coll->isSubsetCollection());
     }
 
     m_metadatatree->Branch("CollectionTypeInfo", &collectionInfo);

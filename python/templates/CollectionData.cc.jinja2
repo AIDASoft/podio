@@ -41,8 +41,8 @@
 {% endfor %}
 }
 
-void {{ class_type }}::clear(bool isRefColl) {
-  if (isRefColl) {
+void {{ class_type }}::clear(bool isSubsetColl) {
+  if (isSubsetColl) {
     // We don't own the objects so no cleanup to do here
     entries.clear();
     // Clear the ObjectID I/O buffer
@@ -79,20 +79,20 @@ void {{ class_type }}::clear(bool isRefColl) {
   entries.clear();
 }
 
-podio::CollectionBuffers {{ class_type }}::getCollectionBuffers(bool isRefColl) {
+podio::CollectionBuffers {{ class_type }}::getCollectionBuffers(bool isSubsetColl) {
   return {
-    isRefColl ? nullptr : (void*)&m_data,
+    isSubsetColl ? nullptr : (void*)&m_data,
     &m_refCollections, // only need to store the ObjectIDs of the referenced objects
     &m_vecmem_info
   };
 }
 
-void {{ class_type }}::prepareForWrite(bool isRefColl) {
+void {{ class_type }}::prepareForWrite(bool isSubsetColl) {
   for (auto& pointer : m_refCollections) { pointer->clear(); }
 
-  // If this is a reference collection use the relation storing mechanism to
+  // If this is a subset collection use the relation storing mechanism to
   // store the ObjectIDs of all referenced objects and nothing else
-  if (isRefColl) {
+  if (isSubsetColl) {
     for (const auto* obj : entries) {
       m_refCollections[0]->emplace_back(obj->id);
     }
@@ -161,8 +161,8 @@ void {{ class_type }}::createRelations({{ class.bare_type }}Obj* obj) {
 {% endif %}
 
 {% if OneToManyRelations or OneToOneRelations %}
-void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectionProvider, bool isRefColl) {
-  if (isRefColl) {
+void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectionProvider, bool isSubsetColl) {
+  if (isSubsetColl) {
     for (const auto& id : *m_refCollections[0]) {
 {{ macros.get_collection(class.full_type) }}
       entries.push_back(tmp_coll->m_storage.entries[id.index]);
@@ -181,8 +181,8 @@ void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectio
 }
 {% endif %}
 
-void {{ class_type }}::makeReferenceCollection() {
-  // Reference collections do not need all the data buffers that normal
+void {{ class_type }}::makeSubsetCollection() {
+  // Subset collections do not need all the data buffers that normal
   // collections need, so we can free them here
   m_vecmem_info.clear();
 
@@ -198,7 +198,7 @@ void {{ class_type }}::makeReferenceCollection() {
   m_vec_{{ member.name }} = nullptr;
 {% endfor %}
 
-  // Reference collections need one vector of ObjectIDs for I/O purposes.
+  // Subset collections need one vector of ObjectIDs for I/O purposes.
   for (auto& pointer : m_refCollections) {
     delete pointer;
   }

@@ -31,7 +31,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& info       = store.create<EventInfoCollection>("info");
   auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
   auto& mcpsRefs   = store.create<ExampleMCCollection>("mcParticleRefs");
-  mcpsRefs.setReferenceCollection();
+  mcpsRefs.setSubsetCollection();
   auto& hits       = store.create<ExampleHitCollection>("hits");
   auto& clusters   = store.create<ExampleClusterCollection>("clusters");
   auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");

@@ -47,7 +47,7 @@ namespace podio {
     virtual SIOBlock* create(const std::string& name) const=0 ;
 
     // create a new collection for this block
-    virtual void createCollection(const bool referenceCollection=false) = 0;
+    virtual void createCollection(const bool subsetCollection=false) = 0;
 
   protected:
 
@@ -74,13 +74,13 @@ namespace podio {
 
     podio::CollectionIDTable* getTable() { return _table; }
     const std::vector<std::string>& getTypeNames() const { return _types; }
-    const std::vector<short>& getRefCollectionBits() const { return _isRefColl; }
+    const std::vector<short>& getSubsetCollectionBits() const { return _isSubsetColl; }
 
   private:
     podio::EventStore* _store{nullptr};
     podio::CollectionIDTable* _table{nullptr};
     std::vector<std::string> _types{};
-    std::vector<short> _isRefColl{};
+    std::vector<short> _isSubsetColl{};
   };
 
 

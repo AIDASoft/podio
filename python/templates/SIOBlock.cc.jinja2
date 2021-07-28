@@ -33,7 +33,7 @@ void handlePODDataSIO(devT& device, {{ class.namespace }}::{{ class.bare_type }}
 
 void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
   auto collBuffers = _col->getBuffers();
-  if (not _col->isReferenceCollection()) {
+  if (not _col->isSubsetCollection()) {
     auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
     unsigned size(0);
     device.data( size );
@@ -64,7 +64,7 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
 void {{ block_class }}::write(sio::write_device& device) {
   _col->prepareForWrite() ;
   auto collBuffers = _col->getBuffers();
-  if (not _col->isReferenceCollection()) {
+  if (not _col->isSubsetCollection()) {
     auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
     unsigned size = dataVec->size() ;
     device.data( size ) ;
@@ -90,9 +90,9 @@ void {{ block_class }}::write(sio::write_device& device) {
 {% endif %}
 }
 
-void {{ block_class }}::createCollection(const bool referenceCollection) {
+void {{ block_class }}::createCollection(const bool subsetCollection) {
   setCollection(new {{ class.bare_type }}Collection);
-  _col->setReferenceCollection(referenceCollection);
+  _col->setSubsetCollection(subsetCollection);
 }
 
 {% endwith %}

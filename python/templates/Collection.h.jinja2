@@ -64,11 +64,11 @@ public:
   /// fully qualified type name of elements - with namespace
   std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
 
-  bool isReferenceCollection() const final {
-    return m_isRefColl;
+  bool isSubsetCollection() const final {
+    return m_isSubsetColl;
   }
 
-  void setReferenceCollection(bool setToRef=true) final;
+  void setSubsetCollection(bool setSubset=true) final;
 
   /// Returns the object of given index
   Const{{ class.bare_type }} operator[](unsigned int index) const;
@@ -132,7 +132,7 @@ private:
 
   bool m_isValid{false};
   bool m_isReadFromFile{false};
-  bool m_isRefColl{false};
+  bool m_isSubsetColl{false};
   int m_collectionID{0};
   {{ class.bare_type }}CollectionData m_storage{};
 };
@@ -141,8 +141,8 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection&
 
 template<typename... Args>
 {{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... args) {
-  if (m_isRefColl) {
-    throw std::logic_error("Cannot create new elements on a reference collection");
+  if (m_isSubsetColl) {
+    throw std::logic_error("Cannot create new elements on a subset collection");
   }
   const int size = m_storage.entries.size();
   auto obj = new {{ class.bare_type }}Obj({size, m_collectionID}, {std::forward<Args>(args)...});

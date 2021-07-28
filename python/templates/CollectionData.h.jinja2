@@ -57,7 +57,7 @@ public:
 
   void prepareAfterRead(int collectionID);
 
-  void makeReferenceCollection();
+  void makeSubsetCollection();
 
 {% if OneToManyRelations or VectorMembers %}
   void createRelations({{ class.bare_type }}Obj* obj);

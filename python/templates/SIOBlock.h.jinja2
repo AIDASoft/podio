@@ -33,7 +33,7 @@ public:
   // Write the particle data to the device
   virtual void write(sio::write_device& device) override;
 
-  virtual void createCollection(const bool referenceCollection=false) override;
+  virtual void createCollection(const bool subsetCollection=false) override;
 
   SIOBlock* create(const std::string& name) const override { return new {{ block_class }}(name); }
 };

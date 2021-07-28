@@ -74,11 +74,11 @@ namespace podio {
     auto* collection = static_cast<CollectionBase*>(collectionClass->New());
     auto collBuffers = collection->getBuffers();
     // If we have a valid data buffer class we know that have to read data,
-    // otherwise we are handling a reference collection
+    // otherwise we are handling a subset collection
     if (theClass) {
       collBuffers.data = theClass->New();
     } else {
-      collection->setReferenceCollection();
+      collection->setSubsetCollection();
     }
 
     const auto localEntry = m_chain->LoadTree(m_eventNumber);
@@ -199,7 +199,7 @@ namespace podio {
  void ROOTReader::createCollectionBranches(const std::vector<std::tuple<int, std::string, bool>>& collInfo) {
     size_t collectionIndex{0};
 
-    for (const auto& [collID, collType, isRefColl] : collInfo) {
+    for (const auto& [collID, collType, isSubsetColl] : collInfo) {
       // We only write collections that are in the collectionIDTable, so no need
       // to check here
       const auto name = m_table->name(collID);
@@ -211,9 +211,9 @@ namespace podio {
       // temporary collection ourselves
       auto collection = std::unique_ptr<podio::CollectionBase>(
         static_cast<podio::CollectionBase*>(collectionClass->New()));
-      collection->setReferenceCollection(isRefColl);
+      collection->setSubsetCollection(isSubsetColl);
 
-      if (!isRefColl) {
+      if (!isSubsetColl) {
         // This branch is guaranteed to exist since only collections that are
         // also written to file are in the info metadata that we work with here
         branches.data = root_utils::getBranch(m_chain, name.c_str());
@@ -231,7 +231,7 @@ namespace podio {
       }
 
       const std::string bufferClassName = "std::vector<" + collection->getValueTypeName() + "Data>";
-      const auto bufferClass = isRefColl ? nullptr : TClass::GetClass(bufferClassName.c_str());
+      const auto bufferClass = isSubsetColl ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
       m_storedClasses.emplace(
         name, std::make_tuple(bufferClass, collectionClass, collectionIndex++)
