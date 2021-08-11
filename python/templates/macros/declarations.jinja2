@@ -86,7 +86,7 @@
   /// disconnect from {{ type }}Obj instance
   void unlink() { m_obj = nullptr; }
 
-{% set inverse_type = type if prefix else 'Const' + type %}
+{% set inverse_type = type if prefix else 'Mutable' + type %}
   bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }
   bool operator==(const {{ inverse_type }}& other) const;
 

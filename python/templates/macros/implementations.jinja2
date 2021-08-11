@@ -161,7 +161,7 @@ const podio::ObjectID {{ full_type }}::getObjectID() const {
   return podio::ObjectID{podio::ObjectID::invalid, podio::ObjectID::invalid};
 }
 
-{% set inverse_type = class.bare_type if prefix else 'Const' + class.bare_type %}
+{% set inverse_type = class.bare_type if prefix else 'Mutable' + class.bare_type %}
 bool {{ full_type }}::operator==(const {{ inverse_type }}& other) const {
   return m_obj == other.m_obj;
 }
@@ -169,7 +169,7 @@ bool {{ full_type }}::operator==(const {{ inverse_type }}& other) const {
 
 
 {% macro ostream_operator(type, members, single_relations, multi_relations, get_syntax) %}
-std::ostream& operator<<(std::ostream& o, const Const{{ type }}& value) {
+std::ostream& operator<<(std::ostream& o, const {{ type }}& value) {
   o << " id: " << value.id() << '\n';
 {% for member in members %}
 {% if member.is_array %}

@@ -219,7 +219,6 @@ class ClassGenerator(object):
     self._fill_templates('Data', datatype)
     self._fill_templates('Object', datatype)
     self._fill_templates('MutableObject', datatype)
-    self._fill_templates('ConstObject', datatype)
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
     self._fill_templates('CollectionData', datatype)
@@ -233,23 +232,17 @@ class ClassGenerator(object):
     includes, includes_cc = set(), set()
 
     for relation in datatype['OneToOneRelations']:
-      if not relation.is_builtin:
-        relation.relation_type = relation.as_qualified_const()
-
       if relation.full_type != datatype['class'].full_type:
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
-        fwd_declarations[relation.namespace].append('Const' + relation.bare_type)
-        includes_cc.add(self._build_include(relation.bare_type + 'Const'))
+        fwd_declarations[relation.namespace].append(relation.bare_type)
+        includes_cc.add(self._build_include(relation.bare_type))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
 
     for relation in datatype['VectorMembers'] + datatype['OneToManyRelations']:
       if not relation.is_builtin:
-        if relation.full_type not in self.reader.components:
-          relation.relation_type = relation.as_qualified_const()
-
         if relation.full_type == datatype['class'].full_type:
           includes_cc.add(self._build_include(datatype['class'].bare_type))
         else:
@@ -276,7 +269,7 @@ class ClassGenerator(object):
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
-        fwd_declarations[relation.namespace].append('Const' + relation.bare_type)
+        fwd_declarations[relation.namespace].append('Mutable' + relation.bare_type)
         includes_cc.add(self._build_include(relation.bare_type))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:

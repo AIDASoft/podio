@@ -5,8 +5,8 @@
 #ifndef {{ package_name.upper() }}_{{ class.bare_type }}_H
 #define {{ package_name.upper() }}_{{ class.bare_type }}_H
 
-#include "{{ incfolder }}{{ class.bare_type }}Const.h"
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+#include "{{ incfolder }}{{ class.bare_type }}Mutable.h"
 
 {% for include in includes %}
 {{ include }}
@@ -21,25 +21,18 @@
 {{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 
+  friend class Mutable{{ class.bare_type }};
   friend class {{ class.bare_type }}Collection;
   friend class {{ class.bare_type }}CollectionIterator;
-  friend class Const{{ class.bare_type }};
-  friend class Mutable{{ class.bare_type }};
 
 public:
-
 {{ macros.constructors_destructors(class.bare_type, Members) }}
-  /// conversion to const object
-  operator Const{{ class.bare_type }}() const;
 
 public:
 
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}
-{{ macros.member_setters(Members, use_get_syntax) }}
-{{ macros.single_relation_setters(OneToOneRelations, use_get_syntax) }}
-{{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax, with_adder=True) }}
-{{ utils.if_present(ExtraCode, "declaration") }}
+{{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax) }}
 {{ utils.if_present(ConstExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type) }}
 
@@ -47,7 +40,7 @@ private:
   {{ class.bare_type }}Obj* m_obj;
 };
 
-std::ostream& operator<<(std::ostream& o, const Const{{ class.bare_type }}& value);
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 
 {{ utils.namespace_close(class.namespace) }}
 

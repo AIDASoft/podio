@@ -13,15 +13,11 @@
 {{ utils.namespace_open(class.namespace) }}
 
 {{ macros.constructors_destructors(class.bare_type, Members) }}
-{{ class.bare_type }}::operator Const{{ class.bare_type }}() const { return Const{{ class.bare_type }}(m_obj); }
 
 {{ macros.member_getters(class, Members, use_get_syntax) }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax) }}
-{{ macros.member_setters(class, Members, use_get_syntax) }}
-{{ macros.single_relation_setters(class, OneToOneRelations, use_get_syntax) }}
-{{ macros.multi_relation_handling(class, OneToManyRelations + VectorMembers, use_get_syntax, with_adder=True) }}
+{{ macros.multi_relation_handling(class, OneToManyRelations + VectorMembers, use_get_syntax) }}
 
-{{ utils.if_present_with_replacement(ExtraCode, "implementation", '{name}', class.bare_type) }}
 {{ utils.if_present_with_replacement(ConstExtraCode, "implementation", '{name}', class.bare_type) }}
 
 {{ macros.common_object_funcs(class) }}
