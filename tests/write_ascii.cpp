@@ -58,7 +58,7 @@ int main(){
       std::cout << "processing event " << i << std::endl;
     }
 
-    auto item1 = EventInfo();
+    auto item1 = MutableEventInfo();
     item1.Number(i);
     info.push_back(item1);
     auto hit1 = ExampleHit( 0xbad, 0.,0.,0.,23.+i);
@@ -91,10 +91,8 @@ int main(){
     mcps.push_back( mcp9 ) ;
 
     // --- add some daughter relations
-    auto p = ExampleMC();
-    auto d = ExampleMC();
- 
-    p = mcps[0] ; 
+
+    auto p = mcps[0] ;
     p.adddaughters( mcps[2] ) ;
     p.adddaughters( mcps[3] ) ;
     p.adddaughters( mcps[4] ) ;
@@ -120,7 +118,7 @@ int main(){
       p = mcps[j] ; 
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
 	int dIndex = it->getObjectID().index ;
-	d = mcps[ dIndex ] ;
+	auto d = mcps[ dIndex ] ;
 	d.addparents( p ) ;
       }
     }
@@ -138,9 +136,9 @@ int main(){
     }
     //-------------------------------
 
-    auto cluster  = ExampleCluster();
-    auto clu0  = ExampleCluster();
-    auto clu1  = ExampleCluster();
+    auto cluster  = MutableExampleCluster();
+    auto clu0  = MutableExampleCluster();
+    auto clu1  = MutableExampleCluster();
 
     clu0.addHits(hit1);
     clu0.energy(hit1.energy());
@@ -156,7 +154,7 @@ int main(){
     clusters.push_back(clu1);
     clusters.push_back(cluster);
 
-    auto ref = ExampleReferencingType();
+    auto ref = MutableExampleReferencingType();
     refs.push_back(ref);
 
     auto ref2 = ExampleReferencingType();
@@ -165,17 +163,17 @@ int main(){
     ref.addClusters(cluster);
     ref.addRefs(ref2);
 
-    auto comp = ExampleWithComponent();
+    auto comp = MutableExampleWithComponent();
     comp.component().data.x = 0;
     comp.component().data.y = 1;
     comp.component().data.z = i;
     comps.push_back(comp);
 
-    auto cyclic = ExampleReferencingType();
+    auto cyclic = MutableExampleReferencingType();
     cyclic.addRefs(cyclic);
     refs.push_back(cyclic);
 
-    auto oneRel = ExampleWithOneRelation();
+    auto oneRel = MutableExampleWithOneRelation();
     oneRel.cluster(cluster);
     oneRels.push_back(oneRel);
 
@@ -183,18 +181,18 @@ int main(){
     auto oneRelEmpty = ExampleWithOneRelation();
     oneRels.push_back(oneRelEmpty);
 
-    auto vec = ExampleWithVectorMember();
+    auto vec = MutableExampleWithVectorMember();
     vec.addcount(23);
     vec.addcount(24);
     vecs.push_back(vec);
 
 
-    auto namesp = ex42::ExampleWithNamespace();
+    auto namesp = ex42::MutableExampleWithNamespace();
     namesp.component().x = 1;
     namesp.component().y = i;
     namesps.push_back(namesp);
 
-    auto rel = ex42::ExampleWithARelation();
+    auto rel = ex42::MutableExampleWithARelation();
     rel.ref(namesp);
     namesprels.push_back(rel);
 

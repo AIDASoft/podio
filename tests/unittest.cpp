@@ -22,9 +22,9 @@
 
 TEST_CASE("AutoDelete") {
   auto store = podio::EventStore();
-  auto hit1 = EventInfo();
-  auto hit2 = EventInfo();
-  auto hit3 = EventInfo();
+  auto hit1 = MutableEventInfo();
+  auto hit2 = MutableEventInfo();
+  auto hit3 = MutableEventInfo();
   auto& coll  = store.create<EventInfoCollection>("info");
   coll.push_back(hit1);
   hit3 = hit2;
@@ -79,7 +79,7 @@ TEST_CASE("Clearing"){
     cluster.addHits(hit1);
     cluster.addHits(hit2);
     hits.push_back(hit2);
-    auto oneRel = ExampleWithOneRelation();
+    auto oneRel = MutableExampleWithOneRelation();
     oneRel.cluster(cluster);
     oneRel.cluster(cluster);
     oneRels.push_back(oneRel);
@@ -91,33 +91,33 @@ TEST_CASE("Clearing"){
 
 TEST_CASE("Cloning"){
   bool success = true;
-  auto hit = ExampleHit();
+  auto hit = MutableExampleHit();
   hit.energy(30);
   auto hit2 = hit.clone();
   hit2.energy(20);
   if (hit.energy() == hit2.energy()) success = false;
-  auto cluster  = ExampleCluster();
+  auto cluster  = MutableExampleCluster();
   cluster.addHits(hit);
   auto cluster2 = cluster.clone();
   cluster.addHits(hit2);
   // check that the clone of a const object is mutable
-  auto const_hit = ConstExampleHit();
+  auto const_hit = ExampleHit();
   auto const_hit_clone = const_hit.clone();
   const_hit_clone.energy(30);
   REQUIRE(success);
 }
 
 TEST_CASE("Component"){
-  auto info = ExampleWithComponent();
+  auto info = MutableExampleWithComponent();
   info.component().data.x = 3;
   REQUIRE(3 == info.component().data.x);
 }
 
 TEST_CASE("Cyclic"){
-  auto start = ExampleForCyclicDependency1();
+  auto start = MutableExampleForCyclicDependency1();
   auto isAvailable = start.ref().isAvailable();
   REQUIRE_FALSE(isAvailable);
-  auto end = ExampleForCyclicDependency2();
+  auto end = MutableExampleForCyclicDependency2();
   start.ref(end);
   isAvailable = start.ref().isAvailable();
   REQUIRE(isAvailable);
@@ -193,7 +193,7 @@ TEST_CASE("Notebook") {
 TEST_CASE("OneToOneRelations") {
   bool success = true;
   auto cluster = ExampleCluster();
-  auto rel = ExampleWithOneRelation();
+  auto rel = MutableExampleWithOneRelation();
   rel.cluster(cluster);
   REQUIRE(success);
 }
@@ -269,7 +269,7 @@ TEST_CASE("Arrays") {
 */
 
 TEST_CASE("Extracode") {
-  auto ev = EventInfo();
+  auto ev = MutableEventInfo();
   ev.setNumber(42) ;
   REQUIRE(ev.getNumber() == 42);
 
@@ -321,7 +321,7 @@ TEST_CASE("AssociativeContainer") {
 
 TEST_CASE("Equality") {
   auto cluster = ExampleCluster();
-  auto rel = ExampleWithOneRelation();
+  auto rel = MutableExampleWithOneRelation();
   rel.cluster(cluster);
   auto returned_cluster = rel.cluster();
   REQUIRE(cluster == returned_cluster);
@@ -336,12 +336,12 @@ TEST_CASE("NonPresentCollection") {
 TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleClusterCollection>()[0]),
-                ConstExampleCluster>,
+                ExampleCluster>,
                 "const collections should only have indexed access to Const objects");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleClusterCollection>().at(0)),
-                ConstExampleCluster>,
+                ExampleCluster>,
                 "const collections should only have indexed access to Const objects");
 
   REQUIRE(true);
@@ -353,16 +353,16 @@ TEST_CASE("const correct indexed access to collections", "[const-correctness]") 
 
   static_assert(std::is_same_v<decltype(collection), ExampleHitCollection&>, "collection created by store should not be const");
 
-  static_assert(std::is_same_v<decltype(collection[0]), ExampleHit>,"non-const collections should have indexed access to mutable objects");
+  static_assert(std::is_same_v<decltype(collection[0]), MutableExampleHit>,"non-const collections should have indexed access to mutable objects");
  
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleClusterCollection>()[0]),
-                ExampleCluster>,
+                MutableExampleCluster>,
                 "collections should have indexed access to mutable objects");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleClusterCollection>().at(0)),
-                ExampleCluster>,
+                MutableExampleCluster>,
                 "collections should have indexed access to mutable objects");
 
   REQUIRE(true);
@@ -373,29 +373,29 @@ TEST_CASE("const correct iterators on const collections", "[const-correctness]")
   // this essentially checks the whole "chain" from begin() / end() through
   // iterator operators
   for (auto hit : collection) {
-    static_assert(std::is_same_v<decltype(hit), ConstExampleHit>, "const collection iterators should only return Const objects");
+    static_assert(std::is_same_v<decltype(hit), ExampleHit>, "const collection iterators should only return Const objects");
   }
 
   // but we can exercise it in a detailed fashion as well to make it easier to
   // spot where things fail, should they fail
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleHitCollection>().begin()),
-                ExampleHitConstCollectionIterator>,
+                ExampleHitCollectionIterator>,
                 "const collection begin() should return a ConstCollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleHitCollection>().end()),
-                ExampleHitConstCollectionIterator>,
+                ExampleHitCollectionIterator>,
                 "const collection end() should return a ConstCollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(*std::declval<const ExampleHitCollection>().begin()),
-                ConstExampleHit>,
+                ExampleHit>,
                 "ConstCollectionIterator should only give access to Const objects");
 
   static_assert(std::is_same_v<
-                decltype(std::declval<ExampleHitConstCollectionIterator>().operator->()),
-                ConstExampleHit*>,
+                decltype(std::declval<ExampleHitCollectionIterator>().operator->()),
+                ExampleHit*>,
                 "ConstCollectionIterator should only give access to Const objects");
 
   REQUIRE(true);
@@ -405,34 +405,34 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
 
   auto collection = ExampleClusterCollection();
   for (auto cluster : collection) {
-    static_assert(std::is_same_v<decltype(cluster), ExampleCluster>, "collection iterators should return mutable objects");
+    static_assert(std::is_same_v<decltype(cluster), MutableExampleCluster>, "collection iterators should return mutable objects");
     cluster.energy(42); // this will necessarily also compile
   }
 
   // check the individual steps again from above, to see where things fail if they fail
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleClusterCollection>().end()),
-                ExampleClusterCollectionIterator>,
+                ExampleClusterMutableCollectionIterator>,
                 "non const collection end() should return a CollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleClusterCollection>().end()),
-                ExampleClusterCollectionIterator>,
+                ExampleClusterMutableCollectionIterator>,
                 "non const collection end() should return a CollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleClusterCollection>().end()),
-                ExampleClusterCollectionIterator>,
+                ExampleClusterMutableCollectionIterator>,
                 "collection end() should return a CollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(*std::declval<ExampleClusterCollection>().begin()),
-                ExampleCluster>,
+                MutableExampleCluster>,
                 "CollectionIterator should give access to mutable objects");
 
   static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterCollectionIterator>().operator->()),
-                ExampleCluster*>,
+                decltype(std::declval<ExampleClusterMutableCollectionIterator>().operator->()),
+                MutableExampleCluster*>,
                 "CollectionIterator should only give access to mutable objects");
 
   REQUIRE(true);

@@ -9,8 +9,8 @@
 // segfault
 int main(int, char**)
 {
-  ExampleMC mcp1;
-  ExampleMC mcp2;
+  MutableExampleMC mcp1;
+  MutableExampleMC mcp2;
 
   mcp1.adddaughters(mcp2);
   mcp2.addparents(mcp1);
@@ -19,8 +19,8 @@ int main(int, char**)
   std::cout << mcp1 << std::endl;
 
   // Make sure everything still works if the relation is not of the same type
-  ExampleForCyclicDependency1 cyc1;
-  ExampleForCyclicDependency2 cyc2;
+  MutableExampleForCyclicDependency1 cyc1;
+  MutableExampleForCyclicDependency2 cyc2;
 
   cyc1.ref(cyc2);
   cyc2.ref(cyc1);
@@ -28,8 +28,8 @@ int main(int, char**)
   std::cout << cyc1 << cyc2 << std::endl;
 
   // Non-cyclical references
-  ExampleReferencingType ref1;
-  ExampleReferencingType ref2;
+  MutableExampleReferencingType ref1;
+  MutableExampleReferencingType ref2;
   ExampleReferencingType ref3;
 
   ref1.addRefs(ref2);
