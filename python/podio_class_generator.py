@@ -308,7 +308,8 @@ class ClassGenerator(object):
     """Do the necessary preprocessing for the collection"""
     includes_cc = set()
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
-      includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
+      if datatype['class'].bare_type != relation.bare_type:
+        includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
 
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')
