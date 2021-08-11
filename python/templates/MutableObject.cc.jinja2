@@ -1,0 +1,29 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/implementations.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+{{ utils.datamodel_includes(incfolder, class.bare_type) }}
+
+{% for include in includes_cc %}
+{{ include }}
+{% endfor %}
+
+#include <ostream>
+
+{{ utils.namespace_open(class.namespace) }}
+
+{{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
+Mutable{{ class.bare_type }}::operator {{ class.bare_type }}() const { return {{ class.bare_type }}(m_obj); }
+
+{{ macros.member_getters(class, Members, use_get_syntax, prefix='Mutable') }}
+{{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax, prefix='Mutable') }}
+{{ macros.member_setters(class, Members, use_get_syntax, prefix='Mutable') }}
+{{ macros.single_relation_setters(class, OneToOneRelations, use_get_syntax, prefix='Mutable') }}
+{{ macros.multi_relation_handling(class, OneToManyRelations + VectorMembers, use_get_syntax, with_adder=True, prefix='Mutable') }}
+
+{{ utils.if_present_with_replacement(ExtraCode, "implementation", '{name}', 'Mutable' + class.bare_type) }}
+{{ utils.if_present_with_replacement(ConstExtraCode, "implementation", '{name}', 'Mutable' + class.bare_type) }}
+
+{{ macros.common_object_funcs(class, prefix='Mutable') }}
+
+{{ utils.namespace_close(class.namespace) }}

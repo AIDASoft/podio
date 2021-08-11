@@ -165,6 +165,7 @@ class ClassGenerator(object):
         'Data': 'Data',
         'Obj': 'Obj',
         'ConstObject': 'Const',
+        'MutableObject': 'Mutable',
         'PrintInfo': 'PrintInfo',
         'Object': '',
         'Component': '',
@@ -217,6 +218,7 @@ class ClassGenerator(object):
     datatype = self._preprocess_datatype(name, definition)
     self._fill_templates('Data', datatype)
     self._fill_templates('Object', datatype)
+    self._fill_templates('MutableObject', datatype)
     self._fill_templates('ConstObject', datatype)
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)

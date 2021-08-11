@@ -2,10 +2,9 @@
 {% import "macros/utils.jinja2" as utils %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
-#ifndef {{ package_name.upper() }}_{{ class.bare_type }}_H
-#define {{ package_name.upper() }}_{{ class.bare_type }}_H
+#ifndef {{ package_name.upper() }}_Mutable{{ class.bare_type }}_H
+#define {{ package_name.upper() }}_Mutable{{ class.bare_type }}_H
 
-#include "{{ incfolder }}{{ class.bare_type }}Const.h"
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
 
 {% for include in includes %}
@@ -18,19 +17,18 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.class_description(class.bare_type, Description, Author) }}
-class {{ class.bare_type }} {
+{{ macros.class_description(class.bare_type, Description, Author, prefix='Mutable') }}
+class Mutable{{ class.bare_type }} {
 
   friend class {{ class.bare_type }}Collection;
   friend class {{ class.bare_type }}CollectionIterator;
-  friend class Const{{ class.bare_type }};
-  friend class Mutable{{ class.bare_type }};
+  friend class {{ class.bare_type }};
 
 public:
 
-{{ macros.constructors_destructors(class.bare_type, Members) }}
+{{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
   /// conversion to const object
-  operator Const{{ class.bare_type }}() const;
+  operator {{ class.bare_type }}() const;
 
 public:
 
@@ -41,13 +39,13 @@ public:
 {{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax, with_adder=True) }}
 {{ utils.if_present(ExtraCode, "declaration") }}
 {{ utils.if_present(ConstExtraCode, "declaration") }}
-{{ macros.common_object_funcs(class.bare_type) }}
+{{ macros.common_object_funcs(class.bare_type, prefix='Mutable') }}
 
 private:
   {{ class.bare_type }}Obj* m_obj;
 };
 
-std::ostream& operator<<(std::ostream& o, const Const{{ class.bare_type }}& value);
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 
 {{ utils.namespace_close(class.namespace) }}
 

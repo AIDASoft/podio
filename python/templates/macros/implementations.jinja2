@@ -52,20 +52,21 @@ const {{ sub_member.full_type }}& {{ class_type }}::{{ sub_member.getter_name(ge
 {%- endmacro %}
 
 
-{% macro member_setters(class, members, get_syntax) %}
+{% macro member_setters(class, members, get_syntax, prefix='') %}
+{% set class_type = prefix + class.bare_type %}
 {% for member in members %}
-void {{ class.bare_type }}::{{ member.setter_name(get_syntax) }}({{ member.full_type }} value) { m_obj->data.{{ member.name }} = value; }
+void {{ class_type }}::{{ member.setter_name(get_syntax) }}({{ member.full_type }} value) { m_obj->data.{{ member.name }} = value; }
 {% if member.is_array %}
-void {{ class.bare_type }}::{{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value) { m_obj->data.{{ member.name }}.at(i) = value; }
+void {{ class_type }}::{{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value) { m_obj->data.{{ member.name }}.at(i) = value; }
 {% endif %}
 {% if not member.is_builtin %}
-{{ member.full_type }}& {{ class.bare_type }}::{{ member.name }}() { return m_obj->data.{{ member.name }}; }
+{{ member.full_type }}& {{ class_type }}::{{ member.name }}() { return m_obj->data.{{ member.name }}; }
 {% endif %}
 {% if member.sub_members %}
 {% for sub_member in member.sub_members %}
-void {{ class.bare_type }}::{{ sub_member.setter_name(get_syntax) }}({{ sub_member.full_type }} value) { m_obj->data.{{ member.name }}.{{ sub_member.name }} = value; }
+void {{ class_type }}::{{ sub_member.setter_name(get_syntax) }}({{ sub_member.full_type }} value) { m_obj->data.{{ member.name }}.{{ sub_member.name }} = value; }
 {% if not sub_member.is_builtin %}
-{{ sub_member.full_type }}& {{ class.bare_type }}::{{ sub_member.name }}() { return m_obj->data.{{ member.name }}.{{ sub_member.name }}; }
+{{ sub_member.full_type }}& {{ class_type }}::{{ sub_member.name }}() { return m_obj->data.{{ member.name }}.{{ sub_member.name }}; }
 {% endif %}
 {% endfor %}
 {% endif %}
@@ -87,9 +88,10 @@ const {{ relation.relation_type }} {{ class_type }}::{{ relation.getter_name(get
 {%- endmacro %}
 
 
-{% macro single_relation_setters(class, relations, get_syntax) %}
+{% macro single_relation_setters(class, relations, get_syntax, prefix='') %}
+{% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
-void {{ class.bare_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.relation_type }} value) {
+void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.relation_type }} value) {
   if (m_obj->m_{{ relation.name }}) delete m_obj->m_{{ relation.name }};
   m_obj->m_{{ relation.name }} = new {{ relation.relation_type }}(value);
 }
