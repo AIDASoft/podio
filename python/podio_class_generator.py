@@ -242,7 +242,6 @@ class ClassGenerator(object):
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
-      includes.add('#include "podio/RelationRange.h"')
 
     for relation in datatype['VectorMembers'] + datatype['OneToManyRelations']:
       if not relation.is_builtin:
@@ -280,6 +279,7 @@ class ClassGenerator(object):
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
+      includes.add('#include "podio/RelationRange.h"')
 
     for relation in datatype['OneToManyRelations']:
       if self._needs_include(relation):
