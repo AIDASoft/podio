@@ -161,15 +161,16 @@ class ClassGenerator(object):
     # depending on which category is passed different naming conventions apply
     # for the generated files. Additionally not all categories need source files.
     # Listing the special cases here
-    fn_base = {
-        'Data': 'Data',
-        'Obj': 'Obj',
-        'MutableObject': 'Mutable',
-        'PrintInfo': 'PrintInfo',
-        'Object': '',
-        'Component': '',
-        'SIOBlock': 'SIOBlock',
-        }.get(template_base, template_base)
+    def get_fn_format(tmpl):
+      """Get a format string for the filename"""
+      prefix = {'MutableObject': 'Mutable'}
+      postfix = {'Data': 'Data',
+                 'Obj': 'Obj',
+                 'SIOBlock': 'SIOBlock',
+                 'Collection': 'Collection',
+                 'CollectionData': 'CollectionData'}
+
+      return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
 
     endings = {
         'Data': ('h',),
@@ -180,7 +181,7 @@ class ClassGenerator(object):
     fn_templates = []
     for ending in endings:
       template_name = '{fn}.{end}.jinja2'.format(fn=template_base, end=ending)
-      filename = '{name}{fn}.{end}'.format(fn=fn_base, name=name, end=ending)
+      filename = get_fn_format(template_base).format(name=name, end=ending)
       fn_templates.append((filename, template_name))
 
     return fn_templates

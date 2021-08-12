@@ -6,6 +6,8 @@
 #define {{ package_name.upper() }}_Mutable{{ class.bare_type }}_H
 
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+// Make the immutable class available from its mutable version but not vice versa
+#include "{{ incfolder }}{{ class.bare_type }}.h"
 
 {% for include in includes %}
 {{ include }}
@@ -44,8 +46,6 @@ public:
 private:
   {{ class.bare_type }}Obj* m_obj;
 };
-
-std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 
 {{ utils.namespace_close(class.namespace) }}
 

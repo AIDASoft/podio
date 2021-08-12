@@ -1,6 +1,6 @@
 #include "datamodel/ExampleMCCollection.h"
-#include "datamodel/ExampleReferencingType.h"
-#include "datamodel/ExampleWithVectorMember.h"
+#include "datamodel/MutableExampleReferencingType.h"
+#include "datamodel/MutableExampleWithVectorMember.h"
 
 #include "podio/EventStore.h"
 #include "podio/ROOTWriter.h"

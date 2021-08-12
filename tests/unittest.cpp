@@ -16,8 +16,7 @@
 #include "datamodel/ExampleForCyclicDependency1Collection.h"
 #include "datamodel/ExampleForCyclicDependency2Collection.h"
 #include "datamodel/ExampleHitCollection.h"
-#include "datamodel/ExampleWithComponent.h"
-#include "datamodel/ExampleWithOneRelation.h"
+#include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 
 TEST_CASE("AutoDelete") {
