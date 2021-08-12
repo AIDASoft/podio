@@ -164,7 +164,6 @@ class ClassGenerator(object):
     fn_base = {
         'Data': 'Data',
         'Obj': 'Obj',
-        'ConstObject': 'Const',
         'MutableObject': 'Mutable',
         'PrintInfo': 'PrintInfo',
         'Object': '',

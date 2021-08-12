@@ -130,10 +130,6 @@ class MemberVariable(object):
 
     # For usage in constructor signatures
     self.signature = self.full_type + ' ' + self.name
-    # If used in a relation context. NOTE: The generator might still adapt this
-    # depending on other criteria. Here it is just filled with a sane default
-    # that works if none of these criteria are met
-    self.relation_type = self.full_type
 
     # Needed in case the PODs are exposed
     self.sub_members = None
@@ -156,18 +152,6 @@ class MemberVariable(object):
     if self.description:
       definition += r' ///< {}'.format(self.description)
     return definition
-
-  def as_const(self):
-    """Get the Const name for the type without any namespace"""
-    if self.is_array or self.is_builtin:
-      raise ValueError('Trying to get the Const version of a builtin or array member')
-    return 'Const{}'.format(self.bare_type)
-
-  def as_qualified_const(self):
-    """string representation for the ConstType including namespace"""
-    if self.namespace:
-      return '::{nsp}::{cls}'.format(nsp=self.namespace, cls=self.as_const())
-    return self.as_const()
 
   def getter_name(self, get_syntax):
     """Get the getter name of the variable"""

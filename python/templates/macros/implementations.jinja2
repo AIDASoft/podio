@@ -77,11 +77,11 @@ void {{ class_type }}::{{ sub_member.setter_name(get_syntax) }}({{ sub_member.fu
 {% macro single_relation_getters(class, relations, get_syntax, prefix='') %}
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
-const {{ relation.relation_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
+const {{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
   if (!m_obj->m_{{ relation.name }}) {
-    return {{ relation.relation_type }}(nullptr);
+    return {{ relation.full_type }}(nullptr);
   }
-  return {{ relation.relation_type }}(*(m_obj->m_{{ relation.name }}));
+  return {{ relation.full_type }}(*(m_obj->m_{{ relation.name }}));
 }
 
 {% endfor %}
@@ -91,9 +91,9 @@ const {{ relation.relation_type }} {{ class_type }}::{{ relation.getter_name(get
 {% macro single_relation_setters(class, relations, get_syntax, prefix='') %}
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
-void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.relation_type }} value) {
+void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.full_type }} value) {
   if (m_obj->m_{{ relation.name }}) delete m_obj->m_{{ relation.name }};
-  m_obj->m_{{ relation.name }} = new {{ relation.relation_type }}(value);
+  m_obj->m_{{ relation.name }} = new {{ relation.full_type }}(value);
 }
 
 {% endfor %}
@@ -104,19 +104,19 @@ void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.relati
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
 {% if with_adder %}
-void {{ class_type }}::{{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.relation_type }} component) {
+void {{ class_type }}::{{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.full_type }} component) {
   m_obj->m_{{ relation.name }}->push_back(component);
   m_obj->data.{{ relation.name }}_end++;
 }
 {% endif %}
 
-std::vector<{{ relation.relation_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_begin() const {
+std::vector<{{ relation.full_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_begin() const {
   auto ret_value = m_obj->m_{{ relation.name }}->begin();
   std::advance(ret_value, m_obj->data.{{ relation.name }}_begin);
   return ret_value;
 }
 
-std::vector<{{ relation.relation_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_end() const {
+std::vector<{{ relation.full_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_end() const {
   auto ret_value = m_obj->m_{{ relation.name }}->begin();
   std::advance(ret_value, m_obj->data.{{ relation.name }}_end);
   return ret_value;
@@ -126,14 +126,14 @@ unsigned int {{ class_type }}::{{ relation.name }}_size() const {
   return m_obj->data.{{ relation.name }}_end - m_obj->data.{{ relation.name }}_begin;
 }
 
-{{ relation.relation_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}(unsigned int index) const {
+{{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}(unsigned int index) const {
   if ({{ relation.name }}_size() > index) {
     return m_obj->m_{{ relation.name }}->at(m_obj->data.{{ relation.name }}_begin + index);
   }
   throw std::out_of_range("index out of bounds for existing references");
 }
 
-podio::RelationRange<{{ relation.relation_type }}> {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
+podio::RelationRange<{{ relation.full_type }}> {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
   auto begin = m_obj->m_{{ relation.name }}->begin();
   std::advance(begin, m_obj->data.{{ relation.name }}_begin);
   auto end = m_obj->m_{{ relation.name }}->begin();
