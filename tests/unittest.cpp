@@ -1,5 +1,6 @@
 // STL
 #include <iostream>
+#include <map>
 #include <stdexcept>
 #include <vector>
 #include <type_traits>
@@ -44,6 +45,23 @@ TEST_CASE("Basics") {
   const ExampleHitCollection* coll3(nullptr);
   if (store.get("wrongName",coll3) != false) success = false;
   REQUIRE(success);
+}
+
+TEST_CASE("Assignment-operator ref count") {
+  // Make sure that the assignment operator handles the reference count
+  // correctly. (Will trigger in an ASan build if it is not the case)
+  // See https://github.com/AIDASoft/podio/issues/200
+  std::map<int, ExampleHit> hitMap;
+  for (int i = 0; i < 10; ++i) {
+    auto hit = ExampleHit(0x42ULL, i, i, i, i);
+    hitMap[i] = hit;
+  }
+
+  // hits should still be valid here
+  for (int i = 0; i < 10; ++i) {
+    const auto hit = hitMap[i];
+    REQUIRE(hit.energy() == i);
+  }
 }
 
 TEST_CASE("Clearing"){
