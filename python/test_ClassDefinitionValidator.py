@@ -180,8 +180,9 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     with self.assertRaises(DefinitionError):
       self.validate(make_dm(self.valid_component, datatype), True)
 
-  def test_datatype_valid_many_relations(self):
-    self.valid_datatype['DataType']['OneToManyRelations'] = [
+
+  def _test_datatype_valid_relations(self, rel_type):
+    self.valid_datatype['DataType'][rel_type] = [
         MemberVariable(type='DataType', name='selfRelation')
         ]
     self._assert_no_exception(DefinitionError,
@@ -192,31 +193,43 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
         'Author': 'John Cleese',
         'Description': 'Tis but a scratch',
         'Members': [MemberVariable(type='int', name='counter', description='number of arms')],
-        'OneToManyRelations': [MemberVariable(type='DataType', name='relation', description='soo many relations')]
+        rel_type: [MemberVariable(type='DataType', name='relation', description='soo many relations')]
         }
 
     self._assert_no_exception(DefinitionError, '{} should validate a valid relation',
                               self.validate, make_dm(self.valid_component, self.valid_datatype), False)
 
-  def test_datatype_invalid_many_relations(self):
+  def test_datatype_valid_many_relations(self):
+    self._test_datatype_valid_relations('OneToManyRelations')
+
+  def test_datatype_valid_single_relations(self):
+    self._test_datatype_valid_relations('OneToOneRelations')
+
+  def _test_datatype_invalid_relations(self, rel_type):
     datatype = deepcopy(self.valid_datatype)
-    datatype['DataType']['OneToManyRelations'] = [MemberVariable(type='NonExistentDataType',
-                                                                 name='aName')]
+    datatype['DataType'][rel_type] = [MemberVariable(type='NonExistentDataType',
+                                                     name='aName')]
     with self.assertRaises(DefinitionError):
       self.validate(make_dm({}, datatype), False)
 
     datatype = deepcopy(self.valid_datatype)
-    datatype['DataType']['OneToManyRelations'] = [MemberVariable(type='Component',
-                                                                 name='componentRelation')]
+    datatype['DataType'][rel_type] = [MemberVariable(type='Component',
+                                                     name='componentRelation')]
     with self.assertRaises(DefinitionError):
       self.validate(make_dm(self.valid_component, datatype), False)
 
     datatype = deepcopy(self.valid_datatype)
-    datatype['DataType']['OneToManyRelations'] = [
+    datatype['DataType'][rel_type] = [
         MemberVariable(array_type='int', array_size='42', name='arrayRelation')
         ]
     with self.assertRaises(DefinitionError):
       self.validate(make_dm({}, datatype), False)
+
+  def test_datatype_invalid_many_relations(self):
+    self._test_datatype_invalid_relations('OneToManyRelations')
+
+  def test_datatype_invalid_single_relations(self):
+    self._test_datatype_invalid_relations('OneToOneRelations')
 
   def test_datatype_valid_vector_members(self):
     self.valid_datatype['DataType']['VectorMembers'] = [MemberVariable(type='int', name='someInt')]

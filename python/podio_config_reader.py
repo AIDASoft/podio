@@ -232,6 +232,12 @@ class ClassDefinitionValidator(object):
         raise DefinitionError("'{}' declares a non-allowed many-relation to '{}'"
                               .format(classname, relation.full_type))
 
+    one_relations = definition.get("OneToOneRelations", [])
+    for relation in one_relations:
+      if relation.full_type not in self.datatypes:
+        raise DefinitionError("'{}' declares a non-allowed single-relation to '{}'"
+                              .format(classname, relation.full_type))
+
     vector_members = definition.get("VectorMembers", [])
     for vecmem in vector_members:
       if not vecmem.is_builtin and vecmem.full_type not in self.components:
