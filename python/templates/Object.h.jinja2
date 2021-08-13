@@ -26,6 +26,7 @@ class {{ class.bare_type }} {
   friend class Const{{ class.bare_type }};
 
 public:
+  using ObjPtrT = {{ class.bare_type }}Obj*;
 
 {{ macros.constructors_destructors(class.bare_type, Members) }}
   /// conversion to const object
@@ -42,7 +43,7 @@ public:
 {{ utils.if_present(ConstExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type) }}
 
-private:
+public: // TODO: make private again
   {{ class.bare_type }}Obj* m_obj;
 };
 

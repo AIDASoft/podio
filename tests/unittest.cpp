@@ -9,6 +9,7 @@
 
 // podio specific includes
 #include "podio/EventStore.h"
+#include "podio/GenericWrapper.h"
 
 // Test data types
 #include "datamodel/EventInfoCollection.h"
@@ -514,4 +515,19 @@ TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
 
   REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
   REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);
+}
+
+TEST_CASE("GenericWrapper basics") {
+  std::cout << "+++++++++++++++++++++++++++++++++++++\n";
+  using WrapperT = podio::GenericWrapper<ExampleHit, ExampleCluster>;
+
+  const podio::ObjectID untracked = {podio::ObjectID::untracked, podio::ObjectID::untracked};
+
+  WrapperT wrapper{ExampleHit{}};
+  std::cout << "----------------------------------------\n";
+
+  REQUIRE(wrapper.getObjectID() == untracked);
+
+  wrapper = ExampleCluster{};
+  std::cout << "+++++++++++++++++++++++++++++++++++++\n";
 }

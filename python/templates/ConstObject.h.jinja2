@@ -18,6 +18,7 @@
 
 {{ macros.class_description(class.bare_type, Description, Author, prefix='Const') }}
 class Const{{ class.bare_type }} {
+  using ObjPtrT = {{ class.bare_type }}Obj*;
 
   friend class {{ class.bare_type }};
   friend class {{ class.bare_type }}Collection;
@@ -34,7 +35,7 @@ public:
 {{ utils.if_present(ConstExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type, prefix='Const') }}
 
-private:
+public: // TODO: make private again
   {{ class.bare_type }}Obj* m_obj;
 };
 
