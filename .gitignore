@@ -51,3 +51,7 @@ spack*
 *.exe
 *.out
 *.app
+
+# Tooling
+/.clangd/
+/compile_commands.json
