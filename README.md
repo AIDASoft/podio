@@ -31,6 +31,12 @@ Install ROOT 6.08.06 (or later) and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
 
+### Catch2 v3 (optional)
+
+By default Podio requires that a static [Catch2 v3](https://github.com/catchorg/Catch2/tree/devel) library is available and the unittests will be built against that.
+Using the `-DUSE_EXTERNAL_CATCH2=OFF` to configure CMake will instead fetch an appropriate version of the library and build it on the fly.
+
+
 ### Python > 2.7
 
 Podio works with both python 2 and python3. Check your python version by doing:
