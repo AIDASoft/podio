@@ -129,13 +129,6 @@ podio::CollectionBuffers {{ collection_type }}::getBuffers() {
   return m_storage.getCollectionBuffers(m_isSubsetColl);
 }
 
-// void {{ collection_type }}::setBuffers(const podio::CollectionBuffers& buffers) {
-//   if (m_storage.data) delete m_storage.data;
-//   m_storage.data = static_cast<{{ class.bare_type }}DataContainer*>(buffers.data);
-
-//   m_storage.vecmem_info = std::move(*buffers.vectorMembers);
-//   m_storage.refCollections = std::move(*buffers.references);
-// }
 {% endwith %}
 
 {{ iterator_definitions(class) }}

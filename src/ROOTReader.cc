@@ -68,7 +68,7 @@ namespace podio {
 
   CollectionBase* ROOTReader::getCollection(const std::pair<std::string, CollectionInfo>& collInfo) {
     const auto& name = collInfo.first;
-    const auto [theClass, collectionClass, index] = collInfo.second;
+    const auto& [theClass, collectionClass, index] = collInfo.second;
     auto& branches = m_collectionBranches[index];
 
     auto* collection = static_cast<CollectionBase*>(collectionClass->New());
@@ -137,7 +137,7 @@ namespace podio {
       m_chain->Add(filename.c_str());
     }
 
-   // read the meta data and build the collectionBranches cache
+    // read the meta data and build the collectionBranches cache
     // NOTE: This is a small pessimization, if we do not read all collections
     // afterwards, but it makes the handling much easier in general
     auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));

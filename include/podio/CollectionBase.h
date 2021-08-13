@@ -34,8 +34,6 @@ namespace podio {
     /// Get the collection buffers for this collection
     virtual podio::CollectionBuffers getBuffers() = 0;
 
-    // virtual void setBuffers(const podio::CollectionBuffers& buffers) = 0;
-
     /// check for validity of the container after read
     virtual bool isValid() const = 0;
 
