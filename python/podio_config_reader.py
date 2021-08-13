@@ -144,10 +144,10 @@ class ClassDefinitionValidator(object):
     validations"""
     self.warnings = set()
 
-  def validate(self, components, datatypes, expose_pod_members):
+  def validate(self, datamodel, expose_pod_members):
     """Validate the datamodel"""
-    self.components = components
-    self.datatypes = datatypes
+    self.components = datamodel['components']
+    self.datatypes = datamodel['datatypes']
     self.expose_pod_members = expose_pod_members
     self._clear()
 
@@ -435,5 +435,9 @@ class PodioConfigReader(object):
 
     # If this doesn't raise an exception everything should in principle work out
     validator = ClassDefinitionValidator()
-    validator.validate(self.components, self.datatypes, self.options.get("exposePODMembers", False))
+    datamodel = {
+        'components': self.components,
+        'datatypes': self.datatypes,
+        }
+    validator.validate(datamodel, False)
     self.warnings = validator.warnings
