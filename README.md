@@ -31,12 +31,18 @@ Install ROOT 6.08.06 (or later) and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
 
-### Python > 2.7
+### Python > 3.6
 
-Podio works with both python 2 and python3. Check your python version by doing:
+Check your Python version by doing:
 
     python --version
-    
+
+or
+
+    python3 --version
+ 
+depending on your used system.
+
 #### python packages
 
 Podio requires the `yaml` and `jinja2` python modules.
