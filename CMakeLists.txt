@@ -121,7 +121,7 @@ endif()
 
 #--- enable unit testing capabilities ------------------------------------------
 include(CTest)
-option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" OFF)
+option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" ON)
 
 #--- enable CPack --------------------------------------------------------------
 
