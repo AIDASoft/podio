@@ -8,15 +8,16 @@ from __future__ import print_function, absolute_import, unicode_literals
 import unittest
 from copy import deepcopy
 
-from podio_config_reader import ClassDefinitionValidator, MemberVariable, DefinitionError
+from podio_config_reader import ClassDefinitionValidator, MemberVariable, DefinitionError, DataType
 
 
-def make_dm(components, datatypes):
+def make_dm(components, datatypes, interfaces={}):
   """Small helper function to turn things into a datamodel dict as expected by
   the validator"""
   return {
       'components': components,
       'datatypes': datatypes,
+      'interfaces': interfaces
       }
 
 
@@ -58,6 +59,15 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                 'implementation': 'nothing has changed',
                 'includes': '#include <something_else> this will appear in both includes!'
                 }
+            }
+        }
+
+    self.valid_interface = {
+        'InterfaceType': {
+            'Author': 'Karma Chameleon',
+            'Description': 'I can be many things but only one at a time',
+            'Members': valid_datatype_members,
+            'Types': [DataType('DataType')]
             }
         }
 
@@ -275,6 +285,58 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                        description='not working because component will not be part of the datamodel we pass')]
     with self.assertRaises(DefinitionError):
       self.validate(make_dm({}, datatype), False)
+
+  def test_interface_valid_def(self):
+    self._assert_no_exception(DefinitionError, '{} should not raise for a valid interface type',
+                              self.validate, make_dm({}, self.valid_datatype, self.valid_interface), False)
+
+  def test_interface_invalid_fields(self):
+    for inv_field in ['OneToManyRelations', 'VectorMembers', 'OneToOneRelations']:
+      interface = deepcopy(self.valid_interface)
+      interface['InterfaceType'][inv_field] = ['An invalid field']
+      with self.assertRaises(DefinitionError):
+        self.validate(make_dm({}, self.valid_datatype, interface), False)
+
+  def test_interface_missing_fields(self):
+    for req in ('Author', 'Description', 'Members', 'Types'):
+      int_type = deepcopy(self.valid_interface)
+      del int_type['InterfaceType'][req]
+      with self.assertRaises(DefinitionError):
+        self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+  def test_interface_only_defined_datatypes(self):
+    """Make sure that the interface only uses defined datatypes"""
+    int_type = deepcopy(self.valid_interface)
+    int_type['InterfaceType']['Types'].append(DataType('UndefinedType'))
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+    int_type = deepcopy(self.valid_interface)
+    int_type['InterfaceType']['Types'].append(DataType('Component'))
+
+    int_type = deepcopy(self.valid_interface)
+    int_type['InterfaceType']['Types'].append(DataType('float'))
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+  def test_interface_no_redefining_datatype(self):
+    """Make sure that there is no datatype already with the same name"""
+    int_type = {
+        'DataType': {
+            'Author': 'Copycat',
+            'Description': 'I shall not redefine datatypes as interfaces',
+            'Members': [],
+            'Types': []
+            }
+        }
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+  def test_datatype_uses_interface_type(self):
+    datatype = deepcopy(self.valid_datatype)
+    datatype['DataType']['OneToManyRelations'] = [MemberVariable(type='InterfaceType', name='interfaceRelation')]
+    self._assert_no_exception(DefinitionError, '{} should allow to use relations to interface types',
+                              self.validate, make_dm({}, datatype, self.valid_interface), False)
 
 
 if __name__ == '__main__':

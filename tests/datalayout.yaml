@@ -174,3 +174,22 @@ datatypes :
       - uint64_t fixedU64 // unsigned int with exactly 64 bits
       - uint32_t fixedU32 // unsigned int with exactly 32 bits
       - StructWithFixedWithTypes fixedWidthStruct // struct with more fixed width types
+
+  ExampleWithInterfaceRelation:
+    Description: "Datatype that uses an interface type as one of its relations"
+    Author: "Thomas Madlener"
+    OneToOneRelations:
+      - TypeWithEnergy aSingleEnergyType // single relation
+    OneToManyRelations:
+      - TypeWithEnergy manyEnergies // multiple relations
+
+interfaces:
+  TypeWithEnergy:
+    Description: "Generic interface for all types with an energy member"
+    Author: "Thomas Madlener"
+    Types:
+      - ExampleMC
+      - ExampleCluster
+      - ExampleHit
+    Members:
+      - double energy // the energy

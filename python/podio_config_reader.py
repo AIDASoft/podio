@@ -9,7 +9,7 @@ import yaml
 
 from collections import OrderedDict
 
-from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
+from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES, DataType
 
 
 class MemberParser(object):
@@ -126,6 +126,11 @@ class ClassDefinitionValidator(object):
       "Typedefs",
       )
 
+  required_interface_keys = required_datatype_keys + (
+      "Members",
+      "Types"
+      )
+
   valid_extra_code_keys = ("declaration", "implementation", "includes")
   # documented but not yet implemented
   not_yet_implemented_extra_code = ('declarationFile', 'implementationFile')
@@ -136,6 +141,7 @@ class ClassDefinitionValidator(object):
   def __init__(self):
     self.components = None
     self.datatypes = None
+    self.interfaces = None
     self.expose_pod_members = False
     self.warnings = set()
 
@@ -148,11 +154,13 @@ class ClassDefinitionValidator(object):
     """Validate the datamodel"""
     self.components = datamodel['components']
     self.datatypes = datamodel['datatypes']
+    self.interfaces = datamodel['interfaces']
     self.expose_pod_members = expose_pod_members
     self._clear()
 
     self._check_components()
     self._check_datatypes()
+    self._check_interfaces()
 
   def _check_components(self):
     """Check the components"""
@@ -186,6 +194,13 @@ class ClassDefinitionValidator(object):
       self._check_keys(name, definition)
       self._fill_defaults(definition)
       self._check_datatype(name, definition)
+
+  def _check_interfaces(self):
+    for name, definition in self.interfaces.items():
+      if name in self.datatypes:
+        raise DefinitionError(f"'{name}' redefines a datatype with the same name as interface type")
+      self._check_interface_fields(name, definition)
+      self._check_interface_types(name, definition)
 
   def _check_datatype(self, classname, definition):
     """Check that a datatype only defines valid types and relations"""
@@ -226,15 +241,23 @@ class ClassDefinitionValidator(object):
 
   def _check_relations(self, classname, definition):
     """Check the relations of a class"""
+    def _allowed_type(rel_type):
+      # relations are either to other datatypes or to interface/wrapper types
+      if rel_type in self.datatypes:
+        return True
+      for interface in self.interfaces:
+        return True
+      return False
+
     many_relations = definition.get("OneToManyRelations", [])
     for relation in many_relations:
-      if relation.full_type not in self.datatypes:
+      if not _allowed_type(relation.full_type):
         raise DefinitionError("'{}' declares a non-allowed many-relation to '{}'"
                               .format(classname, relation.full_type))
 
     one_relations = definition.get("OneToOneRelations", [])
     for relation in one_relations:
-      if relation.full_type not in self.datatypes:
+      if not _allowed_type(relation.full_type):
         raise DefinitionError("'{}' declares a non-allowed single-relation to '{}'"
                               .format(classname, relation.full_type))
 
@@ -275,6 +298,27 @@ class ClassDefinitionValidator(object):
 
         raise DefinitionError("{} defines invalid 'ExtraCode' categories: {} (not yet implemented: {})"
                               .format(classname, invalid_keys, not_yet_impl))
+
+  def _check_interface_fields(self, name, definition):
+    """Check that only valid fields are defined for an interface"""
+    # All keys are required
+    for key in self.required_interface_keys:
+      if key not in definition:
+        raise DefinitionError("'{}' does not define '{}' which is required".format(name, key))
+
+    invalid_keys = [k for k in definition.keys() if k not in self.required_interface_keys]
+    if invalid_keys:
+      raise DefinitionError("'{}' defines invalid categories: {}".format(name, invalid_keys))
+
+  def _check_interface_types(self, name, definition):
+    """Check that the used interface types are in the datatypes"""
+    for wrapped_type in definition['Types']:
+      if wrapped_type.full_type not in self.datatypes:
+        raise DefinitionError(f"'{name}' tries to define an interface type using a Type "
+                              f"that is not in the datamodel: '{wrapped_type}'")
+    # TODO: Already here check that all types have all the members that we want
+    # to use? Would make code-gen easier, but make it hard to incorporate user
+    # defined functions here
 
   def _fill_defaults(self, definition):
     """Fill some of the fields with empty defaults in order to make it easier to
@@ -320,6 +364,7 @@ class PodioConfigReader(object):
     self.yamlfile = yamlfile
     self.datatypes = OrderedDict()
     self.components = OrderedDict()
+    self.interfaces = OrderedDict()
     self.options = {
         # should getters / setters be prefixed with get / set?
         "getSyntax": False,
@@ -423,6 +468,25 @@ class PodioConfigReader(object):
 
     return datatype
 
+  def _read_interface(self, value):
+    """Read the interface and put it into an easily digestible format"""
+    interface = value
+    for category, definition in value.items():
+      if category == 'Members':
+        members = []
+        for member in definition:
+          members.append(self.member_parser.parse(member, False))
+        interface['Members'] = members
+      if category == 'Types':
+        types = []
+        for typ in definition:
+          types.append(DataType(typ))
+        interface['Types'] = types
+      else:
+        interface[category] = copy.deepcopy(definition)
+
+    return interface
+
   def read(self):
     stream = open(self.yamlfile, "r")
     content = ordered_load(stream, yaml.SafeLoader)
@@ -439,11 +503,16 @@ class PodioConfigReader(object):
       for option, value in content["options"].items():
         self.options[option] = value
 
+    if 'interfaces' in content:
+      for klassname, value in content['interfaces'].items():
+        self.interfaces[klassname] = self._read_interface(value)
+
     # If this doesn't raise an exception everything should in principle work out
     validator = ClassDefinitionValidator()
     datamodel = {
         'components': self.components,
         'datatypes': self.datatypes,
+        'interfaces': self.interfaces
         }
     validator.validate(datamodel, False)
     self.warnings = validator.warnings
