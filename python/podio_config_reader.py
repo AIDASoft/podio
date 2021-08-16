@@ -194,7 +194,7 @@ class ClassDefinitionValidator(object):
 
   def _check_members(self, classname, members):
     """Check the members of a class for name clashes or undefined classes"""
-    all_types = [n for n in self.datatypes] + [n for n in self.components]
+    all_types = self.components
 
     all_members = {}
     for member in members:

@@ -180,6 +180,16 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     with self.assertRaises(DefinitionError):
       self.validate(make_dm(self.valid_component, datatype), True)
 
+    datatype = deepcopy(self.valid_datatype)
+    datatype['AnotherType'] = {
+        'Author': 'Avril L.',
+        'Description': 'I\'m just a datatype',
+        }
+    datatype['DataType']['Members'].append(
+        MemberVariable(type='AnotherType', name='impossibleType',
+                       description='Another datatype cannot be a member'))
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm(self.valid_component, datatype), False)
 
   def _test_datatype_valid_relations(self, rel_type):
     self.valid_datatype['DataType'][rel_type] = [
