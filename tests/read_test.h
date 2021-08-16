@@ -101,9 +101,6 @@ void processEvent(podio::EventStore& store, int eventNum) {
   if (!mcpRefs.isValid()) throw std::runtime_error("Collection 'mcParticleRefs' should be present");
 
   for (auto p : mcpRefs) {
-    if ((p.id() % 2) == 0) {
-      throw std::runtime_error("MCParticleRefCollection should only contain elements with odd ids");
-    }
     if ((unsigned)p.getObjectID().collectionID == mcpRefs.getID()) {
       throw std::runtime_error("objects of a reference collection should have a different collectionID than the reference collection");
     }
@@ -111,15 +108,34 @@ void processEvent(podio::EventStore& store, int eventNum) {
 
   // Now we can do some more tests actually comparing the references to the MC Particles
   auto& mcps =  store.get<ExampleMCCollection>("mcparticles");
+  auto& moreMCs = store.get<ExampleMCCollection>("moreMCs");
+  // First check that the two mc collections that we store are the same
+  if (mcps.size() != moreMCs.size()) {
+    throw std::runtime_error("'mcparticles' and 'moreMCs' should have the same size");
+  }
+
+  for (size_t index = 0; index < mcps.size(); ++index) {
+    // Not too detailed check here
+    if (mcps[index].energy() != moreMCs[index].energy() ||
+        mcps[index].daughters().size() != moreMCs[index].daughters().size()) {
+      throw std::runtime_error("'mcparticles' and 'moreMCs' do not contain the same elements");
+    }
+  }
+
   if( mcps.isValid() ){
-    if (mcpRefs.size() != mcps.size() / 2) {
+    if (mcpRefs.size() != mcps.size()) {
       throw std::runtime_error("'mcParticleRefs' collection has wrong size");
     }
     for (size_t i = 0; i < mcpRefs.size(); ++i) {
-      std::cout << mcpRefs[i] << std::endl;
-      std::cout << mcps[i] << std::endl;
-      if (!(mcpRefs[i] == mcps[2 * i + 1])) {
-        throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
+      if (i < 5) { // The first elements point into the mcps collection
+        if (!(mcpRefs[i] == mcps[2 * i + 1])) {
+          throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
+        }
+      } else { // The second half points into the moreMCs collection
+        const int index = (i - 5) * 2;
+        if (!(mcpRefs[i] == moreMCs[index])) {
+          throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
+        }
       }
     }
 
