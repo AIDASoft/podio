@@ -268,10 +268,6 @@ class ClassGenerator(object):
     for relation in datatype['OneToManyRelations']:
       if self._needs_include(relation):
         includes.add(self._build_include(relation.bare_type))
-      elif relation.is_array:
-        includes.add('#include <array>')
-        if not relation.is_builtin_array:
-          includes.add(self._build_include(relation.array_bare_type))
 
     for vectormember in datatype['VectorMembers']:
       if vectormember.full_type in self.reader.components:
