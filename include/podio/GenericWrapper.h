@@ -77,9 +77,18 @@ using GetObjPtrT = typename GetObjPtr<T>::type;
 template<typename ...WrappedTypes>
 class GenericWrapper {
   static_assert(detail::allHaveObjPtrT<WrappedTypes...>, "All WrappedTypes must have a public ObjPtrT subtype");
+  /// Private type of the variant that is used internally
   using VariantT = typename std::variant<detail::GetObjPtrT<WrappedTypes>...>;
 
 public:
+  /// Public helper type for enabling one "default" constructor in the using
+  /// classes that takes values or Obj pointers
+  template<typename T>
+  using EnableWrapper = typename detail::EnableIfAnyOf<T,
+                                                       WrappedTypes...,
+                                                       detail::GetObjPtrT<WrappedTypes>...
+                                                       >::type;
+
   template<typename T,
            typename detail::EnableIfAnyOf<T, WrappedTypes...>::type = false>
   GenericWrapper(T value) : m_obj(value.m_obj) {
@@ -104,6 +113,10 @@ public:
     acquireObj();
   }
 
+  GenericWrapper(VariantT const& variant) : m_obj(variant) {
+    acquireObj();
+  }
+
   GenericWrapper& operator=(GenericWrapper const& other) {
     releaseObj();
     m_obj = other.m_obj;
@@ -117,6 +130,26 @@ public:
 
   const podio::ObjectID getObjectID() const {
     return std::visit([](auto&& obj) { return obj->id; }, m_obj);
+  }
+
+  unsigned int id() const {
+    return std::visit([](auto&& obj) {
+      const auto objId = obj->id;
+      return objId.collectionID * 10000000 + objId.index;
+    }, m_obj);
+  }
+
+  template<typename U,
+           typename detail::EnableIfAnyOf<U, WrappedTypes...>::type = false>
+  bool isCurrentType() const {
+    return std::holds_alternative<detail::GetObjPtrT<U>>(m_obj);
+  }
+
+  template<typename U,
+           typename detail::EnableIfAnyOf<U, WrappedTypes...>::type = false>
+  U getValue() const {
+    const auto obj = std::get<detail::GetObjPtrT<U>>(m_obj);
+    return U(obj);
   }
 
 protected:

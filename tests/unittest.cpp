@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <stdexcept>
+#include <variant>
 #include <vector>
 #include <type_traits>
 
@@ -530,4 +531,23 @@ TEST_CASE("GenericWrapper basics") {
 
   wrapper = ExampleCluster{};
   std::cout << "+++++++++++++++++++++++++++++++++++++\n";
+}
+
+TEST_CASE("GenericWrapper getting values") {
+  using WrapperT = podio::GenericWrapper<ExampleHit, ExampleCluster>;
+
+  ExampleHitCollection hits{};
+  auto inputHit = hits.create();
+
+  WrapperT wrapper{inputHit};
+
+  REQUIRE(wrapper.isCurrentType<ExampleHit>());
+  REQUIRE(!wrapper.isCurrentType<ExampleCluster>());
+  // Cannot yet work with Const types
+  //REQUIRE(wrapper.isCurrentType<ConstExampleHit>());
+
+  REQUIRE_THROWS_AS(wrapper.getValue<ExampleCluster>(), std::bad_variant_access);
+
+  auto hit = wrapper.getValue<ExampleHit>();
+  REQUIRE(hit == inputHit);
 }
