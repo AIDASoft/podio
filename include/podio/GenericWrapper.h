@@ -119,6 +119,9 @@ public:
     return std::visit([](auto&& obj) { return obj->id; }, m_obj);
   }
 
+protected:
+  VariantT m_obj;
+
 private:
   void acquireObj() {
     std::visit([](auto&& obj) { obj->acquire(); }, m_obj);
@@ -128,8 +131,6 @@ private:
       if(obj) obj->release();
     }, m_obj);
   }
-
-  VariantT m_obj;
 };
 
 
