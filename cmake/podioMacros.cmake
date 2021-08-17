@@ -147,12 +147,17 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     ${podio_PYTHON_DIR}/podio_config_reader.py
   )
 
+  message(STATUS "Creating '${datamodel}' datamodel")
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E echo "Creating \"${datamodel}\" data model"
     COMMAND python ${podio_PYTHON_DIR}/podio_class_generator.py ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    RESULT_VARIABLE podio_generate_command_retval
     )
+
+  IF(NOT ${podio_generate_command_retval} EQUAL 0)
+    message(FATAL_ERROR "Could not generate datamodel '${datamodel}'. Check your definition in '${YAML_FILE}'")
+  ENDIF()
 
   # Get the generated headers and source files
   include(${ARG_OUTPUT_FOLDER}/podio_generated_files.cmake)
