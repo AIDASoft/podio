@@ -1,0 +1,17 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/wrappers.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}Const.h"
+
+{{ utils.namespace_open(class.namespace) }}
+
+{{ macros.member_getters(class, Members, use_get_syntax, prefix='Const') }}
+
+std::ostream& operator<<(std::ostream& os, const Const{{ class.bare_type }}& value) {
+  return std::visit([&os](auto&& obj) -> std::ostream& {
+    return os << obj;
+  }, value.m_obj);
+}
+
+{{ utils.namespace_close(class.namespace) }}

@@ -95,6 +95,7 @@ class MemberVariable(object):
     self.is_builtin = False
     self.is_builtin_array = False
     self.is_array = False
+    self.interface_types = []
     # ensure that this will break somewhere if requested but not set
     self.namespace, self.bare_type = None, None
     self.array_namespace, self.array_bare_type = None, None

@@ -1,0 +1,46 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/declarations.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+{% for include in include_types %}
+{{ include }}
+{% endfor %}
+
+#include "podio/GenericWrapper.h"
+
+#include <ostream>
+
+#ifndef {{ package_name.upper() }}_Const{{ class.bare_type }}_H
+#define {{ package_name.upper() }}_Const{{ class.bare_type }}_H
+
+{{ utils.namespace_open(class.namespace) }}
+
+{{ macros.class_description(class.bare_type, Description, Author, prefix='Const' )}}
+
+{% with class_type = 'Const' + class.bare_type %}
+class {{ class_type }} : public podio::GenericWrapper<{{ Types | join(', ') }}> {
+private:
+  using WrapperT = podio::GenericWrapper<{{ Types | join(', ')}}>;
+public:
+  /// A {{ class.bare_type }} can only be constructed from a concrete value
+  {{ class_type }}() = delete;
+
+  /// The default constructor takes anything that can be converted into this type
+  template<typename T,
+           WrapperT::EnableWrapper<T> = false>
+  {{ class_type }}(T&& val) : WrapperT(std::forward<T>(val)) {}
+
+  /// Constructor from another {{ class.bare_type }}
+  {{ class_type }}({{ class_type }} const& other) : WrapperT(other.m_obj) {}
+
+  /// The class can also get initialized from another wrapper of the same type
+  {{ class_type }}(WrapperT const& other) : WrapperT(other) {}
+
+{{ macros.member_getters(Members, use_get_syntax) }}
+friend std::ostream& operator<<(std::ostream& os, const {{ class_type }}& value);
+};
+
+{% endwith %}
+
+{{ utils.namespace_close(class.namespace )}}
+#endif

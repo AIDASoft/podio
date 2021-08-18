@@ -111,6 +111,9 @@ class ClassGenerator(object):
     for name, datatype in self.reader.datatypes.items():
       self._process_datatype(name, datatype)
 
+    for name, interface in self.reader.interfaces.items():
+      self._process_interface(name, interface)
+
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
     self.print_report()
@@ -168,6 +171,8 @@ class ClassGenerator(object):
         'PrintInfo': 'PrintInfo',
         'Object': '',
         'Component': '',
+        'Wrapped': '',
+        'ConstWrapped': 'Const',
         'SIOBlock': 'SIOBlock',
         }.get(template_base, template_base)
 
@@ -226,6 +231,13 @@ class ClassGenerator(object):
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
 
+  def _process_interface(self, name, interface):
+    """Create an interface type class"""
+    interface = self._preprocess_interface(name, interface)
+
+    self._fill_templates('Wrapped', interface)
+    self._fill_templates('ConstWrapped', interface)
+
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
     fwd_declarations = {}
@@ -272,7 +284,10 @@ class ClassGenerator(object):
         member.sub_members = self.reader.components[member.full_type]['Members']
 
     for relation in datatype['OneToOneRelations']:
-      if self._needs_include(relation):
+      if self._is_interface(relation):
+        # Just make the first the go-to type for whenever we need a default init
+        relation.interface_types = self.reader.interfaces[relation.full_type]['Types']
+      if self._is_datatype(relation) or relation.interface_types:
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
@@ -283,7 +298,9 @@ class ClassGenerator(object):
       includes.add('#include <vector>')
 
     for relation in datatype['OneToManyRelations']:
-      if self._needs_include(relation):
+      if self._is_interface(relation):
+        relation.interface_types = self.reader.interfaces[relation.full_type]['Types']
+      if self._is_datatype(relation) or relation.interface_types:
         includes.add(self._build_include(relation.bare_type))
 
     for vectormember in datatype['VectorMembers']:
@@ -309,7 +326,12 @@ class ClassGenerator(object):
     """Do the necessary preprocessing for the collection"""
     includes_cc = set()
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
-      includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
+      if relation.full_type in self.reader.interfaces:
+        includes_cc.add(self._build_include(relation.bare_type))
+        for typ in self.reader.interfaces[relation.full_type]['Types']:
+          includes_cc.add(self._build_include(typ.bare_type + 'Collection'))
+      else:
+        includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
 
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')
@@ -367,6 +389,20 @@ class ClassGenerator(object):
 
     return data
 
+  def _preprocess_interface(self, name, interface):
+    """Preprocess an interface definition such that the dict holds everything that
+    is necessary for jinja"""
+    interface = deepcopy(interface)
+    interface['class'] = DataType(name)
+    interface['include_types'] = [
+        self._build_include(typ.bare_type) for typ in interface['Types']
+        ]
+
+    import pprint
+    pprint.pprint(interface)
+
+    return interface
+
   def _get_member_includes(self, members):
     """Process all members and gather the necessary includes"""
     includes = set()
@@ -380,7 +416,7 @@ class ClassGenerator(object):
         if member.full_type == 'std::' + stl_type:
           includes.add("#include <{}>".format(stl_type))
 
-      if self._needs_include(member):
+      if self._is_component(member):
         includes.add(self._build_include(member.bare_type))
 
     return self._sort_includes(includes)
@@ -431,9 +467,21 @@ class ClassGenerator(object):
 
     return True
 
-  def _needs_include(self, member):
-    """Check whether the member needs an include from within the datamodel"""
-    return member.full_type in self.reader.components or member.full_type in self.reader.datatypes
+  def _is_datatype(self, member):
+    """Check if the member is another datatype defined by the datamodel"""
+    return member.full_type in self.reader.datatypes
+
+  def _is_component(self, member):
+    """Check if the member is a component defined by the datamodel"""
+    return member.full_type in self.reader.components
+
+  def _is_interface(self, member):
+    """Check if the member is an interface type defined by the model"""
+    return member.full_type in self.reader.interfaces
+
+  # def _needs_include(self, member):
+  #   """Check whether the member needs an include from within the datamodel"""
+  #   return member.full_type in self.reader.components or member.full_type in self.reader.datatypes
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""

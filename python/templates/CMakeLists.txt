@@ -14,10 +14,15 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/selection.xml.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/Wrapped.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/Wrapped.cc.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/ConstWrapped.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/ConstWrapped.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/collections.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/declarations.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/implementations.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/iterator.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/sioblocks.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/utils.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/macros/wrappers.jinja2
 )

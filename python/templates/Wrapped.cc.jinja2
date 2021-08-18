@@ -1,0 +1,11 @@
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/wrappers.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}.h"
+
+{{ utils.namespace_open(class.namespace) }}
+
+{{ macros.member_getters(class, Members, use_get_syntax) }}
+
+{{ utils.namespace_close(class.namespace) }}

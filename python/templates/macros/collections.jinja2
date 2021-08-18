@@ -57,27 +57,64 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
       {{ type }}Collection* tmp_coll = static_cast<{{ type }}Collection*>(coll);
 {%- endmacro %}
 
+{% macro _add_multi_relation(relation) %}
+{% if relation.interface_types %}
+      podio::CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID, coll);
+      const auto typeName = coll->getValueTypeName(); // TODO something more elegant
+{% for int_type in relation.interface_types %}
+      if (typeName == "{{ int_type.full_type }}") {
+        auto* tmp_coll = static_cast<{{ int_type.full_type }}Collection*>(coll);
+        const auto tmp = (*tmp_coll)[id.index];
+        m_rel_{{ relation.name }}->emplace_back(tmp);
+      }
+{% endfor %}
+{% else %}
+{{ get_collection(relation.full_type) }}
+      const auto tmp = (*tmp_coll)[id.index];
+      m_rel_{{ relation.name }}->emplace_back(tmp);
+{% endif %}
+{%- endmacro %}
+
 {% macro set_references_multi_relation(relation, index) %}
   for (unsigned int i = 0, size = m_refCollections[{{ index }}]->size(); i != size; ++i) {
     const auto id = (*m_refCollections[{{ index }}])[i];
     if (id.index != podio::ObjectID::invalid) {
-{{ get_collection(relation.full_type) }}
-      const auto tmp = (*tmp_coll)[id.index];
-      m_rel_{{ relation.name }}->emplace_back(tmp);
+{{ _add_multi_relation(relation) }}
     } else {
+{% if relation.interface_types %}
+      // Need to cast to a dedicated type here. Just use one of the variants
+      m_rel_{{ relation.name }}->emplace_back(static_cast<{{ relation.interface_types[0] }}Obj*>(nullptr));
+{% else %}
       m_rel_{{ relation.name }}->emplace_back(nullptr);
+{% endif %}
     }
   }
 {% endmacro %}
 
+{% macro _add_single_relation(relation) %}
+{% if relation.interface_types %}
+      podio::CollectionBase* coll = nullptr;
+      collectionProvider->get(id.collectionID, coll);
+      const auto typeName = coll->getValueTypeName(); // TODO: something more elegant
+{% for int_type in relation.interface_types %}
+      if (typeName == "{{ int_type.full_type }}") {
+        auto* tmp_coll = static_cast<{{ int_type.full_type }}Collection*>(coll);
+        entries[i]->m_{{ relation.name }} = new {{ relation.as_qualified_const() }}((*tmp_coll)[id.index]);
+      }
+{% endfor %}
+{% else %}
+{{ get_collection(relation.full_type) }}
+      entries[i]->m_{{ relation.name }} = new {{ relation.as_qualified_const() }}((*tmp_coll)[id.index]);
+{% endif %}
+{%- endmacro %}
 
 {% macro set_reference_single_relation(relation, index, start_index) %}
 {% set real_index = index + start_index %}
   for (unsigned int i = 0, size = entries.size(); i != size; ++i) {
     const auto id = (*m_refCollections[{{ real_index }}])[i];
     if (id.index != podio::ObjectID::invalid) {
-  {{ get_collection(relation.full_type) }}
-      entries[i]->m_{{ relation.name }} = new {{ relation.as_qualified_const() }}((*tmp_coll)[id.index]);
+{{ _add_single_relation(relation) }}
     } else {
       entries[i]->m_{{ relation.name }} = nullptr;
     }

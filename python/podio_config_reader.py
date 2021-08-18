@@ -470,14 +470,14 @@ class PodioConfigReader(object):
 
   def _read_interface(self, value):
     """Read the interface and put it into an easily digestible format"""
-    interface = value
+    interface = {}
     for category, definition in value.items():
       if category == 'Members':
         members = []
         for member in definition:
           members.append(self.member_parser.parse(member, False))
         interface['Members'] = members
-      if category == 'Types':
+      elif category == 'Types':
         types = []
         for typ in definition:
           types.append(DataType(typ))

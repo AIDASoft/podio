@@ -1,0 +1,26 @@
+{% macro member_getters(class, members, get_syntax, prefix='') %}
+{% set class_type = prefix + class.bare_type %}
+{% for member in members %}
+const {{ member.full_type }}& {{ class_type }}::{{ member.getter_name(use_get_syntax) }}() const {
+  return std::visit([](auto&& obj) -> const {{ member.full_type}}& {
+    return obj->data.{{ member.name }};
+  }, m_obj);
+}
+{% if member.is_array %}
+const {{ member.array_type }}& {{ class_type }}::{{ member.getter_name(get_syntax) }}(size_t i) const {
+  return std::visit([](auto& obj) -> const {{ member.array_type }}& {
+    return obj->data.{{ member.name }}[i];
+  }, m_obj);
+}
+{% endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+const {{ sub_member.full_type }}& {{ class_type }}::{{ sub_member.getter_name(get_syntax) }}() const {
+  return std::visit([](auto&& obj) -> const {{ sub_member.full_type }}& {
+    return m_obj->data.{{ member.name }}.{{ sub_member.name }};
+  }, m_obj);
+}
+{% endfor %}
+{%- endif %}
+{% endfor %}
+{% endmacro %}

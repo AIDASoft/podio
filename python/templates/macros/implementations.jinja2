@@ -78,7 +78,12 @@ void {{ class.bare_type }}::{{ sub_member.setter_name(get_syntax) }}({{ sub_memb
 {% for relation in relations %}
 const {{ relation.relation_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
   if (!m_obj->m_{{ relation.name }}) {
+{% if relation.interface_types %}
+    // We need to give the nullptr an arbitrary type to make an interface class work
+    return {{ relation.relation_type }}(static_cast<{{ relation.interface_types[0] }}::ObjPtrT>(nullptr));
+{% else %}
     return {{ relation.relation_type }}(nullptr);
+{% endif %}
   }
   return {{ relation.relation_type }}(*(m_obj->m_{{ relation.name }}));
 }
