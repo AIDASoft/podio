@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import, print_function
 
 import os
 import errno
+import sys
 import subprocess
 from io import open
 import pickle
@@ -23,7 +24,7 @@ except ImportError:
 import jinja2
 
 from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
-from generator_utils import DataType
+from generator_utils import DataType, DefinitionError
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
@@ -65,7 +66,12 @@ class ClassGenerator(object):
     self.yamlfile = yamlfile
 
     self.reader = PodioConfigReader(yamlfile)
-    self.reader.read()
+    try:
+      self.reader.read()
+    except DefinitionError as err:
+      print(f'Error while generating the datamodel: {err}')
+      sys.exit(1)
+
     self.include_subfolder = self.reader.options["includeSubfolder"]
 
     self.env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
@@ -268,10 +274,6 @@ class ClassGenerator(object):
     for relation in datatype['OneToManyRelations']:
       if self._needs_include(relation):
         includes.add(self._build_include(relation.bare_type))
-      elif relation.is_array:
-        includes.add('#include <array>')
-        if not relation.is_builtin_array:
-          includes.add(self._build_include(relation.array_bare_type))
 
     for vectormember in datatype['VectorMembers']:
       if vectormember.full_type in self.reader.components:

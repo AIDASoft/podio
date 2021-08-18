@@ -144,10 +144,10 @@ class ClassDefinitionValidator(object):
     validations"""
     self.warnings = set()
 
-  def validate(self, components, datatypes, expose_pod_members):
+  def validate(self, datamodel, expose_pod_members):
     """Validate the datamodel"""
-    self.components = components
-    self.datatypes = datatypes
+    self.components = datamodel['components']
+    self.datatypes = datamodel['datatypes']
     self.expose_pod_members = expose_pod_members
     self._clear()
 
@@ -194,7 +194,7 @@ class ClassDefinitionValidator(object):
 
   def _check_members(self, classname, members):
     """Check the members of a class for name clashes or undefined classes"""
-    all_types = [n for n in self.datatypes] + [n for n in self.components]
+    all_types = self.components
 
     all_members = {}
     for member in members:
@@ -230,6 +230,12 @@ class ClassDefinitionValidator(object):
     for relation in many_relations:
       if relation.full_type not in self.datatypes:
         raise DefinitionError("'{}' declares a non-allowed many-relation to '{}'"
+                              .format(classname, relation.full_type))
+
+    one_relations = definition.get("OneToOneRelations", [])
+    for relation in one_relations:
+      if relation.full_type not in self.datatypes:
+        raise DefinitionError("'{}' declares a non-allowed single-relation to '{}'"
                               .format(classname, relation.full_type))
 
     vector_members = definition.get("VectorMembers", [])
@@ -435,5 +441,9 @@ class PodioConfigReader(object):
 
     # If this doesn't raise an exception everything should in principle work out
     validator = ClassDefinitionValidator()
-    validator.validate(self.components, self.datatypes, self.options.get("exposePODMembers", False))
+    datamodel = {
+        'components': self.components,
+        'datatypes': self.datatypes,
+        }
+    validator.validate(datamodel, False)
     self.warnings = validator.warnings
