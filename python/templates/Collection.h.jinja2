@@ -10,6 +10,7 @@
 #include "{{ incfolder }}{{ class.bare_type }}Data.h"
 #include "{{ incfolder }}{{ class.bare_type }}.h"
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+#include "{{ incfolder }}{{ class.bare_type }}CollectionData.h"
 
 // podio specific includes
 #include "podio/ICollectionProvider.h"
@@ -25,8 +26,6 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-using {{ class.bare_type }}DataContainer = std::vector<{{ class.bare_type }}Data>;
-using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }}Obj*>;
 
 {{ iterator_declaration(class) }}
 
@@ -36,7 +35,6 @@ using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }
 A Collection is identified by an ID.
 */
 class {{ class.bare_type }}Collection : public podio::CollectionBase {
-
 public:
   using const_iterator = {{ class.bare_type }}ConstCollectionIterator;
   using iterator = {{ class.bare_type }}CollectionIterator;
@@ -66,7 +64,13 @@ public:
   /// fully qualified type name of elements - with namespace
   std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
 
-  /// Returns the const object of given index
+  bool isSubsetCollection() const final {
+    return m_isSubsetColl;
+  }
+
+  void setSubsetCollection(bool setSubset=true) final;
+
+  /// Returns the object of given index
   Const{{ class.bare_type }} operator[](unsigned int index) const;
   /// Returns the object of a given index
   {{ class.bare_type }} operator[](unsigned int index);
@@ -81,16 +85,14 @@ public:
 
   void prepareForWrite() override final;
   void prepareAfterRead() override final;
-  void setBuffer(void* address) override final;
   bool setReferences(const podio::ICollectionProvider* collectionProvider) override final;
 
-  podio::CollRefCollection* referenceCollections() override final { return &m_refCollections; }
-
-  podio::VectorMembersInfo* vectorMembers() override { return &m_vecmem_info; }
+  /// Get the collection buffers for this collection
+  podio::CollectionBuffers getBuffers() final;
 
   void setID(unsigned ID) override final {
     m_collectionID = ID;
-    std::for_each(m_entries.begin(),m_entries.end(),
+    std::for_each(m_storage.entries.begin(), m_storage.entries.end(),
                   [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<int>(ID)}; }
     );
     m_isValid = true;
@@ -106,23 +108,17 @@ public:
 
   // support for the iterator protocol
   iterator begin() {
-    return iterator(0, &m_entries);
+    return iterator(0, &m_storage.entries);
   }
   const_iterator begin() const {
-    return const_iterator(0, &m_entries);
+    return const_iterator(0, &m_storage.entries);
   }
   iterator end() {
-    return iterator(m_entries.size(), &m_entries);
+    return iterator(m_storage.entries.size(), &m_storage.entries);
   }
   const_iterator end() const {
-    return const_iterator(m_entries.size(), &m_entries);
+    return const_iterator(m_storage.entries.size(), &m_storage.entries);
   }
-
-  /// returns the address of the pointer to the data buffer
-  void* getBufferAddress() override final { return (void*)&m_data; }
-
-  /// Returns the pointer to the data buffer
-  std::vector<{{ class.bare_type }}Data>* _getBuffer() { return m_data; }
 
 {% for member in Members %}
   template<size_t arraysize>
@@ -130,38 +126,36 @@ public:
 {% endfor %}
 
 private:
+  // For setReferences, we need to give our own CollectionData access to our
+  // private entries. Otherwise we would need to expose a public member function
+  // that gives access to the Obj* which is definitely not what we want
+  friend class {{ class.bare_type }}CollectionData;
+
   bool m_isValid{false};
   bool m_isReadFromFile{false};
+  bool m_isSubsetColl{false};
   int m_collectionID{0};
-  {{ class.bare_type }}ObjPointerContainer m_entries;
-
-  // members to handle 1-to-N-relations
-{% for relation in OneToManyRelations %}
-  std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
-  std::vector<std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>*> m_rel_{{ relation.name }}_tmp{}; ///< Relation buffer for internal book-keeping
-{% endfor %}
-{% for relation in OneToOneRelations %}
-  std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
-{% endfor %}
-
-  // members to handle vector members
-{% for member in VectorMembers %}
-  std::vector<{{ member.full_type }}>* m_vec_{{ member.name }}; /// combined vector of all objects in collection
-  std::vector<std::vector<{{ member.full_type }}>*> m_vecs_{{ member.name }}{}; /// pointers to individual member vectors
-{% endfor %}
-  // members to handle streaming
-  podio::CollRefCollection m_refCollections{};
-  podio::VectorMembersInfo m_vecmem_info{};
-  {{ class.bare_type }}DataContainer* m_data;
+  {{ class.bare_type }}CollectionData m_storage{};
 };
 
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& v);
 
 template<typename... Args>
 {{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... args) {
-  const int size = m_entries.size();
-  auto obj = new {{ class.bare_type }}Obj({size, m_collectionID}, {args...});
-  m_entries.push_back(obj);
+  if (m_isSubsetColl) {
+    throw std::logic_error("Cannot create new elements on a subset collection");
+  }
+  const int size = m_storage.entries.size();
+  auto obj = new {{ class.bare_type }}Obj({size, m_collectionID}, {std::forward<Args>(args)...});
+  m_storage.entries.push_back(obj);
+
+{% if OneToManyRelations or VectorMembers %}
+  // Need to initialize the relation vectors manually for the {ObjectID, {{class.bare_type}}Data} constructor
+{% for relation in OneToManyRelations + VectorMembers %}
+  obj->m_{{ relation.name }} = new std::vector<{{ relation.relation_type }}>();
+{% endfor %}
+  m_storage.createRelations(obj);
+{% endif %}
   return {{ class.bare_type }}(obj);
 }
 

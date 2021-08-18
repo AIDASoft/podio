@@ -52,11 +52,15 @@ void ROOTWriter::writeEvent(){
 void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections) {
   for (auto& [name, coll] : collections) {
     root_utils::CollectionBranches branches;
-    const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
-    branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), coll->getBufferAddress());
+    const auto collBuffers = coll->getBuffers();
+    if (collBuffers.data) {
+      // only create the data buffer branch if necessary
+      const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
+      branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), collBuffers.data);
+    }
 
     // reference collections
-    if (auto refColls = coll->referenceCollections()) {
+    if (auto refColls = collBuffers.references) {
       int i = 0;
       for (auto& c : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i);
@@ -66,7 +70,7 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
     }
 
     // vector members
-    if (auto vminfo = coll->vectorMembers()) {
+    if (auto vminfo = collBuffers.vectorMembers) {
       int i = 0;
       for (auto& [type, vec] : (*vminfo)) {
         const auto typeName = "vector<" + type + ">";
@@ -92,8 +96,24 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
 
 
   void ROOTWriter::finish(){
-    // now we want to safe the metadata
-    m_metadatatree->Branch("CollectionIDs",m_store->getCollectionIDTable());
+    // now we want to safe the metadata. This includes info about the
+    // collections
+    const auto collIDTable = m_store->getCollectionIDTable();
+    m_metadatatree->Branch("CollectionIDs", collIDTable);
+
+    // collectionID, collection type, subset collection
+    std::vector<std::tuple<int, std::string, bool>> collectionInfo;
+    collectionInfo.reserve(m_collectionsToWrite.size());
+    for (const auto& name : m_collectionsToWrite) {
+      const auto collID = collIDTable->collectionID(name);
+      const podio::CollectionBase* coll{nullptr};
+      // No check necessary, only registered collections possible
+      m_store->get(name, coll);
+      const auto collType = coll->getValueTypeName() + "Collection";
+      collectionInfo.emplace_back(collID, std::move(collType), coll->isSubsetCollection());
+    }
+
+    m_metadatatree->Branch("CollectionTypeInfo", &collectionInfo);
     m_metadatatree->Fill();
 
     m_colMDtree->Branch("colMD", "std::map<int,podio::GenericParameters>", m_store->getColMetaDataMap() ) ;

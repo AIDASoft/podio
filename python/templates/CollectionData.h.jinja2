@@ -1,0 +1,96 @@
+{% import "macros/utils.jinja2" as utils %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}_CollectionData_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}_CollectionData_H
+
+// datamodel specific includes
+#include "{{ incfolder }}{{ class.bare_type }}Data.h"
+#include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+
+// podio specific includes
+#include "podio/CollectionBuffers.h"
+#include "podio/ICollectionProvider.h"
+
+#include <deque>
+
+
+{{ utils.namespace_open(class.namespace) }}
+
+using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }}Obj*>;
+using {{ class.bare_type }}DataContainer = std::vector<{{ class.bare_type }}Data>;
+
+
+/**
+ * Class encapsulating everything related to storage of data that is needed by a
+ * collection.
+ */
+{% with class_type = class.bare_type + 'CollectionData' %}
+class {{ class.bare_type }}CollectionData {
+public:
+  /**
+   * The Objs of this collection
+   */
+  {{ class.bare_type }}ObjPointerContainer entries{};
+
+  /**
+   * Default constructor setting up the necessary buffers
+   */
+  {{ class_type }}();
+
+  /**
+   * Non copy-able class
+   */
+  {{ class_type }}(const {{ class_type }}&) = delete;
+  {{ class_type }}& operator=(const {{ class_type }}&) = delete;
+
+  /**
+   * Deconstructor
+   */
+  ~{{ class_type }}();
+
+  void clear(bool isRefColl);
+
+  podio::CollectionBuffers getCollectionBuffers(bool isRefColl);
+
+  void prepareForWrite(bool isRefColl);
+
+  void prepareAfterRead(int collectionID);
+
+  void makeSubsetCollection();
+
+{% if OneToManyRelations or VectorMembers %}
+  void createRelations({{ class.bare_type }}Obj* obj);
+{% endif %}
+
+{% if OneToManyRelations or OneToOneRelations %}
+  void setReferences(const podio::ICollectionProvider* collectionProvider, bool isRefColl);
+{% endif %}
+
+private:
+  // members to handle 1-to-N-relations
+{% for relation in OneToManyRelations %}
+  std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
+  std::vector<std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>*> m_rel_{{ relation.name }}_tmp{}; ///< Relation buffer for internal book-keeping
+{% endfor %}
+{% for relation in OneToOneRelations %}
+  std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
+{% endfor %}
+
+  // members to handle vector members
+{% for member in VectorMembers %}
+  std::vector<{{ member.full_type }}>* m_vec_{{ member.name }}; /// combined vector of all objects in collection
+  std::vector<std::vector<{{ member.full_type }}>*> m_vecs_{{ member.name }}{}; /// pointers to individual member vectors
+{% endfor %}
+
+  // I/O related buffers
+  podio::CollRefCollection m_refCollections{};
+  podio::VectorMembersInfo m_vecmem_info{};
+  {{ class.bare_type }}DataContainer* m_data{nullptr};
+};
+{% endwith %}
+
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

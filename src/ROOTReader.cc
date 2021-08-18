@@ -10,7 +10,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TChain.h"
-#include "TROOT.h"
+#include "TClass.h"
 #include "TTreeCache.h"
 
 
@@ -56,67 +56,30 @@ namespace podio {
       return p->first;
     }
 
-    // Have we read this collection before? If so: use the cached information to
-    // speed up reading
+    // Do we know about this collection? If so, read it
     if (const auto& info = m_storedClasses.find(name); info != m_storedClasses.end()) {
       return getCollection(*info);
     }
 
-    // Otherwise do some setup first and then directly read the collection
-    if (auto branch = root_utils::getBranch(m_chain, name.c_str())) {
-      const std::string dataClassName = branch->GetClassName();
-      const auto* theClass = gROOT->GetClass(dataClassName.c_str());
-      if (theClass == nullptr) return nullptr;
-      // now create the transient collections
-      // some workaround until gcc supports regex properly:
-      auto dataClassString = std::string(dataClassName);
-      auto start = dataClassString.find("<");
-      auto end   = dataClassString.find(">");
-      //getting "TypeCollection" out of "vector<TypeData>"
-      auto classname = dataClassString.substr(start+1, end-start-5);
-      auto collectionClassName = classname+"Collection";
-      const auto* collectionClass = gROOT->GetClass(collectionClassName.c_str());
-      if (collectionClass == nullptr) return nullptr;
-
-      // create the branches and cache them
-      root_utils::CollectionBranches branches;
-      branches.data = branch;
-
-      auto* collection = root_utils::prepareCollection(theClass, collectionClass);
-
-      if (auto refCollections = collection->referenceCollections()) {
-        for (size_t i = 0; i < refCollections->size(); ++i) {
-          const auto brName = root_utils::refBranch(name, i);
-          branches.refs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
-        }
-      }
-      if (auto vecMembers = collection->vectorMembers()) {
-        for (size_t i = 0; i < vecMembers->size(); ++i) {
-          const auto brName = root_utils::vecBranch(name, i);
-          branches.vecs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
-        }
-      }
-
-      // cache the information
-      const auto collInfo = std::make_tuple(theClass, collectionClass, m_collectionIndex++);
-      m_storedClasses[name] = collInfo;
-      m_collectionBranches.push_back(branches);
-
-      // connect the branches and the buffers
-      root_utils::setCollectionAddresses(collection, branches);
-
-      return readCollectionData(branches, collection, 0, name);
-    }
-
+    // At this point this collection is definitely not in this file, because we
+    // have no information on how to construct it in the first place
     return nullptr;
   }
 
   CollectionBase* ROOTReader::getCollection(const std::pair<std::string, CollectionInfo>& collInfo) {
     const auto& name = collInfo.first;
-    const auto [theClass, collectionClass, index] = collInfo.second;
+    const auto& [theClass, collectionClass, index] = collInfo.second;
     auto& branches = m_collectionBranches[index];
 
-    auto* collection = root_utils::prepareCollection(theClass, collectionClass);
+    auto* collection = static_cast<CollectionBase*>(collectionClass->New());
+    auto collBuffers = collection->getBuffers();
+    // If we have a valid data buffer class we know that have to read data,
+    // otherwise we are handling a subset collection
+    if (theClass) {
+      collBuffers.data = theClass->New();
+    } else {
+      collection->setSubsetCollection();
+    }
 
     const auto localEntry = m_chain->LoadTree(m_eventNumber);
     // After switching trees in the chain, branch pointers get invalidated so
@@ -127,7 +90,7 @@ namespace podio {
       branches.data = root_utils::getBranch(m_chain, name.c_str());
 
       // reference collections
-      if (auto* refCollections = collection->referenceCollections()) {
+      if (auto* refCollections = collBuffers.references) {
         for (size_t i = 0; i < refCollections->size(); ++i) {
           const auto brName = root_utils::refBranch(name, i);
           branches.refs[i] = root_utils::getBranch(m_chain, brName.c_str());
@@ -135,7 +98,7 @@ namespace podio {
       }
 
       // vector members
-      if (auto* vecMembers = collection->vectorMembers()) {
+      if (auto* vecMembers = collBuffers.vectorMembers) {
         for (size_t i = 0; i < vecMembers->size(); ++i) {
           const auto brName = root_utils::vecBranch(name, i);
           branches.vecs[i] = root_utils::getBranch(m_chain, brName.c_str());
@@ -151,7 +114,7 @@ namespace podio {
 
   CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranches& branches, CollectionBase* collection, Long64_t entry, const std::string& name) {
     // Read all data
-    branches.data->GetEntry(entry);
+    if (branches.data) branches.data->GetEntry(entry);
     for (auto* br : branches.refs) br->GetEntry(entry);
     for (auto* br : branches.vecs) br->GetEntry(entry);
 
@@ -173,10 +136,20 @@ namespace podio {
     for (const auto& filename:  filenames) {
       m_chain->Add(filename.c_str());
     }
-    m_table = new CollectionIDTable();
+
+    // read the meta data and build the collectionBranches cache
+    // NOTE: This is a small pessimization, if we do not read all collections
+    // afterwards, but it makes the handling much easier in general
     auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
+    m_table = new CollectionIDTable();
     metadatatree->SetBranchAddress("CollectionIDs", &m_table);
+
+    auto collectionInfo = new std::vector<std::tuple<int, std::string, bool>>;
+    metadatatree->SetBranchAddress("CollectionTypeInfo", &collectionInfo);
     metadatatree->GetEntry(0);
+
+    createCollectionBranches(*collectionInfo);
+    delete collectionInfo;
   }
 
   void ROOTReader::closeFile(){
@@ -223,5 +196,48 @@ namespace podio {
     m_inputs.clear();
   }
 
+ void ROOTReader::createCollectionBranches(const std::vector<std::tuple<int, std::string, bool>>& collInfo) {
+    size_t collectionIndex{0};
+
+    for (const auto& [collID, collType, isSubsetColl] : collInfo) {
+      // We only write collections that are in the collectionIDTable, so no need
+      // to check here
+      const auto name = m_table->name(collID);
+
+      root_utils::CollectionBranches branches{};
+      const auto collectionClass = TClass::GetClass(collType.c_str());
+
+      // Need the collection here to setup all the branches. Have to manage the
+      // temporary collection ourselves
+      auto collection = std::unique_ptr<podio::CollectionBase>(
+        static_cast<podio::CollectionBase*>(collectionClass->New()));
+      collection->setSubsetCollection(isSubsetColl);
+
+      if (!isSubsetColl) {
+        // This branch is guaranteed to exist since only collections that are
+        // also written to file are in the info metadata that we work with here
+        branches.data = root_utils::getBranch(m_chain, name.c_str());
+      }
+
+      const auto buffers = collection->getBuffers();
+      for (size_t i = 0; i < buffers.references->size(); ++i) {
+        const auto brName = root_utils::refBranch(name, i);
+        branches.refs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
+      }
+
+      for (size_t i = 0; i < buffers.vectorMembers->size(); ++i) {
+        const auto brName = root_utils::vecBranch(name, i);
+        branches.vecs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
+      }
+
+      const std::string bufferClassName = "std::vector<" + collection->getValueTypeName() + "Data>";
+      const auto bufferClass = isSubsetColl ? nullptr : TClass::GetClass(bufferClassName.c_str());
+
+      m_storedClasses.emplace(
+        name, std::make_tuple(bufferClass, collectionClass, collectionIndex++)
+      );
+      m_collectionBranches.push_back(branches);
+    }
+  }
 
 } //namespace

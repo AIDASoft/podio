@@ -28,30 +28,24 @@ inline std::string vecBranch(const std::string& name, size_t index) {
 
 
 inline void setCollectionAddresses(podio::CollectionBase* collection, const CollectionBranches& branches) {
-  if (auto buffer = collection->getBufferAddress()) {
+  const auto collBuffers = collection->getBuffers();
+
+  if (auto buffer = collBuffers.data) {
     branches.data->SetAddress(buffer);
   }
 
-  if (auto refCollections = collection->referenceCollections()) {
+  if (auto refCollections = collBuffers.references) {
     for (size_t i = 0; i < refCollections->size(); ++i) {
       branches.refs[i]->SetAddress(&(*refCollections)[i]);
     }
   }
 
-  if (auto vecMembers = collection->vectorMembers()) {
+  if (auto vecMembers = collBuffers.vectorMembers) {
     for (size_t i = 0; i < vecMembers->size(); ++i) {
       branches.vecs[i]->SetAddress((*vecMembers)[i].second);
     }
   }
 }
-
-inline CollectionBase* prepareCollection(const TClass* dataClass, const TClass* collectionClass) {
-  auto* buffer = dataClass->New();
-  auto* collection = static_cast<CollectionBase*>(collectionClass->New());
-  collection->setBuffer(buffer);
-  return collection;
-}
-
 
 }
 

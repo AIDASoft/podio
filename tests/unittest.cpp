@@ -227,6 +227,19 @@ TEST_CASE("Referencing") {
   REQUIRE(success);
 }
 
+TEST_CASE("VariadicCreate", "Test that objects created via the variadic create template function handle relations correctly") {
+  auto store = podio::EventStore();
+  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+
+  auto variadic_cluster = clusters.create(3.14f);
+  auto normal_cluster = clusters.create();
+  normal_cluster.energy(42);
+
+  variadic_cluster.addClusters(normal_cluster);
+  REQUIRE(variadic_cluster.Clusters_size() == 1);
+  REQUIRE(variadic_cluster.Clusters(0) == normal_cluster);
+}
+
 TEST_CASE("write_buffer") {
   bool success = true;
   auto store = podio::EventStore();
@@ -419,4 +432,86 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
                 "CollectionIterator should only give access to mutable objects");
 
   REQUIRE(true);
+}
+
+TEST_CASE("Subset collection basics", "[subset-colls]") {
+  auto clusterRefs = ExampleClusterCollection();
+  clusterRefs.setSubsetCollection();
+
+  // The following will always be true
+  REQUIRE(clusterRefs.isSubsetCollection());
+  const auto refCollBuffers = clusterRefs.getBuffers();
+  REQUIRE(refCollBuffers.data == nullptr);
+  REQUIRE(refCollBuffers.vectorMembers->empty());
+  REQUIRE(refCollBuffers.references->size() == 1u);
+}
+
+TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
+   // Can only collect things that already live in a different colection
+  auto clusters = ExampleClusterCollection();
+  auto cluster = clusters.create();
+
+  auto clusterRefs = ExampleClusterCollection();
+  clusterRefs.setSubsetCollection();
+  clusterRefs.push_back(cluster);
+
+  auto clusterRef = clusterRefs[0];
+  static_assert(std::is_same_v<decltype(clusterRef), decltype(cluster)>, "Elements that can be obtained from a collection and a subset collection should have the same type");
+
+  REQUIRE(clusterRef == cluster);
+
+  // These are "true" subsets, so changes should propagate
+  cluster.energy(42);
+  REQUIRE(clusterRef.energy() == 42);
+  // Also in the other directon
+  clusterRef.energy(-42);
+  REQUIRE(cluster.energy() == -42);
+}
+
+TEST_CASE("Collection iterators work with subset collections", "[subset-colls]") {
+  auto hits = ExampleHitCollection();
+  auto hit1 = hits.create(0x42ULL,0.,0.,0.,0.);
+  auto hit2 = hits.create(0x42ULL,1.,1.,1.,1.);
+
+  auto hitRefs = ExampleHitCollection();
+  hitRefs.setSubsetCollection();
+  for (const auto h : hits) hitRefs.push_back(h);
+
+  // index-based looping / access
+  for (size_t i = 0; i < hitRefs.size(); ++i) {
+    REQUIRE(hitRefs[i].energy() == i);
+  }
+
+  // range-based for loop
+  int index = 0;
+  for (const auto h : hitRefs) {
+    REQUIRE(h.energy() == index++);
+  }
+}
+
+TEST_CASE("Canont convert a normal collection into a subset collection", "[subset-colls]") {
+  auto clusterRefs = ExampleClusterCollection();
+  auto cluster = clusterRefs.create();
+
+  REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(), std::logic_error);
+}
+
+TEST_CASE("Cannot convert a subset collection into a normal collection", "[subset-colls]") {
+  auto clusterRefs = ExampleClusterCollection();
+  clusterRefs.setSubsetCollection();
+
+  auto clusters = ExampleClusterCollection();
+  auto cluster = clusters.create();
+  clusterRefs.push_back(cluster);
+
+  REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(false), std::logic_error);
+}
+
+TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
+  auto clusterRefs = ExampleClusterCollection();
+  clusterRefs.setSubsetCollection();
+  auto cluster = ExampleCluster();
+
+  REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
+  REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);
 }

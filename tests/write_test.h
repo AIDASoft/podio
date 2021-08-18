@@ -30,6 +30,9 @@ void write(podio::EventStore& store, WriterT& writer) {
 
   auto& info       = store.create<EventInfoCollection>("info");
   auto& mcps       = store.create<ExampleMCCollection>("mcparticles");
+  auto& moreMCs    = store.create<ExampleMCCollection>("moreMCs");
+  auto& mcpsRefs   = store.create<ExampleMCCollection>("mcParticleRefs");
+  mcpsRefs.setSubsetCollection();
   auto& hits       = store.create<ExampleHitCollection>("hits");
   auto& clusters   = store.create<ExampleClusterCollection>("clusters");
   auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");
@@ -46,6 +49,8 @@ void write(podio::EventStore& store, WriterT& writer) {
 
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");
+  writer.registerForWrite("moreMCs");
+  writer.registerForWrite("mcParticleRefs");
   writer.registerForWrite("hits");
   writer.registerForWrite("clusters");
   writer.registerForWrite("refs");
@@ -163,6 +168,31 @@ void write(podio::EventStore& store, WriterT& writer) {
         std::cout << " " << it->getObjectID().index;
       }
 
+    }
+    //-------------------------------
+
+    // ----------------- create a second MC collection -----------------
+    // Can use it to test subset collections that store elements from multiple
+    // collections
+    for (const auto&& mc : mcps) {
+      moreMCs.push_back(mc.clone());
+    }
+
+    // ----------------- add all "odd" mc particles into a subset collection
+    for (auto p : mcps) {
+      if (p.id() % 2) {
+        mcpsRefs.push_back(p);
+      }
+    }
+    // ----------------- add the "even" counterparts from a different collection
+    for (auto p : moreMCs) {
+      if (p.id() % 2 == 0) {
+        mcpsRefs.push_back(p);
+      }
+    }
+
+    if (mcpsRefs.size() != mcps.size()) {
+      throw std::runtime_error("The mcParticleRefs collection should now contain as many elements as the mcparticles collection");
     }
     //-------------------------------
 

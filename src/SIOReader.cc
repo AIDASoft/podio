@@ -125,7 +125,7 @@ namespace podio {
     m_blocks.push_back(m_eventMetaData);
 
     for (size_t i = 0; i < m_typeNames.size(); ++i) {
-      auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i]);
+      auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i], m_subsetCollectionBits[i]);
       m_blocks.push_back(blk);
       m_inputs.emplace_back(blk->getCollection(), m_table->names()[i]);
     }
@@ -147,6 +147,7 @@ namespace podio {
     auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
     m_table = idTableBlock->getTable();
     m_typeNames = idTableBlock->getTypeNames();
+    m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
   }
 
   void SIOReader::readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock) {
