@@ -96,6 +96,7 @@ set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_time
 
 if (TARGET read_sio)
   set_property(TEST read_sio PROPERTY DEPENDS write_sio)
+  set_property(TEST read_and_write_sio PROPERTY DEPENDS write_sio)
   set_property(TEST read_timed_sio PROPERTY DEPENDS write_timed_sio)
 
   add_test(NAME check_benchmark_outputs_sio COMMAND check_benchmark_outputs write_benchmark_sio.root read_benchmark_sio.root)
