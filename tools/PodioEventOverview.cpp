@@ -12,12 +12,12 @@ int main(int argc, char* argv[]){
   if(argc!=2)return 0;
   
   std::string FileName{argv[1]};
-
+  
   //Declaring the reader object and openning the file
   auto reader = getReader(FileName);
   reader->openFile(FileName);
   int evt=reader->getEntries();
-
+  
   //Pinting important info of the file
   std::cout<<"FileName: "<<FileName<<std::endl;
   std::cout<<"Number of events: "<<evt<<std::endl;
