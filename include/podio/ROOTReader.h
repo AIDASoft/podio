@@ -64,11 +64,13 @@ class ROOTReader : public IReader {
     /// Check if TFile is valid
     virtual bool isValid() const override final;
 
-  private:
+
 
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name) override final;
 
+  private:
+  
     /// read event meta data for current event
     GenericParameters* readEventMetaData() override final ;
 
