@@ -55,10 +55,10 @@ namespace podio {
 
     void endOfEvent() override;
 
-  private:
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name) override final;
 
+  private:
     /// read event meta data for current event
     GenericParameters* readEventMetaData() override final;
 
