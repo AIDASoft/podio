@@ -398,9 +398,6 @@ class ClassGenerator(object):
         self._build_include(typ.bare_type) for typ in interface['Types']
         ]
 
-    import pprint
-    pprint.pprint(interface)
-
     return interface
 
   def _get_member_includes(self, members):

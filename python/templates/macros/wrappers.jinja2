@@ -24,3 +24,38 @@ const {{ sub_member.full_type }}& {{ class_type }}::{{ sub_member.getter_name(ge
 {%- endif %}
 {% endfor %}
 {% endmacro %}
+
+
+{% macro member_setters(class, members, get_syntax) %}
+{% for member in members %}
+void {{ class.bare_type }}::{{ member.setter_name(get_syntax) }}({{ member.full_type }} value) {
+  std::visit([value](auto&& obj) { obj->data.{{ member.name }} = value;}, m_obj);
+}
+{% if member.is_array %}
+void {{ class.bare_type }}::{{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value) {
+  std::visit([i, value](auto&& obj) { obj->data.{{ member.name }}[i] = value;}, m_obj);
+}
+{% endif %}
+{% if not member.is_builtin %}
+{{ member.full_type }}& {{ class.bare_type }}::{{ member.name }}() {
+  return std::visit([](auto&& obj) -> {{ member.full_type }}& {
+    return obj->data.{{ member.name }};
+  }, m_obj);
+}
+{% endif %}
+{% if members.sub_members %}
+{% for sub_member in members.sub_members %}
+void {{ class.bare_type }}::{{ sub_member.member_setter(get_syntax) }}({{ sub_member.full_type }} value) {
+  std::visit([value](auto&& obj) { obj->data.{{ member.name }}.{{ sub_member.name }} = value; }, m_obj);
+}
+{% if not sub_member.is_builtin %}
+{{ sub_member.full_type }}& {{ class.bare_type }}::{{ sub_member.name }}() {
+  return std::visit([](auto&& obj) -> {{ sub_member.full_type }}& {
+    return obj->data.{{ member.name }}.{{ sub_member.name }};
+  }, m_obj);
+}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endmacro %}
