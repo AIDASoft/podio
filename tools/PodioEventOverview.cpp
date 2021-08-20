@@ -4,13 +4,14 @@
 #include "podio/ROOTReader.h"
 #include "podio/SIOReader.h"
 #include "podio/CollectionBase.h"
-
-std::unique_ptr<podio::IReader> getReader(const std::string& FileName);
+#include "podio/tools.h"
 
 int main(int argc, char* argv[]){
   
-  if(argc!=2)return 0;
-  
+  if(argc!=2){
+    std::cout<<"ERROR FileName not received"<<std::endl;
+    return 0;
+  }
   std::string FileName{argv[1]};
   
   //Declaring the reader object and openning the file
@@ -40,13 +41,3 @@ int main(int argc, char* argv[]){
   
   return 0;
 }
-
-std::unique_ptr<podio::IReader> getReader(const std::string& FileName){                            
-                                                                                                   
-  std::unique_ptr<podio::IReader> reader = nullptr;                                                
-  if(FileName.substr(FileName.length()-4)=="root"){                          
-    return std::make_unique<podio::ROOTReader>();}                                                
-  else{                                                                                           
-    return std::make_unique<podio::SIOReader>();}                                                 
-  
-}  
