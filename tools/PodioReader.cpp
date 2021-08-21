@@ -10,16 +10,31 @@
 int main(int argc, char* argv[]){
   
   //Declaring reader object
-  if(argc!=2){
-    std::cout<<"ERROR FileName not received"<<std::endl;
-    return 0;
+  if(argc<=2){
+    std::cout<<"Not enough arguments"<<std::endl;
+    return 1;
   }
-  std::string FileName{argv[1]};
-    
+
+  int evt_number=std::stoi(argv[2]);
+
   
+  std::string FileName{argv[1]};
+
+  //Getting the reader for the file
   auto reader=getReader(FileName);
   reader->openFile(FileName);
-    
+  int evt=reader->getEntries();
+
+  if(evt_number>evt){
+    std::cout<<"Event number not valid"<<std::endl;
+    return 2;
+  }
+  
+  //Skipping not wanted events
+  for(int i=0; i<evt_number; i++){
+    reader->endOfEvent();
+  }
+
   //Getting Table containing the info about the collections
   const auto collIDTable = reader->getCollectionIDTable();
   const auto collNames = collIDTable->names();
@@ -33,7 +48,7 @@ int main(int argc, char* argv[]){
   for (const auto& name : collNames) {
     const auto coll = reader->readCollection(name);
     const auto type = coll->getValueTypeName();    
-
+    
     coll->registerForWrite(writer, name);
   }
   
