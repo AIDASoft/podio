@@ -29,8 +29,10 @@ int main(int argc, char* argv[]){
   const auto collNames = collIDTable->names();
   //Iterating over all events to get size for each event
   for(int i=0; i<evt; i++){
-    std::cout<<std::left<<std::setw(30)<<"Name"<<std::left<<std::setw(30)<<"Type"<<"Colection Size"<<std::endl;
-    std::cout<<"--------------------------------------------------------------------------"<<std::endl;
+    std::cout<<std::left<<std::setw(30)<<"Name"<<std::left<<std::setw(40)<<"Type"<<"Colection Size"<<std::endl;
+    std::cout<<"-------------------------------------------------------------------------------------"<<std::endl;
+
+    reader->readEvent();
     //Iterating over the collections to get each kind of data type
     for (const auto& name : collNames) {
       
@@ -38,9 +40,10 @@ int main(int argc, char* argv[]){
       auto size = coll->size();
       const auto type = coll->getValueTypeName();
       //Printing Collection Names
-      std::cout<<std::left<<std::setw(30)<<name<<std::left<<std::setw(30)<<type<<size<<"\n";
+      std::cout<<std::left<<std::setw(30)<<name<<std::left<<std::setw(40)<<type<<size<<"\n";
     }
     reader->endOfEvent();
+
     std::cout<<std::endl;
   }
   return 0;

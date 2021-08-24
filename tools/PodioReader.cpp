@@ -30,11 +30,9 @@ int main(int argc, char* argv[]){
     return 2;
   }
   
-  //Skipping not wanted events
-  for(int i=0; i<evt_number; i++){
-    reader->endOfEvent();
-  }
-
+  reader->goToEvent(evt_number);
+  reader->readEvent();
+  
   //Getting Table containing the info about the collections
   const auto collIDTable = reader->getCollectionIDTable();
   const auto collNames = collIDTable->names();

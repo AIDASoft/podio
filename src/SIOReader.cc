@@ -6,6 +6,7 @@
 #include "podio/EventStore.h"
 #include "podio/SIOBlock.h"
 #include "sio/definitions.h"
+#include "sio/api.h"
 
 #include <memory>
 #include <sio/compression/zlib.h>
@@ -25,49 +26,49 @@ namespace podio {
     if (m_lastEventRead != m_eventNumber) {
       readEvent();
     }
-
+    
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
                           [&name](const SIOReader::Input& t){ return t.second == name;});
-
+    
     if (p != end(m_inputs)) {
       p->first->prepareAfterRead();
       return p->first;
     }
-
+    
     return nullptr;
   }
-
+  
   std::map<int,GenericParameters>* SIOReader::readCollectionMetaData() {
     // Only read the data if it hasn't been read already
     if (!m_collectionMetaData->data) {
       m_collectionMetaData->data = new ColMDMap();
       readMetaDataRecord(m_collectionMetaData);
     }
-
+    
     return m_collectionMetaData->data;
   }
-
+  
   std::map<int,GenericParameters>* SIOReader::readRunMetaData() {
     // Only read the data if it hasn't been read already
     if (!m_runMetaData->data) {
       m_runMetaData->data = new RunMDMap();
       readMetaDataRecord(m_runMetaData);
     }
-
+    
     return m_runMetaData->data;
   }
-
+  
   podio::GenericParameters* SIOReader::readEventMetaData() {
     if (m_lastEventRead != m_eventNumber) {
       readEvent();
     }
     return m_eventMetaData->metadata;
   }
-
+  
   void SIOReader::openFile(const std::string& filename){
     m_stream.open( filename , std::ios::binary ) ;
     readCollectionIDTable();
-
+    
     if (!readFileTOCRecord()) {
       reconstructFileTOCRecord();
     }
@@ -82,7 +83,7 @@ namespace podio {
     // recreate the blocks, since the contents are owned and managed by the
     // EventStore
     createBlocks();
-
+    
     // skip possible intermediate records that are not event data
     sio::api::go_to_record(m_stream, "event_record");
 
@@ -100,24 +101,29 @@ namespace podio {
     }
 
     m_lastEventRead = m_eventNumber;
+    
   }
 
   bool SIOReader::isValid() const {
     return m_stream.good()  ;
   }
-
+  
   SIOReader::~SIOReader() {
     // delete all collections
     // at the moment it is done in the EventStore;
     // TODO: who deletes the buffers?
   }
-
+  
   void SIOReader::endOfEvent() {
     ++m_eventNumber;
     m_blocks.clear();
     m_inputs.clear();
   }
-
+  
+  void SIOReader::goToEvent(unsigned eventNumber) {
+    sio::api::skip_n_records(m_stream, eventNumber+1);
+  }
+  
   void SIOReader::createBlocks() {
     // make sure that the first block is EventMetaData as it is also the first
     // during wrting
