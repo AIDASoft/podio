@@ -10,18 +10,18 @@
 
 /*
 
-This class has the function to read available data from disk
-and to prepare collections and buffers.
+  This class has the function to read available data from disk
+  and to prepare collections and buffers.
 
 */
 
 namespace podio {
 
-class CollectionBase;
-class CollectionIDTable;
-class GenericParameters;
-
-class IReader {
+  class CollectionBase;
+  class CollectionIDTable;
+  class GenericParameters;
+  
+  class IReader {
   public:
     virtual ~IReader(){};
     /// Read Collection of given name
@@ -40,10 +40,15 @@ class IReader {
     //TODO: decide on smart-pointers for passing of objects
     /// Check if reader is valid
     virtual bool isValid() const = 0;
-
+    
     virtual void openFile(const std::string& filename) = 0;
+
     virtual void closeFile() = 0;
-};
+
+    virtual void readEvent() = 0;
+
+    virtual void goToEvent(unsigned evnum) = 0;
+  };
 
 } // namespace
 

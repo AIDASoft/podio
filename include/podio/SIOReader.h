@@ -55,6 +55,8 @@ namespace podio {
 
     void endOfEvent() override;
 
+    void goToEvent(unsigned evnum);
+    
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name) override final;
 
