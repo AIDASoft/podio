@@ -11,7 +11,7 @@ int main(int argc, char* argv[]){
   
   //Declaring reader object
   if(argc<=2){
-    std::cout<<"Not enough arguments"<<std::endl;
+    std::cout<<"Arguments not specified: FileName and event number were expected"<<std::endl;
     return 1;
   }
 
