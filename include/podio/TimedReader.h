@@ -74,6 +74,8 @@ public:
     return runTimed(false, "get_entries", &IReader::getEntries);
   }
 
+  void readEvent(){
+  }
   /// Prepare the reader to read the next event
   virtual void endOfEvent() override {
     runVoidTimed(true, "end_of_event", &IReader::endOfEvent);
@@ -93,8 +95,8 @@ public:
   virtual void closeFile() override {
     runVoidTimed(false, "close_file", &IReader::closeFile);
   }
-
-private:
+  void goToEvent(unsigned) override{}
+    private:
   void recordTime (bool perEvent, const std::string& step, ClockT::duration duration) const {
     if (perEvent) {
       m_perEventTree.recordTime(step, duration);
