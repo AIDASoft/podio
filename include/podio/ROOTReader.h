@@ -47,7 +47,7 @@ class ROOTReader : public IReader {
     void closeFiles();
 
     /// Read all collections requested
-    void readEvent();
+    void readEvent() override;
 
     /// Read CollectionIDTable from ROOT file
     CollectionIDTable* getCollectionIDTable() override final {return m_table;}
@@ -59,7 +59,7 @@ class ROOTReader : public IReader {
     void endOfEvent() override;
 
     /// Preparing to read a given event
-    void goToEvent(unsigned evnum);
+    void goToEvent(unsigned evnum) override;
 
     /// Check if TFile is valid
     virtual bool isValid() const override final;
