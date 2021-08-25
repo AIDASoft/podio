@@ -29,7 +29,6 @@ int main(int argc, char* argv[]){
     std::cout<<"Event number not valid"<<std::endl;
     return 2;
   }
-  
   reader->goToEvent(evt_number);
   reader->readEvent();
   
