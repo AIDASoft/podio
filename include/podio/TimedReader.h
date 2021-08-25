@@ -74,7 +74,7 @@ public:
     return runTimed(false, "get_entries", &IReader::getEntries);
   }
 
-  void readEvent(){
+  void readEvent() override{
   }
   /// Prepare the reader to read the next event
   virtual void endOfEvent() override {

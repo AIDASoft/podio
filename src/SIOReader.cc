@@ -6,7 +6,6 @@
 #include "podio/EventStore.h"
 #include "podio/SIOBlock.h"
 #include "sio/definitions.h"
-#include "sio/api.h"
 
 #include <memory>
 #include <sio/compression/zlib.h>
@@ -101,7 +100,6 @@ namespace podio {
     }
 
     m_lastEventRead = m_eventNumber;
-    
   }
 
   bool SIOReader::isValid() const {
@@ -122,6 +120,8 @@ namespace podio {
   
   void SIOReader::goToEvent(unsigned eventNumber) {
     //can only go to forward events for the moment
+    if((int)eventNumber<m_eventNumber)return;
+    
     sio::api::go_to_record(m_stream, "event_record");
     sio::api::skip_n_records(m_stream, eventNumber-m_eventNumber);
     m_eventNumber=eventNumber-m_eventNumber;

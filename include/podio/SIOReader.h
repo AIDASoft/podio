@@ -43,7 +43,7 @@ namespace podio {
     void closeFile() override;
 
     /// Read all collections requested
-    void readEvent();
+    void readEvent() override;
 
     /// Read CollectionIDTable from SIO file
     CollectionIDTable* getCollectionIDTable() override final {return m_table;}
@@ -55,7 +55,7 @@ namespace podio {
 
     void endOfEvent() override;
 
-    void goToEvent(unsigned evnum);
+    void goToEvent(unsigned evnum) override;
     
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name) override final;

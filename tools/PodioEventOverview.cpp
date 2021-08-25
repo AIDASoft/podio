@@ -19,7 +19,7 @@ int main(int argc, char* argv[]){
   reader->openFile(FileName);
   int evt=reader->getEntries();
   
-  //Pinting important info of the file
+  //Printing important info of the file
   std::cout<<"FileName: "<<FileName<<std::endl;
   std::cout<<"Number of events: "<<evt<<std::endl;
   std::cout<<std::endl;
