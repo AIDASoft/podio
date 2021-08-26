@@ -20,12 +20,15 @@ int main(int argc, char* argv[]){
   int eventNumber=reader->getEntries();
   int readEvent=1;
   if(argc==3){
-    if(std::stoi(argv[2])>=eventNumber){
-      std::cout<<"Not enough events in file"<<std::endl;
+    try {
+      readEvent = std::stoi(argv[2]);
+      if (readEvent > eventNumber) {
+        std::cerr << "Only have " << eventNumber << " events to read. " << std::endl;
+        readEvent = eventNumber;
+      }
+    } catch (std::invalid_argument& ex) {
+      std::cerr << "Cannot convert " << argv[2] << " to an event number: " << ex.what() << std::endl;
       return 1;
-    }
-    else{
-      readEvent=std::stoi(argv[2]);
     }
   }
   //Printing important info of the file
