@@ -74,10 +74,6 @@ public:
 
   void setSubsetCollection(bool setSubset=true) final;
 
-  void registerForWrite(podio::ASCIIWriter& writer, const std::string& name) override{
-        writer.registerForWrite<{{ class.bare_type }}Collection>(name);
-  }
-
   /// Returns the object of given index
   Const{{ class.bare_type }} operator[](unsigned int index) const;
   /// Returns the object of a given index
