@@ -46,7 +46,6 @@ int main(int argc, char* argv[]){
     const auto coll = reader->readCollection(name);
     const auto type = coll->getValueTypeName();    
     
-    coll->registerForWrite(writer, name);
   }
   
   writer.writeEvent();

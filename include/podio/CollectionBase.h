@@ -55,8 +55,6 @@ namespace podio {
 
     /// declare this collection to be a subset collection
     virtual void setSubsetCollection(bool setSubset=true) = 0;
-    
-    virtual void registerForWrite(podio::ASCIIWriter& writer, const std::string& name) = 0;
   };
 
 } // namespace
