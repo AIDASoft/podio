@@ -16,6 +16,8 @@
 #include "datamodel/ExampleWithArrayCollection.h"
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 
+#include "podio/UserDataCollection.h"
+
 #include "podio/EventStore.h"
 
 // STL
@@ -46,6 +48,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
   auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+  auto& usrInts = store.create<podio::UserDataCollection<int> >("userInts");
 
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");
@@ -64,12 +67,20 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.registerForWrite("strings");
   writer.registerForWrite("arrays");
   writer.registerForWrite("fixedWidthInts");
+  writer.registerForWrite("userInts");
 
   unsigned nevents = 2000;
 
   for(unsigned i=0; i<nevents; ++i) {
     if(i % 1000 == 0) {
       std::cout << "processing event " << i << std::endl;
+    }
+
+    auto& uivec = usrInts.vec() ;
+    uivec.resize( i + 1 ) ;
+    int myInt = 0 ;
+    for( int& iu : uivec ){
+      iu = myInt++  ;
     }
 
     auto item1 = EventInfo();

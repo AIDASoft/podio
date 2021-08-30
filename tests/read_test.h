@@ -18,6 +18,8 @@
 #include "podio/EventStore.h"
 #include "podio/IReader.h"
 
+#include "podio/UserDataCollection.h"
+
 // STL
 #include <limits>
 #include <vector>
@@ -61,6 +63,17 @@ void processEvent(podio::EventStore& store, int eventNum) {
       throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
     }
   }
+
+
+  auto& usrInts = store.get<podio::UserDataCollection<int> >("userInts");
+  auto& uivec = usrInts.vec() ;
+
+  int myInt = 0 ;
+  for( int iu : uivec ){
+    if( iu != myInt++ )
+      throw std::runtime_error("Couldn't read userInts properly"); ;
+  }
+
 
   auto& strings = store.get<ExampleWithStringCollection>("strings");
   if(strings.isValid()){
