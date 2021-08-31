@@ -48,7 +48,8 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
   auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
-  auto& usrInts = store.create<podio::UserDataCollection<int> >("userInts");
+//  auto& usrInts = store.create<podio::UserDataCollection<int> >("userInts");
+  auto& usrInts = store.create<podio::intCollection>("userInts");
 
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");

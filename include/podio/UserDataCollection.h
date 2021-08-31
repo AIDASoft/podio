@@ -22,12 +22,12 @@ namespace podio {
     CollRefCollection m_refCollections{};
     VectorMembersInfo m_vecmem_info{};
 
-    const std::map< std::type_index, const std::string >_typeMap =
-    { 
-      { std::type_index( typeid(int) ) , "podio::int" } ,
-      { std::type_index( typeid(long) ) , "podio::long" } ,
-      { std::type_index( typeid(float) ) , "podio::float" } ,
-      { std::type_index( typeid(double) ) , "podio::double" } 
+    const std::map< const std::type_index, const std::string >_typeMap =
+    {
+      { std::type_index( typeid(int) ),   "podio::int"   },
+      { std::type_index( typeid(long) ),  "podio::long"  },
+      { std::type_index( typeid(float) ), "podio::float" },
+      { std::type_index( typeid(double) ),"podio::double"}
     } ;
 
   public:
@@ -35,7 +35,7 @@ namespace podio {
     UserDataCollection() = default ;
     UserDataCollection(const UserDataCollection& ) = delete;
     UserDataCollection& operator=(const UserDataCollection& ) = delete;
-
+    ~UserDataCollection() = default;
 
 
     /// prepare buffers for serialization
@@ -45,7 +45,9 @@ namespace podio {
     void  prepareAfterRead() override final {}
 
     /// initialize references after read
-    bool setReferences(const ICollectionProvider* collectionProvider) override final {  return true ;}
+    bool setReferences(const ICollectionProvider* ) override final {
+      return true ;
+    }
 
     /// set collection ID
     void setID(unsigned id) override final {
@@ -66,7 +68,6 @@ namespace podio {
 
     /// check for validity of the container after read
     bool isValid() const override final {
-      // nothing to chek here - or ?
       return true ;
     }
 
@@ -79,12 +80,7 @@ namespace podio {
     std::string getValueTypeName() const override final {
       auto it = _typeMap.find( std::type_index( typeid(BasicType) ) ) ;
       return it != _typeMap.end() ? it->second  :  "UNKNOWN"  ;
-
-	//return typeid(BasicType).name() ;
     }
-
-    /// destructor
-    ~UserDataCollection() = default;
 
     /// clear the collection and all internal states
     void clear() override final {
@@ -93,27 +89,32 @@ namespace podio {
 
 
     /// check if this collection is a subset collection - no subset possible
-    bool isSubsetCollection() const override final {return false ;}
+    bool isSubsetCollection() const override final {
+      return false ;
+    }
 
     /// declare this collection to be a subset collectionv - no effect
-    void setSubsetCollection(bool setSubset=true) override final {}
-
+    void setSubsetCollection(bool) override final {}
 
     /// access to the actual data vector
-    typename std::vector<BasicType>& vec() { return _vec; }
-    
+    typename std::vector<BasicType>& vec() {
+      return _vec;
+    }
+
     /// access to the actual data vector
-    const typename std::vector<BasicType>& vec() const { return _vec; }
+    const typename std::vector<BasicType>& vec() const {
+      return _vec;
+    }
 
 
   };
 
   /// some typedefs to make ROOT happy
 
-  typedef UserDataCollection<int> intCollection ;
+  typedef UserDataCollection<int>   intCollection ;
   typedef UserDataCollection<float> floatCollection ;
 
-  typedef int intData ;
+  typedef int   intData ;
   typedef float floatData ;
 
 } // namespace
