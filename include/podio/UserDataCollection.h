@@ -17,6 +17,9 @@ namespace podio {
   class  UserDataTypes{
   private:
     UserDataTypes() = default ;
+    UserDataTypes(const UserDataTypes& ) = delete;
+    UserDataTypes& operator=(const UserDataTypes& ) = delete;
+    ~UserDataTypes() = default;
 
     const std::map< const std::type_index, const std::string >_typeMap =
     {
@@ -31,6 +34,11 @@ namespace podio {
     std::string name( std::type_index idx ){
       auto it = _typeMap.find( idx ) ;
       return it != _typeMap.end() ? it->second  :  "UNKNOWN"  ;
+    }
+
+    // typename w/ 'podio::' replaced by 'podio_'
+    std::string sio_name( std::type_index idx ){
+      return std::string("podio_") + name( idx ).substr( 7 , 1024)  ;
     }
 
     static UserDataTypes& instance(){
@@ -132,11 +140,15 @@ namespace podio {
 
   /// some typedefs to make ROOT happy
 
-  typedef UserDataCollection<int>   intCollection ;
-  typedef UserDataCollection<float> floatCollection ;
+  typedef UserDataCollection<int>    intCollection ;
+  typedef UserDataCollection<long>   longCollection ;
+  typedef UserDataCollection<float>  floatCollection ;
+  typedef UserDataCollection<double> doubleCollection ;
 
-  typedef int   intData ;
-  typedef float floatData ;
+  typedef int    intData ;
+  typedef long   longData ;
+  typedef float  floatData ;
+  typedef double doubleData ;
 
 } // namespace
 
