@@ -12,15 +12,11 @@
 
 namespace podio {
 
-  template <typename BasicType>
-  class UserDataCollection : public CollectionBase {
 
+  ///helper class providing names for basic types used in UserDataCollection<T>
+  class  UserDataTypes{
   private:
-    std::vector<BasicType> _vec ;
-    std::vector<BasicType>* _vecPtr = &_vec ;
-    int m_collectionID{0};
-    CollRefCollection m_refCollections{};
-    VectorMembersInfo m_vecmem_info{};
+    UserDataTypes() = default ;
 
     const std::map< const std::type_index, const std::string >_typeMap =
     {
@@ -29,6 +25,31 @@ namespace podio {
       { std::type_index( typeid(float) ), "podio::float" },
       { std::type_index( typeid(double) ),"podio::double"}
     } ;
+
+  public:
+
+    std::string name( std::type_index idx ){
+      auto it = _typeMap.find( idx ) ;
+      return it != _typeMap.end() ? it->second  :  "UNKNOWN"  ;
+    }
+
+    static UserDataTypes& instance(){
+      static UserDataTypes me ;
+      return me ;
+    }
+  } ;
+
+
+  /// Templated base class for storing std::vectors of basic types as user data in PODIO
+  template <typename BasicType>
+  class UserDataCollection : public CollectionBase {
+
+  private:
+    std::vector<BasicType> _vec{} ;
+    std::vector<BasicType>* _vecPtr = &_vec ;
+    int m_collectionID{0};
+    CollRefCollection m_refCollections{};
+    VectorMembersInfo m_vecmem_info{};
 
   public:
 
@@ -78,8 +99,8 @@ namespace podio {
 
     /// fully qualified type name of elements - with namespace
     std::string getValueTypeName() const override final {
-      auto it = _typeMap.find( std::type_index( typeid(BasicType) ) ) ;
-      return it != _typeMap.end() ? it->second  :  "UNKNOWN"  ;
+
+      return UserDataTypes::instance().name( typeid(BasicType) ) ;
     }
 
     /// clear the collection and all internal states
@@ -101,7 +122,7 @@ namespace podio {
       return _vec;
     }
 
-    /// access to the actual data vector
+    /// const access to the actual data vector
     const typename std::vector<BasicType>& vec() const {
       return _vec;
     }
