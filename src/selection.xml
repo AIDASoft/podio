@@ -4,8 +4,6 @@
     <class name="podio::IntVec"/>
     <class name="podio::FloatVec"/>
     <class name="podio::StringVec"/>
-    <class name="podio::intCollection"/>
-    <class name="podio::floatCollection"/>
     <class name="podio::GenericParameters::MapType<int>"/>
     <class name="podio::GenericParameters::MapType<float>"/>
     <class name="podio::GenericParameters::MapType<std::string>"/>
@@ -19,5 +17,9 @@
     </class>
     <class name="podio::ObjectID"/>
     <class name="vector<podio::ObjectID>"/>
+    <class name="podio::intCollection"/>
+    <class name="podio::longCollection"/>
+    <class name="podio::floatCollection"/>
+    <class name="podio::doubleCollection"/>
     </selection>
 </lcgdict>
