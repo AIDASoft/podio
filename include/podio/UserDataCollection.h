@@ -125,6 +125,20 @@ namespace podio {
     /// declare this collection to be a subset collectionv - no effect
     void setSubsetCollection(bool) override final {}
 
+
+    // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)
+
+    typename std::vector<BasicType>::iterator begin() { return _vec.begin() ; }
+    typename std::vector<BasicType>::iterator end()   { return _vec.end() ; }
+    typename std::vector<BasicType>::const_iterator begin() const { return _vec.begin() ; }
+    typename std::vector<BasicType>::const_iterator end()   const { return _vec.end() ; }
+
+    typename std::vector<BasicType>::reference operator[](size_t idx) { return _vec[idx] ; }
+    typename std::vector<BasicType>::const_reference operator[](size_t idx) const { return _vec[idx] ; }
+
+    void resize( size_t count ) { _vec.resize( count ) ; }
+    void push_back( const BasicType& value ) { _vec.push_back( value ) ; }
+
     /// access to the actual data vector
     typename std::vector<BasicType>& vec() {
       return _vec;
@@ -138,7 +152,7 @@ namespace podio {
 
   };
 
-  /// some typedefs to make ROOT happy
+  /// some typedefs to make ROOT and the ROOTWriter happy
 
   typedef UserDataCollection<int>    intCollection ;
   typedef UserDataCollection<long>   longCollection ;
