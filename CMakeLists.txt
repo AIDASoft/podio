@@ -83,9 +83,9 @@ IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION
   ENDIF()
   message( STATUS "Python version used for building ROOT ${ROOT_PYTHON_VERSION}" )
   message( STATUS "Required python version ${REQUIRE_PYTHON_VERSION}")
-  FIND_PACKAGE(Python ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development)
+  FIND_PACKAGE(Python ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development Interpreter)
 ELSE()
-  FIND_PACKAGE(Python COMPONENTS Development)
+  FIND_PACKAGE(Python COMPONENTS Development Interpreter)
 ENDIF()
 
 # ROOT only sets usage requirements from 6.14, so for
