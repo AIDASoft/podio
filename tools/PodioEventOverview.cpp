@@ -19,9 +19,11 @@ int main(int argc, char* argv[]){
   reader->openFile(FileName);
   int eventNumber=reader->getEntries();
   int readEvent=1;
+  int startEvent=0;
   if(argc==3){
     try {
       readEvent = std::stoi(argv[2]);
+      if(readEvent==-1)readEvent=eventNumber;
       if (readEvent > eventNumber) {
         std::cerr << "Only have " << eventNumber << " events to read. " << std::endl;
         readEvent = eventNumber;
@@ -31,6 +33,17 @@ int main(int argc, char* argv[]){
       return 1;
     }
   }
+  if(argc==4){
+    try{
+      startEvent = std::stoi(argv[2]);
+      readEvent  = std::stoi(argv[3]);
+      
+    } catch (std::invalid_argument& ex) {
+      std::cerr << "Cannot convert " << argv[2] << " to an event number: " << ex.what() << std::endl;
+      return 1;
+    }
+  }
+
   //Printing important info of the file
   std::cout<<"FileName: "<<FileName<<std::endl;
   std::cout<<"Number of events: "<<eventNumber<<std::endl;
@@ -40,7 +53,7 @@ int main(int argc, char* argv[]){
   const auto collIDTable = reader->getCollectionIDTable();
   const auto collNames = collIDTable->names();
   //Iterating over all events to get size for each event
-  for(int i=0; i<readEvent; i++){
+  for(int i=startEvent; i<readEvent; i++){
 
     std::cout<<"Event Number "<<i<<std::endl;
     std::cout<<std::left<<std::setw(30)<<"Name"<<std::left<<std::setw(40)<<"Type"<<"Colection Size"<<std::endl;
