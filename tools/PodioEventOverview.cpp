@@ -22,12 +22,13 @@ int main(int argc, char* argv[]){
   int startEvent=0;
   if(argc==3){
     try {
-      readEvent = std::stoi(argv[2]);
-      if(readEvent==-1)readEvent=eventNumber;
-      if (readEvent > eventNumber) {
-        std::cerr << "Only have " << eventNumber << " events to read. " << std::endl;
-        readEvent = eventNumber;
+      readEvent = std::stoi(argv[2])+1;
+      startEvent= readEvent-1;
+      if(readEvent==-1)	{
+	readEvent=eventNumber;
+	startEvent=0;
       }
+      
     } catch (std::invalid_argument& ex) {
       std::cerr << "Cannot convert " << argv[2] << " to an event number: " << ex.what() << std::endl;
       return 1;
@@ -44,6 +45,15 @@ int main(int argc, char* argv[]){
     }
   }
 
+  if (startEvent>=readEvent){
+    std::cout<<"Can not use specified range"<<std::endl;
+  }
+  
+  if (readEvent > eventNumber) {
+    std::cerr << "Only have " << eventNumber << " events to read. " << std::endl;
+    readEvent = eventNumber;
+  }
+  
   //Printing important info of the file
   std::cout<<"FileName: "<<FileName<<std::endl;
   std::cout<<"Number of events: "<<eventNumber<<std::endl;
