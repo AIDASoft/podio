@@ -159,10 +159,11 @@ namespace podio {
   typedef UserDataCollection<float>  floatCollection ;
   typedef UserDataCollection<double> doubleCollection ;
 
-  typedef int    intData ;
-  typedef long   longData ;
-  typedef float  floatData ;
-  typedef double doubleData ;
+  // are these needed or not ? the ROOT branch is created w/ "vector<xxxData>" where xxx is int, float, ...
+   // typedef int    intData ;
+   // typedef long   longData ;
+   // typedef float  floatData ;
+   // typedef double doubleData ;
 
 } // namespace
 
