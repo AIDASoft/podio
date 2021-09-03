@@ -23,10 +23,10 @@ namespace podio {
 
     const std::map< const std::type_index, const std::string >_typeMap =
     {
-      { std::type_index( typeid(int) ),   "podio::int"   },
-      { std::type_index( typeid(long) ),  "podio::long"  },
-      { std::type_index( typeid(float) ), "podio::float" },
-      { std::type_index( typeid(double) ),"podio::double"}
+      { std::type_index( typeid(int) ),   "podio::User_int"   },
+      { std::type_index( typeid(long) ),  "podio::User_long"  },
+      { std::type_index( typeid(float) ), "podio::User_float" },
+      { std::type_index( typeid(double) ),"podio::User_double"}
     } ;
 
   public:
@@ -154,16 +154,10 @@ namespace podio {
 
   /// some typedefs to make ROOT and the ROOTWriter happy
 
-  typedef UserDataCollection<int>    intCollection ;
-  typedef UserDataCollection<long>   longCollection ;
-  typedef UserDataCollection<float>  floatCollection ;
-  typedef UserDataCollection<double> doubleCollection ;
-
-  // are these needed or not ? the ROOT branch is created w/ "vector<xxxData>" where xxx is int, float, ...
-   // typedef int    intData ;
-   // typedef long   longData ;
-   // typedef float  floatData ;
-   // typedef double doubleData ;
+  typedef UserDataCollection<int>    User_intCollection ;
+  typedef UserDataCollection<long>   User_longCollection ;
+  typedef UserDataCollection<float>  User_floatCollection ;
+  typedef UserDataCollection<double> User_doubleCollection ;
 
 } // namespace
 

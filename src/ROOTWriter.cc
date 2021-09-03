@@ -55,7 +55,18 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
     const auto collBuffers = coll->getBuffers();
     if (collBuffers.data) {
       // only create the data buffer branch if necessary
-      const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
+
+      std::string valTypeName = coll->getValueTypeName() ;
+
+      auto collClassName = "vector<" + valTypeName + "Data>";
+
+      auto it = valTypeName.find("podio::User_") ;
+      if(it == 0 ){
+	valTypeName = valTypeName.substr( 12 , 1024 ) ; // rm 'podio_user_' prefix
+	 collClassName = "vector<" + valTypeName +">";
+      }
+
+      std::cout << " **** create branch " << collClassName << std::endl ;
       branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), collBuffers.data);
     }
 

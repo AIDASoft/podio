@@ -49,7 +49,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
   auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
   //  auto& usrInts = store.create<podio::UserDataCollection<int> >("userInts");
-  auto& usrInts = store.create<podio::intCollection>("userInts");
+  auto& usrInts = store.create<podio::User_intCollection>("userInts");
   auto& usrDoubles = store.create<podio::UserDataCollection<double> >("userDoubles");
 
   writer.registerForWrite("info");
