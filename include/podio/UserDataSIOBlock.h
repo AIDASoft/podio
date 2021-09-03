@@ -29,29 +29,24 @@ public:
 
   virtual void read(sio::read_device& device, sio::version_type /*version*/) override {
     auto collBuffers = _col->getBuffers();
-    if (not _col->isSubsetCollection()) {
-      auto* dataVec = collBuffers.dataAsVector<BasicType>();
-      unsigned size(0);
-      device.data( size );
-      dataVec->resize(size);
-      podio::handlePODDataSIO(device, &(*dataVec)[0], size);
-    }
+    auto* dataVec = collBuffers.dataAsVector<BasicType>();
+    unsigned size(0);
+    device.data( size );
+    dataVec->resize(size);
+    podio::handlePODDataSIO(device, &(*dataVec)[0], size);
   }
 
   virtual void write(sio::write_device& device) override {
     _col->prepareForWrite() ;
     auto collBuffers = _col->getBuffers();
-    if (not _col->isSubsetCollection()) {
-      auto* dataVec = collBuffers.dataAsVector<BasicType>();
-      unsigned size = dataVec->size() ;
-      device.data( size ) ;
-      podio::handlePODDataSIO( device ,  &(*dataVec)[0], size ) ;
-    }
+    auto* dataVec = collBuffers.dataAsVector<BasicType>();
+    unsigned size = dataVec->size() ;
+    device.data( size ) ;
+    podio::handlePODDataSIO( device ,  &(*dataVec)[0], size ) ;
   }
 
-  virtual void createCollection(const bool subsetCollection=false) override{
+  virtual void createCollection(const bool) override{
     setCollection(new podio::UserDataCollection<BasicType>);
-    _col->setSubsetCollection(subsetCollection);
   }
 
   SIOBlock* create(const std::string& name) const override {
