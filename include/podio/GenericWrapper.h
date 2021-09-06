@@ -62,6 +62,18 @@ struct GetObjPtr {
 template<typename T>
 using GetObjPtrT = typename GetObjPtr<T>::type;
 
+// Helper type for getting the Const type from a mutable class (which is used to
+// instantiate the templates)
+// NOTE: no checks here, since we assume that that is covered by the checks for
+// the public ObjPtrT subtype above
+template<typename T>
+struct GetConstType {
+  using type = typename T::ConstT;
+};
+
+template<typename T>
+using GetConstT = typename GetConstType<T>::type;
+
 } // namespace detail
 
 
@@ -69,7 +81,7 @@ using GetObjPtrT = typename GetObjPtr<T>::type;
  * GenericWrapper class that can wrap any number of DataTypes as long as they
  * have a public ObjPtrT typedef/subtype. The wrapper internally stores the Obj*
  * of the passed value type into a std::variant of all the passed types. It also
- * defines the some commonly used functions that all data types provide. The
+ * defines some commonly used functions that all data types provide. The
  * intended use case is to inherit form this GenericWrapper and then implement
  * necessary additional functionality in the inheriting class that can then be
  * used just as any other podio generated class.
@@ -80,17 +92,26 @@ class GenericWrapper {
   /// Private type of the variant that is used internally
   using VariantT = typename std::variant<detail::GetObjPtrT<WrappedTypes>...>;
 
+  /// Private helper type for enabling functions that should work with "Const"
+  /// and the default classes
+  template<typename T>
+  using EnableForValueTypes = typename detail::EnableIfAnyOf<T,
+                                                             WrappedTypes...,
+                                                             detail::GetConstT<WrappedTypes>...
+                                                             >::type;
+
 public:
   /// Public helper type for enabling one "default" constructor in the using
   /// classes that takes values or Obj pointers
   template<typename T>
   using EnableWrapper = typename detail::EnableIfAnyOf<T,
                                                        WrappedTypes...,
+                                                       detail::GetConstT<WrappedTypes>...,
                                                        detail::GetObjPtrT<WrappedTypes>...
                                                        >::type;
 
   template<typename T,
-           typename detail::EnableIfAnyOf<T, WrappedTypes...>::type = false>
+           EnableForValueTypes<T> = false>
   GenericWrapper(T value) : m_obj(value.m_obj) {
     value.m_obj->acquire(); // TODO: go through std::visit as well here?
   }
@@ -140,13 +161,13 @@ public:
   }
 
   template<typename U,
-           typename detail::EnableIfAnyOf<U, WrappedTypes...>::type = false>
+           EnableForValueTypes<U> = false>
   bool isCurrentType() const {
     return std::holds_alternative<detail::GetObjPtrT<U>>(m_obj);
   }
 
   template<typename U,
-           typename detail::EnableIfAnyOf<U, WrappedTypes...>::type = false>
+           EnableForValueTypes<U> = false>
   U getValue() const {
     const auto obj = std::get<detail::GetObjPtrT<U>>(m_obj);
     return U(obj);

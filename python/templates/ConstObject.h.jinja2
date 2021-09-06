@@ -18,13 +18,13 @@
 
 {{ macros.class_description(class.bare_type, Description, Author, prefix='Const') }}
 class Const{{ class.bare_type }} {
-  using ObjPtrT = {{ class.bare_type }}Obj*;
-
   friend class {{ class.bare_type }};
   friend class {{ class.bare_type }}Collection;
   friend class {{ class.bare_type }}ConstCollectionIterator;
 
 public:
+  using ObjPtrT = {{ class.bare_type }}Obj*;
+
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Const') }}
 
 public:

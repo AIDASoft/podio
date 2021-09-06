@@ -27,6 +27,7 @@ class {{ class.bare_type }} {
 
 public:
   using ObjPtrT = {{ class.bare_type }}Obj*;
+  using ConstT = Const{{ class.bare_type }};
 
 {{ macros.constructors_destructors(class.bare_type, Members) }}
   /// conversion to const object

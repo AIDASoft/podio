@@ -519,19 +519,21 @@ TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
 }
 
 TEST_CASE("GenericWrapper basics") {
-  std::cout << "+++++++++++++++++++++++++++++++++++++\n";
   using WrapperT = podio::GenericWrapper<ExampleHit, ExampleCluster>;
 
   const podio::ObjectID untracked = {podio::ObjectID::untracked, podio::ObjectID::untracked};
 
   WrapperT wrapper{ExampleHit{}};
-  std::cout << "----------------------------------------\n";
-
   REQUIRE(wrapper.getObjectID() == untracked);
 
   wrapper = ExampleCluster{};
-  std::cout << "+++++++++++++++++++++++++++++++++++++\n";
+  REQUIRE(wrapper.getObjectID() == untracked);
+
+  auto coll = ExampleHitCollection{};
+  wrapper = coll.create();
+  REQUIRE(wrapper.getObjectID() == podio::ObjectID{(int)coll.getID(), 0});
 }
+
 
 TEST_CASE("GenericWrapper getting values") {
   using WrapperT = podio::GenericWrapper<ExampleHit, ExampleCluster>;
@@ -542,12 +544,16 @@ TEST_CASE("GenericWrapper getting values") {
   WrapperT wrapper{inputHit};
 
   REQUIRE(wrapper.isCurrentType<ExampleHit>());
+  // We currently do not really differentitate between holding a Const or a
+  // mutable value
+  REQUIRE(wrapper.isCurrentType<ConstExampleHit>());
   REQUIRE(!wrapper.isCurrentType<ExampleCluster>());
-  // Cannot yet work with Const types
-  //REQUIRE(wrapper.isCurrentType<ConstExampleHit>());
 
   REQUIRE_THROWS_AS(wrapper.getValue<ExampleCluster>(), std::bad_variant_access);
 
   auto hit = wrapper.getValue<ExampleHit>();
   REQUIRE(hit == inputHit);
+
+  auto constHit = wrapper.getValue<ConstExampleHit>();
+  REQUIRE(constHit == hit);
 }
