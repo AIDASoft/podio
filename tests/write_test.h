@@ -15,6 +15,7 @@
 #include "datamodel/ExampleWithStringCollection.h"
 #include "datamodel/ExampleWithArrayCollection.h"
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
+#include "datamodel/ExampleWithInterfaceRelationCollection.h"
 
 #include "podio/EventStore.h"
 
@@ -46,6 +47,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
   auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+  auto& interfaceTypes = store.create<ExampleWithInterfaceRelationCollection>("interfaceTypes");
 
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");
@@ -64,6 +66,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.registerForWrite("strings");
   writer.registerForWrite("arrays");
   writer.registerForWrite("fixedWidthInts");
+  writer.registerForWrite("interfaceTypes");
 
   unsigned nevents = 2000;
 
@@ -314,6 +317,22 @@ void write(podio::EventStore& store, WriterT& writer) {
     arbComp.fixedUnsigned16 = 12345;
     arbComp.fixedInteger32 = -1234567890;
     arbComp.fixedInteger64 = -1234567890123456789ll;
+
+    // interface relation types
+    auto energyType1 = interfaceTypes.create();
+    energyType1.aSingleEnergyType(hits[0]);
+    energyType1.addmanyEnergies(hits[1]);
+    energyType1.addmanyEnergies(clusters[1]);
+    energyType1.addmanyEnergies(mcps[1]);
+
+    auto energyType2 = interfaceTypes.create();
+    energyType2.aSingleEnergyType(clusters[0]);
+
+    auto energyType3 = interfaceTypes.create();
+    energyType3.aSingleEnergyType(mcps[0]);
+    energyType3.addmanyEnergies(hits[0]);
+    energyType3.addmanyEnergies(hits[1]);
+    energyType3.addmanyEnergies(clusters[1]);
 
     writer.writeEvent();
     store.clearCollections();

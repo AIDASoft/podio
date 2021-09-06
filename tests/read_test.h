@@ -5,6 +5,7 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleReferencingTypeCollection.h"
+#include "datamodel/ExampleWithInterfaceRelationCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "datamodel/ExampleWithComponentCollection.h"
@@ -323,6 +324,39 @@ void processEvent(podio::EventStore& store, int eventNum) {
   check_fixed_width_value(arbComps.fixedInteger64, std::int64_t{-1234567890123456789}, "int64");
   check_fixed_width_value(arbComps.fixedInteger32, std::int32_t{-1234567890}, "int32");
   check_fixed_width_value(arbComps.fixedUnsigned16, std::uint16_t{12345}, "uint16");
+
+
+  const auto& interfaceTypes = store.get<ExampleWithInterfaceRelationCollection>("interfaceTypes");
+  if (!interfaceTypes.isValid() || interfaceTypes.size() != 3) {
+    throw std::runtime_error("Collection \'interfaceTypes\' should be present and have 3 entries");
+  }
+
+  auto energyType1 = interfaceTypes[0];
+  auto manyEnergies = energyType1.manyEnergies();
+  if (!(energyType1.aSingleEnergyType().getValue<ConstExampleHit>() == hits[0] &&
+        manyEnergies.size() == 3 &&
+        manyEnergies[0].getValue<ConstExampleHit>() == hits[1] &&
+        manyEnergies[1].getValue<ConstExampleCluster>() == clusters[1] &&
+        manyEnergies[2].getValue<ConstExampleMC>() == mcps[1])) {
+    throw std::runtime_error("Interface type 0 with energies does not have expected contents");
+  }
+
+  auto energyType2 = interfaceTypes[1];
+  if (!(energyType2.aSingleEnergyType().getValue<ConstExampleCluster>() == clusters[0]) &&
+      energyType2.manyEnergies().empty()) {
+    throw std::runtime_error("Interface type 1 with energies does not have expected contents");
+  }
+
+  // Instead of comparing object Ids, let's see if also actually using the
+  // energy getter function returns the expected values
+  auto energyType3 = interfaceTypes[2];
+  manyEnergies = energyType3.manyEnergies();
+  if (!(energyType3.aSingleEnergyType().energy() == mcps[0].energy() &&
+        manyEnergies[0].energy() == hits[0].energy() &&
+        manyEnergies[1].energy() == hits[1].energy() &&
+        manyEnergies[2].energy() == clusters[1].energy())) {
+    throw std::runtime_error("Interface type 2 with energies does not have expected contents");
+  }
 }
 
 void run_read_test(podio::IReader& reader) {
