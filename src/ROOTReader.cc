@@ -230,7 +230,8 @@ namespace podio {
         branches.vecs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
       }
 
-      const std::string bufferClassName = "std::vector<" + collection->getValueTypeName() + "Data>";
+      using namespace std::string_literals;
+      const auto bufferClassName = "std::vector<"s + collection->getValueTypeName().data() + "Data>";
       const auto bufferClass = isSubsetColl ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
       m_storedClasses.emplace(

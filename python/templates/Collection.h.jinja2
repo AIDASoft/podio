@@ -62,7 +62,7 @@ public:
   size_t size() const override final;
 
   /// fully qualified type name of elements - with namespace
-  std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
+  std::string_view getValueTypeName() const override { return m_valueTypeName; }
 
   bool isSubsetCollection() const final {
     return m_isSubsetColl;
@@ -130,6 +130,8 @@ private:
   // private entries. Otherwise we would need to expose a public member function
   // that gives access to the Obj* which is definitely not what we want
   friend class {{ class.bare_type }}CollectionData;
+
+  static constexpr std::string_view m_valueTypeName = "{{ (class | string).strip(':') }}";
 
   bool m_isValid{false};
   bool m_isReadFromFile{false};

@@ -4,10 +4,9 @@
 #include "podio/ObjectID.h"
 #include "podio/CollectionBuffers.h"
 
-#include <string>
 #include <utility>
 #include <vector>
-
+#include <string_view>
 
 
 namespace podio {
@@ -41,7 +40,7 @@ namespace podio {
     virtual size_t size() const = 0;
 
     /// fully qualified type name of elements - with namespace
-    virtual std::string getValueTypeName() const = 0;
+    virtual std::string_view getValueTypeName() const = 0;
 
     /// destructor
     virtual ~CollectionBase() = default;

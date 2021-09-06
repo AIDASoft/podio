@@ -50,12 +50,13 @@ void ROOTWriter::writeEvent(){
 }
 
 void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections) {
+  using namespace std::string_literals;
   for (auto& [name, coll] : collections) {
     root_utils::CollectionBranches branches;
     const auto collBuffers = coll->getBuffers();
     if (collBuffers.data) {
       // only create the data buffer branch if necessary
-      const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
+      const auto collClassName = "vector<"s + coll->getValueTypeName().data() + "Data>";
       branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), collBuffers.data);
     }
 
@@ -96,6 +97,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
 
 
   void ROOTWriter::finish(){
+    using namespace std::string_literals;
     // now we want to safe the metadata. This includes info about the
     // collections
     const auto collIDTable = m_store->getCollectionIDTable();
@@ -109,7 +111,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
       const podio::CollectionBase* coll{nullptr};
       // No check necessary, only registered collections possible
       m_store->get(name, coll);
-      const auto collType = coll->getValueTypeName() + "Collection";
+      const auto collType = coll->getValueTypeName().data() + "Collection"s;
       collectionInfo.emplace_back(collID, std::move(collType), coll->isSubsetCollection());
     }
 

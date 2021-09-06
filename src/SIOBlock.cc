@@ -35,7 +35,7 @@ namespace podio {
       if (!_store->get(id, tmp)) {
         std::cerr << "ERROR during writing of CollectionID table" << std::endl;
       }
-      typeNames.push_back(tmp->getValueTypeName());
+      typeNames.emplace_back(tmp->getValueTypeName().data());
       isSubsetColl.push_back(tmp->isSubsetCollection());
     }
     device.data(typeNames);
@@ -122,7 +122,7 @@ namespace podio {
   }
 
   std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBase* col, const std::string& name) const {
-    const std::string typeStr = col->getValueTypeName() ;
+    const std::string typeStr{col->getValueTypeName()};
     const auto it = _map.find(typeStr) ;
 
     if( it!= _map.end() ) {
