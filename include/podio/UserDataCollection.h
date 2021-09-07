@@ -130,13 +130,6 @@ namespace podio {
 
   };
 
-  /// some typedefs to make ROOT and the ROOTWriter happy
-
-  typedef UserDataCollection<int>    User_intCollection ;
-  typedef UserDataCollection<long>   User_longCollection ;
-  typedef UserDataCollection<float>  User_floatCollection ;
-  typedef UserDataCollection<double> User_doubleCollection ;
-
 } // namespace
 
 #endif

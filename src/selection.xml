@@ -17,9 +17,9 @@
     </class>
     <class name="podio::ObjectID"/>
     <class name="vector<podio::ObjectID>"/>
-    <class name="podio::User_intCollection"/>
-    <class name="podio::User_longCollection"/>
-    <class name="podio::User_floatCollection"/>
-    <class name="podio::User_doubleCollection"/>
+    <class name="podio::UserDataCollection<int>"/>
+    <class name="podio::UserDataCollection<long>"/>
+    <class name="podio::UserDataCollection<float>"/>
+    <class name="podio::UserDataCollection<double>"/>
     </selection>
 </lcgdict>
