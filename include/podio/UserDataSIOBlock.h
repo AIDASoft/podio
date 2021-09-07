@@ -16,11 +16,11 @@ template <typename BasicType>
 class UserDataSIOBlock: public podio::SIOBlock {
 public:
   UserDataSIOBlock() :
-    SIOBlock( podio::UserDataTypes::instance().sio_name( typeid(BasicType) ),
+    SIOBlock( podio::userDataTypeName<BasicType>() ,
 	      sio::version::encode_version(0, 1)) {
 
     podio::SIOBlockFactory::instance().registerBlockForCollection(
-      podio::UserDataTypes::instance().name( typeid(BasicType) ) , this);
+      podio::userDataTypeName<BasicType>()  , this);
   }
 
   UserDataSIOBlock(const std::string& name) :

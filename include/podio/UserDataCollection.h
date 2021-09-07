@@ -12,40 +12,14 @@
 
 namespace podio {
 
+  template <typename BasicType>
+  std::string userDataTypeName() { throw std::runtime_error( std::string(" unsupported type for UserDataCollection: ")
+							     + typeid(BasicType).name() ) ; }
 
-  ///helper class providing names for basic types used in UserDataCollection<T>
-  class  UserDataTypes{
-  private:
-    UserDataTypes() = default ;
-    UserDataTypes(const UserDataTypes& ) = delete;
-    UserDataTypes& operator=(const UserDataTypes& ) = delete;
-    ~UserDataTypes() = default;
-
-    const std::map< const std::type_index, const std::string >_typeMap =
-    {
-      { std::type_index( typeid(int) ),   "podio::User_int"   },
-      { std::type_index( typeid(long) ),  "podio::User_long"  },
-      { std::type_index( typeid(float) ), "podio::User_float" },
-      { std::type_index( typeid(double) ),"podio::User_double"}
-    } ;
-
-  public:
-
-    std::string name( std::type_index idx ){
-      auto it = _typeMap.find( idx ) ;
-      return it != _typeMap.end() ? it->second  :  "UNKNOWN"  ;
-    }
-
-    // typename w/ 'podio::' replaced by 'podio_'
-    std::string sio_name( std::type_index idx ){
-      return std::string("podio_") + name( idx ).substr( 7 , 1024)  ;
-    }
-
-    static UserDataTypes& instance(){
-      static UserDataTypes me ;
-      return me ;
-    }
-  } ;
+  template <>  std::string userDataTypeName<int>()   {return "int" ; }
+  template <>  std::string userDataTypeName<float>() {return "float" ; }
+  template <>  std::string userDataTypeName<long>()  {return "long" ; }
+  template <>  std::string userDataTypeName<double>(){return "double" ; }
 
 
   /// Templated base class for storing std::vectors of basic types as user data in PODIO
@@ -105,11 +79,15 @@ namespace podio {
       return _vec.size() ;
     }
 
-    /// fully qualified type name of elements - with namespace
-    std::string getValueTypeName() const override final {
+    /// fully qualified type name
+    std::string getTypeName() const override { return std::string("podio::UserDataCollection<")
+	+ userDataTypeName< BasicType >() + ">" ; }
 
-      return UserDataTypes::instance().name( typeid(BasicType) ) ;
-    }
+    /// fully qualified type name of elements - with namespace
+    std::string getValueTypeName() const override { return userDataTypeName< BasicType >() ; }
+
+    /// fully qualified type name of stored POD elements - with namespace
+    std::string getDataTypeName() const override { return  userDataTypeName< BasicType >() ; }
 
     /// clear the collection and all internal states
     void clear() override final {

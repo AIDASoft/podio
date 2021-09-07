@@ -61,8 +61,12 @@ public:
   /// number of elements in the collection
   size_t size() const override final;
 
+  /// fully qualified type name
+  std::string getTypeName() const override { return std::string("{{ (class | string ).strip(':')+"Collection" }}"); }
   /// fully qualified type name of elements - with namespace
   std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
+  /// fully qualified type name of stored POD elements - with namespace
+  std::string getDataTypeName() const override { return std::string("{{ (class | string ).strip(':')+"Data" }}"); }
 
   bool isSubsetCollection() const final {
     return m_isSubsetColl;
