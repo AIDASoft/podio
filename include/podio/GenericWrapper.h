@@ -26,10 +26,10 @@ using remove_cvref_t = typename remove_cvref<T>::type;
 
 // Helper bool to check if the first type is any of the passed other types after
 // stripping all const, volatile and references from the first type
-// I.e. the following will compile:
-// static_assert(isAnyOf<const int&, int>);
 template<typename T, typename ...Ts>
 constexpr bool isAnyOf = (std::is_same_v<remove_cvref_t<T>, Ts> || ...);
+// I.e. the following works
+static_assert(isAnyOf<const int&, int>);
 
 // Helper struct to select functions/overloads depending on whether the first
 // type is actually one of the other passed types (after removing any const and
