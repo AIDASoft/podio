@@ -35,7 +35,7 @@ constexpr bool isAnyOf = (std::is_same_v<remove_cvref_t<T>, Ts> || ...);
 // type is actually one of the other passed types (after removing any const and
 // volatile qualifiers). See also isAnyOf
 template<typename T, typename ...Ts>
-struct EnableIfAnyOf : std::enable_if<isAnyOf<T, Ts...>, bool> {};
+using EnableIfAnyOf = std::enable_if_t<isAnyOf<T, Ts...>>;
 
 // Helper struct to determine whether a type as an ObjPtrT subtype
 // Mainly used for slightly nicer error messages
@@ -95,29 +95,35 @@ class GenericWrapper {
   /// Private helper type for enabling functions that should work with "Const"
   /// and the default classes
   template<typename T>
-  using EnableForValueTypes = typename detail::EnableIfAnyOf<T,
-                                                             WrappedTypes...,
-                                                             detail::GetConstT<WrappedTypes>...
-                                                             >::type;
+  using EnableForValueTypes =  detail::EnableIfAnyOf<T,
+                                                     WrappedTypes...,
+                                                     detail::GetConstT<WrappedTypes>...>;
+
+  /// Private helper type for enabling functions that whould work for ObjPtrT
+  /// template arguments
+  template<typename T>
+  using EnableForObjPtrTypes = detail::EnableIfAnyOf<T,
+                                                     detail::GetObjPtrT<WrappedTypes>...>;
+ 
 
 public:
   /// Public helper type for enabling one "default" constructor in the using
   /// classes that takes values or Obj pointers
   template<typename T>
-  using EnableWrapper = typename detail::EnableIfAnyOf<T,
-                                                       WrappedTypes...,
-                                                       detail::GetConstT<WrappedTypes>...,
-                                                       detail::GetObjPtrT<WrappedTypes>...
-                                                       >::type;
+  using EnableWrapper = detail::EnableIfAnyOf<T,
+                                              WrappedTypes...,
+                                              detail::GetConstT<WrappedTypes>...,
+                                              detail::GetObjPtrT<WrappedTypes>...
+                                              >;
 
   template<typename T,
-           EnableForValueTypes<T> = false>
+           typename = EnableForValueTypes<T>>
   GenericWrapper(T value) : m_obj(value.m_obj) {
     value.m_obj->acquire(); // TODO: go through std::visit as well here?
   }
 
   template<typename ObjT,
-           typename detail::EnableIfAnyOf<ObjT, detail::GetObjPtrT<WrappedTypes>...>::type = false>
+           typename = EnableForObjPtrTypes<ObjT>>
   GenericWrapper(ObjT* obj) : m_obj(obj) {
     obj->acquire(); // TODO: go through std::visit as well here?
   }
@@ -161,13 +167,13 @@ public:
   }
 
   template<typename U,
-           EnableForValueTypes<U> = false>
+           typename = EnableForValueTypes<U>>
   bool isCurrentType() const {
     return std::holds_alternative<detail::GetObjPtrT<U>>(m_obj);
   }
 
   template<typename U,
-           EnableForValueTypes<U> = false>
+           typename = EnableForValueTypes<U>>
   U getValue() const {
     const auto obj = std::get<detail::GetObjPtrT<U>>(m_obj);
     return U(obj);

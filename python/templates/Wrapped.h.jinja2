@@ -26,7 +26,7 @@ public:
 
   /// The default constructor takes anything that can be converted into this type
   template<typename T,
-           WrapperT::EnableWrapper<T> = false>
+           typename = WrapperT::EnableWrapper<T>>
   {{ class.bare_type }}(T&& val) : WrapperT(std::forward<T>(val)) {}
 
   /// Constructor from another {{ class.bare_type }}
