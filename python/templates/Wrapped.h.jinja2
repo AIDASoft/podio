@@ -17,9 +17,10 @@
 {{ macros.class_description(class.bare_type, Description, Author )}}
 
 {{ utils.namespace_close(class.namespace )}}
-class {{ class.bare_type }} : public podio::GenericWrapper<{{ Types | join(', ') }}> {
+class {{ class.bare_type }} : public podio::GenericWrapper<true, {{ Types | join(', ') }}> {
 private:
-  using WrapperT = podio::GenericWrapper<{{ Types | join(', ')}}>;
+  // The underlying Wrapper type is Mutable
+  using WrapperT = podio::GenericWrapper<true, {{ Types | join(', ')}}>;
 public:
   /// A {{ class.bare_type }} can only be constructed from a concrete value
   {{ class.bare_type }}() = delete;

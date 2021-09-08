@@ -519,7 +519,7 @@ TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
 }
 
 TEST_CASE("GenericWrapper basics") {
-  using WrapperT = podio::GenericWrapper<ExampleHit, ExampleCluster>;
+  using WrapperT = podio::GenericWrapper<true, ExampleHit, ExampleCluster>;
 
   const podio::ObjectID untracked = {podio::ObjectID::untracked, podio::ObjectID::untracked};
 
@@ -536,7 +536,7 @@ TEST_CASE("GenericWrapper basics") {
 
 
 TEST_CASE("GenericWrapper getting values") {
-  using WrapperT = podio::GenericWrapper<ExampleHit, ExampleCluster>;
+  using WrapperT = podio::GenericWrapper<true, ExampleHit, ExampleCluster>;
 
   ExampleHitCollection hits{};
   auto inputHit = hits.create();
@@ -554,6 +554,7 @@ TEST_CASE("GenericWrapper getting values") {
   auto hit = wrapper.getValue<ExampleHit>();
   REQUIRE(hit == inputHit);
 
+  // Can also get a Const user class from a mutable wrapper
   auto constHit = wrapper.getValue<ConstExampleHit>();
   REQUIRE(constHit == hit);
 }

@@ -37,6 +37,12 @@ constexpr bool isAnyOf = (std::is_same_v<remove_cvref_t<T>, Ts> || ...);
 template<typename T, typename ...Ts>
 using EnableIfAnyOf = std::enable_if_t<isAnyOf<T, Ts...>>;
 
+// Helper type to select functions/overloads depending on whether the condition
+// C is treu and the type T is one of the other passed types (after removing any
+// const and volatile qualifiers from T). See also isAnyOf
+template <bool C, typename T, typename... Ts>
+using EnableIfAnyOfAnd = std::enable_if_t<C && isAnyOf<T, Ts...>>;
+
 // Helper struct to determine whether a type as an ObjPtrT subtype
 // Mainly used for slightly nicer error messages
 template<typename T, typename=std::void_t<>>
@@ -85,8 +91,11 @@ using GetConstT = typename GetConstType<T>::type;
  * intended use case is to inherit form this GenericWrapper and then implement
  * necessary additional functionality in the inheriting class that can then be
  * used just as any other podio generated class.
+ *
+ * NOTE: The first bool template parameter steers whether a call to getValue can
+ * return only Const values or if it can also return mutable values.
  */
-template<typename ...WrappedTypes>
+template<bool Mutable, typename ...WrappedTypes>
 class GenericWrapper {
   static_assert(detail::allHaveObjPtrT<WrappedTypes...>, "All WrappedTypes must have a public ObjPtrT subtype");
   /// Private type of the variant that is used internally
@@ -172,8 +181,22 @@ public:
     return std::holds_alternative<detail::GetObjPtrT<U>>(m_obj);
   }
 
+  /// Get the wrapped value as user data type.
+  /// This overload with access to mutable types only exists for Mutable == true
+  /// classes
   template<typename U,
-           typename = EnableForValueTypes<U>>
+           typename = detail::EnableIfAnyOfAnd<Mutable,
+                                               U,
+                                               WrappedTypes...,
+                                               detail::GetConstT<WrappedTypes>...>>
+  U getValue() {
+    const auto obj = std::get<detail::GetObjPtrT<U>>(m_obj);
+    return U(obj);
+  }
+
+  /// Access to the const wrapped user data type
+  template<typename U,
+           typename = detail::EnableIfAnyOf<U, detail::GetConstT<WrappedTypes>...>>
   U getValue() const {
     const auto obj = std::get<detail::GetObjPtrT<U>>(m_obj);
     return U(obj);

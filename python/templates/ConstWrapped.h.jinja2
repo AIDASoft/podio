@@ -18,9 +18,10 @@
 {{ macros.class_description(class.bare_type, Description, Author, prefix='Const' )}}
 
 {% with class_type = 'Const' + class.bare_type %}
-class {{ class_type }} : public podio::GenericWrapper<{{ Types | join(', ') }}> {
+class {{ class_type }} : public podio::GenericWrapper<false, {{ Types | join(', ') }}> {
 private:
-  using WrapperT = podio::GenericWrapper<{{ Types | join(', ')}}>;
+  // The underlying wrapper is immutable
+  using WrapperT = podio::GenericWrapper<false, {{ Types | join(', ')}}>;
 public:
   /// A {{ class.bare_type }} can only be constructed from a concrete value
   {{ class_type }}() = delete;
