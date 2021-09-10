@@ -69,7 +69,7 @@
   {{  full_type }}(const {{  full_type }}& other);
 
   /// copy-assignment operator
-  {{  full_type }}& operator=(const {{  full_type }}& other);
+  {{  full_type }}& operator=({{ full_type }} other);
 
   /// support cloning (deep-copy)
   {{  full_type }} clone() const;
@@ -96,6 +96,11 @@
   unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index; }
 
   const podio::ObjectID getObjectID() const;
+
+  friend void swap({{ full_type }}& a, {{ full_type }}& b) {
+    using std::swap;
+    swap(a.m_obj, b.m_obj); // swap out the internal pointers
+  }
 {%- endmacro %}
 
 
