@@ -180,8 +180,16 @@ datatypes :
     Author: "Thomas Madlener"
     OneToOneRelations:
       - TypeWithEnergy aSingleEnergyType // single relation
+      - ex42::AnotherTypeWithEnergy energyRelation // another single relation
     OneToManyRelations:
       - TypeWithEnergy manyEnergies // multiple relations
+      - ex42::AnotherTypeWithEnergy moreEnergies // multiple namespace relations
+
+  nsp::EnergyInNamespace:
+    Description: "A type with energy in a namespace"
+    Author: "Thomas Madlener"
+    Members:
+      - double energy // energy
 
 interfaces:
   TypeWithEnergy:
@@ -191,5 +199,14 @@ interfaces:
       - ExampleMC
       - ExampleCluster
       - ExampleHit
+    Members:
+      - double energy // the energy
+
+  ex42::AnotherTypeWithEnergy:
+    Description: "Another interface type for making sure they also work in namespaces"
+    Author: "Thomas Madlener"
+    Types:
+      - ExampleHit
+      - nsp::EnergyInNamespace
     Members:
       - double energy // the energy

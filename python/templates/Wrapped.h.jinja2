@@ -15,8 +15,6 @@
 {{ utils.namespace_open(class.namespace) }}
 
 {{ macros.class_description(class.bare_type, Description, Author )}}
-
-{{ utils.namespace_close(class.namespace )}}
 class {{ class.bare_type }} : public podio::GenericWrapper<true, {{ Types | join(', ') }}> {
 private:
   // The underlying Wrapper type is Mutable
@@ -39,5 +37,7 @@ public:
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.member_setters(Members, use_get_syntax) }}
 };
+
+{{ utils.namespace_close(class.namespace )}}
 
 #endif
