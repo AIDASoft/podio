@@ -17,7 +17,6 @@
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 
 #include "podio/UserDataCollection.h"
-
 #include "podio/EventStore.h"
 
 // STL

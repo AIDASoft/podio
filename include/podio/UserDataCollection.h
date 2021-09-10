@@ -9,21 +9,72 @@
 #include <vector>
 #include <typeindex>
 
+#define PODIO_ADD_USER_TYPE(type) template<> constexpr const char* userDataTypeName<type>( return #type; }
+
 
 namespace podio {
 
-  template <typename BasicType>
-  std::string userDataTypeName() { throw std::runtime_error( std::string(" unsupported type for UserDataCollection: ")
-							     + typeid(BasicType).name() ) ; }
-
-  template <>  std::string userDataTypeName<int>()   {return "int" ; }
-  template <>  std::string userDataTypeName<float>() {return "float" ; }
-  template <>  std::string userDataTypeName<long>()  {return "long" ; }
-  template <>  std::string userDataTypeName<double>(){return "double" ; }
 
 
-  /// Templated base class for storing std::vectors of basic types as user data in PODIO
-  template <typename BasicType>
+
+  namespace detail {
+
+    // some templates to ensure valid and supported user types
+    // as suggested by T.Madlener, DESY
+
+    /** tuple of basic types supported in user vector
+     */
+    using SupportedUserDataTypes = std::tuple<
+      int,
+      float,
+      long,
+      double
+      >;
+
+    /**
+     * Helper function to check whether a type T is in an std::tuple<Ts...>
+     */
+    template<typename T, typename ...Ts>
+    constexpr bool inTuple(std::tuple<Ts...>) {
+      return (std::is_same_v<T, Ts> || ...);
+    }
+
+    /**
+     * Compile time helper function to check whether the given type is in the list
+     * of supported types
+     */
+    template<typename T>
+    constexpr bool isSupported() {
+      return inTuple<T>(SupportedUserDataTypes{});
+    }
+  }
+
+  /**
+   * Alias template to be used to enable template specializations only for the types listed in the
+   * SupportedUserDataTypes list
+   */
+  template<typename T>
+  using EnableIfSupportedUserType = std::enable_if_t<detail::isSupported<T>()>;
+
+
+  /** helper template to provide readable type names for basic types
+   */
+  template <typename BasicType, typename = EnableIfSupportedUserType<BasicType> >
+  constexpr const char*  userDataTypeName() ;
+
+  template <> constexpr const char* userDataTypeName<int>()   {return "int" ; }
+  template <> constexpr const char* userDataTypeName<float>() {return "float" ; }
+  template <> constexpr const char* userDataTypeName<long>()  {return "long" ; }
+  template <> constexpr const char* userDataTypeName<double>(){return "double" ; }
+
+
+  /** Collection of basic types for additional user data not defined in the EDM.
+   *  The data is stored in an std::vector<basic_type>. Supported are all basic types supported in
+   *  PODIO - @see SupportedUserDataTypes.
+   *  @author F.Gaede, DESY
+   *  @date Sep 2021
+   */
+  template<typename BasicType, typename = EnableIfSupportedUserType< BasicType> >
   class UserDataCollection : public CollectionBase {
 
   private:
@@ -65,7 +116,7 @@ namespace podio {
     /// Get the collection buffers for this collection
     podio::CollectionBuffers getBuffers() override final {
       return { &_vecPtr,
-	&m_refCollections, // only need to store the ObjectIDs of the referenced objects
+	&m_refCollections,
 	&m_vecmem_info } ;
     }
 
