@@ -104,15 +104,15 @@ class GenericWrapper {
   /// Private helper type for enabling functions that should work with "Const"
   /// and the default classes
   template<typename T>
-  using EnableForValueTypes =  detail::EnableIfAnyOf<T,
-                                                     WrappedTypes...,
-                                                     detail::GetConstT<WrappedTypes>...>;
+  using EnableIfValueType =  detail::EnableIfAnyOf<T,
+                                                   WrappedTypes...,
+                                                   detail::GetConstT<WrappedTypes>...>;
 
   /// Private helper type for enabling functions that whould work for ObjPtrT
   /// template arguments
   template<typename T>
-  using EnableForObjPtrTypes = detail::EnableIfAnyOf<T,
-                                                     detail::GetObjPtrT<WrappedTypes>...>;
+  using EnableIfObjPtrType = detail::EnableIfAnyOf<T,
+                                                   detail::GetObjPtrT<WrappedTypes>...>;
 
 
 public:
@@ -126,13 +126,13 @@ public:
                                               >;
 
   template<typename T,
-           typename = EnableForValueTypes<T>>
+           typename = EnableIfValueType<T>>
   GenericWrapper(T value) : m_obj(value.m_obj) {
     value.m_obj->acquire(); // TODO: go through std::visit as well here?
   }
 
   template<typename ObjT,
-           typename = EnableForObjPtrTypes<ObjT>>
+           typename = EnableIfObjPtrType<ObjT>>
   GenericWrapper(ObjT* obj) : m_obj(obj) {
     obj->acquire(); // TODO: go through std::visit as well here?
   }
@@ -176,7 +176,7 @@ public:
   }
 
   template<typename U,
-           typename = EnableForValueTypes<U>>
+           typename = EnableIfValueType<U>>
   bool isCurrentType() const {
     return std::holds_alternative<detail::GetObjPtrT<U>>(m_obj);
   }
