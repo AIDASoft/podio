@@ -10,6 +10,7 @@
 
 #include <typeindex>
 #include <string>
+#include <algorithm>
 
 
 namespace{
