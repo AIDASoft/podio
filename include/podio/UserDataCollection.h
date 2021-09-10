@@ -64,21 +64,21 @@ namespace podio {
   template <typename BasicType, typename = EnableIfSupportedUserType<BasicType> >
   constexpr const char*  userDataTypeName() ;
 
-  PODIO_ADD_USER_TYPE(int);
-  PODIO_ADD_USER_TYPE(long);
-  PODIO_ADD_USER_TYPE(float);
-  PODIO_ADD_USER_TYPE(double);
-  PODIO_ADD_USER_TYPE(unsigned);
-//  PODIO_ADD_USER_TYPE(unsigned int);
-  PODIO_ADD_USER_TYPE(unsigned long);
-  PODIO_ADD_USER_TYPE(char);
-  PODIO_ADD_USER_TYPE(short);
-  PODIO_ADD_USER_TYPE(long long);
-  PODIO_ADD_USER_TYPE(unsigned long long);
-//  PODIO_ADD_USER_TYPE(int16_t);
-//  PODIO_ADD_USER_TYPE(int32_t);
-//  PODIO_ADD_USER_TYPE(int64_t);
-  PODIO_ADD_USER_TYPE(uint16_t);
+  PODIO_ADD_USER_TYPE(int)
+  PODIO_ADD_USER_TYPE(long)
+  PODIO_ADD_USER_TYPE(float)
+  PODIO_ADD_USER_TYPE(double)
+  PODIO_ADD_USER_TYPE(unsigned)
+//  PODIO_ADD_USER_TYPE(unsigned int)
+  PODIO_ADD_USER_TYPE(unsigned long)
+  PODIO_ADD_USER_TYPE(char)
+  PODIO_ADD_USER_TYPE(short)
+  PODIO_ADD_USER_TYPE(long long)
+  PODIO_ADD_USER_TYPE(unsigned long long)
+//  PODIO_ADD_USER_TYPE(int16_t)
+//  PODIO_ADD_USER_TYPE(int32_t)
+//  PODIO_ADD_USER_TYPE(int64_t)
+  PODIO_ADD_USER_TYPE(uint16_t)
 //  PODIO_ADD_USER_TYPE(uint32_t)
 //  PODIO_ADD_USER_TYPE(uint64_t)
 
