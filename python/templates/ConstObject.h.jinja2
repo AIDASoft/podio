@@ -11,6 +11,7 @@
 {{ include }}
 {% endfor %}
 #include "podio/ObjectID.h"
+#include "podio/GenericWrapper.h"
 
 {{ utils.forward_decls(forward_declarations) }}
 
@@ -21,6 +22,10 @@ class Const{{ class.bare_type }} {
   friend class {{ class.bare_type }};
   friend class {{ class.bare_type }}Collection;
   friend class {{ class.bare_type }}ConstCollectionIterator;
+
+  // Allow the wrapper to access the private Obj*
+  template<bool, typename...>
+  friend class podio::GenericWrapper;
 
 public:
   using ObjPtrT = {{ class.bare_type }}Obj*;
@@ -35,7 +40,7 @@ public:
 {{ utils.if_present(ConstExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type, prefix='Const') }}
 
-public: // TODO: make private again
+private:
   {{ class.bare_type }}Obj* m_obj;
 };
 

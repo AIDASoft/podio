@@ -36,7 +36,7 @@ namespace podio {
     /// ID of the object
     podio::ObjectID id;
 
-  public:
+  private:
     /// reference counter
     std::atomic<unsigned> ref_counter;
 

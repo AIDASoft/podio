@@ -113,7 +113,7 @@ class GenericWrapper {
   template<typename T>
   using EnableForObjPtrTypes = detail::EnableIfAnyOf<T,
                                                      detail::GetObjPtrT<WrappedTypes>...>;
- 
+
 
 public:
   /// Public helper type for enabling one "default" constructor in the using
