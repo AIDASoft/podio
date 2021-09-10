@@ -47,7 +47,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
   auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
-  auto& usrInts = store.create<podio::UserDataCollection<int> >("userInts");
+  auto& usrInts = store.create<podio::UserDataCollection<uint64_t> >("userInts");
   auto& usrDoubles = store.create<podio::UserDataCollection<double> >("userDoubles");
 
   writer.registerForWrite("info");
@@ -325,7 +325,7 @@ void write(podio::EventStore& store, WriterT& writer) {
     auto& uivec = usrInts ;
     uivec.resize( i + 1 ) ;
     int myInt = 0 ;
-    for( int& iu : uivec ){
+    for( auto& iu : uivec ){
       iu = myInt++  ;
     }
     // and some user double values

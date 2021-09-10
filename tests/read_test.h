@@ -329,7 +329,7 @@ void processEvent(podio::EventStore& store, int eventNum) {
 
 
 
-  auto& usrInts = store.get<podio::UserDataCollection<int> >("userInts");
+  auto& usrInts = store.get<podio::UserDataCollection<uint64_t> >("userInts");
 
 #if 0 //access via vector
   auto& uivec = usrInts.vec() ;

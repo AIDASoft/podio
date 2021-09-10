@@ -9,7 +9,7 @@
 #include <vector>
 #include <typeindex>
 
-#define PODIO_ADD_USER_TYPE(type) template<> constexpr const char* userDataTypeName<type>( return #type; }
+#define PODIO_ADD_USER_TYPE(type) template<> constexpr const   char* userDataTypeName<type>(){ return #type ; }
 
 
 namespace podio {
@@ -25,10 +25,12 @@ namespace podio {
     /** tuple of basic types supported in user vector
      */
     using SupportedUserDataTypes = std::tuple<
-      int,
-      float,
-      long,
-      double
+      int, long, float, double,
+      unsigned int, unsigned, unsigned long,
+      char, short, long long,
+      unsigned long long,
+      int16_t, int32_t, int64_t,
+      uint16_t, uint32_t, uint64_t
       >;
 
     /**
@@ -57,15 +59,30 @@ namespace podio {
   using EnableIfSupportedUserType = std::enable_if_t<detail::isSupported<T>()>;
 
 
-  /** helper template to provide readable type names for basic types
+  /** helper template to provide readable type names for basic types with macro PODIO_ADD_USER_TYPE(type)
    */
   template <typename BasicType, typename = EnableIfSupportedUserType<BasicType> >
   constexpr const char*  userDataTypeName() ;
 
-  template <> constexpr const char* userDataTypeName<int>()   {return "int" ; }
-  template <> constexpr const char* userDataTypeName<float>() {return "float" ; }
-  template <> constexpr const char* userDataTypeName<long>()  {return "long" ; }
-  template <> constexpr const char* userDataTypeName<double>(){return "double" ; }
+  PODIO_ADD_USER_TYPE(int);
+  PODIO_ADD_USER_TYPE(long);
+  PODIO_ADD_USER_TYPE(float);
+  PODIO_ADD_USER_TYPE(double);
+  PODIO_ADD_USER_TYPE(unsigned);
+//  PODIO_ADD_USER_TYPE(unsigned int);
+  PODIO_ADD_USER_TYPE(unsigned long);
+  PODIO_ADD_USER_TYPE(char);
+  PODIO_ADD_USER_TYPE(short);
+  PODIO_ADD_USER_TYPE(long long);
+  PODIO_ADD_USER_TYPE(unsigned long long);
+//  PODIO_ADD_USER_TYPE(int16_t);
+//  PODIO_ADD_USER_TYPE(int32_t);
+//  PODIO_ADD_USER_TYPE(int64_t);
+  PODIO_ADD_USER_TYPE(uint16_t);
+//  PODIO_ADD_USER_TYPE(uint32_t)
+//  PODIO_ADD_USER_TYPE(uint64_t)
+
+// note: duplicate types on 'standard' hardware are commented out here
 
 
   /** Collection of basic types for additional user data not defined in the EDM.

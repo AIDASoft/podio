@@ -1,5 +1,5 @@
-#ifndef UserDataSIOBlock_H
-#define UserDataSIOBlock_H
+#ifndef SIOBlockUserData_H
+#define SIOBlockUserData_H
 
 #include "podio/SIOBlock.h"
 #include "podio/UserDataCollection.h"
@@ -12,18 +12,30 @@
 #include <string>
 
 
+namespace{
+
+  /// helper function to get valid sio block names
+  std::string sio_name(const std::string str){
+    std::string s = str ;
+    std::replace( s.begin(), s.end(), ' ', '_');
+    return s ;
+  }
+}
+
+namespace podio{
+
 template <typename BasicType>
-class UserDataSIOBlock: public podio::SIOBlock {
+class SIOBlockUserData: public podio::SIOBlock {
 public:
-  UserDataSIOBlock() :
-    SIOBlock( podio::userDataTypeName<BasicType>() ,
+  SIOBlockUserData() :
+    SIOBlock( ::sio_name( podio::userDataTypeName<BasicType>() ) ,
 	      sio::version::encode_version(0, 1)) {
 
     podio::SIOBlockFactory::instance().registerBlockForCollection(
       podio::userDataTypeName<BasicType>()  , this);
   }
 
-  UserDataSIOBlock(const std::string& name) :
+  SIOBlockUserData(const std::string& name) :
     SIOBlock(name, sio::version::encode_version(0, 1)) {}
 
 
@@ -50,9 +62,9 @@ public:
   }
 
   SIOBlock* create(const std::string& name) const override {
-    return new UserDataSIOBlock(name);
+    return new SIOBlockUserData(name);
   }
 };
 
-
+}
 #endif
