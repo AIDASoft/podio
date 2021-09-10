@@ -17,10 +17,8 @@
   m_obj->acquire();
 }
 
-{{  full_type }}& {{ full_type }}::operator=(const {{ full_type }}& other) {
-  if (m_obj) m_obj->release();
-  m_obj = other.m_obj;
-  m_obj->acquire();
+{{  full_type }}& {{ full_type }}::operator=({{ full_type }} other) {
+  swap(*this, other);
   return *this;
 }
 

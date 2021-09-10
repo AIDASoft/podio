@@ -147,6 +147,14 @@ datatypes :
     OneToManyRelations :
      - ex42::ExampleWithNamespace refs // multiple refs in a namespace
 
+  ExampleWithDifferentNamespaceRelations:
+    Description: "Datatype using a namespaced relation without being in the same namespace"
+    Author: "Thomas Madlener"
+    OneToOneRelations:
+      - ex42::ExampleWithNamespace rel // a relation in a different namespace
+    OneToManyRelations:
+      - ex42::ExampleWithNamespace rels // relations in a different namespace
+
   ExampleWithArray:
     Description: "Datatype with an array member"
     Author: "Joschka Lingemann"
