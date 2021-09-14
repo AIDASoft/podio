@@ -1,20 +1,20 @@
 #include "podio/SIOBlockUserData.h"
 
-#define PODIO_ADD_USER_TYPE_SIO(type) static UserDataSIOBlock<type>    _default##type##CollcetionSIOBlock ;
+//#define PODIO_ADD_USER_TYPE_SIO(type) static UserDataSIOBlock<type>    _default##type##CollcetionSIOBlock ;
 
 namespace podio{
 
-  static SIOBlockUserData<int> _defaultintCollcetionSIOBlock ;
+  //  static SIOBlockUserData<int> _defaultintCollcetionSIOBlock ;
   static SIOBlockUserData<long> _defaultlongCollcetionSIOBlock ;
   static SIOBlockUserData<float> _defaultfloatCollcetionSIOBlock ;
   static SIOBlockUserData<double> _defaultdoubleCollcetionSIOBlock ;
-  static SIOBlockUserData<unsigned> _defaultunsignedCollcetionSIOBlock ;
-  static SIOBlockUserData<unsigned int> _defaultunsignedintCollcetionSIOBlock ;
+  //  static SIOBlockUserData<unsigned> _defaultunsignedCollcetionSIOBlock ;
+  //  static SIOBlockUserData<unsigned int> _defaultunsignedintCollcetionSIOBlock ;
   static SIOBlockUserData<unsigned long> _defaultunsignedlongCollcetionSIOBlock ;
   static SIOBlockUserData<char> _defaultcharCollcetionSIOBlock ;
-  static SIOBlockUserData<short> _defaultshortCollcetionSIOBlock ;
-  static SIOBlockUserData<long long> _defaultlonglongCollcetionSIOBlock ;
-  static SIOBlockUserData<unsigned long long> _defaultunsignedlonglongCollcetionSIOBlock ;
+  // static SIOBlockUserData<short> _defaultshortCollcetionSIOBlock ;
+  // static SIOBlockUserData<long long> _defaultlonglongCollcetionSIOBlock ;
+  // static SIOBlockUserData<unsigned long long> _defaultunsignedlonglongCollcetionSIOBlock ;
   static SIOBlockUserData<int16_t> _defaultint16_tCollcetionSIOBlock ;
   static SIOBlockUserData<int32_t> _defaultint32_tCollcetionSIOBlock ;
   static SIOBlockUserData<int64_t> _defaultint64_tCollcetionSIOBlock ;
