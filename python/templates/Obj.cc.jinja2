@@ -43,6 +43,7 @@
 {% endfor %}
 }
 
+{% if obj_needs_destructor -%}
 {{ obj_type }}::~{{ obj_type }}() {
 {% with multi_relations = OneToManyRelations + VectorMembers %}
 {%- if multi_relations %}
@@ -58,5 +59,7 @@
   if (m_{{ relation.name }}) delete m_{{ relation.name }};
 {% endfor %}
 }
+{%- endif %}
+
 {% endwith %}
 {{ utils.namespace_close(class.namespace) }}
