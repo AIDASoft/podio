@@ -96,7 +96,7 @@ public:
     runVoidTimed(false, "close_file", &IReader::closeFile);
   }
   void goToEvent(unsigned) override{}
-    private:
+private:
   void recordTime (bool perEvent, const std::string& step, ClockT::duration duration) const {
     if (perEvent) {
       m_perEventTree.recordTime(step, duration);
