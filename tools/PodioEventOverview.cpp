@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
   for(int i=startEvent; i<readEvent; i++){
 
     std::cout<<"Event Number "<<i<<std::endl;
-    std::cout<<std::left<<std::setw(30)<<"Name"<<std::left<<std::setw(40)<<"Type"<<"Colection Size"<<std::endl;
+    std::cout<<std::left<<std::setw(30)<<"Name"<<std::left<<std::setw(40)<<"Type"<<"Collection Size"<<std::endl;
     std::cout<<"-------------------------------------------------------------------------------------"<<std::endl;
 
     reader->readEvent();
