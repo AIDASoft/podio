@@ -10,8 +10,8 @@
 
 /*
 
-  This class has the function to read available data from disk
-  and to prepare collections and buffers.
+This class has the function to read available data from disk
+and to prepare collections and buffers.
 
 */
 
@@ -20,7 +20,7 @@ namespace podio {
 class CollectionBase;
 class CollectionIDTable;
 class GenericParameters;
-  
+
 class IReader {
   public:
     virtual ~IReader(){};
