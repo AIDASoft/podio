@@ -17,11 +17,11 @@
 
 namespace podio {
 
-  class CollectionBase;
-  class CollectionIDTable;
-  class GenericParameters;
+class CollectionBase;
+class CollectionIDTable;
+class GenericParameters;
   
-  class IReader {
+class IReader {
   public:
     virtual ~IReader(){};
     /// Read Collection of given name
@@ -40,7 +40,7 @@ namespace podio {
     //TODO: decide on smart-pointers for passing of objects
     /// Check if reader is valid
     virtual bool isValid() const = 0;
-   
+
     virtual void openFile(const std::string& filename) = 0;
     virtual void closeFile() = 0;
 
