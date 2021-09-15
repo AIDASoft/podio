@@ -84,16 +84,19 @@ namespace podio {
   constexpr const char*  userDataTypeName() ;
 
   // PODIO_ADD_USER_TYPE(int)
-  PODIO_ADD_USER_TYPE(long)
   PODIO_ADD_USER_TYPE(float)
   PODIO_ADD_USER_TYPE(double)
   // PODIO_ADD_USER_TYPE(unsigned)
   // PODIO_ADD_USER_TYPE(unsigned int)
+#if defined(__APPLE__)
+  PODIO_ADD_USER_TYPE(long)
   PODIO_ADD_USER_TYPE(unsigned long)
+#else
+  PODIO_ADD_USER_TYPE(long long)
+  PODIO_ADD_USER_TYPE(unsigned long long)
+#endif
   PODIO_ADD_USER_TYPE(char)
   // PODIO_ADD_USER_TYPE(short)
-  // PODIO_ADD_USER_TYPE(long long)
-  // PODIO_ADD_USER_TYPE(unsigned long long)
   PODIO_ADD_USER_TYPE(int16_t)
   PODIO_ADD_USER_TYPE(int32_t)
   PODIO_ADD_USER_TYPE(int64_t)
