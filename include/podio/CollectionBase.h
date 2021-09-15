@@ -8,9 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "podio/ObjectID.h"
-#include "podio/ASCIIWriter.h"
-
 namespace podio {
   // forward declarations
   class ICollectionProvider;
