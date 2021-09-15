@@ -54,12 +54,20 @@ namespace podio {
     /// some static type checks to ensure our assumptions on the fundamental types are correct
     // note: eventually we might need some more generic tests and checks on type equivalence and
     //       size_of supported types in PODIO as this also can affect the generated POD types...
+
     static_assert( std::is_same_v<int16_t,short>);
     static_assert( std::is_same_v<int32_t,int>);
-    static_assert( std::is_same_v<int64_t,long long>);
     static_assert( std::is_same_v<uint16_t,unsigned short>);
     static_assert( std::is_same_v<uint32_t,unsigned>);
+    // temporary workaround for differences on APPLE and Linux
+#if defined(__APPLE__)
+    static_assert( std::is_same_v<int64_t,long long>);
     static_assert( std::is_same_v<uint64_t,unsigned long long>);
+#else
+    static_assert( std::is_same_v<int64_t,long>);
+    static_assert( std::is_same_v<uint64_t,unsigned long>);
+#endif
+
   }
 
   /**
