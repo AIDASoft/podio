@@ -25,12 +25,9 @@ namespace podio {
     /** tuple of basic types supported in user vector
      */
     using SupportedUserDataTypes = std::tuple<
-      int, long, float, double,
-      unsigned int, unsigned, unsigned long,
-      char, short, long long,
-      unsigned long long,
-      int16_t, int32_t, int64_t,
-      uint16_t, uint32_t, uint64_t
+      float, double,
+      int8_t, int16_t, int32_t, int64_t,
+      uint8_t, uint16_t, uint32_t, uint64_t
       >;
 
     /**
@@ -49,25 +46,6 @@ namespace podio {
     constexpr bool isSupported() {
       return inTuple<T>(SupportedUserDataTypes{});
     }
-
-
-    /// some static type checks to ensure our assumptions on the fundamental types are correct
-    // note: eventually we might need some more generic tests and checks on type equivalence and
-    //       size_of supported types in PODIO as this also can affect the generated POD types...
-
-    static_assert( std::is_same_v<int16_t,short>);
-    static_assert( std::is_same_v<int32_t,int>);
-    static_assert( std::is_same_v<uint16_t,unsigned short>);
-    static_assert( std::is_same_v<uint32_t,unsigned>);
-    // temporary workaround for differences on APPLE and Linux
-#if defined(__APPLE__)
-    static_assert( std::is_same_v<int64_t,long long>);
-    static_assert( std::is_same_v<uint64_t,unsigned long long>);
-#else
-    static_assert( std::is_same_v<int64_t,long>);
-    static_assert( std::is_same_v<uint64_t,unsigned long>);
-#endif
-
   }
 
   /**
@@ -83,33 +61,22 @@ namespace podio {
   template <typename BasicType, typename = EnableIfSupportedUserType<BasicType> >
   constexpr const char*  userDataTypeName() ;
 
-  // PODIO_ADD_USER_TYPE(int)
   PODIO_ADD_USER_TYPE(float)
   PODIO_ADD_USER_TYPE(double)
-  // PODIO_ADD_USER_TYPE(unsigned)
-  // PODIO_ADD_USER_TYPE(unsigned int)
-#if defined(__APPLE__)
-  PODIO_ADD_USER_TYPE(long)
-  PODIO_ADD_USER_TYPE(unsigned long)
-#else
-  PODIO_ADD_USER_TYPE(long long)
-  PODIO_ADD_USER_TYPE(unsigned long long)
-#endif
-  PODIO_ADD_USER_TYPE(char)
-  // PODIO_ADD_USER_TYPE(short)
+
+  PODIO_ADD_USER_TYPE(int8_t)
   PODIO_ADD_USER_TYPE(int16_t)
   PODIO_ADD_USER_TYPE(int32_t)
   PODIO_ADD_USER_TYPE(int64_t)
+  PODIO_ADD_USER_TYPE(uint8_t)
   PODIO_ADD_USER_TYPE(uint16_t)
   PODIO_ADD_USER_TYPE(uint32_t)
   PODIO_ADD_USER_TYPE(uint64_t)
 
-// note: duplicate types on 'standard' hardware are commented out here
-//       but left in for a potential updata in the future...
 
   /** Collection of basic types for additional user data not defined in the EDM.
    *  The data is stored in an std::vector<basic_type>. Supported are all basic types supported in
-   *  PODIO - @see SupportedUserDataTypes.
+   *  PODIO, i.e. float, double and 8-64 bit fixed size signed and unsigned integers - @see SupportedUserDataTypes.
    *  @author F.Gaede, DESY
    *  @date Sep 2021
    */

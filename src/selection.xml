@@ -17,20 +17,13 @@
     </class>
     <class name="podio::ObjectID"/>
     <class name="vector<podio::ObjectID>"/>
-    <class name="podio::UserDataCollection<int>"/>
-    <class name="podio::UserDataCollection<long>"/>
     <class name="podio::UserDataCollection<float>"/>
     <class name="podio::UserDataCollection<double>"/>
-    <class name="podio::UserDataCollection<unsigned>"/>
-    <class name="podio::UserDataCollection<unsigned int>"/>
-    <class name="podio::UserDataCollection<unsigned long>"/>
-    <class name="podio::UserDataCollection<char>"/>
-    <class name="podio::UserDataCollection<short>"/>
-    <class name="podio::UserDataCollection<long long>"/>
-    <class name="podio::UserDataCollection<unsigned long long>"/>
+    <class name="podio::UserDataCollection<int8_t>"/>
     <class name="podio::UserDataCollection<int16_t>"/>
     <class name="podio::UserDataCollection<int32_t>"/>
     <class name="podio::UserDataCollection<int64_t>"/>
+    <class name="podio::UserDataCollection<uint8_t>"/>
     <class name="podio::UserDataCollection<uint16_t>"/>
     <class name="podio::UserDataCollection<uint32_t>"/>
     <class name="podio::UserDataCollection<uint64_t>"/>
