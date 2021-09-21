@@ -55,7 +55,9 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
     const auto collBuffers = coll->getBuffers();
     if (collBuffers.data) {
       // only create the data buffer branch if necessary
-      const auto collClassName = "vector<" + coll->getValueTypeName() + "Data>";
+
+      auto collClassName = "vector<" + coll->getDataTypeName() +">";
+
       branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), collBuffers.data);
     }
 
@@ -109,7 +111,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
       const podio::CollectionBase* coll{nullptr};
       // No check necessary, only registered collections possible
       m_store->get(name, coll);
-      const auto collType = coll->getValueTypeName() + "Collection";
+      const auto collType = coll->getTypeName() ;
       collectionInfo.emplace_back(collID, std::move(collType), coll->isSubsetCollection());
     }
 

@@ -18,6 +18,8 @@
 #include "podio/EventStore.h"
 #include "podio/IReader.h"
 
+#include "podio/UserDataCollection.h"
+
 // STL
 #include <limits>
 #include <vector>
@@ -61,6 +63,7 @@ void processEvent(podio::EventStore& store, int eventNum) {
       throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
     }
   }
+
 
   auto& strings = store.get<ExampleWithStringCollection>("strings");
   if(strings.isValid()){
@@ -323,6 +326,32 @@ void processEvent(podio::EventStore& store, int eventNum) {
   check_fixed_width_value(arbComps.fixedInteger64, std::int64_t{-1234567890123456789}, "int64");
   check_fixed_width_value(arbComps.fixedInteger32, std::int32_t{-1234567890}, "int32");
   check_fixed_width_value(arbComps.fixedUnsigned16, std::uint16_t{12345}, "uint16");
+
+
+
+  auto& usrInts = store.get<podio::UserDataCollection<uint64_t> >("userInts");
+
+#if 0 //access via vector
+  auto& uivec = usrInts.vec() ;
+  int myInt = 0 ;
+  for( int iu : uivec ){
+    if( iu != myInt++ )
+      throw std::runtime_error("Couldn't read userInts properly"); ;
+  }
+#else // access in direct range based for loop
+  int myInt = 0 ;
+  for( int iu : usrInts ){
+    if( iu != myInt++ )
+      throw std::runtime_error("Couldn't read userInts properly"); ;
+  }
+#endif
+
+  auto& usrDbl = store.get<podio::UserDataCollection<double> >("userDoubles");
+  for( double d : usrDbl ){
+    if( d != 42. )
+      throw std::runtime_error("Couldn't read userDoubles properly"); ;
+  }
+
 }
 
 void run_read_test(podio::IReader& reader) {

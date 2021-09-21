@@ -16,6 +16,7 @@
 #include "datamodel/ExampleWithArrayCollection.h"
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 
+#include "podio/UserDataCollection.h"
 #include "podio/EventStore.h"
 
 // STL
@@ -46,6 +47,8 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& strings    = store.create<ExampleWithStringCollection>("strings");
   auto& arrays     = store.create<ExampleWithArrayCollection>("arrays");
   auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+  auto& usrInts = store.create<podio::UserDataCollection<uint64_t> >("userInts");
+  auto& usrDoubles = store.create<podio::UserDataCollection<double> >("userDoubles");
 
   writer.registerForWrite("info");
   writer.registerForWrite("mcparticles");
@@ -64,6 +67,8 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.registerForWrite("strings");
   writer.registerForWrite("arrays");
   writer.registerForWrite("fixedWidthInts");
+  writer.registerForWrite("userInts");
+  writer.registerForWrite("userDoubles");
 
   unsigned nevents = 2000;
 
@@ -314,6 +319,22 @@ void write(podio::EventStore& store, WriterT& writer) {
     arbComp.fixedUnsigned16 = 12345;
     arbComp.fixedInteger32 = -1234567890;
     arbComp.fixedInteger64 = -1234567890123456789ll;
+
+
+    // add some plain ints as user data
+    auto& uivec = usrInts ;
+    uivec.resize( i + 1 ) ;
+    int myInt = 0 ;
+    for( auto& iu : uivec ){
+      iu = myInt++  ;
+    }
+    // and some user double values
+    unsigned nd = 100 ;
+    usrDoubles.resize( nd ) ;
+    for(unsigned id=0 ; id<nd ; ++id){
+      usrDoubles[id] = 42. ;
+    }
+
 
     writer.writeEvent();
     store.clearCollections();

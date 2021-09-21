@@ -40,8 +40,12 @@ namespace podio {
     /// number of elements in the collection
     virtual size_t size() const = 0;
 
+    /// fully qualified type name
+    virtual std::string getTypeName() const = 0;
     /// fully qualified type name of elements - with namespace
     virtual std::string getValueTypeName() const = 0;
+    /// fully qualified type name of stored POD elements - with namespace
+    virtual std::string getDataTypeName() const = 0;
 
     /// destructor
     virtual ~CollectionBase() = default;
