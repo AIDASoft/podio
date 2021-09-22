@@ -54,16 +54,10 @@
 {% endmacro %}
 
 
-{% macro constructors_destructors(type, members, prefix='') %}
+{% macro common_constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
   /// default constructor
   {{  full_type }}();
-{% if members %}
-  {{  full_type }}({{ members | map(attribute='signature') | join(', ')  }});
-{% endif %}
-
-  /// constructor from existing {{ type }}Obj
-  {{  full_type }}({{ type }}Obj* obj);
 
   /// copy constructor
   {{  full_type }}(const {{  full_type }}& other);
@@ -72,10 +66,10 @@
   {{  full_type }}& operator=({{ full_type }} other);
 
   /// support cloning (deep-copy)
-  {{  full_type }} clone() const;
+  {{  type }} clone() const;
 
   /// destructor
-  ~{{  full_type }}();
+  ~{{  full_type }}() = default;
 {% endmacro %}
 
 
@@ -83,8 +77,6 @@
 {% set full_type = prefix + type %}
   /// check whether the object is actually available
   bool isAvailable() const;
-  /// disconnect from {{ type }}Obj instance
-  void unlink() { m_obj = nullptr; }
 
 {% set inverse_type = type if prefix else 'Const' + type %}
   bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }

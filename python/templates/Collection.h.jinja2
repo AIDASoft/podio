@@ -85,7 +85,10 @@ public:
 
 
   /// Append object to the collection
-  void push_back(Const{{class.bare_type}} object);
+  void push_back({{class.bare_type}} object);
+
+  /// Append a const reference to a subset collection
+  void push_back(Const{{ class.bare_type }} object);
 
   void prepareForWrite() override final;
   void prepareAfterRead() override final;
@@ -160,7 +163,7 @@ template<typename... Args>
 {% endfor %}
   m_storage.createRelations(obj);
 {% endif %}
-  return {{ class.bare_type }}(obj);
+  return {{ class.bare_type }}(podio::MaybeSharedPtr<{{ class.bare_type }}Obj>(obj));
 }
 
 {% for member in Members %}

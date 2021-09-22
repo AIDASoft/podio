@@ -10,6 +10,7 @@
 {% for include in includes %}
 {{ include }}
 {% endfor %}
+#include "podio/MaybeSharedPtr.h"
 #include "podio/ObjectID.h"
 
 {{ utils.forward_decls(forward_declarations) }}
@@ -24,7 +25,9 @@ class Const{{ class.bare_type }} {
   friend class {{ class.bare_type }}ConstCollectionIterator;
 
 public:
-{{ macros.constructors_destructors(class.bare_type, Members, prefix='Const') }}
+{{ macros.common_constructors_destructors(class.bare_type, Members, prefix='Const') }}
+  /// constructor from existing {{ type }}Obj
+  explicit Const{{ class.bare_type }}({{ class.bare_type }}Obj* obj);
 
 public:
 
@@ -34,8 +37,12 @@ public:
 {{ utils.if_present(ConstExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type, prefix='Const') }}
 
+  /// disconnect from {{ type }}Obj instance
+  void unlink() { m_obj = nullptr; }
+
 private:
-  {{ class.bare_type }}Obj* m_obj;
+  {{ class.bare_type }}Obj* m_obj{nullptr};
+  // podio::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj;
 };
 
 {{ utils.namespace_close(class.namespace) }}

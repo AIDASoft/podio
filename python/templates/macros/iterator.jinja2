@@ -1,8 +1,9 @@
 {% macro iterator_declaration(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
+{% set ptr_init = 'nullptr' if prefix else 'podio::MaybeSharedPtr<' + class.bare_type + 'Obj>{nullptr}' %}
 class {{ iterator_type }} {
 public:
-  {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
+  {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object({{ ptr_init }}), m_collection(collection) {}
 
   {{ iterator_type }}(const {{ iterator_type }}&) = delete;
   {{ iterator_type }}& operator=(const {{ iterator_type }}&) = delete;
@@ -25,14 +26,15 @@ private:
 
 
 {% macro iterator_definitions(class, prefix='') %}
+{% set ptr_type = '' if prefix else 'podio::MaybeSharedPtr<' + class.bare_type + 'Obj>' %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
 {{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() {
-  m_object.m_obj = (*m_collection)[m_index];
+  m_object.m_obj = {{ ptr_type }}((*m_collection)[m_index]);
   return m_object;
 }
 
 {{ prefix }}{{ class.bare_type }}* {{ iterator_type }}::operator->() {
-  m_object.m_obj = (*m_collection)[m_index];
+  m_object.m_obj = {{ ptr_type }}((*m_collection)[m_index]);
   return &m_object;
 }
 

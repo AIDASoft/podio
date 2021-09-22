@@ -22,7 +22,7 @@ class {{ class.bare_type }};
 class Const{{ class.bare_type }};
 
 {% with obj_type = class.bare_type + 'Obj' %}
-class {{ class.bare_type }}Obj : public podio::ObjBase {
+class {{ class.bare_type }}Obj /*: public podio::ObjBase */ {
 public:
   /// constructor
   {{ obj_type }}();
@@ -40,6 +40,7 @@ public:
 {% endif %}
 
 public:
+  podio::ObjectID id;
   {{ class.bare_type }}Data data;
 {% for relation in OneToOneRelations %}
   {{ relation.relation_type }}* m_{{ relation.name }}{nullptr};

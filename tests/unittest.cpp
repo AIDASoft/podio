@@ -20,7 +20,9 @@
 #include "datamodel/ExampleWithOneRelation.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 
-TEST_CASE("AutoDelete") {
+TEST_CASE("AutoDelete", "[memory management]") {
+  // NOTE: This is a unit test without any asserts as it should always work,
+  // even in an ASan build
   auto store = podio::EventStore();
   auto hit1 = EventInfo();
   auto hit2 = EventInfo();
@@ -89,6 +91,37 @@ TEST_CASE("Clearing"){
   REQUIRE(success);
 }
 
+TEST_CASE("Clearing in same scope", "[memory management]") {
+  // NOTE: This is a unit test without any asserts as it should always work,
+  // even in an ASan build
+  // Make sure that there is no heap-use-after-free even when the collection has
+  // taken over management of the Obj* even if clear is called in the same scope
+  // See: https://github.com/AIDASoft/podio/issues/174
+  auto clusters = ExampleClusterCollection();
+  auto cluster = clusters.create();
+  clusters.clear();
+}
+
+TEST_CASE("Clearing order doesn't matter", "[memory management]") {
+  // NOTE: This is a unit test without any asserts as it should always work,
+  // even in an ASan build
+  // Make sure that the order in which collections are cleared do not cause any
+  // heap-use-after-free problems
+  // See: https://github.com/AIDASoft/podio/issues/174
+
+  auto clusters = ExampleClusterCollection();
+  auto oneRelations = ExampleWithOneRelationCollection();
+  {
+    // introduce a new scope to emulate framework usage
+    auto cluster = clusters.create();
+    auto rel = oneRelations.create();
+    rel.cluster(cluster);
+  }
+
+  clusters.clear(); // Clear the related-to collection first
+  oneRelations.clear();
+}
+
 TEST_CASE("Cloning"){
   bool success = true;
   auto hit = ExampleHit();
@@ -126,7 +159,6 @@ TEST_CASE("Cyclic"){
 }
 
 TEST_CASE("Invalid_refs") {
-  bool success = false;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto hit1 = hits.create(0xcaffeeULL,0.,0.,0.,0.);
@@ -135,12 +167,7 @@ TEST_CASE("Invalid_refs") {
   auto  cluster  = clusters.create();
   cluster.addHits(hit1);
   cluster.addHits(hit2);
-  try {
-    clusters.prepareForWrite(); //should fail!
-  } catch (std::runtime_error&){
-    success = true;
-  }
-  REQUIRE(success);
+  REQUIRE_THROWS_AS(clusters.prepareForWrite(), std::runtime_error);
 }
 
 TEST_CASE("Looping") {

@@ -12,6 +12,7 @@
 {{ include }}
 {% endfor %}
 #include "podio/ObjectID.h"
+#include "podio/MaybeSharedPtr.h"
 #include <ostream>
 
 {{ utils.forward_decls(forward_declarations) }}
@@ -27,7 +28,12 @@ class {{ class.bare_type }} {
 
 public:
 
-{{ macros.constructors_destructors(class.bare_type, Members) }}
+{{ macros.common_constructors_destructors(class.bare_type, Members) }}
+{% if Members %}
+  /// Constructor initializing data members
+  {{  class.bare_type }}({{ Members | map(attribute='signature') | join(', ')  }});
+{% endif %}
+
   /// conversion to const object
   operator Const{{ class.bare_type }}() const;
 
@@ -41,9 +47,15 @@ public:
 {{ utils.if_present(ExtraCode, "declaration") }}
 {{ utils.if_present(ConstExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type) }}
+  /// disconnect from {{ type }}Obj instance
+  void unlink() { m_obj = podio::MaybeSharedPtr<{{ class.bare_type }}Obj>(nullptr); }
 
 private:
-  {{ class.bare_type }}Obj* m_obj;
+  /// constructor from existing {{ type }}Obj
+  explicit {{ class.bare_type }}(podio::MaybeSharedPtr<{{ class.bare_type }}Obj> obj);
+
+  // {{ class.bare_type }}Obj* m_obj;
+  podio::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj;
 };
 
 std::ostream& operator<<(std::ostream& o, const Const{{ class.bare_type }}& value);

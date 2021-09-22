@@ -12,8 +12,25 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.constructors_destructors(class.bare_type, Members) }}
-{{ class.bare_type }}::operator Const{{ class.bare_type }}() const { return Const{{ class.bare_type }}(m_obj); }
+{{ macros.common_constructors_destructors(class.bare_type, Members) }}
+
+{{ class.bare_type }}::{{ class.bare_type }}() : m_obj(new {{ class.bare_type }}Obj(), podio::MarkOwned) {}
+
+{{ class.bare_type }} {{ class.bare_type }}::clone() const {
+  return {{ class.bare_type }}{podio::MaybeSharedPtr(new {{ class.bare_type }}Obj(*m_obj), podio::MarkOwned)};
+}
+
+{% if Members %}
+{{ class.bare_type }}::{{ class.bare_type }}({{ Members | map(attribute='signature') | join(', ') }}) : m_obj(new {{ class.bare_type }}Obj(), podio::MarkOwned) {
+{% for member in Members %}
+  m_obj->data.{{ member.name }} = {{ member.name }};
+{% endfor %}
+}
+{% endif %}
+
+{{ class.bare_type }}::{{ class.bare_type }}(podio::MaybeSharedPtr<{{ class.bare_type }}Obj> obj) : m_obj(obj) {}
+
+{{ class.bare_type }}::operator Const{{ class.bare_type }}() const { return Const{{ class.bare_type }}(m_obj.get()); }
 
 {{ macros.member_getters(class, Members, use_get_syntax) }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax) }}

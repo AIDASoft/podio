@@ -12,7 +12,22 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.constructors_destructors(class.bare_type, Members, prefix='Const') }}
+{{ macros.common_constructors_destructors(class.bare_type, Members, prefix='Const') }}
+
+{% with full_type = 'Const' + class.bare_type %}
+{{ full_type }}::{{ full_type }}() {
+  static auto defaultObj = {{ class.bare_type }}Obj{};
+  m_obj = &defaultObj;
+}
+
+{{ class.bare_type }} {{ full_type }}::clone() const {
+  return {{ class.bare_type }}(podio::MaybeSharedPtr(new {{ class.bare_type}}Obj(*m_obj), podio::MarkOwned));
+}
+
+{{ full_type }}::{{ full_type }}({{ class.bare_type }}Obj* obj) : m_obj(obj) {}
+
+{% endwith %}
+
 {{ macros.member_getters(class, Members, use_get_syntax, prefix='Const') }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax, prefix='Const') }}
 {{ macros.multi_relation_handling(class, OneToManyRelations + VectorMembers, use_get_syntax, prefix='Const') }}

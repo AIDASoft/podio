@@ -32,11 +32,11 @@ Const{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
 }
 
 {{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) {
-  return {{ class.bare_type }}(m_storage.entries[index]);
+  return {{ class.bare_type }}(podio::MaybeSharedPtr(m_storage.entries[index]));
 }
 
 {{ class.bare_type }} {{ collection_type }}::at(unsigned int index) {
-  return {{ class.bare_type }}(m_storage.entries.at(index));
+  return {{ class.bare_type }}(podio::MaybeSharedPtr(m_storage.entries.at(index)));
 }
 
 size_t {{ collection_type }}::size() const {
@@ -65,7 +65,7 @@ void {{ collection_type }}::setSubsetCollection(bool setSubset) {
 {% endif %}
 
   obj->id = {int(m_storage.entries.size() - 1), m_collectionID};
-  return {{ class.bare_type }}(obj);
+  return {{ class.bare_type }}(podio::MaybeSharedPtr<{{ class.bare_type }}Obj>(obj));
 }
 
 void {{ collection_type }}::clear() {
@@ -97,7 +97,7 @@ bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% i
   return true; //TODO: check success
 }
 
-void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
+void {{ collection_type }}::push_back({{ class.bare_type }} object) {
   // We have to do different things here depending on whether this is a
   // subset collection or not. A normal collection cannot collect objects
   // that are already part of another collection, while a subset collection
@@ -107,23 +107,29 @@ void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
     if (obj->id.index == podio::ObjectID::untracked) {
       const auto size = m_storage.entries.size();
       obj->id = {(int)size, m_collectionID};
-      m_storage.entries.push_back(obj);
+      m_storage.entries.push_back(obj.release());
 {% if OneToManyRelations or VectorMembers %}
-      m_storage.createRelations(obj);
+      m_storage.createRelations(obj.get());
 {% endif %}
     } else {
       throw std::invalid_argument("Object already in a collection. Cannot add it to a second collection");
     }
   } else {
-    const auto obj = object.m_obj;
-    if (obj->id.index < 0) {
-      throw std::invalid_argument("Object needs to be tracked by another collection in order for it to be storable in a subset collection");
-    }
-    m_storage.entries.push_back(obj);
-    // No need to handle any relations here, since this is already done by the
-    // "owning" collection
+    push_back(Const{{ class.bare_type }}(object));
   }
 }
+
+void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
+  if (!m_isSubsetColl) {
+    throw std::invalid_argument("Can only add Const objects to subset collections!");
+  }
+  auto obj = object.m_obj;
+  if (obj->id.index < 0) {
+    throw std::invalid_argument("Object needs to be tracked by another collection in order for it to be storable in a subset collection");
+  }
+  m_storage.entries.push_back(obj);
+}
+
 
 podio::CollectionBuffers {{ collection_type }}::getBuffers() {
   return m_storage.getCollectionBuffers(m_isSubsetColl);
