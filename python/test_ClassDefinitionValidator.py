@@ -53,7 +53,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                 'declaration': 'not necessarily valid c++',
                 'implementation': 'still not checked for c++ validity',
                 },
-            'ConstExtraCode': {
+            'MutableExtraCode': {
                 'declaration': 'also not checked for valid c++',
                 'implementation': 'nothing has changed',
                 'includes': '#include <something_else> this will appear in both includes!'

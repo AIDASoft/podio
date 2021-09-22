@@ -255,7 +255,7 @@ class ClassGenerator(object):
     datatype['obj_needs_destructor'] = needs_destructor
 
   def _preprocess_for_class(self, datatype):
-    """Do the preprocessing that is necessary for the classes and Const classes"""
+    """Do the preprocessing that is necessary for the classes and Mutable classes"""
     includes = set(datatype['includes_data'])
     fwd_declarations = {}
     includes_cc = set()
@@ -285,7 +285,8 @@ class ClassGenerator(object):
         includes.add(self._build_include(vectormember.bare_type))
 
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
-    includes.update(datatype.get('ConstExtraCode', {}).get('includes', '').split('\n'))
+    # TODO: in principle only the mutable classes would need these includes!
+    includes.update(datatype.get('MutableExtraCode', {}).get('includes', '').split('\n'))
 
     # When we have a relation to the same type we have the header that we are
     # just generating in the includes. This would lead to a circular include, so

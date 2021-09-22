@@ -47,9 +47,9 @@ datatypes :
     Author : "B. Hegner"
     Members :
      - int Number // event number
-    ExtraCode :
+    MutableExtraCode :
        declaration: "void setNumber(int n) { Number( n ) ; } "
-    ConstExtraCode:
+    ExtraCode:
       declaration: "int getNumber() const;"
       implementation: "int {name}::getNumber() const { return Number(); }"
 

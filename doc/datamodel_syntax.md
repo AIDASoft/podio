@@ -88,15 +88,20 @@ There can be one-to-one-relations and one-to-many relations being stored in a pa
 ```
 
 ### Explicit definition of methods
-In a few cases, it makes sense to add some more functionality to the created classes. Thus this library provides two ways of defining additional methods and code. Either by defining them inline or in external files. Extra code has to be provided separately for const and non-const additions.
+In a few cases, it makes sense to add some more functionality to the created classes. Thus this library provides two ways of defining additional methods and code. Either by defining them inline or in external files. Extra code has to be provided separately for immutable and mutable additions.
+Note that the immutable (`ExtraCode`) will also be placed into the mutable classes, so that there is no need for duplicating the code.
+Only if some additions should only be available for the mutable classes it is necessary to fill the `MutableExtraCode` section.
+The `includes` will be add to the header files of the generated classes.
 
 ```yaml
     ExtraCode:
+      includes: <newline separated list of strings (optional)>
       declaration: <string>
       implementation : <string>
       declarationFile: <string> (to be implemented!)
       implementationFile: <string> (to be implemented!)
-    ConstExtraCode:
+    MutableExtraCode:
+      includes: <newline separated list of strings (optional)>
       declaration: <string>
       implementation : <string>
       declarationFile: <string> (to be implemented!)

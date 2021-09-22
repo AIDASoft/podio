@@ -33,7 +33,7 @@ public:
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}
 {{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax) }}
-{{ utils.if_present(ConstExtraCode, "declaration") }}
+{{ utils.if_present(ExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type) }}
 
 private:
