@@ -336,12 +336,12 @@ TEST_CASE("const correct indexed access to const collections", "[const-correctne
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleClusterCollection>()[0]),
                 ExampleCluster>,
-                "const collections should only have indexed access to Const objects");
+                "const collections should only have indexed access to immutable objects");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleClusterCollection>().at(0)),
                 ExampleCluster>,
-                "const collections should only have indexed access to Const objects");
+                "const collections should only have indexed access to immutable objects");
 
   REQUIRE(true);
 }
@@ -380,28 +380,27 @@ TEST_CASE("const correct iterators on const collections", "[const-correctness]")
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleHitCollection>().begin()),
                 ExampleHitCollectionIterator>,
-                "const collection begin() should return a ConstCollectionIterator");
+                "const collection begin() should return an immutable CollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<const ExampleHitCollection>().end()),
                 ExampleHitCollectionIterator>,
-                "const collection end() should return a ConstCollectionIterator");
+                "const collection end() should return an immutable CollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(*std::declval<const ExampleHitCollection>().begin()),
                 ExampleHit>,
-                "ConstCollectionIterator should only give access to Const objects");
+                "CollectionIterator should only give access to immutable objects");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleHitCollectionIterator>().operator->()),
                 ExampleHit*>,
-                "ConstCollectionIterator should only give access to Const objects");
+                "CollectionIterator should only give access to immutable objects");
 
   REQUIRE(true);
 }
 
 TEST_CASE("const correct iterators on collections", "[const-correctness]") {
-
   auto collection = ExampleClusterCollection();
   for (auto cluster : collection) {
     static_assert(std::is_same_v<decltype(cluster), MutableExampleCluster>, "collection iterators should return mutable objects");
@@ -412,27 +411,22 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleClusterCollection>().end()),
                 ExampleClusterMutableCollectionIterator>,
-                "non const collection end() should return a CollectionIterator");
+                "non const collection end() should return a MutableCollectionIterator");
 
   static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterCollection>().end()),
+                decltype(std::declval<ExampleClusterCollection>().begin()),
                 ExampleClusterMutableCollectionIterator>,
-                "non const collection end() should return a CollectionIterator");
-
-  static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterCollection>().end()),
-                ExampleClusterMutableCollectionIterator>,
-                "collection end() should return a CollectionIterator");
+                "non const collection begin() should return a MutableCollectionIterator");
 
   static_assert(std::is_same_v<
                 decltype(*std::declval<ExampleClusterCollection>().begin()),
                 MutableExampleCluster>,
-                "CollectionIterator should give access to mutable objects");
+                "MutableCollectionIterator should give access to mutable objects");
 
   static_assert(std::is_same_v<
                 decltype(std::declval<ExampleClusterMutableCollectionIterator>().operator->()),
                 MutableExampleCluster*>,
-                "CollectionIterator should only give access to mutable objects");
+                "MutableCollectionIterator should only give access to mutable objects");
 
   REQUIRE(true);
 }
