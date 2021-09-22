@@ -12,4 +12,4 @@ Many of the design choices are inspired by previous experience of the [LCIO pack
 
 # Quick-start
 
-An up-to-date installation and quick start guide for the impatient user can be found on the [PODIO github page](https://github.com/hegner/podio).
+An up-to-date installation and quick start guide for the impatient user can be found on the [PODIO github page](https://github.com/AIDASoft/podio).
