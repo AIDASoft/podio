@@ -27,11 +27,14 @@ namespace podio {
     }
 
     auto p = std::find_if(begin(m_inputs), end(m_inputs),
-                          [&name](const SIOReader::Input& t){ return t.second == name;});
+                          [&name](const SIOReader::Input& t){ return std::get<1>(t) == name;});
 
     if (p != end(m_inputs)) {
-      p->first->prepareAfterRead();
-      return p->first;
+      auto coll = std::get<0>(*p);
+      coll->prepareAfterRead();
+      std::get<2>(*p) = true;
+
+      return coll;
     }
 
     return nullptr;
@@ -95,7 +98,7 @@ namespace podio {
     compressor.uncompress( m_rec_buffer.span(), m_unc_buffer ) ;
     sio::api::read_blocks( m_unc_buffer.span(), m_blocks ) ;
 
-    for (auto& [collection, name] : m_inputs) {
+    for (auto& [collection, name, read] : m_inputs) {
       collection->setID(m_table->collectionID(name));
     }
 
@@ -115,6 +118,10 @@ namespace podio {
   void SIOReader::endOfEvent() {
     ++m_eventNumber;
     m_blocks.clear();
+    // Delete all collections which have not been used
+    for (const auto& [coll, name, used] : m_inputs) {
+      if (!used) delete coll;
+    }
     m_inputs.clear();
   }
 
@@ -127,7 +134,7 @@ namespace podio {
     for (size_t i = 0; i < m_typeNames.size(); ++i) {
       auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i], m_subsetCollectionBits[i]);
       m_blocks.push_back(blk);
-      m_inputs.emplace_back(blk->getCollection(), m_table->names()[i]);
+      m_inputs.emplace_back(blk->getCollection(), m_table->names()[i], false);
     }
   }
 

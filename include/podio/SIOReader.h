@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <tuple>
 
 
 #include "podio/ICollectionProvider.h"
@@ -79,7 +80,10 @@ namespace podio {
     void readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock);
     void createBlocks();
 
-    typedef std::pair<CollectionBase*, std::string> Input;
+    /// collection, name, and flag to indictate whether it has been requested by
+    /// the EventStore. The latter is necessary, because collections which have
+    /// not been requested are still the responsibility of us
+    typedef std::tuple<CollectionBase*, std::string, bool> Input;
     std::vector<Input> m_inputs{};
     CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
