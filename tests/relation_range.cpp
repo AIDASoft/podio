@@ -119,7 +119,7 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   }
 
   try {
-    const auto parent = parents.at(3);
+    const auto parent [[maybe_unused]] = parents.at(3);
     throw std::runtime_error("Trying to access out of bounds in a RelationRange::at should throw");
   } catch (const std::out_of_range& err) {
     ASSERT_EQUAL(err.what(), std::string("index out of bounds for RelationRange"),
