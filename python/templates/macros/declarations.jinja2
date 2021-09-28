@@ -62,9 +62,6 @@
   {{  full_type }}({{ members | map(attribute='signature') | join(', ')  }});
 {% endif %}
 
-  /// constructor from existing {{ type }}Obj
-  {{  full_type }}({{ type }}Obj* obj);
-
   /// copy constructor
   {{  full_type }}(const {{  full_type }}& other);
 

@@ -35,6 +35,11 @@ public:
 {{ macros.common_object_funcs(class.bare_type, prefix='Const') }}
 
 private:
+
+  /// constructor from existing {{ class.bare_type }}Obj
+  Const{{  class.bare_type }}({{ class.bare_type }}Obj* obj);
+
+
   {{ class.bare_type }}Obj* m_obj;
 };
 
