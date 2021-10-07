@@ -26,7 +26,7 @@
   if (m_obj) m_obj->acquire();
 }
 
-{{ full_type }} {{ full_type }}::clone() const {
+{{ type }} {{ full_type }}::clone() const {
   return {new {{ type }}Obj(*m_obj)};
 }
 
