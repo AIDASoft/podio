@@ -71,8 +71,8 @@
   /// copy-assignment operator
   {{  full_type }}& operator=({{ full_type }} other);
 
-  /// create a mutable deep-copy of the object with identical relations 
-  {{  type }} clone() const;
+  /// create a mutable deep-copy of the object with identical relations
+  Mutable{{ type }} clone() const;
 
   /// destructor
   ~{{  full_type }}();
