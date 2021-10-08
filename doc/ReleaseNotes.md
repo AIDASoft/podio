@@ -1,3 +1,71 @@
+# v00-13-02
+
+* 2021-10-08 Thomas Madlener ([PR#224](https://github.com/AIDASoft/podio/pull/224))
+  - Make the `clone` function always return a mutable object, also when called on an immutable object (Fixes #219)
+
+* 2021-09-22 Thomas Madlener ([PR#214](https://github.com/AIDASoft/podio/pull/214))
+  - Make the CMake datamodel generation macro use the python interpreter that is also found by CMake to avoid accidentally picking up an unsuitable system provided version that might be on `PATH`.
+
+* 2021-09-21 Frank Gaede ([PR#213](https://github.com/AIDASoft/podio/pull/213))
+  - add possibility to store additional user data as collections of fundamental types in PODIO files
+       -  uses `std::vector<basic_type>`
+       - stored in simple branch in root (and simple block in SIO)
+       - all fundamental types supported in PODIO (except bool) can be written
+  - example code:
+  ```c++
+    auto& usrInts = store.create<podio::UserDataCollection<uint64_t> >("userInts");
+    auto& usrDoubles = store.create<podio::UserDataCollection<double> >("userDoubles");
+    // ...
+  
+    // add some unsigned ints
+    usrInts.resize( i + 1 ) ;
+    int myInt = 0 ;
+    for( auto& iu : usrInts ){
+      iu = myInt++  ;
+    }
+    // and some user double values
+    unsigned nd = 100 ;
+    usrDoubles.resize( nd ) ;
+    for(unsigned id=0 ; id<nd ; ++id){
+      usrDoubles[id] = 42. ;
+    }
+  ```
+  
+  - should replace https://github.com/key4hep/EDM4hep/pull/114 in a more efficient way
+
+* 2021-09-21 tmadlener ([PR#143](https://github.com/AIDASoft/podio/pull/143))
+  - Generate an additional `podio_generated_files.cmake` file containing all generated source files as a `header` and `sources` list and make the code generation macro include this file to get the headers and source files.
+    - Now only the files generated for the current settings are picked up by cmake
+    - Makes it possible to have additional files in the folders where the generated files are placed, since these are no longer globbed over.
+
+* 2021-09-10 Thomas Madlener ([PR#217](https://github.com/AIDASoft/podio/pull/217))
+  - Make the `Obj` destructors `= default` where possible, i.e. if a datatype has no relations to handle
+  - Make the assignment operators of the user facing classes use the "copy-and-swap" idiom
+  - Fix the problem where `OneToOneRelations` needed to be from the same namespace as the datatype they are used in (#216)
+
+* 2021-09-06 Thomas Madlener ([PR#211](https://github.com/AIDASoft/podio/pull/211))
+  - Fix test dependencies to allow running tests in parallel via `ctest -jN`
+
+* 2021-08-18 Thomas Madlener ([PR#210](https://github.com/AIDASoft/podio/pull/210))
+  - Fix a few small issues in the datamodel yaml file validation. **These do not change the behavior of code generation, they just try to catch problems earlier**
+    - Make sure that `OneToManyRelations` and `OneToOneRelations` have the same restrictions
+    - Only allow `components`, builtins and arrays of those as `Members`
+  - Make the API of `validate` slightly more generic by taking a dict instead of multiple arguments.
+  - Make the generator exit with an easier to read error message in case of a validation problem instead of printing a full backtrace.
+
+* 2021-08-18 Thomas Madlener ([PR#197](https://github.com/AIDASoft/podio/pull/197))
+  - Introduce a `podio::CollectionBuffers` class that contains everything that is necessary for I/O of a given collection. **This is a breaking change in the collection interface** 
+  - Introduce  and generate a `CollectionData` class for each datatype that only manages the storage of a given collection.
+    - Exposes only the `Obj` entries of each collection as well as the necessary functionality to add a new object (and its relations) to the collection.
+  - Implement "subset" collections that behave exactly the same as normal collections apart from an additional function call when creating them.
+
+* 2021-08-13 Thomas Madlener ([PR#206](https://github.com/AIDASoft/podio/pull/206))
+  - Switch to Catch2 v3 test library and by default assume that it is available. Use the 'USE_EXTERNAL_CATCH2` cmake option to control whether podio should use an external installation or if it should fetch and build it internally instead.
+  - Remove `catch.hpp` header that was previously shipped, since it is no longer needed.
+
+* 2021-08-13 Thomas Madlener ([PR#201](https://github.com/AIDASoft/podio/pull/201))
+  - Make assignment operator increase the reference count to avoid possible heap-after-free usage. (Fixes #200)
+
 # v00-13-01
 
 * 2021-06-03 Thomas Madlener ([PR#195](https://github.com/aidasoft/PODIO/pull/195))
