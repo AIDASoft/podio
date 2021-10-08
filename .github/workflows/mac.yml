@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   compile:
-    runs-on: macos-latest
+    runs-on: macOS-10.15
     strategy:
       fail-fast: false
       matrix:
