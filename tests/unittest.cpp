@@ -100,6 +100,10 @@ TEST_CASE("Cloning"){
   cluster.addHits(hit);
   auto cluster2 = cluster.clone();
   cluster.addHits(hit2);
+  // check that the clone of a const object is mutable
+  auto const_hit = ConstExampleHit();
+  auto const_hit_clone = const_hit.clone();
+  const_hit_clone.energy(30);
   REQUIRE(success);
 }
 
