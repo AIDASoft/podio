@@ -25,7 +25,7 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
     )
 endfunction()
 
-set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp read_and_write.cpp write_timed.cpp read_timed.cpp)
+set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp read_and_write.cpp write_timed.cpp read_timed.cpp read-legacy-files.cpp)
 set(root_libs TestDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
