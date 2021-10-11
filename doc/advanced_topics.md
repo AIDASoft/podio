@@ -1,5 +1,7 @@
 # Advanced Topics
 
+## Writing extra data outside the EDM
+[See here](userdata.md)
 
 ## Persistency
 
