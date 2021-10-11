@@ -125,7 +125,8 @@ namespace podio {
     m_blocks.push_back(m_eventMetaData);
 
     for (size_t i = 0; i < m_typeNames.size(); ++i) {
-      auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i], m_subsetCollectionBits[i]);
+      const bool subsetColl = m_subsetCollectionBits.size() && m_subsetCollectionBits[i];
+      auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i], subsetColl);
       m_blocks.push_back(blk);
       m_inputs.emplace_back(blk->getCollection(), m_table->names()[i]);
     }

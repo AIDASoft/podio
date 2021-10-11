@@ -60,10 +60,10 @@ namespace podio {
   class SIOCollectionIDTableBlock : public sio::block {
   public:
     SIOCollectionIDTableBlock() :
-      sio::block("CollectionIDs", sio::version::encode_version(0, 1)) {}
+      sio::block("CollectionIDs", sio::version::encode_version(0, 2)) {}
 
     SIOCollectionIDTableBlock(podio::EventStore* store) :
-      sio::block("CollectionIDs", sio::version::encode_version(0, 1)),
+      sio::block("CollectionIDs", sio::version::encode_version(0, 2)),
       _store(store), _table(store->getCollectionIDTable()) {}
 
     SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
