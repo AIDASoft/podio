@@ -104,7 +104,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
     m_metadatatree->Branch("CollectionIDs", collIDTable);
 
     // collectionID, collection type, subset collection
-    std::vector<std::tuple<int, std::string, bool>> collectionInfo;
+    std::vector<root_utils::CollectionInfoT> collectionInfo;
     collectionInfo.reserve(m_collectionsToWrite.size());
     for (const auto& name : m_collectionsToWrite) {
       const auto collID = collIDTable->collectionID(name);

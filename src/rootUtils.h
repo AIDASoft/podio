@@ -3,12 +3,16 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBranches.h"
+#include "podio/CollectionIDTable.h"
 
 #include "TBranch.h"
 #include "TClass.h"
 
+#include <iostream>
 #include <vector>
 #include <string>
+#include <tuple>
+#include <string_view>
 
 namespace podio::root_utils {
 // Workaround slow branch retrieval for 6.22/06 performance degradation
@@ -45,6 +49,43 @@ inline void setCollectionAddresses(podio::CollectionBase* collection, const Coll
       branches.vecs[i]->SetAddress((*vecMembers)[i].second);
     }
   }
+}
+
+// A collection of additional information that describes the collection: the
+// collectionID, the collection (data) type, and whether it is a subset
+// collection
+using CollectionInfoT = std::tuple<int, std::string, bool>;
+
+/**
+ * reconstruct the collection info from information that is available from other
+ * trees in the file.
+ *
+ * NOTE: This function is only supposed to be called if there is no
+ * "CollectionTypeInfo" branch in the metadata tree, as it assumes that the file
+ * has been written with podio previous to #197 where there were no subset
+ * collections
+ */
+inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable const& idTable) {
+  std::vector<CollectionInfoT> collInfo;
+
+  for (size_t iColl = 0; iColl < idTable.names().size(); ++iColl) {
+    const auto collID = idTable.ids()[iColl];
+    const auto& name = idTable.names()[iColl];
+
+    if (auto branch = getBranch(eventTree, name.c_str())) {
+      const std::string_view bufferClassName = branch->GetClassName();
+      // this comes with vector<...Data>, where we only care about the ...
+      std::string_view dataClass = bufferClassName;
+      dataClass.remove_suffix(5);
+      const auto collClass = std::string(dataClass.substr(7)) + "Collection";
+      // Assume that there are no subset collections in "old files"
+      collInfo.emplace_back(collID, std::move(collClass), false);
+    } else {
+      std::cerr << "Problems reconstructing collection info for collection: \'" << name << "\'\n";
+    }
+  }
+
+  return collInfo;
 }
 
 }

@@ -144,12 +144,21 @@ namespace podio {
     m_table = new CollectionIDTable();
     metadatatree->SetBranchAddress("CollectionIDs", &m_table);
 
-    auto collectionInfo = new std::vector<std::tuple<int, std::string, bool>>;
-    metadatatree->SetBranchAddress("CollectionTypeInfo", &collectionInfo);
-    metadatatree->GetEntry(0);
-
-    createCollectionBranches(*collectionInfo);
-    delete collectionInfo;
+    // Check if the CollectionTypeInfo branch is there and assume that the file
+    // has been written with with podio pre #197 (<0.13.1) if that is not the case
+    if (auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo")) {
+      auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
+      collInfoBranch->SetAddress(&collectionInfo);
+      metadatatree->GetEntry(0);
+      createCollectionBranches(*collectionInfo);
+      delete collectionInfo;
+    } else {
+      std::cout << "PODIO: Reconstructing CollectionTypeInfo branch from other sources in file: \'"
+                << m_chain->GetFile()->GetName() << "\'" << std::endl;
+      metadatatree->GetEntry(0);
+      const auto collectionInfo = root_utils::reconstructCollectionInfo(m_chain, *m_table);
+      createCollectionBranches(collectionInfo);
+    }
   }
 
   void ROOTReader::closeFile(){
@@ -196,7 +205,7 @@ namespace podio {
     m_inputs.clear();
   }
 
- void ROOTReader::createCollectionBranches(const std::vector<std::tuple<int, std::string, bool>>& collInfo) {
+ void ROOTReader::createCollectionBranches(const std::vector<root_utils::CollectionInfoT>& collInfo) {
     size_t collectionIndex{0};
 
     for (const auto& [collID, collType, isSubsetColl] : collInfo) {
