@@ -199,8 +199,7 @@ class ClassGenerator(object):
   def _process_component(self, name, component):
     """Process one component"""
     includes = set()
-    if any(m.is_array for m in component['Members']):
-      includes.add('#include <array>')
+    includes.update(*(m.includes for m in component['Members']))
 
     for member in component['Members']:
       if member.full_type in self.reader.components or member.array_type in self.reader.components:
@@ -370,11 +369,10 @@ class ClassGenerator(object):
   def _get_member_includes(self, members):
     """Process all members and gather the necessary includes"""
     includes = set()
+    includes.update(*(m.includes for m in members))
     for member in members:
-      if member.is_array:
-        includes.add("#include <array>")
-        if not member.is_builtin_array:
-          includes.add(self._build_include(member.array_bare_type))
+      if member.is_array and not member.is_builtin_array:
+        includes.add(self._build_include(member.array_bare_type))
 
       for stl_type in ClassDefinitionValidator.allowed_stl_types:
         if member.full_type == 'std::' + stl_type:

@@ -102,6 +102,8 @@ class MemberVariable(object):
     self.array_type = kwargs.pop('array_type', None)
     self.array_size = kwargs.pop('array_size', None)
 
+    self.includes = set()
+
     if kwargs:
       raise ValueError("Unused kwargs in MemberVariable: {}".format(list(kwargs.keys())))
 
@@ -109,6 +111,7 @@ class MemberVariable(object):
       self.is_array = True
       self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
       self.is_builtin_array = self.array_type in BUILTIN_TYPES
+      self.includes.add('#include <array>')
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
     # We still have to check if this type is a valid fixed width type that we
@@ -123,6 +126,7 @@ class MemberVariable(object):
         # "Normalize" the name by prepending it with the std namespace if necessary
         if not self.full_type.startswith('std::'):
           self.full_type = f'std::{self.full_type}'
+        self.includes.add('#include <cstdint>')
 
     # For usage in constructor signatures
     self.signature = self.full_type + ' ' + self.name
