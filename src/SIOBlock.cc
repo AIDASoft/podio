@@ -12,13 +12,15 @@
 #endif
 
 namespace podio {
-  void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type) {
+  void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type version) {
     std::vector<std::string> names;
     std::vector<int> ids;
     device.data(names);
     device.data(ids);
     device.data(_types);
-    device.data(_isSubsetColl);
+    if (version >= sio::version::encode_version(0, 2)) {
+      device.data(_isSubsetColl);
+    }
 
     _table = new CollectionIDTable(std::move(ids), std::move(names));
   }
