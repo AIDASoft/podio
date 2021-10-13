@@ -53,8 +53,9 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
 
 {% macro get_collection(type) %}
       podio::CollectionBase* coll = nullptr;
-      collectionProvider->get(id.collectionID, coll);
-      auto* tmp_coll = static_cast<{{ type }}Collection*>(coll);
+      auto collGetResult = collectionProvider->get(id.collectionID, coll);
+      if (collGetResult == false) { continue; }
+      {{ type }}Collection* tmp_coll = static_cast<{{ type }}Collection*>(coll);
 {%- endmacro %}
 
 {% macro set_references_multi_relation(relation, index) %}
