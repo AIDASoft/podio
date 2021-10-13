@@ -1,3 +1,16 @@
+# v00-14-00
+
+* 2021-10-12 Thomas Madlener ([PR#232](https://github.com/AIDASoft/podio/pull/232))
+  - Make it possible to read "old" podio data files that have been written with podio < 0.13.1 (i.e. before #197) was merged.
+    - For ROOT: Reconstruct the `"CollectionInfoType"` branch that as introduced there via other means and simply assume that all collections are proper collections (since subset collections didn't exist prior).
+    - For SIO: Bump the version of the `SIOCollectionIDTableBlock` to 0.2 and only read the subset collection bits when they are available.
+
+* 2021-10-12 Valentin Volkl ([PR#231](https://github.com/AIDASoft/podio/pull/231))
+  - Add regression test for mutable clones of const objects
+
+* 2021-10-11 Thomas Madlener ([PR#223](https://github.com/AIDASoft/podio/pull/223))
+  - Add brief documentation for the newly added `UserDataCollection` added in #213
+
 # v00-13-02
 
 * 2021-10-08 Thomas Madlener ([PR#224](https://github.com/AIDASoft/podio/pull/224))
