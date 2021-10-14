@@ -81,10 +81,15 @@ void readCollection() {
 
     auto& clusters = store.get<ExampleClusterCollection>("clusters");
     if(clusters.isValid()){
-      // // auto cluster = clusters[0];
-      // // for (auto j = cluster.Hits_begin(), end = cluster.Hits_end(); j!=end; ++i){
-        // // std::cout << "  Referenced hit has an energy of " << j->energy() << std::endl;
-      // // }
+      for (const auto& cluster : clusters) {
+        if (cluster.isAvailable()) {
+          for (const auto& hit : cluster.Hits()) {
+            if (hit.isAvailable()) {
+              throw std::runtime_error("Hit is available, although it has not been written");
+            }
+          }
+        }
+      }
     } else {
       throw std::runtime_error("Collection 'clusters' should be present");
     }
