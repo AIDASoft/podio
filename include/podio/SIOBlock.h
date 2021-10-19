@@ -5,6 +5,7 @@
 #include <podio/CollectionIDTable.h>
 #include <podio/GenericParameters.h>
 #include <podio/EventStore.h>
+#include <podio/podioVersion.h>
 
 #include <sio/block.h>
 #include <sio/version.h>
@@ -60,10 +61,10 @@ namespace podio {
   class SIOCollectionIDTableBlock : public sio::block {
   public:
     SIOCollectionIDTableBlock() :
-      sio::block("CollectionIDs", sio::version::encode_version(0, 2)) {}
+      sio::block("CollectionIDs", sio::version::encode_version(0, 3)) {}
 
     SIOCollectionIDTableBlock(podio::EventStore* store) :
-      sio::block("CollectionIDs", sio::version::encode_version(0, 2)),
+      sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
       _store(store), _table(store->getCollectionIDTable()) {}
 
     SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
@@ -81,6 +82,7 @@ namespace podio {
     podio::CollectionIDTable* _table{nullptr};
     std::vector<std::string> _types{};
     std::vector<short> _isSubsetColl{};
+    podio::version::Version podioVersion{podio::version::build_version};
   };
 
 

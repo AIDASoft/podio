@@ -23,6 +23,12 @@ namespace podio {
     }
 
     _table = new CollectionIDTable(std::move(ids), std::move(names));
+
+    if (version >= sio::version::encode_version(0, 3)) {
+      device.data(podioVersion.major);
+      device.data(podioVersion.minor);
+      device.data(podioVersion.patch);
+    }
   }
 
   void SIOCollectionIDTableBlock::write(sio::write_device& device) {
@@ -42,6 +48,10 @@ namespace podio {
     }
     device.data(typeNames);
     device.data(isSubsetColl);
+
+    device.data(podioVersion.major);
+    device.data(podioVersion.minor);
+    device.data(podioVersion.patch);
   }
 
   template<typename MappedT>
