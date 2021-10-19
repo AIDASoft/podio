@@ -18,9 +18,11 @@ void writeCollection() {
   auto& info       = store.create<EventInfoCollection>("info");
   auto& hits       = store.create<ExampleHitCollection>("hits");
   auto& clusters   = store.create<ExampleClusterCollection>("clusters");
+  auto& hits_subset   = store.create<ExampleHitCollection>("hits_subset");
 
   writer.registerForWrite("clusters");
   // writer.registerForWrite("hits");
+  // writer.registerForWrite("hits_subset");
 
   unsigned nevents = 2;
 
@@ -31,9 +33,9 @@ void writeCollection() {
     info.push_back(item1);
 
     auto& evtMD = store.getEventMetaData() ;
-    evtMD.setValue( "UserEventWeight" , (float) 100.*i ) ;
+    evtMD.setValue( "UserEventWeight" , (float) 100.*i );
     std::cout << " event number: " << i << std::endl;
-    evtMD.setValue( "UserEventName" , std::to_string(i)) ;
+    evtMD.setValue( "UserEventName" , std::to_string(i));
 
     auto hit1 = ExampleHit( 0xbad, 0.,0.,0.,23.+i);
     auto hit2 = ExampleHit( 0xcaffee,1.,0.,0.,12.+i);
@@ -53,15 +55,21 @@ void writeCollection() {
     cluster.addHits(hit1);
     cluster.addHits(hit2);
     cluster.energy(hit1.energy()+hit2.energy());
-    cluster.addClusters( clu0 ) ;
-    cluster.addClusters( clu1 ) ;
+    cluster.addClusters( clu0 );
+    cluster.addClusters( clu1 );
 
+    // Add tracked hits to subset hits collection
+    hits_subset.setSubsetCollection(true);
+    hits_subset.push_back(hit1);
+    hits_subset.push_back(hit2);
+
+    // Push all clusters
     clusters.push_back(clu0);
     clusters.push_back(clu1);
     clusters.push_back(cluster);
 
     writer.writeEvent();
-    store.clearCollections();    
+    store.clearCollections();
   }
   writer.finish();
 }
@@ -80,7 +88,7 @@ void readCollection() {
   for(unsigned i=0; i<nEvents; ++i) {
 
     auto& clusters = store.get<ExampleClusterCollection>("clusters");
-    if(clusters.isValid()){
+    if(clusters.isValid()) {
       for (const auto& cluster : clusters) {
         if (cluster.isAvailable()) {
           for (const auto& hit : cluster.Hits()) {
