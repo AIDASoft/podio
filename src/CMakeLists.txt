@@ -49,6 +49,7 @@ SET(headers
   ${CMAKE_SOURCE_DIR}/include/podio/ObjectID.h
   ${CMAKE_SOURCE_DIR}/include/podio/PythonEventStore.h
   ${CMAKE_SOURCE_DIR}/include/podio/UserDataCollection.h
+  ${CMAKE_SOURCE_DIR}/include/podio/podioVersion.h
   )
 PODIO_GENERATE_DICTIONARY(podioDict ${headers} SELECTION selection.xml
   OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}podioDict${CMAKE_SHARED_LIBRARY_SUFFIX}
