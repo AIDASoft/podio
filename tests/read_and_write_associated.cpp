@@ -22,7 +22,7 @@ void writeCollection() {
 
   writer.registerForWrite("clusters");
   // writer.registerForWrite("hits");
-  // writer.registerForWrite("hits_subset");
+  writer.registerForWrite("hits_subset");
 
   unsigned nevents = 2;
 
@@ -100,6 +100,16 @@ void readCollection() {
       }
     } else {
       throw std::runtime_error("Collection 'clusters' should be present");
+    }
+
+    // Test for subset collections
+    auto& hits_subset = store.get<ExampleHitCollection>("hits_subset");
+    if(hits_subset.isValid()) {
+      for (const auto& hit : hits_subset) {
+        if (hit.isAvailable()) {
+          throw std::runtime_error("Hit is available, although it has not been written");
+        }
+      }
     }
   
     store.clear();
