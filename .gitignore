@@ -58,3 +58,6 @@ spack*
 
 # Generated files
 *podio_generated_files.cmake
+
+# Populated by cmake before build
+/include/podio/podioVersion.h

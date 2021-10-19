@@ -1,5 +1,4 @@
 // STL
-#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <vector>
@@ -10,6 +9,7 @@
 // podio specific includes
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "podio/EventStore.h"
+#include "podio/podioVersion.h"
 
 // Test data types
 #include "datamodel/EventInfoCollection.h"
@@ -647,5 +647,81 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     auto newSubsetVecs = std::move(subsetVecs);
     REQUIRE(newSubsetVecs.isSubsetCollection());
     checkCollections(hitColl, clusterColl, newSubsetVecs, userDataColl);
+  }
+}
+
+TEST_CASE("Version tests", "[versioning]") {
+  using namespace podio::version;
+  // all of these comparisons should be possible at compile time -> STATIC_REQUIRE
+
+  // major version checks
+  constexpr Version ver_1{1};
+  constexpr Version ver_2{2};
+  constexpr Version ver_1_1{1, 1};
+  constexpr Version ver_2_1{2, 1};
+  constexpr Version ver_1_1_1{1, 1, 1};
+  constexpr Version ver_1_0_2{1, 0, 2};
+  constexpr Version ver_2_0_2{2, 0, 2};
+
+  SECTION("Equality") {
+    STATIC_REQUIRE(ver_1 == Version{1, 0, 0});
+    STATIC_REQUIRE(ver_1 != ver_2);
+    STATIC_REQUIRE(ver_1_1_1 == Version{1, 1, 1});
+    STATIC_REQUIRE(ver_2_1 != ver_1_1);
+    STATIC_REQUIRE(ver_1_0_2 != ver_2_0_2);
+  }
+
+  SECTION("Major version") {
+    STATIC_REQUIRE(ver_1 < ver_2);
+    STATIC_REQUIRE(Version{3} > ver_2);
+  }
+
+  SECTION("Minor version") {
+    STATIC_REQUIRE(ver_1 < ver_1_1);
+    STATIC_REQUIRE(ver_2_1 > ver_2);
+    STATIC_REQUIRE(ver_1_1 < ver_2);
+  }
+
+  SECTION("Patch version") {
+    STATIC_REQUIRE(ver_1 < ver_1_0_2);
+    STATIC_REQUIRE(ver_1 < ver_1_1_1);
+    STATIC_REQUIRE(ver_1_1_1 > ver_1_1);
+    STATIC_REQUIRE(ver_2_0_2 < ver_2_1);
+  }
+
+  SECTION("Compatibility: default") {
+    // Assume Compatibility == AnyNewer (default)
+    STATIC_REQUIRE(compatible(ver_2, ver_1));
+    STATIC_REQUIRE(compatible(ver_1_1, ver_1));
+    STATIC_REQUIRE(compatible(ver_1_1_1, ver_1_1));
+    STATIC_REQUIRE(compatible(ver_2_0_2, ver_2));
+
+    // opposite direction
+    STATIC_REQUIRE_FALSE(compatible(ver_2, ver_2_0_2));
+    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_2));
+  }
+
+  SECTION("Compatibility: SameMajor") {
+    STATIC_REQUIRE(compatible(ver_1, ver_1_1, Compatibility::SameMajor));
+    STATIC_REQUIRE(compatible(ver_1_1, ver_1, Compatibility::SameMajor));
+    STATIC_REQUIRE(compatible(ver_1, ver_1_1_1, Compatibility::SameMajor));
+    STATIC_REQUIRE(compatible(ver_1_1_1, ver_1, Compatibility::SameMajor));
+    STATIC_REQUIRE(compatible(ver_1_1, ver_1_1_1, Compatibility::SameMajor));
+    STATIC_REQUIRE(compatible(ver_2_0_2, ver_2, Compatibility::SameMajor));
+    STATIC_REQUIRE(compatible(ver_2, ver_2_0_2, Compatibility::SameMajor));
+  }
+
+  SECTION("Compatibility: SameMinor") {
+    STATIC_REQUIRE(compatible(ver_1, ver_1_0_2, Compatibility::SameMinor));
+    STATIC_REQUIRE_FALSE(compatible(ver_1_1, ver_1, Compatibility::SameMinor));
+    STATIC_REQUIRE(compatible(ver_1_1, ver_1_1_1, Compatibility::SameMinor));
+    STATIC_REQUIRE(compatible(ver_1_1_1, ver_1_1, Compatibility::SameMinor));
+  }
+
+  SECTION("Compatibility: Exact") {
+    STATIC_REQUIRE(compatible(ver_1, Version{1}, Compatibility::Exact));
+    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_1_1, Compatibility::Exact));
+    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_1_1_1, Compatibility::Exact));
+    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_2, Compatibility::Exact));
   }
 }
