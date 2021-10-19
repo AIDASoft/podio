@@ -94,6 +94,11 @@ public:
     runVoidTimed(false, "close_file", &IReader::closeFile);
   }
 
+  podio::version::Version currentFileVersion() const override {
+    // no need to time this as it is really just a very simple get
+    return m_reader.currentFileVersion();
+  }
+
 private:
   void recordTime (bool perEvent, const std::string& step, ClockT::duration duration) const {
     if (perEvent) {

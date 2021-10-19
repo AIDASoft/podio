@@ -12,6 +12,7 @@
 #include "TChain.h"
 #include "TClass.h"
 #include "TTreeCache.h"
+#include <memory>
 
 
 namespace podio {
@@ -144,6 +145,11 @@ namespace podio {
     m_table = new CollectionIDTable();
     metadatatree->SetBranchAddress("CollectionIDs", &m_table);
 
+    podio::version::Version* versionPtr{nullptr};
+    if (auto* versionBranch = root_utils::getBranch(metadatatree, "PodioVersion")) {
+      versionBranch->SetAddress(&versionPtr);
+    }
+
     // Check if the CollectionTypeInfo branch is there and assume that the file
     // has been written with with podio pre #197 (<0.13.1) if that is not the case
     if (auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo")) {
@@ -159,6 +165,9 @@ namespace podio {
       const auto collectionInfo = root_utils::reconstructCollectionInfo(m_chain, *m_table);
       createCollectionBranches(collectionInfo);
     }
+
+    m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
+    delete versionPtr;
   }
 
   void ROOTReader::closeFile(){

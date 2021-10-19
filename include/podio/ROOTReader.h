@@ -64,6 +64,8 @@ class ROOTReader : public IReader {
     /// Check if TFile is valid
     virtual bool isValid() const override final;
 
+    podio::version::Version currentFileVersion() const override { return m_fileVersion; }
+
   private:
 
     /// Implementation for collection reading
@@ -109,6 +111,8 @@ class ROOTReader : public IReader {
     // read and we start caching the branches.
     size_t m_collectionIndex = 0;
     std::vector<root_utils::CollectionBranches> m_collectionBranches{};
+
+    podio::version::Version m_fileVersion{0, 0, 0};
 };
 
 } // namespace

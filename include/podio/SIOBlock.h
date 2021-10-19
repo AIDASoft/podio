@@ -76,6 +76,7 @@ namespace podio {
     podio::CollectionIDTable* getTable() { return _table; }
     const std::vector<std::string>& getTypeNames() const { return _types; }
     const std::vector<short>& getSubsetCollectionBits() const { return _isSubsetColl; }
+    podio::version::Version getPodioVersion() const { return podioVersion; }
 
   private:
     podio::EventStore* _store{nullptr};

@@ -149,6 +149,7 @@ namespace podio {
     m_table = idTableBlock->getTable();
     m_typeNames = idTableBlock->getTypeNames();
     m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
+    m_fileVersion = idTableBlock->getPodioVersion();
   }
 
   void SIOReader::readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock) {
