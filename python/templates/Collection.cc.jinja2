@@ -119,7 +119,7 @@ void {{ collection_type }}::push_back({{ class.bare_type }} object) {
   } else {
     const auto obj = object.m_obj;
     if (obj->id.index < 0) {
-      throw std::invalid_argument("Object needs to be tracked by another collection in order for it to be storable in a subset collection");
+      throw std::invalid_argument("Objects can only be stored in a subset collection if they are already elements of a collection");
     }
     m_storage.entries.push_back(obj);
     // No need to handle any relations here, since this is already done by the
