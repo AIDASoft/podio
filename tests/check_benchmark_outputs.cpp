@@ -73,7 +73,7 @@ int main(int, char* argv[]) {
     "constructor", "open_file", "close_file", "get_entries", "read_collection_ids"
   };
   const StringVec readBMEventBranches = {
-    "read_collections", "read_ev_md", "read_run_md", "read_coll_md", "end_of_event"
+    "read_collections", "read_ev_md", "read_run_md", "read_coll_md", "end_of_event", "read_event"
   };
   verifyBMFile(argv[2], readBMSetupBranches, readBMEventBranches);
 

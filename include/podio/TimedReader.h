@@ -24,7 +24,7 @@ public:
     m_recorder(recorder),
     m_perEventTree(m_recorder.addTree("event_times", {
       "read_collections", "read_ev_md", "read_run_md", "read_coll_md",
-      "end_of_event"
+      "end_of_event", "read_event"
     }))
   {
     m_recorder.addTree("setup_times", {
@@ -75,7 +75,9 @@ public:
   }
 
   void readEvent() override{
+    return runVoidTimed(true, "read_event", &IReader::readEvent);
   }
+
   /// Prepare the reader to read the next event
   virtual void endOfEvent() override {
     runVoidTimed(true, "end_of_event", &IReader::endOfEvent);
@@ -95,7 +97,12 @@ public:
   virtual void closeFile() override {
     runVoidTimed(false, "close_file", &IReader::closeFile);
   }
-  void goToEvent(unsigned) override{}
+
+  void goToEvent(unsigned ev) override{
+    // TODO: Do we need to time this? Not really used at the moment
+    m_reader.goToEvent(ev);
+  }
+
 private:
   void recordTime (bool perEvent, const std::string& step, ClockT::duration duration) const {
     if (perEvent) {
