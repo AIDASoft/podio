@@ -1,20 +1,26 @@
 # This is needed for older ROOTs which do not understand
 # target usage requirements
 
-file(GLOB sources *.cc)
-LIST(APPEND sources ${CMAKE_CURRENT_SOURCE_DIR}/rootUtils.h)
-SET(root_sources ${sources})
+SET(sources
+  CollectionIDTable.cc
+  GenericParameters.cc
+  ASCIIWriter.cc
+  EventStore.cc
+)
 
-# --- Store the sources for sio into a separate list
-if(ENABLE_SIO)
-  SET(sio_sources ${sources})
-  LIST(FILTER sio_sources INCLUDE REGEX SIO.*)
-endif()
+SET(root_sources
+  rootUtils.h
+  ROOTWriter.cc
+  ROOTReader.cc
+  PythonEventStore.cc
+)
 
-# Remove SIO and ROOT related things from the core library
-LIST(FILTER sources EXCLUDE REGEX SIO.*)
-LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.*|root.* )
-LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.*|root.* )
+SET(sio_sources
+  SIOReader.cc
+  SIOWriter.cc
+  SIOBlockUserData.cc
+  SIOBlock.cc
+)
 
 # Main Library, no external dependencies
 add_library(podio SHARED ${sources})
