@@ -1,4 +1,8 @@
 ADD_EXECUTABLE( PodioEventOverview PodioEventOverview.cpp )
-TARGET_LINK_LIBRARIES( PodioEventOverview podioRootIO podioSioIO podio )
+TARGET_LINK_LIBRARIES( PodioEventOverview podioRootIO  podio )
+if (ENABLE_SIO)
+  TARGET_COMPILE_DEFINITIONS(PodioEventOverview PRIVATE PODIO_ENABLE_SIO=1)
+  TARGET_LINK_LIBRARIES(PodioEventOverview podioSioIO)
+endif()
 
 INSTALL(TARGETS PodioEventOverview DESTINATION ${CMAKE_INSTALL_BINDIR})

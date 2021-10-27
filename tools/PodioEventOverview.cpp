@@ -1,8 +1,6 @@
 #include "podio/EventStore.h"
-#include "podio/ROOTReader.h"
-#include "podio/SIOReader.h"
 #include "podio/CollectionBase.h"
-#include "podio/tools.h"
+#include "podio/utilities.h"
 
 #include <iostream>
 #include <iomanip>
@@ -37,7 +35,11 @@ int main(int argc, char* argv[]){
   const std::string FileName{argv[1]};
   
   //Declaring the reader object and opening the file
-  auto reader = getReader(FileName);
+  auto reader = podio::utils::createReader(FileName);
+  if (!reader) {
+    std::cerr << "Cannot deduce the reader that would be necessary for reading the file: " << FileName << std::endl;
+    return 1;
+  }
   reader->openFile(FileName);
   const int eventNumber=reader->getEntries();
   int endEvent = 1; // default print the first event
