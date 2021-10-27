@@ -3,9 +3,8 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 from ROOT import gSystem
-gSystem.Load("libpodioRootIO")  # noqa: E402
+gSystem.Load('libpodioPythonStore')  # noqa: E402
 from ROOT import podio
-
 
 def size(self):
   return self.size()

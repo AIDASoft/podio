@@ -12,7 +12,6 @@ SET(root_sources
   rootUtils.h
   ROOTWriter.cc
   ROOTReader.cc
-  PythonEventStore.cc
 )
 
 SET(sio_sources
@@ -20,6 +19,10 @@ SET(sio_sources
   SIOWriter.cc
   SIOBlockUserData.cc
   SIOBlock.cc
+)
+
+SET(python_sources
+  PythonEventStore.cc
 )
 
 # Main Library, no external dependencies
@@ -53,7 +56,6 @@ SET(headers
   ${CMAKE_SOURCE_DIR}/include/podio/ICollectionProvider.h
   ${CMAKE_SOURCE_DIR}/include/podio/IReader.h
   ${CMAKE_SOURCE_DIR}/include/podio/ObjectID.h
-  ${CMAKE_SOURCE_DIR}/include/podio/PythonEventStore.h
   ${CMAKE_SOURCE_DIR}/include/podio/UserDataCollection.h
   )
 PODIO_GENERATE_DICTIONARY(podioDict ${headers} SELECTION selection.xml
@@ -63,6 +65,24 @@ PODIO_GENERATE_DICTIONARY(podioDict ${headers} SELECTION selection.xml
 set_target_properties(podioDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 target_sources(podioDict PRIVATE podioDict.cxx)
+
+add_library(podioPythonStore SHARED ${python_sources})
+target_link_libraries(podioPythonStore podio podioRootIO)
+LIST(APPEND INSTALL_LIBRARIES podioPythonStore)
+
+add_library(podioPythonStoreDict SHARED)
+target_include_directories(podioPythonStoreDict PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+target_link_libraries(podioPythonStoreDict PUBLIC podioPythonStore)
+SET(python_headers
+  ${CMAKE_SOURCE_DIR}/include/podio/PythonEventStore.h
+)
+PODIO_GENERATE_DICTIONARY(podioPythonStoreDict ${python_headers} SELECTION python_selection.xml
+  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}podioPythonStoreDict${CMAKE_SHARED_MODULE_SUFFIX})
+set_target_properties(podioPythonStoreDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+target_sources(podioPythonStoreDict PRIVATE podioPythonStoreDict.cxx)
 
 # SIO I/O library
 if(ENABLE_SIO)
@@ -75,9 +95,14 @@ if(ENABLE_SIO)
   target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
 
   LIST(APPEND INSTALL_LIBRARIES podioSioIO)
+
+  # also make the python EventStore understand SIO
+  target_link_libraries(podioPythonStore podioSioIO)
+  target_compile_definitions(podioPythonStore PRIVATE PODIO_ENABLE_SIO=1)
 endif()
 
-install(TARGETS podio podioDict podioRootIO ${INSTALL_LIBRARIES}
+
+install(TARGETS podio podioDict podioPythonStoreDict podioRootIO ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
@@ -85,4 +110,6 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTA
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/podioPythonStoreDictDict.rootmap
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodioPythonStoreDict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
