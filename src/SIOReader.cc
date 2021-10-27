@@ -38,22 +38,16 @@ namespace podio {
   }
 
   std::map<int,GenericParameters>* SIOReader::readCollectionMetaData() {
-    // Only read the data if it hasn't been read already
-    if (!m_collectionMetaData->data) {
-      m_collectionMetaData->data = new ColMDMap();
-      readMetaDataRecord(m_collectionMetaData);
-    }
-
+    // Always read a new map, because the EventStore takes ownership
+    m_collectionMetaData->data = new ColMDMap();
+    readMetaDataRecord(m_collectionMetaData);
     return m_collectionMetaData->data;
   }
 
   std::map<int,GenericParameters>* SIOReader::readRunMetaData() {
-    // Only read the data if it hasn't been read already
-    if (!m_runMetaData->data) {
-      m_runMetaData->data = new RunMDMap();
-      readMetaDataRecord(m_runMetaData);
-    }
-
+    // Always read a new map, because the EventStore takes ownership
+    m_runMetaData->data = new RunMDMap();
+    readMetaDataRecord(m_runMetaData);
     return m_runMetaData->data;
   }
 
@@ -119,12 +113,16 @@ namespace podio {
   }
   
   void SIOReader::goToEvent(unsigned eventNumber) {
-    //can only go to forward events for the moment
-    if((int)eventNumber<m_eventNumber)return;
-    
+    // If we are already past the desired event number, rewind to the start first
+    if (eventNumber < (unsigned)m_eventNumber) {
+      m_stream.clear();
+      m_stream.seekg(0);
+      m_eventNumber = 0;
+    }
+
     sio::api::go_to_record(m_stream, "event_record");
-    sio::api::skip_n_records(m_stream, eventNumber-m_eventNumber);
-    m_eventNumber=eventNumber-m_eventNumber;
+    sio::api::skip_n_records(m_stream, eventNumber - m_eventNumber);
+    m_eventNumber = eventNumber - m_eventNumber;
   }
   
   void SIOReader::createBlocks() {
@@ -155,7 +153,8 @@ namespace podio {
     sio::api::read_blocks(m_unc_buffer.span(), blocks);
 
     auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
-    m_table = idTableBlock->getTable();
+    m_table = std::make_shared<CollectionIDTable>();
+    m_table.reset(idTableBlock->getTable());
     m_typeNames = idTableBlock->getTypeNames();
     m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
   }

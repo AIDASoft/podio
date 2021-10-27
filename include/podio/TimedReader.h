@@ -52,7 +52,7 @@ public:
   }
 
   /// Get CollectionIDTable of read-in data
-  virtual CollectionIDTable* getCollectionIDTable() override {
+  virtual std::shared_ptr<CollectionIDTable> getCollectionIDTable() override {
     return runTimed(false, "read_collection_ids", &IReader::getCollectionIDTable);
   }
 

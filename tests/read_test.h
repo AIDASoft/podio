@@ -383,4 +383,15 @@ void run_read_test(podio::IReader& reader) {
   }
 }
 
+// Same as above but only for a specified event
+void run_read_test_event(podio::IReader& reader, unsigned event) {
+  auto store = podio::EventStore();
+  store.setReader(&reader);
+
+  reader.goToEvent(event);
+  processEvent(store, event);
+  store.clear();
+  reader.endOfEvent();
+}
+
 #endif // PODIO_TESTS_READ_TEST_H__

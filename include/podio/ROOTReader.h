@@ -50,7 +50,7 @@ class ROOTReader : public IReader {
     void readEvent() override;
 
     /// Read CollectionIDTable from ROOT file
-    CollectionIDTable* getCollectionIDTable() override final {return m_table;}
+    std::shared_ptr<CollectionIDTable> getCollectionIDTable() override final {return m_table;}
 
     /// Returns number of entries in the TTree
     unsigned getEntries() const override;
@@ -100,7 +100,7 @@ class ROOTReader : public IReader {
     // collection after it has been read the very first time
     std::map<std::string, CollectionInfo> m_storedClasses{};
 
-    CollectionIDTable* m_table{nullptr};
+    std::shared_ptr<CollectionIDTable> m_table{nullptr};
     TChain* m_chain{nullptr};
     unsigned m_eventNumber{0};
 

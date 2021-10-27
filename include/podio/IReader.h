@@ -7,6 +7,7 @@
 #include <map>
 
 #include <iostream>
+#include <memory>
 
 /*
 
@@ -28,7 +29,7 @@ class IReader {
     /// Does not set references yet.
     virtual CollectionBase* readCollection(const std::string& name) = 0;
     /// Get CollectionIDTable of read-in data
-    virtual CollectionIDTable* getCollectionIDTable() = 0;
+    virtual std::shared_ptr<CollectionIDTable> getCollectionIDTable() = 0;
     /// read event meta data from file
     virtual GenericParameters* readEventMetaData()=0 ;
     virtual std::map<int,GenericParameters>* readCollectionMetaData()=0 ;

@@ -46,7 +46,7 @@ namespace podio {
     void readEvent() override;
 
     /// Read CollectionIDTable from SIO file
-    CollectionIDTable* getCollectionIDTable() override final {return m_table;}
+    std::shared_ptr<CollectionIDTable> getCollectionIDTable() override final {return m_table;}
 
     unsigned getEntries() const override { return m_tocRecord.getNRecords("event_record"); }
 
@@ -83,7 +83,7 @@ namespace podio {
 
     typedef std::pair<CollectionBase*, std::string> Input;
     std::vector<Input> m_inputs{};
-    CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
+    std::shared_ptr<CollectionIDTable> m_table{nullptr}; // will be owned by the EventStore
     int m_eventNumber{0};
     int m_lastEventRead{-1};
     std::vector<std::string> m_typeNames{};
