@@ -3,7 +3,7 @@
 
 
 #include "podio/EventStore.h"
-#include "podio/ROOTReader.h"
+#include "podio/IReader.h"
 
 namespace podio {
 
@@ -25,16 +25,17 @@ public:
   unsigned getEntries() const;
 
   /// is the input file accessible?
-  bool isZombie() const {return m_isZombie;}
+  bool isZombie() const { return m_isZombie;}
   
-  bool isValid() const {return m_reader.isValid();}
-  void close() {m_reader.closeFiles();}
+  bool isValid() const { return m_reader && m_reader->isValid();}
+
+  void close() { m_reader->closeFile();}
 
   /// list available collections
   const std::vector<std::string>& getCollectionNames() const;
 
  private:
-  podio::ROOTReader m_reader;
+  std::unique_ptr<podio::IReader> m_reader;
   podio::EventStore m_store;
 
   /// set to true if input root file accessible, false otherwise
