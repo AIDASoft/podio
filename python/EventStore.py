@@ -6,6 +6,7 @@ from ROOT import gSystem
 gSystem.Load('libpodioPythonStore')  # noqa: E402
 from ROOT import podio
 
+
 def size(self):
   return self.size()
 
