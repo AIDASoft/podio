@@ -47,6 +47,8 @@ public:
 
   void clear() override final;
 
+  void print(std::ostream& os=std::cout) const override;
+
   /// operator to allow pointer like calling of members a la LCIO
   {{ class.bare_type }}Collection* operator->() { return ({{ class.bare_type }}Collection*) this; }
 

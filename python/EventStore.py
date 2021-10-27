@@ -88,6 +88,10 @@ class EventStore(object):
     else:
       return self.current_store.fname
 
+  def collections(self):
+    """Get all collection names"""
+    return [str(c) for c in self.current_store.getCollectionNames()]
+
   def __enter__(self):
     return self
 

@@ -7,8 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-
+#include <iostream>
 
 namespace podio {
   // forward declarations
@@ -58,6 +57,8 @@ namespace podio {
 
     /// declare this collection to be a subset collection
     virtual void setSubsetCollection(bool setSubset=true) = 0;
+
+    virtual void print(std::ostream& os=std::cout) const = 0;
   };
 
 } // namespace

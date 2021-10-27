@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+from EventStore import EventStore
+
+
+def main(args):
+  """Main"""
+  store = EventStore(args.inputfile)
+  event = store[args.event]
+
+  for collection in store.collections():
+    print(collection)
+    event.get(collection).print()
+    print()
+
+if __name__ == '__main__':
+  import argparse
+  parser = argparse.ArgumentParser(description='Dump the contents of an event to stdout')
+  parser.add_argument('inputfile', help='Name of the input file')
+  parser.add_argument('event', help='The event to dump', type=int)
+
+  clargs = parser.parse_args()
+  main(clargs)

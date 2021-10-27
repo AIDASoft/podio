@@ -160,6 +160,14 @@ namespace podio {
     /// declare this collection to be a subset collectionv - no effect
     void setSubsetCollection(bool) override final {}
 
+    void print(std::ostream& os=std::cout) const override {
+      if (_vec.empty()) return;
+      os << _vec[0];
+      for (size_t i = 1; i < _vec.size(); ++i) {
+        os << ", " << _vec[i];
+      }
+      os << std::endl;
+    }
 
     // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)
 
@@ -190,6 +198,12 @@ namespace podio {
 
 // don't make this macro public as it should only be used internally here...
 #undef PODIO_ADD_USER_TYPE
+
+template<typename BasicType, typename=EnableIfSupportedUserType<BasicType>>
+std::ostream& operator<<(std::ostream& os, const podio::UserDataCollection<BasicType>& coll) {
+  coll.print(os);
+  return os;
+}
 
 } // namespace
 
