@@ -9,9 +9,14 @@ from EventStore import EventStore
 from test_EventStore import EventStoreBaseTestCase
 
 
+SKIP_SIO_TESTS = os.environ.get('SKIP_SIO_TESTS', '1') == '1'
+
+
+@unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")
 class EventStoreSioTestCase(EventStoreBaseTestCase, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
+    print(SKIP_SIO_TESTS)
     self.filename = 'example.sio'
     self.assertTrue(os.path.isfile(self.filename))
     self.store = EventStore([self.filename])
