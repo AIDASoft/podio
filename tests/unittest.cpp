@@ -725,3 +725,40 @@ TEST_CASE("Version tests", "[versioning]") {
     STATIC_REQUIRE_FALSE(compatible(ver_1, ver_2, Compatibility::Exact));
   }
 }
+
+TEST_CASE("Preprocessor version tests", "[versioning]") {
+  SECTION("Basic functionality") {
+    using namespace podio::version;
+    // Check that preprocessor comparisons work
+    STATIC_REQUIRE(PODIO_BUILD_VERSION == PODIO_VERSION(build_version.major, build_version.minor, build_version.patch));
+
+    // Make sure that we can actually decode 64 bit versions
+    STATIC_REQUIRE(decode_version(PODIO_BUILD_VERSION) == build_version);
+
+    STATIC_REQUIRE(PODIO_MAJOR_VERSION(PODIO_BUILD_VERSION) == build_version.major);
+    STATIC_REQUIRE(PODIO_MINOR_VERSION(PODIO_BUILD_VERSION) == build_version.minor);
+    STATIC_REQUIRE(PODIO_PATCH_VERSION(PODIO_BUILD_VERSION) == build_version.patch);
+
+    // Make a few checks where other versions are "maxed out"
+    STATIC_REQUIRE(PODIO_MAJOR_VERSION(PODIO_VERSION(10000, 65535, 65535)) == 10000);
+    STATIC_REQUIRE(PODIO_MINOR_VERSION(PODIO_VERSION(65535, 20000, 65535)) == 20000);
+    STATIC_REQUIRE(PODIO_PATCH_VERSION(PODIO_VERSION(65535, 65535, 30000)) == 30000);
+  }
+
+  SECTION("Comparing") {
+    // Using some large numbers here to check what happens if we start to
+    // actually use the 16 available bits
+    // patch version
+    STATIC_REQUIRE(PODIO_VERSION(10000, 20000, 39999) < PODIO_VERSION(10000, 20000, 40000));
+
+    // minor version
+    STATIC_REQUIRE(PODIO_VERSION(10000, 30000, 33333) > PODIO_VERSION(10000, 29999, 33333));
+    STATIC_REQUIRE(PODIO_VERSION(10000, 30000, 33333) < PODIO_VERSION(10000, 30001, 44444));
+
+    // major version
+    STATIC_REQUIRE(PODIO_VERSION(20000, 40000, 0) < PODIO_VERSION(20001, 40000, 0));
+    STATIC_REQUIRE(PODIO_VERSION(20000, 40000, 10000) < PODIO_VERSION(20001, 30000, 0));
+    STATIC_REQUIRE(PODIO_VERSION(20001, 40000, 10000) > PODIO_VERSION(20000, 40000, 20000));
+    STATIC_REQUIRE(PODIO_VERSION(20000, 40000, 10000) > PODIO_VERSION(19999, 50000, 30000));
+  }
+}
