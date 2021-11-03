@@ -136,7 +136,7 @@ private:
   friend class {{ class.bare_type }}CollectionData;
 
   bool m_isValid{false};
-  bool m_isReadFromFile{false};
+  bool m_isPrepared{false};
   bool m_isSubsetColl{false};
   int m_collectionID{0};
   {{ class.bare_type }}CollectionData m_storage{};

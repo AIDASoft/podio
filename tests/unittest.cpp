@@ -245,19 +245,27 @@ TEST_CASE("VariadicCreate", "Test that objects created via the variadic create t
 }
 
 TEST_CASE("write_buffer") {
-  bool success = true;
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("data");
   auto hit1 = coll.create(0x42ULL,0.,0.,0.,0.);
   auto hit2 = coll.create(0x42ULL,1.,1.,1.,1.);
   auto& clusters  = store.create<ExampleClusterCollection>("clusters");
   auto cluster  = clusters.create();
+  // add a few related objects to also exercise relation writing
+  cluster.addHits(hit1);
+  cluster.addHits(hit2);
+
   clusters.prepareForWrite();
-  REQUIRE(success);
+  auto buffers = clusters.getBuffers();
+  REQUIRE(buffers.dataAsVector<ExampleClusterData>()->size() == clusters.size());
+
+  // a second call should not crash the whole thing and leave everything untouched
+  clusters.prepareForWrite();
+  REQUIRE(clusters.getBuffers().data == buffers.data);
+
   auto& ref_coll  = store.create<ExampleWithOneRelationCollection>("onerel");
   auto withRef = ref_coll.create();
   ref_coll.prepareForWrite();
-
 }
 
 /*
