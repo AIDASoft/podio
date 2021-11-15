@@ -27,7 +27,7 @@ target_compile_options(podio PRIVATE -pthread)
 # Root dependency, mostly IO
 add_library(podioRootIO SHARED ${root_sources})
 add_library(podio::podioRootIO ALIAS podioRootIO)
-target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree)
+target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree ROOT::ROOTNTuple)
 target_include_directories(podioRootIO PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -38,7 +38,7 @@ add_library(podio::podioDict ALIAS podioDict)
 target_include_directories(podioDict PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree)
+target_link_libraries(podioDict PUBLIC podio::podio ROOT::Core ROOT::Tree ROOT::ROOTNTuple)
 
 SET(headers
   ${CMAKE_SOURCE_DIR}/include/podio/CollectionBase.h
