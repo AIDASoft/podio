@@ -49,11 +49,11 @@ public:
    */
   ~{{ class_type }}();
 
-  void clear(bool isRefColl);
+  void clear(bool isSubsetColl);
 
-  podio::CollectionBuffers getCollectionBuffers(bool isRefColl);
+  podio::CollectionBuffers getCollectionBuffers(bool isSubsetColl);
 
-  void prepareForWrite(bool isRefColl);
+  void prepareForWrite(bool isSubsetColl);
 
   void prepareAfterRead(int collectionID);
 
@@ -64,7 +64,7 @@ public:
 {% endif %}
 
 {% if OneToManyRelations or OneToOneRelations %}
-  void setReferences(const podio::ICollectionProvider* collectionProvider, bool isRefColl);
+  void setReferences(const podio::ICollectionProvider* collectionProvider, bool isSubsetColl);
 {% endif %}
 
 private:
