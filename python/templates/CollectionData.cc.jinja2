@@ -39,6 +39,58 @@
 {% endfor %}
 }
 
+{{ class_type }}::{{ class_type }}({{ class_type }}&& other) :
+  entries(std::move(other.entries)),
+{%- for relation in OneToManyRelations %}
+  m_rel_{{ relation.name }}(std::move(other.m_rel_{{ relation.name }})),
+  m_rel_{{ relation.name }}_tmp(std::move(other.m_rel_{{ relation.name }}_tmp)),
+{%- endfor %}
+{%- for relation in OneToOneRelations %}
+  m_rel_{{ relation.name }}(std::move(other.m_rel_{{ relation.name }})),
+{%- endfor %}
+{%- for member in VectorMembers %}
+  m_vec_{{ member.name }}(std::move(other.m_vec_{{ member.name }})),
+  m_vecs_{{ member.name }}(std::move(other.m_vecs_{{ member.name }})),
+{%- endfor %}
+  m_refCollections(std::move(other.m_refCollections)),
+  m_vecmem_info(std::move(other.m_vecmem_info)),
+  m_data(std::move(other.m_data)) {
+  // Reset the pointers in the moved from object
+{% for relation in OneToManyRelations + OneToOneRelations %}
+  m_rel_{{ relation.name }} = nullptr;
+{% endfor %}
+{% for member in VectorMembers %}
+  m_vec_{{ member.name }} = nullptr;
+{% endfor %}
+  other.m_data = nullptr;
+}
+
+{{ class_type }}& {{ class_type }}::operator=({{ class_type }}&& other) {
+  entries = std::move(other.entries);
+{% for relation in OneToManyRelations %}
+  m_rel_{{ relation.name }} = std::move(other.m_rel_{{ relation.name }});
+  m_rel_{{ relation.name }} = nullptr;
+  m_rel_{{ relation.name }}_tmp = std::move(other.m_rel_{{ relation.name }}_tmp);
+{% endfor %}
+{% for relation in OneToOneRelations %}
+  m_rel_{{ relation.name }} = std::move(other.m_rel_{{ relation.name }});
+  m_rel_{{ relation.name }} = nullptr;
+{% endfor %}
+{% for member in VectorMembers %}
+  m_vec_{{ member.name }}= std::move(other.m_vec_{{ member.name }});
+  m_vec_{{ member.name }} = nullptr;
+  m_vecs_{{ member.name }} = std::move(other.m_vecs_{{ member.name }});
+{% endfor %}
+
+  m_refCollections = std::move(other.m_refCollections);
+  m_vecmem_info = std::move(other.m_vecmem_info);
+
+  m_data = std::move(other.m_data);
+  other.m_data = nullptr;
+
+  return *this;
+}
+
 void {{ class_type }}::clear(bool isSubsetColl) {
   if (isSubsetColl) {
     // We don't own the objects so no cleanup to do here

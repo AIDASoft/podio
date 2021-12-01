@@ -39,10 +39,12 @@ public:
   {{ class_type }}();
 
   /**
-   * Non copy-able class
+   * Non copy-able, move-only class
    */
   {{ class_type }}(const {{ class_type }}&) = delete;
   {{ class_type }}& operator=(const {{ class_type }}&) = delete;
+  {{ class_type }}({{ class_type }}&& other);
+  {{ class_type }}& operator=({{ class_type }}&& other);
 
   /**
    * Deconstructor
