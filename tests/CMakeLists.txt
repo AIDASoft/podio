@@ -62,14 +62,6 @@ else()
   set(CMAKE_CXX_FLAGS ${CXX_FLAGS_CMAKE_USED})
 endif()
 
-CREATE_PODIO_TEST(unittest.cpp "Catch2::Catch2;Catch2::Catch2WithMain")
-
-if(NOT USE_SANITIZER MATCHES "Memory(WithOrigin)?")
-   # This can fail with memory sanitizer because it actually runs an executable.
-   # Hence, we enable this only for non memory-sanitizer runs
-   include(Catch)
-   catch_discover_tests(unittest WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-endif()
 
 if (TARGET TestDataModelSioBlocks)
   set(sio_dependent_tests write_sio.cpp read_sio.cpp read_and_write_sio.cpp write_timed_sio.cpp read_timed_sio.cpp)
@@ -84,7 +76,6 @@ if (TARGET TestDataModelSioBlocks)
   target_link_libraries(write_timed_sio ROOT::Tree)
   target_link_libraries(read_timed_sio ROOT::Tree)
 endif()
-
 
 #--- set some dependencies between the different tests to ensure input generating ones are run first
 set_property(TEST read PROPERTY DEPENDS write)
@@ -114,3 +105,42 @@ set_property(TEST pyunittest
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
                       ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
 set_property(TEST pyunittest PROPERTY DEPENDS write)
+
+# Customize CTest to potentially disable some of the tests with known problems
+configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
+
+
+add_executable(unittest unittest.cpp)
+target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain)
+
+# The unittests are a bit better and they are labelled so we can put together a
+# list of labels that we want to ignore
+set(filter_tests "")
+if (NOT FORCE_RUN_ALL_TESTS)
+  if(USE_SANITIZER MATCHES "Address")
+    set(filter_tests "~[LEAK-FAIL]~[ASAN-FAIL]")
+  elseif(USE_SANITIZER MATCHES "Leak")
+    set(filter_tests "~[LEAK-FAIL]")
+  elseif(USE_SANITIZER MATCHES "Thread")
+    set(filter_tests "~[THREAD-FAIL]")
+  endif()
+endif()
+
+if (USE_SANITIZER MATCHES "Memory(WithOrigin)?")
+  # Automatic test discovery fails with Memory sanitizers due to some issues in
+  # Catch2. So in that case we skip the discovery step and simply run the thing
+  # directly in the tests.
+  if (FORCE_RUN_ALL_TESTS)
+    # Unfortunately Memory sanitizer seems to be really unhappy with Catch2 and
+    # it fails to succesfully launch the executable and execute any test. Here
+    # we just include them in order to have them show up as failing
+    add_test(NAME unittest COMMAND unittest ${filter_tests})
+  endif()
+else()
+  include(Catch)
+  catch_discover_tests(unittest
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
+      TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
+  )
+endif()

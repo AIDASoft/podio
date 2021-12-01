@@ -60,7 +60,7 @@ TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
   }
 }
 
-TEST_CASE("Clearing", "[ASAN-FAIL][basics][memory-management]"){
+TEST_CASE("Clearing", "[ASAN-FAIL][THREAD-FAIL][basics][memory-management]"){
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");

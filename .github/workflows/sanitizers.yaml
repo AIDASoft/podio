@@ -1,6 +1,6 @@
 name: sanitizers
 
-on: [workflow_dispatch]
+on: [push, pull_request]
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -13,10 +13,14 @@ jobs:
         sanitizer: [Thread,
                     Address,
                     Undefined]
-        include:
-          # Memory sanitizer is not available for gcc
-          - compiler: clang10
-            sanitizer: MemoryWithOrigin
+        # Memory sanitizer triggers on almost anything and some of the things
+        # are outside our control. Additionally, there seem to be
+        # inconsistencies between local and CI runs, so disabling this for now
+        #
+        # include:
+        #   # Memory sanitizer is not available for gcc
+        #   - compiler: clang10
+        #     sanitizer: MemoryWithOrigin
     steps:
       - uses: actions/checkout@v2
       - uses: cvmfs-contrib/github-action-cvmfs@v2
