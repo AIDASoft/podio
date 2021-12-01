@@ -192,17 +192,12 @@ TEST_CASE("OneToOneRelations", "[basics][relations]") {
 
 TEST_CASE("Podness", "[basics][code-gen]") {
   // fail this already at compile time
-  static_assert(std::is_standard_layout_v<ExampleClusterData>, "Generated data classes do not have standard layout");
-  static_assert(std::is_trivially_copyable_v<ExampleClusterData>, "Generated data classes are not trivially copyable");
-  static_assert(std::is_standard_layout_v<ExampleHitData>, "Generated data classes do not have standard layout");
-  static_assert(std::is_trivially_copyable_v<ExampleHitData>, "Generated data classes are not trivially copyable");
-  static_assert(std::is_standard_layout_v<ExampleWithOneRelationData>, "Generated data classes do not have standard layout");
-  static_assert(std::is_trivially_copyable_v<ExampleWithOneRelationData>, "Generated data classes are not trivially copyable");
-
-  // just to be sure the test does what it is supposed to do
-  static_assert(not std::is_standard_layout_v<ExampleClusterObj>);
-  static_assert(not std::is_trivially_copyable_v<ExampleClusterObj>);
-  REQUIRE(true); // just to have this also show up at runtime
+  STATIC_REQUIRE(std::is_standard_layout_v<ExampleClusterData>); // Generated data classes do not have standard layout
+  STATIC_REQUIRE(std::is_trivially_copyable_v<ExampleClusterData>); // Generated data classes are not trivially copyable
+  STATIC_REQUIRE(std::is_standard_layout_v<ExampleHitData>); // Generated data classes do not have standard layout
+  STATIC_REQUIRE(std::is_trivially_copyable_v<ExampleHitData>); // Generated data classes are not trivially copyable
+  STATIC_REQUIRE(std::is_standard_layout_v<ExampleWithOneRelationData>); // Generated data classes do not have standard layout
+  STATIC_REQUIRE(std::is_trivially_copyable_v<ExampleWithOneRelationData>); // Generated data classes are not trivially copyable
 }
 
 TEST_CASE("Referencing", "[basics][relations]") {
@@ -333,38 +328,29 @@ TEST_CASE("NonPresentCollection", "[basics][event-store]") {
 }
 
 TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
-  static_assert(std::is_same_v<
-                decltype(std::declval<const ExampleClusterCollection>()[0]),
-                ExampleCluster>,
-                "const collections should only have indexed access to immutable objects");
-
-  static_assert(std::is_same_v<
-                decltype(std::declval<const ExampleClusterCollection>().at(0)),
-                ExampleCluster>,
-                "const collections should only have indexed access to immutable objects");
-
-  REQUIRE(true);
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<const ExampleClusterCollection>()[0]),
+                 ExampleCluster>); // const collections should only have indexed access to mutable objects
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<const ExampleClusterCollection>().at(0)),
+                 ExampleCluster>); // const collections should only have indexed access to mutable objects
 }
 
 TEST_CASE("const correct indexed access to collections", "[const-correctness]") {
   auto store = podio::EventStore();
   auto& collection = store.create<ExampleHitCollection>("irrelevant name");
 
-  static_assert(std::is_same_v<decltype(collection), ExampleHitCollection&>, "collection created by store should not be const");
+  STATIC_REQUIRE(std::is_same_v<decltype(collection), ExampleHitCollection&>); // collection created by store should not be const
 
-  static_assert(std::is_same_v<decltype(collection[0]), MutableExampleHit>,"non-const collections should have indexed access to mutable objects");
+  STATIC_REQUIRE(std::is_same_v<decltype(collection[0]), MutableExampleHit>); // non-const collections should have indexed access to mutable objects
  
-  static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterCollection>()[0]),
-                MutableExampleCluster>,
-                "collections should have indexed access to mutable objects");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<ExampleClusterCollection>()[0]),
+                 MutableExampleCluster>); // collections should have indexed access to mutable objects
 
-  static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterCollection>().at(0)),
-                MutableExampleCluster>,
-                "collections should have indexed access to mutable objects");
-
-  REQUIRE(true);
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<ExampleClusterCollection>().at(0)),
+                 MutableExampleCluster>); // collections should have indexed access to mutable objects
 }
 
 TEST_CASE("const correct iterators on const collections", "[const-correctness]") {
@@ -372,63 +358,55 @@ TEST_CASE("const correct iterators on const collections", "[const-correctness]")
   // this essentially checks the whole "chain" from begin() / end() through
   // iterator operators
   for (auto hit : collection) {
-    static_assert(std::is_same_v<decltype(hit), ExampleHit>, "const collection iterators should only return Const objects");
+    STATIC_REQUIRE(std::is_same_v<decltype(hit), ExampleHit>); // const collection iterators should only return immutable objects
   }
 
   // but we can exercise it in a detailed fashion as well to make it easier to
   // spot where things fail, should they fail
-  static_assert(std::is_same_v<
-                decltype(std::declval<const ExampleHitCollection>().begin()),
-                ExampleHitCollectionIterator>,
-                "const collection begin() should return an immutable CollectionIterator");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<const ExampleHitCollection>().begin()),
+                 ExampleHitCollectionIterator>); // const collection begin() should return a CollectionIterator
 
-  static_assert(std::is_same_v<
-                decltype(std::declval<const ExampleHitCollection>().end()),
-                ExampleHitCollectionIterator>,
-                "const collection end() should return an immutable CollectionIterator");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<const ExampleHitCollection>().end()),
+                 ExampleHitCollectionIterator>); // const collection end() should return a CollectionIterator
 
-  static_assert(std::is_same_v<
-                decltype(*std::declval<const ExampleHitCollection>().begin()),
-                ExampleHit>,
-                "CollectionIterator should only give access to immutable objects");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(*std::declval<const ExampleHitCollection>().begin()),
+                 ExampleHit>); // CollectionIterator should only give access to immutable objects
 
-  static_assert(std::is_same_v<
-                decltype(std::declval<ExampleHitCollectionIterator>().operator->()),
-                ExampleHit*>,
-                "CollectionIterator should only give access to immutable objects");
-
-  REQUIRE(true);
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<ExampleHitCollectionIterator>().operator->()),
+                 ExampleHit*>); // CollectionIterator should only give access to immutable objects
 }
 
 TEST_CASE("const correct iterators on collections", "[const-correctness]") {
   auto collection = ExampleClusterCollection();
   for (auto cluster : collection) {
-    static_assert(std::is_same_v<decltype(cluster), MutableExampleCluster>, "collection iterators should return mutable objects");
+    STATIC_REQUIRE(std::is_same_v<decltype(cluster), MutableExampleCluster>); // collection iterators should return mutable objects
     cluster.energy(42); // this will necessarily also compile
   }
 
   // check the individual steps again from above, to see where things fail if they fail
-  static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterCollection>().end()),
-                ExampleClusterMutableCollectionIterator>,
-                "non const collection end() should return a MutableCollectionIterator");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<ExampleClusterCollection>().end()),
+                 ExampleClusterMutableCollectionIterator>); // non const collection end() should return a MutableCollectionIterator
 
-  static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterCollection>().begin()),
-                ExampleClusterMutableCollectionIterator>,
-                "non const collection begin() should return a MutableCollectionIterator");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<ExampleClusterCollection>().end()),
+                 ExampleClusterMutableCollectionIterator>); // non const collection end() should return a MutableCollectionIterator
 
-  static_assert(std::is_same_v<
-                decltype(*std::declval<ExampleClusterCollection>().begin()),
-                MutableExampleCluster>,
-                "MutableCollectionIterator should give access to mutable objects");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<ExampleClusterCollection>().end()),
+                 ExampleClusterMutableCollectionIterator>); // collection end() should return a MutableCollectionIterator
 
-  static_assert(std::is_same_v<
-                decltype(std::declval<ExampleClusterMutableCollectionIterator>().operator->()),
-                MutableExampleCluster*>,
-                "MutableCollectionIterator should only give access to mutable objects");
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(*std::declval<ExampleClusterCollection>().begin()),
+                 MutableExampleCluster>); // MutableCollectionIterator should give access to mutable objects
 
-  REQUIRE(true);
+  STATIC_REQUIRE(std::is_same_v<
+                 decltype(std::declval<ExampleClusterMutableCollectionIterator>().operator->()),
+                 MutableExampleCluster*>); // CollectionIterator should only give access to mutable objects
 }
 
 TEST_CASE("Subset collection basics", "[subset-colls]") {
@@ -453,7 +431,7 @@ TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
   clusterRefs.push_back(cluster);
 
   auto clusterRef = clusterRefs[0];
-  static_assert(std::is_same_v<decltype(clusterRef), decltype(cluster)>, "Elements that can be obtained from a collection and a subset collection should have the same type");
+  STATIC_REQUIRE(std::is_same_v<decltype(clusterRef), decltype(cluster)>); // Elements that can be obtained from a collection and a subset collection should have the same type
 
   REQUIRE(clusterRef == cluster);
 
