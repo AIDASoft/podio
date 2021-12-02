@@ -19,7 +19,7 @@
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 
-TEST_CASE("AutoDelete") {
+TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto store = podio::EventStore();
   auto hit1 = MutableEventInfo();
   auto hit2 = MutableEventInfo();
@@ -29,7 +29,7 @@ TEST_CASE("AutoDelete") {
   hit3 = hit2;
 }
 
-TEST_CASE("Basics") {
+TEST_CASE("Basics", "[basics][memory-management]") {
   auto store = podio::EventStore();
   // Adding
   auto& collection = store.create<ExampleHitCollection>("name");
@@ -38,13 +38,12 @@ TEST_CASE("Basics") {
   hit2.energy(12.5);
   // Retrieving
   const ExampleHitCollection* coll2(nullptr);
-  bool success = store.get("name",coll2);
+  REQUIRE(store.get("name", coll2));
   const ExampleHitCollection* coll3(nullptr);
-  if (store.get("wrongName",coll3) != false) success = false;
-  REQUIRE(success);
+  REQUIRE_FALSE(store.get("wrongName", coll3));
 }
 
-TEST_CASE("Assignment-operator ref count") {
+TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
   // Make sure that the assignment operator handles the reference count
   // correctly. (Will trigger in an ASan build if it is not the case)
   // See https://github.com/AIDASoft/podio/issues/200
@@ -61,7 +60,7 @@ TEST_CASE("Assignment-operator ref count") {
   }
 }
 
-TEST_CASE("Clearing"){
+TEST_CASE("Clearing", "[ASAN-FAIL][basics][memory-management]"){
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -88,7 +87,7 @@ TEST_CASE("Clearing"){
   REQUIRE(success);
 }
 
-TEST_CASE("Cloning"){
+TEST_CASE("Cloning", "[basics][memory-management]"){
   bool success = true;
   auto hit = MutableExampleHit();
   hit.energy(30);
@@ -106,13 +105,13 @@ TEST_CASE("Cloning"){
   REQUIRE(success);
 }
 
-TEST_CASE("Component"){
+TEST_CASE("Component", "[basics]"){
   auto info = MutableExampleWithComponent();
   info.component().data.x = 3;
   REQUIRE(3 == info.component().data.x);
 }
 
-TEST_CASE("Cyclic"){
+TEST_CASE("Cyclic", "[LEAK-FAIL][basics][relations][memory-management]"){
   auto start = MutableExampleForCyclicDependency1();
   auto isAvailable = start.ref().isAvailable();
   REQUIRE_FALSE(isAvailable);
@@ -128,8 +127,7 @@ TEST_CASE("Cyclic"){
   REQUIRE(start == start.ref().ref());
 }
 
-TEST_CASE("Invalid_refs") {
-  bool success = false;
+TEST_CASE("Invalid_refs", "[LEAK-FAIL][basics][relations]") {
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto hit1 = hits.create(0xcaffeeULL,0.,0.,0.,0.);
@@ -138,15 +136,10 @@ TEST_CASE("Invalid_refs") {
   auto  cluster  = clusters.create();
   cluster.addHits(hit1);
   cluster.addHits(hit2);
-  try {
-    clusters.prepareForWrite(); //should fail!
-  } catch (std::runtime_error&){
-    success = true;
-  }
-  REQUIRE(success);
+  REQUIRE_THROWS_AS(clusters.prepareForWrite(), std::runtime_error);
 }
 
-TEST_CASE("Looping") {
+TEST_CASE("Looping", "[basics]") {
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("name");
   auto hit1 = coll.create(0xbadULL,0.,0.,0.,0.);
@@ -173,7 +166,7 @@ TEST_CASE("Looping") {
   }
 }
 
-TEST_CASE("Notebook") {
+TEST_CASE("Notebook", "[basics]") {
   bool success = true;
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
@@ -189,7 +182,7 @@ TEST_CASE("Notebook") {
   REQUIRE(success);
 }
 
-TEST_CASE("OneToOneRelations") {
+TEST_CASE("OneToOneRelations", "[basics][relations]") {
   bool success = true;
   auto cluster = ExampleCluster();
   auto rel = MutableExampleWithOneRelation();
@@ -197,7 +190,7 @@ TEST_CASE("OneToOneRelations") {
   REQUIRE(success);
 }
 
-TEST_CASE("Podness") {
+TEST_CASE("Podness", "[basics][code-gen]") {
   // fail this already at compile time
   static_assert(std::is_standard_layout_v<ExampleClusterData>, "Generated data classes do not have standard layout");
   static_assert(std::is_trivially_copyable_v<ExampleClusterData>, "Generated data classes are not trivially copyable");
@@ -212,8 +205,7 @@ TEST_CASE("Podness") {
   REQUIRE(true); // just to have this also show up at runtime
 }
 
-TEST_CASE("Referencing") {
-  bool success = true;
+TEST_CASE("Referencing", "[basics][relations]") {
   auto store = podio::EventStore();
   auto& hits  = store.create<ExampleHitCollection>("hits");
   auto hit1 = hits.create(0x42ULL,0.,0.,0.,0.);
@@ -224,13 +216,13 @@ TEST_CASE("Referencing") {
   cluster.addHits(hit2);
   int index = 0;
   for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i!=end; ++i){
-    if( i->energy() != index) success = false;
+    REQUIRE(i->energy() == index);
     ++index;
   }
-  REQUIRE(success);
 }
 
-TEST_CASE("VariadicCreate", "Test that objects created via the variadic create template function handle relations correctly") {
+TEST_CASE("VariadicCreate", "[basics]") {
+  // Test that objects created via the variadic create template function handle relations correctly
   auto store = podio::EventStore();
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
 
@@ -243,7 +235,7 @@ TEST_CASE("VariadicCreate", "Test that objects created via the variadic create t
   REQUIRE(variadic_cluster.Clusters(0) == normal_cluster);
 }
 
-TEST_CASE("write_buffer") {
+TEST_CASE("write_buffer", "[basics][io]") {
   auto store = podio::EventStore();
   auto& coll  = store.create<ExampleHitCollection>("data");
   auto hit1 = coll.create(0x42ULL,0.,0.,0.,0.);
@@ -254,17 +246,17 @@ TEST_CASE("write_buffer") {
   cluster.addHits(hit1);
   cluster.addHits(hit2);
 
-  clusters.prepareForWrite();
+  REQUIRE_NOTHROW(clusters.prepareForWrite());
   auto buffers = clusters.getBuffers();
   REQUIRE(buffers.dataAsVector<ExampleClusterData>()->size() == clusters.size());
 
   // a second call should not crash the whole thing and leave everything untouched
-  clusters.prepareForWrite();
+  REQUIRE_NOTHROW(clusters.prepareForWrite());
   REQUIRE(clusters.getBuffers().data == buffers.data);
 
   auto& ref_coll  = store.create<ExampleWithOneRelationCollection>("onerel");
   auto withRef = ref_coll.create();
-  ref_coll.prepareForWrite();
+  REQUIRE_NOTHROW(ref_coll.prepareForWrite());
 }
 
 /*
@@ -275,7 +267,7 @@ TEST_CASE("Arrays") {
 }
 */
 
-TEST_CASE("Extracode") {
+TEST_CASE("Extracode", "[basics][code-gen]") {
   auto ev = MutableEventInfo();
   ev.setNumber(42) ;
   REQUIRE(ev.getNumber() == 42);
@@ -290,7 +282,7 @@ TEST_CASE("Extracode") {
 }
 
 
-TEST_CASE("AssociativeContainer") {
+TEST_CASE("AssociativeContainer", "[basics]") {
   auto clu1 = ExampleCluster();
   auto clu2 = ExampleCluster();
   auto clu3 = ExampleCluster();
@@ -326,7 +318,7 @@ TEST_CASE("AssociativeContainer") {
 
 }
 
-TEST_CASE("Equality") {
+TEST_CASE("Equality", "[basics]") {
   auto cluster = ExampleCluster();
   auto rel = MutableExampleWithOneRelation();
   rel.cluster(cluster);
@@ -335,7 +327,7 @@ TEST_CASE("Equality") {
   REQUIRE(returned_cluster == cluster);
 }
 
-TEST_CASE("NonPresentCollection") {
+TEST_CASE("NonPresentCollection", "[basics][event-store]") {
   auto store = podio::EventStore();
   REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
 }
@@ -473,7 +465,7 @@ TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
   REQUIRE(cluster.energy() == -42);
 }
 
-TEST_CASE("Collection iterators work with subset collections", "[subset-colls]") {
+TEST_CASE("Collection iterators work with subset collections", "[LEAK-FAIL][subset-colls]") {
   auto hits = ExampleHitCollection();
   auto hit1 = hits.create(0x42ULL,0.,0.,0.,0.);
   auto hit2 = hits.create(0x42ULL,1.,1.,1.,1.);
