@@ -17,7 +17,7 @@
 
 {% with collection_type = class.bare_type + 'Collection' %}
 {{ collection_type }}::{{ collection_type }}() :
-  m_isValid(false), m_isReadFromFile(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {}
+  m_isValid(false), m_isPrepared(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {}
 
 {{ collection_type }}::~{{ collection_type }}() {
   clear();
@@ -70,23 +70,27 @@ Mutable{{ class.bare_type }} {{ collection_type }}::create() {
 
 void {{ collection_type }}::clear() {
   m_storage.clear(m_isSubsetColl);
+  m_isPrepared = false;
 }
 
 void {{ collection_type }}::prepareForWrite() {
-  // If the collection has been read from a file, there is nothing to do here
-  if (m_isReadFromFile) return;
+  // If the collection has been prepared already there is nothing to do
+  if (m_isPrepared) return;
   m_storage.prepareForWrite(m_isSubsetColl);
+  m_isPrepared = true;
 }
 
 void {{ collection_type }}::prepareAfterRead() {
   // No need to go through this again if we have already done it
-  if (m_isReadFromFile) return;
+  if (m_isPrepared) return;
 
   if (!m_isSubsetColl) {
     // Subset collections do not store any data that would require post-processing
     m_storage.prepareAfterRead(m_collectionID);
   }
-  m_isReadFromFile = true;
+  // Preparing a collection doesn't affect the underlying I/O buffers, so this
+  // collection is still prepared
+  m_isPrepared = true;
 }
 
 bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% if OneToManyRelations or OneToOneRelations -%}collectionProvider{%- endif -%}) {
