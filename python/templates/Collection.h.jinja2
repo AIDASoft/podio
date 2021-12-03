@@ -9,6 +9,7 @@
 // datamodel specific includes
 #include "{{ incfolder }}{{ class.bare_type }}Data.h"
 #include "{{ incfolder }}{{ class.bare_type }}.h"
+#include "{{ incfolder }}Mutable{{ class.bare_type }}.h"
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
 #include "{{ incfolder }}{{ class.bare_type }}CollectionData.h"
 
@@ -29,15 +30,15 @@
 
 {{ iterator_declaration(class) }}
 
-{{ iterator_declaration(class, prefix='Const') }}
+{{ iterator_declaration(class, prefix='Mutable') }}
 
 /**
 A Collection is identified by an ID.
 */
 class {{ class.bare_type }}Collection : public podio::CollectionBase {
 public:
-  using const_iterator = {{ class.bare_type }}ConstCollectionIterator;
-  using iterator = {{ class.bare_type }}CollectionIterator;
+  using const_iterator = {{ class.bare_type }}CollectionIterator;
+  using iterator = {{ class.bare_type }}MutableCollectionIterator;
 
   {{ class.bare_type }}Collection();
   {{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete;
@@ -51,12 +52,12 @@ public:
   {{ class.bare_type }}Collection* operator->() { return ({{ class.bare_type }}Collection*) this; }
 
   /// Append a new object to the collection, and return this object.
-  {{ class.bare_type }} create();
+  Mutable{{ class.bare_type }} create();
 
   /// Append a new object to the collection, and return this object.
   /// Initialized with the parameters given
   template<typename... Args>
-  {{ class.bare_type }} create(Args&&... args);
+  Mutable{{ class.bare_type }} create(Args&&... args);
 
   /// number of elements in the collection
   size_t size() const override final;
@@ -74,18 +75,18 @@ public:
 
   void setSubsetCollection(bool setSubset=true) final;
 
-  /// Returns the object of given index
-  Const{{ class.bare_type }} operator[](unsigned int index) const;
-  /// Returns the object of a given index
-  {{ class.bare_type }} operator[](unsigned int index);
   /// Returns the const object of given index
-  Const{{ class.bare_type }} at(unsigned int index) const;
+  {{ class.bare_type }} operator[](unsigned int index) const;
+  /// Returns the object of a given index
+  Mutable{{ class.bare_type }} operator[](unsigned int index);
+  /// Returns the const object of given index
+  {{ class.bare_type }} at(unsigned int index) const;
   /// Returns the object of given index
-  {{ class.bare_type }} at(unsigned int index);
+  Mutable{{ class.bare_type }} at(unsigned int index);
 
 
   /// Append object to the collection
-  void push_back(Const{{class.bare_type}} object);
+  void push_back({{class.bare_type}} object);
 
   void prepareForWrite() override final;
   void prepareAfterRead() override final;
@@ -145,7 +146,7 @@ private:
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& v);
 
 template<typename... Args>
-{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... args) {
+Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... args) {
   if (m_isSubsetColl) {
     throw std::logic_error("Cannot create new elements on a subset collection");
   }
@@ -156,11 +157,11 @@ template<typename... Args>
 {% if OneToManyRelations or VectorMembers %}
   // Need to initialize the relation vectors manually for the {ObjectID, {{class.bare_type}}Data} constructor
 {% for relation in OneToManyRelations + VectorMembers %}
-  obj->m_{{ relation.name }} = new std::vector<{{ relation.relation_type }}>();
+  obj->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>();
 {% endfor %}
   m_storage.createRelations(obj);
 {% endif %}
-  return {{ class.bare_type }}(obj);
+  return Mutable{{ class.bare_type }}(obj);
 }
 
 {% for member in Members %}

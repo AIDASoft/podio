@@ -1,6 +1,6 @@
 #include "datamodel/ExampleMCCollection.h"
-#include "datamodel/ExampleReferencingType.h"
-#include "datamodel/ExampleWithVectorMember.h"
+#include "datamodel/MutableExampleReferencingType.h"
+#include "datamodel/MutableExampleWithVectorMember.h"
 
 #include "podio/EventStore.h"
 #include "podio/ROOTWriter.h"
@@ -32,7 +32,7 @@
 void fillExampleMCCollection(ExampleMCCollection& collection)
 {
   for (int i = 0; i < 10; ++i) {
-    ExampleMC mcp;
+    MutableExampleMC mcp;
     mcp.PDG(i);
     collection.push_back(mcp);
   }
@@ -151,7 +151,7 @@ void testExampleMC()
 
 void testExampleWithVectorMember()
 {
-  ExampleWithVectorMember ex;
+  MutableExampleWithVectorMember ex;
   ex.addcount(1);
   ex.addcount(2);
   ex.addcount(10);
@@ -168,7 +168,7 @@ void testExampleWithVectorMember()
 
 void testExampleReferencingType()
 {
-  ExampleReferencingType ex;
+  MutableExampleReferencingType ex;
   ExampleReferencingType ex1;
   ExampleReferencingType ex2;
 

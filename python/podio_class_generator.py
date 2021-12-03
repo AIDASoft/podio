@@ -161,15 +161,16 @@ class ClassGenerator(object):
     # depending on which category is passed different naming conventions apply
     # for the generated files. Additionally not all categories need source files.
     # Listing the special cases here
-    fn_base = {
-        'Data': 'Data',
-        'Obj': 'Obj',
-        'ConstObject': 'Const',
-        'PrintInfo': 'PrintInfo',
-        'Object': '',
-        'Component': '',
-        'SIOBlock': 'SIOBlock',
-        }.get(template_base, template_base)
+    def get_fn_format(tmpl):
+      """Get a format string for the filename"""
+      prefix = {'MutableObject': 'Mutable'}
+      postfix = {'Data': 'Data',
+                 'Obj': 'Obj',
+                 'SIOBlock': 'SIOBlock',
+                 'Collection': 'Collection',
+                 'CollectionData': 'CollectionData'}
+
+      return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
 
     endings = {
         'Data': ('h',),
@@ -180,7 +181,7 @@ class ClassGenerator(object):
     fn_templates = []
     for ending in endings:
       template_name = '{fn}.{end}.jinja2'.format(fn=template_base, end=ending)
-      filename = '{name}{fn}.{end}'.format(fn=fn_base, name=name, end=ending)
+      filename = get_fn_format(template_base).format(name=name, end=ending)
       fn_templates.append((filename, template_name))
 
     return fn_templates
@@ -217,7 +218,7 @@ class ClassGenerator(object):
     datatype = self._preprocess_datatype(name, definition)
     self._fill_templates('Data', datatype)
     self._fill_templates('Object', datatype)
-    self._fill_templates('ConstObject', datatype)
+    self._fill_templates('MutableObject', datatype)
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
     self._fill_templates('CollectionData', datatype)
@@ -231,24 +232,17 @@ class ClassGenerator(object):
     includes, includes_cc = set(), set()
 
     for relation in datatype['OneToOneRelations']:
-      if not relation.is_builtin:
-        relation.relation_type = relation.as_qualified_const()
-
       if relation.full_type != datatype['class'].full_type:
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
-        fwd_declarations[relation.namespace].append('Const' + relation.bare_type)
-        includes_cc.add(self._build_include(relation.bare_type + 'Const'))
+        fwd_declarations[relation.namespace].append(relation.bare_type)
+        includes_cc.add(self._build_include(relation.bare_type))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
-      includes.add('#include "podio/RelationRange.h"')
 
     for relation in datatype['VectorMembers'] + datatype['OneToManyRelations']:
       if not relation.is_builtin:
-        if relation.full_type not in self.reader.components:
-          relation.relation_type = relation.as_qualified_const()
-
         if relation.full_type == datatype['class'].full_type:
           includes_cc.add(self._build_include(datatype['class'].bare_type))
         else:
@@ -261,7 +255,7 @@ class ClassGenerator(object):
     datatype['obj_needs_destructor'] = needs_destructor
 
   def _preprocess_for_class(self, datatype):
-    """Do the preprocessing that is necessary for the classes and Const classes"""
+    """Do the preprocessing that is necessary for the classes and Mutable classes"""
     includes = set(datatype['includes_data'])
     fwd_declarations = {}
     includes_cc = set()
@@ -275,11 +269,12 @@ class ClassGenerator(object):
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
-        fwd_declarations[relation.namespace].append('Const' + relation.bare_type)
+        fwd_declarations[relation.namespace].append('Mutable' + relation.bare_type)
         includes_cc.add(self._build_include(relation.bare_type))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
+      includes.add('#include "podio/RelationRange.h"')
 
     for relation in datatype['OneToManyRelations']:
       if self._needs_include(relation):
@@ -290,7 +285,8 @@ class ClassGenerator(object):
         includes.add(self._build_include(vectormember.bare_type))
 
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
-    includes.update(datatype.get('ConstExtraCode', {}).get('includes', '').split('\n'))
+    # TODO: in principle only the mutable classes would need these includes!
+    includes.update(datatype.get('MutableExtraCode', {}).get('includes', '').split('\n'))
 
     # When we have a relation to the same type we have the header that we are
     # just generating in the includes. This would lead to a circular include, so
@@ -308,7 +304,8 @@ class ClassGenerator(object):
     """Do the necessary preprocessing for the collection"""
     includes_cc = set()
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
-      includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
+      if datatype['class'].bare_type != relation.bare_type:
+        includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
 
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')

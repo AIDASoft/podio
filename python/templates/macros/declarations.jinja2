@@ -71,8 +71,8 @@
   /// copy-assignment operator
   {{  full_type }}& operator=({{ full_type }} other);
 
-  /// create a mutable deep-copy of the object with identical relations 
-  {{  type }} clone() const;
+  /// create a mutable deep-copy of the object with identical relations
+  Mutable{{ type }} clone() const;
 
   /// destructor
   ~{{  full_type }}();
@@ -86,7 +86,7 @@
   /// disconnect from {{ type }}Obj instance
   void unlink() { m_obj = nullptr; }
 
-{% set inverse_type = type if prefix else 'Const' + type %}
+{% set inverse_type = type if prefix else 'Mutable' + type %}
   bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }
   bool operator==(const {{ inverse_type }}& other) const;
 
@@ -107,7 +107,7 @@
 {% macro single_relation_getters(relations, get_syntax) %}
 {% for relation in relations %}
   /// Access the {{ relation.description }}
-  const {{ relation.relation_type }} {{ relation.getter_name(get_syntax) }}() const;
+  const {{ relation.full_type }} {{ relation.getter_name(get_syntax) }}() const;
 {% endfor %}
 {%- endmacro %}
 
@@ -115,7 +115,7 @@
 {% macro single_relation_setters(relations, get_syntax) %}
 {% for relation in relations %}
   /// Set the {{ relation.description }}
-  void {{ relation.setter_name(get_syntax) }}({{ relation.relation_type }} value);
+  void {{ relation.setter_name(get_syntax) }}({{ relation.full_type }} value);
 {% endfor %}
 {%- endmacro %}
 
@@ -123,12 +123,12 @@
 {% macro multi_relation_handling(relations, get_syntax, with_adder=False) %}
 {% for relation in relations %}
 {% if with_adder %}
-  void {{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.relation_type }});
+  void {{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.full_type }});
 {% endif %}
   unsigned int {{ relation.name }}_size() const;
-  {{ relation.relation_type }} {{ relation.getter_name(get_syntax) }}(unsigned int) const;
-  std::vector<{{ relation.relation_type }}>::const_iterator {{ relation.name }}_begin() const;
-  std::vector<{{ relation.relation_type }}>::const_iterator {{ relation.name }}_end() const;
-  podio::RelationRange<{{ relation.relation_type }}> {{ relation.getter_name(get_syntax) }}() const;
+  {{ relation.full_type }} {{ relation.getter_name(get_syntax) }}(unsigned int) const;
+  std::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_begin() const;
+  std::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_end() const;
+  podio::RelationRange<{{ relation.full_type }}> {{ relation.getter_name(get_syntax) }}() const;
 {% endfor %}
 {%- endmacro %}

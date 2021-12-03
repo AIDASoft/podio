@@ -4,13 +4,13 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/CollectionData.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/CollectionData.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Component.h.jinja2
-  ${CMAKE_CURRENT_LIST_DIR}/ConstObject.cc.jinja2
-  ${CMAKE_CURRENT_LIST_DIR}/ConstObject.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Data.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/Obj.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Obj.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Object.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Object.h.jinja2
-  ${CMAKE_CURRENT_LIST_DIR}/Obj.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/MutableObject.cc.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/MutableObject.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/selection.xml.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.h.jinja2

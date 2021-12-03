@@ -77,7 +77,7 @@ void write(podio::EventStore& store, WriterT& writer) {
       std::cout << "processing event " << i << std::endl;
     }
 
-    auto item1 = EventInfo();
+    auto item1 = MutableEventInfo();
     item1.Number(i);
     info.push_back(item1);
 
@@ -162,8 +162,8 @@ void write(podio::EventStore& store, WriterT& writer) {
       }
       std::cout << std::endl ;
 
-      // make sure that this does not crash when we do it on a ConstExampleMC
-      ConstExampleMC constP{p};
+      // make sure that this does not crash when we do it on an immutable object
+      ExampleMC constP{p};
       std::cout << "The const particle still has the same relations: daughters: ";
       for (auto it = constP.daughters_begin(); it != constP.daughters_end(); ++it) {
         std::cout << " " << it->getObjectID().index;
@@ -201,9 +201,9 @@ void write(podio::EventStore& store, WriterT& writer) {
     }
     //-------------------------------
 
-    auto cluster  = ExampleCluster();
-    auto clu0  = ExampleCluster();
-    auto clu1  = ExampleCluster();
+    auto cluster  = MutableExampleCluster();
+    auto clu0  = MutableExampleCluster();
+    auto clu1  = MutableExampleCluster();
 
     clu0.addHits(hit1);
     clu0.energy(hit1.energy());
@@ -219,7 +219,7 @@ void write(podio::EventStore& store, WriterT& writer) {
     clusters.push_back(clu1);
     clusters.push_back(cluster);
 
-    auto ref = ExampleReferencingType();
+    auto ref = MutableExampleReferencingType();
     refs.push_back(ref);
 
     auto ref2 = ExampleReferencingType();
@@ -228,17 +228,17 @@ void write(podio::EventStore& store, WriterT& writer) {
     ref.addClusters(cluster);
     ref.addRefs(ref2);
 
-    auto comp = ExampleWithComponent();
+    auto comp = MutableExampleWithComponent();
     comp.component().data.x = 0;
     comp.component().data.y = 1;
     comp.component().data.z = i;
     comps.push_back(comp);
 
-    auto cyclic = ExampleReferencingType();
+    auto cyclic = MutableExampleReferencingType();
     cyclic.addRefs(cyclic);
     refs.push_back(cyclic);
 
-    auto oneRel = ExampleWithOneRelation();
+    auto oneRel = MutableExampleWithOneRelation();
     oneRel.cluster(cluster);
     oneRels.push_back(oneRel);
 
@@ -246,26 +246,26 @@ void write(podio::EventStore& store, WriterT& writer) {
     auto oneRelEmpty = ExampleWithOneRelation();
     oneRels.push_back(oneRelEmpty);
 
-    auto vec = ExampleWithVectorMember();
+    auto vec = MutableExampleWithVectorMember();
     vec.addcount(i);
     vec.addcount(i+10);
     vecs.push_back(vec);
-    auto vec1 = ExampleWithVectorMember();
+    auto vec1 = MutableExampleWithVectorMember();
     vec1.addcount(i+1);
     vec1.addcount(i+11);
     vecs.push_back(vec1);
 
     for (int j = 0; j < 5; j++) {
-      auto rel = ex42::ExampleWithARelation();
+      auto rel = ex42::MutableExampleWithARelation();
       rel.number(0.5*j);
-      auto exWithNamesp = ex42::ExampleWithNamespace();
+      auto exWithNamesp = ex42::MutableExampleWithNamespace();
       exWithNamesp.component().x = i;
       exWithNamesp.component().y = 1000*i;
       namesps.push_back(exWithNamesp);
       if (j != 3) { // also check for empty relations
         rel.ref(exWithNamesp);
         for (int k = 0; k < 5; k++) {
-          auto namesp = ex42::ExampleWithNamespace();
+          auto namesp = ex42::MutableExampleWithNamespace();
           namesp.x(3*k);
           namesp.component().y = k;
           namesps.push_back(namesp);
@@ -288,7 +288,7 @@ void write(podio::EventStore& store, WriterT& writer) {
     ex2::NamespaceStruct nstruct;
     nstruct.x = static_cast<int>(i);
     std::array<ex2::NamespaceStruct, 4> structArrayTest = {nstruct, nstruct, nstruct, nstruct};
-    auto array = ExampleWithArray(a, arrayTest, arrayTest, arrayTest, arrayTest, structArrayTest);
+    auto array = MutableExampleWithArray(a, arrayTest, arrayTest, arrayTest, arrayTest, structArrayTest);
     array.myArray(1, i);
     array.arrayStruct(a);
     arrays.push_back(array);

@@ -23,20 +23,20 @@
   clear();
 }
 
-Const{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
-  return Const{{ class.bare_type }}(m_storage.entries[index]);
-}
-
-Const{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
-  return Const{{ class.bare_type }}(m_storage.entries.at(index));
-}
-
-{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) {
+{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
   return {{ class.bare_type }}(m_storage.entries[index]);
 }
 
-{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) {
+{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
   return {{ class.bare_type }}(m_storage.entries.at(index));
+}
+
+Mutable{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) {
+  return Mutable{{ class.bare_type }}(m_storage.entries[index]);
+}
+
+Mutable{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) {
+  return Mutable{{ class.bare_type }}(m_storage.entries.at(index));
 }
 
 size_t {{ collection_type }}::size() const {
@@ -54,7 +54,7 @@ void {{ collection_type }}::setSubsetCollection(bool setSubset) {
   m_isSubsetColl = setSubset;
 }
 
-{{ class.bare_type }} {{ collection_type }}::create() {
+Mutable{{ class.bare_type }} {{ collection_type }}::create() {
   if (m_isSubsetColl) {
     throw std::logic_error("Cannot create new elements on a subset collection");
   }
@@ -65,7 +65,7 @@ void {{ collection_type }}::setSubsetCollection(bool setSubset) {
 {% endif %}
 
   obj->id = {int(m_storage.entries.size() - 1), m_collectionID};
-  return {{ class.bare_type }}(obj);
+  return Mutable{{ class.bare_type }}(obj);
 }
 
 void {{ collection_type }}::clear() {
@@ -97,7 +97,7 @@ bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% i
   return true; //TODO: check success
 }
 
-void {{ collection_type }}::push_back(Const{{ class.bare_type }} object) {
+void {{ collection_type }}::push_back({{ class.bare_type }} object) {
   // We have to do different things here depending on whether this is a
   // subset collection or not. A normal collection cannot collect objects
   // that are already part of another collection, while a subset collection
@@ -133,7 +133,7 @@ podio::CollectionBuffers {{ collection_type }}::getBuffers() {
 
 {{ iterator_definitions(class) }}
 
-{{ iterator_definitions(class, prefix='Const' ) }}
+{{ iterator_definitions(class, prefix='Mutable' ) }}
 
 {{ macros.ostream_operator(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax, ostream_collection_settings) }}
 

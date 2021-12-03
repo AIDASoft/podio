@@ -117,7 +117,7 @@ class ClassDefinitionValidator(object):
       )
   valid_extra_datatype_keys = (
       "ExtraCode",
-      "ConstExtraCode"
+      "MutableExtraCode"
       )
 
   # documented but not yet implemented

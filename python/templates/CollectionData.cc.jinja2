@@ -14,7 +14,7 @@
 
 {{ class_type }}::{{ class_type }}() :
 {%- for relation in OneToManyRelations + OneToOneRelations %}
-  m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::Const{{ relation.bare_type }}>()),
+  m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
 {%- endfor %}
 {%- for member in VectorMembers %}
   m_vec_{{ member.name }}(new std::vector<{{ member.full_type }}>()),

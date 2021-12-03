@@ -19,7 +19,6 @@
 
 {{ utils.namespace_open(class.namespace) }}
 class {{ class.bare_type }};
-class Const{{ class.bare_type }};
 
 {% with obj_type = class.bare_type + 'Obj' %}
 class {{ class.bare_type }}Obj : public podio::ObjBase {
@@ -42,10 +41,10 @@ public:
 public:
   {{ class.bare_type }}Data data;
 {% for relation in OneToOneRelations %}
-  {{ relation.relation_type }}* m_{{ relation.name }}{nullptr};
+  {{ relation.full_type }}* m_{{ relation.name }}{nullptr};
 {% endfor %}
 {% for relation in OneToManyRelations + VectorMembers %}
-  std::vector<{{ relation.relation_type }}>* m_{{ relation.name }}{nullptr};
+  std::vector<{{ relation.full_type }}>* m_{{ relation.name }}{nullptr};
 {% endfor %}
 };
 {% endwith %}
