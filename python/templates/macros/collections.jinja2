@@ -51,10 +51,13 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
   }
 {% endmacro %}
 
-{% macro get_collection(type) %}
+{% macro get_obj_ptr(type) %}
       podio::CollectionBase* coll = nullptr;
-      collectionProvider->get(id.collectionID, coll);
-      {{ type }}Collection* tmp_coll = static_cast<{{ type }}Collection*>(coll);
+      {{ type }}Obj* obj = nullptr;
+      if (collectionProvider->get(id.collectionID, coll)) {
+        auto* tmp_coll = static_cast<{{ type }}Collection*>(coll);
+        obj = tmp_coll->m_storage.entries[id.index];
+      }
 {%- endmacro %}
 
 {% macro set_references_multi_relation(relation, index) %}

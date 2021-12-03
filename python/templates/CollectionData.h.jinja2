@@ -63,7 +63,7 @@ public:
   void createRelations({{ class.bare_type }}Obj* obj);
 {% endif %}
 
-  void setReferences(const podio::ICollectionProvider* collectionProvider, bool isSubsetColl);
+  bool setReferences(const podio::ICollectionProvider* collectionProvider, bool isSubsetColl);
 
 private:
   // members to handle 1-to-N-relations

@@ -94,9 +94,7 @@ void {{ collection_type }}::prepareAfterRead() {
 }
 
 bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {
-  m_storage.setReferences(collectionProvider, m_isSubsetColl);
-
-  return true; //TODO: check success
+  return m_storage.setReferences(collectionProvider, m_isSubsetColl);
 }
 
 void {{ collection_type }}::push_back({{ class.bare_type }} object) {

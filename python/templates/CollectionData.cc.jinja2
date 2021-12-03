@@ -158,13 +158,13 @@ void {{ class_type }}::createRelations({{ class.bare_type }}Obj* obj) {
 }
 {% endif %}
 
-void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectionProvider, bool isSubsetColl) {
+bool {{ class_type }}::setReferences(const podio::ICollectionProvider* collectionProvider, bool isSubsetColl) {
   if (isSubsetColl) {
     for (const auto& id : *m_refCollections[0]) {
-{{ macros.get_collection(class.full_type) }}
-      entries.push_back(tmp_coll->m_storage.entries[id.index]);
+{{ macros.get_obj_ptr(class.full_type) }}
+      entries.push_back(obj);
     }
-    return;
+    return true; // TODO: check success, how?
   }
 
   // Normal collections have to resolve all relations
@@ -175,6 +175,7 @@ void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectio
 {{ macros.set_reference_single_relation(relation, loop.index0, OneToManyRelations | length) }}
 {% endfor %}
 
+  return true; // TODO: check success, how?
 }
 
 void {{ class_type }}::makeSubsetCollection() {

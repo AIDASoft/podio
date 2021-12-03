@@ -12,13 +12,14 @@
 void writeCollection() {
 
   auto store = podio::EventStore();
-  podio::ROOTWriter writer("example1.root", &store);
+  podio::ROOTWriter writer("associations.root", &store);
 
   std::cout << "start writting collections...\n";
   auto& info       = store.create<EventInfoCollection>("info");
   auto& hits       = store.create<ExampleHitCollection>("hits");
   auto& clusters   = store.create<ExampleClusterCollection>("clusters");
   auto& hits_subset   = store.create<ExampleHitCollection>("hits_subset");
+  hits_subset.setSubsetCollection(true);
 
   writer.registerForWrite("clusters");
   // writer.registerForWrite("hits");
@@ -59,7 +60,6 @@ void writeCollection() {
     cluster.addClusters( clu1 );
 
     // Add tracked hits to subset hits collection
-    hits_subset.setSubsetCollection(true);
     hits_subset.push_back(hit1);
     hits_subset.push_back(hit2);
 
@@ -78,7 +78,7 @@ void readCollection() {
 
   // Start reading the input
   auto reader = podio::ROOTReader();
-  reader.openFile("example1.root");
+  reader.openFile("associations.root");
 
   auto store = podio::EventStore();
   store.setReader(&reader);
@@ -105,11 +105,21 @@ void readCollection() {
     // Test for subset collections
     auto& hits_subset = store.get<ExampleHitCollection>("hits_subset");
     if(hits_subset.isValid()) {
+      if (!hits_subset.isSubsetCollection()) {
+        throw std::runtime_error("hits_subset should be a subset collection");
+      }
+
+      if (hits_subset.size() != 2) {
+        throw std::runtime_error("subset collection should have original size");
+      }
+
       for (const auto& hit : hits_subset) {
         if (hit.isAvailable()) {
           throw std::runtime_error("Hit is available, although it has not been written");
         }
       }
+    } else {
+      throw std::runtime_error("Collection 'hits_subset' should be present");
     }
   
     store.clear();
