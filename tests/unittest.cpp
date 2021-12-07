@@ -8,6 +8,7 @@
 #include "catch2/catch_test_macros.hpp"
 
 // podio specific includes
+#include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "podio/EventStore.h"
 
 // Test data types
@@ -519,4 +520,56 @@ TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
 
   REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
   REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);
+}
+
+TEST_CASE("Move-only collections", "[collections][move-semantics]") {
+  // Setup a few collections that will be used throughout below
+  auto hitColl = ExampleHitCollection();
+  auto clusterColl = ExampleClusterCollection();
+  auto vecMemColl = ExampleWithVectorMemberCollection();
+
+  constexpr auto nElements = 3u;
+  for (auto i = 0u; i < nElements; ++i) {
+    auto hit = hitColl.create();
+    auto cluster = clusterColl.create();
+    // create a few relations as well
+    cluster.addHits(hit);
+
+    auto vecMem = vecMemColl.create();
+    vecMem.addcount(i);
+    vecMem.addcount(2 * i);
+  }
+
+  // Check the basic setup
+  REQUIRE(hitColl.size() == nElements);
+  REQUIRE(clusterColl.size() == nElements);
+  REQUIRE(vecMemColl.size() == nElements);
+
+
+  SECTION("Move constructor") {
+    // Move-construct collections and make sure the size is as expected
+    auto newHits = std::move(hitColl);
+    REQUIRE(newHits.size() == nElements);
+
+    auto newClusters = std::move(clusterColl);
+    REQUIRE(newClusters.size() == nElements);
+
+    auto newVecMems = std::move(vecMemColl);
+    REQUIRE(newVecMems.size() == nElements);
+  }
+
+  SECTION("Move assignment") {
+    // Move assign collections and make sure everything is as expected
+    auto newHits = ExampleHitCollection();
+    newHits = std::move(hitColl);
+    REQUIRE(newHits.size() == nElements);
+
+    auto newClusters = ExampleClusterCollection();
+    newClusters = std::move(clusterColl);
+    REQUIRE(newClusters.size() == nElements);
+
+    auto newVecMems = ExampleWithVectorMemberCollection();
+    newVecMems = std::move(vecMemColl);
+    REQUIRE(newVecMems.size() == nElements);
+  }
 }
