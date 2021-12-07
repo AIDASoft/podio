@@ -540,36 +540,88 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     vecMem.addcount(2 * i);
   }
 
-  // Check the basic setup
-  REQUIRE(hitColl.size() == nElements);
-  REQUIRE(clusterColl.size() == nElements);
-  REQUIRE(vecMemColl.size() == nElements);
 
+  // Define a quick check function here for checking collections below
+  const auto checkCollections = [nElements](const ExampleHitCollection& hits,
+                                            const ExampleClusterCollection& clusters,
+                                            const ExampleWithVectorMemberCollection& vectors) {
+    // Basics
+    REQUIRE(hits.size() == nElements);
+    REQUIRE(clusters.size() == nElements);
+    REQUIRE(vectors.size() == nElements);
+
+    int i = 0;
+    for (auto cluster : clusters) {
+      REQUIRE(cluster.Hits(0) == hits[i++]);
+    }
+
+    i = 0;
+    for (const auto vec : vectors) {
+      const auto counts = vec.count();
+      REQUIRE(counts.size() == 2);
+      REQUIRE(counts[0] == i);
+      REQUIRE(counts[1] == i * 2);
+      i++;
+    }
+  };
+
+  // Hopefully redundant check for setup
+  checkCollections(hitColl, clusterColl, vecMemColl);
 
   SECTION("Move constructor") {
     // Move-construct collections and make sure the size is as expected
     auto newHits = std::move(hitColl);
-    REQUIRE(newHits.size() == nElements);
-
     auto newClusters = std::move(clusterColl);
-    REQUIRE(newClusters.size() == nElements);
-
     auto newVecMems = std::move(vecMemColl);
-    REQUIRE(newVecMems.size() == nElements);
+
+    checkCollections(newHits, newClusters, newVecMems);
   }
+
 
   SECTION("Move assignment") {
     // Move assign collections and make sure everything is as expected
     auto newHits = ExampleHitCollection();
     newHits = std::move(hitColl);
-    REQUIRE(newHits.size() == nElements);
 
     auto newClusters = ExampleClusterCollection();
     newClusters = std::move(clusterColl);
-    REQUIRE(newClusters.size() == nElements);
 
     auto newVecMems = ExampleWithVectorMemberCollection();
     newVecMems = std::move(vecMemColl);
-    REQUIRE(newVecMems.size() == nElements);
+
+    checkCollections(newHits, newClusters, newVecMems);
+  }
+
+
+  SECTION("Prepared collections can be move constructed") {
+    hitColl.prepareForWrite();
+    auto newHits = std::move(hitColl);
+
+    clusterColl.prepareForWrite();
+    auto newClusters = std::move(clusterColl);
+
+    vecMemColl.prepareForWrite();
+    auto newVecMems = std::move(vecMemColl);
+
+    checkCollections(newHits, newClusters, newVecMems);
+  }
+
+
+  SECTION("Prepared collections can be move assigned") {
+    hitColl.prepareForWrite();
+    clusterColl.prepareForWrite();
+    vecMemColl.prepareForWrite();
+
+    auto newHits = ExampleHitCollection();
+    newHits = std::move(hitColl);
+
+    auto newClusters = ExampleClusterCollection();
+    newClusters = std::move(clusterColl);
+
+    auto newVecMems = ExampleWithVectorMemberCollection();
+    newVecMems = std::move(vecMemColl);
+
+    checkCollections(newHits, newClusters, newVecMems);
+  }
   }
 }
