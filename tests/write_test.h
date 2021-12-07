@@ -35,6 +35,8 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& mcpsRefs   = store.create<ExampleMCCollection>("mcParticleRefs");
   mcpsRefs.setSubsetCollection();
   auto& hits       = store.create<ExampleHitCollection>("hits");
+  auto& hitRefs    = store.create<ExampleHitCollection>("hitRefs");
+  hitRefs.setSubsetCollection();
   auto& clusters   = store.create<ExampleClusterCollection>("clusters");
   auto& refs       = store.create<ExampleReferencingTypeCollection>("refs");
   auto& refs2      = store.create<ExampleReferencingTypeCollection>("refs2");
@@ -55,6 +57,7 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.registerForWrite("moreMCs");
   writer.registerForWrite("mcParticleRefs");
   writer.registerForWrite("hits");
+  writer.registerForWrite("hitRefs");
   writer.registerForWrite("clusters");
   writer.registerForWrite("refs");
   writer.registerForWrite("refs2");
@@ -95,6 +98,9 @@ void write(podio::EventStore& store, WriterT& writer) {
 
     hits.push_back(hit1);
     hits.push_back(hit2);
+
+    hitRefs.push_back(hit2);
+    hitRefs.push_back(hit1);
 
     // ---- add some MC particles ----
     auto mcp0 = ExampleMC();
