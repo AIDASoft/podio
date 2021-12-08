@@ -116,18 +116,18 @@ namespace podio{
 
 
   void GenericParameters::setValues(const std::string & key,const IntVec & values){
-    
+
     _intMap[ key ].assign(  values.begin() , values.end() ) ;
   }
-  
+
   void GenericParameters::setValues(const std::string & key,const  FloatVec & values){
 
     _floatMap[ key ].assign(  values.begin() , values.end() ) ;
   }
-  
+
   void GenericParameters::setValues(const std::string & key, const StringVec & values){
 
     _stringMap[ key ].assign(  values.begin() , values.end() ) ;
   }
 
-} // namespace 
+} // namespace

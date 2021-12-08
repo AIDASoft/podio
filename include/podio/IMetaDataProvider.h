@@ -4,10 +4,10 @@
 #include "podio/GenericParameters.h"
 
 namespace podio {
-  
+
 
    /** Inteface to access meta data for runs, events and collections.
-   * @author F. Gaede, DESY 
+   * @author F. Gaede, DESY
    * @date Apr 2020
    */
   class IMetaDataProvider {

@@ -7,7 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <functional> 
+#include <functional>
 #include <map>
 
 
@@ -19,7 +19,7 @@ namespace podio {
     virtual void writeCollection(CollectionBase*, std::ostream& )=0 ;
     virtual ~ColWriterBase() = default;
   } ;
-  
+
   template <class T>
   struct ColWriter : public ColWriterBase{
     void writeCollection(CollectionBase* c, std::ostream& o){

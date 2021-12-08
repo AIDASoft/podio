@@ -121,7 +121,7 @@ void readCollection() {
     } else {
       throw std::runtime_error("Collection 'hits_subset' should be present");
     }
-  
+
     store.clear();
     reader.endOfEvent();
   }
