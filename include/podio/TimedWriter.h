@@ -1,33 +1,31 @@
 #ifndef PODIO_TIMEDWRITER_H__
 #define PODIO_TIMEDWRITER_H__
 
-#include "podio/BenchmarkUtil.h"
 #include "podio/BenchmarkRecorder.h"
+#include "podio/BenchmarkUtil.h"
 
-#include <string>
 #include <chrono>
+#include <string>
 
 namespace podio {
 
-template<class WrappedWriter>
+template <class WrappedWriter>
 class TimedWriter {
   using ClockT = benchmark::ClockT;
 
 public:
-  template<typename ...Args>
+  template <typename... Args>
   TimedWriter(benchmark::BenchmarkRecorder& recorder, Args&&... args) :
-    m_start(ClockT::now()),
-    m_writer(WrappedWriter(std::forward<Args>(args)...)),
-    m_end(ClockT::now()),
-    m_recorder(recorder),
-    m_perEventTree(m_recorder.addTree("event_times", {"write_event"}))
-  {
+      m_start(ClockT::now()),
+      m_writer(WrappedWriter(std::forward<Args>(args)...)),
+      m_end(ClockT::now()),
+      m_recorder(recorder),
+      m_perEventTree(m_recorder.addTree("event_times", {"write_event"})) {
     m_recorder.addTree("setup_times", {"constructor", "finish", "register_for_write"});
     m_recorder.recordTime("setup_times", "constructor", m_end - m_start);
   }
 
-  ~TimedWriter()
-  {
+  ~TimedWriter() {
     m_recorder.recordTime("setup_times", "register_for_write", m_registerTime);
     m_recorder.Fill("setup_times");
   }
@@ -41,14 +39,12 @@ public:
   }
 
   void writeEvent() {
-    m_perEventTree.recordTime("write_event",
-                              benchmark::run_void_member_timed(m_writer, &WrappedWriter::writeEvent));
+    m_perEventTree.recordTime("write_event", benchmark::run_void_member_timed(m_writer, &WrappedWriter::writeEvent));
     m_perEventTree.Fill();
   }
 
   void finish() {
-    m_recorder.recordTime("setup_times", "finish",
-                          benchmark::run_void_member_timed(m_writer, &WrappedWriter::finish));
+    m_recorder.recordTime("setup_times", "finish", benchmark::run_void_member_timed(m_writer, &WrappedWriter::finish));
   }
 
 private:
@@ -60,6 +56,6 @@ private:
   ClockT::duration m_registerTime{std::chrono::nanoseconds{0}};
 };
 
-}
+} // namespace podio
 
 #endif

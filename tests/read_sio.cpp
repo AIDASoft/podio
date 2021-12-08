@@ -1,8 +1,8 @@
-#include "read_test.h"
 #include "podio/SIOReader.h"
+#include "read_test.h"
 
-int main(){
-//  auto reader = podio::SIOReader();
+int main() {
+  //  auto reader = podio::SIOReader();
   podio::SIOReader reader; // SIOReader has no copy c'tor ...
   reader.openFile("example.sio");
   if (reader.currentFileVersion() != podio::version::build_version) {

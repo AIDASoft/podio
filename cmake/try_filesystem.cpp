@@ -1,5 +1,5 @@
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 
 int main(int, char**) {
   namespace fs = std::filesystem;
