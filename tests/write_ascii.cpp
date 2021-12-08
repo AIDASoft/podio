@@ -97,17 +97,17 @@ int main(){
     p.adddaughters( mcps[3] ) ;
     p.adddaughters( mcps[4] ) ;
     p.adddaughters( mcps[5] ) ;
-    p = mcps[1] ; 
+    p = mcps[1] ;
     p.adddaughters( mcps[2] ) ;
     p.adddaughters( mcps[3] ) ;
     p.adddaughters( mcps[4] ) ;
     p.adddaughters( mcps[5] ) ;
-    p = mcps[2] ; 
+    p = mcps[2] ;
     p.adddaughters( mcps[6] ) ;
     p.adddaughters( mcps[7] ) ;
     p.adddaughters( mcps[8] ) ;
     p.adddaughters( mcps[9] ) ;
-    p = mcps[3] ; 
+    p = mcps[3] ;
     p.adddaughters( mcps[6] ) ;
     p.adddaughters( mcps[7] ) ;
     p.adddaughters( mcps[8] ) ;
@@ -115,7 +115,7 @@ int main(){
 
     //--- now fix the parent relations
     for( unsigned j=0,N=mcps.size();j<N;++j){
-      p = mcps[j] ; 
+      p = mcps[j] ;
       for(auto it = p.daughters_begin(), end = p.daughters_end() ; it!=end ; ++it ){
 	int dIndex = it->getObjectID().index ;
 	auto d = mcps[ dIndex ] ;
