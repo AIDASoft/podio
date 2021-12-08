@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Thin wrapper around clang-format for easier to parse output from the
+# pre-commit hook.
+#
+# Needs to work with multiple input files as pre-commit passes multiple files to
+# the "executables"
+
+success=0
+for file in ${@}; do
+    if ! $(clang-format --style=file --Werror --dry-run ${file} > /dev/null 2>&1); then
+        echo "Necessary changes for: '${file}'"
+        diff --color=always -u ${file} <(clang-format --style=file ${file}) | tail -n +3
+        success=1
+    fi
+done
+exit ${success}

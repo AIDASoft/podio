@@ -1,9 +1,6 @@
 name: pre-commit
 
-on:
-  pull_request:
-  push:
-    branches: [master]
+on: [push, pull_request]
 
 jobs:
   pre-commit:
@@ -24,7 +21,8 @@ jobs:
           cmake .. -DENABLE_SIO=ON \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror "\
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DUSE_EXTERNAL_CATCH2=OFF
           ln -s $(pwd)/compile_commands.json ../
           cd ..
           pre-commit run --show-diff-on-failure \
