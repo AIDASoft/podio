@@ -302,15 +302,18 @@ class ClassGenerator(object):
 
   def _preprocess_for_collection(self, datatype):
     """Do the necessary preprocessing for the collection"""
-    includes_cc = set()
+    includes_cc, includes = set(), set()
+
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       if datatype['class'].bare_type != relation.bare_type:
         includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
+        includes.add(self._build_include(relation.bare_type))
 
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')
 
     datatype['includes_coll_cc'] = self._sort_includes(includes_cc)
+    datatype['includes_coll_data'] = self._sort_includes(includes)
 
     # the ostream operator needs a bit of help from the python side in the form
     # of some pre processing but also in the form of formatting, both are done

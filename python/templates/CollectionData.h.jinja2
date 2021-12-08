@@ -7,6 +7,9 @@
 // datamodel specific includes
 #include "{{ incfolder }}{{ class.bare_type }}Data.h"
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+{% for include in includes_coll_data %}
+{{ include }}
+{% endfor %}
 
 // podio specific includes
 #include "podio/CollectionBuffers.h"
