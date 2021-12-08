@@ -623,5 +623,36 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
 
     checkCollections(newHits, newClusters, newVecMems);
   }
+
+
+  SECTION("Subset collections can be moved") {
+    auto subsetHits = ExampleHitCollection();
+    subsetHits.setSubsetCollection();
+    for (auto hit : hitColl) subsetHits.push_back(hit);
+    checkCollections(subsetHits, clusterColl, vecMemColl);
+
+    auto newSubsetHits = std::move(subsetHits);
+    REQUIRE(newSubsetHits.isSubsetCollection());
+    checkCollections(newSubsetHits, clusterColl, vecMemColl);
+
+    auto subsetClusters = ExampleClusterCollection();
+    subsetClusters.setSubsetCollection();
+    for (auto cluster : clusterColl) subsetClusters.push_back(cluster);
+    checkCollections(newSubsetHits, subsetClusters, vecMemColl);
+
+    // Test move-assignment here as well
+    auto newSubsetClusters = ExampleClusterCollection();
+    newSubsetClusters = std::move(subsetClusters);
+    REQUIRE(newSubsetClusters.isSubsetCollection());
+    checkCollections(newSubsetHits, newSubsetClusters, vecMemColl);
+
+    auto subsetVecs = ExampleWithVectorMemberCollection();
+    subsetVecs.setSubsetCollection();
+    for (auto vec : vecMemColl) subsetVecs.push_back(vec);
+    checkCollections(newSubsetHits, newSubsetClusters, subsetVecs);
+
+    auto newSubsetVecs = std::move(subsetVecs);
+    REQUIRE(newSubsetVecs.isSubsetCollection());
+    checkCollections(hitColl, clusterColl, newSubsetVecs);
   }
 }
