@@ -1,5 +1,5 @@
-#ifndef ALBERS_EVENTSTORE_H
-#define ALBERS_EVENTSTORE_H
+#ifndef PODIO_EVENTSTORE_H
+#define PODIO_EVENTSTORE_H
 
 #include <iostream>
 #include <memory>
@@ -34,11 +34,11 @@ typedef std::map<int, GenericParameters> RunMDMap;
 typedef std::map<int, GenericParameters> ColMDMap;
 
 class EventStore : public ICollectionProvider, public IMetaDataProvider {
+public:
   /// Make non-copyable
   EventStore(const EventStore&) = delete;
   EventStore& operator=(const EventStore&) = delete;
 
-public:
   /// Collection entry. Each collection is identified by a name
   typedef std::pair<std::string, CollectionBase*> CollPair;
   typedef std::vector<CollPair> CollContainer;
@@ -63,7 +63,7 @@ public:
   }
 
   /// access a collection by ID. returns true if successful
-  bool get(int id, CollectionBase*& coll) const override final;
+  bool get(int id, CollectionBase*& coll) const final;
 
   /// access a collection by name
   /// returns a collection w/ setting isValid to true if successful
@@ -142,7 +142,7 @@ template <typename T>
 bool EventStore::get(const std::string& name, const T*& collection) {
   //  static_assert(std::is_base_of<podio::CollectionBase,T>::value,
   //              "DataStore only contains types inheriting from CollectionBase");
-  CollectionBase* tmp(0);
+  CollectionBase* tmp{nullptr};
   doGet(name, tmp);
   collection = static_cast<T*>(tmp);
   if (collection != nullptr) {

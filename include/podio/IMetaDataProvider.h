@@ -1,5 +1,5 @@
-#ifndef IMETADATAPROVIDER_H
-#define IMETADATAPROVIDER_H
+#ifndef PODIO_IMETADATAPROVIDER_H
+#define PODIO_IMETADATAPROVIDER_H
 
 #include "podio/GenericParameters.h"
 
@@ -13,7 +13,7 @@ class IMetaDataProvider {
 
 public:
   /// destructor
-  virtual ~IMetaDataProvider(){};
+  virtual ~IMetaDataProvider() = default;
 
   /// return the event meta data for the current event
   virtual GenericParameters& getEventMetaData() = 0;

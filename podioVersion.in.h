@@ -1,5 +1,5 @@
-#ifndef PODIO_VERSION_H
-#define PODIO_VERSION_H
+#ifndef PODIO_PODIOVERSION_H
+#define PODIO_PODIOVERSION_H
 
 #include <cstdint>
 #include <ostream>

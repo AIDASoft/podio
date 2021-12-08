@@ -1,5 +1,5 @@
-#ifndef COLLECTIONIDTABLE_H
-#define COLLECTIONIDTABLE_H
+#ifndef PODIO_COLLECTIONIDTABLE_H
+#define PODIO_COLLECTIONIDTABLE_H
 
 #include <mutex>
 #include <string>

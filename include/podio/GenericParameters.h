@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef GenericParameters_H
-#define GenericParameters_H 1
+#ifndef PODIO_GENERICPARAMETERS_H
+#define PODIO_GENERICPARAMETERS_H 1
 
 #include <map>
 #include <string>

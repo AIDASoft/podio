@@ -59,7 +59,7 @@ void fillExampleMCCollection(ExampleMCCollection& collection) {
 // TODO: break up into smaller cases
 void doTestExampleMC(ExampleMCCollection const& collection) {
   // Empty
-  ASSERT_CONDITION(collection[7].daughters().size() == 0 && collection[7].parents().size() == 0,
+  ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
                    "RelationRange of empty collection is not empty");
   // Equivalent but potentially quicker way of checking an empty collection
   ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
@@ -111,7 +111,7 @@ void doTestExampleMC(ExampleMCCollection const& collection) {
   }
 
   try {
-    const auto parent = parents.at(3);
+    const auto parent [[maybe_unused]] = parents.at(3);
     throw std::runtime_error("Trying to access out of bounds in a RelationRange::at should throw");
   } catch (const std::out_of_range& err) {
     ASSERT_EQUAL(err.what(), std::string("index out of bounds for RelationRange"),

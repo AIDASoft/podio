@@ -6,9 +6,9 @@
 #include <map>
 #include <sstream>
 #ifdef USE_BOOST_FILESYSTEM
-#  include <boost/filesystem.hpp>
+  #include <boost/filesystem.hpp>
 #else
-#  include <filesystem>
+  #include <filesystem>
 #endif
 
 namespace podio {
@@ -176,8 +176,9 @@ std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
   std::string dir;
   std::istringstream stream(std::getenv("LD_LIBRARY_PATH"));
   while (std::getline(stream, dir, ':')) {
-    if (not fs::exists(dir))
+    if (not fs::exists(dir)) {
       continue;
+    }
 
     for (auto& lib : fs::directory_iterator(dir)) {
       const auto filename = lib.path().filename().string();

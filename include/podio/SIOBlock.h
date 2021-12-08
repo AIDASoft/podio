@@ -1,5 +1,5 @@
-#ifndef SIOBlock_H
-#define SIOBlock_H
+#ifndef PODIO_SIOBLOCK_H
+#define PODIO_SIOBLOCK_H
 
 #include <podio/CollectionBase.h>
 #include <podio/CollectionIDTable.h>
@@ -72,8 +72,8 @@ public:
   SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
   SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
 
-  virtual void read(sio::read_device& device, sio::version_type version) override;
-  virtual void write(sio::write_device& device) override;
+  void read(sio::read_device& device, sio::version_type version) override;
+  void write(sio::write_device& device) override;
 
   podio::CollectionIDTable* getTable() {
     return _table;
@@ -107,8 +107,8 @@ public:
   SIOEventMetaDataBlock(const SIOEventMetaDataBlock&) = delete;
   SIOEventMetaDataBlock& operator=(const SIOEventMetaDataBlock&) = delete;
 
-  virtual void read(sio::read_device& device, sio::version_type version) override;
-  virtual void write(sio::write_device& device) override;
+  void read(sio::read_device& device, sio::version_type version) override;
+  void write(sio::write_device& device) override;
 
   podio::GenericParameters* metadata{nullptr};
 };
@@ -124,8 +124,8 @@ public:
   SIONumberedMetaDataBlock(const SIONumberedMetaDataBlock&) = delete;
   SIONumberedMetaDataBlock& operator=(const SIONumberedMetaDataBlock&) = delete;
 
-  virtual void read(sio::read_device& device, sio::version_type version) override;
-  virtual void write(sio::write_device& device) override;
+  void read(sio::read_device& device, sio::version_type version) override;
+  void write(sio::write_device& device) override;
 
   std::map<int, GenericParameters>* data{nullptr};
 };
@@ -139,7 +139,7 @@ private:
   BlockMap _map{};
 
 public:
-  void registerBlockForCollection(std::string type, SIOBlock* b) {
+  void registerBlockForCollection(const std::string& type, SIOBlock* b) {
     _map[type] = b;
   }
 
@@ -213,8 +213,8 @@ struct SIOFileTOCRecordBlock : public sio::block {
   SIOFileTOCRecordBlock(const SIOFileTOCRecordBlock&) = delete;
   SIOFileTOCRecordBlock& operator=(const SIOFileTOCRecordBlock&) = delete;
 
-  virtual void read(sio::read_device& device, sio::version_type version) override;
-  virtual void write(sio::write_device& device) override;
+  void read(sio::read_device& device, sio::version_type version) override;
+  void write(sio::write_device& device) override;
 
   SIOFileTOCRecord* record{nullptr};
 };

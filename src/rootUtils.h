@@ -1,5 +1,5 @@
-#ifndef PODIO_ROOT_UTILS_H
-#define PODIO_ROOT_UTILS_H
+#ifndef PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
+#define PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBranches.h"
@@ -7,6 +7,7 @@
 
 #include "TBranch.h"
 #include "TClass.h"
+#include "TTree.h"
 
 #include <iostream>
 #include <string>

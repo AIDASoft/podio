@@ -104,12 +104,6 @@ bool SIOReader::isValid() const {
   return m_stream.good();
 }
 
-SIOReader::~SIOReader() {
-  // delete all collections
-  // at the moment it is done in the EventStore;
-  // TODO: who deletes the buffers?
-}
-
 void SIOReader::endOfEvent() {
   ++m_eventNumber;
   m_blocks.clear();
@@ -123,7 +117,7 @@ void SIOReader::createBlocks() {
   m_blocks.push_back(m_eventMetaData);
 
   for (size_t i = 0; i < m_typeNames.size(); ++i) {
-    const bool subsetColl = m_subsetCollectionBits.size() && m_subsetCollectionBits[i];
+    const bool subsetColl = !m_subsetCollectionBits.empty() && m_subsetCollectionBits[i];
     auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i], subsetColl);
     m_blocks.push_back(blk);
     m_inputs.emplace_back(blk->getCollection(), m_table->names()[i]);
@@ -150,7 +144,7 @@ void SIOReader::readCollectionIDTable() {
   m_fileVersion = idTableBlock->getPodioVersion();
 }
 
-void SIOReader::readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock) {
+void SIOReader::readMetaDataRecord(const std::shared_ptr<SIONumberedMetaDataBlock>& mdBlock) {
   const auto currPos = m_stream.tellg();
   sio::api::go_to_record(m_stream, mdBlock->name());
 

@@ -1,5 +1,5 @@
-#ifndef ROOTREADER_H
-#define ROOTREADER_H
+#ifndef PODIO_ROOTREADER_H
+#define PODIO_ROOTREADER_H
 
 #include "podio/CollectionBranches.h"
 #include "podio/ICollectionProvider.h"
@@ -35,7 +35,7 @@ class ROOTReader : public IReader {
 
 public:
   ROOTReader() = default;
-  ~ROOTReader();
+  ~ROOTReader() = default;
 
   // non-copyable
   ROOTReader(const ROOTReader&) = delete;
@@ -50,7 +50,7 @@ public:
   void readEvent();
 
   /// Read CollectionIDTable from ROOT file
-  CollectionIDTable* getCollectionIDTable() override final {
+  CollectionIDTable* getCollectionIDTable() override {
     return m_table;
   }
 
@@ -68,20 +68,20 @@ public:
   }
 
   /// Check if TFile is valid
-  virtual bool isValid() const override final;
+  bool isValid() const override;
 
 private:
   /// Implementation for collection reading
-  CollectionBase* readCollection(const std::string& name) override final;
+  CollectionBase* readCollection(const std::string& name) override;
 
   /// read event meta data for current event
-  GenericParameters* readEventMetaData() override final;
+  GenericParameters* readEventMetaData() override;
 
   /// read the collection meta data
-  std::map<int, GenericParameters>* readCollectionMetaData() override final;
+  std::map<int, GenericParameters>* readCollectionMetaData() override;
 
   /// read the run meta data
-  std::map<int, GenericParameters>* readRunMetaData() override final;
+  std::map<int, GenericParameters>* readRunMetaData() override;
 
 private:
   void createCollectionBranches(const std::vector<std::tuple<int, std::string, bool>>& collInfo);

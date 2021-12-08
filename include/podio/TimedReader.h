@@ -1,5 +1,5 @@
-#ifndef PODIO_TIMEDREADER_H__
-#define PODIO_TIMEDREADER_H__
+#ifndef PODIO_TIMEDREADER_H
+#define PODIO_TIMEDREADER_H
 
 #include "podio/BenchmarkRecorder.h"
 #include "podio/BenchmarkUtil.h"
@@ -28,7 +28,7 @@ public:
     m_recorder.recordTime("setup_times", "constructor", m_end - m_start);
   }
 
-  virtual ~TimedReader() {
+  ~TimedReader() {
     // Timing deconstructors is not straight forward when wrapping a value.
     // Since nothing is usually happening in them in any case, we simply don't
     // do it. We still have to fill the setup_times tree here though.
@@ -37,7 +37,7 @@ public:
 
   /// Read Collection of given name
   /// Does not set references yet.
-  virtual CollectionBase* readCollection(const std::string& name) override {
+  CollectionBase* readCollection(const std::string& name) override {
     const auto [result, duration] = benchmark::run_member_timed(m_reader, &IReader::readCollection, name);
     // since we cannot in general know how many collections there will be read
     // we simply sum up all the requests in an event and record that
@@ -46,30 +46,30 @@ public:
   }
 
   /// Get CollectionIDTable of read-in data
-  virtual CollectionIDTable* getCollectionIDTable() override {
+  CollectionIDTable* getCollectionIDTable() override {
     return runTimed(false, "read_collection_ids", &IReader::getCollectionIDTable);
   }
 
   /// read event meta data from file
-  virtual GenericParameters* readEventMetaData() override {
+  GenericParameters* readEventMetaData() override {
     return runTimed(true, "read_ev_md", &IReader::readEventMetaData);
   }
 
-  virtual std::map<int, GenericParameters>* readCollectionMetaData() override {
+  std::map<int, GenericParameters>* readCollectionMetaData() override {
     return runTimed(true, "read_coll_md", &IReader::readCollectionMetaData);
   }
 
-  virtual std::map<int, GenericParameters>* readRunMetaData() override {
+  std::map<int, GenericParameters>* readRunMetaData() override {
     return runTimed(true, "read_run_md", &IReader::readRunMetaData);
   }
 
   /// get the number of events available from this reader
-  virtual unsigned getEntries() const override {
+  unsigned getEntries() const override {
     return runTimed(false, "get_entries", &IReader::getEntries);
   }
 
   /// Prepare the reader to read the next event
-  virtual void endOfEvent() override {
+  void endOfEvent() override {
     runVoidTimed(true, "end_of_event", &IReader::endOfEvent);
 
     m_perEventTree.recordTime("read_collections", m_totalCollectionReadTime);
@@ -78,15 +78,15 @@ public:
   }
 
   // not benchmarking this one
-  virtual bool isValid() const override {
+  bool isValid() const override {
     return m_reader.isValid();
   }
 
-  virtual void openFile(const std::string& filename) override {
+  void openFile(const std::string& filename) override {
     runVoidTimed(false, "open_file", &IReader::openFile, filename);
   }
 
-  virtual void closeFile() override {
+  void closeFile() override {
     runVoidTimed(false, "close_file", &IReader::closeFile);
   }
 
