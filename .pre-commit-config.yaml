@@ -7,6 +7,18 @@ repos:
         exclude: (doc/ReleaseNotes.md)
   - repo: local
     hooks:
+      - id: clang-tidy
+        name: clang-tidy
+        entry: clang-tidy -warnings-as-errors='*' -p compile_commands.json
+        types: [c++]
+        exclude: (tests/(datamodel|src)/.*(h|cc)|podioVersion.in.h)
+        language: system
+      - id: clang-format
+        name: clang-format
+        entry: .github/scripts/clang-format-hook
+        exclude: (tests/(datamodel|src)/.*(h|cc)$|podioVersion.in.h)
+        types: [c++]
+        language: system
       - id: pylint
         name: pylint
         entry: 'pylint --rcfile=.github/scripts/pylint.rc --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"'
