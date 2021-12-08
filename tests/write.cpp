@@ -1,8 +1,8 @@
-#include "write_test.h"
-#include "podio/ROOTWriter.h"
 #include "podio/EventStore.h"
+#include "podio/ROOTWriter.h"
+#include "write_test.h"
 
-int main(int, char**){
+int main(int, char**) {
   auto store = podio::EventStore();
   podio::ROOTWriter writer("example.root", &store);
   write(store, writer);

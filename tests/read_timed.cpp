@@ -1,7 +1,7 @@
-#include "read_test.h"
+#include "podio/BenchmarkRecorder.h"
 #include "podio/ROOTReader.h"
 #include "podio/TimedReader.h"
-#include "podio/BenchmarkRecorder.h"
+#include "read_test.h"
 
 int main() {
   podio::benchmark::BenchmarkRecorder recorder("read_benchmark_root.root");

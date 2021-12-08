@@ -4,10 +4,9 @@
 #include "podio/podioVersion.h"
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-
 
 /*
 
@@ -23,32 +22,32 @@ class CollectionIDTable;
 class GenericParameters;
 
 class IReader {
-  public:
-    virtual ~IReader(){};
-    /// Read Collection of given name
-    /// Does not set references yet.
-    virtual CollectionBase* readCollection(const std::string& name) = 0;
-    /// Get CollectionIDTable of read-in data
-    virtual CollectionIDTable* getCollectionIDTable() = 0;
-    /// read event meta data from file
-    virtual GenericParameters* readEventMetaData()=0 ;
-    virtual std::map<int,GenericParameters>* readCollectionMetaData()=0 ;
-    virtual std::map<int,GenericParameters>* readRunMetaData()=0 ;
-    /// get the number of events available from this reader
-    virtual unsigned getEntries() const = 0;
-    /// Prepare the reader to read the next event
-    virtual void endOfEvent() = 0;
-    //TODO: decide on smart-pointers for passing of objects
-    /// Check if reader is valid
-    virtual bool isValid() const = 0;
+public:
+  virtual ~IReader(){};
+  /// Read Collection of given name
+  /// Does not set references yet.
+  virtual CollectionBase* readCollection(const std::string& name) = 0;
+  /// Get CollectionIDTable of read-in data
+  virtual CollectionIDTable* getCollectionIDTable() = 0;
+  /// read event meta data from file
+  virtual GenericParameters* readEventMetaData() = 0;
+  virtual std::map<int, GenericParameters>* readCollectionMetaData() = 0;
+  virtual std::map<int, GenericParameters>* readRunMetaData() = 0;
+  /// get the number of events available from this reader
+  virtual unsigned getEntries() const = 0;
+  /// Prepare the reader to read the next event
+  virtual void endOfEvent() = 0;
+  // TODO: decide on smart-pointers for passing of objects
+  /// Check if reader is valid
+  virtual bool isValid() const = 0;
 
-    virtual void openFile(const std::string& filename) = 0;
-    virtual void closeFile() = 0;
+  virtual void openFile(const std::string& filename) = 0;
+  virtual void closeFile() = 0;
 
-    /// Get the podio version with which the current file has been written
-    virtual podio::version::Version currentFileVersion() const = 0;
+  /// Get the podio version with which the current file has been written
+  virtual podio::version::Version currentFileVersion() const = 0;
 };
 
-} // namespace
+} // namespace podio
 
 #endif

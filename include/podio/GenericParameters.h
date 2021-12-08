@@ -3,143 +3,153 @@
 #define GenericParameters_H 1
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace podio {
 
-  typedef std::vector<int> IntVec ;
-  typedef std::vector<float> FloatVec ;
-  typedef std::vector<std::string> StringVec ;
+typedef std::vector<int> IntVec;
+typedef std::vector<float> FloatVec;
+typedef std::vector<std::string> StringVec;
 
-  /** GenericParameters objects allow to store generic named parameters of type
-   *  int, float and string or vectors of these types.
-   *  They can be used  to store (user) meta data that is
-   *  run, event or collection dependent.
-   *  (based on lcio::LCParameters)
-   *
-   * @author F. Gaede, DESY
-   * @date Apr 2020
+/** GenericParameters objects allow to store generic named parameters of type
+ *  int, float and string or vectors of these types.
+ *  They can be used  to store (user) meta data that is
+ *  run, event or collection dependent.
+ *  (based on lcio::LCParameters)
+ *
+ * @author F. Gaede, DESY
+ * @date Apr 2020
+ */
+
+class GenericParameters {
+public:
+  template <typename T>
+  using MapType = std::map<std::string, std::vector<T>>;
+
+private:
+  using IntMap = MapType<int>;
+  using FloatMap = MapType<float>;
+  using StringMap = MapType<std::string>;
+
+public:
+  /** Returns the first integer value for the given key.
    */
+  int getIntVal(const std::string& key) const;
 
-  class GenericParameters {
-  public:
-    template<typename T>
-    using MapType = std::map<std::string, std::vector<T>>;
+  /** Returns the first float value for the given key.
+   */
+  float getFloatVal(const std::string& key) const;
 
-  private:
-    using IntMap = MapType<int>;
-    using FloatMap = MapType<float>;
-    using StringMap = MapType<std::string>;
+  /** Returns the first string value for the given key.
+   */
+  const std::string& getStringVal(const std::string& key) const;
 
-  public:
+  /** Adds all integer values for the given key to values.
+   *  Returns a reference to values for convenience.
+   */
+  IntVec& getIntVals(const std::string& key, IntVec& values) const;
 
-    /** Returns the first integer value for the given key.
-     */
-    int getIntVal(const std::string & key) const  ;
+  /** Adds all float values for the given key to values.
+   *  Returns a reference to values for convenience.
+   */
+  FloatVec& getFloatVals(const std::string& key, FloatVec& values) const;
 
-    /** Returns the first float value for the given key.
-     */
-    float getFloatVal(const std::string & key) const ;
+  /** Adds all float values for the given key to values.
+   *  Returns a reference to values for convenience.
+   */
+  StringVec& getStringVals(const std::string& key, StringVec& values) const;
 
-    /** Returns the first string value for the given key.
-     */
-    const std::string & getStringVal(const std::string & key) const ;
+  /** Returns a list of all keys of integer parameters.
+   */
+  const StringVec& getIntKeys(StringVec& keys) const;
 
-    /** Adds all integer values for the given key to values.
-     *  Returns a reference to values for convenience.
-     */
-    IntVec & getIntVals(const std::string & key, IntVec & values) const ;
+  /** Returns a list of all keys of float parameters.
+   */
+  const StringVec& getFloatKeys(StringVec& keys) const;
 
-    /** Adds all float values for the given key to values.
-     *  Returns a reference to values for convenience.
-     */
-    FloatVec & getFloatVals(const std::string & key, FloatVec & values) const ;
+  /** Returns a list of all keys of string parameters.
+   */
+  const StringVec& getStringKeys(StringVec& keys) const;
 
-    /** Adds all float values for the given key to values.
-     *  Returns a reference to values for convenience.
-     */
-     StringVec & getStringVals(const std::string & key, StringVec & values) const ;
+  /** The number of integer values stored for this key.
+   */
+  int getNInt(const std::string& key) const;
 
-    /** Returns a list of all keys of integer parameters.
-     */
-    const StringVec & getIntKeys( StringVec & keys) const  ;
+  /** The number of float values stored for this key.
+   */
+  int getNFloat(const std::string& key) const;
 
-    /** Returns a list of all keys of float parameters.
-     */
-    const StringVec & getFloatKeys(StringVec & keys)  const ;
+  /** The number of string values stored for this key.
+   */
+  int getNString(const std::string& key) const;
 
-    /** Returns a list of all keys of string parameters.
-     */
-    const StringVec & getStringKeys(StringVec & keys)  const ;
+  /** Set integer value for the given key.
+   */
+  void setValue(const std::string& key, int value);
 
-    /** The number of integer values stored for this key.
-     */
-    int getNInt(const std::string & key) const ;
+  /** Set float value for the given key.
+   */
+  void setValue(const std::string& key, float value);
 
-    /** The number of float values stored for this key.
-     */
-    int getNFloat(const std::string & key) const ;
+  /** Set string value for the given key.
+   */
+  void setValue(const std::string& key, const std::string& value);
 
-    /** The number of string values stored for this key.
-     */
-    int getNString(const std::string & key) const ;
+  /** Set integer values for the given key.
+   */
+  void setValues(const std::string& key, const IntVec& values);
 
-    /** Set integer value for the given key.
-     */
-    void setValue(const std::string & key, int value) ;
+  /** Set float values for the given key.
+   */
+  void setValues(const std::string& key, const FloatVec& values);
 
-    /** Set float value for the given key.
-     */
-    void setValue(const std::string & key, float value) ;
+  /** Set string values for the given key.
+   */
+  void setValues(const std::string& key, const StringVec& values);
 
-    /** Set string value for the given key.
-     */
-    void setValue(const std::string & key, const std::string & value) ;
+  /// erase all elements
+  void clear() {
+    _intMap.clear();
+    _floatMap.clear();
+    _stringMap.clear();
+  }
 
-    /** Set integer values for the given key.
-     */
-    void setValues(const std::string & key, const IntVec & values);
+  /**
+   * Get the internal int map (necessary for serialization with SIO)
+   */
+  const IntMap& getIntMap() const {
+    return _intMap;
+  }
+  IntMap& getIntMap() {
+    return _intMap;
+  }
 
-    /** Set float values for the given key.
-     */
-    void setValues(const std::string & key, const FloatVec & values);
+  /**
+   * Get the internal float map (necessary for serialization with SIO)
+   */
+  const FloatMap& getFloatMap() const {
+    return _floatMap;
+  }
+  FloatMap& getFloatMap() {
+    return _floatMap;
+  }
 
-    /** Set string values for the given key.
-     */
-    void setValues(const std::string & key, const StringVec & values);
+  /**
+   * Get the internal string map (necessary for serialization with SIO)
+   */
+  const StringMap& getStringMap() const {
+    return _stringMap;
+  }
+  StringMap& getStringMap() {
+    return _stringMap;
+  }
 
-    /// erase all elements
-    void clear() {
-      _intMap.clear();
-      _floatMap.clear();
-      _stringMap.clear();
-    }
+protected:
+  IntMap _intMap{};
+  FloatMap _floatMap{};
+  StringMap _stringMap{};
 
-    /**
-     * Get the internal int map (necessary for serialization with SIO)
-     */
-    const IntMap& getIntMap() const { return _intMap; }
-    IntMap& getIntMap() { return _intMap; }
-
-    /**
-     * Get the internal float map (necessary for serialization with SIO)
-     */
-    const FloatMap& getFloatMap() const { return _floatMap; }
-    FloatMap& getFloatMap() { return _floatMap; }
-
-    /**
-     * Get the internal string map (necessary for serialization with SIO)
-     */
-    const StringMap& getStringMap() const { return _stringMap; }
-    StringMap& getStringMap() { return _stringMap; }
-
-  protected:
-
-    IntMap _intMap{} ;
-    FloatMap _floatMap{} ;
-    StringMap _stringMap{} ;
-
-  }; // class
+}; // class
 } // namespace podio
 #endif

@@ -3,16 +3,16 @@
 
 namespace podio {
 
-  class CollectionBase;
+class CollectionBase;
 
-  class ICollectionProvider {
-  public:
-    /// destructor
-    virtual ~ICollectionProvider(){};
-    /// access a collection by ID. returns true if successful
-    virtual bool get(int collectionID, CollectionBase*& collection) const = 0;
-  };
+class ICollectionProvider {
+public:
+  /// destructor
+  virtual ~ICollectionProvider(){};
+  /// access a collection by ID. returns true if successful
+  virtual bool get(int collectionID, CollectionBase*& collection) const = 0;
+};
 
-} // namespace
+} // namespace podio
 
 #endif

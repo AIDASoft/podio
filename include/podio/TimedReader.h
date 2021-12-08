@@ -1,36 +1,30 @@
 #ifndef PODIO_TIMEDREADER_H__
 #define PODIO_TIMEDREADER_H__
 
-#include "podio/BenchmarkUtil.h"
 #include "podio/BenchmarkRecorder.h"
+#include "podio/BenchmarkUtil.h"
 
-#include "podio/IReader.h"
 #include "podio/GenericParameters.h"
+#include "podio/IReader.h"
 
 #include <map>
 
 namespace podio {
 
-template<class WrappedReader>
+template <class WrappedReader>
 class TimedReader : public IReader {
   using ClockT = benchmark::ClockT;
 
 public:
-  template<typename ...Args>
+  template <typename... Args>
   TimedReader(benchmark::BenchmarkRecorder& recorder, Args&&... args) :
-    m_start(ClockT::now()),
-    m_reader(WrappedReader(std::forward<Args>(args)...)),
-    m_end(ClockT::now()),
-    m_recorder(recorder),
-    m_perEventTree(m_recorder.addTree("event_times", {
-      "read_collections", "read_ev_md", "read_run_md", "read_coll_md",
-      "end_of_event"
-    }))
-  {
-    m_recorder.addTree("setup_times", {
-      "constructor", "open_file", "close_file", "read_collection_ids",
-      "get_entries"
-    });
+      m_start(ClockT::now()),
+      m_reader(WrappedReader(std::forward<Args>(args)...)),
+      m_end(ClockT::now()),
+      m_recorder(recorder),
+      m_perEventTree(m_recorder.addTree(
+          "event_times", {"read_collections", "read_ev_md", "read_run_md", "read_coll_md", "end_of_event"})) {
+    m_recorder.addTree("setup_times", {"constructor", "open_file", "close_file", "read_collection_ids", "get_entries"});
     m_recorder.recordTime("setup_times", "constructor", m_end - m_start);
   }
 
@@ -84,7 +78,9 @@ public:
   }
 
   // not benchmarking this one
-  virtual bool isValid() const override { return m_reader.isValid(); }
+  virtual bool isValid() const override {
+    return m_reader.isValid();
+  }
 
   virtual void openFile(const std::string& filename) override {
     runVoidTimed(false, "open_file", &IReader::openFile, filename);
@@ -100,7 +96,7 @@ public:
   }
 
 private:
-  void recordTime (bool perEvent, const std::string& step, ClockT::duration duration) const {
+  void recordTime(bool perEvent, const std::string& step, ClockT::duration duration) const {
     if (perEvent) {
       m_perEventTree.recordTime(step, duration);
     } else {
@@ -108,9 +104,9 @@ private:
     }
   }
 
-  template<typename FuncT, typename ...Args>
-  inline std::invoke_result_t<FuncT, WrappedReader, Args...>
-  runTimed(bool perEvent, const std::string& step, FuncT func, Args&&... args) {
+  template <typename FuncT, typename... Args>
+  inline std::invoke_result_t<FuncT, WrappedReader, Args...> runTimed(bool perEvent, const std::string& step,
+                                                                      FuncT func, Args&&... args) {
     const auto [result, duration] = benchmark::run_member_timed(m_reader, func, std::forward<Args>(args)...);
 
     recordTime(perEvent, step, duration);
@@ -118,9 +114,9 @@ private:
     return result;
   }
 
-  template<typename FuncT, typename ...Args>
-  inline std::invoke_result_t<FuncT, WrappedReader, Args...>
-  runTimed(bool perEvent, const std::string& step, FuncT func, Args&&... args) const {
+  template <typename FuncT, typename... Args>
+  inline std::invoke_result_t<FuncT, WrappedReader, Args...> runTimed(bool perEvent, const std::string& step,
+                                                                      FuncT func, Args&&... args) const {
     const auto [result, duration] = benchmark::run_member_timed(m_reader, func, std::forward<Args>(args)...);
 
     recordTime(perEvent, step, duration);
@@ -128,7 +124,7 @@ private:
     return result;
   }
 
-  template<typename FuncT, typename ...Args>
+  template <typename FuncT, typename... Args>
   inline void runVoidTimed(bool perEvent, const std::string& step, FuncT func, Args&&... args) {
     const auto duration = benchmark::run_void_member_timed(m_reader, func, std::forward<Args>(args)...);
 
@@ -138,8 +134,8 @@ private:
   // NOTE: c++ initializes its class members in the order they are defined not
   // in the order in which they appear in the initializer list!
   ClockT::time_point m_start; // to time the construction
-  WrappedReader m_reader; // the decorated reader that does the actual work
-  ClockT::time_point m_end; // to time the constructor call
+  WrappedReader m_reader;     // the decorated reader that does the actual work
+  ClockT::time_point m_end;   // to time the constructor call
 
   benchmark::BenchmarkRecorder& m_recorder;
   // Keep a reference to this one around, to save the look-up in each event
@@ -147,6 +143,6 @@ private:
   ClockT::duration m_totalCollectionReadTime{std::chrono::nanoseconds{0}};
 };
 
-}
+} // namespace podio
 
 #endif
