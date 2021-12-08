@@ -32,9 +32,6 @@ SIOWriter::SIOWriter(const std::string& filename, EventStore* store) :
   auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
 }
 
-SIOWriter::~SIOWriter() {
-}
-
 void SIOWriter::writeEvent() {
   if (m_firstEvent) {
     // Write the collectionIDs as a separate record at the beginning of the

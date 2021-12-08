@@ -85,8 +85,9 @@ TEST_CASE("Clearing", "[ASAN-FAIL][THREAD-FAIL][basics][memory-management]") {
     oneRels.push_back(oneRel);
   }
   hits.clear();
-  if (hits.size() != 0)
+  if (hits.size() != 0) {
     success = false;
+  }
   REQUIRE(success);
 }
 
@@ -96,8 +97,9 @@ TEST_CASE("Cloning", "[basics][memory-management]") {
   hit.energy(30);
   auto hit2 = hit.clone();
   hit2.energy(20);
-  if (hit.energy() == hit2.energy())
+  if (hit.energy() == hit2.energy()) {
     success = false;
+  }
   auto cluster = MutableExampleCluster();
   cluster.addHits(hit);
   auto cluster2 = cluster.clone();
@@ -148,9 +150,9 @@ TEST_CASE("Looping", "[basics]") {
   auto& coll = store.create<ExampleHitCollection>("name");
   auto hit1 = coll.create(0xbadULL, 0., 0., 0., 0.);
   auto hit2 = coll.create(0xcaffeeULL, 1., 1., 1., 1.);
-  for (auto i = coll.begin(), end = coll.end(); i != end; ++i) {
-    i->energy(42); // make sure that we can indeed change the energy here for
-                   // non-const collections
+  for (auto&& i : coll) {
+    i.energy(42); // make sure that we can indeed change the energy here for
+                  // non-const collections
   }
   REQUIRE(hit1.energy() == 42);
   REQUIRE(hit2.energy() == 42);
@@ -180,8 +182,9 @@ TEST_CASE("Notebook", "[basics]") {
   auto energies = hits.energy<10>();
   int index = 0;
   for (auto energy : energies) {
-    if (double(index) != energy)
+    if (double(index) != energy) {
       success = false;
+    }
     ++index;
   }
   REQUIRE(success);
@@ -455,8 +458,9 @@ TEST_CASE("Collection iterators work with subset collections", "[LEAK-FAIL][subs
 
   auto hitRefs = ExampleHitCollection();
   hitRefs.setSubsetCollection();
-  for (const auto h : hits)
+  for (const auto h : hits) {
     hitRefs.push_back(h);
+  }
 
   // index-based looping / access
   for (size_t i = 0; i < hitRefs.size(); ++i) {
@@ -618,8 +622,9 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     // NOTE: Does not apply to UserDataCollections!
     auto subsetHits = ExampleHitCollection();
     subsetHits.setSubsetCollection();
-    for (auto hit : hitColl)
+    for (auto hit : hitColl) {
       subsetHits.push_back(hit);
+    }
     checkCollections(subsetHits, clusterColl, vecMemColl, userDataColl);
 
     auto newSubsetHits = std::move(subsetHits);
@@ -628,8 +633,9 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
 
     auto subsetClusters = ExampleClusterCollection();
     subsetClusters.setSubsetCollection();
-    for (auto cluster : clusterColl)
+    for (auto cluster : clusterColl) {
       subsetClusters.push_back(cluster);
+    }
     checkCollections(newSubsetHits, subsetClusters, vecMemColl, userDataColl);
 
     // Test move-assignment here as well
@@ -640,8 +646,9 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
 
     auto subsetVecs = ExampleWithVectorMemberCollection();
     subsetVecs.setSubsetCollection();
-    for (auto vec : vecMemColl)
+    for (auto vec : vecMemColl) {
       subsetVecs.push_back(vec);
+    }
     checkCollections(newSubsetHits, newSubsetClusters, subsetVecs, userDataColl);
 
     auto newSubsetVecs = std::move(subsetVecs);

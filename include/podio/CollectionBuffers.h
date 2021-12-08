@@ -3,14 +3,14 @@
 
 #include "podio/ObjectID.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 
 namespace podio {
 
-template<typename T>
+template <typename T>
 using UVecPtr = std::unique_ptr<std::vector<T>>;
 
 using CollRefCollection = std::vector<UVecPtr<podio::ObjectID>>;

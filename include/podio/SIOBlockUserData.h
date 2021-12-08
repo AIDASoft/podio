@@ -1,5 +1,5 @@
-#ifndef SIOBlockUserData_H
-#define SIOBlockUserData_H
+#ifndef PODIO_SIOBLOCKUSERDATA_H
+#define PODIO_SIOBLOCKUSERDATA_H
 
 #include "podio/SIOBlock.h"
 #include "podio/UserDataCollection.h"
@@ -15,7 +15,7 @@
 namespace {
 
 /// helper function to get valid sio block names
-std::string sio_name(const std::string str) {
+inline std::string sio_name(const std::string& str) {
   std::string s = str;
   std::replace(s.begin(), s.end(), ' ', '_');
   return s;
@@ -35,7 +35,7 @@ public:
   SIOBlockUserData(const std::string& name) : SIOBlock(name, sio::version::encode_version(0, 1)) {
   }
 
-  virtual void read(sio::read_device& device, sio::version_type /*version*/) override {
+  void read(sio::read_device& device, sio::version_type /*version*/) override {
     auto collBuffers = _col->getBuffers();
     auto* dataVec = collBuffers.dataAsVector<BasicType>();
     unsigned size(0);
@@ -44,7 +44,7 @@ public:
     podio::handlePODDataSIO(device, &(*dataVec)[0], size);
   }
 
-  virtual void write(sio::write_device& device) override {
+  void write(sio::write_device& device) override {
     _col->prepareForWrite();
     auto collBuffers = _col->getBuffers();
     auto* dataVec = collBuffers.dataAsVector<BasicType>();
@@ -53,7 +53,7 @@ public:
     podio::handlePODDataSIO(device, &(*dataVec)[0], size);
   }
 
-  virtual void createCollection(const bool) override {
+  void createCollection(const bool) override {
     setCollection(new podio::UserDataCollection<BasicType>);
   }
 

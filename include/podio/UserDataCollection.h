@@ -1,5 +1,5 @@
-#ifndef USERDATACOLLECTION_H
-#define USERDATACOLLECTION_H
+#ifndef PODIO_USERDATACOLLECTION_H
+#define PODIO_USERDATACOLLECTION_H
 
 #include "podio/CollectionBase.h"
 
@@ -97,41 +97,41 @@ public:
   ~UserDataCollection() = default;
 
   /// prepare buffers for serialization
-  void prepareForWrite() override final {
+  void prepareForWrite() override {
   }
 
   /// re-create collection from buffers after read
-  void prepareAfterRead() override final {
+  void prepareAfterRead() override {
   }
 
   /// initialize references after read
-  bool setReferences(const ICollectionProvider*) override final {
+  bool setReferences(const ICollectionProvider*) override {
     return true;
   }
 
   /// set collection ID
-  void setID(unsigned id) override final {
+  void setID(unsigned id) override {
     m_collectionID = id;
   }
 
   /// get collection ID
-  unsigned getID() const override final {
+  unsigned getID() const override {
     return m_collectionID;
   }
 
   /// Get the collection buffers for this collection
-  podio::CollectionBuffers getBuffers() override final {
+  podio::CollectionBuffers getBuffers() override {
     _vecPtr = &_vec; // Set the pointer to the correct internal vector
     return {&_vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
   /// check for validity of the container after read
-  bool isValid() const override final {
+  bool isValid() const override {
     return true;
   }
 
   /// number of elements in the collection
-  size_t size() const override final {
+  size_t size() const override {
     return _vec.size();
   }
 
@@ -151,17 +151,17 @@ public:
   }
 
   /// clear the collection and all internal states
-  void clear() override final {
+  void clear() override {
     _vec.clear();
   };
 
   /// check if this collection is a subset collection - no subset possible
-  bool isSubsetCollection() const override final {
+  bool isSubsetCollection() const override {
     return false;
   }
 
   /// declare this collection to be a subset collectionv - no effect
-  void setSubsetCollection(bool) override final {
+  void setSubsetCollection(bool) override {
   }
 
   // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)

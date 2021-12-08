@@ -7,8 +7,9 @@ namespace podio {
 template <typename T>
 T getValFromMap(const GenericParameters::MapType<T>& map, const std::string& key) {
   const auto it = map.find(key);
-  if (it == map.end())
+  if (it == map.end()) {
     return T{};
+  }
   const auto& iv = it->second;
   return iv[0];
 }
@@ -17,8 +18,9 @@ T getValFromMap(const GenericParameters::MapType<T>& map, const std::string& key
 const std::string& getValFromMap(const GenericParameters::MapType<std::string>& map, const std::string& key) {
   static const std::string empty("");
   auto it = map.find(key);
-  if (it == map.end())
+  if (it == map.end()) {
     return empty;
+  }
   const auto& iv = it->second;
   return iv[0];
 }
@@ -78,10 +80,10 @@ const StringVec& GenericParameters::getStringKeys(StringVec& keys) const {
 template <typename T>
 int getStoredElements(const GenericParameters::MapType<T>& map, const std::string& key) {
   auto it = map.find(key);
-  if (it == map.end())
+  if (it == map.end()) {
     return 0;
-  else
-    return it->second.size();
+  }
+  return it->second.size();
 }
 
 int GenericParameters::getNInt(const std::string& key) const {

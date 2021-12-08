@@ -18,8 +18,9 @@ EventStore::~EventStore() {
 
 bool EventStore::get(int id, CollectionBase*& collection) const {
   // see if we have a cached collection
-  if ((collection = getFast(id)) != nullptr)
+  if ((collection = getFast(id)) != nullptr) {
     return true;
+  }
 
   auto val = m_retrievedIDs.insert(id);
   bool success = false;
@@ -28,8 +29,9 @@ bool EventStore::get(int id, CollectionBase*& collection) const {
     auto name = m_table->name(id);
     success = doGet(name, collection, true);
     if (collection != nullptr) { // cache the collection for faster retreaval later
-      if (m_cachedCollections.size() < (unsigned)id + 1)
+      if (m_cachedCollections.size() < (unsigned)id + 1) {
         m_cachedCollections.resize(id + 1);
+      }
       m_cachedCollections[id] = collection;
     }
   } else {
@@ -75,8 +77,9 @@ bool EventStore::doGet(const std::string& name, CollectionBase*& collection, boo
       }
     }
     collection = tmp;
-    if (tmp != nullptr)
+    if (tmp != nullptr) {
       return true;
+    }
   } else {
     return false;
   }
