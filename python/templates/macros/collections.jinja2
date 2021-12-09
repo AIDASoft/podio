@@ -109,32 +109,32 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection&
   {{ header | ostream_collection_header(col_width=col_width) }}:
 {%- endfor -%}" << '\n';
 
-  for (size_t i = 0; i < v.size(); ++i) {
-    o << std::scientific << std::showpos << std::setw({{ col_width }}) << v[i].id() << " "
+  for (const auto&& el : v) {
+    o << std::scientific << std::showpos << std::setw({{ col_width }}) << el.id() << " "
 {% for member in members %}
 {% if not member.is_array %}
-      << std::setw({{ col_width }}) << v[i].{{ member.getter_name(get_syntax) }}() << " "
+      << std::setw({{ col_width }}) << el.{{ member.getter_name(get_syntax) }}() << " "
 {% endif %}
 {% endfor %}
       << std::endl;
 
 {% for relation in multi_relations %}
     o << "      {{ relation.name }} : ";
-    for (unsigned j = 0, N = v[i].{{ relation.name }}_size(); j < N; ++j) {
-      o << v[i].{{ relation.getter_name(get_syntax) }}(j).id() << " ";
+    for (unsigned j = 0, N = el.{{ relation.name }}_size(); j < N; ++j) {
+      o << el.{{ relation.getter_name(get_syntax) }}(j).id() << " ";
     }
     o << std::endl;
 {% endfor %}
 
 {% for relation in single_relations %}
     o << "      {{ relation.name }} : ";
-    o << v[i].{{ relation.getter_name(get_syntax) }}().id() << std::endl;
+    o << el.{{ relation.getter_name(get_syntax) }}().id() << std::endl;
 {% endfor %}
 
 {% for member in vector_members %}
     o << "      {{ member.name }} : ";
-    for (unsigned j = 0, N = v[i].{{ member.name }}_size(); j < N; ++j) {
-      o << v[i].{{ member.getter_name(get_syntax) }}(j) << " ";
+    for (unsigned j = 0, N = el.{{ member.name }}_size(); j < N; ++j) {
+      o << el.{{ member.getter_name(get_syntax) }}(j) << " ";
     }
     o << std::endl;
 {% endfor %}
