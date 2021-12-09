@@ -15,8 +15,9 @@
 namespace {
 
 /// helper function to get valid sio block names
-inline std::string sio_name(const std::string& str) {
-  std::string s = str;
+template <typename BasicType, typename = podio::EnableIfSupportedUserType<BasicType>>
+inline std::string sio_name() {
+  std::string s = podio::userDataTypeName<BasicType>();
   std::replace(s.begin(), s.end(), ' ', '_');
   return s;
 }
@@ -24,10 +25,10 @@ inline std::string sio_name(const std::string& str) {
 
 namespace podio {
 
-template <typename BasicType>
+template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 class SIOBlockUserData : public podio::SIOBlock {
 public:
-  SIOBlockUserData() : SIOBlock(::sio_name(podio::userDataTypeName<BasicType>()), sio::version::encode_version(0, 1)) {
+  SIOBlockUserData() : SIOBlock(::sio_name<BasicType>(), sio::version::encode_version(0, 1)) {
 
     podio::SIOBlockFactory::instance().registerBlockForCollection(podio::userDataTypeName<BasicType>(), this);
   }
