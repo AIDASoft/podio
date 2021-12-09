@@ -50,7 +50,7 @@ public:
 //  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, int collectionID);
   ~{{ class.bare_type }}Collection();
 
-  void clear() override final;
+  void clear() final;
 
   /// operator to allow pointer like calling of members a la LCIO
   {{ class.bare_type }}Collection* operator->() { return ({{ class.bare_type }}Collection*) this; }
@@ -64,14 +64,14 @@ public:
   Mutable{{ class.bare_type }} create(Args&&... args);
 
   /// number of elements in the collection
-  size_t size() const override final;
+  size_t size() const final;
 
   /// fully qualified type name
-  std::string getTypeName() const override { return std::string("{{ (class | string ).strip(':')+"Collection" }}"); }
+  std::string getTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Collection" }}"); }
   /// fully qualified type name of elements - with namespace
-  std::string getValueTypeName() const override { return std::string("{{ (class | string ).strip(':') }}"); }
+  std::string getValueTypeName() const final { return std::string("{{ (class | string ).strip(':') }}"); }
   /// fully qualified type name of stored POD elements - with namespace
-  std::string getDataTypeName() const override { return std::string("{{ (class | string ).strip(':')+"Data" }}"); }
+  std::string getDataTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Data" }}"); }
 
   bool isSubsetCollection() const final {
     return m_isSubsetColl;
@@ -92,14 +92,14 @@ public:
   /// Append object to the collection
   void push_back({{class.bare_type}} object);
 
-  void prepareForWrite() override final;
-  void prepareAfterRead() override final;
-  bool setReferences(const podio::ICollectionProvider* collectionProvider) override final;
+  void prepareForWrite() final;
+  void prepareAfterRead() final;
+  bool setReferences(const podio::ICollectionProvider* collectionProvider) final;
 
   /// Get the collection buffers for this collection
   podio::CollectionBuffers getBuffers() final;
 
-  void setID(unsigned ID) override final {
+  void setID(unsigned ID) final {
     m_collectionID = ID;
     std::for_each(m_storage.entries.begin(), m_storage.entries.end(),
                   [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<int>(ID)}; }
@@ -107,11 +107,11 @@ public:
     m_isValid = true;
   };
 
-  unsigned getID() const override final {
+  unsigned getID() const final {
     return m_collectionID;
   }
 
-  bool isValid() const override final {
+  bool isValid() const final {
     return m_isValid;
   }
 

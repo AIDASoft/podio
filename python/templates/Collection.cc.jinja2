@@ -20,7 +20,8 @@
   m_isValid(false), m_isPrepared(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {}
 
 {{ collection_type }}::~{{ collection_type }}() {
-  clear();
+  // Need to tell the storage how to clean-up
+  m_storage.clear(m_isSubsetColl);
 }
 
 {{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
@@ -75,14 +76,18 @@ void {{ collection_type }}::clear() {
 
 void {{ collection_type }}::prepareForWrite() {
   // If the collection has been prepared already there is nothing to do
-  if (m_isPrepared) return;
+  if (m_isPrepared) {
+    return;
+  }
   m_storage.prepareForWrite(m_isSubsetColl);
   m_isPrepared = true;
 }
 
 void {{ collection_type }}::prepareAfterRead() {
   // No need to go through this again if we have already done it
-  if (m_isPrepared) return;
+  if (m_isPrepared) {
+    return;
+  }
 
   if (!m_isSubsetColl) {
     // Subset collections do not store any data that would require post-processing

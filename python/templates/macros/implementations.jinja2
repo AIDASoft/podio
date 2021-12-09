@@ -23,7 +23,9 @@
 }
 
 {{ full_type }}::{{ full_type }}( {{ type }}Obj* obj) : m_obj(obj) {
-  if (m_obj) m_obj->acquire();
+  if (m_obj) {
+    m_obj->acquire();
+  }
 }
 
 Mutable{{ type }} {{ full_type }}::clone() const {
@@ -31,7 +33,9 @@ Mutable{{ type }} {{ full_type }}::clone() const {
 }
 
 {{ full_type }}::~{{ full_type }}() {
-  if (m_obj) m_obj->release();
+  if (m_obj) {
+    m_obj->release();
+  }
 }
 {%- endmacro %}
 
@@ -92,7 +96,9 @@ const {{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syn
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
 void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.full_type }} value) {
-  if (m_obj->m_{{ relation.name }}) delete m_obj->m_{{ relation.name }};
+  if (m_obj->m_{{ relation.name }}) {
+    delete m_obj->m_{{ relation.name }};
+  }
   m_obj->m_{{ relation.name }} = new {{ relation.full_type }}(value);
 }
 
