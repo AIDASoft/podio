@@ -56,6 +56,10 @@ include(cmake/podioBuild.cmake)
 podio_set_compiler_flags()
 podio_set_rpath()
 
+set(USE_SANITIZER ""
+  CACHE STRING "Compile with a sanitizer. Options are Address, Memory, MemoryWithOrigin, Undefined, Thread, Leak, Address;Undefined")
+ADD_SANITIZER_FLAGS()
+option(FORCE_RUN_ALL_TESTS "Run all the tests even those with known problems" OFF)
 
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
