@@ -13,8 +13,8 @@ endif()
 
 # Remove SIO and ROOT related things from the core library
 LIST(FILTER sources EXCLUDE REGEX SIO.*)
-LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.*|root.* )
-LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.*|root.* )
+LIST(FILTER sources EXCLUDE REGEX ROOT.*|PythonEventStore.*|root[a-z|A-z|0-9].* )
+LIST(FILTER root_sources INCLUDE REGEX ROOT.*|PythonEventStore.*|root[a-z|A-z|0-9].* )
 
 # Main Library, no external dependencies
 add_library(podio SHARED ${sources})
