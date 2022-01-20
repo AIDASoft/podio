@@ -167,3 +167,16 @@ The generation script has the following additional options:
 After compilation you can run rudimentary tests with
 
     make test
+
+## Advanced build topics
+
+It is possible to instrument the complete podio build with sanitizers using the
+`USE_SANITIZER` cmake option. Currently `Address`, `Memory[WithOrigin]`,
+`Undefined` and `Thread` are available. Given the sanitizers limitations they
+are more or less mutually exclusive, with the exception of `Address;Undefined`.
+Currently some of the tests will fail with sanitizers enabled
+([issue](https://github.com/AIDASoft/podio/issues/250)). In order to allow for a
+smoother development experience with sanitizers enabled, these failing tests are
+labelled (e.g. `[ASAN-FAIL]` or `[THREAD-FAIL]`) and will not be run by default
+if the corresponding sanitizer is enabled. It is possible to force all tests to
+be run via the `FORCE_RUN_ALL_TESTS` cmake option.
