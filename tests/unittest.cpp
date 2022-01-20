@@ -19,6 +19,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
+#include "podio/UserDataCollection.h"
 
 TEST_CASE("AutoDelete") {
   auto store = podio::EventStore();
@@ -527,6 +528,7 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
   auto hitColl = ExampleHitCollection();
   auto clusterColl = ExampleClusterCollection();
   auto vecMemColl = ExampleWithVectorMemberCollection();
+  auto userDataColl = podio::UserDataCollection<float>();
 
   constexpr auto nElements = 3u;
   for (auto i = 0u; i < nElements; ++i) {
@@ -538,17 +540,21 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     auto vecMem = vecMemColl.create();
     vecMem.addcount(i);
     vecMem.addcount(2 * i);
+
+    userDataColl.push_back(3.14f * i);
   }
 
 
   // Define a quick check function here for checking collections below
   const auto checkCollections = [nElements](const ExampleHitCollection& hits,
                                             const ExampleClusterCollection& clusters,
-                                            const ExampleWithVectorMemberCollection& vectors) {
+                                            const ExampleWithVectorMemberCollection& vectors,
+                                            const podio::UserDataCollection<float>& userData) {
     // Basics
     REQUIRE(hits.size() == nElements);
     REQUIRE(clusters.size() == nElements);
     REQUIRE(vectors.size() == nElements);
+    REQUIRE(userData.size() == nElements);
 
     int i = 0;
     for (auto cluster : clusters) {
@@ -563,18 +569,25 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
       REQUIRE(counts[1] == i * 2);
       i++;
     }
+
+    i = 0;
+    for (const auto v : userData) {
+      REQUIRE(v == 3.14f * i++);
+    }
   };
 
+
   // Hopefully redundant check for setup
-  checkCollections(hitColl, clusterColl, vecMemColl);
+  checkCollections(hitColl, clusterColl, vecMemColl, userDataColl);
 
   SECTION("Move constructor") {
     // Move-construct collections and make sure the size is as expected
     auto newHits = std::move(hitColl);
     auto newClusters = std::move(clusterColl);
     auto newVecMems = std::move(vecMemColl);
+    auto newUserData = std::move(userDataColl);
 
-    checkCollections(newHits, newClusters, newVecMems);
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
   }
 
 
@@ -589,7 +602,10 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     auto newVecMems = ExampleWithVectorMemberCollection();
     newVecMems = std::move(vecMemColl);
 
-    checkCollections(newHits, newClusters, newVecMems);
+    auto newUserData = podio::UserDataCollection<float>();
+    newUserData = std::move(userDataColl);
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
   }
 
 
@@ -603,7 +619,10 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     vecMemColl.prepareForWrite();
     auto newVecMems = std::move(vecMemColl);
 
-    checkCollections(newHits, newClusters, newVecMems);
+    userDataColl.prepareForWrite();
+    auto newUserData = std::move(userDataColl);
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
   }
 
 
@@ -621,38 +640,42 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     auto newVecMems = ExampleWithVectorMemberCollection();
     newVecMems = std::move(vecMemColl);
 
-    checkCollections(newHits, newClusters, newVecMems);
+    auto newUserData = podio::UserDataCollection<float>();
+    newUserData = std::move(userDataColl);
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
   }
 
 
   SECTION("Subset collections can be moved") {
+    // NOTE: Does not apply to UserDataCollections!
     auto subsetHits = ExampleHitCollection();
     subsetHits.setSubsetCollection();
     for (auto hit : hitColl) subsetHits.push_back(hit);
-    checkCollections(subsetHits, clusterColl, vecMemColl);
+    checkCollections(subsetHits, clusterColl, vecMemColl, userDataColl);
 
     auto newSubsetHits = std::move(subsetHits);
     REQUIRE(newSubsetHits.isSubsetCollection());
-    checkCollections(newSubsetHits, clusterColl, vecMemColl);
+    checkCollections(newSubsetHits, clusterColl, vecMemColl, userDataColl);
 
     auto subsetClusters = ExampleClusterCollection();
     subsetClusters.setSubsetCollection();
     for (auto cluster : clusterColl) subsetClusters.push_back(cluster);
-    checkCollections(newSubsetHits, subsetClusters, vecMemColl);
+    checkCollections(newSubsetHits, subsetClusters, vecMemColl, userDataColl);
 
     // Test move-assignment here as well
     auto newSubsetClusters = ExampleClusterCollection();
     newSubsetClusters = std::move(subsetClusters);
     REQUIRE(newSubsetClusters.isSubsetCollection());
-    checkCollections(newSubsetHits, newSubsetClusters, vecMemColl);
+    checkCollections(newSubsetHits, newSubsetClusters, vecMemColl, userDataColl);
 
     auto subsetVecs = ExampleWithVectorMemberCollection();
     subsetVecs.setSubsetCollection();
     for (auto vec : vecMemColl) subsetVecs.push_back(vec);
-    checkCollections(newSubsetHits, newSubsetClusters, subsetVecs);
+    checkCollections(newSubsetHits, newSubsetClusters, subsetVecs, userDataColl);
 
     auto newSubsetVecs = std::move(subsetVecs);
     REQUIRE(newSubsetVecs.isSubsetCollection());
-    checkCollections(hitColl, clusterColl, newSubsetVecs);
+    checkCollections(hitColl, clusterColl, newSubsetVecs, userDataColl);
   }
 }
