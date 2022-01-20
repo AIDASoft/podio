@@ -30,9 +30,7 @@
 
 {{ class_type }}::~{{ class_type }}() {
   delete m_data;
-{% if OneToManyRelations or OneToOneRelations %}
   for (auto& pointer : m_refCollections) delete pointer;
-{% endif %}
 {% for relation in OneToManyRelations + OneToOneRelations %}
   delete m_rel_{{ relation.name }};
 {% endfor %}
@@ -160,7 +158,6 @@ void {{ class_type }}::createRelations({{ class.bare_type }}Obj* obj) {
 }
 {% endif %}
 
-{% if OneToManyRelations or OneToOneRelations %}
 void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectionProvider, bool isSubsetColl) {
   if (isSubsetColl) {
     for (const auto& id : *m_refCollections[0]) {
@@ -179,7 +176,6 @@ void {{ class_type }}::setReferences(const podio::ICollectionProvider* collectio
 {% endfor %}
 
 }
-{% endif %}
 
 void {{ class_type }}::makeSubsetCollection() {
   // Subset collections do not need all the data buffers that normal

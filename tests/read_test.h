@@ -22,6 +22,7 @@
 
 // STL
 #include <limits>
+#include <stdexcept>
 #include <vector>
 #include <iostream>
 #include <exception>
@@ -86,6 +87,13 @@ void processEvent(podio::EventStore& store, int eventNum) {
     throw std::runtime_error("Couldn't read event meta data parameters 'CellIDEncodingString'");
   }
 
+  auto& hitRefs = store.get<ExampleHitCollection>("hitRefs");
+  if (hitRefs.size() != hits.size()) {
+    throw std::runtime_error("hit and subset hit collection do not have the same size");
+  }
+  if (!(hits[1] == hitRefs[0] && hits[0] == hitRefs[1])) {
+    throw std::runtime_error("hit subset collections do not have the expected contents");
+  }
 
   auto& clusters = store.get<ExampleClusterCollection>("clusters");
   if(clusters.isValid()){

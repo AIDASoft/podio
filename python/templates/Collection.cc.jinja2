@@ -93,10 +93,8 @@ void {{ collection_type }}::prepareAfterRead() {
   m_isPrepared = true;
 }
 
-bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* {% if OneToManyRelations or OneToOneRelations -%}collectionProvider{%- endif -%}) {
-{% if OneToManyRelations or OneToOneRelations %}
+bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* collectionProvider) {
   m_storage.setReferences(collectionProvider, m_isSubsetColl);
-{% endif %}
 
   return true; //TODO: check success
 }
