@@ -1,9 +1,16 @@
-#include "read_test.h"
 #include "podio/ROOTReader.h"
+#include "read_test.h"
 
-int main(){
+#include <iostream>
+
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cerr << "Usage: read-legacy-files inputfile" << std::endl;
+    return 1;
+  }
+
   auto reader = podio::ROOTReader();
-  reader.openFile("https://key4hep.web.cern.ch/testFiles/podio/v00-13/example.root");
+  reader.openFile(argv[1]);
 
   run_read_test(reader);
 
