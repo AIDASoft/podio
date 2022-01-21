@@ -501,14 +501,12 @@ TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
   REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);
 }
 
-TEST_CASE("Move-only collections", "[collections][move-semantics]") {
-  // Setup a few collections that will be used throughout below
-  auto hitColl = ExampleHitCollection();
-  auto clusterColl = ExampleClusterCollection();
-  auto vecMemColl = ExampleWithVectorMemberCollection();
-  auto userDataColl = podio::UserDataCollection<float>();
+// Helper functionality to keep the tests below with a common setup a bit shorter
+auto createCollections(const size_t nElements = 3u) {
+  auto colls = std::make_tuple(ExampleHitCollection(), ExampleClusterCollection(), ExampleWithVectorMemberCollection(),
+                               podio::UserDataCollection<float>());
+  auto& [hitColl, clusterColl, vecMemColl, userDataColl] = colls;
 
-  constexpr auto nElements = 3u;
   for (auto i = 0u; i < nElements; ++i) {
     auto hit = hitColl.create();
     auto cluster = clusterColl.create();
@@ -522,35 +520,42 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     userDataColl.push_back(3.14f * i);
   }
 
-  // Define a quick check function here for checking collections below
-  const auto checkCollections = [nElements](const ExampleHitCollection& hits, const ExampleClusterCollection& clusters,
-                                            const ExampleWithVectorMemberCollection& vectors,
-                                            const podio::UserDataCollection<float>& userData) {
-    // Basics
-    REQUIRE(hits.size() == nElements);
-    REQUIRE(clusters.size() == nElements);
-    REQUIRE(vectors.size() == nElements);
-    REQUIRE(userData.size() == nElements);
+  return colls;
+}
 
-    int i = 0;
-    for (auto cluster : clusters) {
-      REQUIRE(cluster.Hits(0) == hits[i++]);
-    }
+// Helper functionality to keep the tests below with a common setup a bit shorter
+void checkCollections(const ExampleHitCollection& hits, const ExampleClusterCollection& clusters,
+                      const ExampleWithVectorMemberCollection& vectors,
+                      const podio::UserDataCollection<float>& userData, const size_t nElements = 3u) {
+  // Basics
+  REQUIRE(hits.size() == nElements);
+  REQUIRE(clusters.size() == nElements);
+  REQUIRE(vectors.size() == nElements);
+  REQUIRE(userData.size() == nElements);
 
-    i = 0;
-    for (const auto vec : vectors) {
-      const auto counts = vec.count();
-      REQUIRE(counts.size() == 2);
-      REQUIRE(counts[0] == i);
-      REQUIRE(counts[1] == i * 2);
-      i++;
-    }
+  int i = 0;
+  for (auto cluster : clusters) {
+    REQUIRE(cluster.Hits(0) == hits[i++]);
+  }
 
-    i = 0;
-    for (const auto v : userData) {
-      REQUIRE(v == 3.14f * i++);
-    }
-  };
+  i = 0;
+  for (const auto vec : vectors) {
+    const auto counts = vec.count();
+    REQUIRE(counts.size() == 2);
+    REQUIRE(counts[0] == i);
+    REQUIRE(counts[1] == i * 2);
+    i++;
+  }
+
+  i = 0;
+  for (const auto v : userData) {
+    REQUIRE(v == 3.14f * i++);
+  }
+}
+
+TEST_CASE("Move-only collections", "[collections][move-semantics]") {
+  // Setup a few collections that will be used throughout below
+  auto [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
 
   // Hopefully redundant check for setup
   checkCollections(hitColl, clusterColl, vecMemColl, userDataColl);
