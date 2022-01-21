@@ -8,6 +8,7 @@
 #include "catch2/catch_test_macros.hpp"
 
 // podio specific includes
+#include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "podio/EventStore.h"
 
 // Test data types
@@ -18,6 +19,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
+#include "podio/UserDataCollection.h"
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto store = podio::EventStore();
@@ -489,4 +491,161 @@ TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
 
   REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
   REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);
+}
+
+TEST_CASE("Move-only collections", "[collections][move-semantics]") {
+  // Setup a few collections that will be used throughout below
+  auto hitColl = ExampleHitCollection();
+  auto clusterColl = ExampleClusterCollection();
+  auto vecMemColl = ExampleWithVectorMemberCollection();
+  auto userDataColl = podio::UserDataCollection<float>();
+
+  constexpr auto nElements = 3u;
+  for (auto i = 0u; i < nElements; ++i) {
+    auto hit = hitColl.create();
+    auto cluster = clusterColl.create();
+    // create a few relations as well
+    cluster.addHits(hit);
+
+    auto vecMem = vecMemColl.create();
+    vecMem.addcount(i);
+    vecMem.addcount(2 * i);
+
+    userDataColl.push_back(3.14f * i);
+  }
+
+
+  // Define a quick check function here for checking collections below
+  const auto checkCollections = [nElements](const ExampleHitCollection& hits,
+                                            const ExampleClusterCollection& clusters,
+                                            const ExampleWithVectorMemberCollection& vectors,
+                                            const podio::UserDataCollection<float>& userData) {
+    // Basics
+    REQUIRE(hits.size() == nElements);
+    REQUIRE(clusters.size() == nElements);
+    REQUIRE(vectors.size() == nElements);
+    REQUIRE(userData.size() == nElements);
+
+    int i = 0;
+    for (auto cluster : clusters) {
+      REQUIRE(cluster.Hits(0) == hits[i++]);
+    }
+
+    i = 0;
+    for (const auto vec : vectors) {
+      const auto counts = vec.count();
+      REQUIRE(counts.size() == 2);
+      REQUIRE(counts[0] == i);
+      REQUIRE(counts[1] == i * 2);
+      i++;
+    }
+
+    i = 0;
+    for (const auto v : userData) {
+      REQUIRE(v == 3.14f * i++);
+    }
+  };
+
+
+  // Hopefully redundant check for setup
+  checkCollections(hitColl, clusterColl, vecMemColl, userDataColl);
+
+  SECTION("Move constructor") {
+    // Move-construct collections and make sure the size is as expected
+    auto newHits = std::move(hitColl);
+    auto newClusters = std::move(clusterColl);
+    auto newVecMems = std::move(vecMemColl);
+    auto newUserData = std::move(userDataColl);
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
+  }
+
+
+  SECTION("Move assignment") {
+    // Move assign collections and make sure everything is as expected
+    auto newHits = ExampleHitCollection();
+    newHits = std::move(hitColl);
+
+    auto newClusters = ExampleClusterCollection();
+    newClusters = std::move(clusterColl);
+
+    auto newVecMems = ExampleWithVectorMemberCollection();
+    newVecMems = std::move(vecMemColl);
+
+    auto newUserData = podio::UserDataCollection<float>();
+    newUserData = std::move(userDataColl);
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
+  }
+
+
+  SECTION("Prepared collections can be move constructed") {
+    hitColl.prepareForWrite();
+    auto newHits = std::move(hitColl);
+
+    clusterColl.prepareForWrite();
+    auto newClusters = std::move(clusterColl);
+
+    vecMemColl.prepareForWrite();
+    auto newVecMems = std::move(vecMemColl);
+
+    userDataColl.prepareForWrite();
+    auto newUserData = std::move(userDataColl);
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
+  }
+
+
+  SECTION("Prepared collections can be move assigned") {
+    hitColl.prepareForWrite();
+    clusterColl.prepareForWrite();
+    vecMemColl.prepareForWrite();
+
+    auto newHits = ExampleHitCollection();
+    newHits = std::move(hitColl);
+
+    auto newClusters = ExampleClusterCollection();
+    newClusters = std::move(clusterColl);
+
+    auto newVecMems = ExampleWithVectorMemberCollection();
+    newVecMems = std::move(vecMemColl);
+
+    auto newUserData = podio::UserDataCollection<float>();
+    newUserData = std::move(userDataColl);
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
+  }
+
+
+  SECTION("Subset collections can be moved") {
+    // NOTE: Does not apply to UserDataCollections!
+    auto subsetHits = ExampleHitCollection();
+    subsetHits.setSubsetCollection();
+    for (auto hit : hitColl) subsetHits.push_back(hit);
+    checkCollections(subsetHits, clusterColl, vecMemColl, userDataColl);
+
+    auto newSubsetHits = std::move(subsetHits);
+    REQUIRE(newSubsetHits.isSubsetCollection());
+    checkCollections(newSubsetHits, clusterColl, vecMemColl, userDataColl);
+
+    auto subsetClusters = ExampleClusterCollection();
+    subsetClusters.setSubsetCollection();
+    for (auto cluster : clusterColl) subsetClusters.push_back(cluster);
+    checkCollections(newSubsetHits, subsetClusters, vecMemColl, userDataColl);
+
+    // Test move-assignment here as well
+    auto newSubsetClusters = ExampleClusterCollection();
+    newSubsetClusters = std::move(subsetClusters);
+    REQUIRE(newSubsetClusters.isSubsetCollection());
+    checkCollections(newSubsetHits, newSubsetClusters, vecMemColl, userDataColl);
+
+    auto subsetVecs = ExampleWithVectorMemberCollection();
+    subsetVecs.setSubsetCollection();
+    for (auto vec : vecMemColl) subsetVecs.push_back(vec);
+    checkCollections(newSubsetHits, newSubsetClusters, subsetVecs, userDataColl);
+
+    auto newSubsetVecs = std::move(subsetVecs);
+    REQUIRE(newSubsetVecs.isSubsetCollection());
+    checkCollections(hitColl, clusterColl, newSubsetVecs, userDataColl);
+  }
 }

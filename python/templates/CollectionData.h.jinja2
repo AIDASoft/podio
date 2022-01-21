@@ -7,13 +7,16 @@
 // datamodel specific includes
 #include "{{ incfolder }}{{ class.bare_type }}Data.h"
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
+{% for include in includes_coll_data %}
+{{ include }}
+{% endfor %}
 
 // podio specific includes
 #include "podio/CollectionBuffers.h"
 #include "podio/ICollectionProvider.h"
 
 #include <deque>
-
+#include <memory>
 
 {{ utils.namespace_open(class.namespace) }}
 
@@ -39,15 +42,17 @@ public:
   {{ class_type }}();
 
   /**
-   * Non copy-able class
+   * Non copy-able, move-only class
    */
   {{ class_type }}(const {{ class_type }}&) = delete;
   {{ class_type }}& operator=(const {{ class_type }}&) = delete;
+  {{ class_type }}({{ class_type }}&& other) = default;
+  {{ class_type }}& operator=({{ class_type }}&& other) = default;
 
   /**
    * Deconstructor
    */
-  ~{{ class_type }}();
+  ~{{ class_type }}() = default;
 
   void clear(bool isSubsetColl);
 
@@ -68,23 +73,23 @@ public:
 private:
   // members to handle 1-to-N-relations
 {% for relation in OneToManyRelations %}
-  std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
-  std::vector<std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>*> m_rel_{{ relation.name }}_tmp{}; ///< Relation buffer for internal book-keeping
+  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }};  ///< Relation buffer for read / write
+  std::vector<podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}>> m_rel_{{ relation.name }}_tmp{}; ///< Relation buffer for internal book-keeping
 {% endfor %}
 {% for relation in OneToOneRelations %}
-  std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>* m_rel_{{ relation.name }}; ///< Relation buffer for read / write
+  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }}; ///< Relation buffer for read / write
 {% endfor %}
 
   // members to handle vector members
 {% for member in VectorMembers %}
-  std::vector<{{ member.full_type }}>* m_vec_{{ member.name }}; /// combined vector of all objects in collection
-  std::vector<std::vector<{{ member.full_type }}>*> m_vecs_{{ member.name }}{}; /// pointers to individual member vectors
+  podio::UVecPtr<{{ member.full_type }}> m_vec_{{ member.name }}; /// combined vector of all objects in collection
+  std::vector<podio::UVecPtr<{{ member.full_type }}>> m_vecs_{{ member.name }}{}; /// pointers to individual member vectors
 {% endfor %}
 
   // I/O related buffers
   podio::CollRefCollection m_refCollections{};
   podio::VectorMembersInfo m_vecmem_info{};
-  {{ class.bare_type }}DataContainer* m_data{nullptr};
+  std::unique_ptr<{{ class.bare_type }}DataContainer> m_data{nullptr};
 };
 {% endwith %}
 

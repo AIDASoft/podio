@@ -85,7 +85,10 @@ namespace podio {
 
   private:
     std::vector<BasicType> _vec{} ;
-    std::vector<BasicType>* _vecPtr = &_vec ;
+    // Pointer to the actual storage, necessary for I/O. In order to have
+    // simpler move-semantics this will be set and properly initialized on
+    // demand during the call to getBuffers
+    std::vector<BasicType>* _vecPtr{nullptr};
     int m_collectionID{0};
     CollRefCollection m_refCollections{};
     VectorMembersInfo m_vecmem_info{};
@@ -95,6 +98,8 @@ namespace podio {
     UserDataCollection() = default ;
     UserDataCollection(const UserDataCollection& ) = delete;
     UserDataCollection& operator=(const UserDataCollection& ) = delete;
+    UserDataCollection(UserDataCollection&&) = default;
+    UserDataCollection& operator=(UserDataCollection&&) = default;
     ~UserDataCollection() = default;
 
 
@@ -121,6 +126,7 @@ namespace podio {
 
     /// Get the collection buffers for this collection
     podio::CollectionBuffers getBuffers() override final {
+      _vecPtr = &_vec; // Set the pointer to the correct internal vector
       return { &_vecPtr,
 	&m_refCollections,
 	&m_vecmem_info } ;

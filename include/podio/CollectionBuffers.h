@@ -6,11 +6,15 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 
 
 namespace podio {
 
-using CollRefCollection = std::vector<std::vector<podio::ObjectID>*>;
+template<typename T>
+using UVecPtr = std::unique_ptr<std::vector<T>>;
+
+using CollRefCollection = std::vector<UVecPtr<podio::ObjectID>>;
 using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
 
 /**

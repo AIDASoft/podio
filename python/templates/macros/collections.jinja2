@@ -12,8 +12,10 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
 
 
 {% macro clear_relation(relation) %}
-  for (auto& item : (*m_rel_{{ relation.name }})) { item.unlink(); }
-  m_rel_{{ relation.name }}->clear();
+  if (m_rel_{{ relation.name }}) {
+    for (auto& item : (*m_rel_{{ relation.name }})) { item.unlink(); }
+    m_rel_{{ relation.name }}->clear();
+  }
 {% endmacro %}
 
 {% macro _relation_index_handling(relation) %}

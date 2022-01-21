@@ -38,16 +38,16 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
     unsigned size(0);
     device.data( size );
     dataVec->resize(size);
-    podio::handlePODDataSIO(device, &(*dataVec)[0], size);
+    podio::handlePODDataSIO(device, dataVec->data(), size);
   }
 
   //---- read ref collections -----
   auto* refCols = collBuffers.references;
-  for( auto* refC : *refCols ){
+  for( auto& refC : *refCols ){
     unsigned size{0};
     device.data( size ) ;
     refC->resize(size) ;
-    podio::handlePODDataSIO( device ,  &((*refC)[0]), size ) ;
+    podio::handlePODDataSIO( device ,  refC->data(), size ) ;
   }
 
 {% if VectorMembers %}
@@ -68,15 +68,15 @@ void {{ block_class }}::write(sio::write_device& device) {
     auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
     unsigned size = dataVec->size() ;
     device.data( size ) ;
-    podio::handlePODDataSIO( device ,  &(*dataVec)[0], size ) ;
+    podio::handlePODDataSIO( device ,  dataVec->data(), size ) ;
   }
 
   //---- write ref collections -----
   auto* refCols = collBuffers.references;
-  for( auto* refC : *refCols ){
+  for( auto& refC : *refCols ){
     unsigned size = refC->size() ;
     device.data( size ) ;
-    podio::handlePODDataSIO( device ,  &((*refC)[0]), size ) ;
+    podio::handlePODDataSIO( device ,  refC->data(), size ) ;
   }
 
 {% if VectorMembers %}
