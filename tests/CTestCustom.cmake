@@ -19,6 +19,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_timed
     check_benchmark_outputs
     read-multiple
+    read-legacy-files
 
     write_sio
     read_sio
