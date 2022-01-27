@@ -53,6 +53,8 @@ public:
   using MutT = Mutable{{ class.bare_type }};
   using DefT = {{ class.bare_type }};
 
+  static constexpr auto TypeName = "{{ class.full_type }}";
+
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}
 {{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax) }}
