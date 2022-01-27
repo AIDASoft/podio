@@ -39,6 +39,9 @@ public:
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
 
 public:
+  // Some typedefs for the Association handling
+  using MutT = Mutable{{ class.bare_type }};
+  using DefT = {{ class.bare_type }};
 
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}

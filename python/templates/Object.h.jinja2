@@ -49,6 +49,9 @@ public:
   static {{ class.bare_type }} makeEmpty();
 
 public:
+  // Some typedefs for the Association handling
+  using MutT = Mutable{{ class.bare_type }};
+  using DefT = {{ class.bare_type }};
 
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}

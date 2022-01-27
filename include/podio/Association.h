@@ -1,6 +1,7 @@
 #ifndef PODIO_ASSOCIATION_H
 #define PODIO_ASSOCIATION_H
 
+#include "podio/AssociationFwd.h"
 #include "podio/AssociationObj.h"
 
 #include <ostream>
@@ -15,20 +16,30 @@ namespace podio {
  */
 template <typename FromT, typename ToT, bool Mutable>
 class AssociationT {
+  // The typedefs in AssociationFwd.h should make sure that at this point
+  // Mutable classes are stripped, i.e. the user should never be able to trigger
+  // these!
+  static_assert(std::is_same_v<detail::GetDefT<FromT>, FromT>,
+                "Associations need to be instantiated with the default types!");
+  static_assert(std::is_same_v<detail::GetDefT<ToT>, ToT>,
+                "Associations need to be instantiated with the default types!");
+
+  using AssociationObjT = AssociationObj<FromT, ToT>;
+
 public:
   /// Constructor
-  AssociationT() : m_obj(new AssociationObj<FromT, ToT>()) {
+  AssociationT() : m_obj(new AssociationObjT()) {
     m_obj->acquire();
   }
 
   /// Constructor with weight
-  AssociationT(float weight) : m_obj(new AssociationObj<FromT, ToT>()) {
+  AssociationT(float weight) : m_obj(new AssociationObjT()) {
     m_obj->acquire();
     m_obj->weight = weight;
   }
 
   /// Constructor from existing AssociationObj
-  AssociationT(AssociationObj<FromT, ToT>* obj) : m_obj(obj) {
+  AssociationT(AssociationObjT* obj) : m_obj(obj) {
     if (m_obj) {
       m_obj->acquire();
     }
@@ -47,6 +58,20 @@ public:
     return *this;
   }
 
+  /// Implicit conversion of mutable to immutable associations
+  template <typename FromU, typename ToU, bool Mut = Mutable,
+            typename = std::enable_if_t<Mut && std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  operator AssociationT<FromU, ToU, false>() const {
+    return AssociationT<FromU, ToU, false>(m_obj);
+  }
+
+  /// Create a mutable deep-copy with identical relations
+  template <typename FromU = FromT, typename ToU = ToT,
+            typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  MutableAssociation<FromU, ToU> clone() const {
+    return {new AssociationObjT(*m_obj)};
+  }
+
   /// Destructor
   ~AssociationT() {
     if (m_obj) {
@@ -54,24 +79,47 @@ public:
     }
   }
 
+  /// Get the weight of the association
   float getWeight() const {
     return m_obj->weight;
   }
 
+  /// Set the weight of the association
+  template <bool Mut = Mutable, typename = std::enable_if_t<Mut>>
+  void setWeight(float value) {
+    m_obj->weight = value;
+  }
+
   /// Access the related-from object
-  const FromT getFrom() const {
+  FromT getFrom() const {
     if (!m_obj->m_from) {
       return FromT(nullptr);
     }
-    return FromT(m_obj->m_from);
+    return FromT(*(m_obj->m_from));
+  }
+
+  /// Set the related-from object
+  template <typename FromU, bool Mut = Mutable,
+            typename = std::enable_if_t<Mut && std::is_same_v<detail::GetDefT<FromU>, FromT>>>
+  void setFrom(FromU value) {
+    delete m_obj->m_from;
+    m_obj->m_from = new detail::GetDefT<FromU>(value);
   }
 
   /// Access the related-to object
-  const ToT getTo() const {
+  ToT getTo() const {
     if (!m_obj->m_to) {
-      return FromT(nullptr);
+      return ToT(nullptr);
     }
-    return FromT(m_obj->m_to);
+    return ToT(*(m_obj->m_to));
+  }
+
+  /// Set the related-to object
+  template <typename ToU, bool Mut = Mutable,
+            typename = std::enable_if_t<Mut && std::is_same_v<detail::GetDefT<ToU>, ToT>>>
+  void setTo(ToU value) {
+    delete m_obj->m_to;
+    m_obj->m_to = new detail::GetDefT<ToU>(value);
   }
 
   /// check whether the object is actually available
@@ -112,12 +160,6 @@ public:
 private:
   AssociationObj<FromT, ToT>* m_obj{nullptr};
 }; // namespace podio
-
-template <typename FromT, typename ToT>
-using Association = AssociationT<FromT, ToT, false>;
-
-template <typename FromT, typename ToT>
-using MutableAssociation = AssociationT<FromT, ToT, true>;
 
 template <typename FromT, typename ToT>
 std::ostream& operator<<(std::ostream& os, const Association<FromT, ToT>& assoc) {
