@@ -1,6 +1,7 @@
 #ifndef PODIO_ASSOCIATIONOBJ_H
 #define PODIO_ASSOCIATIONOBJ_H
 
+#include "podio/AssociationFwd.h"
 #include "podio/ObjBase.h"
 #include "podio/ObjectID.h"
 
@@ -8,6 +9,10 @@ namespace podio {
 
 template <typename FromT, typename ToT>
 class AssociationObj : public podio::ObjBase {
+
+  friend Association<FromT, ToT>;
+  friend MutableAssociation<FromT, ToT>;
+
 public:
   /// Constructor
   AssociationObj() :
