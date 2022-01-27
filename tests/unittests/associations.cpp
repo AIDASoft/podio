@@ -1,6 +1,6 @@
 #include "catch2/catch_test_macros.hpp"
 
-#include "podio/Association.h"
+#include "podio/AssociationCollection.h"
 
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleHit.h"
@@ -12,6 +12,7 @@
 // Test datatypes
 using TestA = podio::Association<ExampleHit, ExampleCluster>;
 using TestMA = podio::MutableAssociation<ExampleHit, ExampleCluster>;
+using TestAColl = podio::AssociationCollection<ExampleHit, ExampleCluster>;
 
 TEST_CASE("Association constness", "[associations][static-checks]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMA>().getFrom()), ExampleHit>);
@@ -126,4 +127,12 @@ TEST_CASE("Association basics", "[associations]") {
     TestA assoc = mutAssoc;
     REQUIRE(assoc == mutAssoc);
   }
+}
+
+TEST_CASE("AssociationCollection", "[associations]") {
+  auto coll = TestAColl();
+
+  REQUIRE(coll.getValueTypeName() == "podio::Association<ExampleHit,ExampleCluster>");
+
+  REQUIRE(true);
 }
