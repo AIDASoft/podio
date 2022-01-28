@@ -201,7 +201,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
     def _preprocess_for_class(self, datatype):
         """Do the preprocessing that is necessary for the classes and Mutable classes"""
         includes = set(datatype["includes_data"])
-        fwd_declarations = {}
+        fwd_declarations = {
+            datatype["class"].namespace: [f"{datatype['class'].bare_type}Collection"]
+        }
         includes_cc = set()
 
         for member in datatype["Members"]:
