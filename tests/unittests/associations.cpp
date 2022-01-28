@@ -82,7 +82,7 @@ TEST_CASE("Association basics", "[associations]") {
   SECTION("Implicit conversion") {
     // Use an immediately invoked lambda to check that the implicit conversion
     // is working as desired
-    [hit, cluster](TestA assoc) {
+    [hit, cluster](TestA assoc) { // NOLINT(performance-unnecessary-value-param)
       REQUIRE(assoc.getWeight() == 3.14f);
       REQUIRE(assoc.getFrom() == hit);
       REQUIRE(assoc.getTo() == cluster);
@@ -216,7 +216,7 @@ TEST_CASE("AssociationCollection constness", "[associations][static-checks][cons
   }
 }
 
-TEST_CASE("AssociationCollection subset collection", "[associations]") {
+TEST_CASE("AssociationCollection subset collection", "[associations][subset-colls]") {
   auto assocs = TestAColl();
   auto assoc1 = assocs.create();
   assoc1.setWeight(1.0f);
@@ -255,5 +255,92 @@ TEST_CASE("AssociationCollection subset collection", "[associations]") {
     auto assoc = TestA();
     REQUIRE_THROWS_AS(assocRefs.push_back(assoc), std::invalid_argument);
     REQUIRE_THROWS_AS(assocRefs.create(), std::logic_error);
+  }
+}
+
+auto createAssocCollections(const size_t nElements = 3u) {
+  auto colls = std::make_tuple(TestAColl(), ExampleHitCollection(), ExampleClusterCollection());
+
+  auto& [assocColl, hitColl, clusterColl] = colls;
+  for (auto i = 0u; i < nElements; ++i) {
+    auto hit = hitColl.create();
+    auto cluster = clusterColl.create();
+  }
+
+  for (auto i = 0u; i < nElements; ++i) {
+    auto assoc = assocColl.create();
+    assoc.setWeight(i);
+    // Fill the relations in opposite orders to at least uncover issues that
+    // could be hidden by running the indices in parallel
+    assoc.setFrom(hitColl[i]);
+    assoc.setTo(clusterColl[nElements - i - 1]);
+  }
+
+  return colls;
+}
+
+void checkCollections(const TestAColl& assocs, const ExampleHitCollection& hits,
+                      const ExampleClusterCollection& clusters, const size_t nElements = 3u) {
+  REQUIRE(assocs.size() == 3);
+  REQUIRE(hits.size() == 3);
+  REQUIRE(clusters.size() == 3);
+
+  size_t index = 0;
+  for (auto assoc : assocs) {
+    REQUIRE(assoc.getWeight() == index);
+    REQUIRE(assoc.getFrom() == hits[index]);
+    REQUIRE(assoc.getTo() == clusters[nElements - index - 1]);
+
+    index++;
+  }
+}
+
+TEST_CASE("AssociationCollection movability", "[associations][move-semantics][collections]") {
+  // Setup a few collections for testing
+  auto [assocColl, hitColl, clusterColl] = createAssocCollections();
+
+  // Check that after the setup everything is as expected
+  checkCollections(assocColl, hitColl, clusterColl);
+
+  SECTION("Move constructor and assignment") {
+    // NOTE: moving datatype collections is already covered by respective tests
+    auto newAssocs = std::move(assocColl);
+    checkCollections(newAssocs, hitColl, clusterColl);
+
+    auto newerAssocs = TestAColl();
+    newerAssocs = std::move(newAssocs);
+    checkCollections(newerAssocs, hitColl, clusterColl);
+  }
+
+  SECTION("Prepared collections can be move assigned/constructed") {
+    assocColl.prepareForWrite();
+    auto newAssocs = std::move(assocColl);
+    // checkCollections(newAssocs, hitColl, clusterColl);
+
+    newAssocs.prepareForWrite();
+    auto newerAssocs = TestAColl();
+    newerAssocs = std::move(newAssocs);
+    // checkCollections(newAssocs, hitColl, clusterColl);
+  }
+
+  SECTION("Subset collections can be moved") {
+    // Create a subset collection to move from
+    auto subsetAssocs = TestAColl();
+    subsetAssocs.setSubsetCollection();
+    for (auto a : assocColl) {
+      subsetAssocs.push_back(a);
+    }
+    checkCollections(subsetAssocs, hitColl, clusterColl);
+
+    // Move constructor
+    auto newSubsetAssocs = std::move(subsetAssocs);
+    checkCollections(newSubsetAssocs, hitColl, clusterColl);
+    REQUIRE(newSubsetAssocs.isSubsetCollection());
+
+    // Move assignment
+    auto evenNewerAssocs = TestAColl();
+    evenNewerAssocs = std::move(newSubsetAssocs);
+    checkCollections(evenNewerAssocs, hitColl, clusterColl);
+    REQUIRE(evenNewerAssocs.isSubsetCollection());
   }
 }
