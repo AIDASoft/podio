@@ -133,7 +133,7 @@ public:
   }
 
   std::string getValueTypeName() const override {
-    return std::string("podio::Association<") + FromT::TypeName + "," + ToT::TypeName + ">";
+    return podio::detail::associationSIOName<FromT, ToT>();
   }
 
   std::string getDataTypeName() const override {
