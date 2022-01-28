@@ -29,6 +29,19 @@ public:
   using const_iterator = AssociationCollectionIterator<FromT, ToT>;
   using iterator = AssociationMutableCollectionIterator<FromT, ToT>;
 
+  AssociationCollection() = default;
+
+  // Move-only type
+  AssociationCollection(const AssociationCollection&) = delete;
+  AssociationCollection& operator=(const AssociationCollection&) = delete;
+  AssociationCollection(AssociationCollection&&) = default;
+  AssociationCollection& operator=(AssociationCollection&&) = default;
+
+  ~AssociationCollection() {
+    // Need the storage how to clean up
+    m_storage.clear(m_isSubsetColl);
+  }
+
   /// Append a new association to the collection and return this object
   MutableAssocT create() {
     if (m_isSubsetColl) {
@@ -188,7 +201,7 @@ private:
   bool m_isPrepared{false};
   bool m_isSubsetColl{false};
   int m_collectionID{0};
-  AssociationCollectionData<FromT, ToT> m_storage;
+  AssociationCollectionData<FromT, ToT> m_storage{};
 };
 
 } // namespace podio
