@@ -215,3 +215,45 @@ TEST_CASE("AssociationCollection constness", "[associations][static-checks][cons
                                   TestMutA>); // collections should have indexed indexed access to mutable objects
   }
 }
+
+TEST_CASE("AssociationCollection subset collection", "[associations]") {
+  auto assocs = TestAColl();
+  auto assoc1 = assocs.create();
+  assoc1.setWeight(1.0f);
+  auto assoc2 = assocs.create();
+  assoc2.setWeight(2.0f);
+
+  auto assocRefs = TestAColl();
+  assocRefs.setSubsetCollection();
+  for (const auto a : assocs) {
+    assocRefs.push_back(a);
+  }
+
+  SECTION("Collection iterators work with subset collections") {
+
+    // index-based looping / access
+    for (size_t i = 0; i < assocRefs.size(); ++i) {
+      REQUIRE(assocRefs[i].getWeight() == i + 1);
+    }
+
+    // range-based for loop
+    int index = 1;
+    for (const auto a : assocRefs) {
+      REQUIRE(a.getWeight() == index++);
+    }
+  }
+
+  SECTION("Conversion failures") {
+    // Cannot convert into a subset collection if elements already present
+    REQUIRE_THROWS_AS(assocs.setSubsetCollection(), std::logic_error);
+
+    // Connot convert a subset collection into a normal collection
+    REQUIRE_THROWS_AS(assocRefs.setSubsetCollection(false), std::logic_error);
+  }
+
+  SECTION("Subset collection only handles tracked objects") {
+    auto assoc = TestA();
+    REQUIRE_THROWS_AS(assocRefs.push_back(assoc), std::invalid_argument);
+    REQUIRE_THROWS_AS(assocRefs.create(), std::logic_error);
+  }
+}
