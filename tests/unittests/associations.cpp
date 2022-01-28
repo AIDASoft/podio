@@ -133,9 +133,7 @@ TEST_CASE("Association basics", "[associations]") {
 TEST_CASE("AssociationCollection basics", "[associations]") {
   auto coll = TestAColl();
 
-  REQUIRE(coll.getValueTypeName() == "podio::Association<ExampleHit,ExampleCluster>");
-
-  REQUIRE(true);
+  // TODO: basics without I/O
 }
 
 TEST_CASE("AssociationCollection constness", "[associations][static-checks][const-correctness]") {
