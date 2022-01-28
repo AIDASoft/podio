@@ -49,7 +49,7 @@ public:
     delete m_to;
   }
 
-private:
+public:
   float weight{};
   FromT* m_from{nullptr};
   ToT* m_to{nullptr};

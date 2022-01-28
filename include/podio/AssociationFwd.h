@@ -1,6 +1,9 @@
 #ifndef PODIO_ASSOCIATIONFWD_H
 #define PODIO_ASSOCIATIONFWD_H
 
+#include <deque>
+#include <vector>
+
 namespace podio {
 namespace detail {
   template <typename T>
@@ -19,9 +22,26 @@ namespace detail {
   template <typename T>
   using GetDefT = typename GetDefType<T>::type;
 
+  template <typename T>
+  struct GetCollType {
+    using type = typename T::CollT;
+  };
+
+  template <typename T>
+  using GetCollT = typename GetCollType<T>::type;
+
 } // namespace detail
 
-// Forward declarations for a bit less typing below
+// Forward declarations and typedefs used throughout the whole Association
+// business
+template <typename FromT, typename ToT>
+class AssociationObj;
+
+template <typename FromT, typename ToT>
+using AssociationObjPointerContainer = std::deque<AssociationObj<FromT, ToT>*>;
+
+using AssociationDataContainer = std::vector<float>;
+
 template <typename FromT, typename ToT, bool Mutable>
 class AssociationT;
 
@@ -30,6 +50,19 @@ using Association = AssociationT<detail::GetDefT<FromT>, detail::GetDefT<ToT>, f
 
 template <typename FromT, typename ToT>
 using MutableAssociation = AssociationT<detail::GetDefT<FromT>, detail::GetDefT<ToT>, true>;
+
+template <typename FromT, typename ToT>
+class AssociationCollection;
+
+template <typename FromT, typename ToT, bool Mutable>
+class AssociationCollectionIteratorT;
+
+template <typename FromT, typename ToT>
+using AssociationCollectionIterator = AssociationCollectionIteratorT<FromT, ToT, false>;
+
+template <typename FromT, typename ToT>
+using AssociationMutableCollectionIterator = AssociationCollectionIteratorT<FromT, ToT, true>;
+
 } // namespace podio
 
 #endif // PODIO_ASSOCIATIONFWD_H

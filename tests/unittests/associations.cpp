@@ -2,21 +2,22 @@
 
 #include "podio/AssociationCollection.h"
 
-#include "datamodel/ExampleCluster.h"
-#include "datamodel/ExampleHit.h"
-#include "datamodel/MutableExampleCluster.h"
-#include "datamodel/MutableExampleHit.h"
+#include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleHitCollection.h"
 
 #include <type_traits>
 
-// Test datatypes
+// Test datatypes (spelling them out here explicitly to make sure that
+// assumptions about typedefs actually hold)
 using TestA = podio::Association<ExampleHit, ExampleCluster>;
-using TestMA = podio::MutableAssociation<ExampleHit, ExampleCluster>;
+using TestMutA = podio::MutableAssociation<ExampleHit, ExampleCluster>;
 using TestAColl = podio::AssociationCollection<ExampleHit, ExampleCluster>;
+using TestAIter = podio::AssociationCollectionIterator<ExampleHit, ExampleCluster>;
+using TestAMutIter = podio::AssociationMutableCollectionIterator<ExampleHit, ExampleCluster>;
 
 TEST_CASE("Association constness", "[associations][static-checks]") {
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMA>().getFrom()), ExampleHit>);
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMA>().getTo()), ExampleCluster>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutA>().getFrom()), ExampleHit>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutA>().getTo()), ExampleCluster>);
 
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestA>().getFrom()), ExampleHit>);
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestA>().getTo()), ExampleCluster>);
@@ -26,7 +27,7 @@ TEST_CASE("Association basics", "[associations]") {
   auto cluster = MutableExampleCluster();
   auto hit = MutableExampleHit();
 
-  auto mutAssoc = TestMA();
+  auto mutAssoc = TestMutA();
   mutAssoc.setWeight(3.14f);
   mutAssoc.setFrom(hit);
   mutAssoc.setTo(cluster);
@@ -57,7 +58,7 @@ TEST_CASE("Association basics", "[associations]") {
   }
 
   SECTION("Assignment") {
-    auto otherAssoc = TestMA();
+    auto otherAssoc = TestMutA();
     otherAssoc = mutAssoc;
     REQUIRE(otherAssoc.getWeight() == 3.14f);
     REQUIRE(otherAssoc.getFrom() == hit);
@@ -129,10 +130,88 @@ TEST_CASE("Association basics", "[associations]") {
   }
 }
 
-TEST_CASE("AssociationCollection", "[associations]") {
+TEST_CASE("AssociationCollection basics", "[associations]") {
   auto coll = TestAColl();
 
   REQUIRE(coll.getValueTypeName() == "podio::Association<ExampleHit,ExampleCluster>");
 
   REQUIRE(true);
+}
+
+TEST_CASE("AssociationCollection constness", "[associations][static-checks][const-correctness]") {
+  // Test type-aliases in AssociationCollection
+  STATIC_REQUIRE(std::is_same_v<TestAColl::const_iterator, TestAIter>);
+  STATIC_REQUIRE(std::is_same_v<TestAColl::iterator, TestAMutIter>);
+
+  SECTION("const collections with const iterators") {
+    const auto coll = TestAColl();
+    // this essentially checks the whole "chain" from begin() / end() through
+    // iterator operators
+    for (auto assoc : coll) {
+      STATIC_REQUIRE(std::is_same_v<decltype(assoc), TestA>); // const collection iterators should only return
+                                                              // immutable objects
+    }
+
+    // check the individual steps again from above, to see where things fail if they fail
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestAColl>().begin()),
+                                  TestAColl::const_iterator>); // const collectionb begin() should return a
+                                                               // AssociationCollectionIterator
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestAColl>().end()),
+                                  TestAColl::const_iterator>); // const collectionb end() should return a
+                                                               // AssociationCollectionIterator
+
+    STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<const TestAColl>().begin()),
+                                  TestA>); // AssociationCollectionIterator should only give access to immutable
+                                           // objects
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestAIter>().operator->()),
+                                  TestA*>); // AssociationCollectionIterator should only give access to immutable
+                                            // objects
+  }
+
+  SECTION("non-const collections with mutable iterators") {
+    auto coll = TestAColl();
+    // this essentially checks the whole "chain" from begin() / end() through
+    // iterator operators
+    for (auto assoc : coll) {
+      STATIC_REQUIRE(std::is_same_v<decltype(assoc), TestMutA>); // collection iterators should return return
+                                                                 // mutable objects
+    }
+
+    // check the individual steps again from above, to see where things fail if they fail
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestAColl>().begin()),
+                                  TestAColl::iterator>); // collection begin() should return a
+                                                         // MutableCollectionIterator
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestAColl>().end()),
+                                  TestAColl::iterator>); // collectionb end() should return a
+                                                         // MutableCollectionIterator
+
+    STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<TestAColl>().begin()),
+                                  TestMutA>); // MutableCollectionIterator should give access to immutable
+                                              // mutable objects
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestAMutIter>().operator->()),
+                                  TestMutA*>); // MutableCollectionIterator should give access to immutable
+                                               // mutable objects
+  }
+
+  SECTION("const correct indexed access to const collections") {
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestAColl>()[0]),
+                                  TestA>); // const collections should only have indexed indexed access to immutable
+                                           // objects
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestAColl>().at(0)),
+                                  TestA>); // const collections should only have indexed indexed access to immutable
+                                           // objects
+  }
+
+  SECTION("const correct indexed access to collections") {
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestAColl>()[0]),
+                                  TestMutA>); // collections should have indexed indexed access to mutable objects
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestAColl>().at(0)),
+                                  TestMutA>); // collections should have indexed indexed access to mutable objects
+  }
 }
