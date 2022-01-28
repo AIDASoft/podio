@@ -25,6 +25,7 @@ class AssociationT {
                 "Associations need to be instantiated with the default types!");
 
   using AssociationObjT = AssociationObj<FromT, ToT>;
+  friend AssociationCollectionIteratorT<FromT, ToT, Mutable>;
 
 public:
   /// Constructor

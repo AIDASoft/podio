@@ -50,8 +50,9 @@ public:
 
 public:
   // Some typedefs for the Association handling
-  using MutT = Mutable{{ class.bare_type }};
-  using DefT = {{ class.bare_type }};
+  using MutT = {{ class.namespace }}::Mutable{{ class.bare_type }};
+  using DefT = {{ class.namespace }}::{{ class.bare_type }};
+  using CollT = {{ class.namespace }}::{{ class.bare_type }}Collection;
 
   static constexpr auto TypeName = "{{ class.full_type }}";
 
