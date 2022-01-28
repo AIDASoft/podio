@@ -131,7 +131,7 @@ public:
     return m_isSubsetColl;
   }
 
-  void setSubsetCollection(bool setSubset) override {
+  void setSubsetCollection(bool setSubset = true) override {
     if (m_isSubsetColl != setSubset && !m_storage.entries.empty()) {
       throw std::logic_error("Cannot change the character of a collection that already contains elements");
     }
@@ -187,7 +187,7 @@ private:
   bool m_isValid{false};
   bool m_isPrepared{false};
   bool m_isSubsetColl{false};
-  unsigned m_collectionID{0};
+  int m_collectionID{0};
   AssociationCollectionData<FromT, ToT> m_storage;
 };
 
