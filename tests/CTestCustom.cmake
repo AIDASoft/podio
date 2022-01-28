@@ -14,6 +14,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write
     read
     read_and_write
+    read_and_write_associated
     write_timed
     read_timed
     check_benchmark_outputs
