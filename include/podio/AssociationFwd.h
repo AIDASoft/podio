@@ -1,7 +1,9 @@
 #ifndef PODIO_ASSOCIATIONFWD_H
 #define PODIO_ASSOCIATIONFWD_H
 
+#include <algorithm>
 #include <deque>
+#include <string>
 #include <vector>
 
 namespace podio {
@@ -22,6 +24,10 @@ namespace detail {
   template <typename T>
   using GetDefT = typename GetDefType<T>::type;
 
+  /**
+   * Helper template struct and type-alias to retrieve the collection type from
+   * a given data type
+   */
   template <typename T>
   struct GetCollType {
     using type = typename T::CollT;
@@ -30,6 +36,12 @@ namespace detail {
   template <typename T>
   using GetCollT = typename GetCollType<T>::type;
 
+  template <typename FromT, typename ToT>
+  inline std::string associationSIOName() {
+    auto n = std::string("Association_FROM_") + FromT::TypeName + "_TO_" + FromT::TypeName;
+    std::replace(n.begin(), n.end(), ':', '_');
+    return n;
+  }
 } // namespace detail
 
 // Forward declarations and typedefs used throughout the whole Association
