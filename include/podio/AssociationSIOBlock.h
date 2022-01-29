@@ -75,4 +75,4 @@ public:
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATIONBLOCK_H
+#endif // PODIO_ASSOCIATIONSIOBLOCK_H

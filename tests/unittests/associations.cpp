@@ -27,7 +27,8 @@ TEST_CASE("Association basics", "[associations]") {
   auto cluster = MutableExampleCluster();
   auto hit = MutableExampleHit();
 
-  auto mutAssoc = TestMutA();
+  auto mutAssoc = TestMutA(); // NOLINT(clang-analyzer-cplusplus.NewDelete) necessary due to clang-tidy and Catch2
+                              // SECTIONs interaction (common setup seems to confuse clang-tidy)
   mutAssoc.setWeight(3.14f);
   mutAssoc.setFrom(hit);
   mutAssoc.setTo(cluster);
@@ -121,7 +122,7 @@ TEST_CASE("Association basics", "[associations]") {
   }
 
   SECTION("Equality operator") {
-    auto otherAssoc = mutAssoc;
+    auto otherAssoc = mutAssoc; // NOLINT(performance-unnecessary-copy-initialization)
     REQUIRE(otherAssoc == mutAssoc);
 
     // Mutable and immutable associations should be comparable

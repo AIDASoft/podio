@@ -77,7 +77,7 @@ public:
   /// Destructor
   ~AssociationT() {
     if (m_obj) {
-      m_obj->release();
+      m_obj->release(); // NOLINT(clang-analyzer-cplusplus.NewDelete) issue #174
     }
   }
 
