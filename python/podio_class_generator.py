@@ -210,7 +210,7 @@ class ClassGenerator(object):
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
-    component['class'] = DataType(name)
+    component['class'] = DataType(name, schema_version=self.schema_version)
 
     self._fill_templates('Component', component)
 
@@ -359,7 +359,8 @@ class ClassGenerator(object):
     # original definition can be left untouched
     data = deepcopy(definition)
     data['schema_version'] = self.schema_version
-    data['class'] = DataType(name)
+    print(self.schema_version)
+    data['class'] = DataType(name, schema_version=self.schema_version)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     data['is_pod'] = self._is_pod_type(definition["Members"])
     self._preprocess_for_class(data)
@@ -437,8 +438,9 @@ class ClassGenerator(object):
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c) for c in self.reader.components.keys()],
-            'datatypes': [DataType(d) for d in self.reader.datatypes.keys()]}
+    data = {'components': [DataType(c, schema_version=self.schema_version) for c in self.reader.components.keys()],
+            'datatypes': [DataType(d, schema_version=self.schema_version) for d in self.reader.datatypes.keys()],
+            'schema_version': self.schema_version}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, classname):

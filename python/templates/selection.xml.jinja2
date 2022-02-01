@@ -1,8 +1,8 @@
 {% macro class_selection(class, prefix='', postfix='') %}
 {%- if class.namespace %}
-        <class name="{{ class.namespace }}::{{ schema_version }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}"/>
+        <class name="{{ class.namespace }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}"/>
 {%- else %}
-        <class name="{{ schema_version }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}"/>
+        <class name="{{ prefix }}{{ class.bare_type }}{{ postfix }}"/>
 {%- endif %}
 {% endmacro %}
 
