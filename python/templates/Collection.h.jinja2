@@ -26,7 +26,7 @@
 #include <ostream>
 
 {{ utils.namespace_open(class.namespace) }}
-
+{{ utils.inline_namespace_open(schema_version) }}
 
 {{ iterator_declaration(class) }}
 
@@ -172,6 +172,7 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
 {{ macros.vectorized_access(class, member) }}
 {% endfor %}
 
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

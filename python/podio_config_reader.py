@@ -427,6 +427,14 @@ class PodioConfigReader(object):
     stream = open(self.yamlfile, "r")
     content = ordered_load(stream, yaml.SafeLoader)
 
+    if "schemaversion" in content:
+      self.schema_version = "v%i"%content["schemaversion"]
+    else:
+          warnings.warn("Please provide a schemaversion entry. "+
+                        "It will become mandatory. Setting it to v1 as default", 
+                        FutureWarning, stacklevel=3)
+          self.schemaversion = "v1"
+
     if "components" in content:
       for klassname, value in content["components"].items():
         self.components[klassname] = self._read_component(value)

@@ -10,6 +10,7 @@
 {% endfor %}
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 
 {{ macros.class_description(class.bare_type, Description, Author, postfix='Data') }}
 class {{ class.bare_type }}Data {
@@ -24,6 +25,7 @@ public:
 {% endfor %}
 };
 
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

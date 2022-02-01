@@ -14,6 +14,7 @@
 
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 {% with obj_type = class.bare_type + 'Obj' %}
 {{ obj_type }}::{{ obj_type }}() :
 {% raw %}  ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0}{% endraw %},
@@ -62,4 +63,5 @@
 {%- endif %}
 
 {% endwith %}
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}

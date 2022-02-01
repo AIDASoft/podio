@@ -11,6 +11,7 @@
 #include <ostream>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
 Mutable{{ class.bare_type }}::operator {{ class.bare_type }}() const { return {{ class.bare_type }}(m_obj); }
@@ -26,4 +27,5 @@ Mutable{{ class.bare_type }}::operator {{ class.bare_type }}() const { return {{
 
 {{ macros.common_object_funcs(class, prefix='Mutable') }}
 
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}

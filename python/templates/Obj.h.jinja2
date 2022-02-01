@@ -15,9 +15,10 @@
 #include <vector>
 {%- endif %}
 
-{{ utils.forward_decls(forward_declarations_obj) }}
+{{ utils.forward_decls(forward_declarations_obj, schema_version) }}
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 class {{ class.bare_type }};
 
 {% with obj_type = class.bare_type + 'Obj' %}
@@ -49,6 +50,7 @@ public:
 };
 {% endwith %}
 
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

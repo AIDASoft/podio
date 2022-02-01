@@ -19,6 +19,7 @@
 #include <memory>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 
 using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }}Obj*>;
 using {{ class.bare_type }}DataContainer = std::vector<{{ class.bare_type }}Data>;
@@ -93,7 +94,7 @@ private:
 };
 {% endwith %}
 
-
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

@@ -99,6 +99,7 @@ class ClassGenerator(object):
     self.get_syntax = self.reader.options["getSyntax"]
     self.incfolder = self.package_name + "/" if self.reader.options["includeSubfolder"] else ""
     self.expose_pod_members = self.reader.options["exposePODMembers"]
+    self.schema_version = self.reader.schema_version
 
     self.clang_format = []
     self.generated_files = []
@@ -357,6 +358,7 @@ class ClassGenerator(object):
     # Make a copy here and add the preprocessing steps to that such that the
     # original definition can be left untouched
     data = deepcopy(definition)
+    data['schema_version'] = self.schema_version
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     data['is_pod'] = self._is_pod_type(definition["Members"])

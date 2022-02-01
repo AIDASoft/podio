@@ -10,6 +10,8 @@
 {% endfor %}
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.namespace_open(schema_version) }}
+
 {% with class_type = class.bare_type + 'CollectionData' %}
 
 {{ class_type }}::{{ class_type }}() :
@@ -188,4 +190,5 @@ void {{ class_type }}::makeSubsetCollection() {
 
 {% endwith %}
 
+{{ utils.namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}

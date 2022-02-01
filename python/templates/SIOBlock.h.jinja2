@@ -14,6 +14,7 @@
 #include <string>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 
 {% with block_class = class.bare_type + 'SIOBlock' %}
 class {{ block_class }}: public podio::SIOBlock {
@@ -41,6 +42,7 @@ public:
 static {{ block_class }} _dummy{{ block_class }};
 {% endwith %}
 
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

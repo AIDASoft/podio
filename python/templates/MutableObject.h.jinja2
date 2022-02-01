@@ -15,9 +15,10 @@
 #include "podio/ObjectID.h"
 #include <ostream>
 
-{{ utils.forward_decls(forward_declarations) }}
+{{ utils.forward_decls(forward_declarations, schema_version) }}
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 
 {{ macros.class_description(class.bare_type, Description, Author, prefix='Mutable') }}
 class Mutable{{ class.bare_type }} {
@@ -47,6 +48,7 @@ private:
   {{ class.bare_type }}Obj* m_obj;
 };
 
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

@@ -10,6 +10,17 @@ namespace {{ nsp }} {
 {% endif %}
 {%- endmacro %}
 
+{% macro inline_namespace_open(nsp) %}
+{% if nsp %}
+inline namespace {{ nsp }} {
+{% endif %}
+{%- endmacro %}
+
+{% macro inline_namespace_close(nsp) %}
+{% if nsp %}
+} // inline namespace {{ nsp }}
+{% endif %}
+{%- endmacro %}
 
 {% macro if_present(content, field) %}
 {% if content and content[field] %}
@@ -34,7 +45,7 @@ namespace {{ nsp }} {
 {%- endmacro %}
 
 
-{%- macro forward_decls(fwd_decls) %}
+{%- macro forward_decls(fwd_decls, schema_version) %}
 {% if fwd_decls %}
 // forward declarations
 {% endif %}
@@ -42,9 +53,11 @@ namespace {{ nsp }} {
 {% if nsp %}
 namespace {{ nsp }} {
 {% endif %}
+inline namespace {{ schema_version }} {
 {% for class in classes %}
 class {{ class }};
 {% endfor %}
+} // inline namespace {{ schema_version }}
 {% if nsp %}
 }
 {% endif %}

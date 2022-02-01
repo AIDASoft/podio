@@ -29,6 +29,7 @@ void handlePODDataSIO(devT& device, {{ class.namespace }}::{{ class.bare_type }}
 {% endif %}
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.inline_namespace_open(schema_version) }}
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
 void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
@@ -96,4 +97,5 @@ void {{ block_class }}::createCollection(const bool subsetCollection) {
 }
 
 {% endwith %}
+{{ utils.inline_namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}

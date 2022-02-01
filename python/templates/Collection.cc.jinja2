@@ -14,6 +14,7 @@
 #include <iomanip>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.namespace_open(schema_version) }}
 
 {% with collection_type = class.bare_type + 'Collection' %}
 {{ collection_type }}::{{ collection_type }}() :
@@ -137,4 +138,5 @@ podio::CollectionBuffers {{ collection_type }}::getBuffers() {
 
 {{ macros.ostream_operator(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax, ostream_collection_settings) }}
 
+{{ utils.namespace_close(schema_version) }}
 {{ utils.namespace_close(class.namespace) }}
