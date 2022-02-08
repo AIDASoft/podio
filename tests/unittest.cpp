@@ -688,42 +688,6 @@ TEST_CASE("Version tests", "[versioning]") {
     STATIC_REQUIRE(ver_1_1_1 > ver_1_1);
     STATIC_REQUIRE(ver_2_0_2 < ver_2_1);
   }
-
-  SECTION("Compatibility: default") {
-    // Assume Compatibility == AnyNewer (default)
-    STATIC_REQUIRE(compatible(ver_2, ver_1));
-    STATIC_REQUIRE(compatible(ver_1_1, ver_1));
-    STATIC_REQUIRE(compatible(ver_1_1_1, ver_1_1));
-    STATIC_REQUIRE(compatible(ver_2_0_2, ver_2));
-
-    // opposite direction
-    STATIC_REQUIRE_FALSE(compatible(ver_2, ver_2_0_2));
-    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_2));
-  }
-
-  SECTION("Compatibility: SameMajor") {
-    STATIC_REQUIRE(compatible(ver_1, ver_1_1, Compatibility::SameMajor));
-    STATIC_REQUIRE(compatible(ver_1_1, ver_1, Compatibility::SameMajor));
-    STATIC_REQUIRE(compatible(ver_1, ver_1_1_1, Compatibility::SameMajor));
-    STATIC_REQUIRE(compatible(ver_1_1_1, ver_1, Compatibility::SameMajor));
-    STATIC_REQUIRE(compatible(ver_1_1, ver_1_1_1, Compatibility::SameMajor));
-    STATIC_REQUIRE(compatible(ver_2_0_2, ver_2, Compatibility::SameMajor));
-    STATIC_REQUIRE(compatible(ver_2, ver_2_0_2, Compatibility::SameMajor));
-  }
-
-  SECTION("Compatibility: SameMinor") {
-    STATIC_REQUIRE(compatible(ver_1, ver_1_0_2, Compatibility::SameMinor));
-    STATIC_REQUIRE_FALSE(compatible(ver_1_1, ver_1, Compatibility::SameMinor));
-    STATIC_REQUIRE(compatible(ver_1_1, ver_1_1_1, Compatibility::SameMinor));
-    STATIC_REQUIRE(compatible(ver_1_1_1, ver_1_1, Compatibility::SameMinor));
-  }
-
-  SECTION("Compatibility: Exact") {
-    STATIC_REQUIRE(compatible(ver_1, Version{1}, Compatibility::Exact));
-    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_1_1, Compatibility::Exact));
-    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_1_1_1, Compatibility::Exact));
-    STATIC_REQUIRE_FALSE(compatible(ver_1, ver_2, Compatibility::Exact));
-  }
 }
 
 TEST_CASE("Preprocessor version tests", "[versioning]") {

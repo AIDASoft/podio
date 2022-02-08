@@ -1,5 +1,5 @@
-#ifndef podioVersion_h
-#define podioVersion_h
+#ifndef PODIO_VERSION_H
+#define PODIO_VERSION_H
 
 #include <cstdint>
 #include <tuple>
@@ -82,40 +82,6 @@ namespace podio::version {
       (uint16_t) PODIO_PATCH_VERSION(version)
     };
   }
-
-
-  enum class Compatibility {
-    AnyNewer,  ///< A version is equal or higher than another version
-    SameMajor, ///< Two versions have the same major version
-    SameMinor, ///< Two versions have the same major and minor version
-    Exact      ///< Two versions are exactly the same
-  };
-
-
-  /**
-   * Check if Version va is compatible with Version vb under a given
-   * compatibility strategy (defaults AnyNewer).
-   */
-  inline constexpr bool compatible(Version va, Version vb, Compatibility compat=Compatibility::AnyNewer) noexcept {
-    switch (compat) {
-      case Compatibility::Exact:
-        return va == vb;
-      case Compatibility::AnyNewer:
-        return va >= vb;
-      case Compatibility::SameMajor:
-        return va.major == vb.major;
-      case Compatibility::SameMinor:
-        return va.major == vb.major && va.minor == vb.minor;
-    }
-  }
-
-  /**
-   * Check if the version is compatible with the current build_version
-   */
-  inline constexpr bool compatible(Version v, Compatibility compat=Compatibility::AnyNewer) noexcept {
-    return compatible(v, build_version, compat);
-  }
-   
 }
 
 
