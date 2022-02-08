@@ -31,6 +31,26 @@ foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
 
+message(STATUS "Getting test input files")
+execute_process(
+  COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/get_test_inputs.sh
+  OUTPUT_VARIABLE PODIO_TEST_INPUT_DATA_DIR
+  RESULT_VARIABLE TEST_INPUTS_AVAILABLE
+  )
+if (NOT "${TEST_INPUTS_AVAILABLE}" STREQUAL "0")
+  message(WARNING "Could not get test input files. Will skip some tests that depend on these")
+else()
+  message(STATUS "Test inputs stored in " ${PODIO_TEST_INPUT_DATA_DIR})
+
+  add_executable(read-legacy-files read-legacy-files.cpp)
+  target_link_libraries(read-legacy-files TestDataModel TestDataModelDict podio::podioRootIO)
+  add_test(NAME read-legacy-files COMMAND read-legacy-files ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
+
+  set_property(TEST read-legacy-files PROPERTY ENVIRONMENT
+    LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+  )
+endif()
+
 CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
 

@@ -21,7 +21,7 @@ int main(){
   for(unsigned i=0; i<nEvents; ++i) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
-    processEvent(store, i);
+    processEvent(store, i, reader.currentFileVersion());
 
     writer.writeEvent() ;
     

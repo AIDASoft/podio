@@ -1,12 +1,13 @@
 #ifndef IREADER_H
 #define IREADER_H
 
+#include "podio/podioVersion.h"
+
 #include <algorithm>
 #include <string>
 #include <vector>
 #include <map>
 
-#include <iostream>
 
 /*
 
@@ -43,6 +44,9 @@ class IReader {
 
     virtual void openFile(const std::string& filename) = 0;
     virtual void closeFile() = 0;
+
+    /// Get the podio version with which the current file has been written
+    virtual podio::version::Version currentFileVersion() const = 0;
 };
 
 } // namespace

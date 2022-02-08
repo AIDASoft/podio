@@ -55,6 +55,8 @@ namespace podio {
 
     void endOfEvent() override;
 
+    podio::version::Version currentFileVersion() const override { return m_fileVersion; }
+
   private:
     /// Implementation for collection reading
     CollectionBase* readCollection(const std::string& name) override final;
@@ -99,6 +101,8 @@ namespace podio {
     sio::block_list  m_blocks {} ;
 
     SIOFileTOCRecord m_tocRecord{};
+
+    podio::version::Version m_fileVersion{0};
   };
 
 

@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
 #include "podio/ROOTWriter.h"
+#include "podio/podioVersion.h"
 
 // ROOT specifc includes
 #include "TFile.h"
@@ -116,6 +117,10 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
     }
 
     m_metadatatree->Branch("CollectionTypeInfo", &collectionInfo);
+
+    podio::version::Version podioVersion = podio::version::build_version;
+    m_metadatatree->Branch("PodioVersion", &podioVersion);
+
     m_metadatatree->Fill();
 
     m_colMDtree->Branch("colMD", "std::map<int,podio::GenericParameters>", m_store->getColMetaDataMap() ) ;

@@ -1,5 +1,4 @@
 // STL
-#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <vector>
@@ -10,6 +9,7 @@
 // podio specific includes
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "podio/EventStore.h"
+#include "podio/podioVersion.h"
 
 // Test data types
 #include "datamodel/EventInfoCollection.h"
@@ -647,5 +647,82 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     auto newSubsetVecs = std::move(subsetVecs);
     REQUIRE(newSubsetVecs.isSubsetCollection());
     checkCollections(hitColl, clusterColl, newSubsetVecs, userDataColl);
+  }
+}
+
+TEST_CASE("Version tests", "[versioning]") {
+  using namespace podio::version;
+  // all of these comparisons should be possible at compile time -> STATIC_REQUIRE
+
+  // major version checks
+  constexpr Version ver_1{1};
+  constexpr Version ver_2{2};
+  constexpr Version ver_1_1{1, 1};
+  constexpr Version ver_2_1{2, 1};
+  constexpr Version ver_1_1_1{1, 1, 1};
+  constexpr Version ver_1_0_2{1, 0, 2};
+  constexpr Version ver_2_0_2{2, 0, 2};
+
+  SECTION("Equality") {
+    STATIC_REQUIRE(ver_1 == Version{1, 0, 0});
+    STATIC_REQUIRE(ver_1 != ver_2);
+    STATIC_REQUIRE(ver_1_1_1 == Version{1, 1, 1});
+    STATIC_REQUIRE(ver_2_1 != ver_1_1);
+    STATIC_REQUIRE(ver_1_0_2 != ver_2_0_2);
+  }
+
+  SECTION("Major version") {
+    STATIC_REQUIRE(ver_1 < ver_2);
+    STATIC_REQUIRE(Version{3} > ver_2);
+  }
+
+  SECTION("Minor version") {
+    STATIC_REQUIRE(ver_1 < ver_1_1);
+    STATIC_REQUIRE(ver_2_1 > ver_2);
+    STATIC_REQUIRE(ver_1_1 < ver_2);
+  }
+
+  SECTION("Patch version") {
+    STATIC_REQUIRE(ver_1 < ver_1_0_2);
+    STATIC_REQUIRE(ver_1 < ver_1_1_1);
+    STATIC_REQUIRE(ver_1_1_1 > ver_1_1);
+    STATIC_REQUIRE(ver_2_0_2 < ver_2_1);
+  }
+}
+
+TEST_CASE("Preprocessor version tests", "[versioning]") {
+  SECTION("Basic functionality") {
+    using namespace podio::version;
+    // Check that preprocessor comparisons work
+    STATIC_REQUIRE(PODIO_BUILD_VERSION == PODIO_VERSION(build_version.major, build_version.minor, build_version.patch));
+
+    // Make sure that we can actually decode 64 bit versions
+    STATIC_REQUIRE(decode_version(PODIO_BUILD_VERSION) == build_version);
+
+    STATIC_REQUIRE(PODIO_MAJOR_VERSION(PODIO_BUILD_VERSION) == build_version.major);
+    STATIC_REQUIRE(PODIO_MINOR_VERSION(PODIO_BUILD_VERSION) == build_version.minor);
+    STATIC_REQUIRE(PODIO_PATCH_VERSION(PODIO_BUILD_VERSION) == build_version.patch);
+
+    // Make a few checks where other versions are "maxed out"
+    STATIC_REQUIRE(PODIO_MAJOR_VERSION(PODIO_VERSION(10000, 65535, 65535)) == 10000);
+    STATIC_REQUIRE(PODIO_MINOR_VERSION(PODIO_VERSION(65535, 20000, 65535)) == 20000);
+    STATIC_REQUIRE(PODIO_PATCH_VERSION(PODIO_VERSION(65535, 65535, 30000)) == 30000);
+  }
+
+  SECTION("Comparing") {
+    // Using some large numbers here to check what happens if we start to
+    // actually use the 16 available bits
+    // patch version
+    STATIC_REQUIRE(PODIO_VERSION(10000, 20000, 39999) < PODIO_VERSION(10000, 20000, 40000));
+
+    // minor version
+    STATIC_REQUIRE(PODIO_VERSION(10000, 30000, 33333) > PODIO_VERSION(10000, 29999, 33333));
+    STATIC_REQUIRE(PODIO_VERSION(10000, 30000, 33333) < PODIO_VERSION(10000, 30001, 44444));
+
+    // major version
+    STATIC_REQUIRE(PODIO_VERSION(20000, 40000, 0) < PODIO_VERSION(20001, 40000, 0));
+    STATIC_REQUIRE(PODIO_VERSION(20000, 40000, 10000) < PODIO_VERSION(20001, 30000, 0));
+    STATIC_REQUIRE(PODIO_VERSION(20001, 40000, 10000) > PODIO_VERSION(20000, 40000, 20000));
+    STATIC_REQUIRE(PODIO_VERSION(20000, 40000, 10000) > PODIO_VERSION(19999, 50000, 30000));
   }
 }

@@ -36,7 +36,7 @@ endif()
 # ``-DCMAKE_CXX_STANDARD=<standard>`` when invoking CMake
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
 
-if(NOT CMAKE_CXX_STANDARD MATCHES "17")
+if(NOT CMAKE_CXX_STANDARD MATCHES "17|20")
   message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}")
 endif()
 
@@ -139,9 +139,9 @@ if(CREATE_DOC)
 	include(cmake/podioDoxygen.cmake)
 endif()
 #--- add version files ---------------------------------------------------------
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podioVersion.h
-               ${CMAKE_CURRENT_BINARY_DIR}/podioVersion.h )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/podioVersion.h
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podioVersion.in.h
+               ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h )
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio )
 
 #--- add license files ---------------------------------------------------------

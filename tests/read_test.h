@@ -17,7 +17,7 @@
 // podio specific includes
 #include "podio/EventStore.h"
 #include "podio/IReader.h"
-
+#include "podio/podioVersion.h"
 #include "podio/UserDataCollection.h"
 
 // STL
@@ -39,7 +39,7 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
   return true;
 }
 
-void processEvent(podio::EventStore& store, int eventNum) {
+void processEvent(podio::EventStore& store, int eventNum, podio::version::Version fileVersion) {
 
   auto evtMD = store.getEventMetaData() ;
   float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
@@ -87,12 +87,14 @@ void processEvent(podio::EventStore& store, int eventNum) {
     throw std::runtime_error("Couldn't read event meta data parameters 'CellIDEncodingString'");
   }
 
-  auto& hitRefs = store.get<ExampleHitCollection>("hitRefs");
-  if (hitRefs.size() != hits.size()) {
-    throw std::runtime_error("hit and subset hit collection do not have the same size");
-  }
-  if (!(hits[1] == hitRefs[0] && hits[0] == hitRefs[1])) {
-    throw std::runtime_error("hit subset collections do not have the expected contents");
+  if (fileVersion > podio::version::Version{0, 14, 0}) {
+    auto& hitRefs = store.get<ExampleHitCollection>("hitRefs");
+    if (hitRefs.size() != hits.size()) {
+      throw std::runtime_error("hit and subset hit collection do not have the same size");
+    }
+    if (!(hits[1] == hitRefs[0] && hits[0] == hitRefs[1])) {
+      throw std::runtime_error("hit subset collections do not have the expected contents");
+    }
   }
 
   auto& clusters = store.get<ExampleClusterCollection>("clusters");
@@ -105,50 +107,13 @@ void processEvent(podio::EventStore& store, int eventNum) {
     throw std::runtime_error("Collection 'clusters' should be present");
   }
 
-  // ----------------- MCParticleRefCollection ----------------------
-  // Test this before the MCParticle collection to make sure it actually loads
-  // the referenced collection(s) if they are not already present
-  auto& mcpRefs = store.get<ExampleMCCollection>("mcParticleRefs");
-  if (!mcpRefs.isValid()) throw std::runtime_error("Collection 'mcParticleRefs' should be present");
-
-  for (auto p : mcpRefs) {
-    if ((unsigned)p.getObjectID().collectionID == mcpRefs.getID()) {
-      throw std::runtime_error("objects of a reference collection should have a different collectionID than the reference collection");
-    }
-  }
-
-  // Now we can do some more tests actually comparing the references to the MC Particles
+  // ----------------- MCParticle & MCParticleRefCollection ----------------------
   auto& mcps =  store.get<ExampleMCCollection>("mcparticles");
-  auto& moreMCs = store.get<ExampleMCCollection>("moreMCs");
-  // First check that the two mc collections that we store are the same
-  if (mcps.size() != moreMCs.size()) {
-    throw std::runtime_error("'mcparticles' and 'moreMCs' should have the same size");
+  if( !mcps.isValid() ) {
+    throw std::runtime_error("Collection 'mcparticles' should be present");
   }
 
-  for (size_t index = 0; index < mcps.size(); ++index) {
-    // Not too detailed check here
-    if (mcps[index].energy() != moreMCs[index].energy() ||
-        mcps[index].daughters().size() != moreMCs[index].daughters().size()) {
-      throw std::runtime_error("'mcparticles' and 'moreMCs' do not contain the same elements");
-    }
-  }
 
-  if( mcps.isValid() ){
-    if (mcpRefs.size() != mcps.size()) {
-      throw std::runtime_error("'mcParticleRefs' collection has wrong size");
-    }
-    for (size_t i = 0; i < mcpRefs.size(); ++i) {
-      if (i < 5) { // The first elements point into the mcps collection
-        if (!(mcpRefs[i] == mcps[2 * i + 1])) {
-          throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
-        }
-      } else { // The second half points into the moreMCs collection
-        const int index = (i - 5) * 2;
-        if (!(mcpRefs[i] == moreMCs[index])) {
-          throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
-        }
-      }
-    }
 
     // check that we can retrieve the correct parent daughter relation
     // set in write_test.h :
@@ -192,9 +157,55 @@ void processEvent(podio::EventStore& store, int eventNum) {
     if( ! ( d2 == mcps[8] ) )  throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 ");
     if( ! ( d3 == mcps[9] ) )  throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 ");
 
-  } else {
-    throw std::runtime_error("Collection 'mcparticles' should be present");
+
+  // Check the MCParticle subset collection only if it is technically possible
+  // to be in the file
+  if (fileVersion >= podio::version::Version{0, 13, 2}) {
+
+    // Load the subset collection first to ensure that it pulls in objects taht
+    // have not been read yet
+    auto& mcpRefs = store.get<ExampleMCCollection>("mcParticleRefs");
+    if (!mcpRefs.isValid()) throw std::runtime_error("Collection 'mcParticleRefs' should be present");
+
+    for (auto pr : mcpRefs) {
+      if ((unsigned)pr.getObjectID().collectionID == mcpRefs.getID()) {
+        throw std::runtime_error("objects of a reference collection should have a different collectionID than the reference collection");
+      }
+    }
+
+    auto& moreMCs = store.get<ExampleMCCollection>("moreMCs");
+
+    // First check that the two mc collections that we store are the same
+    if (mcps.size() != moreMCs.size()) {
+      throw std::runtime_error("'mcparticles' and 'moreMCs' should have the same size");
+    }
+
+    for (size_t index = 0; index < mcps.size(); ++index) {
+      // Not too detailed check here
+      if (mcps[index].energy() != moreMCs[index].energy() ||
+          mcps[index].daughters().size() != moreMCs[index].daughters().size()) {
+        throw std::runtime_error("'mcparticles' and 'moreMCs' do not contain the same elements");
+      }
+    }
+
+
+    if (mcpRefs.size() != mcps.size()) {
+      throw std::runtime_error("'mcParticleRefs' collection has wrong size");
+    }
+    for (size_t i = 0; i < mcpRefs.size(); ++i) {
+      if (i < 5) { // The first elements point into the mcps collection
+        if (!(mcpRefs[i] == mcps[2 * i + 1])) {
+          throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
+        }
+      } else { // The second half points into the moreMCs collection
+        const int index = (i - 5) * 2;
+        if (!(mcpRefs[i] == moreMCs[index])) {
+          throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
+        }
+      }
+    }
   }
+
 
 
   //std::cout << "Fetching collection 'refs'" << std::endl;
@@ -303,61 +314,62 @@ void processEvent(podio::EventStore& store, int eventNum) {
     throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
   }
 
-  const auto& fixedWidthInts = store.get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
-  if (not fixedWidthInts.isValid() or fixedWidthInts.size() != 3) {
-    throw std::runtime_error("Collection \'fixedWidthInts\' should be present and have 3 elements");
+  if (fileVersion >= podio::version::Version{0, 13, 1}) {
+    const auto& fixedWidthInts = store.get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+    if (not fixedWidthInts.isValid() or fixedWidthInts.size() != 3) {
+      throw std::runtime_error("Collection \'fixedWidthInts\' should be present and have 3 elements");
+    }
+
+    auto maxValues = fixedWidthInts[0];
+    const auto& maxComps = maxValues.fixedWidthStruct();
+    check_fixed_width_value(maxValues.fixedI16(), std::numeric_limits<std::int16_t>::max(), "int16");
+    check_fixed_width_value(maxValues.fixedU32(), std::numeric_limits<std::uint32_t>::max(), "uint32");
+    check_fixed_width_value(maxValues.fixedU64(), std::numeric_limits<std::uint64_t>::max(), "uint64");
+    check_fixed_width_value(maxComps.fixedInteger64, std::numeric_limits<std::int64_t>::max(), "int64");
+    check_fixed_width_value(maxComps.fixedInteger32, std::numeric_limits<std::int32_t>::max(), "int32");
+    check_fixed_width_value(maxComps.fixedUnsigned16, std::numeric_limits<std::uint16_t>::max(), "uint16");
+
+    auto minValues = fixedWidthInts[1];
+    const auto& minComps = minValues.fixedWidthStruct();
+    check_fixed_width_value(minValues.fixedI16(), std::numeric_limits<std::int16_t>::min(), "int16");
+    check_fixed_width_value(minValues.fixedU32(), std::numeric_limits<std::uint32_t>::min(), "uint32");
+    check_fixed_width_value(minValues.fixedU64(), std::numeric_limits<std::uint64_t>::min(), "uint64");
+    check_fixed_width_value(minComps.fixedInteger64, std::numeric_limits<std::int64_t>::min(), "int64");
+    check_fixed_width_value(minComps.fixedInteger32, std::numeric_limits<std::int32_t>::min(), "int32");
+    check_fixed_width_value(minComps.fixedUnsigned16, std::numeric_limits<std::uint16_t>::min(), "uint16");
+
+    auto arbValues = fixedWidthInts[2];
+    const auto& arbComps = arbValues.fixedWidthStruct();
+    check_fixed_width_value(arbValues.fixedI16(), std::int16_t{-12345}, "int16");
+    check_fixed_width_value(arbValues.fixedU32(), std::uint32_t{1234567890}, "uint32");
+    check_fixed_width_value(arbValues.fixedU64(), std::uint64_t{1234567890123456789}, "uint64");
+    check_fixed_width_value(arbComps.fixedInteger64, std::int64_t{-1234567890123456789}, "int64");
+    check_fixed_width_value(arbComps.fixedInteger32, std::int32_t{-1234567890}, "int32");
+    check_fixed_width_value(arbComps.fixedUnsigned16, std::uint16_t{12345}, "uint16");
   }
 
-  auto maxValues = fixedWidthInts[0];
-  const auto& maxComps = maxValues.fixedWidthStruct();
-  check_fixed_width_value(maxValues.fixedI16(), std::numeric_limits<std::int16_t>::max(), "int16");
-  check_fixed_width_value(maxValues.fixedU32(), std::numeric_limits<std::uint32_t>::max(), "uint32");
-  check_fixed_width_value(maxValues.fixedU64(), std::numeric_limits<std::uint64_t>::max(), "uint64");
-  check_fixed_width_value(maxComps.fixedInteger64, std::numeric_limits<std::int64_t>::max(), "int64");
-  check_fixed_width_value(maxComps.fixedInteger32, std::numeric_limits<std::int32_t>::max(), "int32");
-  check_fixed_width_value(maxComps.fixedUnsigned16, std::numeric_limits<std::uint16_t>::max(), "uint16");
 
-  auto minValues = fixedWidthInts[1];
-  const auto& minComps = minValues.fixedWidthStruct();
-  check_fixed_width_value(minValues.fixedI16(), std::numeric_limits<std::int16_t>::min(), "int16");
-  check_fixed_width_value(minValues.fixedU32(), std::numeric_limits<std::uint32_t>::min(), "uint32");
-  check_fixed_width_value(minValues.fixedU64(), std::numeric_limits<std::uint64_t>::min(), "uint64");
-  check_fixed_width_value(minComps.fixedInteger64, std::numeric_limits<std::int64_t>::min(), "int64");
-  check_fixed_width_value(minComps.fixedInteger32, std::numeric_limits<std::int32_t>::min(), "int32");
-  check_fixed_width_value(minComps.fixedUnsigned16, std::numeric_limits<std::uint16_t>::min(), "uint16");
+  if (fileVersion >= podio::version::Version{0, 13, 2}) {
+    auto& usrInts = store.get<podio::UserDataCollection<uint64_t> >("userInts");
 
-  auto arbValues = fixedWidthInts[2];
-  const auto& arbComps = arbValues.fixedWidthStruct();
-  check_fixed_width_value(arbValues.fixedI16(), std::int16_t{-12345}, "int16");
-  check_fixed_width_value(arbValues.fixedU32(), std::uint32_t{1234567890}, "uint32");
-  check_fixed_width_value(arbValues.fixedU64(), std::uint64_t{1234567890123456789}, "uint64");
-  check_fixed_width_value(arbComps.fixedInteger64, std::int64_t{-1234567890123456789}, "int64");
-  check_fixed_width_value(arbComps.fixedInteger32, std::int32_t{-1234567890}, "int32");
-  check_fixed_width_value(arbComps.fixedUnsigned16, std::uint16_t{12345}, "uint16");
+    auto& uivec = usrInts.vec() ;
+    int myInt = 0 ;
+    for( int iu : uivec ){
+      if( iu != myInt++ )
+        throw std::runtime_error("Couldn't read userInts properly"); ;
+    }
 
+    myInt = 0 ;
+    for( int iu : usrInts ){
+      if( iu != myInt++ )
+        throw std::runtime_error("Couldn't read userInts properly"); ;
+    }
 
-
-  auto& usrInts = store.get<podio::UserDataCollection<uint64_t> >("userInts");
-
-#if 0 //access via vector
-  auto& uivec = usrInts.vec() ;
-  int myInt = 0 ;
-  for( int iu : uivec ){
-    if( iu != myInt++ )
-      throw std::runtime_error("Couldn't read userInts properly"); ;
-  }
-#else // access in direct range based for loop
-  int myInt = 0 ;
-  for( int iu : usrInts ){
-    if( iu != myInt++ )
-      throw std::runtime_error("Couldn't read userInts properly"); ;
-  }
-#endif
-
-  auto& usrDbl = store.get<podio::UserDataCollection<double> >("userDoubles");
-  for( double d : usrDbl ){
-    if( d != 42. )
-      throw std::runtime_error("Couldn't read userDoubles properly"); ;
+    auto& usrDbl = store.get<podio::UserDataCollection<double> >("userDoubles");
+    for( double d : usrDbl ){
+      if( d != 42. )
+        throw std::runtime_error("Couldn't read userDoubles properly"); ;
+    }
   }
 
 }
@@ -385,7 +397,7 @@ void run_read_test(podio::IReader& reader) {
     if(i%1000==0)
       std::cout<<"reading event "<<i<<std::endl;
 
-    processEvent(store, correctIndex(i));
+    processEvent(store, correctIndex(i), reader.currentFileVersion());
     store.clear();
     reader.endOfEvent();
   }
