@@ -56,6 +56,18 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventName'");
   }
 
+  if (fileVersion > podio::version::Version{0, 14, 1}) {
+    const auto& someVectorData = evtMD.getValue<std::vector<int>>("SomeVectorData");
+    if (someVectorData.size() != 4) {
+      throw std::runtime_error("Couldn't read event meta data parameters: 'SomeVectorData'");
+    }
+    for (int i = 0; i < 4; ++i) {
+      if (someVectorData[i] != i + 1) {
+        throw std::runtime_error("Couldn't read event meta data parameters: 'SomeVectorData'");
+      }
+    }
+  }
+
   try {
     // not assigning to a variable, because it will remain unused, we just want
     // the exception here
