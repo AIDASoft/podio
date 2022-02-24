@@ -11,36 +11,27 @@
 
 namespace podio {
 
-/**
- * The types which are supported in the GenericParameters
- */
+/// The types which are supported in the GenericParameters
 using SupportedGenericDataTypes = std::tuple<int, float, std::string>;
 
+/// Static bool for determining if a type T is a supported GenericParamter type
 template <typename T>
 static constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, SupportedGenericDataTypes>;
 
-/**
- * Alias template to be used for enabling / disabling template overloads that
- * should only be present for actually supported data types
- */
+/// Alias template to be used for enabling / disabling template overloads that
+/// should only be present for actually supported data types
 template <typename T>
 using EnableIfValidGenericDataType = typename std::enable_if_t<isSupportedGenericDataType<T>>;
 
-/**
- * The data types for which a return by value should be preferred over a return
- * by const-ref
- */
+/// The data types for which a return by value should be preferred over a return
+/// by const-ref
 using ValueReturnGenericDataTypes = std::tuple<int, float>;
 
-/**
- * Alias template for enabling return by value overloads
- */
+/// Alias template for enabling return by value overloads
 template <typename T>
 using EnableIfValueReturnGenericDataType = std::enable_if_t<detail::isInTuple<T, ValueReturnGenericDataTypes>>;
 
-/**
- * Alias template for return by const ref overloads
- */
+/// Alias template for return by const ref overloads
 template <typename T>
 using EnableIfConstRefReturnGenericDataType =
     std::enable_if_t<std::is_same_v<T, std::string> ||
@@ -71,18 +62,15 @@ private:
   using StringMap = MapType<std::string>;
 
 public:
-  /**
-   * Get the value that is stored under the given key
-   */
+  /// Get the value that is stored under the given key (by const reference)
   template <typename T, typename = EnableIfConstRefReturnGenericDataType<T>>
   const T& getValue(const std::string& key) const;
 
-  /**
-   * Get the value that is stored under the given key
-   */
+  /// Get the value that is stored under the given key (by value)
   template <typename T, typename = EnableIfValueReturnGenericDataType<T>>
   T getValue(const std::string& key) const;
 
+  /// Store (a copy of) the passed value under the given key
   template <typename T, typename = std::enable_if_t<isSupportedGenericDataType<T>>>
   void setValue(const std::string& key, T value);
 
@@ -97,9 +85,11 @@ public:
     setValue<std::vector<T>>(key, std::move(values));
   }
 
+  /// Get the number of elements stored under the given key for a type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   size_t getN(const std::string& key) const;
 
+  /// Get all available keys for a given type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   std::vector<std::string> getKeys() const;
 
@@ -209,6 +199,7 @@ public:
   }
 
 private:
+  /// Get a reference to the internal map for a given type (necessary for SIO)
   template <typename T>
   const MapType<T>& getMap() const {
     if constexpr (std::is_same_v<T, int>) {
@@ -220,6 +211,7 @@ private:
     }
   }
 
+  /// Get a reference to the internal map for a given type (necessary for SIO)
   template <typename T>
   MapType<T>& getMap() {
     if constexpr (std::is_same_v<T, int>) {
