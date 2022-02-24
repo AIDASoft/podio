@@ -107,6 +107,20 @@ class MemberParserTest(unittest.TestCase):
     self.assertTrue(not parsed.is_builtin_array)
     self.assertEqual(parsed.array_type, r'::GlobalType')
 
+    parsed = parser.parse(r'std::array<std::int16_t, 42> fixedWidthArray // a fixed width type array')
+    self.assertEqual(parsed.full_type, r'std::array<std::int16_t, 42>')
+    self.assertEqual(parsed.name, r'fixedWidthArray')
+    self.assertEqual(parsed.description, r'a fixed width type array')
+    self.assertTrue(parsed.is_builtin_array)
+    self.assertEqual(parsed.array_type, r'std::int16_t')
+
+    parsed = parser.parse(r'std::array<uint32_t, 42> fixedWidthArray // a fixed width type array without namespace')
+    self.assertEqual(parsed.full_type, r'std::array<std::uint32_t, 42>')
+    self.assertEqual(parsed.name, r'fixedWidthArray')
+    self.assertEqual(parsed.description, r'a fixed width type array without namespace')
+    self.assertTrue(parsed.is_builtin_array)
+    self.assertEqual(parsed.array_type, r'std::uint32_t')
+
   def test_parse_invalid(self):
     # setup an empty parser
     parser = MemberParser()
@@ -133,6 +147,7 @@ class MemberParserTest(unittest.TestCase):
         r'uint_fast64_t disallowed // only allow fixed width integers with exact widths',
         r'std::int_least16_t disallowed // also adding a std namespace here does not make these allowed',
         r'std::uint_fast16_t disallowed // also adding a std namespace here does not make these allowed',
+        r'std::array<uint_fast16_t, 42> disallowedArray // arrays should not accept disallowed fixed width types'
         ]
 
     for inp in invalid_inputs:

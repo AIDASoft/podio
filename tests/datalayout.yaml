@@ -174,3 +174,4 @@ datatypes :
       - uint64_t fixedU64 // unsigned int with exactly 64 bits
       - uint32_t fixedU32 // unsigned int with exactly 32 bits
       - StructWithFixedWithTypes fixedWidthStruct // struct with more fixed width types
+      - std::array<int16_t, 2> fixedWidthArray // 32 bits split into two times 16 bits
