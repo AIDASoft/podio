@@ -201,10 +201,10 @@ public:
 private:
   /// Get a reference to the internal map for a given type (necessary for SIO)
   template <typename T>
-  const MapType<T>& getMap() const {
-    if constexpr (std::is_same_v<T, int>) {
+  const MapType<detail::GetVectorType<T>>& getMap() const {
+    if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
       return _intMap;
-    } else if constexpr (std::is_same_v<T, float>) {
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
       return _floatMap;
     } else {
       return _stringMap;
@@ -213,10 +213,10 @@ private:
 
   /// Get a reference to the internal map for a given type (necessary for SIO)
   template <typename T>
-  MapType<T>& getMap() {
-    if constexpr (std::is_same_v<T, int>) {
+  MapType<detail::GetVectorType<T>>& getMap() {
+    if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
       return _intMap;
-    } else if constexpr (std::is_same_v<T, float>) {
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
       return _floatMap;
     } else {
       return _stringMap;
@@ -232,7 +232,7 @@ private:
 
 template <typename T, typename>
 const T& GenericParameters::getValue(const std::string& key) const {
-  const auto& map = getMap<detail::GetVectorType<T>>();
+  const auto& map = getMap<T>();
   const auto it = map.find(key);
   // If there is no entry to the key, we just return an empty default
   // TODO: make this case detectable from the outside
@@ -264,18 +264,19 @@ T GenericParameters::getValue(const std::string& key) const {
 
 template <typename T, typename>
 void GenericParameters::setValue(const std::string& key, T value) {
-  auto& map = getMap<detail::GetVectorType<T>>();
+  auto& map = getMap<T>();
   if constexpr (detail::isVector<T>) {
     map.insert_or_assign(key, std::move(value));
   } else {
-    std::vector<detail::GetVectorType<T>> v = {value};
+    // Wrap the value into a vector with exactly one entry and store that
+    std::vector<T> v = {value};
     map.insert_or_assign(key, std::move(v));
   }
 }
 
 template <typename T, typename>
 size_t GenericParameters::getN(const std::string& key) const {
-  const auto& map = getMap<detail::GetVectorType<T>>();
+  const auto& map = getMap<T>();
   if (const auto it = map.find(key); it != map.end()) {
     return it->second.size();
   }
@@ -285,7 +286,7 @@ size_t GenericParameters::getN(const std::string& key) const {
 template <typename T, typename>
 std::vector<std::string> GenericParameters::getKeys() const {
   std::vector<std::string> keys;
-  const auto& map = getMap<detail::GetVectorType<T>>();
+  const auto& map = getMap<T>();
   std::transform(map.begin(), map.end(), std::back_inserter(keys), [](const auto& pair) { return pair.first; });
 
   return keys;
