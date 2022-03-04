@@ -109,8 +109,19 @@ class MemberVariable(object):
 
     if self.array_type is not None and self.array_size is not None:
       self.is_array = True
-      self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
       self.is_builtin_array = self.array_type in BUILTIN_TYPES
+      # We also have to check if this is a fixed width integer array
+      if not self.is_builtin_array:
+        is_fw, valid_fw = _is_fixed_width_type(self.array_type)
+        if is_fw:
+          if not valid_fw:
+            raise DefinitionError(f'{self.full_type} is an array of a fixed width integer type that is not allowed')
+          self.is_builtin_array = True
+          if not self.array_type.startswith('std::'):
+            self.array_type = f'std::{self.array_type}'
+          self.includes.add('#include <cstdint>')
+
+      self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
       self.includes.add('#include <array>')
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
