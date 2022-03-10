@@ -63,6 +63,71 @@
 * 2021-10-14 Thomas Madlener ([PR#236](https://github.com/aidasoft/podio/pull/236))
   - Fix problem in python tests that appears in spack builds
 
+# v00-14-01
+
+* 2022-03-04 Thomas Madlener ([PR#261](https://github.com/aidasoft/podio/pull/261))
+  - Make the datamodel validation accept arrays of fixed width integer types.
+
+* 2022-02-09 Placido Fernandez Declara ([PR#259](https://github.com/aidasoft/podio/pull/259))
+  - Filter files with regex based on file name, not complete path
+
+* 2022-02-08 Thomas Madlener ([PR#238](https://github.com/aidasoft/podio/pull/238))
+  - Extend the `podioVersion.h` header that is configured by cmake to hold some version utilities.
+    - `podio::version::Version` class holding three `uint16_t`s for major, minor and patch version, plus `constexpr` comparison operators.
+    - static const(expr) `podio::version::build_version` that holds the current (i.e. last tag) version of podio
+    - Add preprocessor macros with similar functionality
+      - `PODIO_VERSION` takes a major, minor and a patch version number and encodes it into a 64 bit version constant. 
+      - `PODIO_[MAJOR|MINOR|PATCH]_VERSION` macros can extracts these values again from a 64 bit encoded version. 
+      - `PODIO_BUILD_VERSION` holds the 64 bit encoded current (i.e. last tag) version of podio
+  - Reorder the read tests slightly and make some sections version dependent
+  - Add legacy file read test from #230
+
+* 2022-01-28 Thomas Madlener ([PR#256](https://github.com/aidasoft/podio/pull/256))
+  - Ignore the test introduced in #235 in sanitizer builds as it currently breaks.
+
+* 2022-01-24 Placido Fernandez Declara ([PR#235](https://github.com/aidasoft/podio/pull/235))
+  - Fix crashes that happen when reading collections that have related objects in collections that have not been persisted.
+  - Fix similar crashes for subset collections where the original collection has not been persisted.
+    - The expected behavior in both cases is that podio does not crash when reading such collections, but only once the user tries to actually access such a missing object. Each object has an `isAvailable` function to guard against such crashes if need be.
+  - Add a test that makes sure that the expected behavior is the one that is observed.
+  - Fix a somewhat related bug in `setReferences` which was mistakenly a no-op for collections of a type without relations. Since this is the mechanism we use for restoring subset collections it obviously has to be present for all types.
+
+* 2022-01-21 Thomas Madlener ([PR#252](https://github.com/aidasoft/podio/pull/252))
+  - Make the `CollectionData` classes use `unique_ptr` instead of raw pointers, wherever they actually own the pointer.
+  - Implement move constructors and move assignment operators for collections. Thanks to the usage of `unique_ptr` for ownership management in the `CollectionData`, these can be `default`ed in `Collection` and `CollectionData`.
+  - Add a few tests to check that moving collections actually works.
+
+* 2022-01-20 Thomas Madlener ([PR#251](https://github.com/aidasoft/podio/pull/251))
+  - Make sure that collections of types without relations can still be used properly as subset collections. Previous to these changes, the necessary functionality was not generated if a datatype had no relations (i.e. not a single `OneToOneRelation` or `OneToManyRelation`).
+  - Add a check of this functionality to the write/read tests.
+
+* 2022-01-20 Thomas Madlener ([PR#249](https://github.com/aidasoft/podio/pull/249))
+  - Add a `USE_SANITIZER` build option to more easily build podio with sanitizers for testing. Curently `Address`, `Memory[WithOrigin]`, `Undefined` and `Thread` are available as options. Given the limitations of the sanitizers these are more or less mutually exlusive.
+  - Label all the Catch2 test cases which makes it easier to run them selectively.
+  - For builds with sanitizers enabled, by default ignore tests with known failures, but add a `FORCE_RUN_ALL_TESTS` cmake option that overrides this for local development.
+  - Run CI workflows with a selection of sanitizers enabled (on a limited list of tests).
+
+* 2022-01-20 hegner ([PR#209](https://github.com/aidasoft/podio/pull/209))
+  - Remove mention of Python 2 compatibility
+
+* 2021-12-03 Thomas Madlener ([PR#245](https://github.com/aidasoft/podio/pull/245))
+  - Make it possible to call `prepareForWrite` multiple times on collections by rendering all but the first call no-ops. Fixes #241
+    - Collections are marked as prepared, either if they are read from file or once `prepareForWrite` has been called on them.
+
+* 2021-12-03 Thomas Madlener ([PR#205](https://github.com/aidasoft/podio/pull/205))
+  - Make the default classes immutable and mark mutable classes explictly via their class name (e.g. `Hit` and `MutableHit`). See a brief discussion in #204 for more details on the reasons for this **breaking change**.
+  - After these changes collections return mutable objects via their `create` functionality, and will only give access to the default (immutable) objects when they are `const` (e.g. when they are read from file).
+  - In general these changes should make it easier for users to write interface that behave as expected, and also make it very obvious where objects are actually mutated already from looking at an interface definition.
+
+* 2021-10-22 Thomas Madlener ([PR#239](https://github.com/aidasoft/podio/pull/239))
+  - Fix a typo in the cmake config for finding the correct python version when cmake is used in downstream packages.
+
+* 2021-10-21 Thomas Madlener ([PR#237](https://github.com/aidasoft/podio/pull/237))
+  - Mistakenly dropped colon in #236
+
+* 2021-10-14 Thomas Madlener ([PR#236](https://github.com/aidasoft/podio/pull/236))
+  - Fix problem in python tests that appears in spack builds
+
 # v00-14
 
 * 2021-10-13 Thomas Madlener ([PR#234](https://github.com/AIDASoft/podio/pull/234))
