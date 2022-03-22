@@ -103,7 +103,7 @@ class MemberVariable:
     self.includes = set()
 
     if kwargs:
-      raise ValueError(f"Unused kwargs in MemberVariable: {kwargs.keys()}")
+      raise ValueError(f"Unused kwargs in MemberVariable: {list(kwargs.keys())}")
 
     if self.array_type is not None and self.array_size is not None:
       self.is_array = True

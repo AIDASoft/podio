@@ -1,4 +1,4 @@
-"""Datamodel yaml configuration file reading and validation utilities"""
+"""Datamodel yaml configuration file reading and validation utilities."""
 
 
 import copy
