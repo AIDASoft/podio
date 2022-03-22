@@ -12,7 +12,7 @@ def _get_namespace_class(full_type):
   DefinitionError if a nested namespace is found"""
   cnameparts = full_type.split('::')
   if len(cnameparts) > 2:
-    raise DefinitionError("'{}' is a type with a nested namespace. not supperted, yet.".format(full_type))
+    raise DefinitionError(f"'{full_type}' is a type with a nested namespace. not supperted, yet.")
   if len(cnameparts) == 2:
     # If in std namespace, consider that to be part of the type instead and only
     # split namespace if that is not the case
@@ -78,7 +78,7 @@ class DataType:
 
   def __str__(self):
     if self.namespace:
-      scoped_type = '::{}::{}'.format(self.namespace, self.bare_type)
+      scoped_type = f'::{self.namespace}::{self.bare_type}'
     else:
       scoped_type = self.full_type
 
@@ -104,7 +104,7 @@ class MemberVariable:
     self.includes = set()
 
     if kwargs:
-      raise ValueError("Unused kwargs in MemberVariable: {}".format(list(kwargs.keys())))
+      raise ValueError(f"Unused kwargs in MemberVariable: {list(kwargs.keys())}")
 
     if self.array_type is not None and self.array_size is not None:
       self.is_array = True
@@ -120,7 +120,7 @@ class MemberVariable:
             self.array_type = f'std::{self.array_type}'
           self.includes.add('#include <cstdint>')
 
-      self.full_type = r'std::array<{}, {}>'.format(self.array_type, self.array_size)
+      self.full_type = rf'std::array<{self.array_type}, {self.array_size}>'
       self.includes.add('#include <array>')
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
@@ -153,13 +153,13 @@ class MemberVariable:
     """string representation"""
     # Make sure to include scope-operator if necessary
     if self.namespace:
-      scoped_type = '::{}::{}'.format(self.namespace, self.bare_type)
+      scoped_type = f'::{self.namespace}::{self.bare_type}'
     else:
       scoped_type = self.full_type
 
-    definition = r'{} {}{{}};'.format(scoped_type, self.name)
+    definition = rf'{scoped_type} {self.name}{{}};'
     if self.description:
-      definition += r' ///< {}'.format(self.description)
+      definition += rf' ///< {self.description}'
     return definition
 
   def getter_name(self, get_syntax):

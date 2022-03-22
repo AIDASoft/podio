@@ -1,4 +1,4 @@
-"""Datamodel yaml configuration file reading and validation utilities"""
+"""Datamodel yaml configuration file reading and validation utilities."""
 
 from __future__ import absolute_import, unicode_literals, print_function
 
@@ -23,8 +23,8 @@ class MemberParser:
   # builtin types above. Currently this is done by simple brute-forcing.
   # To "ensure" that the builtin matching is greedy and picks up as much as
   # possible, sort the types by their length in descending order
-  builtin_str = r'|'.join(r'(?:{})'.format(t) for t in sorted(BUILTIN_TYPES, key=len, reverse=True))
-  type_str = r'({builtin_re}|(?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*)'.format(builtin_re=builtin_str)
+  builtin_str = r'|'.join(f'(?:{t})' for t in sorted(BUILTIN_TYPES, key=len, reverse=True))
+  type_str = rf'({builtin_str}|(?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*)'
   type_re = re.compile(type_str)
 
   # Names can be almost anything as long as it doesn't start with a digit and
@@ -36,17 +36,15 @@ class MemberParser:
   # stripping of trailing whitespaces is done later as it is hard to do with regex
   comment_str = r'\/\/ *(.*)'
   # std::array declaration with some whitespace distribution freedom
-  array_str = r' *std::array *< *{typ} *, *([0-9]+) *>'.format(typ=type_str)
+  array_str = rf' *std::array *< *{type_str} *, *([0-9]+) *>'
 
   array_re = re.compile(array_str)
-  full_array_re = re.compile(r'{array} *{name} *{comment}'.format(
-      array=array_str, name=name_str, comment=comment_str))
-  member_re = re.compile(r' *{typ} +{name} *{comment}'.format(
-      typ=type_str, name=name_str, comment=comment_str))
+  full_array_re = re.compile(rf'{array_str} *{name_str} *{comment_str}')
+  member_re = re.compile(rf' *{type_str} +{name_str} *{comment_str}')
 
   # For cases where we don't require a description
-  bare_member_re = re.compile(r' *{typ} +{name}'.format(typ=type_str, name=name_str))
-  bare_array_re = re.compile(r' *{array} +{name}'.format(array=array_str, name=name_str))
+  bare_member_re = re.compile(rf' *{type_str} +{name_str}')
+  bare_array_re = re.compile(rf' *{array_str} +{name_str}')
 
   @staticmethod
   def _parse_with_regexps(string, regexps_callbacks):
