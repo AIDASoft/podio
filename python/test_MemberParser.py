@@ -20,6 +20,7 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.full_type, r'float')
     self.assertEqual(parsed.name, r'someFloat')
     self.assertEqual(parsed.description, r'with an additional comment')
+    self.assertTrue(parsed.default_val is None)
 
     parsed = parser.parse(r'float float2 // with numbers')
     self.assertEqual(parsed.full_type, r'float')
@@ -87,6 +88,7 @@ class MemberParserTest(unittest.TestCase):
     self.assertTrue(parsed.is_builtin_array)
     self.assertEqual(int(parsed.array_size), 4)
     self.assertEqual(parsed.array_type, r'double')
+    self.assertTrue(parsed.default_val is None)
 
     # an array definition as terse as possible
     parsed = parser.parse(r'std::array<int,2>anArray//with a comment')
@@ -120,6 +122,36 @@ class MemberParserTest(unittest.TestCase):
     self.assertTrue(parsed.is_builtin_array)
     self.assertEqual(parsed.array_type, r'std::uint32_t')
 
+  def test_parse_valid_default_value(self):
+    """Test that member variables can be parsed correctly if they have a user
+    defined default value"""
+    parser = MemberParser()
+
+    parsed = parser.parse(r'int fortyTwo{43} // default values can lie')
+    self.assertEqual(parsed.full_type, r'int')
+    self.assertEqual(parsed.name, r'fortyTwo')
+    self.assertEqual(parsed.description, 'default values can lie')
+    self.assertEqual(parsed.default_val, r'43')
+    self.assertEqual(str(parsed), 'int fortyTwo{43}; ///< default values can lie')
+
+    parsed = parser.parse(r'float f{3.14f}', require_description=False)
+    self.assertEqual(parsed.full_type, 'float')
+    self.assertEqual(parsed.name, 'f')
+    self.assertEqual(parsed.default_val, '3.14f')
+
+    parsed = parser.parse('nsp::SomeValue val {42} // default values can have space')
+    self.assertEqual(parsed.full_type, 'nsp::SomeValue')
+    self.assertEqual(parsed.name, 'val')
+    self.assertEqual(parsed.default_val, '42')
+    self.assertEqual(parsed.namespace, 'nsp')
+    self.assertEqual(parsed.bare_type, 'SomeValue')
+
+    # NOTE: The default values do not have to make sense at the moment!
+    parsed = parser.parse(r'int weirdDefault{whatever, even space} // same')
+    self.assertEqual(parsed.full_type, r'int')
+    self.assertEqual(parsed.name, r'weirdDefault')
+    self.assertEqual(parsed.default_val, r'whatever, even space')
+
   def test_parse_invalid(self):
     """Test that invalid member variable definitions indeed fail during parsing"""
     # setup an empty parser
@@ -135,7 +167,8 @@ class MemberParserTest(unittest.TestCase):
         r'std::array<int, 2> anArrayWithoutDescription',
         r'std::array<__foo, 3> anArray // with invalid type',
         r'std::array<double, N> array // with invalid size',
-        r'int another ill formed name // some comment'
+        r'int another ill formed name // some comment',
+        r'float illFormedDefault {',
 
         # Some examples of valid c++ that are rejected by the validation
         r'unsigned long int uLongInt // technically valid c++, but not in our builtin list',
@@ -147,7 +180,13 @@ class MemberParserTest(unittest.TestCase):
         r'uint_fast64_t disallowed // only allow fixed width integers with exact widths',
         r'std::int_least16_t disallowed // also adding a std namespace here does not make these allowed',
         r'std::uint_fast16_t disallowed // also adding a std namespace here does not make these allowed',
-        r'std::array<uint_fast16_t, 42> disallowedArray // arrays should not accept disallowed fixed width types'
+        r'std::array<uint_fast16_t, 42> disallowedArray // arrays should not accept disallowed fixed width types',
+
+        # Default values cannot be empty
+        r'int emptyDefault{} // valid c++, but we want an explicit default value here',
+        # Arrays cannot be user initialized
+        r'std::array<int, 3> array{1, 2, 3} // We do not allow user initialization for arrays',
+        r'std::array<int, 1> array{1, 2, 3} // because validating this is really non-trivial',
         ]
 
     for inp in invalid_inputs:

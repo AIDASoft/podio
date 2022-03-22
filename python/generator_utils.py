@@ -90,6 +90,7 @@ class MemberVariable:
     self.name = name
     self.full_type = kwargs.pop('type', '')
     self.description = kwargs.pop('description', '')
+    self.default_val = kwargs.pop('default_val', None)
     self.is_builtin = False
     self.is_builtin_array = False
     self.is_array = False
@@ -156,7 +157,11 @@ class MemberVariable:
     else:
       scoped_type = self.full_type
 
-    definition = rf'{scoped_type} {self.name}{{}};'
+    if self.default_val:
+      definition = rf'{scoped_type} {self.name}{{{self.default_val}}};'
+    else:
+      definition = rf'{scoped_type} {self.name}{{}};'
+
     if self.description:
       definition += rf' ///< {self.description}'
     return definition

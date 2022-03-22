@@ -36,12 +36,16 @@ class MemberParser:
   # std::array declaration with some whitespace distribution freedom
   array_str = rf' *std::array *< *{type_str} *, *([0-9]+) *>'
 
+  # Default values can be anything that in curly braces, but not the empty
+  # default initialization, since that is what we generate in any case
+  def_val_str = r'(?:{(.+)})?'
+
   array_re = re.compile(array_str)
   full_array_re = re.compile(rf'{array_str} *{name_str} *{comment_str}')
-  member_re = re.compile(rf' *{type_str} +{name_str} *{comment_str}')
+  member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str} *{comment_str}')
 
   # For cases where we don't require a description
-  bare_member_re = re.compile(rf' *{type_str} +{name_str}')
+  bare_member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str}')
   bare_array_re = re.compile(rf' *{array_str} +{name_str}')
 
   @staticmethod
@@ -64,8 +68,8 @@ class MemberParser:
   @staticmethod
   def _full_member_conv(match):
     """MemberVariable construction for members with a docstring"""
-    klass, name, comment = match.groups()
-    return MemberVariable(name=name, type=klass, description=comment.strip())
+    klass, name, def_val, comment = match.groups()
+    return MemberVariable(name=name, type=klass, description=comment.strip(), default_val=def_val)
 
   @staticmethod
   def _bare_array_conv(match):
@@ -76,8 +80,8 @@ class MemberParser:
   @staticmethod
   def _bare_member_conv(match):
     """MemberVarible construction for members without docstring"""
-    klass, name = match.groups()
-    return MemberVariable(name=name, type=klass)
+    klass, name, def_val = match.groups()
+    return MemberVariable(name=name, type=klass, default_val=def_val)
 
   def parse(self, string, require_description=True):
     """Parse the passed string"""
