@@ -1,7 +1,5 @@
 """Datamodel yaml configuration file reading and validation utilities."""
 
-from __future__ import absolute_import, unicode_literals, print_function
-
 import copy
 import re
 import warnings
