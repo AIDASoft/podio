@@ -101,6 +101,12 @@ datatypes :
     OneToOneRelations:
      - ExampleCluster cluster // a particular cluster
 
+  ExampleWithArrayComponent:
+    Description: "A type that has a component with an array"
+    Author: "Thomas Madlener"
+    Members:
+      - SimpleStruct s // a component that has an array
+
   ExampleWithComponent :
     Description : "Type with one component"
     Author : "Benedikt Hegner"
