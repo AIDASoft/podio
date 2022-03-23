@@ -2,11 +2,23 @@
 
 import copy
 import re
+import subprocess
 import warnings
 from collections import OrderedDict
 import yaml
 
 from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
+
+
+def _validate_syntax(snippet, compiler="gcc", flags=None):
+  """Validate the passed snippet via -fsyntax-only."""
+  flags = flags or ["-std=c++17"]
+  try:
+    args = [compiler, "-fsyntax-only", "-x", "c++", "-"] + flags
+    subprocess.run(args, input=snippet.encode(), check=True, capture_output=True)
+    return None
+  except subprocess.CalledProcessError as err:
+    return err.stderr.decode()
 
 
 class MemberParser:
@@ -41,12 +53,12 @@ class MemberParser:
   def_val_str = r'(?:{(.+)})?'
 
   array_re = re.compile(array_str)
-  full_array_re = re.compile(rf'{array_str} *{name_str} *{comment_str}')
+  full_array_re = re.compile(rf'{array_str} *{name_str} *{def_val_str} *{comment_str}')
   member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str} *{comment_str}')
 
   # For cases where we don't require a description
   bare_member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str}')
-  bare_array_re = re.compile(rf' *{array_str} +{name_str}')
+  bare_array_re = re.compile(rf' *{array_str} +{name_str} *{def_val_str}')
 
   @staticmethod
   def _parse_with_regexps(string, regexps_callbacks):
@@ -62,26 +74,48 @@ class MemberParser:
   @staticmethod
   def _full_array_conv(match):
     """MemberVariable construction for array members with a docstring"""
-    typ, size, name, comment = match.groups()
-    return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip())
+    typ, size, name, def_val, comment = match.groups()
+    return MemberParser.validate_init(
+        MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip(), default_val=def_val))
 
   @staticmethod
   def _full_member_conv(match):
     """MemberVariable construction for members with a docstring"""
     klass, name, def_val, comment = match.groups()
-    return MemberVariable(name=name, type=klass, description=comment.strip(), default_val=def_val)
+    return MemberParser.validate_init(
+        MemberVariable(name=name, type=klass, description=comment.strip(), default_val=def_val))
 
   @staticmethod
   def _bare_array_conv(match):
     """MemberVariable construction for array members without docstring"""
-    typ, size, name = match.groups()
-    return MemberVariable(name=name, array_type=typ, array_size=size)
+    typ, size, name, def_val = match.groups()
+    return MemberParser.validate_init(MemberVariable(name=name, array_type=typ, array_size=size, default_val=def_val))
 
   @staticmethod
   def _bare_member_conv(match):
     """MemberVarible construction for members without docstring"""
     klass, name, def_val = match.groups()
-    return MemberVariable(name=name, type=klass, default_val=def_val)
+    return MemberParser.validate_init(MemberVariable(name=name, type=klass, default_val=def_val))
+
+  @staticmethod
+  def validate_init(member_var: MemberVariable):
+    """Validate the passed in member variable also checking if the user defined
+    initialization is valid (for cases where that is possible without further
+    context)
+    """
+    # We can only check if an initialization is possible from the member
+    # declaration alone without further context, if we have a builtin type or an
+    # array of builtin types. For cases we cannot handle, we go with "user knows
+    # best"
+    if not member_var.is_builtin and not member_var.is_builtin_array:
+      return member_var
+
+    includes = '\n'.join(member_var.includes)
+    validation_err = _validate_syntax(f'{includes}\n{member_var}')
+    if validation_err:
+      raise DefinitionError(f'{member_var.name} does not pass syntax validation:\n{validation_err}')
+
+    return member_var
 
   def parse(self, string, require_description=True):
     """Parse the passed string"""

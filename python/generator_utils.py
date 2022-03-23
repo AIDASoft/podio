@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Module holding some generator utility functions
 """
@@ -124,6 +124,10 @@ class MemberVariable:
       self.includes.add('#include <array>')
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
+    # Check if this is a string and add the corresponding include
+    if self.full_type == 'std::string':
+      self.includes.add('#include <string>')
+
     # We still have to check if this type is a valid fixed width type that we
     # also consider to be builtin types
     if not self.is_builtin:

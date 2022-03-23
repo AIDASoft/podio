@@ -140,6 +140,13 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.name, 'f')
     self.assertEqual(parsed.default_val, '3.14f')
 
+    parsed = parser.parse(r'std::array<int, 3> array{1, 2, 3} // arrays can be initialized')
+    self.assertEqual(parsed.full_type, r'std::array<int, 3>')
+    self.assertEqual(parsed.default_val, '1, 2, 3')
+    self.assertEqual(parsed.name, 'array')
+
+    # These are cases where we cannot really decide whether the initialization
+    # is valid just from the member declaration. We let them pass here
     parsed = parser.parse('nsp::SomeValue val {42} // default values can have space')
     self.assertEqual(parsed.full_type, 'nsp::SomeValue')
     self.assertEqual(parsed.name, 'val')
@@ -147,11 +154,12 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.namespace, 'nsp')
     self.assertEqual(parsed.bare_type, 'SomeValue')
 
-    # NOTE: The default values do not have to make sense at the moment!
-    parsed = parser.parse(r'int weirdDefault{whatever, even space} // same')
-    self.assertEqual(parsed.full_type, r'int')
-    self.assertEqual(parsed.name, r'weirdDefault')
-    self.assertEqual(parsed.default_val, r'whatever, even space')
+    parsed = parser.parse(r'edm4hep::Vector3d v{1, 2, 3, 4} // for aggregates we do not validate init values')
+    self.assertEqual(parsed.full_type, 'edm4hep::Vector3d')
+    self.assertEqual(parsed.default_val, '1, 2, 3, 4')
+
+    parsed = parser.parse(r'AggType bogusInit{here, we can even put invalid c++}', False)
+    self.assertEqual(parsed.default_val, 'here, we can even put invalid c++')
 
   def test_parse_invalid(self):
     """Test that invalid member variable definitions indeed fail during parsing"""
@@ -185,14 +193,19 @@ class MemberParserTest(unittest.TestCase):
 
         # Default values cannot be empty
         r'int emptyDefault{} // valid c++, but we want an explicit default value here',
-        # Arrays cannot be user initialized
-        r'std::array<int, 3> array{1, 2, 3} // We do not allow user initialization for arrays',
-        r'std::array<int, 1> array{1, 2, 3} // because validating this is really non-trivial',
+
+        # Some cases which should be caught by the -fsyntax-only checks
+        r'std::array<int, 1> array{1, 2, 3} // too many values provided',
+        # Invalid user default value initialization
+        r'int weirdDefault{whatever, even space} // invalid c++ should not pass',
+        r'int initFromFloat{3.14f} // implicit conversions are not allowed'
         ]
 
     for inp in invalid_inputs:
-      with self.assertRaises(DefinitionError):
-        parser.parse(inp)
+      try:
+        self.assertRaises(DefinitionError, parser.parse, inp)
+      except AssertionError:
+        raise AssertionError(f"'{inp}' should raise a DefinitionError from the MemberParser")
 
   def test_parse_valid_no_description(self):
     """Test that member variable definitions are OK without description"""
