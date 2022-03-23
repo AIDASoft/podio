@@ -145,6 +145,10 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.default_val, '1, 2, 3')
     self.assertEqual(parsed.name, 'array')
 
+    parsed = parser.parse(r'std::array<int, 25> array{1, 2, 3} // we do not have to init the complete array')
+    self.assertEqual(parsed.full_type, r'std::array<int, 25>')
+    self.assertEqual(parsed.default_val, r'1, 2, 3')
+
     # These are cases where we cannot really decide whether the initialization
     # is valid just from the member declaration. We let them pass here
     parsed = parser.parse('nsp::SomeValue val {42} // default values can have space')

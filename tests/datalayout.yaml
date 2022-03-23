@@ -40,6 +40,11 @@ components :
       - std::int64_t fixedInteger64 // int with exactly 64 bits
       - int32_t fixedInteger32 // int with exactly 32 bits
 
+  CompWithInit:
+    Members:
+      - int i{42} // is there even another value to initialize ints to?
+      - std::array<double, 10> arr {1.2, 3.4} // half initialized double array
+
 datatypes :
 
   EventInfo:
@@ -190,3 +195,4 @@ datatypes :
       - std::array<float, 2> floats {3.14f, 1.23f} // some float values
       - ex2::NamespaceStruct s{10, 11} // one that we happen to know works
       - double d{9.876e5} // double val
+      - CompWithInit comp // To make sure that the default initializer of the component does what it should
