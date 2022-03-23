@@ -390,6 +390,9 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
   REQUIRE(elem.s().x == 10);
   REQUIRE(elem.s().y == 11);
   REQUIRE(elem.d() == 9.876e5);
+  REQUIRE(elem.comp().i == 42);
+  REQUIRE(elem.comp().arr[0] == 1.2);
+  REQUIRE(elem.comp().arr[1] == 3.4);
 
   // And obviously when initialized directly
   auto ex = ExampleWithUserInit{};
@@ -399,6 +402,9 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
   REQUIRE(ex.s().x == 10);
   REQUIRE(ex.s().y == 11);
   REQUIRE(ex.d() == 9.876e5);
+  REQUIRE(ex.comp().i == 42);
+  REQUIRE(ex.comp().arr[0] == 1.2);
+  REQUIRE(ex.comp().arr[1] == 3.4);
 }
 
 TEST_CASE("NonPresentCollection", "[basics][event-store]") {
