@@ -103,6 +103,10 @@ class MemberParser:
     initialization is valid (for cases where that is possible without further
     context)
     """
+    # Checks are quite expensive. Only run them if really necessary
+    if member_var.default_val is None:
+      return member_var
+
     # We can only check if an initialization is possible from the member
     # declaration alone without further context, if we have a builtin type or an
     # array of builtin types. For cases we cannot handle, we go with "user knows
