@@ -181,11 +181,6 @@ std::ostream& operator<<(std::ostream& o, const {{ type }}& value) {
 {% else %}
   o << " {{ member.name }} : " << value.{{ member.getter_name(get_syntax) }}() << '\n';
 {% endif %}
-{% if member.sub_members %}
-{% for sub_member in member.sub_members %}
-  o << " {{ member.name }}: " << value.{{ sub_member.getter_name(get_syntax) }}() << '\n';
-{% endfor %}
-{% endif %}
 {% endfor %}
 
 {% for relation in single_relations %}
