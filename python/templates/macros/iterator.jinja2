@@ -2,18 +2,32 @@
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
 class {{ iterator_type }} {
 public:
+  using difference_type = std::ptrdiff_t;
+  using value_type = {{ class.bare_type }};
+  using pointer = {{ class.bare_type }}*;
+  using reference = {{ class.bare_type }}&;
+  using iterator_category = std::input_iterator_tag;
+
   {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {}
 
-  {{ iterator_type }}(const {{ iterator_type }}&) = delete;
-  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = delete;
+  {{ iterator_type }}(const {{ iterator_type }}&) = default;
+  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = default;
 
   bool operator!=(const {{ iterator_type}}& x) const {
     return m_index != x.m_index; // TODO: may not be complete
+  }
+  bool operator==(const {{ iterator_type}}& x) const {
+    return !operator!=(x);
   }
 
   {{ prefix }}{{ class.bare_type }} operator*();
   {{ prefix }}{{ class.bare_type }}* operator->();
   {{ iterator_type }}& operator++();
+  {{ iterator_type }} operator++(int) {
+    {{ iterator_type }} temp = *this;
+    ++*this;
+    return temp;
+  };
 
 private:
   size_t m_index;
@@ -23,6 +37,7 @@ private:
 {% endwith %}
 {% endmacro %}
 
+static_assert(std::forward_iterator<{{ iterator_type }}>);
 
 {% macro iterator_definitions(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
