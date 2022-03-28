@@ -3,6 +3,9 @@
 ## Writing extra data outside the EDM
 [See here](userdata.md)
 
+## Changing / creating new templates
+[See here](templates.md)
+
 ## Persistency
 
 The library is build such that it can support multiple storage backends. However, the tested storage system being used is ROOT.
