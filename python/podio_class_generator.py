@@ -359,7 +359,6 @@ class ClassGenerator:
     data = deepcopy(definition)
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
-    data['is_pod'] = self._is_pod_type(definition["Members"])
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
@@ -373,10 +372,6 @@ class ClassGenerator:
     for member in members:
       if member.is_array and not member.is_builtin_array:
         includes.add(self._build_include(member.array_bare_type))
-
-      for stl_type in ClassDefinitionValidator.allowed_stl_types:
-        if member.full_type == 'std::' + stl_type:
-          includes.add(f"#include <{stl_type}>")
 
       if self._needs_include(member):
         includes.add(self._build_include(member.bare_type))
@@ -418,16 +413,6 @@ class ClassGenerator:
     write_file_if_changed(f'{self.install_dir}/podio_generated_files.cmake',
                           '\n'.join(full_contents),
                           self.any_changes)
-
-  @staticmethod
-  def _is_pod_type(members):
-    """Check if the members of the class define a POD type"""
-    for stl_type in ClassDefinitionValidator.allowed_stl_types:
-      full_stl_type = 'std::' + stl_type
-      if any(m.full_type.startswith(full_stl_type) for m in members):
-        return False
-
-    return True
 
   def _needs_include(self, member):
     """Check whether the member needs an include from within the datamodel"""

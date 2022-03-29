@@ -129,9 +129,6 @@ class ClassDefinitionValidator:
   # documented but not yet implemented
   not_yet_implemented_extra_code = ('declarationFile', 'implementationFile')
 
-  # stl types that are allowed to appear (other than array)
-  allowed_stl_types = ('string',)
-
   def __init__(self):
     self.components = None
     self.datatypes = None
@@ -196,12 +193,6 @@ class ClassDefinitionValidator:
 
     all_members = {}
     for member in members:
-      for stl_type in self.allowed_stl_types:
-        if member.full_type.startswith('std::' + stl_type):
-          self.warnings.add(f"{classname} defines a std::{stl_type} member ('{member.name}') that spoils PODness")
-          self.warnings.add('Deprecation warning: Support for std::string members in datatypes will be removed'
-                            ' in the near future')
-
       is_builtin = member.is_builtin or member.is_builtin_array
       in_definitions = member.full_type in all_types or member.array_type in all_types
 
