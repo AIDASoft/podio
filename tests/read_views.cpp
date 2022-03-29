@@ -26,10 +26,11 @@ int main(){
     processEvent(store, i, reader.currentFileVersion());
 
     #if __cpp_lib_ranges
-    auto is_electron = [](const auto& p){ return p.getPDG() == 11; };
-
     auto& mcparticles = store.get<ExampleMCCollection>("mcparticles");
 
+    auto v = mcparticles | std::views::reverse;
+
+    auto is_electron = [](const auto& p){ return p.getPDG() == 11; };
     for (const auto& e: mcparticles | std::views::filter(is_electron)) {
       // stuff
     }
