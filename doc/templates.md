@@ -24,14 +24,14 @@ They are broadly split along the classes that are generated for each datatype or
 
 | template file(s)                | content                                                                                                 | generated file(s)                                                                     |
 |---------------------------------|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| `Component.h.jinja2`            | Definition for each component                                                                           | `[<package>]/<component-name>.h`                                                      |
-| `Data.h.jinja2`                 | POD struct of each datatype (living in the POD layer)                                                   | `[<package>]/<datatype-name>Data.h`                                                   |
-| `Obj.{h,cc}.jinja2`             | `Obj` class for each datatype (linving in the object layer) and managing resources                      | `[<package>]/<datatype-name>Obj.h`,  `src/<datatype-name>Obj.cc`                      |
-| `[Mutable]Object.{h,cc}.jinja2` | The user facing interfaces for each datatype (living in the user layer)                                 | `[<package>]/[Mutable]<datatype-name>.h`, `src/[Mutable]<datatype-name>.cc`           |
-| `Collection.{h,cc}.jinja2`      | The user facing collection interface (living in the user layer)                                         | `[<package>]/<datatype-name>Collection.h`, `src/<datatype-name>Collection.cc`         |
-| `CollectionData.{h,cc}.jinja2`  | The classes managing the collection storage (not user facing!)                                          | `[<package>]/<datatype-name>CollectionData.h`, `src/<datatype-name>CollectionData.cc` |
+| `Component.h.jinja2`            | Definition for each component                                                                           | `[<package>/]<component-name>.h`                                                      |
+| `Data.h.jinja2`                 | POD struct of each datatype (living in the POD layer)                                                   | `[<package>/]<datatype-name>Data.h`                                                   |
+| `Obj.{h,cc}.jinja2`             | `Obj` class for each datatype (linving in the object layer) and managing resources                      | `[<package>/]<datatype-name>Obj.h`,  `src/<datatype-name>Obj.cc`                      |
+| `[Mutable]Object.{h,cc}.jinja2` | The user facing interfaces for each datatype (living in the user layer)                                 | `[<package>/][Mutable]<datatype-name>.h`, `src/[Mutable]<datatype-name>.cc`           |
+| `Collection.{h,cc}.jinja2`      | The user facing collection interface (living in the user layer)                                         | `[<package>/]<datatype-name>Collection.h`, `src/<datatype-name>Collection.cc`         |
+| `CollectionData.{h,cc}.jinja2`  | The classes managing the collection storage (not user facing!)                                          | `[<package>/]<datatype-name>CollectionData.h`, `src/<datatype-name>CollectionData.cc` |
 | `selection.xml.jinja2`          | The `selection.xml` file that is necessary for generating a root dictionary for the generated datamodel | `src/selection.xml`                                                                   |
-| `SIOBlock.{h,cc}.jinja2`        | The SIO blocks that are necessary for the SIO backend                                                   | `[<package>]/<datatype-name>SIOBlock.h`, `src/<datatype-name>SIOBlock.cc`             |
+| `SIOBlock.{h,cc}.jinja2`        | The SIO blocks that are necessary for the SIO backend                                                   | `[<package>/]<datatype-name>SIOBlock.h`, `src/<datatype-name>SIOBlock.cc`             |
 
 The presence of a `[<package>]` subdirectory for the header files is controlled by the `includeSubfolder` option in the yaml definition file.
 
@@ -70,7 +70,7 @@ The following keys / variables are always available
 |---------------------|------------------------------------------------------------------------------------------|
 | `package_name`      | The package name of the datamodel (passed to the generator as argument)                  |
 | `use_get_syntax`    | The value of the `getSyntax` option from the yaml definition file                        |
-| `incfolder`         | The `[<package>]/` part of the generated header files (See [above](#existing-templates)) |
+| `incfolder`         | The `[<package>/]` part of the generated header files (See [above](#existing-templates)) |
 
 ### Components
 The following keys are filled for each component
