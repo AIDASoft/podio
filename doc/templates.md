@@ -122,6 +122,7 @@ In principle all members are accessible in the templates, however, the most impo
 | `array_size`  | The size of the array if the member is a `std::array`                                                                                                                       |
 | `getter_name` | Method for generating the correct name for getter functions, depending on the `getSyntax` option in the yaml definition file.                                               |
 | `setter_name` | Method for generating the correct name for setter functions, depending on the `getSyntax` option in the yaml definition file and on whether the member is a relation or not |
+| `signature`   | The signature of a data member that can be used in function signatures, corresponds to `{{ full_type }} {{ name }}`                                                         |
 
 ### `DataType`
 Defined in [`python/generator_utils.py`](/python/generator_utils.py). 
