@@ -159,7 +159,7 @@ set_property(TEST pyunittest PROPERTY DEPENDS write)
 configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
 find_package(Threads REQUIRED)
-add_executable(unittest unittest.cpp)
+add_executable(unittest unittest.cpp frame.cpp)
 target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads)
 
 # The unittests are a bit better and they are labelled so we can put together a
