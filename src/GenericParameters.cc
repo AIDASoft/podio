@@ -31,7 +31,7 @@ FloatVec& GenericParameters::getFloatVals(const std::string& key, FloatVec& valu
 }
 
 StringVec& GenericParameters::getStringVals(const std::string& key, StringVec& values) const {
-  for (const auto v : getValue<std::vector<std::string>>(key)) {
+  for (const auto& v : getValue<std::vector<std::string>>(key)) {
     values.push_back(v);
   }
   return values;
