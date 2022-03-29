@@ -131,12 +131,6 @@ datatypes :
 #    Members:
 #      - std::array<int,33> array // the array
 
-  ExampleWithString :
-    Description : "Type with a string"
-    Author : "Benedikt Hegner"
-    Members:
-      - std::string theString // the string
-
   ex42::ExampleWithNamespace :
     Description : "Type with namespace and namespaced member"
     Author : "Joschka Lingemann"

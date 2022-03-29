@@ -13,7 +13,6 @@
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
-#include "datamodel/ExampleWithStringCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 #include "podio/EventStore.h"
@@ -46,7 +45,6 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& namesps = store.create<ex42::ExampleWithNamespaceCollection>("WithNamespaceMember");
   auto& namesprels = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
-  auto& strings = store.create<ExampleWithStringCollection>("strings");
   auto& arrays = store.create<ExampleWithArrayCollection>("arrays");
   auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
   auto& usrInts = store.create<podio::UserDataCollection<uint64_t>>("userInts");
@@ -67,7 +65,6 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.registerForWrite("WithNamespaceMember");
   writer.registerForWrite("WithNamespaceRelation");
   writer.registerForWrite("WithNamespaceRelationCopy");
-  writer.registerForWrite("strings");
   writer.registerForWrite("arrays");
   writer.registerForWrite("fixedWidthInts");
   writer.registerForWrite("userInts");
@@ -284,9 +281,6 @@ void write(podio::EventStore& store, WriterT& writer) {
     for (auto&& namesprel : namesprels) {
       cpytest.push_back(namesprel.clone());
     }
-
-    auto string = ExampleWithString("SomeString");
-    strings.push_back(string);
 
     std::array<int, 4> arrayTest = {0, 0, 2, 3};
     std::array<int, 4> arrayTest2 = {4, 4, 2 * static_cast<int>(i)};

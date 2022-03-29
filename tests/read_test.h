@@ -11,7 +11,6 @@
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 #include "datamodel/ExampleWithNamespace.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
-#include "datamodel/ExampleWithStringCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 // podio specific includes
@@ -76,16 +75,6 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
     if (std::string(err.what()) != "No collection \'notthere\' is present in the EventStore") {
       throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
     }
-  }
-
-  auto& strings = store.get<ExampleWithStringCollection>("strings");
-  if (strings.isValid()) {
-    auto string = strings[0];
-    if (string.theString() != "SomeString") {
-      throw std::runtime_error("Couldn't read string properly");
-    }
-  } else {
-    throw std::runtime_error("Collection 'strings' should be present.");
   }
 
   // read collection meta data
