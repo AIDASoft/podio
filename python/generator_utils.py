@@ -41,14 +41,13 @@ class DefinitionError(Exception):
 BUILTIN_TYPES = ["int", "long", "float", "double",
                  "unsigned int", "unsigned", "unsigned long",
                  "char", "short", "bool", "long long",
-                 "unsigned long long", "std::string"]
+                 "unsigned long long"]
 
 # Fixed width types defined in <cstdint>. Omitting int8_t and uint8_t since they
 # are often only aliases for signed char and unsigned char, which tends to break
 # expectations towards the behavior of integer types. Also omitting the _fastN_t
 # and leastN_t since those are probably already covered by the usual integer
-# types. These fixed width types should only be used when necessary (e.g. as
-# basis for bit fields)
+# types.
 ALLOWED_FIXED_WIDTH_TYPES = ["int16_t", "int32_t", "int64_t",
                              "uint16_t", "uint32_t", "uint64_t"]
 
