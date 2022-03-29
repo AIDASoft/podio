@@ -42,7 +42,7 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
 void processEvent(podio::EventStore& store, int eventNum, podio::version::Version fileVersion) {
 
   const auto& evtMD = store.getEventMetaData();
-  float evtWeight = evtMD.getFloatVal("UserEventWeight");
+  float evtWeight = evtMD.getValue<float>("UserEventWeight");
   if (evtWeight != (float)100. * eventNum) {
     std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float)100. * eventNum << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
@@ -50,7 +50,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
   std::stringstream ss;
   ss << " event_number_" << eventNum;
   const auto& evtMD2 = store.getEventMetaData();
-  const auto& evtName = evtMD2.getStringVal("UserEventName");
+  const auto& evtName = evtMD2.getValue<std::string>("UserEventName");
   if (evtName != ss.str()) {
     std::cout << " read UserEventName: " << evtName << " - expected : " << ss.str() << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventName'");
@@ -91,7 +91,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
   // read collection meta data
   auto& hits = store.get<ExampleHitCollection>("hits");
   auto colMD = store.getCollectionMetaData(hits.getID());
-  const auto& es = colMD.getStringVal("CellIDEncodingString");
+  const auto& es = colMD.getValue<std::string>("CellIDEncodingString");
   if (es != std::string("system:8,barrel:3,layer:6,slice:5,x:-16,y:-16")) {
     std::cout << " meta data from collection 'hits' with id = " << hits.getID() << " read CellIDEncodingString: " << es
               << " - expected : system:8,barrel:3,layer:6,slice:5,x:-16,y:-16" << std::endl;
