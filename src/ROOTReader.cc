@@ -227,6 +227,13 @@ void ROOTReader::createCollectionBranches(const std::vector<root_utils::Collecti
     root_utils::CollectionBranches branches{};
     const auto collectionClass = TClass::GetClass(collType.c_str());
 
+    // Make sure that ROOT actually knows about this datatype before running
+    // into a potentially cryptic segmentation fault by accessing the nullptr
+    if (!collectionClass) {
+      std::cerr << "PODIO: Cannot create the collection type \'" << collType << "\' stored in branch \'" << name
+                << "\'. Contents of this branch cannot be read." << std::endl;
+      continue;
+    }
     // Need the collection here to setup all the branches. Have to manage the
     // temporary collection ourselves
     auto collection =
