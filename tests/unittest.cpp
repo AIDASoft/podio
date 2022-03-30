@@ -9,6 +9,7 @@
 // podio specific includes
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "podio/EventStore.h"
+#include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
 
 // Test data types
@@ -737,4 +738,64 @@ TEST_CASE("Preprocessor version tests", "[versioning]") {
     STATIC_REQUIRE(PODIO_VERSION(20001, 40000, 10000) > PODIO_VERSION(20000, 40000, 20000));
     STATIC_REQUIRE(PODIO_VERSION(20000, 40000, 10000) > PODIO_VERSION(19999, 50000, 30000));
   }
+}
+
+TEST_CASE("GenericParameters", "[generic-parameters]") {
+  // Check that GenericParameters work as intended
+  auto gp = podio::GenericParameters{};
+
+  gp.setValue("anInt", 42);
+  REQUIRE(gp.getValue<int>("anInt") == 42);
+
+  // Make sure that passing a string literal is converted to a string on the fly
+  gp.setValue("aString", "const char initialized");
+  REQUIRE(gp.getValue<std::string>("aString") == "const char initialized");
+
+  // Check that passing an initializer_list creates the vector on the fly
+  gp.setValue("manyInts", {1, 2, 3, 4});
+  const auto& ints = gp.getValue<std::vector<int>>("manyInts");
+  REQUIRE(ints.size() == 4);
+  for (int i = 0; i < 4; ++i) {
+    REQUIRE(ints[i] == i + 1);
+  }
+
+  auto floats = std::vector<float>{3.14f, 2.718f};
+  // This stores a copy of the current value
+  gp.setValue("someFloats", floats);
+  // Hence, modifying the original vector will not be reflected
+  floats.push_back(42.f);
+  REQUIRE(floats.size() == 3);
+
+  const auto& storedFloats = gp.getValue<std::vector<float>>("someFloats");
+  REQUIRE(storedFloats.size() == 2);
+  REQUIRE(storedFloats[0] == 3.14f);
+  REQUIRE(storedFloats[1] == 2.718f);
+
+  // Missing values return the default initialized ones
+  REQUIRE(gp.getValue<int>("MissingValue") == int{});
+  REQUIRE(gp.getValue<float>("MissingValue") == float{});
+  REQUIRE(gp.getValue<std::string>("MissingValue") == std::string{});
+  // Same for vectors
+  REQUIRE(gp.getValue<std::vector<int>>("MissingValue").empty());
+  REQUIRE(gp.getValue<std::vector<float>>("MissingValue").empty());
+  REQUIRE(gp.getValue<std::vector<std::string>>("MissingValue").empty());
+}
+
+// Helper alias template "macro" to get the return type of calling
+// GenericParameters::getValue with the desired template type
+template <typename T>
+using GPGetValue = decltype(std::declval<podio::GenericParameters>().getValue<T>(std::declval<std::string>()));
+
+TEST_CASE("GenericParameters return types", "[generic-parameters][static-checks]") {
+  // Tests for checking that the getValue returns return by value resp. by const
+  // reference as expected
+  STATIC_REQUIRE(std::is_same_v<GPGetValue<int>, int>); // int and float are returned by value
+  STATIC_REQUIRE(std::is_same_v<GPGetValue<std::vector<int>>, const std::vector<int>&>); // vectors are const
+                                                                                         // references
+
+  STATIC_REQUIRE(std::is_same_v<GPGetValue<std::string>, const std::string&>); // std::strings are returned by const
+                                                                               // reference as well
+  STATIC_REQUIRE(std::is_same_v<GPGetValue<std::vector<std::string>>, const std::vector<std::string>&>); // as are
+                                                                                                         // vectors of
+                                                                                                         // strings
 }

@@ -25,19 +25,32 @@ static constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, Su
 template <typename T>
 using EnableIfValidGenericDataType = typename std::enable_if_t<isSupportedGenericDataType<T>>;
 
-/// The data types for which a return by value should be preferred over a return
-/// by const-ref
-using ValueReturnGenericDataTypes = std::tuple<int, float>;
+namespace detail {
+  /// Helper struct to determine how to return different types from the
+  /// GenericParamters to avoid unnecessary copies but also to prohibit carrying
+  /// around const references to ints or floats
+  template <typename T>
+  struct GenericDataReturnTypeHelper {
+    using type = T;
+  };
 
-/// Alias template for enabling return by value overloads
-template <typename T>
-using EnableIfValueReturnGenericDataType = std::enable_if_t<detail::isInTuple<T, ValueReturnGenericDataTypes>>;
+  /// Specialization for std::string. Those will always be returned by const ref
+  template <>
+  struct GenericDataReturnTypeHelper<std::string> {
+    using type = const std::string&;
+  };
 
-/// Alias template for return by const ref overloads
+  /// Specialization for std::vector. Those will always be returned by const ref
+  template <typename T>
+  struct GenericDataReturnTypeHelper<std::vector<T>> {
+    using type = const std::vector<T>&;
+  };
+} // namespace detail
+
+/// Alias template for determining the appropriate return type for the passed in
+/// type
 template <typename T>
-using EnableIfConstRefReturnGenericDataType =
-    std::enable_if_t<std::is_same_v<T, std::string> ||
-                     (detail::isInTuple<T, detail::TupleOfVector<SupportedGenericDataTypes>>)>;
+using GenericDataReturnType = typename detail::GenericDataReturnTypeHelper<T>::type;
 
 // These should be trivial to remove once the deprecated non-templated access
 // functionality is actually removed
@@ -66,16 +79,13 @@ private:
   using StringMap = MapType<std::string>;
 
 public:
-  /// Get the value that is stored under the given key (by const reference)
-  template <typename T, typename = EnableIfConstRefReturnGenericDataType<T>>
-  const T& getValue(const std::string& key) const;
-
-  /// Get the value that is stored under the given key (by value)
-  template <typename T, typename = EnableIfValueReturnGenericDataType<T>>
-  T getValue(const std::string& key) const;
+  /// Get the value that is stored under the given key, by const reference or by
+  /// value depending on the desired type
+  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  GenericDataReturnType<T> getValue(const std::string&) const;
 
   /// Store (a copy of) the passed value under the given key
-  template <typename T, typename = std::enable_if_t<isSupportedGenericDataType<T>>>
+  template <typename T, typename = EnableIfValidGenericDataType<T>>
   void setValue(const std::string& key, T value);
 
   /// Overload for catching const char* setting for string values
@@ -235,7 +245,7 @@ private:
 }; // class
 
 template <typename T, typename>
-const T& GenericParameters::getValue(const std::string& key) const {
+GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) const {
   const auto& map = getMap<T>();
   const auto it = map.find(key);
   // If there is no entry to the key, we just return an empty default
@@ -245,7 +255,7 @@ const T& GenericParameters::getValue(const std::string& key) const {
     return empty;
   }
 
-  // Here we have to check whether the return type is a vector or a single value
+  // We have to check whether the return type is a vector or a single value
   if constexpr (detail::isVector<T>) {
     return it->second;
   } else {
@@ -254,17 +264,37 @@ const T& GenericParameters::getValue(const std::string& key) const {
   }
 }
 
-template <typename T, typename>
-T GenericParameters::getValue(const std::string& key) const {
-  // Function not enabled for vector return types
-  const auto& map = getMap<T>();
-  const auto it = map.find(key);
-  if (it == map.end()) {
-    return T{};
-  }
-  // No need to differentiate between vector and single value return case here
-  return (it->second)[0];
-}
+// template <typename T, typename>
+// const T& GenericParameters::getValue(const std::string& key) const {
+//   const auto& map = getMap<T>();
+//   const auto it = map.find(key);
+//   // If there is no entry to the key, we just return an empty default
+//   // TODO: make this case detectable from the outside
+//   if (it == map.end()) {
+//     static const auto empty = T{};
+//     return empty;
+//   }
+
+//   // Here we have to check whether the return type is a vector or a single value
+//   if constexpr (detail::isVector<T>) {
+//     return it->second;
+//   } else {
+//     const auto& iv = it->second;
+//     return iv[0];
+//   }
+// }
+
+// template <typename T, typename>
+// T GenericParameters::getValue(const std::string& key) const {
+//   // Function not enabled for vector return types
+//   const auto& map = getMap<T>();
+//   const auto it = map.find(key);
+//   if (it == map.end()) {
+//     return T{};
+//   }
+//   // No need to differentiate between vector and single value return case here
+//   return (it->second)[0];
+// }
 
 template <typename T, typename>
 void GenericParameters::setValue(const std::string& key, T value) {
