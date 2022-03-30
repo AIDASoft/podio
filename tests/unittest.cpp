@@ -507,6 +507,12 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   // a collection to play with
   auto collection = ExampleHitCollection();
 
+  // bidirectional iterator traits
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::iterator>::iterator_category, std::bidirectional_iterator_tag>);
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::const_iterator>::iterator_category, std::bidirectional_iterator_tag>);
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::reverse_iterator>::iterator_category, std::bidirectional_iterator_tag>);
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::const_reverse_iterator>::iterator_category, std::bidirectional_iterator_tag>);
+
   #ifdef __cpp_lib_ranges
   // bidirectional iterator concepts (C++20)
   STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::iterator>);
