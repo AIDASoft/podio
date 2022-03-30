@@ -12,6 +12,15 @@
 #include <unordered_map>
 
 namespace podio {
+
+/// Alias template for enabling overloads only for Collections
+template <typename T>
+using EnableIfCollection = typename std::enable_if_t<isCollection<T>>;
+
+/// Alias template for enabling overloads only for Collection r-values
+template <typename T>
+using EnableIfCollectionRValue = typename std::enable_if_t<isCollection<T> && !std::is_lvalue_reference_v<T>>;
+
 /**
  * Frame class that serves as a container of collection and meta data.
  */
@@ -85,13 +94,13 @@ public:
 
   /** Get a collection from the Frame
    */
-  template <typename CollT>
+  template <typename CollT, typename = EnableIfCollection<CollT>>
   const CollT& get(const std::string& name) const;
 
   /** (Destructively) move a collection into the Frame and get a const reference
    * back for further use
    */
-  template <typename CollT, typename = std::enable_if_t<!std::is_lvalue_reference_v<CollT>>>
+  template <typename CollT, typename = EnableIfCollectionRValue<CollT>>
   const CollT& put(CollT&& coll, const std::string& name);
 
   /** Add a value to the parameters of the Frame (if the type is supported).
@@ -139,7 +148,7 @@ public:
 Frame::Frame() : m_self(std::make_unique<FrameModel>()) {
 }
 
-template <typename CollT>
+template <typename CollT, typename>
 const CollT& Frame::get(const std::string& name) const {
   const auto* coll = dynamic_cast<const CollT*>(m_self->get(name));
   if (coll) {
