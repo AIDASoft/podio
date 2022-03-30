@@ -2,7 +2,10 @@
 #define PODIO_FRAME_H
 
 #include "podio/CollectionBase.h"
+#include "podio/GenericParameters.h"
+#include "podio/utilities/TypeHelpers.h"
 
+#include <initializer_list>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -21,6 +24,8 @@ class Frame {
     virtual ~FrameConcept() = default;
     virtual const podio::CollectionBase* get(const std::string& name) const = 0;
     virtual const podio::CollectionBase* put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) = 0;
+    virtual podio::GenericParameters& parameters() = 0;
+    virtual const podio::GenericParameters& parameters() const = 0;
   };
 
   /**
@@ -47,10 +52,18 @@ class Frame {
      */
     const podio::CollectionBase* put(std::unique_ptr<CollectionBase> coll, const std::string& name) final;
 
+    podio::GenericParameters& parameters() override {
+      return m_parameters;
+    }
+    const podio::GenericParameters& parameters() const override {
+      return m_parameters;
+    };
+
   private:
     using CollectionMapT = std::unordered_map<std::string, std::unique_ptr<podio::CollectionBase>>;
 
-    CollectionMapT m_collections{};
+    CollectionMapT m_collections{};          ///< The internal map for storing unpacked collections
+    podio::GenericParameters m_parameters{}; ///< The generic parameter store for this frame
   };
 
   std::unique_ptr<FrameConcept> m_self;
@@ -68,6 +81,45 @@ public:
    */
   template <typename CollT, typename = std::enable_if_t<!std::is_lvalue_reference_v<CollT>>>
   const CollT& put(CollT&& coll, const std::string& name);
+
+  /** Add a value to the parameters of the Frame (if the type is supported).
+   * Copy the value into the internal store
+   */
+  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  void putParameter(const std::string& key, T value) {
+    m_self->parameters().setValue(key, value);
+  }
+
+  /** Add a string value to the parameters of the Frame by copying it. Dedicated
+   * overload for enabling the on-the-fly conversion on the string literals.
+   */
+  void putParameter(const std::string& key, std::string value) {
+    putParameter<std::string>(key, std::move(value));
+  }
+
+  /** Add a vector of strings to the parameters of the Frame (via copy).
+   * Dedicated overload for enabling on-the-fly conversions of initializer_list
+   * of string literals.
+   */
+  void putParameter(const std::string& key, std::vector<std::string> values) {
+    putParameter<std::vector<std::string>>(key, std::move(values));
+  }
+
+  /** Add a vector of values into the parameters of the Frame. Overload for
+   * catching on-the-fly conversions of initializer_lists of values.
+   */
+  template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
+  void putParameter(const std::string& key, std::initializer_list<T>&& values) {
+    putParameter<std::vector<T>>(key, std::move(values));
+  }
+
+  /** Retrieve parameters via key from the internal store. Return type will
+   * either by a const reference or a value depending on the desired type.
+   */
+  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  podio::GenericDataReturnType<T> getParameter(const std::string& key) const {
+    return m_self->parameters().getValue<T>(key);
+  }
 };
 
 // implementations below
