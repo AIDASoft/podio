@@ -42,7 +42,7 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
 void processEvent(podio::EventStore& store, int eventNum, podio::version::Version fileVersion) {
 
   const auto& evtMD = store.getEventMetaData();
-  float evtWeight = evtMD.getValue<float>("UserEventWeight");
+  auto evtWeight = evtMD.getValue<float>("UserEventWeight");
   if (evtWeight != (float)100. * eventNum) {
     std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float)100. * eventNum << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
