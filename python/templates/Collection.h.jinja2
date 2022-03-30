@@ -55,9 +55,6 @@ public:
   {{ class.bare_type }}Collection(std::ranges::input_range auto&& range)
   requires(std::convertible_to<std::ranges::range_value_t<decltype(range)>, {{ class.bare_type }}>)
   : m_isValid(false), m_isPrepared(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {
-    if constexpr (std::ranges::sized_range<decltype(range)>) {
-      reserve(std::ranges::size(range));
-    }
     for (auto&& item : range) {
       push_back(item);
     }
