@@ -135,5 +135,6 @@ TEST_CASE("Frame movability", "[frame][move-semantics]") {
 
     auto& hits = otherFrame.get<ExampleHitCollection>("moreHits");
     REQUIRE(hits.size() == 3);
+    checkFrame(otherFrame);
   }
 }
