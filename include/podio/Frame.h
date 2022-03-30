@@ -66,10 +66,22 @@ class Frame {
     podio::GenericParameters m_parameters{}; ///< The generic parameter store for this frame
   };
 
-  std::unique_ptr<FrameConcept> m_self;
+  std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
 
 public:
+  /** Empty Frame constructor
+   */
   Frame();
+
+  // The frame is a non-copyable type
+  Frame(const Frame&) = delete;
+  Frame& operator=(const Frame&) = delete;
+
+  Frame(Frame&&) = default;
+  Frame& operator=(Frame&&) = default;
+
+  /** Frame destructor */
+  ~Frame() = default;
 
   /** Get a collection from the Frame
    */
