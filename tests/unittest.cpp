@@ -1,10 +1,19 @@
 // STL
+#include <algorithm>
 #include <cstdint>
 #include <map>
 #include <stdexcept>
 #include <thread>
 #include <type_traits>
 #include <vector>
+#ifdef __has_include
+#  if __has_include(<version>)
+#    include <version>
+#  endif
+#  if __has_include(<ranges>)
+#    include <ranges>
+#  endif
+#endif
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -492,6 +501,124 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterMutableCollectionIterator>().operator->()),
                                 MutableExampleCluster*>); // CollectionIterator should only give access to mutable
                                                           // objects
+}
+
+TEST_CASE("Iterator concepts", "[iterator-concepts]") {
+  // a collection to play with
+  auto collection = ExampleHitCollection();
+
+  #ifdef __cpp_lib_ranges
+  // bidirectional iterator concepts (C++20)
+  STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::iterator>);
+  STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::const_iterator>);
+  STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::reverse_iterator>);
+  STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::const_reverse_iterator>);
+  STATIC_REQUIRE(std::ranges::bidirectional_range<decltype(collection)>);
+  #endif
+
+  // iterator loops
+  auto cellID = 0;
+  collection.clear();
+  collection.create();
+  collection.create(0x42ULL, 0., 0., 0., 0.);
+  // forward loop with post-increment
+  for (auto c = collection.begin(); c != collection.end(); c++) {
+    STATIC_REQUIRE(std::is_same_v<decltype(c), ExampleHitMutableCollectionIterator>);
+    cellID = c->cellID();
+  }
+  REQUIRE(cellID == 0x42ULL);
+  // reverse const loop with pre-increment
+  for (auto c = collection.crbegin(); c != collection.crend(); ++c) {
+    STATIC_REQUIRE(std::is_same_v<decltype(c), ExampleHitCollectionReverseIterator>);
+    cellID = c->cellID();
+  }
+  REQUIRE(cellID == 0);
+
+  // fill from const
+  collection.clear();
+  collection.create();
+  auto const_hit = ExampleHit(0x42ULL, 0., 0., 0., 0.);
+  //FIXME this should work but we may need a conversion constructor!
+  //std::fill(collection.begin(), collection.end(), const_hit);
+  //REQUIRE(collection.begin()->cellID() == 0x42ULL);
+  // fill from mutable
+  collection.clear();
+  collection.create();
+  auto mutable_hit = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
+  std::fill(collection.begin(), collection.end(), mutable_hit);
+  //FIXME
+  //REQUIRE(collection.begin()->cellID() == 0x42ULL);
+
+  // find in collection
+  collection.clear();
+  collection.create();
+  collection.create(0x42ULL, 0., 0., 0., 0.);
+  auto found = std::find_if(collection.begin(), collection.begin(),
+    [](const auto& h){ return h.cellID() == 0x42ULL; });
+  STATIC_REQUIRE(std::is_same_v<decltype(found), ExampleHitMutableCollectionIterator>);
+  REQUIRE(found != collection.end());
+  //FIXME
+  //REQUIRE(found->cellID() == 0x42ULL);
+
+  #ifdef __cpp_lib_ranges
+  // ranged views (C++20)
+  auto is_non_zero = [](const auto& p){ return p.cellID() > 0; };
+  auto half_energy = [](const auto& p){ auto q = p.clone(); q.energy(q.energy()/2); return q; };
+  collection.clear();
+  collection.create();
+  collection.create(0x42ULL, 1., 1., 1., 1.);
+  // pipe syntax
+  int count_pipe_syntax = 0;
+  for (auto c: collection | std::views::filter(is_non_zero) | std::views::reverse) {
+    STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
+    ++count_pipe_syntax;
+  }
+  REQUIRE(count_pipe_syntax == 1);
+  // composing syntax
+  auto count_composing = 0;
+  for (auto c: std::views::reverse(std::views::filter(collection, is_non_zero))) {
+    STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
+    ++count_composing;
+  }
+  REQUIRE(count_composing == 1);
+  // take_while
+  auto count_take_while = 0;
+  for (auto c: collection | std::views::take_while(is_non_zero) | std::views::reverse) {
+    STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
+    ++count_take_while;
+  }
+  REQUIRE(count_take_while == 0);
+  // ref_view
+  const std::ranges::ref_view collection_ref_view{collection};
+  for (auto c: collection_ref_view) {
+    STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
+  }
+  // for_each with pipe syntax
+  float energy = 0;
+  auto add_to_energy = [&e = energy](const auto& p){ e += p.energy(); };
+  std::ranges::for_each(collection
+      | std::views::filter(is_non_zero)
+      | std::views::transform(half_energy),
+      add_to_energy);
+  REQUIRE(energy > 0.49);
+  REQUIRE(energy < 0.51);
+  #ifdef __cpp_lib_ranges_zip
+  // zip range view over two different collections (C++23)
+  auto collection1 = ExampleHitCollection();
+  auto hit1 = collection1.create();
+  auto collection2 = ExampleClusterCollection();
+  auto cluster1 = collection2.create();
+  REQUIRE(collection1.begin().cellID() == 0);
+  for (auto c: std::views::zip(collection1, collection2) {
+    STATIC_REQUIRE(std::is_same_v<decltype(std::get<0>(c)), MutableExampleHit>);
+    STATIC_REQUIRE(std::is_same_v<decltype(std::get<1>(c)), MutableExampleCluster>);
+    // set all cellIDs in hit collection to 1
+    std::get<0>(c).cellID(1);
+  }
+  // views are references
+  REQUIRE(collection1.begin().cellID() == 1);
+  #endif
+  #endif
 }
 
 TEST_CASE("Subset collection basics", "[subset-colls]") {
