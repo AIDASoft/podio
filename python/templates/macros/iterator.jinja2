@@ -23,7 +23,7 @@ public:
     return !operator!=(x);
   }
 
-  {{ prefix }}{{ class.bare_type }} operator*();
+  {{ prefix }}{{ class.bare_type }} operator*() const;
   {{ prefix }}{{ class.bare_type }}* operator->();
   {{ iterator_type }}& operator++();
   {{ iterator_type }} operator++(int) {
@@ -40,7 +40,7 @@ public:
 
 private:
   size_t m_index;
-  {{ prefix }}{{ class.bare_type }} m_object;
+  mutable {{ prefix }}{{ class.bare_type }} m_object;
   const {{ class.bare_type }}ObjPointerContainer* m_collection;
 };
 {% endwith %}
@@ -71,7 +71,7 @@ public:
     return !operator!=(x);
   }
 
-  {{ prefix }}{{ class.bare_type }} operator*();
+  {{ prefix }}{{ class.bare_type }} operator*() const;
   {{ prefix }}{{ class.bare_type }}* operator->();
   {{ iterator_type }}& operator++();
   {{ iterator_type }} operator++(int) {
@@ -88,7 +88,7 @@ public:
 
 private:
   size_t m_index;
-  {{ prefix }}{{ class.bare_type }} m_object;
+  mutable {{ prefix }}{{ class.bare_type }} m_object;
   const {{ class.bare_type }}ObjPointerContainer* m_collection;
 };
 {% endwith %}
@@ -96,7 +96,7 @@ private:
 
 {% macro iterator_definitions(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
-{{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() {
+{{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() const {
   m_object.m_obj = (*m_collection)[m_index];
   return m_object;
 }
@@ -120,7 +120,7 @@ private:
 
 {% macro reverse_iterator_definitions(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionReverseIterator' %}
-{{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() {
+{{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() const {
   m_object.m_obj = (*m_collection)[m_index];
   return m_object;
 }
