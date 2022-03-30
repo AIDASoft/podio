@@ -30,7 +30,7 @@ int main(){
 
     auto v = mcparticles | std::views::reverse;
 
-    auto is_electron = [](const auto& p){ return p.getPDG() == 11; };
+    auto is_electron = [](const auto& p){ return p.PDG() == 11; };
     for (const auto& e: mcparticles | std::views::filter(is_electron)) {
       // stuff
     }
