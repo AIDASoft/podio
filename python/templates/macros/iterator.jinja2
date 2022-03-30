@@ -40,7 +40,7 @@ public:
 
 private:
   size_t m_index;
-  mutable {{ prefix }}{{ class.bare_type }} m_object;
+  {{ prefix }}{{ class.bare_type }} m_object;
   const {{ class.bare_type }}ObjPointerContainer* m_collection;
 };
 {% endwith %}
@@ -88,7 +88,7 @@ public:
 
 private:
   size_t m_index;
-  mutable {{ prefix }}{{ class.bare_type }} m_object;
+  {{ prefix }}{{ class.bare_type }} m_object;
   const {{ class.bare_type }}ObjPointerContainer* m_collection;
 };
 {% endwith %}
@@ -97,8 +97,7 @@ private:
 {% macro iterator_definitions(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
 {{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() const {
-  m_object.m_obj = (*m_collection)[m_index];
-  return m_object;
+  return {(*m_collection)[m_index]};
 }
 
 {{ prefix }}{{ class.bare_type }}* {{ iterator_type }}::operator->() {
@@ -121,8 +120,7 @@ private:
 {% macro reverse_iterator_definitions(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionReverseIterator' %}
 {{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() const {
-  m_object.m_obj = (*m_collection)[m_index];
-  return m_object;
+  return {(*m_collection)[m_index]};
 }
 
 {{ prefix }}{{ class.bare_type }}* {{ iterator_type }}::operator->() {
