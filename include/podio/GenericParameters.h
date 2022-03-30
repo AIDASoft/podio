@@ -241,8 +241,7 @@ private:
   IntMap _intMap{};
   FloatMap _floatMap{};
   StringMap _stringMap{};
-
-}; // class
+};
 
 template <typename T, typename>
 GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) const {
@@ -263,38 +262,6 @@ GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) con
     return iv[0];
   }
 }
-
-// template <typename T, typename>
-// const T& GenericParameters::getValue(const std::string& key) const {
-//   const auto& map = getMap<T>();
-//   const auto it = map.find(key);
-//   // If there is no entry to the key, we just return an empty default
-//   // TODO: make this case detectable from the outside
-//   if (it == map.end()) {
-//     static const auto empty = T{};
-//     return empty;
-//   }
-
-//   // Here we have to check whether the return type is a vector or a single value
-//   if constexpr (detail::isVector<T>) {
-//     return it->second;
-//   } else {
-//     const auto& iv = it->second;
-//     return iv[0];
-//   }
-// }
-
-// template <typename T, typename>
-// T GenericParameters::getValue(const std::string& key) const {
-//   // Function not enabled for vector return types
-//   const auto& map = getMap<T>();
-//   const auto it = map.find(key);
-//   if (it == map.end()) {
-//     return T{};
-//   }
-//   // No need to differentiate between vector and single value return case here
-//   return (it->second)[0];
-// }
 
 template <typename T, typename>
 void GenericParameters::setValue(const std::string& key, T value) {
