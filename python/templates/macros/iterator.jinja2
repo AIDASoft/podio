@@ -3,10 +3,10 @@
 class {{ iterator_type }} {
 public:
   using difference_type = std::ptrdiff_t;
-  using value_type = {{ class.bare_type }};
-  using pointer = {{ class.bare_type }}*;
-  using reference = {{ class.bare_type }}&;
-  using iterator_category = std::forward_iterator_tag;
+  using value_type = {{ prefix }}{{ class.bare_type }};
+  using pointer = {{ prefix }}{{ class.bare_type }}*;
+  using reference = {{ prefix }}{{ class.bare_type }}&;
+  using iterator_category = std::bidirectional_iterator_tag;
 
   {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {};
 
@@ -48,10 +48,10 @@ private:
 class {{ iterator_type }} {
 public:
   using difference_type = std::ptrdiff_t;
-  using value_type = {{ class.bare_type }};
-  using pointer = {{ class.bare_type }}*;
-  using reference = {{ class.bare_type }}&;
-  using iterator_category = std::forward_iterator_tag;
+  using value_type = {{prefix}}{{ class.bare_type }};
+  using pointer = {{prefix}}{{ class.bare_type }}*;
+  using reference = {{prefix}}{{ class.bare_type }}&;
+  using iterator_category = std::bidirectional_iterator_tag;
 
   {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object(nullptr), m_collection(collection) {};
 
