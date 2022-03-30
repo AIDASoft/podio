@@ -774,7 +774,9 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   // Missing values return the default initialized ones
   REQUIRE(gp.getValue<int>("MissingValue") == int{});
   REQUIRE(gp.getValue<float>("MissingValue") == float{});
-  REQUIRE(gp.getValue<std::string>("MissingValue") == std::string{});
+  REQUIRE(gp.getValue<std::string>("MissingValue") == std::string{}); // NOLINT(readability-container-size-empty): We
+                                                                      // want the explicit comparison here
+
   // Same for vectors
   REQUIRE(gp.getValue<std::vector<int>>("MissingValue").empty());
   REQUIRE(gp.getValue<std::vector<float>>("MissingValue").empty());
