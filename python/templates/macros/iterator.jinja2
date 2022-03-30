@@ -64,10 +64,10 @@ public:
   {{ iterator_type }}(const {{ iterator_type }}&) = default;
   {{ iterator_type }}& operator=(const {{ iterator_type }}&) = default;
 
-  bool operator!=(const {{ iterator_type}}& x) const {
+  bool operator!=(const {{ iterator_type }}& x) const {
     return m_index != x.m_index; // TODO: may not be complete
   }
-  bool operator==(const {{ iterator_type}}& x) const {
+  bool operator==(const {{ iterator_type }}& x) const {
     return !operator!=(x);
   }
 
