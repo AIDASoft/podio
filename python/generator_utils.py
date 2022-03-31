@@ -182,3 +182,18 @@ class MemberVariable:
     if not get_syntax:
       return self.name
     return _prefix_name(self.name, 'set')
+
+
+class DataModel:
+  """A class for holding a complete datamodel read from a configuration file"""
+  def __init__(self, datatypes=None, components=None, options=None):
+    self.datatypes = datatypes or {}
+    self.components = components or {}
+    self.options = options or {
+        # should getters / setters be prefixed with get / set?
+        "getSyntax": False,
+        # should POD members be exposed with getters/setters in classes that have them as members?
+        "exposePODMembers": True,
+        # use subfolder when including package header files
+        "includeSubfolder": False,
+        }

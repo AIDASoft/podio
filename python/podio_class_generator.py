@@ -68,7 +68,7 @@ def write_file_if_changed(filename, content, force_write=False):
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
-  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun):
+  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun, upstream_edm):
     self.install_dir = install_dir
     self.package_name = package_name
     self.io_handlers = io_handlers
@@ -76,23 +76,22 @@ class ClassGenerator:
     self.dryrun = dryrun
     self.yamlfile = yamlfile
 
-    self.reader = PodioConfigReader(yamlfile)
     try:
-      self.reader.read()
+      self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
     except DefinitionError as err:
       print(f'Error while generating the datamodel: {err}')
       sys.exit(1)
 
-    self.include_subfolder = self.reader.options["includeSubfolder"]
+    self.include_subfolder = self.datamodel.options["includeSubfolder"]
 
     self.env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                   keep_trailing_newline=True,
                                   lstrip_blocks=True,
                                   trim_blocks=True)
 
-    self.get_syntax = self.reader.options["getSyntax"]
-    self.incfolder = self.package_name + "/" if self.reader.options["includeSubfolder"] else ""
-    self.expose_pod_members = self.reader.options["exposePODMembers"]
+    self.get_syntax = self.datamodel.options["getSyntax"]
+    self.incfolder = self.datamodel.options['includeSubfolder']
+    self.expose_pod_members = self.datamodel.options["exposePODMembers"]
 
     self.clang_format = []
     self.generated_files = []
@@ -100,10 +99,10 @@ class ClassGenerator:
 
   def process(self):
     """Run the actual generation"""
-    for name, component in self.reader.components.items():
+    for name, component in self.datamodel.components.items():
       self._process_component(name, component)
 
-    for name, datatype in self.reader.datatypes.items():
+    for name, datatype in self.datamodel.datatypes.items():
       self._process_datatype(name, datatype)
 
     if 'ROOT' in self.io_handlers:
@@ -120,7 +119,7 @@ class ClassGenerator:
     with open(os.path.join(THIS_DIR, "figure.txt"), 'rb') as pkl:
       figure = pickle.load(pkl)
 
-    nclasses = 5 * len(self.reader.datatypes) + len(self.reader.components)
+    nclasses = 5 * len(self.datamodel.datatypes) + len(self.datamodel.components)
     text = REPORT_TEXT.format(yamlfile=self.yamlfile,
                               nclasses=nclasses,
                               installdir=self.install_dir)
@@ -200,7 +199,7 @@ class ClassGenerator:
     includes.update(*(m.includes for m in component['Members']))
 
     for member in component['Members']:
-      if member.full_type in self.reader.components or member.array_type in self.reader.components:
+      if member.full_type in self.datamodel.components or member.array_type in self.datamodel.components:
         includes.add(self._build_include(member.bare_type))
 
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
@@ -259,7 +258,7 @@ class ClassGenerator:
 
     for member in datatype["Members"]:
       if self.expose_pod_members and not member.is_builtin and not member.is_array:
-        member.sub_members = self.reader.components[member.full_type]['Members']
+        member.sub_members = self.datamodel.components[member.full_type]['Members']
 
     for relation in datatype['OneToOneRelations']:
       if self._needs_include(relation):
@@ -278,7 +277,7 @@ class ClassGenerator:
         includes.add(self._build_include(relation.bare_type))
 
     for vectormember in datatype['VectorMembers']:
-      if vectormember.full_type in self.reader.components:
+      if vectormember.full_type in self.datamodel.components:
         includes.add(self._build_include(vectormember.bare_type))
 
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
@@ -320,8 +319,8 @@ class ClassGenerator:
     header_contents = []
     for member in datatype['Members']:
       header = {'name': member.name}
-      if member.full_type in self.reader.components:
-        comps = [c.name for c in self.reader.components[member.full_type]['Members']]
+      if member.full_type in self.datamodel.components:
+        comps = [c.name for c in self.datamodel.components[member.full_type]['Members']]
         header['components'] = comps
       header_contents.append(header)
 
@@ -413,12 +412,12 @@ class ClassGenerator:
 
   def _needs_include(self, member):
     """Check whether the member needs an include from within the datamodel"""
-    return member.full_type in self.reader.components or member.full_type in self.reader.datatypes
+    return member.full_type in self.datamodel.components or member.full_type in self.datamodel.datatypes
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c) for c in self.reader.components],
-            'datatypes': [DataType(d) for d in self.reader.datatypes]}
+    data = {'components': [DataType(c) for c in self.datamodel.components],
+            'datatypes': [DataType(d) for d in self.datamodel.datatypes]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, classname):
@@ -448,6 +447,27 @@ def verify_io_handlers(handler):
     return handler
   raise argparse.ArgumentTypeError(f'{handler} is not a valid io handler')
 
+def read_upstream_edm(name_path):
+  """Read an upstream EDM yaml definition file to make the types that are defined
+  in that available to the current EDM"""
+  if name_path is None:
+    return None
+
+  import argparse
+  try:
+    name, path = name_path.split(':')
+  except ValueError:
+    raise argparse.ArgumentTypeError('upstream-edm argument needs to be the upstream package '
+                                     'name and the upstream edm yaml file separated by a colon')
+
+  if not os.path.isfile(path):
+    raise argparse.ArgumentTypeError(f'{path} needs to be an EDM yaml file')
+
+  try:
+    return PodioConfigReader.read(path, name)
+  except DefinitionError:
+    raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition')
+
 
 if __name__ == "__main__":
   import argparse
@@ -468,6 +488,11 @@ if __name__ == "__main__":
                       help='Do not actually write datamodel files')
   parser.add_argument('-c', '--clangformat', action='store_true', default=False,
                       help='Apply clang-format when generating code (with -style=file)')
+  parser.add_argument('--upstream-edm',
+                      help='Make datatypes of this upstream EDM available to the current'
+                      ' EDM. Format is \'<upstream-name>:<upstream.yaml>\'. '
+                      'Note that only the code for the current EDM will be generated',
+                      default=None, type=read_upstream_edm)
 
   args = parser.parse_args()
 
@@ -480,7 +505,7 @@ if __name__ == "__main__":
       os.makedirs(directory)
 
   gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers,
-                       verbose=args.verbose, dryrun=args.dryrun)
+                       verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm)
   if args.clangformat:
     gen.clang_format = get_clang_format()
   gen.process()

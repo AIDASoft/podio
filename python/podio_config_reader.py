@@ -6,7 +6,7 @@ import re
 import warnings
 import yaml
 
-from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
+from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES, DataModel
 
 
 class MemberParser:
@@ -133,23 +133,26 @@ class ClassDefinitionValidator:
   # documented but not yet implemented
   not_yet_implemented_extra_code = ('declarationFile', 'implementationFile')
 
-  def __init__(self):
-    self.components = None
-    self.datatypes = None
-    self.expose_pod_members = False
+  @classmethod
+  def validate(cls, datamodel, upstream_edm=None):
+    """Validate the datamodel."""
+    cls._check_components(datamodel, upstream_edm)
+    expose_pod_members = datamodel.options['exposePODMembers']
+    cls._check_datatypes(datamodel, expose_pod_members, upstream_edm)
 
-  def validate(self, datamodel, expose_pod_members):
-    """Validate the datamodel"""
-    self.components = datamodel['components']
-    self.datatypes = datamodel['datatypes']
-    self.expose_pod_members = expose_pod_members
+  @classmethod
+  def _check_comp(cls, member, components, upstream_edm):
+    """Check if the passed member is a component defined in either the datamodel
+    itself or in the upstream datamodel."""
+    def _from_upstream():
+      return upstream_edm.components if upstream_edm else []
 
-    self._check_components()
-    self._check_datatypes()
+    return member in components or member in _from_upstream()
 
-  def _check_components(self):
-    """Check the components"""
-    for name, component in self.components.items():
+  @classmethod
+  def _check_components(cls, datamodel, upstream_edm):
+    """Check the components."""
+    for name, component in datamodel.components.items():
       for field in component:
         if field not in ['Members', 'ExtraCode']:
           raise DefinitionError(f"{name} defines a '{field}' field which is not allowed for a component")
@@ -162,31 +165,36 @@ class ClassDefinitionValidator:
 
       for member in component['Members']:
         is_builtin = member.is_builtin or member.is_builtin_array
-        is_component_array = member.is_array and member.array_type in self.components
-        is_component = member.full_type in self.components or is_component_array
+        is_component_array = member.is_array and cls._check_comp(member.array_type, datamodel.components, upstream_edm)
+        is_component = cls._check_comp(member.full_type, datamodel.components, upstream_edm) or is_component_array
 
         if not is_builtin and not is_component:
-          raise DefinitionError(f"{member.name} defines a member of type '{member.full_type}' which is not allowed in"
-                                " components")
+          raise DefinitionError(f'{member.name} of component {name} is not a builtin type, '
+                                'another component or one from the upstream EDM')
 
-  def _check_datatypes(self):
-    """Check the datatypes"""
+  @classmethod
+  def _check_datatypes(cls, datamodel, expose_pod_members, upstream_edm):
+    """Check the datatypes."""
     # Get all of the datatype names here to avoid depending on the order of
     # declaration. NOTE: In this way also invalid classes will be considered,
     # but they should hopefully be caught later
-    for name, definition in self.datatypes.items():
-      self._check_keys(name, definition)
-      self._fill_defaults(definition)
-      self._check_datatype(name, definition)
+    for name, definition in datamodel.datatypes.items():
+      cls._check_keys(name, definition)
+      cls._fill_defaults(definition)
+      cls._check_datatype(name, definition, expose_pod_members, datamodel, upstream_edm)
 
-  def _check_datatype(self, classname, definition):
-    """Check that a datatype only defines valid types and relations"""
-    self._check_members(classname, definition.get("Members", []))
-    self._check_relations(classname, definition)
+  @classmethod
+  def _check_datatype(cls, classname, definition, expose_pod_members, datamodel, upstream_edm):
+    """Check that a datatype only defines valid types and relations."""
+    cls._check_members(classname, definition.get("Members", []), expose_pod_members, datamodel, upstream_edm)
+    cls._check_relations(classname, definition, datamodel, upstream_edm)
 
-  def _check_members(self, classname, members):
-    """Check the members of a class for name clashes or undefined classes"""
-    all_types = self.components
+  @classmethod
+  def _check_members(cls, classname, members, expose_pod_members, datamodel, upstream_edm):
+    """Check the members of a class for name clashes or undefined classes."""
+    all_types = list(datamodel.components.keys())
+    ext_types = upstream_edm.components.keys() if upstream_edm else []
+    all_types.extend(ext_types)
 
     all_members = {}
     for member in members:
@@ -202,38 +210,47 @@ class ClassDefinitionValidator:
                               f" in '{all_members[member.name]}'")
 
       all_members[member.name] = classname
-      if self.expose_pod_members and not member.is_builtin and not member.is_array:
-        for sub_member in self.components[member.full_type]['Members']:
+      if expose_pod_members and not member.is_builtin and not member.is_array:
+        for sub_member in datamodel.components[member.full_type]['Members']:
           if sub_member.name in all_members:
             raise DefinitionError(f"'{sub_member.name}' clashes with another member name in class '{classname}'"
                                   f" (defined in the component '{member.name}' and '{all_members[sub_member.name]}')")
 
           all_members[sub_member.name] = f"member '{member.name}'"
 
-  def _check_relations(self, classname, definition):
-    """Check the relations of a class"""
+  @classmethod
+  def _check_relations(cls, classname, definition, datamodel, upstream_edm):
+    """Check the relations of a class."""
+    def _valid_datatype(rel_type):
+      if rel_type in datamodel.datatypes:
+        return True
+      if upstream_edm and rel_type in upstream_edm.datatypes:
+        return True
+      return False
+
     many_relations = definition.get("OneToManyRelations", [])
     for relation in many_relations:
-      if relation.full_type not in self.datatypes:
+      if not _valid_datatype(relation.full_type):
         raise DefinitionError(f"'{classname}' declares a non-allowed many-relation to '{relation.full_type}'")
 
     one_relations = definition.get("OneToOneRelations", [])
     for relation in one_relations:
-      if relation.full_type not in self.datatypes:
+      if not _valid_datatype(relation.full_type):
         raise DefinitionError(f"'{classname}' declares a non-allowed single-relation to '{relation.full_type}'")
 
     vector_members = definition.get("VectorMembers", [])
     for vecmem in vector_members:
-      if not vecmem.is_builtin and vecmem.full_type not in self.components:
+      if not vecmem.is_builtin and not cls._check_comp(vecmem.full_type, datamodel.components, upstream_edm):
         raise DefinitionError(f"'{classname}' declares a non-allowed vector member of type '{vecmem.full_type}'")
 
-  def _check_keys(self, classname, definition):
-    """Check the keys of a datatype"""
-    allowed_keys = self.required_datatype_keys + self.valid_datatype_member_keys + self.valid_extra_datatype_keys
+  @classmethod
+  def _check_keys(cls, classname, definition):
+    """Check the keys of a datatype."""
+    allowed_keys = cls.required_datatype_keys + cls.valid_datatype_member_keys + cls.valid_extra_datatype_keys
     # Give some more info for not yet implemented features
     invalid_keys = [k for k in definition.keys() if k not in allowed_keys]
     if invalid_keys:
-      not_yet_impl = [k for k in invalid_keys if k in self.not_yet_implemented_keys]
+      not_yet_impl = [k for k in invalid_keys if k in cls.not_yet_implemented_keys]
       if not_yet_impl:
         not_yet_impl = f' (not yet implemented: {not_yet_impl})'
       else:
@@ -241,15 +258,15 @@ class ClassDefinitionValidator:
 
       raise DefinitionError(f"'{classname}' defines invalid categories: {invalid_keys}{not_yet_impl}")
 
-    for key in self.required_datatype_keys:
+    for key in cls.required_datatype_keys:
       if key not in definition:
         raise DefinitionError(f"'{classname}' does not define '{key}'")
 
     if 'ExtraCode' in definition:
       extracode = definition['ExtraCode']
-      invalid_keys = [k for k in extracode if k not in self.valid_extra_code_keys]
+      invalid_keys = [k for k in extracode if k not in cls.valid_extra_code_keys]
       if invalid_keys:
-        not_yet_impl = [k for k in invalid_keys if k in self.not_yet_implemented_extra_code]
+        not_yet_impl = [k for k in invalid_keys if k in cls.not_yet_implemented_extra_code]
         if not_yet_impl:
           not_yet_impl = f' (not yet implemented: {not_yet_impl})'
         else:
@@ -257,7 +274,8 @@ class ClassDefinitionValidator:
 
         raise DefinitionError("{classname} defines invalid 'ExtraCode' categories: {invalid_keys}{not_yet_impl}")
 
-  def _fill_defaults(self, definition):
+  @classmethod
+  def _fill_defaults(cls, definition):
     """Fill some of the fields with empty defaults in order to make it easier to
     handle them afterwards and not having to check everytime whether they exist.
     TODO: This is a rather ugly thing to do as it strongly couples all the
@@ -267,11 +285,11 @@ class ClassDefinitionValidator:
     encapsulate this into one place here, such that it makes it easier to remove
     once the generator is more robust against missing fields
     """
-    for field in self.valid_datatype_member_keys:
+    for field in cls.valid_datatype_member_keys:
       if field not in definition:
         definition[field] = []
 
-    for field in self.valid_extra_datatype_keys:
+    for field in cls.valid_extra_datatype_keys:
       if field not in definition:
         definition[field] = {}
 
@@ -282,19 +300,15 @@ class PodioConfigReader:
   validation
   """
   member_parser = MemberParser()
-
-  def __init__(self, yamlfile):
-    self.yamlfile = yamlfile
-    self.datatypes = {}
-    self.components = {}
-    self.options = {
-        # should getters / setters be prefixed with get / set?
-        "getSyntax": False,
-        # should POD members be exposed with getters/setters in classes that have them as members?
-        "exposePODMembers": True,
-        # use subfolder when including package header files
-        "includeSubfolder": False,
-        }
+  # default options
+  options = {
+      # should getters / setters be prefixed with get / set?
+      "getSyntax": False,
+      # should POD members be exposed with getters/setters in classes that have them as members?
+      "exposePODMembers": True,
+      # use subfolder when including package header files
+      "includeSubfolder": False,
+      }
 
   @staticmethod
   def _handle_extracode(definition):
@@ -349,7 +363,8 @@ class PodioConfigReader:
 
     return component
 
-  def _read_component(self, definition):
+  @classmethod
+  def _read_component(cls, definition):
     """Read the component and put it into an easily digestible format.
 
     Currently handles two versions of syntax:
@@ -361,7 +376,7 @@ class PodioConfigReader:
     # Very basic check here to differentiate between old and new style component
     # definitions
     if "Members" not in definition:
-      return self._read_component_old_definition(definition)
+      return cls._read_component_old_definition(definition)
 
     component = {}
     for name, category in definition.items():
@@ -369,13 +384,14 @@ class PodioConfigReader:
         component['Members'] = []
         for member in definition[name]:
           # for components we do not require a description in the members
-          component['Members'].append(self.member_parser.parse(member, False))
+          component['Members'].append(cls.member_parser.parse(member, False))
       else:
         component[name] = copy.deepcopy(category)
 
     return component
 
-  def _read_datatype(self, value):
+  @classmethod
+  def _read_datatype(cls, value):
     """Read the datatype and put it into an easily digestible format"""
     datatype = {}
     for category, definition in value.items():
@@ -383,34 +399,42 @@ class PodioConfigReader:
       if category in ClassDefinitionValidator.valid_datatype_member_keys:
         members = []
         for member in definition:
-          members.append(self.member_parser.parse(member))
+          members.append(cls.member_parser.parse(member))
         datatype[category] = members
       else:
         datatype[category] = copy.deepcopy(definition)
 
     return datatype
 
-  def read(self):
-    """Read the datamodel definition from the yamlfile"""
-    with open(self.yamlfile, "r", encoding='utf-8') as stream:
+  @classmethod
+  def read(cls, yamlfile, package_name, upstream_edm=None):
+    """Read the datamodel definition from the yamlfile."""
+    with open(yamlfile, "r", encoding='utf-8') as stream:
       content = yaml.load(stream, yaml.SafeLoader)
 
+    components = {}
     if "components" in content:
       for klassname, value in content["components"].items():
-        self.components[klassname] = self._read_component(value)
+        components[klassname] = cls._read_component(value)
 
+    datatypes = {}
     if "datatypes" in content:
       for klassname, value in content["datatypes"].items():
-        self.datatypes[klassname] = self._read_datatype(value)
+        datatypes[klassname] = cls._read_datatype(value)
 
+    options = copy.deepcopy(cls.options)
     if "options" in content:
       for option, value in content["options"].items():
-        self.options[option] = value
+        options[option] = value
+
+    # Normalize the includeSubfoler internally already here
+    if options['includeSubfolder']:
+      options['includeSubfolder'] = f'{package_name}/'
+    else:
+      options['includeSubfolder'] = ''
 
     # If this doesn't raise an exception everything should in principle work out
     validator = ClassDefinitionValidator()
-    datamodel = {
-        'components': self.components,
-        'datatypes': self.datatypes,
-        }
-    validator.validate(datamodel, self.options.get('exposePODMembers', False))
+    datamodel = DataModel(datatypes, components, options)
+    validator.validate(datamodel, upstream_edm)
+    return datamodel

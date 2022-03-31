@@ -9,15 +9,13 @@ import unittest
 from copy import deepcopy
 
 from podio_config_reader import ClassDefinitionValidator, MemberVariable, DefinitionError
+from generator_utils import DataModel
 
 
-def make_dm(components, datatypes):
+def make_dm(components, datatypes, options=None):
   """Small helper function to turn things into a datamodel dict as expected by
   the validator"""
-  return {
-      'components': components,
-      'datatypes': datatypes,
-      }
+  return DataModel(datatypes, components, options)
 
 
 class ClassDefinitionValidatorTest(unittest.TestCase):
@@ -62,6 +60,9 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
             }
         }
 
+    # The default options that should be used for validation
+    self.def_opts = {'exposePODMembers': False}
+
     self.validator = ClassDefinitionValidator()
     self.validate = self.validator.validate
 
@@ -101,11 +102,12 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     self._assert_no_exception(DefinitionError, '{} should not raise for a valid component',
                               self.validate, make_dm(self.valid_component, {}), False)
 
-    self.valid_component['SecondComponent'] = {
+    components = deepcopy(self.valid_component)
+    components['SecondComponent'] = {
         'Members': [MemberVariable(array_type='Component', array_size='10', name='referToOtheComponent')]
         }
     self._assert_no_exception(DefinitionError, '{} should allow for component members in components',
-                              self.validate, make_dm(self.valid_component, {}), False)
+                              self.validate, make_dm(components, {}), False)
 
   def test_component_invalid_field(self):
     self.valid_component['Component']['Author'] = 'An invalid field for a component'
@@ -114,13 +116,13 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
   def test_datatype_valid_members(self):
     self._assert_no_exception(DefinitionError, '{} should not raise for a valid datatype',
-                              self.validate, make_dm({}, self.valid_datatype), False)
+                              self.validate, make_dm({}, self.valid_datatype, self.def_opts))
 
     # things should still work if we add a component member
     self.valid_datatype['DataType']['Members'].append(MemberVariable(type='Component', name='comp'))
     self._assert_no_exception(DefinitionError, '{} should allow for members that are components',
                               self.validate,
-                              make_dm(self.valid_component, self.valid_datatype), False)
+                              make_dm(self.valid_component, self.valid_datatype, self.def_opts))
 
     # also when we add an array of components
     self.valid_datatype['DataType']['Members'].append(MemberVariable(array_type='Component',
@@ -128,14 +130,14 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                                                                      name='arrComp'))
     self._assert_no_exception(DefinitionError, '{} should allow for arrays of components as members',
                               self.validate,
-                              make_dm(self.valid_component, self.valid_datatype), False)
+                              make_dm(self.valid_component, self.valid_datatype, self.def_opts))
 
     # pod members can be redefined if they are note exposed
     self.valid_datatype['DataType']['Members'].append(MemberVariable(type='double', name='aFloat'))
     self._assert_no_exception(DefinitionError,
                               '{} should allow for re-use of component names if the components are not exposed',
                               self.validate,
-                              make_dm(self.valid_component, self.valid_datatype), False)
+                              make_dm(self.valid_component, self.valid_datatype, self.def_opts))
 
     datatype = {
         'DataTypeWithoutMembers': {
@@ -143,7 +145,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
             }
         }
     self._assert_no_exception(DefinitionError, '{} should allow for almost empty datatypes',
-                              self.validate, make_dm({}, datatype), False)
+                              self.validate, make_dm({}, datatype, self.def_opts))
 
   def test_datatype_invalid_definitions(self):
     for required in ('Author', 'Description'):
@@ -166,20 +168,20 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     datatype = deepcopy(self.valid_datatype)
     datatype['DataType']['Members'].append(MemberVariable(type='NonDeclaredType', name='foo'))
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm({}, datatype), False)
+      self.validate(make_dm({}, datatype, self.def_opts))
 
     datatype = deepcopy(self.valid_datatype)
     datatype['DataType']['Members'].append(MemberVariable(type='float', name='definedTwice'))
     datatype['DataType']['Members'].append(MemberVariable(type='int', name='definedTwice'))
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm({}, datatype), False)
+      self.validate(make_dm({}, datatype, self.def_opts))
 
     # Re-definition of a member present in a component and pod members are exposed
     datatype = deepcopy(self.valid_datatype)
     datatype['DataType']['Members'].append(MemberVariable(type='Component', name='aComponent'))
     datatype['DataType']['Members'].append(MemberVariable(type='float', name='aFloat'))
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm(self.valid_component, datatype), True)
+      self.validate(make_dm(self.valid_component, datatype, {'exposePODMembers': True}))
 
     datatype = deepcopy(self.valid_datatype)
     datatype['AnotherType'] = {
@@ -190,7 +192,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
         MemberVariable(type='AnotherType', name='impossibleType',
                        description='Another datatype cannot be a member'))
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm(self.valid_component, datatype), False)
+      self.validate(make_dm(self.valid_component, datatype, self.def_opts))
 
   def _test_datatype_valid_relations(self, rel_type):
     self.valid_datatype['DataType'][rel_type] = [
@@ -276,6 +278,112 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                        description='not working because component will not be part of the datamodel we pass')]
     with self.assertRaises(DefinitionError):
       self.validate(make_dm({}, datatype), False)
+
+  def test_component_valid_upstream(self):
+    """Test that a component from an upstream datamodel passes here"""
+    component = {
+        'DownstreamComponent': {
+            'Members': [
+                MemberVariable(type='Component', name='UpstreamComponent'),
+                MemberVariable(array_type='Component', array_size='42', name='upstreamArray')
+                ]
+            }
+        }
+
+    upstream_dm = make_dm(self.valid_component, {})
+
+    self._assert_no_exception(DefinitionError, '{} should allow to use upstream components in components',
+                              self.validate, make_dm(component, {}, self.def_opts), upstream_dm)
+
+  def test_component_invalid_upstream(self):
+    """Test that a component does not pass if it is not available upstream or in the
+    current definition"""
+    # Valid non-array component, invalid array
+    component = {
+        'DownstreamComponent': {
+            'Members': [
+                MemberVariable(type='Component', name='UpstreamComponent'),
+                MemberVariable(array_type='NotAvailComponent', array_size='42', name='upstreamArray')
+                ]
+            }
+        }
+
+    upstream_dm = make_dm(self.valid_component, {})
+
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm(component, {}, self.def_opts), upstream_dm)
+
+    # invalid non-array component, valid array
+    component = {
+        'DownstreamComponent': {
+            'Members': [
+                MemberVariable(type='NotAvailComponent', name='UpstreamComponent'),
+                MemberVariable(array_type='Component', array_size='42', name='upstreamArray')
+                ]
+            }
+        }
+
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm(component, {}, self.def_opts), upstream_dm)
+
+  def test_datatype_valid_upstream(self):
+    """Test that a datatype from an upstream datamodel passes here"""
+    datatype = {
+        'DownstreamDatatype': {
+            'Members': [
+                MemberVariable(type='Component', name='UpstreamComponent', description='upstream component')
+                ],
+            'Description': 'A datatype with upstream components and relations',
+            'Author': 'Sophisticated datamodel authors',
+            'OneToOneRelations': [
+                MemberVariable(type='DataType', name='upSingleRel', description='upstream single relation')
+                ],
+            'OneToManyRelations': [
+                MemberVariable(type='DataType', name='upManyRel', description='upstream many relation')
+                ],
+            'VectorMembers': [
+                MemberVariable(type='Component', name='upVector', description='upstream component as vector member')
+                ]
+            }
+        }
+
+    upstream_dm = make_dm(self.valid_component, self.valid_datatype, self.def_opts)
+    self._assert_no_exception(DefinitionError, '{} should allow to use to use upstream datatypes and components',
+                              self.validate, make_dm({}, datatype, self.def_opts), upstream_dm)
+
+  def test_datatype_invalid_upstream(self):
+    """Test that datatypes that are not from upstream cannot be used"""
+    basetype = {
+        'DsType': {
+            'Author': 'Less sophisticated datamodel authors',
+            'Description': 'A datatype trying to use non-existant upstream content'
+            }
+        }
+
+    upstream_dm = make_dm(self.valid_component, self.valid_datatype, self.def_opts)
+
+    # Check for invalid members
+    dtype = deepcopy(basetype)
+    dtype['DsType']['Members'] = [MemberVariable(type='InvalidType', name='foo', description='non existant upstream')]
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
+
+    # Check relations
+    dtype = deepcopy(basetype)
+    dtype['DsType']['OneToOneRelations'] = [MemberVariable(type='InvalidType', name='foo', description='invalid')]
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
+
+    dtype = deepcopy(basetype)
+    dtype['DsType']['OneToManyRelations'] = [MemberVariable(type='InvalidType', name='foo', description='invalid')]
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
+
+    # vector members
+    dtype = deepcopy(basetype)
+    dtype['DsType']['VectorMembers'] = [MemberVariable(type='InvalidType', name='foo', description='invalid')]
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
 
 
 if __name__ == '__main__':
