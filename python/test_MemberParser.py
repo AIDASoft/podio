@@ -11,10 +11,10 @@ from podio_config_reader import MemberParser, DefinitionError
 
 
 class MemberParserTest(unittest.TestCase):
-  def setUp(self):
-    pass
+  """Unit tests for the MemberParser"""
 
-  def test_parse_valid(self):
+  def test_parse_valid(self):  # pylint: disable=too-many-statements
+    """Test if valid member definitions pass"""
     parser = MemberParser()
 
     parsed = parser.parse(r'float someFloat // with an additional comment')
@@ -122,6 +122,7 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.array_type, r'std::uint32_t')
 
   def test_parse_invalid(self):
+    """Test that invalid member variable definitions indeed fail during parsing"""
     # setup an empty parser
     parser = MemberParser()
 
@@ -155,6 +156,7 @@ class MemberParserTest(unittest.TestCase):
         parser.parse(inp)
 
   def test_parse_valid_no_description(self):
+    """Test that member variable definitions are OK without description"""
     parser = MemberParser()
 
     parsed = parser.parse('unsigned long long aLongWithoutDescription', False)

@@ -59,7 +59,7 @@ for (/* some loop */) {
     auto hit = hits.create();
     // To be able to loop over these in parallel, you have to fill the user data manually
     uint16_t hitTag;
-    hitTags.push_back(hitTag); 
+    hitTags.push_back(hitTag);
 }
 ```
 

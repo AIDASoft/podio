@@ -26,7 +26,7 @@ public:
 
   /// is the input file accessible?
   bool isZombie() const {return m_isZombie;}
-  
+
   bool isValid() const {return m_reader.isValid();}
   void close() {m_reader.closeFiles();}
 

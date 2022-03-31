@@ -96,7 +96,7 @@ namespace podio {
     }
     return m_evtMD ;
   }
-  
+
   GenericParameters& EventStore::getRunMetaData(int runID) {
 
     if( m_runMDMap.empty() && m_reader != nullptr ){
@@ -106,7 +106,7 @@ namespace podio {
     }
     return m_runMDMap[ runID ] ;
   }
-  
+
 
   GenericParameters& EventStore::getCollectionMetaData(int colID) {
 

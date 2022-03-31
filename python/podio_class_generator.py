@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Podio class generator script"""
+
 from __future__ import unicode_literals, absolute_import, print_function
 
 import os
 import sys
 import subprocess
-from io import open
 import pickle
 from copy import deepcopy
 
@@ -59,21 +60,23 @@ def write_file_if_changed(filename, content, force_write=False):
   """Write the file contents only if it has changed or if the file does not exist
   yet. Return whether the file has been written or not"""
   try:
-    with open(filename, 'r') as f:
-      existing_content = f.read()
+    with open(filename, 'r') as infile:
+      existing_content = infile.read()
       changed = existing_content != content
   except FileNotFoundError:
     changed = True
 
   if changed or force_write:
-    with open(filename, 'w') as f:
-      f.write(content)
+    with open(filename, 'w') as outfile:
+      outfile.write(content)
     return True
 
   return False
 
 
-class ClassGenerator(object):
+class ClassGenerator:
+  """The entry point for reading a datamodel definition and generating the
+  necessary source code from it."""
   def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun):
     self.install_dir = install_dir
     self.package_name = package_name
@@ -105,6 +108,7 @@ class ClassGenerator(object):
     self.any_changes = False
 
   def process(self):
+    """Run the actual generation"""
     for name, component in self.reader.components.items():
       self._process_component(name, component)
 
@@ -118,6 +122,7 @@ class ClassGenerator(object):
     self._write_cmake_lists_file()
 
   def print_report(self):
+    """Print a summary report about the generated code"""
     if not self.verbose:
       return
 
@@ -285,7 +290,7 @@ class ClassGenerator(object):
         includes.add(self._build_include(vectormember.bare_type))
 
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
-    # TODO: in principle only the mutable classes would need these includes!
+    # TODO: in principle only the mutable classes would need these includes!  # pylint: disable=fixme
     includes.update(datatype.get('MutableExtraCode', {}).get('includes', '').split('\n'))
 
     # When we have a relation to the same type we have the header that we are
@@ -318,7 +323,7 @@ class ClassGenerator(object):
     # the ostream operator needs a bit of help from the python side in the form
     # of some pre processing but also in the form of formatting, both are done
     # here.
-    # TODO: also handle array members properly. These are currently simply
+    # TODO: also handle array members properly. These are currently simply  # pylint: disable=fixme
     # ignored
     header_contents = []
     for member in datatype['Members']:
@@ -450,8 +455,8 @@ class ClassGenerator(object):
     package_includes = sorted(i for i in includes if self.package_name in i)
     podio_includes = sorted(i for i in includes if 'podio' in i)
     stl_includes = sorted(i for i in includes if '<' in i and '>' in i)
-    # TODO: check whether there are includes that fulfill more than one of the
-    # above conditions?
+    # Are ther includes that fulfill more than one of the above conditions? Are
+    # there includes that fulfill none?
 
     return package_includes + podio_includes + stl_includes
 
@@ -469,6 +474,7 @@ def verify_io_handlers(handler):
 
 if __name__ == "__main__":
   import argparse
+  # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
   parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
                                    'the necessary c++ files in the target directory')
 
@@ -501,3 +507,5 @@ if __name__ == "__main__":
   if args.clangformat:
     gen.clang_format = get_clang_format()
   gen.process()
+
+  # pylint: enable=invalid-name

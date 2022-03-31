@@ -13,15 +13,15 @@ namespace podio {
   typedef std::vector<std::string> StringVec ;
 
   /** GenericParameters objects allow to store generic named parameters of type
-   *  int, float and string or vectors of these types. 
-   *  They can be used  to store (user) meta data that is 
-   *  run, event or collection dependent. 
+   *  int, float and string or vectors of these types.
+   *  They can be used  to store (user) meta data that is
+   *  run, event or collection dependent.
    *  (based on lcio::LCParameters)
-   * 
-   * @author F. Gaede, DESY 
+   *
+   * @author F. Gaede, DESY
    * @date Apr 2020
    */
-  
+
   class GenericParameters {
   public:
     template<typename T>
@@ -33,34 +33,34 @@ namespace podio {
     using StringMap = MapType<std::string>;
 
   public:
-   
+
     /** Returns the first integer value for the given key.
      */
     int getIntVal(const std::string & key) const  ;
-    
+
     /** Returns the first float value for the given key.
      */
     float getFloatVal(const std::string & key) const ;
-    
+
     /** Returns the first string value for the given key.
      */
     const std::string & getStringVal(const std::string & key) const ;
-    
+
     /** Adds all integer values for the given key to values.
      *  Returns a reference to values for convenience.
      */
     IntVec & getIntVals(const std::string & key, IntVec & values) const ;
-    
+
     /** Adds all float values for the given key to values.
      *  Returns a reference to values for convenience.
      */
     FloatVec & getFloatVals(const std::string & key, FloatVec & values) const ;
-    
+
     /** Adds all float values for the given key to values.
      *  Returns a reference to values for convenience.
      */
      StringVec & getStringVals(const std::string & key, StringVec & values) const ;
-    
+
     /** Returns a list of all keys of integer parameters.
      */
     const StringVec & getIntKeys( StringVec & keys) const  ;
@@ -72,19 +72,19 @@ namespace podio {
     /** Returns a list of all keys of string parameters.
      */
     const StringVec & getStringKeys(StringVec & keys)  const ;
-    
+
     /** The number of integer values stored for this key.
-     */ 
+     */
     int getNInt(const std::string & key) const ;
-    
+
     /** The number of float values stored for this key.
-     */ 
+     */
     int getNFloat(const std::string & key) const ;
-    
+
     /** The number of string values stored for this key.
-     */ 
+     */
     int getNString(const std::string & key) const ;
-    
+
     /** Set integer value for the given key.
      */
     void setValue(const std::string & key, int value) ;

@@ -17,15 +17,15 @@ namespace podio {
   }
 
   void ASCIIWriter::writeEvent(){
-    
+
     unsigned i = 0 ;
     for (auto& coll : m_storedCollections){
       coll->prepareForWrite();
-      
- 
+
+
       const std::string& name = m_collectionNames[i++] ;
       std::cout << " writing collection " << name << std::endl ;
-      
+
       *m_file << name << "  " ;
 
       ColWriterBase* wrt = m_map[ name ] ;
@@ -34,11 +34,11 @@ namespace podio {
 
     }
   }
-  
+
   void ASCIIWriter::finish(){
 
     m_file->close();
 
   }
-  
+
 } // namespace
