@@ -20,7 +20,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
-            -DUSE_EXTERNAL_CATCH2=OFF \
+            -DUSE_EXTERNAL_CATCH2=ON \
             -G Ninja ..
           ninja -k0
           ctest --output-on-failure
