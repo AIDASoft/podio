@@ -6,13 +6,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      matrix:
+        release: ["sw.hsf.org/key4hep",
+                  "sw-nightlies.hsf.org/key4hep"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
     - uses: aidasoft/run-lcg-view@v3
       with:
         container: centos7
-        view-path: /cvmfs/sw.hsf.org/key4hep
+        view-path: /cvmfs/${{ matrix.release }}
         run: |
           mkdir build install
           cd build
@@ -20,7 +23,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
-            -DUSE_EXTERNAL_CATCH2=OFF \
+            -DUSE_EXTERNAL_CATCH2=ON \
             -G Ninja ..
           ninja -k0
           ctest --output-on-failure

@@ -22,6 +22,9 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
   target_link_libraries(${name} TestDataModel ${additional_libs})
   set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+      # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
+      # with existing headers from other installations
+      ROOT_INCLUDE_PATH=
     )
 endfunction()
 
@@ -48,6 +51,7 @@ else()
 
   set_property(TEST read-legacy-files PROPERTY ENVIRONMENT
     LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+    ROOT_INCLUDE_PATH=
   )
 endif()
 
@@ -123,7 +127,8 @@ set_property(TEST pyunittest
              PROPERTY ENVIRONMENT
                       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
-                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${ROOT_INCLUDE_PATH})
+                      ROOT_INCLUDE_PATH=
+                      )
 set_property(TEST pyunittest PROPERTY DEPENDS write)
 
 # Customize CTest to potentially disable some of the tests with known problems
