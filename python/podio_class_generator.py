@@ -14,7 +14,7 @@ from itertools import zip_longest
 
 import jinja2
 
-from podio_config_reader import PodioConfigReader, ClassDefinitionValidator
+from podio_config_reader import PodioConfigReader
 from generator_utils import DataType, DefinitionError
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -130,9 +130,6 @@ class ClassGenerator:
       print(figline + summaryline)
     print("     'Homage to the Square' - Josef Albers")
     print()
-
-    for warning in self.reader.warnings:
-      print(warning)
     print()
 
   def _eval_template(self, template, data):

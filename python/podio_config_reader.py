@@ -133,19 +133,12 @@ class ClassDefinitionValidator:
     self.components = None
     self.datatypes = None
     self.expose_pod_members = False
-    self.warnings = set()
-
-  def _clear(self):
-    """Reset all the internal state such that one instance can be used for multiple
-    validations"""
-    self.warnings = set()
 
   def validate(self, datamodel, expose_pod_members):
     """Validate the datamodel"""
     self.components = datamodel['components']
     self.datatypes = datamodel['datatypes']
     self.expose_pod_members = expose_pod_members
-    self._clear()
 
     self._check_components()
     self._check_datatypes()
@@ -298,7 +291,6 @@ class PodioConfigReader:
         # use subfolder when including package header files
         "includeSubfolder": False,
         }
-    self.warnings = set()
 
   @staticmethod
   def _handle_extracode(definition):
@@ -418,4 +410,3 @@ class PodioConfigReader:
         'datatypes': self.datatypes,
         }
     validator.validate(datamodel, False)
-    self.warnings = validator.warnings
