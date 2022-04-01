@@ -5,6 +5,10 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 
+#include <string>
+#include <thread>
+#include <vector>
+
 TEST_CASE("Frame collections", "[frame][basics]") {
   auto event = podio::Frame();
   auto clusters = ExampleClusterCollection();
@@ -38,6 +42,51 @@ TEST_CASE("Frame parameters", "[frame][basics]") {
   REQUIRE(strings[2] == "three");
 }
 
+TEST_CASE("Frame collections multithreaded insert", "[frame][basics][multithread]") {
+  constexpr int nThreads = 10;
+  std::vector<std::thread> threads;
+  threads.reserve(10);
+
+  auto frame = podio::Frame();
+
+  // Fill collections from different threads
+  for (int i = 0; i < nThreads; ++i) {
+    threads.emplace_back(
+        [&frame](int j) {
+          auto clusters = ExampleClusterCollection();
+          clusters.create(j * 3.14);
+          clusters.create(j * 3.14);
+          frame.put(std::move(clusters), "clusters_" + std::to_string(j));
+
+          auto hits = ExampleHitCollection();
+          hits.create(j * 100ULL);
+          hits.create(j * 100ULL);
+          hits.create(j * 100ULL);
+          frame.put(std::move(hits), "hits_" + std::to_string(j));
+        },
+        i);
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  // Check the frame contents after all threads have finished
+  for (int i = 0; i < nThreads; ++i) {
+    auto& hits = frame.get<ExampleHitCollection>("hits_" + std::to_string(i));
+    REQUIRE(hits.size() == 3);
+    for (const auto h : hits) {
+      REQUIRE(h.cellID() == i * 100ULL);
+    }
+
+    auto& clusters = frame.get<ExampleClusterCollection>("clusters_" + std::to_string(i));
+    REQUIRE(clusters.size() == 2);
+    for (const auto c : clusters) {
+      REQUIRE(c.energy() == i * 3.14);
+    }
+  }
+}
+
 // Helper function to create a frame in the tests below
 auto createFrame() {
   auto frame = podio::Frame();
@@ -68,6 +117,65 @@ auto createFrame() {
   frame.putParameter("someFloats", {1.23f, 2.34f, 3.45f});
 
   return frame;
+}
+
+TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][multithread]") {
+  constexpr int nThreads = 10;
+  std::vector<std::thread> threads;
+  threads.reserve(10);
+
+  // create a pre-populated frame
+  auto frame = createFrame();
+
+  // Fill collections from different threads
+  for (int i = 0; i < nThreads; ++i) {
+    threads.emplace_back(
+        [&frame](int j) {
+          auto clusters = ExampleClusterCollection();
+          clusters.create(j * 3.14);
+          clusters.create(j * 3.14);
+          frame.put(std::move(clusters), "clusters_" + std::to_string(j));
+
+          // Retrieve a few collections in between and do just a very basic testing
+          auto& existingClu = frame.get<ExampleClusterCollection>("clusters");
+          REQUIRE(existingClu.size() == 2);
+          auto& existingHits = frame.get<ExampleHitCollection>("hits");
+          REQUIRE(existingHits.size() == 2);
+
+          auto hits = ExampleHitCollection();
+          hits.create(j * 100ULL);
+          hits.create(j * 100ULL);
+          hits.create(j * 100ULL);
+          frame.put(std::move(hits), "hits_" + std::to_string(j));
+
+          // Fill in a lot of new collections to trigger a rehashing of the
+          // internal map, which invalidates iterators
+          constexpr int nColls = 100;
+          for (int k = 0; k < nColls; ++k) {
+            frame.put(ExampleHitCollection(), "h_" + std::to_string(j) + "_" + std::to_string(k));
+          }
+        },
+        i);
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  // Check the frame contents after all threads have finished
+  for (int i = 0; i < nThreads; ++i) {
+    auto& hits = frame.get<ExampleHitCollection>("hits_" + std::to_string(i));
+    REQUIRE(hits.size() == 3);
+    for (const auto h : hits) {
+      REQUIRE(h.cellID() == i * 100ULL);
+    }
+
+    auto& clusters = frame.get<ExampleClusterCollection>("clusters_" + std::to_string(i));
+    REQUIRE(clusters.size() == 2);
+    for (const auto c : clusters) {
+      REQUIRE(c.energy() == i * 3.14);
+    }
+  }
 }
 
 // Helper function to keep the tests below a bit easier to read and not having

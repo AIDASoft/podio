@@ -7,6 +7,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <type_traits>
 #include <unordered_map>
@@ -73,6 +74,7 @@ class Frame {
 
     CollectionMapT m_collections{};          ///< The internal map for storing unpacked collections
     podio::GenericParameters m_parameters{}; ///< The generic parameter store for this frame
+    mutable std::mutex m_mapMutex{};         ///< The mutex for guarding the internal collection map
   };
 
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
@@ -171,8 +173,11 @@ const CollT& Frame::put(CollT&& coll, const std::string& name) {
 }
 
 const podio::CollectionBase* Frame::FrameModel::get(const std::string& name) const {
-  if (const auto it = m_collections.find(name); it != m_collections.end()) {
-    return it->second.get();
+  {
+    std::lock_guard lock(m_mapMutex);
+    if (const auto it = m_collections.find(name); it != m_collections.end()) {
+      return it->second.get();
+    }
   }
 
   return nullptr;
@@ -180,9 +185,12 @@ const podio::CollectionBase* Frame::FrameModel::get(const std::string& name) con
 
 const podio::CollectionBase* Frame::FrameModel::put(std::unique_ptr<podio::CollectionBase> coll,
                                                     const std::string& name) {
-  auto [it, success] = m_collections.try_emplace(name, std::move(coll));
-  if (success) {
-    return it->second.get();
+  {
+    std::lock_guard lock(m_mapMutex);
+    auto [it, success] = m_collections.try_emplace(name, std::move(coll));
+    if (success) {
+      return it->second.get();
+    }
   }
 
   return nullptr;
