@@ -540,31 +540,56 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   }
   REQUIRE(cellID == 0);
 
+  // NOTE: the following unit tests are disabled because even the mutable iterator
+  // does not return an lvalue on dereference:
+  // for (auto i = collection.begin(); i != collection.end(); i++) {
+  //   *i = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
+  // }
+  // This does not write into the collection, but just to a temporary.
+  //
   // fill from const
-  collection.clear();
-  collection.create();
-  auto const_hit = ExampleHit(0x42ULL, 0., 0., 0., 0.);
-  //FIXME this should work but we may need a conversion constructor!
+  //collection.clear();
+  //collection.create();
+  //auto const_hit = ExampleHit(0x42ULL, 0., 0., 0., 0.);
   //std::fill(collection.begin(), collection.end(), const_hit);
   //REQUIRE(collection.begin()->cellID() == 0x42ULL);
   // fill from mutable
-  collection.clear();
-  collection.create();
-  auto mutable_hit = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
-  std::fill(collection.begin(), collection.end(), mutable_hit);
-  //FIXME
+  //collection.clear();
+  //collection.create();
+  //auto mutable_hit = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
+  //std::fill(collection.begin(), collection.end(), mutable_hit);
   //REQUIRE(collection.begin()->cellID() == 0x42ULL);
 
   // find in collection
   collection.clear();
   collection.create();
-  collection.create(0x42ULL, 0., 0., 0., 0.);
-  auto found = std::find_if(collection.begin(), collection.begin(),
+  collection.create(0x42ULL, 1., 1., 1., 1.);
+  // forward find with const iterators
+  auto found_const = std::find_if(collection.cbegin(), collection.cend(),
+    [](const auto& h){ return h.cellID() == 0x42ULL; });
+  STATIC_REQUIRE(std::is_same_v<decltype(found_const), ExampleHitCollectionIterator>);
+  REQUIRE(found_const != collection.cend());
+  REQUIRE(found_const->cellID() == 0x42ULL);
+  // forward find with mutable iterators
+  auto found = std::find_if(collection.begin(), collection.end(),
     [](const auto& h){ return h.cellID() == 0x42ULL; });
   STATIC_REQUIRE(std::is_same_v<decltype(found), ExampleHitMutableCollectionIterator>);
   REQUIRE(found != collection.end());
-  //FIXME
-  //REQUIRE(found->cellID() == 0x42ULL);
+  REQUIRE(found->cellID() == 0x42ULL);
+  // reverse find with mutable iterators
+  auto found_reverse = std::find_if(collection.rbegin(), collection.rend(),
+    [](const auto& h){ return h.cellID() == 0x42ULL; });
+  STATIC_REQUIRE(std::is_same_v<decltype(found_reverse), ExampleHitMutableCollectionReverseIterator>);
+  REQUIRE(found_reverse != collection.rend());
+  REQUIRE(found_reverse->cellID() == 0x42ULL);
+  // forward find that fails
+  auto not_found = std::find_if(collection.begin(), collection.end(),
+    [](const auto& h){ return h.cellID() == 0x1ULL; });
+  REQUIRE(not_found == collection.end());
+  // reverse find that fails
+  auto not_found_reverse = std::find_if(collection.rbegin(), collection.rend(),
+    [](const auto& h){ return h.cellID() == 0x1ULL; });
+  REQUIRE(not_found_reverse == collection.rend());
 
   #ifdef __cpp_lib_ranges
   // ranged views (C++20)
