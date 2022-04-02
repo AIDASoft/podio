@@ -3,34 +3,33 @@
 #include "datamodel/MutableExampleWithVectorMember.h"
 
 #include "podio/EventStore.h"
-#include "podio/ROOTWriter.h"
 #include "podio/ROOTReader.h"
+#include "podio/ROOTWriter.h"
 
-#include <vector>
-#include <string>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
-#define LOCATION()                                                      \
-  std::string(__FILE__) + std::string(":") + std::to_string(__LINE__) + \
-  std::string(" in ") + std::string(__PRETTY_FUNCTION__)
+#define LOCATION()                                                                                                     \
+  std::string(__FILE__) + std::string(":") + std::to_string(__LINE__) + std::string(" in ") +                          \
+      std::string(__PRETTY_FUNCTION__)
 
-#define ASSERT_CONDITION( condition,  message )                              \
-{                                                                            \
-  if ( !(condition) ) {                                                      \
-    throw std::runtime_error( LOCATION() + std::string(": ") + message);     \
-  }                                                                          \
-}
+#define ASSERT_CONDITION(condition, message)                                                                           \
+  {                                                                                                                    \
+    if (!(condition)) {                                                                                                \
+      throw std::runtime_error(LOCATION() + std::string(": ") + message);                                              \
+    }                                                                                                                  \
+  }
 
-#define ASSERT_EQUAL( left, right, message )                              \
-{                                                                         \
-  std::stringstream msg;                                                  \
-  msg << message << " | expected: " << right << " - actual: " << left;    \
-  ASSERT_CONDITION(left == right, msg.str())                              \
-}
+#define ASSERT_EQUAL(left, right, message)                                                                             \
+  {                                                                                                                    \
+    std::stringstream msg;                                                                                             \
+    msg << message << " | expected: " << right << " - actual: " << left;                                               \
+    ASSERT_CONDITION(left == right, msg.str())                                                                         \
+  }
 
-void fillExampleMCCollection(ExampleMCCollection& collection)
-{
+void fillExampleMCCollection(ExampleMCCollection& collection) {
   for (int i = 0; i < 10; ++i) {
     MutableExampleMC mcp;
     mcp.PDG(i);
@@ -57,19 +56,17 @@ void fillExampleMCCollection(ExampleMCCollection& collection)
   collection[3].adddaughters(collection[6]);
 }
 
-
 // TODO: break up into smaller cases
-void doTestExampleMC(ExampleMCCollection const& collection)
-{
+void doTestExampleMC(ExampleMCCollection const& collection) {
   // Empty
-  ASSERT_CONDITION(collection[7].daughters().size() == 0 && collection[7].parents().size() == 0,
+  ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
                    "RelationRange of empty collection is not empty");
   // Equivalent but potentially quicker way of checking an empty collection
   ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
                    "RelationRange of empty collection is not empty");
 
   // alternatively check if a loop is entered
-  for (const auto& p[[maybe_unused]]: collection[7].daughters()) {
+  for (const auto& p [[maybe_unused]] : collection[7].daughters()) {
     throw std::runtime_error("Range based for loop entered on a supposedly empty range");
   }
 
@@ -78,8 +75,7 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   std::vector<int> expectedPDG = {1, 5, 4};
   int index = 0;
   for (const auto& p : collection[0].daughters()) {
-    ASSERT_EQUAL(p.PDG(), expectedPDG[index],
-                 "ExampleMC daughters range points to wrong particle (by PDG)");
+    ASSERT_EQUAL(p.PDG(), expectedPDG[index], "ExampleMC daughters range points to wrong particle (by PDG)");
     index++;
   }
 
@@ -87,8 +83,7 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   const auto daughters = collection[0].daughters();
   for (size_t i = 0; i < expectedPDG.size(); ++i) {
     const auto daughter = daughters[i];
-    ASSERT_EQUAL(daughter.PDG(), expectedPDG[i],
-                 "ExampleMC daughter points to the wrong particle (by PDG)");
+    ASSERT_EQUAL(daughter.PDG(), expectedPDG[i], "ExampleMC daughter points to the wrong particle (by PDG)");
   }
 
   // mothers and daughters
@@ -98,15 +93,13 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   expectedPDG = {1, 9};
   index = 0;
   for (const auto& p : collection[2].daughters()) {
-    ASSERT_EQUAL(p.PDG(), expectedPDG[index],
-                 "ExampleMC daughters range points to wrong particle (by PDG)");
+    ASSERT_EQUAL(p.PDG(), expectedPDG[index], "ExampleMC daughters range points to wrong particle (by PDG)");
     index++;
   }
   expectedPDG = {8, 6};
   index = 0;
   for (const auto& p : collection[2].parents()) {
-    ASSERT_EQUAL(p.PDG(), expectedPDG[index],
-                 "ExampleMC parents range points to wrong particle (by PDG)");
+    ASSERT_EQUAL(p.PDG(), expectedPDG[index], "ExampleMC parents range points to wrong particle (by PDG)");
     index++;
   }
 
@@ -114,12 +107,11 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   const auto parents = collection[2].parents();
   for (size_t i = 0; i < expectedPDG.size(); ++i) {
     const auto parent = parents.at(i);
-    ASSERT_EQUAL(parent.PDG(), expectedPDG[i],
-                 "ExampleMC parents points to the wrong particle (by PDG)");
+    ASSERT_EQUAL(parent.PDG(), expectedPDG[i], "ExampleMC parents points to the wrong particle (by PDG)");
   }
 
   try {
-    const auto parent = parents.at(3);
+    const auto parent [[maybe_unused]] = parents.at(3);
     throw std::runtime_error("Trying to access out of bounds in a RelationRange::at should throw");
   } catch (const std::out_of_range& err) {
     ASSERT_EQUAL(err.what(), std::string("index out of bounds for RelationRange"),
@@ -142,15 +134,13 @@ void doTestExampleMC(ExampleMCCollection const& collection)
   }
 }
 
-void testExampleMC()
-{
- ExampleMCCollection mcps;
- fillExampleMCCollection(mcps);
- doTestExampleMC(mcps);
+void testExampleMC() {
+  ExampleMCCollection mcps;
+  fillExampleMCCollection(mcps);
+  doTestExampleMC(mcps);
 }
 
-void testExampleWithVectorMember()
-{
+void testExampleWithVectorMember() {
   MutableExampleWithVectorMember ex;
   ex.addcount(1);
   ex.addcount(2);
@@ -166,8 +156,7 @@ void testExampleWithVectorMember()
   }
 }
 
-void testExampleReferencingType()
-{
+void testExampleReferencingType() {
   MutableExampleReferencingType ex;
   ExampleReferencingType ex1;
   ExampleReferencingType ex2;
@@ -192,8 +181,7 @@ void testExampleReferencingType()
   ASSERT_CONDITION(ex1.Refs().empty(), "Relation range of element with no relations should be empty");
 }
 
-void testWithIO()
-{
+void testWithIO() {
   podio::EventStore store;
   podio::ROOTWriter writer("relation_range_io_test.root", &store);
 
@@ -224,8 +212,7 @@ void testWithIO()
   }
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   try {
     testExampleMC();
     testExampleWithVectorMember();

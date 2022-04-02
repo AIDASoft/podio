@@ -4,7 +4,7 @@
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 
-int main(){
+int main() {
   auto reader = podio::ROOTReader();
   auto store = podio::EventStore();
   reader.openFile("example.root");
@@ -18,12 +18,13 @@ int main(){
   writer.registerForWrite("clusters");
 
   unsigned nEvents = reader.getEntries();
-  for(unsigned i=0; i<nEvents; ++i) {
-    if(i%1000==0)
-      std::cout<<"reading event "<<i<<std::endl;
+  for (unsigned i = 0; i < nEvents; ++i) {
+    if (i % 1000 == 0) {
+      std::cout << "reading event " << i << std::endl;
+    }
     processEvent(store, i, reader.currentFileVersion());
 
-    writer.writeEvent() ;
+    writer.writeEvent();
 
     store.clear();
     reader.endOfEvent();

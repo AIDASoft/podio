@@ -1,111 +1,115 @@
-#ifndef SIOReader_H
-#define SIOReader_H
-
+#ifndef PODIO_SIOREADER_H
+#define PODIO_SIOREADER_H
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
-
+#include "podio/EventStore.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/IReader.h"
-#include "podio/EventStore.h"
 #include "podio/SIOBlock.h"
 
 // -- sio headers
-#include <sio/definitions.h>
-#include <sio/exception.h>
 #include <sio/api.h>
 #include <sio/buffer.h>
+#include <sio/definitions.h>
+#include <sio/exception.h>
 
 namespace podio {
 
-  class CollectionBase;
-  class CollectionIDTable;
+class CollectionBase;
+class CollectionIDTable;
 
 /**
    This class has the function to read available data from disk
    and to prepare collections and buffers.
 **/
-  class SIOReader : public IReader {
-    friend EventStore;
-  public:
-    SIOReader();
-    ~SIOReader();
+class SIOReader : public IReader {
+  friend EventStore;
 
-    //make non-copyable
-    SIOReader(const SIOReader &) = delete;
-    SIOReader& operator=(const SIOReader &) = delete;
+public:
+  SIOReader();
+  ~SIOReader() = default;
 
-    void openFile(const std::string& filename) override;
-    void closeFile() override;
+  // make non-copyable
+  SIOReader(const SIOReader&) = delete;
+  SIOReader& operator=(const SIOReader&) = delete;
 
-    /// Read all collections requested
-    void readEvent();
+  void openFile(const std::string& filename) override;
+  void closeFile() override;
 
-    /// Read CollectionIDTable from SIO file
-    CollectionIDTable* getCollectionIDTable() override final {return m_table;}
+  /// Read all collections requested
+  void readEvent();
 
-    unsigned getEntries() const override { return m_tocRecord.getNRecords("event_record"); }
+  /// Read CollectionIDTable from SIO file
+  CollectionIDTable* getCollectionIDTable() override {
+    return m_table;
+  }
 
-    /// Check if file is valid
-    virtual bool isValid() const override final;
+  unsigned getEntries() const override {
+    return m_tocRecord.getNRecords("event_record");
+  }
 
-    void endOfEvent() override;
+  /// Check if file is valid
+  bool isValid() const override;
 
-    podio::version::Version currentFileVersion() const override { return m_fileVersion; }
+  podio::version::Version currentFileVersion() const override {
+    return m_fileVersion;
+  }
 
-  private:
-    /// Implementation for collection reading
-    CollectionBase* readCollection(const std::string& name) override final;
+  void endOfEvent() override;
 
-    /// read event meta data for current event
-    GenericParameters* readEventMetaData() override final;
+private:
+  /// Implementation for collection reading
+  CollectionBase* readCollection(const std::string& name) override;
 
-    /// read the collection meta data
-    std::map<int,GenericParameters>* readCollectionMetaData() override final;
+  /// read event meta data for current event
+  GenericParameters* readEventMetaData() override;
 
-    /// read the run meta data
-    std::map<int,GenericParameters>* readRunMetaData() override final;
+  /// read the collection meta data
+  std::map<int, GenericParameters>* readCollectionMetaData() override;
 
-    /// read the TOC record
-    bool readFileTOCRecord();
+  /// read the run meta data
+  std::map<int, GenericParameters>* readRunMetaData() override;
 
-    /// reconstruct the TOC record from the file contents
-    void reconstructFileTOCRecord();
+  /// read the TOC record
+  bool readFileTOCRecord();
 
-  private:
-    void readCollectionIDTable();
-    void readMetaDataRecord(std::shared_ptr<SIONumberedMetaDataBlock> mdBlock);
-    void createBlocks();
+  /// reconstruct the TOC record from the file contents
+  void reconstructFileTOCRecord();
 
-    typedef std::pair<CollectionBase*, std::string> Input;
-    std::vector<Input> m_inputs{};
-    CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
-    int m_eventNumber{0};
-    int m_lastEventRead{-1};
-    std::vector<std::string> m_typeNames{};
-    std::vector<short> m_subsetCollectionBits{};
+private:
+  void readCollectionIDTable();
+  void readMetaDataRecord(const std::shared_ptr<SIONumberedMetaDataBlock>& mdBlock);
+  void createBlocks();
 
-    std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
-    std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData{};
-    std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData{};
+  typedef std::pair<CollectionBase*, std::string> Input;
+  std::vector<Input> m_inputs{};
+  CollectionIDTable* m_table{nullptr}; // will be owned by the EventStore
+  int m_eventNumber{0};
+  int m_lastEventRead{-1};
+  std::vector<std::string> m_typeNames{};
+  std::vector<short> m_subsetCollectionBits{};
 
-    sio::ifstream    m_stream{} ;
-    sio::record_info m_rec_info{} ;
-    sio::buffer      m_info_buffer{ sio::max_record_info_len } ;
-    sio::buffer      m_rec_buffer{ sio::mbyte } ;
-    sio::buffer      m_unc_buffer{ sio::mbyte } ;
-    sio::block_list  m_blocks {} ;
+  std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData{};
+  std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData{};
+  std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData{};
 
-    SIOFileTOCRecord m_tocRecord{};
+  sio::ifstream m_stream{};
+  sio::record_info m_rec_info{};
+  sio::buffer m_info_buffer{sio::max_record_info_len};
+  sio::buffer m_rec_buffer{sio::mbyte};
+  sio::buffer m_unc_buffer{sio::mbyte};
+  sio::block_list m_blocks{};
 
-    podio::version::Version m_fileVersion{0};
-  };
+  SIOFileTOCRecord m_tocRecord{};
 
+  podio::version::Version m_fileVersion{0};
+};
 
-} // namespace
+} // namespace podio
 
 #endif

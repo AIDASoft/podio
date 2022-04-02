@@ -153,3 +153,19 @@ macro(ADD_SANITIZER_FLAGS)
 
   endif(USE_SANITIZER)
 endmacro(ADD_SANITIZER_FLAGS)
+
+#--- Add clang-tidy to the compilation step
+macro(ADD_CLANG_TIDY)
+  if (CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
+    mark_as_advanced(FORCE CLANG_TIDY_EXE)
+    if (NOT CLANG_TIDY_EXE)
+      message(FATAL_ERROR "CLANG_TIDY required but cannot find clang-tidy executable")
+    endif()
+
+    # We simply use cmakes clang-tidy integration here for clang-tidy which
+    # would work with the Ninja and Makefile generators
+    message(STATUS "Enabling clang-tidy, using clang-tidy: ${CLANG_TIDY_EXE}")
+    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+  endif(CLANG_TIDY)
+endmacro(ADD_CLANG_TIDY)
