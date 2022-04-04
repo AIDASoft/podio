@@ -503,6 +503,25 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
                                                           // objects
 }
 
+TEST_CASE("Iterator dereferencing", "[!shouldfail]") {
+  // a collection to play with
+  auto collection = ExampleHitCollection();
+
+  // NOTE: the following unit tests will fail because even the mutable iterator
+  // does not return an lvalue on dereference that writes to the collection: i.e.
+  // for (auto i = collection.begin(); i != collection.end(); i++) {
+  //   *i = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
+  // }
+  // This does not write into the collection, but just to a temporary copy.
+
+  // fill from mutable
+  collection.clear();
+  collection.create();
+  auto mutable_hit = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
+  std::fill(collection.begin(), collection.end(), mutable_hit);
+  REQUIRE(collection.begin()->cellID() == 0x42ULL);
+}
+
 TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   // a collection to play with
   auto collection = ExampleHitCollection();
@@ -539,26 +558,12 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
     cellID = c->cellID();
   }
   REQUIRE(cellID == 0);
-
-  // NOTE: the following unit tests are disabled because even the mutable iterator
-  // does not return an lvalue on dereference:
-  // for (auto i = collection.begin(); i != collection.end(); i++) {
-  //   *i = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
-  // }
-  // This does not write into the collection, but just to a temporary.
-  //
-  // fill from const
-  //collection.clear();
-  //collection.create();
-  //auto const_hit = ExampleHit(0x42ULL, 0., 0., 0., 0.);
-  //std::fill(collection.begin(), collection.end(), const_hit);
-  //REQUIRE(collection.begin()->cellID() == 0x42ULL);
-  // fill from mutable
-  //collection.clear();
-  //collection.create();
-  //auto mutable_hit = MutableExampleHit(0x42ULL, 0., 0., 0., 0.);
-  //std::fill(collection.begin(), collection.end(), mutable_hit);
-  //REQUIRE(collection.begin()->cellID() == 0x42ULL);
+  // std::for_each loop with reference capture
+  std::for_each(collection.begin(), collection.end(), [&cellID](const auto& c){
+    STATIC_REQUIRE(std::is_same_v<decltype(c), const MutableExampleHit&>);
+    cellID = c.cellID();
+  });
+  REQUIRE(cellID == 0x42ULL);
 
   // find in collection
   collection.clear();
