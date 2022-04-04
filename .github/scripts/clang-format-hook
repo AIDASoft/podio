@@ -13,7 +13,7 @@ COLOR_OUTPUT=$(diff --color=always <(echo) <(echo) > /dev/null 2>&1 && echo "--c
 success=0
 for file in ${@}; do
     if ! $(clang-format --style=file --Werror --dry-run ${file} > /dev/null 2>&1); then
-        echo "Necessary changes for: '${file}' (run 'clang-format --style=file ${file}' to fix it)"
+        echo "Necessary changes for: '${file}' (run 'clang-format --style=file -i ${file}' to fix it)"
         diff ${COLOR_OUTPUT} -u ${file} <(clang-format --style=file ${file}) | tail -n +3
         success=1
     fi
