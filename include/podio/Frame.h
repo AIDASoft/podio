@@ -44,7 +44,7 @@ class Frame {
    */
   struct FrameModel final : FrameConcept {
 
-    FrameModel() = default;
+    FrameModel();
     ~FrameModel() = default;
     FrameModel(const FrameModel&) = delete;
     FrameModel& operator=(const FrameModel&) = delete;
@@ -72,9 +72,9 @@ class Frame {
   private:
     using CollectionMapT = std::unordered_map<std::string, std::unique_ptr<podio::CollectionBase>>;
 
-    CollectionMapT m_collections{};          ///< The internal map for storing unpacked collections
-    podio::GenericParameters m_parameters{}; ///< The generic parameter store for this frame
-    mutable std::mutex m_mapMutex{};         ///< The mutex for guarding the internal collection map
+    CollectionMapT m_collections{};                          ///< The internal map for storing unpacked collections
+    podio::GenericParameters m_parameters{};                 ///< The generic parameter store for this frame
+    mutable std::unique_ptr<std::mutex> m_mapMutex{nullptr}; ///< The mutex for guarding the internal collection map
   };
 
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
@@ -172,9 +172,12 @@ const CollT& Frame::put(CollT&& coll, const std::string& name) {
   return emptyColl;
 }
 
+Frame::FrameModel::FrameModel() : m_mapMutex(std::make_unique<std::mutex>()) {
+}
+
 const podio::CollectionBase* Frame::FrameModel::get(const std::string& name) const {
   {
-    std::lock_guard lock(m_mapMutex);
+    std::lock_guard lock{*m_mapMutex};
     if (const auto it = m_collections.find(name); it != m_collections.end()) {
       return it->second.get();
     }
@@ -186,7 +189,7 @@ const podio::CollectionBase* Frame::FrameModel::get(const std::string& name) con
 const podio::CollectionBase* Frame::FrameModel::put(std::unique_ptr<podio::CollectionBase> coll,
                                                     const std::string& name) {
   {
-    std::lock_guard lock(m_mapMutex);
+    std::lock_guard lock{*m_mapMutex};
     auto [it, success] = m_collections.try_emplace(name, std::move(coll));
     if (success) {
       return it->second.get();
