@@ -7,12 +7,12 @@
 #include <type_traits>
 #include <vector>
 #ifdef __has_include
-#  if __has_include(<version>)
-#    include <version>
-#  endif
-#  if __has_include(<ranges>)
-#    include <ranges>
-#  endif
+  #if __has_include(<version>)
+    #include <version>
+  #endif
+  #if __has_include(<ranges>)
+    #include <ranges>
+  #endif
 #endif
 
 #include "catch2/catch_test_macros.hpp"
@@ -527,19 +527,23 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   auto collection = ExampleHitCollection();
 
   // bidirectional iterator traits
-  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::iterator>::iterator_category, std::bidirectional_iterator_tag>);
-  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::const_iterator>::iterator_category, std::bidirectional_iterator_tag>);
-  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::reverse_iterator>::iterator_category, std::bidirectional_iterator_tag>);
-  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::const_reverse_iterator>::iterator_category, std::bidirectional_iterator_tag>);
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::iterator>::iterator_category,
+                                std::bidirectional_iterator_tag>);
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::const_iterator>::iterator_category,
+                                std::bidirectional_iterator_tag>);
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::reverse_iterator>::iterator_category,
+                                std::bidirectional_iterator_tag>);
+  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::const_reverse_iterator>::iterator_category,
+                                std::bidirectional_iterator_tag>);
 
-  #ifdef __cpp_lib_ranges
+#ifdef __cpp_lib_ranges
   // bidirectional iterator concepts (C++20)
   STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::iterator>);
   STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::const_iterator>);
   STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::reverse_iterator>);
   STATIC_REQUIRE(std::bidirectional_iterator<decltype(collection)::const_reverse_iterator>);
   STATIC_REQUIRE(std::ranges::bidirectional_range<decltype(collection)>);
-  #endif
+#endif
 
   // iterator loops
   auto cellID = 0;
@@ -559,7 +563,7 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   }
   REQUIRE(cellID == 0);
   // std::for_each loop with reference capture
-  std::for_each(collection.begin(), collection.end(), [&cellID](const auto& c){
+  std::for_each(collection.begin(), collection.end(), [&cellID](const auto& c) {
     STATIC_REQUIRE(std::is_same_v<decltype(c), const MutableExampleHit&>);
     cellID = c.cellID();
   });
@@ -570,72 +574,73 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   collection.create();
   collection.create(0x42ULL, 1., 1., 1., 1.);
   // forward find with const iterators
-  auto found_const = std::find_if(collection.cbegin(), collection.cend(),
-    [](const auto& h){ return h.cellID() == 0x42ULL; });
+  auto found_const =
+      std::find_if(collection.cbegin(), collection.cend(), [](const auto& h) { return h.cellID() == 0x42ULL; });
   STATIC_REQUIRE(std::is_same_v<decltype(found_const), ExampleHitCollectionIterator>);
   REQUIRE(found_const != collection.cend());
   REQUIRE(found_const->cellID() == 0x42ULL);
   // forward find with mutable iterators
-  auto found = std::find_if(collection.begin(), collection.end(),
-    [](const auto& h){ return h.cellID() == 0x42ULL; });
+  auto found = std::find_if(collection.begin(), collection.end(), [](const auto& h) { return h.cellID() == 0x42ULL; });
   STATIC_REQUIRE(std::is_same_v<decltype(found), ExampleHitMutableCollectionIterator>);
   REQUIRE(found != collection.end());
   REQUIRE(found->cellID() == 0x42ULL);
   // reverse find with mutable iterators
-  auto found_reverse = std::find_if(collection.rbegin(), collection.rend(),
-    [](const auto& h){ return h.cellID() == 0x42ULL; });
+  auto found_reverse =
+      std::find_if(collection.rbegin(), collection.rend(), [](const auto& h) { return h.cellID() == 0x42ULL; });
   STATIC_REQUIRE(std::is_same_v<decltype(found_reverse), ExampleHitMutableCollectionReverseIterator>);
   REQUIRE(found_reverse != collection.rend());
   REQUIRE(found_reverse->cellID() == 0x42ULL);
   // forward find that fails
-  auto not_found = std::find_if(collection.begin(), collection.end(),
-    [](const auto& h){ return h.cellID() == 0x1ULL; });
+  auto not_found =
+      std::find_if(collection.begin(), collection.end(), [](const auto& h) { return h.cellID() == 0x1ULL; });
   REQUIRE(not_found == collection.end());
   // reverse find that fails
-  auto not_found_reverse = std::find_if(collection.rbegin(), collection.rend(),
-    [](const auto& h){ return h.cellID() == 0x1ULL; });
+  auto not_found_reverse =
+      std::find_if(collection.rbegin(), collection.rend(), [](const auto& h) { return h.cellID() == 0x1ULL; });
   REQUIRE(not_found_reverse == collection.rend());
 
-  #ifdef __cpp_lib_ranges
+#ifdef __cpp_lib_ranges
   // ranged views (C++20)
-  auto is_non_zero = [](const auto& p){ return p.cellID() > 0; };
-  auto half_energy = [](const auto& p){ auto q = p.clone(); q.energy(q.energy()/2); return q; };
+  auto is_non_zero = [](const auto& p) { return p.cellID() > 0; };
+  auto half_energy = [](const auto& p) {
+    auto q = p.clone();
+    q.energy(q.energy() / 2);
+    return q;
+  };
   collection.clear();
   collection.create();
   collection.create(0x42ULL, 1., 1., 1., 1.);
   // pipe syntax
   int count_pipe_syntax = 0;
-  for (auto c: collection | std::views::filter(is_non_zero) | std::views::reverse) {
+  for (auto c : collection | std::views::filter(is_non_zero) | std::views::reverse) {
     STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
     ++count_pipe_syntax;
   }
   REQUIRE(count_pipe_syntax == 1);
   // composing syntax
   auto count_composing = 0;
-  for (auto c: std::views::reverse(std::views::filter(collection, is_non_zero))) {
+  for (auto c : std::views::reverse(std::views::filter(collection, is_non_zero))) {
     STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
     ++count_composing;
   }
   REQUIRE(count_composing == 1);
   // take_while
   auto count_take_while = 0;
-  for (auto c: collection | std::views::take_while(is_non_zero) | std::views::reverse) {
+  for (auto c : collection | std::views::take_while(is_non_zero) | std::views::reverse) {
     STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
     ++count_take_while;
   }
   REQUIRE(count_take_while == 0);
   // ref_view
   const std::ranges::ref_view collection_ref_view{collection};
-  for (auto c: collection_ref_view) {
+  for (auto c : collection_ref_view) {
     STATIC_REQUIRE(std::is_same_v<decltype(c), MutableExampleHit>);
   }
   // for_each with pipe syntax
   float energy = 0;
-  auto add_to_energy = [&e = energy](const auto& p){ e += p.energy(); };
-  std::ranges::for_each(collection
-      | std::views::filter(is_non_zero)
-      | std::views::transform(half_energy),
-      add_to_energy);
+  auto add_to_energy = [&e = energy](const auto& p) { e += p.energy(); };
+  std::ranges::for_each(collection | std::views::filter(is_non_zero) | std::views::transform(half_energy),
+                        add_to_energy);
   REQUIRE(energy > 0.49);
   REQUIRE(energy < 0.51);
   #ifdef __cpp_lib_ranges_zip
@@ -654,7 +659,7 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   // views are references
   REQUIRE(collection1.begin().cellID() == 1);
   #endif
-  #endif
+#endif
 }
 
 TEST_CASE("Subset collection basics", "[subset-colls]") {
