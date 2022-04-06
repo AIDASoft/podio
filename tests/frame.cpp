@@ -227,7 +227,8 @@ TEST_CASE("Frame movability", "[frame][move-semantics]") {
   }
 
   SECTION("Use after move construction") {
-    auto otherFrame = std::move(frame);
+    auto otherFrame = std::move(frame); // NOLINT(clang-analyzer-cplusplus.Move) clang-tidy and the Catch2 sections
+                                        // setup do not go along here
     otherFrame.putParameter("aString", "Can add strings after move-constructing");
     REQUIRE(otherFrame.getParameter<std::string>("aString") == "Can add strings after move-constructing");
 
