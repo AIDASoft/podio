@@ -42,6 +42,11 @@ TEST_CASE("Frame parameters", "[frame][basics]") {
   REQUIRE(strings[2] == "three");
 }
 
+// NOTE: Due to the extremly small tasks that are done in these tests, they will
+// most likely succeed with a very high probability and only running with a
+// ThreadSanitizer will detect race conditions, so make sure to have that
+// enabled (-DUSE_SANITIZER=Thread) when working on these tests
+
 TEST_CASE("Frame collections multithreaded insert", "[frame][basics][multithread]") {
   constexpr int nThreads = 10;
   std::vector<std::thread> threads;
@@ -117,6 +122,11 @@ auto createFrame() {
   frame.putParameter("someFloats", {1.23f, 2.34f, 3.45f});
 
   return frame;
+}
+
+// Helper function to get names easily below
+std::string makeName(const std::string& prefix, int index) {
+  return prefix + "_" + std::to_string(index);
 }
 
 TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][multithread]") {
@@ -245,5 +255,83 @@ TEST_CASE("Frame movability", "[frame][move-semantics]") {
     auto& hits = otherFrame.get<ExampleHitCollection>("moreHits");
     REQUIRE(hits.size() == 3);
     checkFrame(otherFrame);
+  }
+}
+
+TEST_CASE("Frame parameters multithread insert", "[frame][basics][multithread]") {
+  // Test that parameter access is thread safe
+  constexpr int nThreads = 10;
+  std::vector<std::thread> threads;
+  threads.reserve(nThreads);
+
+  auto frame = podio::Frame();
+
+  for (int i = 0; i < nThreads; ++i) {
+    threads.emplace_back([&frame, i]() {
+      frame.putParameter(makeName("int_par", i), i);
+
+      frame.putParameter(makeName("float_par", i), (float)i);
+
+      frame.putParameter(makeName("string_par", i), std::to_string(i));
+    });
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  for (int i = 0; i < nThreads; ++i) {
+    REQUIRE(frame.getParameter<int>(makeName("int_par", i)) == i);
+    REQUIRE(frame.getParameter<float>(makeName("float_par", i)) == (float)i);
+    REQUIRE(frame.getParameter<std::string>(makeName("string_par", i)) == std::to_string(i));
+  }
+}
+
+TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multithread]") {
+  constexpr int nThreads = 10;
+  std::vector<std::thread> threads;
+  threads.reserve(nThreads);
+
+  auto frame = podio::Frame();
+  frame.putParameter("int_par", 42);
+  frame.putParameter("string_par", "some string");
+  frame.putParameter("float_pars", {1.23f, 4.56f, 7.89f});
+
+  for (int i = 0; i < nThreads; ++i) {
+    threads.emplace_back([&frame, i]() {
+      frame.putParameter(makeName("int", i), i);
+      frame.putParameter(makeName("float", i), (float)i);
+
+      REQUIRE(frame.getParameter<int>("int_par") == 42);
+      REQUIRE(frame.getParameter<float>(makeName("float", i)) == (float)i);
+
+      frame.putParameter(makeName("string", i), std::to_string(i));
+      const auto& floatPars = frame.getParameter<std::vector<float>>("float_pars");
+      REQUIRE(floatPars.size() == 3);
+      REQUIRE(floatPars[0] == 1.23f);
+      REQUIRE(floatPars[1] == 4.56f);
+      REQUIRE(floatPars[2] == 7.89f);
+
+      // Fill in a lot of new parameters to trigger rehashing of the internal
+      // map, which invalidates iterators
+      constexpr int nParams = 100;
+      for (int k = 0; k < nParams; ++k) {
+        frame.putParameter(makeName("intPar", i) + std::to_string(k), i * k);
+        frame.putParameter(makeName("floatPar", i) + std::to_string(k), (float)i * k);
+        frame.putParameter(makeName("stringPar", i) + std::to_string(k), std::to_string(i * k));
+      }
+
+      REQUIRE(frame.getParameter<std::string>("string_par") == "some string");
+    });
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  for (int i = 0; i < nThreads; ++i) {
+    REQUIRE(frame.getParameter<int>(makeName("int", i)) == i);
+    REQUIRE(frame.getParameter<float>(makeName("float", i)) == (float)i);
+    REQUIRE(frame.getParameter<std::string>(makeName("string", i)) == std::to_string(i));
   }
 }
