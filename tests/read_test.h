@@ -79,7 +79,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
 
   // read collection meta data
   auto& hits = store.get<ExampleHitCollection>("hits");
-  auto colMD = store.getCollectionMetaData(hits.getID());
+  const auto& colMD = store.getCollectionMetaData(hits.getID());
   const auto& es = colMD.getValue<std::string>("CellIDEncodingString");
   if (es != std::string("system:8,barrel:3,layer:6,slice:5,x:-16,y:-16")) {
     std::cout << " meta data from collection 'hits' with id = " << hits.getID() << " read CellIDEncodingString: " << es
