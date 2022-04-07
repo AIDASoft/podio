@@ -4,6 +4,23 @@
 
 namespace podio {
 
+GenericParameters::GenericParameters(const GenericParameters& other) :
+    m_intMtx(std::make_unique<std::mutex>()),
+    m_floatMtx(std::make_unique<std::mutex>()),
+    m_stringMtx(std::make_unique<std::mutex>()) {
+  {
+    // acquire all three locks at once to make sure all three internal maps are
+    // copied at the same "state" of the GenericParameters
+    auto& intMtx = other.getMutex<int>();
+    auto& floatMtx = other.getMutex<float>();
+    auto& stringMtx = other.getMutex<std::string>();
+    std::scoped_lock lock(intMtx, floatMtx, stringMtx);
+    _intMap = other._intMap;
+    _floatMap = other._floatMap;
+    _stringMap = other._stringMap;
+  }
+}
+
 int GenericParameters::getIntVal(const std::string& key) const {
   return getValue<int>(key);
 }

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -77,8 +79,24 @@ private:
   using IntMap = MapType<int>;
   using FloatMap = MapType<float>;
   using StringMap = MapType<std::string>;
+  // need mutex pointers for having the possibility to copy/move GenericParameters
+  using MutexPtr = std::unique_ptr<std::mutex>;
 
 public:
+  GenericParameters() = default;
+
+  /// GenericParameters are copyable
+  /// NOTE: This is currently mainly done to keep the ROOT I/O happy, because
+  /// that needs a copy constructor
+  GenericParameters(const GenericParameters&);
+  GenericParameters& operator=(const GenericParameters&) = delete;
+
+  /// GenericParameters are default moveable
+  GenericParameters(GenericParameters&&) = default;
+  GenericParameters& operator=(GenericParameters&&) = default;
+
+  ~GenericParameters() = default;
+
   /// Get the value that is stored under the given key, by const reference or by
   /// value depending on the desired type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
@@ -237,15 +255,32 @@ private:
     }
   }
 
+  /// Get the mutex that guards the map for the given type
+  template <typename T>
+  std::mutex& getMutex() const {
+    if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
+      return *(m_intMtx.get());
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
+      return *(m_floatMtx.get());
+    } else {
+      return *(m_stringMtx.get());
+    }
+  }
+
 private:
-  IntMap _intMap{};
-  FloatMap _floatMap{};
-  StringMap _stringMap{};
+  IntMap _intMap{};                                             ///< The map storing the integer values
+  mutable MutexPtr m_intMtx{std::make_unique<std::mutex>()};    ///< The mutex guarding the integer map
+  FloatMap _floatMap{};                                         ///< The map storing the float values
+  mutable MutexPtr m_floatMtx{std::make_unique<std::mutex>()};  ///< The mutex guarding the float map
+  StringMap _stringMap{};                                       ///< The map storing the double values
+  mutable MutexPtr m_stringMtx{std::make_unique<std::mutex>()}; ///< The mutex guarding the float map
 };
 
 template <typename T, typename>
 GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) const {
   const auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+  std::lock_guard lock{mtx};
   const auto it = map.find(key);
   // If there is no entry to the key, we just return an empty default
   // TODO: make this case detectable from the outside
@@ -266,11 +301,15 @@ GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) con
 template <typename T, typename>
 void GenericParameters::setValue(const std::string& key, T value) {
   auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+
   if constexpr (detail::isVector<T>) {
+    std::lock_guard lock{mtx};
     map.insert_or_assign(key, std::move(value));
   } else {
     // Wrap the value into a vector with exactly one entry and store that
     std::vector<T> v = {value};
+    std::lock_guard lock{mtx};
     map.insert_or_assign(key, std::move(v));
   }
 }
@@ -278,6 +317,8 @@ void GenericParameters::setValue(const std::string& key, T value) {
 template <typename T, typename>
 size_t GenericParameters::getN(const std::string& key) const {
   const auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+  std::lock_guard lock{mtx};
   if (const auto it = map.find(key); it != map.end()) {
     return it->second.size();
   }
@@ -289,7 +330,11 @@ std::vector<std::string> GenericParameters::getKeys() const {
   std::vector<std::string> keys;
   const auto& map = getMap<T>();
   keys.reserve(map.size());
-  std::transform(map.begin(), map.end(), std::back_inserter(keys), [](const auto& pair) { return pair.first; });
+  {
+    auto& mtx = getMutex<T>();
+    std::lock_guard lock{mtx};
+    std::transform(map.begin(), map.end(), std::back_inserter(keys), [](const auto& pair) { return pair.first; });
+  }
 
   return keys;
 }
