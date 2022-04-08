@@ -306,6 +306,8 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
       REQUIRE(frame.getParameter<float>(makeName("float", i)) == (float)i);
 
       frame.putParameter(makeName("string", i), std::to_string(i));
+      REQUIRE(frame.getParameter<std::string>("string_par") == "some string");
+
       const auto& floatPars = frame.getParameter<std::vector<float>>("float_pars");
       REQUIRE(floatPars.size() == 3);
       REQUIRE(floatPars[0] == 1.23f);
@@ -320,8 +322,6 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
         frame.putParameter(makeName("floatPar", i) + std::to_string(k), (float)i * k);
         frame.putParameter(makeName("stringPar", i) + std::to_string(k), std::to_string(i * k));
       }
-
-      REQUIRE(frame.getParameter<std::string>("string_par") == "some string");
     });
   }
 
