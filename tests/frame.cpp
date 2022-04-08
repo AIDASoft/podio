@@ -144,7 +144,7 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
           auto clusters = ExampleClusterCollection();
           clusters.create(j * 3.14);
           clusters.create(j * 3.14);
-          frame.put(std::move(clusters), "clusters_" + std::to_string(j));
+          frame.put(std::move(clusters), makeName("clusters", j));
 
           // Retrieve a few collections in between and do just a very basic testing
           auto& existingClu = frame.get<ExampleClusterCollection>("clusters");
@@ -156,7 +156,7 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
           hits.create(j * 100ULL);
           hits.create(j * 100ULL);
           hits.create(j * 100ULL);
-          frame.put(std::move(hits), "hits_" + std::to_string(j));
+          frame.put(std::move(hits), makeName("hits", j));
 
           // Fill in a lot of new collections to trigger a rehashing of the
           // internal map, which invalidates iterators
@@ -174,13 +174,13 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
 
   // Check the frame contents after all threads have finished
   for (int i = 0; i < nThreads; ++i) {
-    auto& hits = frame.get<ExampleHitCollection>("hits_" + std::to_string(i));
+    auto& hits = frame.get<ExampleHitCollection>(makeName("hits", i));
     REQUIRE(hits.size() == 3);
     for (const auto h : hits) {
       REQUIRE(h.cellID() == i * 100ULL);
     }
 
-    auto& clusters = frame.get<ExampleClusterCollection>("clusters_" + std::to_string(i));
+    auto& clusters = frame.get<ExampleClusterCollection>(makeName("clusters", i));
     REQUIRE(clusters.size() == 2);
     for (const auto c : clusters) {
       REQUIRE(c.energy() == i * 3.14);
