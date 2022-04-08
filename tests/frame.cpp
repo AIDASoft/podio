@@ -56,20 +56,18 @@ TEST_CASE("Frame collections multithreaded insert", "[frame][basics][multithread
 
   // Fill collections from different threads
   for (int i = 0; i < nThreads; ++i) {
-    threads.emplace_back(
-        [&frame](int j) {
-          auto clusters = ExampleClusterCollection();
-          clusters.create(j * 3.14);
-          clusters.create(j * 3.14);
-          frame.put(std::move(clusters), "clusters_" + std::to_string(j));
+    threads.emplace_back([&frame, i]() {
+      auto clusters = ExampleClusterCollection();
+      clusters.create(i * 3.14);
+      clusters.create(i * 3.14);
+      frame.put(std::move(clusters), "clusters_" + std::to_string(i));
 
-          auto hits = ExampleHitCollection();
-          hits.create(j * 100ULL);
-          hits.create(j * 100ULL);
-          hits.create(j * 100ULL);
-          frame.put(std::move(hits), "hits_" + std::to_string(j));
-        },
-        i);
+      auto hits = ExampleHitCollection();
+      hits.create(i * 100ULL);
+      hits.create(i * 100ULL);
+      hits.create(i * 100ULL);
+      frame.put(std::move(hits), "hits_" + std::to_string(i));
+    });
   }
 
   for (auto& t : threads) {
@@ -139,33 +137,31 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
 
   // Fill collections from different threads
   for (int i = 0; i < nThreads; ++i) {
-    threads.emplace_back(
-        [&frame](int j) {
-          auto clusters = ExampleClusterCollection();
-          clusters.create(j * 3.14);
-          clusters.create(j * 3.14);
-          frame.put(std::move(clusters), makeName("clusters", j));
+    threads.emplace_back([&frame, i]() {
+      auto clusters = ExampleClusterCollection();
+      clusters.create(i * 3.14);
+      clusters.create(i * 3.14);
+      frame.put(std::move(clusters), makeName("clusters", i));
 
-          // Retrieve a few collections in between and do just a very basic testing
-          auto& existingClu = frame.get<ExampleClusterCollection>("clusters");
-          REQUIRE(existingClu.size() == 2);
-          auto& existingHits = frame.get<ExampleHitCollection>("hits");
-          REQUIRE(existingHits.size() == 2);
+      // Retrieve a few collections in between and do iust a very basic testing
+      auto& existingClu = frame.get<ExampleClusterCollection>("clusters");
+      REQUIRE(existingClu.size() == 2);
+      auto& existingHits = frame.get<ExampleHitCollection>("hits");
+      REQUIRE(existingHits.size() == 2);
 
-          auto hits = ExampleHitCollection();
-          hits.create(j * 100ULL);
-          hits.create(j * 100ULL);
-          hits.create(j * 100ULL);
-          frame.put(std::move(hits), makeName("hits", j));
+      auto hits = ExampleHitCollection();
+      hits.create(i * 100ULL);
+      hits.create(i * 100ULL);
+      hits.create(i * 100ULL);
+      frame.put(std::move(hits), makeName("hits", i));
 
-          // Fill in a lot of new collections to trigger a rehashing of the
-          // internal map, which invalidates iterators
-          constexpr int nColls = 100;
-          for (int k = 0; k < nColls; ++k) {
-            frame.put(ExampleHitCollection(), "h_" + std::to_string(j) + "_" + std::to_string(k));
-          }
-        },
-        i);
+      // Fill in a lot of new collections to trigger a rehashing of the
+      // internal map, which invalidates iterators
+      constexpr int nColls = 100;
+      for (int k = 0; k < nColls; ++k) {
+        frame.put(ExampleHitCollection(), "h_" + std::to_string(i) + "_" + std::to_string(k));
+      }
+    });
   }
 
   for (auto& t : threads) {
