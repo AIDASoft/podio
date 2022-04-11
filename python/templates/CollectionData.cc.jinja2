@@ -28,6 +28,23 @@
 {% endfor %}
 }
 
+{{ class_type }}::{{ class_type }}(podio::CollectionBuffers buffers, bool isSubsetColl) :
+{% for relation in OneToManyRelations + OneToOneRelations %}
+  m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
+{% endfor %}
+  m_refCollections(std::move(*buffers.references)),
+  m_vecmem_info(std::move(*buffers.vectorMembers)) {
+  // For subset collections we are done, for proper collections we still have to
+  // populate the data and vector members
+  if (!isSubsetColl) {
+{%- for member in VectorMembers %}
+    m_data.reset(buffers.dataAsVector<{{ class.full_type }}Data>());
+
+    m_vec_{{ member.name }}.reset(static_cast<std::vector<{{ member.full_type }}>*>(m_vecmem_info[{{ loop.index0 }}].second));
+{% endfor %}
+  }
+}
+
 void {{ class_type }}::clear(bool isSubsetColl) {
   if (isSubsetColl) {
     // We don't own the objects so no cleanup to do here

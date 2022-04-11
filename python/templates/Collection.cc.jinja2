@@ -19,6 +19,9 @@
 {{ collection_type }}::{{ collection_type }}() :
   m_isValid(false), m_isPrepared(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {}
 
+{{ collection_type }}::{{ collection_type }}({{ collection_type }}Data&& data, bool isSubsetColl) :
+  m_isValid(true), m_isPrepared(true), m_isSubsetColl(isSubsetColl), m_collectionID(0), m_storage(std::move(data)) {}
+
 {{ collection_type }}::~{{ collection_type }}() {
   // Need to tell the storage how to clean-up
   m_storage.clear(m_isSubsetColl);

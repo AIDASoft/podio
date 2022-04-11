@@ -42,6 +42,11 @@ public:
   {{ class_type }}();
 
   /**
+   * Constructor from existing I/O buffers
+   */
+  {{ class_type }}(podio::CollectionBuffers buffers, bool isSubsetColl);
+
+  /**
    * Non copy-able, move-only class
    */
   {{ class_type }}(const {{ class_type }}&) = delete;

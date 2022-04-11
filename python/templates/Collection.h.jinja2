@@ -47,6 +47,7 @@ public:
   using iterator = {{ class.bare_type }}MutableCollectionIterator;
 
   {{ class.bare_type }}Collection();
+  {{ class.bare_type }}Collection({{ class.bare_type }}CollectionData&& data, bool isSubsetColl);
   // This is a move-only type
   {{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete;
   {{ class.bare_type }}Collection& operator=(const {{ class.bare_type}}Collection& ) = delete;
