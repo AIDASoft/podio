@@ -68,6 +68,9 @@ private:
 
 public:
   UserDataCollection() = default;
+  /// Constructor from an existing vector (wich will be moved from!)
+  UserDataCollection(std::vector<BasicType>&& vec) : _vec(std::move(vec)) {
+  }
   UserDataCollection(const UserDataCollection&) = delete;
   UserDataCollection& operator=(const UserDataCollection&) = delete;
   UserDataCollection(UserDataCollection&&) = default;
@@ -101,6 +104,12 @@ public:
   podio::CollectionBuffers getBuffers() override {
     _vecPtr = &_vec; // Set the pointer to the correct internal vector
     return {&_vecPtr, &m_refCollections, &m_vecmem_info};
+  }
+
+  podio::CollectionBuffers createBuffers() const final {
+    return {nullptr, nullptr, nullptr, [](podio::CollectionBuffers buffers, bool) {
+              return std::make_unique<UserDataCollection<BasicType>>(std::move(*buffers.dataAsVector<BasicType>()));
+            }};
   }
 
   /// check for validity of the container after read

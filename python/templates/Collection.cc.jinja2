@@ -149,6 +149,18 @@ podio::CollectionBuffers {{ collection_type }}::getBuffers() {
   return m_storage.getCollectionBuffers(m_isSubsetColl);
 }
 
+podio::CollectionBuffers {{ collection_type }}::createBuffers() const {
+  return {
+    nullptr,
+    nullptr,
+    nullptr,
+    [](podio::CollectionBuffers buffers, bool isSubsetColl) {
+      {{ collection_type }}Data data(buffers, isSubsetColl);
+      return std::make_unique<{{ collection_type }}>(std::move(data), isSubsetColl);
+    }
+  };
+}
+
 #ifdef PODIO_JSON_OUTPUT
 void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
   j = nlohmann::json::array();
