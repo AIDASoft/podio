@@ -1,6 +1,7 @@
 #ifndef PODIO_COLLECTIONIDTABLE_H
 #define PODIO_COLLECTIONIDTABLE_H
 
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -12,10 +13,19 @@ class CollectionIDTable {
 public:
   /// default constructor
   CollectionIDTable() = default;
+  ~CollectionIDTable() = default;
+
+  CollectionIDTable(const CollectionIDTable&) = delete;
+  CollectionIDTable& operator=(const CollectionIDTable&) = delete;
+  CollectionIDTable(CollectionIDTable&&) = default;
+  CollectionIDTable& operator=(CollectionIDTable&&) = default;
 
   /// constructor from existing ID:name mapping
   CollectionIDTable(std::vector<int>&& ids, std::vector<std::string>&& names) :
       m_collectionIDs(std::move(ids)), m_names(std::move(names)){};
+
+  CollectionIDTable(const std::vector<int>& ids, const std::vector<std::string>& names) :
+      m_collectionIDs(ids), m_names(names){};
 
   /// return collection ID for given name
   int collectionID(const std::string& name) const;
@@ -46,7 +56,7 @@ public:
 private:
   std::vector<int> m_collectionIDs{};
   std::vector<std::string> m_names{};
-  mutable std::mutex m_mutex{};
+  mutable std::unique_ptr<std::mutex> m_mutex{std::make_unique<std::mutex>()};
 };
 
 } // namespace podio

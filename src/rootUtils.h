@@ -3,6 +3,7 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBranches.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 
 #include "TBranch.h"
@@ -31,8 +32,7 @@ inline std::string vecBranch(const std::string& name, size_t index) {
   return name + "_" + std::to_string(index);
 }
 
-inline void setCollectionAddresses(podio::CollectionBase* collection, const CollectionBranches& branches) {
-  const auto collBuffers = collection->getBuffers();
+inline void setCollectionAddresses(const podio::CollectionBuffers& collBuffers, const CollectionBranches& branches) {
 
   if (auto buffer = collBuffers.data) {
     branches.data->SetAddress(buffer);
@@ -55,6 +55,19 @@ inline void setCollectionAddresses(podio::CollectionBase* collection, const Coll
 // collectionID, the collection (data) type, and whether it is a subset
 // collection
 using CollectionInfoT = std::tuple<int, std::string, bool>;
+
+inline void readBranchesData(const CollectionBranches& branches, Long64_t entry) {
+  // Read all data
+  if (branches.data) {
+    branches.data->GetEntry(entry);
+  }
+  for (auto* br : branches.refs) {
+    br->GetEntry(entry);
+  }
+  for (auto* br : branches.vecs) {
+    br->GetEntry(entry);
+  }
+}
 
 /**
  * reconstruct the collection info from information that is available from other

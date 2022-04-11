@@ -90,7 +90,7 @@ void ROOTWriter::setBranches(const std::vector<StoreCollection>& collections) {
   size_t iCollection = 0;
   for (auto& coll : collections) {
     const auto& branches = m_collectionBranches[iCollection];
-    root_utils::setCollectionAddresses(coll.second, branches);
+    root_utils::setCollectionAddresses(coll.second->getBuffers(), branches);
 
     iCollection++;
   }
@@ -111,6 +111,7 @@ void ROOTWriter::finish() {
     // No check necessary, only registered collections possible
     m_store->get(name, coll);
     const auto collType = coll->getTypeName();
+    // const auto collType = "std::vector<" + coll->getDataTypeName() + ">";
     collectionInfo.emplace_back(collID, std::move(collType), coll->isSubsetCollection());
   }
 
