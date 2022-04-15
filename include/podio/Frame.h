@@ -22,6 +22,11 @@ using EnableIfCollection = typename std::enable_if_t<isCollection<T>>;
 template <typename T>
 using EnableIfCollectionRValue = typename std::enable_if_t<isCollection<T> && !std::is_lvalue_reference_v<T>>;
 
+namespace detail {
+  /// Type necessary for constructing frames without raw data
+  struct EmptyRawData {};
+} // namespace detail
+
 /**
  * Frame class that serves as a container of collection and meta data.
  */
@@ -42,9 +47,11 @@ class Frame {
    * The interface implementation of the abstract FrameConcept that is necessary
    * for a type-erased implementation of the Frame class
    */
+  template <typename RawDataT>
   struct FrameModel final : FrameConcept {
 
     FrameModel();
+    FrameModel(std::unique_ptr<RawDataT> rawData);
     ~FrameModel() = default;
     FrameModel(const FrameModel&) = delete;
     FrameModel& operator=(const FrameModel&) = delete;
@@ -79,6 +86,7 @@ class Frame {
     CollectionMapT m_collections{};                          ///< The internal map for storing unpacked collections
     podio::GenericParameters m_parameters{};                 ///< The generic parameter store for this frame
     mutable std::unique_ptr<std::mutex> m_mapMutex{nullptr}; ///< The mutex for guarding the internal collection map
+    std::unique_ptr<RawDataT> m_rawData{nullptr};            ///< The raw data read from file
   };
 
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
@@ -87,6 +95,11 @@ public:
   /** Empty Frame constructor
    */
   Frame();
+
+  /** Frame constructor from (almost) arbitrary raw data
+   */
+  template <typename RawDataT>
+  Frame(std::unique_ptr<RawDataT>);
 
   // The frame is a non-copyable type
   Frame(const Frame&) = delete;
@@ -155,7 +168,11 @@ public:
 
 // implementations below
 
-Frame::Frame() : m_self(std::make_unique<FrameModel>()) {
+Frame::Frame() : m_self(std::make_unique<FrameModel<detail::EmptyRawData>>()) {
+}
+
+template <typename RawDataT>
+Frame::Frame(std::unique_ptr<RawDataT> rawData) : m_self(std::make_unique<FrameModel<RawDataT>>(std::move(rawData))) {
 }
 
 template <typename CollT, typename>
@@ -187,10 +204,17 @@ const CollT& Frame::put(CollT&& coll, const std::string& name) {
   return emptyColl;
 }
 
-Frame::FrameModel::FrameModel() : m_mapMutex(std::make_unique<std::mutex>()) {
+template <typename RawDataT>
+Frame::FrameModel<RawDataT>::FrameModel() : m_mapMutex(std::make_unique<std::mutex>()) {
 }
 
-const podio::CollectionBase* Frame::FrameModel::get(const std::string& name) const {
+template <typename RawDataT>
+Frame::FrameModel<RawDataT>::FrameModel(std::unique_ptr<RawDataT> rawData) :
+    m_mapMutex(std::make_unique<std::mutex>()), m_rawData(std::move(rawData)) {
+}
+
+template <typename RawDataT>
+const podio::CollectionBase* Frame::FrameModel<RawDataT>::get(const std::string& name) const {
   {
     std::lock_guard lock{*m_mapMutex};
     if (const auto it = m_collections.find(name); it != m_collections.end()) {
@@ -201,8 +225,9 @@ const podio::CollectionBase* Frame::FrameModel::get(const std::string& name) con
   return nullptr;
 }
 
-const podio::CollectionBase* Frame::FrameModel::put(std::unique_ptr<podio::CollectionBase> coll,
-                                                    const std::string& name) {
+template <typename RawDataT>
+const podio::CollectionBase* Frame::FrameModel<RawDataT>::put(std::unique_ptr<podio::CollectionBase> coll,
+                                                              const std::string& name) {
   {
     std::lock_guard lock{*m_mapMutex};
     auto [it, success] = m_collections.try_emplace(name, std::move(coll));
