@@ -20,7 +20,7 @@
   m_isValid(false), m_isPrepared(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {}
 
 {{ collection_type }}::{{ collection_type }}({{ collection_type }}Data&& data, bool isSubsetColl) :
-  m_isValid(true), m_isPrepared(true), m_isSubsetColl(isSubsetColl), m_collectionID(0), m_storage(std::move(data)) {}
+  m_isValid(false), m_isPrepared(false), m_isSubsetColl(isSubsetColl), m_collectionID(0), m_storage(std::move(data)) {}
 
 {{ collection_type }}::~{{ collection_type }}() {
   // Need to tell the storage how to clean-up
@@ -149,16 +149,16 @@ podio::CollectionBuffers {{ collection_type }}::getBuffers() {
   return m_storage.getCollectionBuffers(m_isSubsetColl);
 }
 
-podio::CollectionBuffers {{ collection_type }}::createBuffers() const {
-  return {
-    nullptr,
-    nullptr,
-    nullptr,
-    [](podio::CollectionBuffers buffers, bool isSubsetColl) {
+podio::CollectionBuffers {{ collection_type }}::createBuffers() /*const*/ {
+  // Very cumbersome way at the moment. We get the actual buffers to have the
+  // references and vector members sized appropriately (we will use this
+  // information to create new buffers outside)
+  auto collBuffers = m_storage.getCollectionBuffers(m_isSubsetColl);
+  collBuffers.createCollection = [](podio::CollectionBuffers buffers, bool isSubsetColl) {
       {{ collection_type }}Data data(buffers, isSubsetColl);
       return std::make_unique<{{ collection_type }}>(std::move(data), isSubsetColl);
-    }
-  };
+   };
+  return collBuffers;
 }
 
 #ifdef PODIO_JSON_OUTPUT

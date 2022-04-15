@@ -30,8 +30,13 @@ struct CollectionBuffers {
 
   template <typename DataT>
   std::vector<DataT>* dataAsVector() {
+    return asVector<DataT>(data);
+  }
+
+  template <typename T>
+  static std::vector<T>* asVector(void* raw) {
     // Are we at a beach? I can almost smell the C...
-    return *static_cast<std::vector<DataT>**>(data);
+    return *static_cast<std::vector<T>**>(raw);
   }
 
   std::function<std::unique_ptr<podio::CollectionBase>(podio::CollectionBuffers, bool)> createCollection{};

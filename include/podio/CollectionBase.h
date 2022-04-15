@@ -47,7 +47,7 @@ public:
   virtual podio::CollectionBuffers getBuffers() = 0;
 
   /// Create (empty) collection buffers from which a collection can be constructed
-  virtual podio::CollectionBuffers createBuffers() const = 0;
+  virtual podio::CollectionBuffers createBuffers() /*const*/ = 0;
 
   /// check for validity of the container after read
   virtual bool isValid() const = 0;

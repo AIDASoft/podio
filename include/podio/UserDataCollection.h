@@ -106,7 +106,7 @@ public:
     return {&_vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
-  podio::CollectionBuffers createBuffers() const final {
+  podio::CollectionBuffers createBuffers() /*const*/ final {
     return {nullptr, nullptr, nullptr, [](podio::CollectionBuffers buffers, bool) {
               return std::make_unique<UserDataCollection<BasicType>>(std::move(*buffers.dataAsVector<BasicType>()));
             }};

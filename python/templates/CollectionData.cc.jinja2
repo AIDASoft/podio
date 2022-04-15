@@ -37,10 +37,10 @@
   // For subset collections we are done, for proper collections we still have to
   // populate the data and vector members
   if (!isSubsetColl) {
-{%- for member in VectorMembers %}
     m_data.reset(buffers.dataAsVector<{{ class.full_type }}Data>());
 
-    m_vec_{{ member.name }}.reset(static_cast<std::vector<{{ member.full_type }}>*>(m_vecmem_info[{{ loop.index0 }}].second));
+{% for member in VectorMembers %}
+  m_vec_{{ member.name }}.reset(podio::CollectionBuffers::asVector<{{ member.full_type }}>(m_vecmem_info[{{ loop.index0 }}].second));
 {% endfor %}
   }
 }

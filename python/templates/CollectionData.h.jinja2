@@ -82,12 +82,12 @@ private:
   std::vector<podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}>> m_rel_{{ relation.name }}_tmp{}; ///< Relation buffer for internal book-keeping
 {% endfor %}
 {% for relation in OneToOneRelations %}
-  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }}; ///< Relation buffer for read / write
+  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }}{nullptr}; ///< Relation buffer for read / write
 {% endfor %}
 
   // members to handle vector members
 {% for member in VectorMembers %}
-  podio::UVecPtr<{{ member.full_type }}> m_vec_{{ member.name }}; /// combined vector of all objects in collection
+  podio::UVecPtr<{{ member.full_type }}> m_vec_{{ member.name }}{nullptr}; /// combined vector of all objects in collection
   std::vector<podio::UVecPtr<{{ member.full_type }}>> m_vecs_{{ member.name }}{}; /// pointers to individual member vectors
 {% endfor %}
 
