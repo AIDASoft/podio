@@ -29,6 +29,7 @@ add_library(podioRootIO SHARED ${root_sources})
 add_library(podio::podioRootIO ALIAS podioRootIO)
 target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree ROOT::ROOTNTuple)
 target_include_directories(podioRootIO PUBLIC
+  ${VDT_INCLUDE_DIRS}
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 

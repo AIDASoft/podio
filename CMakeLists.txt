@@ -73,6 +73,7 @@ option(ENABLE_SIO "Build SIO I/O support" OFF)
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+find_package(Vdt)
 
 # Check that root is compiled with a modern enough c++ standard
 get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
