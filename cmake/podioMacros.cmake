@@ -129,7 +129,7 @@ endfunction()
 # this is essentially a no-op, and should not cause re-compilation.
 #---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "IO_BACKEND_HANDLERS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER;FORMAT" "IO_BACKEND_HANDLERS" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
@@ -137,13 +137,19 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     # At least build the ROOT selection.xml by default for now
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
   ENDIF()
+  IF ("${ARG_FORMAT}" STREQUAL "")
+    # By default we do the formatting if we find clang-format and a .clang-format file
+    SET(ARG_FORMAT "ON")
+  ENDIF()
 
   set(CLANG_FORMAT_ARG "")
-  find_program(CLANG_FORMAT_EXE NAMES "clang-format")
-  find_file(CLANG_FORMAT_FILE .clang-format PATH ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
-  if(CLANG_FORMAT_EXE AND CLANG_FORMAT_FILE)
-    message(STATUS "Found .clang-format file and clang-format executable. Will pass it to podio class generator")
-    set(CLANG_FORMAT_ARG "--clangformat")
+  if (ARG_FORMAT)
+    find_program(CLANG_FORMAT_EXE NAMES "clang-format")
+    find_file(CLANG_FORMAT_FILE .clang-format PATH ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
+    if(CLANG_FORMAT_EXE AND CLANG_FORMAT_FILE)
+      message(STATUS "Found .clang-format file and clang-format executable. Will pass it to podio class generator")
+      set(CLANG_FORMAT_ARG "--clangformat")
+    endif()
   endif()
 
   # Make sure that we re run the generation process everytime either the

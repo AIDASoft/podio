@@ -5,8 +5,10 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
+option(FORMAT_GENCODE "Use clang-format in the automatic formatting of the generated test code" ON)
+
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
-  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS})
+    FORMAT ${FORMAT_GENCODE} IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS})
 
 # Use the cmake building blocks to add the different parts (conditionally)
 PODIO_ADD_DATAMODEL_CORE_LIB(TestDataModel "${headers}" "${sources}")
