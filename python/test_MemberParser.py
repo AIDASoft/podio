@@ -161,8 +161,21 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.full_type, 'edm4hep::Vector3d')
     self.assertEqual(parsed.default_val, '1, 2, 3, 4')
 
+    # There are cases where we could technically validate this via a syntax
+    # check by the compiler but we don't do that because it is too costly and
+    # this is considered an expert feature. The generated code will not compile
     parsed = parser.parse(r'AggType bogusInit{here, we can even put invalid c++}', False)
     self.assertEqual(parsed.default_val, 'here, we can even put invalid c++')
+
+    parsed = parser.parse(r'std::array<int, 1> array{1, 2, 3} // too many values provided')
+    self.assertEqual(parsed.default_val, '1, 2, 3')
+
+    # Invalid user default value initialization
+    parsed = parser.parse(r'int weirdDefault{whatever, even space} // invalid c++ is not caught')
+    self.assertEqual(parsed.default_val, 'whatever, even space')
+
+    parsed = parser.parse(r'int floatInit{3.14f} // implicit conversions are not allowed in aggregate initialization')
+    self.assertEqual(parsed.default_val, '3.14f')
 
   def test_parse_invalid(self):
     """Test that invalid member variable definitions indeed fail during parsing"""
@@ -197,11 +210,6 @@ class MemberParserTest(unittest.TestCase):
         # Default values cannot be empty
         r'int emptyDefault{} // valid c++, but we want an explicit default value here',
 
-        # Some cases which should be caught by the -fsyntax-only checks
-        r'std::array<int, 1> array{1, 2, 3} // too many values provided',
-        # Invalid user default value initialization
-        r'int weirdDefault{whatever, even space} // invalid c++ should not pass',
-        r'int initFromFloat{3.14f} // implicit conversions are not allowed'
         ]
 
     for inp in invalid_inputs:
