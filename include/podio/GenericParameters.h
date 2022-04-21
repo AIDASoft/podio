@@ -115,6 +115,11 @@ public:
     _stringMap.clear();
   }
 
+  /// Check if no parameter is stored (i.e. if all internal maps are empty)
+  bool empty() const {
+    return _intMap.empty() && _floatMap.empty() && _stringMap.empty();
+  }
+
   /**
    * Get the internal int map (necessary for serialization with SIO)
    */
