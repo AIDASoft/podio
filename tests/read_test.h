@@ -50,8 +50,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     const auto& evtMD = store.getEventMetaData();
     evtWeight = evtMD.template getValue<float>("UserEventWeight");
   } else {
-    // Fake it till you make it ;)
-    evtWeight = 100.f * eventNum;
+    evtWeight = store.template getParameter<float>("UserEventWeight");
   }
   if (evtWeight != (float)100. * eventNum) {
     std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float)100. * eventNum << std::endl;
@@ -65,8 +64,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     const auto& evtMD = store.getEventMetaData();
     evtName = evtMD.template getValue<std::string>("UserEventName");
   } else {
-    // Fake it 'till you make it;
-    evtName = ss.str();
+    evtName = store.template getParameter<std::string>("UserEventName");
   }
 
   if (evtName != ss.str()) {
@@ -80,8 +78,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
       const auto& evtMD = store.getEventMetaData();
       someVectorData = evtMD.template getValue<std::vector<int>>("SomeVectorData");
     } else {
-      // Fake it 'till you make it;
-      someVectorData = {1, 2, 3, 4};
+      someVectorData = store.template getParameter<std::vector<int>>("SomeVectorData");
     }
     if (someVectorData.size() != 4) {
       throw std::runtime_error("Couldn't read event meta data parameters: 'SomeVectorData'");

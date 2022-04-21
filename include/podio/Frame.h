@@ -89,12 +89,12 @@ class Frame {
     /** Get a reference to the internally used GenericParameters
      */
     podio::GenericParameters& parameters() override {
-      return m_parameters;
+      return *m_parameters;
     }
     /** Get a const reference to the internally used GenericParameters
      */
     const podio::GenericParameters& parameters() const override {
-      return m_parameters;
+      return *m_parameters;
     };
 
     bool get(int collectionID, podio::CollectionBase*& collection) const override;
@@ -105,12 +105,11 @@ class Frame {
     using CollectionMapT = std::unordered_map<std::string, std::unique_ptr<podio::CollectionBase>>;
 
     mutable CollectionMapT m_collections{};                    ///< The internal map for storing unpacked collections
-    podio::GenericParameters m_parameters{};                   ///< The generic parameter store for this frame
     mutable std::unique_ptr<std::mutex> m_mapMtx{nullptr};     ///< The mutex for guarding the internal collection map
     std::unique_ptr<RawDataT> m_rawData{nullptr};              ///< The raw data read from file
     mutable std::unique_ptr<std::mutex> m_rawDataMtx{nullptr}; ///< The mutex for guarding the raw data
     podio::CollectionIDTable m_idTable{};                      ///< The collection ID table
-
+    std::unique_ptr<podio::GenericParameters> m_parameters{nullptr}; ///< The generic parameter store for this frame
     mutable std::set<int> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet put
                                             ///< into the map)
   };
@@ -232,7 +231,9 @@ const CollT& Frame::put(CollT&& coll, const std::string& name) {
 
 template <typename RawDataT>
 Frame::FrameModel<RawDataT>::FrameModel() :
-    m_mapMtx(std::make_unique<std::mutex>()), m_rawDataMtx(std::make_unique<std::mutex>()) {
+    m_mapMtx(std::make_unique<std::mutex>()),
+    m_rawDataMtx(std::make_unique<std::mutex>()),
+    m_parameters(std::make_unique<podio::GenericParameters>()) {
 }
 
 template <typename RawDataT>
@@ -240,7 +241,8 @@ Frame::FrameModel<RawDataT>::FrameModel(std::unique_ptr<RawDataT> rawData) :
     m_mapMtx(std::make_unique<std::mutex>()),
     m_rawData(std::move(rawData)),
     m_rawDataMtx(std::make_unique<std::mutex>()),
-    m_idTable(std::move(m_rawData->getIDTable())) {
+    m_idTable(std::move(m_rawData->getIDTable())),
+    m_parameters(std::move(m_rawData->getParameters())) {
 }
 
 template <typename RawDataT>

@@ -57,6 +57,9 @@ public:
   }
 
 private:
+  std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
+  GenericParameters readEventMetaData();
+
   void createCollectionBranches(const std::vector<std::tuple<int, std::string, bool>>& collInfo);
 
   // Information about the data vector as wall as the collection class type

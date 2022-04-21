@@ -1,11 +1,9 @@
-#include "podio/CollectionBuffers.h"
-#include "rootUtils.h"
-
-// podio specific includes
+#include "podio/ROOTFrameReader.h"
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
-#include "podio/ROOTFrameReader.h"
+#include "rootUtils.h"
 
 // ROOT specific includes
 #include "TChain.h"
@@ -18,14 +16,33 @@
 
 namespace podio {
 
+std::pair<TTree*, unsigned> ROOTFrameReader::getLocalTreeAndEntry(const std::string& treename) {
+  auto localEntry = m_chain->LoadTree(m_eventNumber);
+  auto* tree = static_cast<TTree*>(m_chain->GetFile()->Get(treename.c_str()));
+  return {tree, localEntry};
+}
+
+GenericParameters ROOTFrameReader::readEventMetaData() {
+  GenericParameters params;
+  auto [evt_metadatatree, entry] = getLocalTreeAndEntry("evt_metadata");
+  auto* branch = root_utils::getBranch(evt_metadatatree, "evtMD");
+  // ROOT really needs the address of a pointer for I/O to work properly
+  auto* emd = &params;
+  branch->SetAddress(&emd);
+  evt_metadatatree->GetEntry(entry);
+  return params;
+}
+
 std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEvent() {
   std::unordered_map<std::string, podio::CollectionBuffers> buffers;
   for (const auto& collInfo : m_storedClasses) {
     buffers.emplace(collInfo.first, getCollectionBuffers(collInfo));
   }
 
+  auto parameters = readEventMetaData();
+
   m_eventNumber++;
-  return std::make_unique<ROOTRawData>(std::move(buffers), m_table);
+  return std::make_unique<ROOTRawData>(std::move(buffers), m_table, std::move(parameters));
 }
 
 podio::CollectionBuffers ROOTFrameReader::getCollectionBuffers(const std::pair<std::string, CollectionInfo>& collInfo) {
