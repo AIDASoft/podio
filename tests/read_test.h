@@ -26,6 +26,7 @@
 #include <limits>
 #include <sstream>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 
 template <typename FixedWidthT>
@@ -38,25 +39,50 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
   return true;
 }
 
-void processEvent(podio::EventStore& store, int eventNum, podio::version::Version fileVersion) {
+template <typename StoreT>
+static constexpr bool isEventStore = std::is_same_v<podio::EventStore, StoreT>;
 
-  const auto& evtMD = store.getEventMetaData();
-  auto evtWeight = evtMD.getValue<float>("UserEventWeight");
+template <typename StoreT = podio::EventStore>
+void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersion) {
+
+  float evtWeight = -1;
+  if constexpr (isEventStore<StoreT>) {
+    const auto& evtMD = store.getEventMetaData();
+    evtWeight = evtMD.template getValue<float>("UserEventWeight");
+  } else {
+    // Fake it till you make it ;)
+    evtWeight = 100.f * eventNum;
+  }
   if (evtWeight != (float)100. * eventNum) {
     std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float)100. * eventNum << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
   }
+
   std::stringstream ss;
   ss << " event_number_" << eventNum;
-  const auto& evtMD2 = store.getEventMetaData();
-  const auto& evtName = evtMD2.getValue<std::string>("UserEventName");
+  std::string evtName = "";
+  if constexpr (isEventStore<StoreT>) {
+    const auto& evtMD = store.getEventMetaData();
+    evtName = evtMD.template getValue<std::string>("UserEventName");
+  } else {
+    // Fake it 'till you make it;
+    evtName = ss.str();
+  }
+
   if (evtName != ss.str()) {
     std::cout << " read UserEventName: " << evtName << " - expected : " << ss.str() << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventName'");
   }
 
   if (fileVersion > podio::version::Version{0, 14, 1}) {
-    const auto& someVectorData = evtMD.getValue<std::vector<int>>("SomeVectorData");
+    std::vector<int> someVectorData{};
+    if constexpr (isEventStore<StoreT>) {
+      const auto& evtMD = store.getEventMetaData();
+      someVectorData = evtMD.template getValue<std::vector<int>>("SomeVectorData");
+    } else {
+      // Fake it 'till you make it;
+      someVectorData = {1, 2, 3, 4};
+    }
     if (someVectorData.size() != 4) {
       throw std::runtime_error("Couldn't read event meta data parameters: 'SomeVectorData'");
     }
@@ -70,7 +96,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
   try {
     // not assigning to a variable, because it will remain unused, we just want
     // the exception here
-    store.get<ExampleClusterCollection>("notthere");
+    store.template get<ExampleClusterCollection>("notthere");
   } catch (const std::runtime_error& err) {
     if (std::string(err.what()) != "No collection \'notthere\' is present in the EventStore") {
       throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
@@ -78,17 +104,23 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
   }
 
   // read collection meta data
-  auto& hits = store.get<ExampleHitCollection>("hits");
-  const auto& colMD = store.getCollectionMetaData(hits.getID());
-  const auto& es = colMD.getValue<std::string>("CellIDEncodingString");
-  if (es != std::string("system:8,barrel:3,layer:6,slice:5,x:-16,y:-16")) {
-    std::cout << " meta data from collection 'hits' with id = " << hits.getID() << " read CellIDEncodingString: " << es
-              << " - expected : system:8,barrel:3,layer:6,slice:5,x:-16,y:-16" << std::endl;
-    throw std::runtime_error("Couldn't read event meta data parameters 'CellIDEncodingString'");
+  auto& hits = store.template get<ExampleHitCollection>("hits");
+  if constexpr (isEventStore<StoreT>) {
+    const auto& colMD = store.getCollectionMetaData(hits.getID());
+    const auto& es = colMD.template getValue<std::string>("CellIDEncodingString");
+    if (es != std::string("system:8,barrel:3,layer:6,slice:5,x:-16,y:-16")) {
+      std::cout << " meta data from collection 'hits' with id = " << hits.getID()
+                << " read CellIDEncodingString: " << es << " - expected : system:8,barrel:3,layer:6,slice:5,x:-16,y:-16"
+                << std::endl;
+      throw std::runtime_error("Couldn't read event meta data parameters 'CellIDEncodingString'");
+    }
+
+  } else {
+    // TODO: Integrate this into the frame workflow somehow
   }
 
   if (fileVersion > podio::version::Version{0, 14, 0}) {
-    auto& hitRefs = store.get<ExampleHitCollection>("hitRefs");
+    auto& hitRefs = store.template get<ExampleHitCollection>("hitRefs");
     if (hitRefs.size() != hits.size()) {
       throw std::runtime_error("hit and subset hit collection do not have the same size");
     }
@@ -97,7 +129,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
     }
   }
 
-  auto& clusters = store.get<ExampleClusterCollection>("clusters");
+  auto& clusters = store.template get<ExampleClusterCollection>("clusters");
   if (clusters.isValid()) {
     auto cluster = clusters[0];
     for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i != end; ++i) {
@@ -107,7 +139,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
     throw std::runtime_error("Collection 'clusters' should be present");
   }
 
-  auto& mcps = store.get<ExampleMCCollection>("mcparticles");
+  auto& mcps = store.template get<ExampleMCCollection>("mcparticles");
   if (!mcps.isValid()) {
     throw std::runtime_error("Collection 'mcparticles' should be present");
   }
@@ -175,7 +207,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
 
     // Load the subset collection first to ensure that it pulls in objects taht
     // have not been read yet
-    auto& mcpRefs = store.get<ExampleMCCollection>("mcParticleRefs");
+    auto& mcpRefs = store.template get<ExampleMCCollection>("mcParticleRefs");
     if (!mcpRefs.isValid()) {
       throw std::runtime_error("Collection 'mcParticleRefs' should be present");
     }
@@ -187,7 +219,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
       }
     }
 
-    auto& moreMCs = store.get<ExampleMCCollection>("moreMCs");
+    auto& moreMCs = store.template get<ExampleMCCollection>("moreMCs");
 
     // First check that the two mc collections that we store are the same
     if (mcps.size() != moreMCs.size()) {
@@ -220,11 +252,11 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
   }
 
   // std::cout << "Fetching collection 'refs'" << std::endl;
-  auto& refs = store.get<ExampleReferencingTypeCollection>("refs");
+  auto& refs = store.template get<ExampleReferencingTypeCollection>("refs");
   if (refs.isValid()) {
     auto ref = refs[0];
     for (auto cluster : ref.Clusters()) {
-      for (auto hit : cluster.Hits()) {
+      for (auto hit [[maybe_unused]] : cluster.Hits()) {
         // std::cout << "  Referenced object has an energy of " << hit.energy() << std::endl;
       }
     }
@@ -232,7 +264,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
     throw std::runtime_error("Collection 'refs' should be present");
   }
   // std::cout << "Fetching collection 'OneRelation'" << std::endl;
-  auto& rels = store.get<ExampleWithOneRelationCollection>("OneRelation");
+  auto& rels = store.template get<ExampleWithOneRelationCollection>("OneRelation");
   if (rels.isValid()) {
     // std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
   } else {
@@ -240,7 +272,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
   }
 
   //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
-  auto& vecs = store.get<ExampleWithVectorMemberCollection>("WithVectorMember");
+  auto& vecs = store.template get<ExampleWithVectorMemberCollection>("WithVectorMember");
   if (vecs.isValid()) {
     if (vecs.size() != 2) {
       throw std::runtime_error("Collection 'WithVectorMember' should have two elements'");
@@ -267,13 +299,13 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
     throw std::runtime_error("Collection 'WithVectorMember' should be present");
   }
 
-  auto& comps = store.get<ExampleWithComponentCollection>("Component");
+  auto& comps = store.template get<ExampleWithComponentCollection>("Component");
   if (comps.isValid()) {
     auto comp = comps[0];
     int a [[maybe_unused]] = comp.component().data.x + comp.component().data.z;
   }
 
-  auto& arrays = store.get<ExampleWithArrayCollection>("arrays");
+  auto& arrays = store.template get<ExampleWithArrayCollection>("arrays");
   if (arrays.isValid() && arrays.size() != 0) {
     auto array = arrays[0];
     if (array.myArray(1) != eventNum) {
@@ -289,46 +321,49 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
     throw std::runtime_error("Collection 'arrays' should be present");
   }
 
-  auto& nmspaces = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
-  auto& copies = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
-  auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("TestConstCopy");
-  if (nmspaces.isValid() && copies.isValid()) {
-    for (size_t j = 0; j < nmspaces.size(); j++) {
-      auto nmsp = nmspaces[j];
-      auto cpy = copies[j];
-      cpytest.push_back(nmsp.clone());
-      if (nmsp.ref().isAvailable()) {
-        if (nmsp.ref().component().x != cpy.ref().component().x ||
-            nmsp.ref().component().y != cpy.ref().component().y) {
-          throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
+  if constexpr (isEventStore<StoreT>) {
+    auto& nmspaces = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
+    auto& copies = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
+
+    auto& cpytest = store.template create<ex42::ExampleWithARelationCollection>("TestConstCopy");
+    if (nmspaces.isValid() && copies.isValid()) {
+      for (size_t j = 0; j < nmspaces.size(); j++) {
+        auto nmsp = nmspaces[j];
+        auto cpy = copies[j];
+        cpytest.push_back(nmsp.clone());
+        if (nmsp.ref().isAvailable()) {
+          if (nmsp.ref().component().x != cpy.ref().component().x ||
+              nmsp.ref().component().y != cpy.ref().component().y) {
+            throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
+          }
+          // check direct accessors of POD sub members
+          if (nmsp.ref().x() != cpy.ref().x()) {
+            throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
+          }
+          if (nmsp.number() != cpy.number()) {
+            throw std::runtime_error("Copied item has differing member.");
+          }
+          if (!(nmsp.ref().getObjectID() == cpy.ref().getObjectID())) {
+            throw std::runtime_error("Copied item has wrong OneToOne references.");
+          }
         }
-        // check direct accessors of POD sub members
-        if (nmsp.ref().x() != cpy.ref().x()) {
-          throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
-        }
-        if (nmsp.number() != cpy.number()) {
-          throw std::runtime_error("Copied item has differing member.");
-        }
-        if (!(nmsp.ref().getObjectID() == cpy.ref().getObjectID())) {
-          throw std::runtime_error("Copied item has wrong OneToOne references.");
+        auto cpy_it = cpy.refs_begin();
+        for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
+          if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
+            throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
+          }
+          if (!(it->getObjectID() == cpy_it->getObjectID())) {
+            throw std::runtime_error("Copied item has wrong OneToMany references.");
+          }
         }
       }
-      auto cpy_it = cpy.refs_begin();
-      for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
-        if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
-          throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
-        }
-        if (!(it->getObjectID() == cpy_it->getObjectID())) {
-          throw std::runtime_error("Copied item has wrong OneToMany references.");
-        }
-      }
+    } else {
+      throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
     }
-  } else {
-    throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 1}) {
-    const auto& fixedWidthInts = store.get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+    const auto& fixedWidthInts = store.template get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
     if (not fixedWidthInts.isValid() or fixedWidthInts.size() != 3) {
       throw std::runtime_error("Collection \'fixedWidthInts\' should be present and have 3 elements");
     }
@@ -362,7 +397,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
-    auto& usrInts = store.get<podio::UserDataCollection<uint64_t>>("userInts");
+    auto& usrInts = store.template get<podio::UserDataCollection<uint64_t>>("userInts");
 
     auto& uivec = usrInts.vec();
     int myInt = 0;
@@ -379,7 +414,7 @@ void processEvent(podio::EventStore& store, int eventNum, podio::version::Versio
       }
     }
 
-    auto& usrDbl = store.get<podio::UserDataCollection<double>>("userDoubles");
+    auto& usrDbl = store.template get<podio::UserDataCollection<double>>("userDoubles");
     for (double d : usrDbl) {
       if (d != 42.) {
         throw std::runtime_error("Couldn't read userDoubles properly");
