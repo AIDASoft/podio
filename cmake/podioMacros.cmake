@@ -120,6 +120,8 @@ endfunction()
 #   Parameters:
 #      OUTPUT_FOLDER        OPTIONAL: The folder in which the output files should be placed
 #                           Default is ${CMAKE_CURRENT_SOURCE_DIR}
+#      FORMAT               OPTIONAL: Whether to try and detect clang-format and a .clang-format
+#                           config file and use them to format the generated code. Default is ON.
 #      IO_BACKEND_HANDLERS  OPTIONAL: The I/O backend handlers that should be generated. The list is
 #                           passed directly to podio_class_generator.py and validated there
 #                           Default is ROOT
