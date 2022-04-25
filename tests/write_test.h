@@ -48,7 +48,6 @@ void write(podio::EventStore& store, WriterT& writer) {
   auto& cpytest = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
   auto& strings = store.create<ExampleWithStringCollection>("strings");
   auto& arrays = store.create<ExampleWithArrayCollection>("arrays");
-  auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
   auto& usrInts = store.create<podio::UserDataCollection<uint64_t>>("userInts");
   auto& usrDoubles = store.create<podio::UserDataCollection<double>>("userDoubles");
 
@@ -69,9 +68,13 @@ void write(podio::EventStore& store, WriterT& writer) {
   writer.registerForWrite("WithNamespaceRelationCopy");
   writer.registerForWrite("strings");
   writer.registerForWrite("arrays");
-  writer.registerForWrite("fixedWidthInts");
   writer.registerForWrite("userInts");
   writer.registerForWrite("userDoubles");
+
+#if !defined(RNTUPLE_WRITE_TEST) || ROOT_VERSION_CODE > ROOT_VERSION(6, 26 , 0)
+  auto& fixedWidthInts = store.create<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+  writer.registerForWrite("fixedWidthInts");
+#endif
 
   unsigned nevents = 2000;
 
@@ -299,6 +302,8 @@ void write(podio::EventStore& store, WriterT& writer) {
     array.arrayStruct(a);
     arrays.push_back(array);
 
+
+#if !defined(RNTUPLE_WRITE_TEST) || ROOT_VERSION_CODE > ROOT_VERSION(6, 26 , 0)
     auto maxValues = fixedWidthInts.create();
     maxValues.fixedI16(std::numeric_limits<std::int16_t>::max());  // 2^(16 - 1) - 1 == 32767
     maxValues.fixedU32(std::numeric_limits<std::uint32_t>::max()); // 2^32 - 1 == 4294967295
@@ -325,6 +330,7 @@ void write(podio::EventStore& store, WriterT& writer) {
     arbComp.fixedUnsigned16 = 12345;
     arbComp.fixedInteger32 = -1234567890;
     arbComp.fixedInteger64 = -1234567890123456789ll;
+#endif // ! RNTUPLE_WRITE_TEST
 
     // add some plain ints as user data
     auto& uivec = usrInts;
