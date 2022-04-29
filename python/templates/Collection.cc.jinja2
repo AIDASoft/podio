@@ -145,20 +145,33 @@ void {{ collection_type }}::push_back({{ class.bare_type }} object) {
   }
 }
 
-podio::CollectionBuffers {{ collection_type }}::getBuffers() {
+podio::CollectionWriteBuffers {{ collection_type }}::getBuffers() {
   return m_storage.getCollectionBuffers(m_isSubsetColl);
 }
 
-podio::CollectionBuffers {{ collection_type }}::createBuffers() /*const*/ {
+podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
   // Very cumbersome way at the moment. We get the actual buffers to have the
   // references and vector members sized appropriately (we will use this
   // information to create new buffers outside)
   auto collBuffers = m_storage.getCollectionBuffers(m_isSubsetColl);
-  collBuffers.createCollection = [](podio::CollectionBuffers buffers, bool isSubsetColl) {
+  auto readBuffers = podio::CollectionReadBuffers{};
+  readBuffers.references = collBuffers.references;
+  readBuffers.vectorMembers = collBuffers.vectorMembers;
+  readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
       {{ collection_type }}Data data(buffers, isSubsetColl);
       return std::make_unique<{{ collection_type }}>(std::move(data), isSubsetColl);
-   };
-  return collBuffers;
+  };
+  readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
+    if (buffers.data) {
+      buffers.data = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}Data>(buffers.data);
+    }
+{% if VectorMembers %}
+{% for member in VectorMembers %}
+    (*buffers.vectorMembers)[{{ loop.index0 }}].second = podio::CollectionWriteBuffers::asVector<{{ member.full_type }}>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
+{% endfor %}
+{% endif %}
+  };
+  return readBuffers;
 }
 
 #ifdef PODIO_JSON_OUTPUT

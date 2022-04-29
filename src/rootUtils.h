@@ -32,7 +32,8 @@ inline std::string vecBranch(const std::string& name, size_t index) {
   return name + "_" + std::to_string(index);
 }
 
-inline void setCollectionAddresses(const podio::CollectionBuffers& collBuffers, const CollectionBranches& branches) {
+template <typename BufferT>
+inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionBranches& branches) {
 
   if (auto buffer = collBuffers.data) {
     branches.data->SetAddress(buffer);

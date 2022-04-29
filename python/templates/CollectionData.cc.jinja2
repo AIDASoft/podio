@@ -28,7 +28,7 @@
 {% endfor %}
 }
 
-{{ class_type }}::{{ class_type }}(podio::CollectionBuffers buffers, bool isSubsetColl) :
+{{ class_type }}::{{ class_type }}(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
 {% for relation in OneToManyRelations + OneToOneRelations %}
   m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
 {% endfor %}
@@ -40,7 +40,7 @@
     m_data.reset(buffers.dataAsVector<{{ class.full_type }}Data>());
 
 {% for member in VectorMembers %}
-  m_vec_{{ member.name }}.reset(podio::CollectionBuffers::asVector<{{ member.full_type }}>(m_vecmem_info[{{ loop.index0 }}].second));
+  m_vec_{{ member.name }}.reset(podio::CollectionReadBuffers::asVector<{{ member.full_type }}>(m_vecmem_info[{{ loop.index0 }}].second));
 {% endfor %}
   }
 }
@@ -81,7 +81,7 @@ void {{ class_type }}::clear(bool isSubsetColl) {
   entries.clear();
 }
 
-podio::CollectionBuffers {{ class_type }}::getCollectionBuffers(bool isSubsetColl) {
+podio::CollectionWriteBuffers {{ class_type }}::getCollectionBuffers(bool isSubsetColl) {
 {% if VectorMembers %}
   // Make sure these point to the right place, even if a collection has been
   // moved since it has been created

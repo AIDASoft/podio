@@ -33,14 +33,14 @@ namespace detail {
       return {};
     }
 
-    std::optional<podio::CollectionBuffers> getCollectionBuffers(const std::string&) {
+    std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string&) {
       return std::nullopt;
     }
   };
 } // namespace detail
 
 template <typename RawDataT>
-std::optional<podio::CollectionBuffers> unpack(RawDataT* data, const std::string& name) {
+std::optional<podio::CollectionReadBuffers> unpack(RawDataT* data, const std::string& name) {
   return data->getCollectionBuffers(name);
 }
 
@@ -269,7 +269,7 @@ podio::CollectionBase* Frame::FrameModel<RawDataT>::doGet(const std::string& nam
   if (m_rawData) {
     // Have the buffers in the outer scope here to hold the raw data lock as
     // briefly as possible
-    auto buffers = std::optional<podio::CollectionBuffers>{std::nullopt};
+    auto buffers = std::optional<podio::CollectionReadBuffers>{std::nullopt};
     {
       std::lock_guard lock{*m_rawDataMtx};
       buffers = unpack(m_rawData.get(), name);

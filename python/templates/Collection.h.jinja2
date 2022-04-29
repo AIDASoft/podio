@@ -107,10 +107,10 @@ public:
   bool setReferences(const podio::ICollectionProvider* collectionProvider) final;
 
   /// Get the collection buffers for this collection
-  podio::CollectionBuffers getBuffers() final;
+  podio::CollectionWriteBuffers getBuffers() final;
 
   /// Create (empty) collection buffers from which a collection can be constructed
-  virtual podio::CollectionBuffers createBuffers() /*const*/ final;
+  podio::CollectionReadBuffers createBuffers() /*const*/ final;
 
   void setID(unsigned ID) final {
     m_collectionID = ID;

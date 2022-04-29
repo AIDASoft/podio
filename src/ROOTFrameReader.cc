@@ -34,7 +34,7 @@ GenericParameters ROOTFrameReader::readEventMetaData() {
 }
 
 std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEvent() {
-  std::unordered_map<std::string, podio::CollectionBuffers> buffers;
+  ROOTRawData::BufferMap buffers;
   for (const auto& collInfo : m_storedClasses) {
     buffers.emplace(collInfo.first, getCollectionBuffers(collInfo));
   }
@@ -45,13 +45,14 @@ std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEvent() {
   return std::make_unique<ROOTRawData>(std::move(buffers), m_table, std::move(parameters));
 }
 
-podio::CollectionBuffers ROOTFrameReader::getCollectionBuffers(const std::pair<std::string, CollectionInfo>& collInfo) {
+podio::CollectionReadBuffers
+ROOTFrameReader::getCollectionBuffers(const std::pair<std::string, CollectionInfo>& collInfo) {
   const auto& name = collInfo.first;
   const auto& [theClass, collectionClass, index] = collInfo.second;
   auto& branches = m_collectionBranches[index];
 
   // Create empty collection buffers, and connect them to the right branches
-  auto collBuffers = podio::CollectionBuffers();
+  auto collBuffers = podio::CollectionReadBuffers();
   // If we have a valid data buffer class we know that have to read data,
   // otherwise we are handling a subset collection
   const bool isSubsetColl = theClass == nullptr;
@@ -66,6 +67,7 @@ podio::CollectionBuffers ROOTFrameReader::getCollectionBuffers(const std::pair<s
 
     auto tmpBuffers = collection->createBuffers();
     collBuffers.createCollection = std::move(tmpBuffers.createCollection);
+    collBuffers.recast = std::move(tmpBuffers.recast);
 
     if (auto* refs = tmpBuffers.references) {
       collBuffers.references = new podio::CollRefCollection(refs->size());
@@ -109,6 +111,8 @@ podio::CollectionBuffers ROOTFrameReader::getCollectionBuffers(const std::pair<s
   // set the addresses and read the data
   root_utils::setCollectionAddresses(collBuffers, branches);
   root_utils::readBranchesData(branches, localEntry);
+
+  collBuffers.recast(collBuffers);
 
   return collBuffers;
 }

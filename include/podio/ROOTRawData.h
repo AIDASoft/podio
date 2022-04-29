@@ -13,10 +13,11 @@
 namespace podio {
 
 class ROOTRawData {
-  using BufferMap = std::unordered_map<std::string, podio::CollectionBuffers>;
   using CollIDPtr = std::shared_ptr<const podio::CollectionIDTable>;
 
 public:
+  using BufferMap = std::unordered_map<std::string, podio::CollectionReadBuffers>;
+
   ROOTRawData() = delete;
   ~ROOTRawData() = default;
   ROOTRawData(ROOTRawData&&) = default;
@@ -28,7 +29,7 @@ public:
       m_buffers(std::move(buffers)), m_idTable(idTable), m_parameters(std::move(params)) {
   }
 
-  std::optional<podio::CollectionBuffers> getCollectionBuffers(const std::string& name) {
+  std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name) {
     const auto bufferHandle = m_buffers.extract(name);
     if (bufferHandle.empty()) {
       return std::nullopt;

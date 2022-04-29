@@ -2,6 +2,7 @@
 #define PODIO_USERDATACOLLECTION_H
 
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
@@ -101,14 +102,18 @@ public:
   }
 
   /// Get the collection buffers for this collection
-  podio::CollectionBuffers getBuffers() override {
+  podio::CollectionWriteBuffers getBuffers() override {
     _vecPtr = &_vec; // Set the pointer to the correct internal vector
     return {&_vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
-  podio::CollectionBuffers createBuffers() /*const*/ final {
-    return {nullptr, nullptr, nullptr, [](podio::CollectionBuffers buffers, bool) {
+  podio::CollectionReadBuffers createBuffers() /*const*/ final {
+    return {nullptr, nullptr, nullptr,
+            [](podio::CollectionReadBuffers buffers, bool) {
               return std::make_unique<UserDataCollection<BasicType>>(std::move(*buffers.dataAsVector<BasicType>()));
+            },
+            [](podio::CollectionReadBuffers& buffers) {
+              buffers.data = podio::CollectionWriteBuffers::asVector<BasicType>(buffers.data);
             }};
   }
 

@@ -44,7 +44,7 @@ public:
   /**
    * Constructor from existing I/O buffers
    */
-  {{ class_type }}(podio::CollectionBuffers buffers, bool isSubsetColl);
+  {{ class_type }}(podio::CollectionReadBuffers buffers, bool isSubsetColl);
 
   /**
    * Non copy-able, move-only class
@@ -61,7 +61,7 @@ public:
 
   void clear(bool isSubsetColl);
 
-  podio::CollectionBuffers getCollectionBuffers(bool isSubsetColl);
+  podio::CollectionWriteBuffers getCollectionBuffers(bool isSubsetColl);
 
   void prepareForWrite(bool isSubsetColl);
 

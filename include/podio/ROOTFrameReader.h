@@ -26,7 +26,7 @@ class EventStore;
 class CollectionBase;
 class CollectionIDTable;
 class GenericParameters;
-struct CollectionBuffers;
+struct CollectionReadBuffers;
 
 /**
 This class has the function to read available data from disk
@@ -66,7 +66,7 @@ private:
   // and the index in the collection branches cache vector
   using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
 
-  podio::CollectionBuffers getCollectionBuffers(const std::pair<std::string, CollectionInfo>& collInfo);
+  podio::CollectionReadBuffers getCollectionBuffers(const std::pair<std::string, CollectionInfo>& collInfo);
 
   // cache the necessary information to more quickly construct and read each
   // collection after it has been read the very first time
