@@ -35,7 +35,11 @@ public:
   SIOBlock& operator=(const SIOBlock&) = delete;
 
   podio::CollectionBase* getCollection() {
-    return _col;
+    return m_buffers.createCollection(m_buffers, m_subsetColl).release();
+  }
+
+  podio::CollectionReadBuffers getBuffers() const {
+    return m_buffers;
   }
 
   std::string name() {
@@ -43,16 +47,18 @@ public:
   }
 
   void setCollection(podio::CollectionBase* col) {
-    _col = col;
+    m_subsetColl = col->isSubsetCollection();
+    m_buffers = col->getBuffers();
   }
 
   virtual SIOBlock* create(const std::string& name) const = 0;
 
   // create a new collection for this block
-  virtual void createCollection(const bool subsetCollection = false) = 0;
+  virtual void createBuffers(const bool subsetCollection = false) = 0;
 
 protected:
-  podio::CollectionBase* _col{};
+  bool m_subsetColl{false};
+  podio::CollectionReadBuffers m_buffers{};
 };
 
 /**

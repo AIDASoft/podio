@@ -113,12 +113,12 @@ void SIONumberedMetaDataBlock::write(sio::write_device& device) {
 }
 
 std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name,
-                                                       const bool isRefColl) const {
+                                                       const bool isSubsetColl) const {
   const auto it = _map.find(typeStr);
 
   if (it != _map.end()) {
     auto blk = std::shared_ptr<SIOBlock>(it->second->create(name));
-    blk->createCollection(isRefColl);
+    blk->createBuffers(isSubsetColl);
     return blk;
   } else {
     return nullptr;

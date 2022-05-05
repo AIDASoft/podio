@@ -5,6 +5,8 @@
 #include "{{ incfolder }}{{ class.bare_type }}SIOBlock.h"
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 
+#include "podio/CollectionBuffers.h"
+
 #include <sio/block.h>
 #include <sio/io_device.h>
 #include <sio/version.h>
@@ -13,17 +15,25 @@
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
 void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
-  auto collBuffers = _col->getBuffers();
-  if (not _col->isSubsetCollection()) {
-    auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
+  if (m_subsetColl) {
+    m_buffers.references->emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
+  } else {
+{% for relation in OneToManyRelations + OneToOneRelations %}
+    m_buffers.references->emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
+{% endfor %}
+  }
+
+  if (not m_subsetColl) {
     unsigned size(0);
     device.data( size );
-    dataVec->resize(size);
+    m_buffers.data = new std::vector<{{ class.full_type }}Data>(size);
+    auto* dataVec = m_buffers.dataAsVector<{{ class.full_type }}Data>();
     podio::handlePODDataSIO(device, dataVec->data(), size);
+    // m_buffers.data = dataVec;
   }
 
   //---- read ref collections -----
-  auto* refCols = collBuffers.references;
+  auto* refCols = m_buffers.references;
   for( auto& refC : *refCols ){
     unsigned size{0};
     device.data( size ) ;
@@ -32,8 +42,13 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
   }
 
 {% if VectorMembers %}
+{% for member in VectorMembers %}
+  // auto {{ member.name }}Buffers = new std::vector<{{ member.full_type }}>();
+  // m_buffers.vectorMembers->emplace_back("{{ member.full_type }}", &{{ member.name }}Buffers);
+  m_buffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>());
+{% endfor %}
   //---- read vector members
-  auto* vecMemInfo = collBuffers.vectorMembers;
+  auto* vecMemInfo = m_buffers.vectorMembers;
   unsigned size{0};
 
 {% for member in VectorMembers %}
@@ -43,17 +58,15 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
 }
 
 void {{ block_class }}::write(sio::write_device& device) {
-  _col->prepareForWrite() ;
-  auto collBuffers = _col->getBuffers();
-  if (not _col->isSubsetCollection()) {
-    auto* dataVec = collBuffers.dataAsVector<{{ class.full_type }}Data>();
+  if (not m_subsetColl) {
+    auto* dataVec = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}Data>(m_buffers.data);
     unsigned size = dataVec->size() ;
     device.data( size ) ;
     podio::handlePODDataSIO( device ,  dataVec->data(), size ) ;
   }
 
   //---- write ref collections -----
-  auto* refCols = collBuffers.references;
+  auto* refCols = m_buffers.references;
   for( auto& refC : *refCols ){
     unsigned size = refC->size() ;
     device.data( size ) ;
@@ -62,7 +75,7 @@ void {{ block_class }}::write(sio::write_device& device) {
 
 {% if VectorMembers %}
   //---- write vector members
-  auto* vecMemInfo = collBuffers.vectorMembers;
+  auto* vecMemInfo = m_buffers.vectorMembers;
   unsigned size{0};
 
 {% for member in VectorMembers %}
@@ -71,9 +84,18 @@ void {{ block_class }}::write(sio::write_device& device) {
 {% endif %}
 }
 
-void {{ block_class }}::createCollection(const bool subsetCollection) {
-  setCollection(new {{ class.bare_type }}Collection);
-  _col->setSubsetCollection(subsetCollection);
+void {{ block_class }}::createBuffers(bool subsetColl) {
+  m_subsetColl = subsetColl;
+
+
+
+  m_buffers.references = new podio::CollRefCollection();
+  m_buffers.vectorMembers = new podio::VectorMembersInfo();
+
+  m_buffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+    {{ class.bare_type }}CollectionData data(buffers, isSubsetColl);
+    return std::make_unique<{{ class.bare_type }}Collection>(std::move(data), isSubsetColl);
+  };
 }
 
 {% endwith %}
