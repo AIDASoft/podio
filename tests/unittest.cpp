@@ -746,6 +746,9 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
 
   gp.setValue("anInt", 42);
   REQUIRE(gp.getValue<int>("anInt") == 42);
+  // Make sure that resetting a value with the same key works
+  gp.setValue("anInt", -42);
+  REQUIRE(gp.getValue<int>("anInt") == -42);
 
   // Make sure that passing a string literal is converted to a string on the fly
   gp.setValue("aString", "const char initialized");
@@ -770,6 +773,11 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   REQUIRE(storedFloats.size() == 2);
   REQUIRE(storedFloats[0] == 3.14f);
   REQUIRE(storedFloats[1] == 2.718f);
+
+  // We can at this point reset this to a single value with the same key even if
+  // it has been a vector before
+  gp.setValue("someFloats", 12.34f);
+  REQUIRE(gp.getValue<float>("someFloats") == 12.34f);
 
   // Missing values return the default initialized ones
   REQUIRE(gp.getValue<int>("MissingValue") == int{});
