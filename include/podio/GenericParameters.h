@@ -288,6 +288,7 @@ template <typename T, typename>
 std::vector<std::string> GenericParameters::getKeys() const {
   std::vector<std::string> keys;
   const auto& map = getMap<T>();
+  keys.reserve(map.size());
   std::transform(map.begin(), map.end(), std::back_inserter(keys), [](const auto& pair) { return pair.first; });
 
   return keys;
