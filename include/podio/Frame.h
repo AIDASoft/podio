@@ -298,7 +298,7 @@ podio::CollectionBase* Frame::FrameModel<RawDataT>::doGet(const std::string& nam
 template <typename RawDataT>
 bool Frame::FrameModel<RawDataT>::get(int collectionID, CollectionBase*& collection) const {
   const auto& name = m_idTable.name(collectionID);
-  const auto [_, inserted] = m_retrievedIDs.insert(collectionID);
+  const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
 
   if (!inserted) {
     auto coll = doGet(name);
