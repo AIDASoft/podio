@@ -5,14 +5,14 @@
 
 int main() {
   auto reader = podio::ROOTFrameReader();
-  reader.openFile("example.root");
+  reader.openFile("example_frame.root");
 
   if (reader.currentFileVersion() != podio::version::build_version) {
     return 1;
   }
 
-  for (size_t i = 0; i < reader.getEntries(); ++i) {
-    auto frame = podio::Frame(reader.readNextEvent());
+  for (size_t i = 0; i < reader.getEntries("events"); ++i) {
+    auto frame = podio::Frame(reader.readNextEvent("events"));
     processEvent(frame, i, reader.currentFileVersion());
   }
 

@@ -29,9 +29,9 @@ class GenericParameters;
 struct CollectionReadBuffers;
 
 /**
-This class has the function to read available data from disk
-and to prepare collections and buffers.
-**/
+ * This class has the function to read available data from disk
+ * and to prepare collections and buffers.
+ **/
 class ROOTFrameReader {
 
 public:
@@ -47,41 +47,47 @@ public:
   void openFiles(const std::vector<std::string>& filenames);
 
   /// Read all collections requested
-  std::unique_ptr<podio::ROOTRawData> readNextEvent();
+  std::unique_ptr<podio::ROOTRawData> readNextEvent(const std::string& category);
 
-  /// Returns number of entries in the TTree
-  unsigned getEntries() const;
+  /// Returns number of entries for the given category
+  unsigned getEntries(const std::string& category) const;
 
   podio::version::Version currentFileVersion() const {
     return m_fileVersion;
   }
 
-private:
-  std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
-  GenericParameters readEventMetaData();
-
-  void createCollectionBranches(const std::vector<std::tuple<int, std::string, bool>>& collInfo);
-
   // Information about the data vector as wall as the collection class type
   // and the index in the collection branches cache vector
+  // TODO: Make this private again
   using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
 
-  podio::CollectionReadBuffers getCollectionBuffers(const std::pair<std::string, CollectionInfo>& collInfo);
+private:
+  /**
+   * Helper struct to group together all the necessary state to read / process a
+   * given category.
+   */
+  struct CategoryInfo {
+    /// constructor from chain for more convenient map instertion
+    CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
+    }
+    std::unique_ptr<TChain> chain{nullptr};                              ///< The TChain with the data
+    unsigned entry{0};                                                   ///< The next entry to read
+    std::vector<std::pair<std::string, CollectionInfo>> storedClasses{}; ///< The stored collections in this category
+    std::vector<root_utils::CollectionBranches> branches{};              ///< The branches for this category
+    std::shared_ptr<CollectionIDTable> table{nullptr};                   ///< The collection ID table for this category
+  };
 
-  // cache the necessary information to more quickly construct and read each
-  // collection after it has been read the very first time
-  std::vector<std::pair<std::string, CollectionInfo>> m_storedClasses{};
+  void initCategory(CategoryInfo& catInfo, const std::string& category);
 
-  std::shared_ptr<CollectionIDTable> m_table{nullptr};
-  std::unique_ptr<TChain> m_chain{nullptr};
-  unsigned m_eventNumber{0};
+  CategoryInfo& getCategoryInfo(const std::string& category);
 
-  // Similar to writing we cache the branches that belong to each collection
-  // in order to not having to look them up every event. However, for the
-  // reader we cannot guarantee a fixed order of collections as they are read
-  // on demand. Hence, we give each collection an index the first time it is
-  // read and we start caching the branches.
-  std::vector<root_utils::CollectionBranches> m_collectionBranches{};
+  GenericParameters readEventMetaData(CategoryInfo& catInfo);
+
+  podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl);
+
+  std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
+  std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
+  std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
 
   podio::version::Version m_fileVersion{0, 0, 0};
 };

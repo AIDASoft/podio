@@ -16,40 +16,42 @@
 
 namespace podio {
 
-std::pair<TTree*, unsigned> ROOTFrameReader::getLocalTreeAndEntry(const std::string& treename) {
-  auto localEntry = m_chain->LoadTree(m_eventNumber);
-  auto* tree = static_cast<TTree*>(m_chain->GetFile()->Get(treename.c_str()));
-  return {tree, localEntry};
-}
+std::tuple<std::vector<root_utils::CollectionBranches>,
+           std::vector<std::pair<std::string, ROOTFrameReader::CollectionInfo>>>
+createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
+                         const std::vector<root_utils::CollectionInfoT>& collInfo);
 
-GenericParameters ROOTFrameReader::readEventMetaData() {
+GenericParameters ROOTFrameReader::readEventMetaData(ROOTFrameReader::CategoryInfo& catInfo) {
+  // Parameter branch is always the last one
+  auto& paramBranches = catInfo.branches.back();
+  auto* branch = paramBranches.data;
+
   GenericParameters params;
-  auto [evt_metadatatree, entry] = getLocalTreeAndEntry("evt_metadata");
-  auto* branch = root_utils::getBranch(evt_metadatatree, "evtMD");
-  // ROOT really needs the address of a pointer for I/O to work properly
   auto* emd = &params;
   branch->SetAddress(&emd);
-  evt_metadatatree->GetEntry(entry);
+  branch->GetEntry(catInfo.entry);
   return params;
 }
 
-std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEvent() {
+std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEvent(const std::string& category) {
+  auto& catInfo = getCategoryInfo(category);
+
   ROOTRawData::BufferMap buffers;
-  for (const auto& collInfo : m_storedClasses) {
-    buffers.emplace(collInfo.first, getCollectionBuffers(collInfo));
+  for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
+    buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i));
   }
 
-  auto parameters = readEventMetaData();
+  auto parameters = readEventMetaData(catInfo);
 
-  m_eventNumber++;
-  return std::make_unique<ROOTRawData>(std::move(buffers), m_table, std::move(parameters));
+  catInfo.entry++;
+  return std::make_unique<ROOTRawData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
-podio::CollectionReadBuffers
-ROOTFrameReader::getCollectionBuffers(const std::pair<std::string, CollectionInfo>& collInfo) {
-  const auto& name = collInfo.first;
-  const auto& [theClass, collectionClass, index] = collInfo.second;
-  auto& branches = m_collectionBranches[index];
+podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameReader::CategoryInfo& catInfo,
+                                                                   size_t iColl) {
+  const auto& name = catInfo.storedClasses[iColl].first;
+  const auto& [theClass, collectionClass, index] = catInfo.storedClasses[iColl].second;
+  auto& branches = catInfo.branches[index];
 
   // Create empty collection buffers, and connect them to the right branches
   auto collBuffers = podio::CollectionReadBuffers();
@@ -83,19 +85,19 @@ ROOTFrameReader::getCollectionBuffers(const std::pair<std::string, CollectionInf
     }
   }
 
-  const auto localEntry = m_chain->LoadTree(m_eventNumber);
+  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
   // After switching trees in the chain, branch pointers get invalidated so
   // they need to be reassigned.
   // NOTE: root 6.22/06 requires that we get completely new branches here,
   // with 6.20/04 we could just re-set them
   if (localEntry == 0) {
-    branches.data = root_utils::getBranch(m_chain.get(), name.c_str());
+    branches.data = root_utils::getBranch(catInfo.chain.get(), name.c_str());
 
     // reference collections
     if (auto* refCollections = collBuffers.references) {
       for (size_t i = 0; i < refCollections->size(); ++i) {
         const auto brName = root_utils::refBranch(name, i);
-        branches.refs[i] = root_utils::getBranch(m_chain.get(), brName.c_str());
+        branches.refs[i] = root_utils::getBranch(catInfo.chain.get(), brName.c_str());
       }
     }
 
@@ -103,7 +105,7 @@ ROOTFrameReader::getCollectionBuffers(const std::pair<std::string, CollectionInf
     if (auto* vecMembers = collBuffers.vectorMembers) {
       for (size_t i = 0; i < vecMembers->size(); ++i) {
         const auto brName = root_utils::vecBranch(name, i);
-        branches.vecs[i] = root_utils::getBranch(m_chain.get(), brName.c_str());
+        branches.vecs[i] = root_utils::getBranch(catInfo.chain.get(), brName.c_str());
       }
     }
   }
@@ -117,60 +119,115 @@ ROOTFrameReader::getCollectionBuffers(const std::pair<std::string, CollectionInf
   return collBuffers;
 }
 
+ROOTFrameReader::CategoryInfo& ROOTFrameReader::getCategoryInfo(const std::string& category) {
+  if (auto it = m_categories.find(category); it != m_categories.end()) {
+    // Use the id table as proxy to check whether this category has been
+    // initialized alrready
+    if (it->second.table == nullptr) {
+      initCategory(it->second, category);
+    }
+    return it->second;
+  }
+
+  // TODO: Proper error handling. How do we want to deal with this?
+  throw std::runtime_error("No category " + category + " available");
+}
+
+void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& category) {
+  catInfo.table = std::make_shared<podio::CollectionIDTable>();
+  auto* table = catInfo.table.get();
+  auto* tableBranch = root_utils::getBranch(m_metaChain.get(), root_utils::idTableName(category));
+  tableBranch->SetAddress(&table);
+  tableBranch->GetEntry(0);
+
+  auto* collInfoBranch = root_utils::getBranch(m_metaChain.get(), root_utils::collInfoName(category));
+  auto collInfo = new std::vector<root_utils::CollectionInfoT>();
+  collInfoBranch->SetAddress(&collInfo);
+  collInfoBranch->GetEntry(0);
+
+  std::tie(catInfo.branches, catInfo.storedClasses) =
+      createCollectionBranches(catInfo.chain.get(), *catInfo.table, *collInfo);
+
+  delete collInfo;
+
+  // Finaly set up the branches for the paramters
+  root_utils::CollectionBranches paramBranches{};
+  paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
+  catInfo.branches.push_back(paramBranches);
+}
+
+std::vector<std::string> getAvailableCategories(TChain* metaChain) {
+  auto* branches = metaChain->GetListOfBranches();
+  std::vector<std::string> brNames;
+  brNames.reserve(branches->GetEntries());
+  for (int i = 0; i < branches->GetEntries(); ++i) {
+    const std::string name = branches->At(i)->GetName();
+    const auto fUnder = name.find("___");
+    if (fUnder != std::string::npos) {
+      brNames.emplace_back(name.substr(0, name.find('_')));
+    }
+  }
+
+  std::sort(brNames.begin(), brNames.end());
+  brNames.erase(std::unique(brNames.begin(), brNames.end()), brNames.end());
+
+  return brNames;
+}
+
 void ROOTFrameReader::openFile(const std::string& filename) {
   openFiles({filename});
 }
 
 void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
-  m_chain = std::make_unique<TChain>("events");
-  for (const auto& filename : filenames) {
-    m_chain->Add(filename.c_str());
-  }
-
-  // read the meta data and build the collectionBranches cache
-  // NOTE: This is a small pessimization, if we do not read all collections
-  // afterwards, but it makes the handling much easier in general
-  auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
-  m_table = std::make_shared<CollectionIDTable>();
-  auto* table = m_table.get();
-  metadatatree->SetBranchAddress("CollectionIDs", &table);
+  m_metaChain = std::make_unique<TChain>(root_utils::metaTreeName);
+  // NOTE: We simply assume that the meta data doesn't change throughout the
+  // chain! This essentially boils down to the assumption that all files that
+  // are read this way were written with the same settings.
+  m_metaChain->Add(filenames[0].c_str());
 
   podio::version::Version* versionPtr{nullptr};
-  if (auto* versionBranch = root_utils::getBranch(metadatatree, "PodioVersion")) {
+  if (auto* versionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::versionBranchName)) {
     versionBranch->SetAddress(&versionPtr);
+    versionBranch->GetEntry(0);
   }
-
-  // Check if the CollectionTypeInfo branch is there and assume that the file
-  // has been written with with podio pre #197 (<0.13.1) if that is not the case
-  if (auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo")) {
-    auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
-    collInfoBranch->SetAddress(&collectionInfo);
-    metadatatree->GetEntry(0);
-    createCollectionBranches(*collectionInfo);
-    delete collectionInfo;
-  } else {
-    std::cout << "PODIO: Reconstructing CollectionTypeInfo branch from other sources in file: \'"
-              << m_chain->GetFile()->GetName() << "\'" << std::endl;
-    metadatatree->GetEntry(0);
-    const auto collectionInfo = root_utils::reconstructCollectionInfo(m_chain.get(), *m_table);
-    createCollectionBranches(collectionInfo);
-  }
-
   m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
   delete versionPtr;
+
+  // Do some work up front for setting up categories and setup all the chains
+  // and record the available categories. The rest of the setup follows on
+  // demand when the category is first read
+  m_availCategories = getAvailableCategories(m_metaChain.get());
+  for (const auto& cat : m_availCategories) {
+    auto [it, _] = m_categories.try_emplace(cat, std::make_unique<TChain>(cat.c_str()));
+    for (const auto& fn : filenames) {
+      it->second.chain->Add(fn.c_str());
+    }
+  }
 }
 
-unsigned ROOTFrameReader::getEntries() const {
-  return m_chain->GetEntries();
+unsigned ROOTFrameReader::getEntries(const std::string& category) const {
+  if (auto it = m_categories.find(category); it != m_categories.end()) {
+    return it->second.chain->GetEntries();
+  }
+
+  return 0;
 }
 
-void ROOTFrameReader::createCollectionBranches(const std::vector<root_utils::CollectionInfoT>& collInfo) {
+std::tuple<std::vector<root_utils::CollectionBranches>,
+           std::vector<std::pair<std::string, ROOTFrameReader::CollectionInfo>>>
+createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
+                         const std::vector<root_utils::CollectionInfoT>& collInfo) {
+
   size_t collectionIndex{0};
+  std::vector<root_utils::CollectionBranches> collBranches;
+  collBranches.reserve(collInfo.size() + 1);
+  std::vector<std::pair<std::string, ROOTFrameReader::CollectionInfo>> storedClasses;
+  storedClasses.reserve(collInfo.size());
 
   for (const auto& [collID, collType, isSubsetColl] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
-    const auto name = m_table->name(collID);
+    const auto name = idTable.name(collID);
 
     root_utils::CollectionBranches branches{};
     const auto collectionClass = TClass::GetClass(collType.c_str());
@@ -184,26 +241,28 @@ void ROOTFrameReader::createCollectionBranches(const std::vector<root_utils::Col
     if (!isSubsetColl) {
       // This branch is guaranteed to exist since only collections that are
       // also written to file are in the info metadata that we work with here
-      branches.data = root_utils::getBranch(m_chain.get(), name.c_str());
+      branches.data = root_utils::getBranch(chain, name.c_str());
     }
 
     const auto buffers = collection->getBuffers();
     for (size_t i = 0; i < buffers.references->size(); ++i) {
       const auto brName = root_utils::refBranch(name, i);
-      branches.refs.push_back(root_utils::getBranch(m_chain.get(), brName.c_str()));
+      branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
     }
 
     for (size_t i = 0; i < buffers.vectorMembers->size(); ++i) {
       const auto brName = root_utils::vecBranch(name, i);
-      branches.vecs.push_back(root_utils::getBranch(m_chain.get(), brName.c_str()));
+      branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
     }
 
     const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
     const auto bufferClass = isSubsetColl ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
-    m_storedClasses.emplace_back(name, std::make_tuple(bufferClass, collectionClass, collectionIndex++));
-    m_collectionBranches.push_back(branches);
+    storedClasses.emplace_back(name, std::make_tuple(bufferClass, collectionClass, collectionIndex++));
+    collBranches.push_back(branches);
   }
+
+  return {collBranches, storedClasses};
 }
 
 } // namespace podio

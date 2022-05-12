@@ -17,11 +17,52 @@
 #include <vector>
 
 namespace podio::root_utils {
+/**
+ * The name of the meta data tree in podio ROOT files. This tree mainly stores
+ * meta data that is necessary for ROOT based I/O.
+ */
+constexpr static auto metaTreeName = "podio_metadata";
+
+/**
+ * The name of the branch in the TTree for each frame for storing the
+ * GenericParameters
+ */
+constexpr static auto paramBranchName = "PARAMETERS";
+
+/**
+ * The name of the branch into which we store the build version of podio at the
+ * time of writing the file
+ */
+constexpr static auto versionBranchName = "PodioBuildVersion";
+
+/**
+ * Name of the branch for storing the idTable for a given category in the meta
+ * data tree
+ */
+inline std::string idTableName(const std::string& category) {
+  constexpr static auto suffix = "___idTable";
+  return category + suffix;
+}
+
+/**
+ * Name of the branch for storing the collection info for a given category in
+ * the meta data tree
+ */
+inline std::string collInfoName(const std::string& category) {
+  constexpr static auto suffix = "___CollectionTypeInfo";
+  return category + suffix;
+}
+
 // Workaround slow branch retrieval for 6.22/06 performance degradation
 // see: https://root-forum.cern.ch/t/serious-degradation-of-i-o-performance-from-6-20-04-to-6-22-06/43584/10
 template <class Tree>
 TBranch* getBranch(Tree* chain, const char* name) {
   return static_cast<TBranch*>(chain->GetListOfBranches()->FindObject(name));
+}
+
+template <typename Tree>
+TBranch* getBranch(Tree* chain, const std::string& name) {
+  return getBranch(chain, name.c_str());
 }
 
 inline std::string refBranch(const std::string& name, size_t index) {

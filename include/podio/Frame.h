@@ -58,6 +58,10 @@ class Frame {
     virtual const podio::CollectionBase* put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) = 0;
     virtual podio::GenericParameters& parameters() = 0;
     virtual const podio::GenericParameters& parameters() const = 0;
+
+    // Writing interface. Need this to be able to store all necessary information
+    // TODO: Figure out whether this can be "hidden" somehow
+    virtual podio::CollectionIDTable getIDTable() const = 0;
   };
 
   /**
@@ -98,6 +102,11 @@ class Frame {
     };
 
     bool get(int collectionID, podio::CollectionBase*& collection) const override;
+
+    podio::CollectionIDTable getIDTable() const override {
+      // Make a copy
+      return {m_idTable.ids(), m_idTable.names()};
+    }
 
   private:
     podio::CollectionBase* doGet(const std::string& name, bool setReferences = true) const;
@@ -188,6 +197,33 @@ public:
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   podio::GenericDataReturnType<T> getParameter(const std::string& key) const {
     return m_self->parameters().getValue<T>(key);
+  }
+
+  // Interfaces for writing below
+  // TODO: Hide this from the public interface somehow?
+
+  /**
+   * Get the GenericParameters for writing
+   */
+  const podio::GenericParameters& getGenericParametersForWrite() const {
+    return m_self->parameters();
+  }
+
+  /**
+   * Get a collection for writing (in a prepared and "ready-to-write" state)
+   */
+  const podio::CollectionBase* getCollectionForWrite(const std::string& name) const {
+    const auto* coll = m_self->get(name);
+    if (coll) {
+      // TODO: make prepareForWrite threadsafe and get rid of the const_cast here
+      const_cast<podio::CollectionBase*>(coll)->prepareForWrite();
+    }
+
+    return coll;
+  }
+
+  podio::CollectionIDTable getCollectionIDTableForWrite() const {
+    return m_self->getIDTable();
   }
 };
 
@@ -324,6 +360,11 @@ const podio::CollectionBase* Frame::FrameModel<RawDataT>::put(std::unique_ptr<po
     std::lock_guard lock{*m_mapMtx};
     auto [it, success] = m_collections.try_emplace(name, std::move(coll));
     if (success) {
+      // TODO: Check whether this collection is already known to the idTable
+      // -> What to do on collision?
+      // -> Check before we emplace it into the internal map to prevent possible
+      //    collisions from collections that are potentially present from rawdata?
+      it->second->setID(m_idTable.add(name));
       return it->second.get();
     }
   }

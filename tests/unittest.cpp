@@ -614,6 +614,17 @@ auto createCollections(const size_t nElements = 3u) {
     userDataColl.push_back(3.14f * i);
   }
 
+  vecMemColl.prepareForWrite();
+  auto buffers = vecMemColl.getBuffers();
+  auto vecBuffers = buffers.vectorMembers;
+  auto thisVec = (*vecBuffers)[0].second;
+
+  // const auto floatVec = podio::CollectionWriteBuffers::asVector<float>(thisVec);
+  const auto floatVec2 = podio::CollectionReadBuffers::asVector<float>(thisVec);
+
+  // std::cout << floatVec->size() << '\n';
+  std::cout << "** " << floatVec2->size() << " vs " << vecMemColl.size() << '\n';
+
   return colls;
 }
 
@@ -689,6 +700,9 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
   }
 }
 
+template <typename>
+struct TD;
+
 TEST_CASE("Move-only collections", "[collections][move-semantics]") {
   // Setup a few collections that will be used throughout below
   auto [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
@@ -731,12 +745,29 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     auto newClusters = std::move(clusterColl);
 
     vecMemColl.prepareForWrite();
+    auto buffers = vecMemColl.getBuffers();
+    auto vecBuffers = buffers.vectorMembers;
+    auto thisVec = (*vecBuffers)[0].second;
+
+    const auto floatVec = podio::CollectionWriteBuffers::asVector<float>(thisVec);
+    const auto floatVec2 = podio::CollectionReadBuffers::asVector<float>(thisVec);
+
+    std::cout << floatVec->size() << '\n';
+    std::cout << floatVec2->size() << '\n';
+
+    // auto vecBuffers = buffers.vectorMembers;
+    // const auto vecBuffer = podio::CollectionWriteBuffers::asVector<float>((*vecBuffers)[0].second);
+    // TD<decltype(vecBuffer)> td;
+    // REQUIRE(vecBuffer->size() == 2);
     auto newVecMems = std::move(vecMemColl);
 
     userDataColl.prepareForWrite();
     auto newUserData = std::move(userDataColl);
 
     checkCollections(newHits, newClusters, newVecMems, newUserData);
+  }
+
+  SECTION("Moved collections can be prepared") {
   }
 
   SECTION("Prepared collections can be move assigned") {
