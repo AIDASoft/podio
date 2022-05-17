@@ -109,11 +109,30 @@ void ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collecti
   }
 
     m_ntuple_events = rnt::RNTupleWriter::Append(std::move(m_events), "events", *m_file, {});
-    m_ntuple_metadata = rnt::RNTupleWriter::Append(std::move(m_metadata), "metadata", *m_file, {});
 }
 
   void ROOTNTupleWriter::finish() {
   // TODO:
+
+    auto collIDs  = m_metadata->MakeField<std::vector<int>>("CollectionIDs");
+    auto collNames  = m_metadata->MakeField<std::vector<std::string>>("CollectionNames");
+    auto isSubsetCollection  = m_metadata->MakeField<std::vector<bool>>("IsSubsetCollection");
+    auto collTypes  = m_metadata->MakeField<std::vector<std::string>>("CollectionTypes");
+
+    auto collIDTable = m_store->getCollectionIDTable();
+
+    for (const auto& name : m_collectionsToWrite) {
+      const podio::CollectionBase* coll;
+      m_store->get(name, coll);
+      collNames->push_back(name);
+      const auto collID = collIDTable->collectionID(name);
+      collIDs->push_back(collID); 
+      collTypes->push_back(coll->getTypeName());
+      isSubsetCollection->push_back(coll->isSubsetCollection());
+  }
+
+
+    m_ntuple_metadata = rnt::RNTupleWriter::Append(std::move(m_metadata), "metadata", *m_file, {});
   }
 
 } //namespace podio
