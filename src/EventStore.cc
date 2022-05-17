@@ -88,8 +88,7 @@ bool EventStore::doGet(const std::string& name, CollectionBase*& collection, boo
 
 GenericParameters& EventStore::getEventMetaData() {
 
-  if (m_reader != nullptr) {
-    m_evtMD.clear();
+  if (m_evtMD.empty() && m_reader != nullptr) {
     GenericParameters* tmp = m_reader->readEventMetaData();
     m_evtMD = std::move(*tmp);
     delete tmp;
@@ -130,6 +129,7 @@ void EventStore::clear() {
     delete coll.second;
   }
 
+  m_evtMD.clear();
   clearCaches();
 }
 
