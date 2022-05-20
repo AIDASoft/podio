@@ -34,17 +34,31 @@ foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
 
-message(STATUS "Getting test input files")
-execute_process(
-  COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/get_test_inputs.sh
-  OUTPUT_VARIABLE PODIO_TEST_INPUT_DATA_DIR
-  RESULT_VARIABLE TEST_INPUTS_AVAILABLE
-  )
-if (NOT "${TEST_INPUTS_AVAILABLE}" STREQUAL "0")
-  message(WARNING "Could not get test input files. Will skip some tests that depend on these")
-else()
-  message(STATUS "Test inputs stored in " ${PODIO_TEST_INPUT_DATA_DIR})
+# Avoid fetching these everytime cmake is run by caching the directory the first
+# time the inputs are fetched or if the expected file does not exist in the
+# expected directory
+if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
+  message("Getting test input files")
+  execute_process(
+    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/get_test_inputs.sh
+    OUTPUT_VARIABLE podio_test_input_data_dir
+    RESULT_VARIABLE test_inputs_available
+    )
+  if (NOT "${test_inputs_available}" STREQUAL "0")
+    message(WARNING "Could not get test input files. Will skip some tests that depend on these")
+    # Catch cases where the variable is cached but the file no longer exists
+    unset(PODIO_TEST_INPUT_DATA_DIR CACHE)
+  else()
+    message(STATUS "Test inputs stored in: " ${podio_test_input_data_dir})
+    set(PODIO_TEST_INPUT_DATA_DIR ${podio_test_input_data_dir} CACHE INTERNAL "input dir for test inputs fetched from remote sources")
+    mark_as_advanced(PODIO_TEST_INPUT_DATA_DIR)
+  endif()
+endif()
 
+# If the variable is cached and defined now, we have inputs and can add the
+# legacy file read test
+if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
+  message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
   add_executable(read-legacy-files read-legacy-files.cpp)
   target_link_libraries(read-legacy-files TestDataModel TestDataModelDict podio::podioRootIO)
   add_test(NAME read-legacy-files COMMAND read-legacy-files ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
