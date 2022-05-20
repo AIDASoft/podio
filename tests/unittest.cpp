@@ -573,13 +573,15 @@ auto createCollections(const size_t nElements = 3u) {
 
   for (auto i = 0u; i < nElements; ++i) {
     auto hit = hitColl.create();
+    hit.cellID(i);
+    hit.energy(100.f * i);
     auto cluster = clusterColl.create();
     // create a few relations as well
     cluster.addHits(hit);
 
     auto vecMem = vecMemColl.create();
     vecMem.addcount(i);
-    vecMem.addcount(2 * i);
+    vecMem.addcount(42 + i);
 
     userDataColl.push_back(3.14f * i);
   }
@@ -588,9 +590,9 @@ auto createCollections(const size_t nElements = 3u) {
 }
 
 // Helper functionality to keep the tests below with a common setup a bit shorter
-void checkCollections(const ExampleHitCollection& hits, const ExampleClusterCollection& clusters,
-                      const ExampleWithVectorMemberCollection& vectors,
-                      const podio::UserDataCollection<float>& userData, const size_t nElements = 3u) {
+void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClusterCollection& clusters,
+                      /*const*/ ExampleWithVectorMemberCollection& vectors,
+                      /*const*/ podio::UserDataCollection<float>& userData, /*const*/ size_t nElements = 3u) {
   // Basics
   REQUIRE(hits.size() == nElements);
   REQUIRE(clusters.size() == nElements);
@@ -607,13 +609,73 @@ void checkCollections(const ExampleHitCollection& hits, const ExampleClusterColl
     const auto counts = vec.count();
     REQUIRE(counts.size() == 2);
     REQUIRE(counts[0] == i);
-    REQUIRE(counts[1] == i * 2);
+    REQUIRE(counts[1] == i + 42);
     i++;
   }
 
   i = 0;
   for (const auto v : userData) {
     REQUIRE(v == 3.14f * i++);
+  }
+
+  // Also check that the buffers we get are valid and have the expected contents
+  hits.prepareForWrite();
+  auto hitBuffers = hits.getBuffers();
+  if (!hits.isSubsetCollection()) {
+    auto* hitPODBuffers = hitBuffers.dataAsVector<ExampleHitData>();
+    REQUIRE(hitPODBuffers->size() == nElements);
+    for (size_t iHit = 0; iHit < nElements; ++iHit) {
+      const auto& hitPOD = (*hitPODBuffers)[iHit];
+      REQUIRE(hitPOD.cellID == static_cast<unsigned long long>(iHit));
+      REQUIRE(hitPOD.energy == 100.f * iHit);
+    }
+  } else {
+    // NOTE: Just basic tests here really. Checking the contents as well here
+    // requires information that is not easily available at the moment
+    REQUIRE(hitBuffers.data == nullptr);
+    REQUIRE(hitBuffers.references->size() == 1);
+    REQUIRE(hitBuffers.vectorMembers->empty());
+  }
+
+  clusters.prepareForWrite();
+  auto clusterBuffers = clusters.getBuffers();
+  auto* clusterRelationBuffers = clusterBuffers.references;
+
+  if (!clusters.isSubsetCollection()) {
+    REQUIRE(clusterRelationBuffers->size() == 2);                 // We have two relations, to hits and to clusters
+    const auto& hitRelationBuffer = (*clusterRelationBuffers)[0]; // Index is an implementation detail
+    REQUIRE(hitRelationBuffer->size() == nElements * 1);          // Each cluster has one hit in these tests
+    for (size_t iHit = 0; iHit < nElements * 1; ++iHit) {
+      const auto& hitID = (*hitRelationBuffer)[iHit];
+      REQUIRE(hitID.index == (int)iHit);
+      REQUIRE(static_cast<unsigned>(hitID.collectionID) == hits.getID());
+    }
+  } else {
+    // NOTE: Just basic tests here really. Checking the contents as well here
+    // requires information that is not easily available at the moment
+    REQUIRE(clusterBuffers.data == nullptr);
+    REQUIRE(clusterBuffers.references->size() == 1);
+    REQUIRE(clusterBuffers.vectorMembers->empty());
+  }
+
+  vectors.prepareForWrite();
+  auto vecMemBuffers = vectors.getBuffers();
+  if (!vectors.isSubsetCollection()) {
+    auto* vecMemVecBuffers = vecMemBuffers.vectorMembers;
+    REQUIRE(vecMemVecBuffers->size() == 1); // Only one vector member here
+    // Now we are really descending into implementation details
+    const auto* countBuffer = *static_cast<std::vector<int>**>((*vecMemVecBuffers)[0].second);
+    REQUIRE(countBuffer->size() == nElements * 2);
+    for (int iC = 0; iC < (int)nElements; ++iC) {
+      REQUIRE((*countBuffer)[iC * 2] == iC);
+      REQUIRE((*countBuffer)[iC * 2 + 1] == 42 + iC);
+    }
+  } else {
+    // NOTE: Just basic tests here really. Checking the contents as well here
+    // requires information that is not easily available at the moment
+    REQUIRE(vecMemBuffers.data == nullptr);
+    REQUIRE(vecMemBuffers.references->size() == 1);
+    REQUIRE(vecMemBuffers.vectorMembers->empty());
   }
 }
 
