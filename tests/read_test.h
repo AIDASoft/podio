@@ -396,6 +396,11 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
     auto& usrInts = store.template get<podio::UserDataCollection<uint64_t>>("userInts");
 
+    if (usrInts.size() != (unsigned)eventNum + 1) {
+      throw std::runtime_error("Could not read all userInts properly (expected: " + std::to_string(eventNum + 1) +
+                               ", actual: " + std::to_string(usrInts.size()) + ")");
+    }
+
     auto& uivec = usrInts.vec();
     int myInt = 0;
     for (int iu : uivec) {
@@ -412,6 +417,11 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     }
 
     auto& usrDbl = store.template get<podio::UserDataCollection<double>>("userDoubles");
+    if (usrDbl.size() != 100) {
+      throw std::runtime_error(
+          "Could not read all userDoubles properly (expected: 100, actual: " + std::to_string(usrDbl.size()) + ")");
+    }
+
     for (double d : usrDbl) {
       if (d != 42.) {
         throw std::runtime_error("Couldn't read userDoubles properly");
