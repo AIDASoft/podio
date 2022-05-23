@@ -2,6 +2,7 @@
 #define PODIO_USERDATACOLLECTION_H
 
 #include "podio/CollectionBase.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #include <map>
 #include <string>
@@ -17,40 +18,17 @@
 
 namespace podio {
 
-namespace detail {
-
-  // some templates to ensure valid and supported user types
-  // as suggested by T.Madlener, DESY
-
-  /** tuple of basic types supported in user vector
-   */
-  using SupportedUserDataTypes =
-      std::tuple<float, double, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t>;
-
-  /**
-   * Helper function to check whether a type T is in an std::tuple<Ts...>
-   */
-  template <typename T, typename... Ts>
-  constexpr bool inTuple(std::tuple<Ts...>) {
-    return (std::is_same_v<T, Ts> || ...);
-  }
-
-  /**
-   * Compile time helper function to check whether the given type is in the list
-   * of supported types
-   */
-  template <typename T>
-  constexpr bool isSupported() {
-    return inTuple<T>(SupportedUserDataTypes{});
-  }
-} // namespace detail
+/** tuple of basic types supported in user vector
+ */
+using SupportedUserDataTypes =
+    std::tuple<float, double, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t>;
 
 /**
  * Alias template to be used to enable template specializations only for the types listed in the
  * SupportedUserDataTypes list
  */
 template <typename T>
-using EnableIfSupportedUserType = std::enable_if_t<detail::isSupported<T>()>;
+using EnableIfSupportedUserType = std::enable_if_t<detail::isInTuple<T, SupportedUserDataTypes>>;
 
 /** helper template to provide readable type names for basic types with macro PODIO_ADD_USER_TYPE(type)
  */
