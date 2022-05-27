@@ -10,7 +10,7 @@ PODIO only makes use of rather basic Jinja2 templates, so it should in principle
 The entry point for reading yaml files is the [`python/podio_config_reader.py`](/python/podio_config_reader.py).
 When reading the yaml file a basic validation is run and the data members, relations and vector members of components and datatypes are parsed into `MemberVariable` objects (defined in [`python/generator_utils.py`](/python/generator_utils.py)).
 The reader itself will be created as part of the `ClassGenerator` in [`python/podio_class_generator.py`](/python/podio_class_generator.py), which is the main entry point.
-It takes care of 
+It takes care of
 - Configuring the Jinja2 template engine. At the moment this is mainly making the templates known to the engine.
 - The necessary preprocessing of all the datatypes and components. This includes collecting necessary include directories and forward declaration, as well as digesting `ExtraCode` snippets.
 - Putting all the necessary information into a `dict` that can be easily used in the Jinja2 templates. See [below](#available-information-in-the-templates) for what is available in the templates
@@ -52,7 +52,7 @@ The main entry point to the generation is the `process` method which essentially
 
 ## Available information in the templates
 
-The following gives an overview of the information that is available from the dictionary that is passed to the templates from the `ClassGenerator`. 
+The following gives an overview of the information that is available from the dictionary that is passed to the templates from the `ClassGenerator`.
 Each (top level) key in this dict is directly available as a variable in the Jinja2 templates, e.g.
 ```python
 component['include'] = # list of includes
@@ -105,7 +105,7 @@ The following keys / variables are filled for each datatype
 
 
 ### `MemberVariable`
-Defined in [`python/generator_utils.py`](/python/generator_utils.py). 
+Defined in [`python/generator_utils.py`](/python/generator_utils.py).
 The string representation gives the definition of the member, including a potentially present description string.
 In principle all members are accessible in the templates, however, the most important ones are:
 
@@ -125,7 +125,7 @@ In principle all members are accessible in the templates, however, the most impo
 | `signature`   | The signature of a data member that can be used in function signatures, corresponds to `{{ full_type }} {{ name }}`                                                         |
 
 ### `DataType`
-Defined in [`python/generator_utils.py`](/python/generator_utils.py). 
+Defined in [`python/generator_utils.py`](/python/generator_utils.py).
 This is essenitally a stripped down version of the `MemberVariable` with the major difference being that the string representation returns the fully qualified type instead.
 The available fields are
 
