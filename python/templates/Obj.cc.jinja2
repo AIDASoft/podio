@@ -43,7 +43,7 @@
 {% endfor %}
 }
 
-{% if obj_needs_destructor -%}
+{% if is_trivial_type -%}
 {{ obj_type }}::~{{ obj_type }}() {
 {% with multi_relations = OneToManyRelations + VectorMembers %}
 {%- if multi_relations %}

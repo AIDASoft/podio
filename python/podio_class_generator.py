@@ -256,8 +256,8 @@ class ClassGenerator:
     datatype['forward_declarations_obj'] = fwd_declarations
     datatype['includes_obj'] = self._sort_includes(includes)
     datatype['includes_cc_obj'] = self._sort_includes(includes_cc)
-    needs_destructor = datatype['VectorMembers'] or datatype['OneToManyRelations'] or datatype['OneToOneRelations']
-    datatype['obj_needs_destructor'] = needs_destructor
+    trivial_types = datatype['VectorMembers'] or datatype['OneToManyRelations'] or datatype['OneToOneRelations']
+    datatype['is_trivial_type'] = trivial_types
 
   def _preprocess_for_class(self, datatype):
     """Do the preprocessing that is necessary for the classes and Mutable classes"""
