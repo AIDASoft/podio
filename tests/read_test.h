@@ -318,45 +318,43 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     throw std::runtime_error("Collection 'arrays' should be present");
   }
 
-  if constexpr (isEventStore<StoreT>) {
-    auto& nmspaces = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
-    auto& copies = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
+  auto& nmspaces = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& copies = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
 
-    auto& cpytest = store.template create<ex42::ExampleWithARelationCollection>("TestConstCopy");
-    if (nmspaces.isValid() && copies.isValid()) {
-      for (size_t j = 0; j < nmspaces.size(); j++) {
-        auto nmsp = nmspaces[j];
-        auto cpy = copies[j];
-        cpytest.push_back(nmsp.clone());
-        if (nmsp.ref().isAvailable()) {
-          if (nmsp.ref().component().x != cpy.ref().component().x ||
-              nmsp.ref().component().y != cpy.ref().component().y) {
-            throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
-          }
-          // check direct accessors of POD sub members
-          if (nmsp.ref().x() != cpy.ref().x()) {
-            throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
-          }
-          if (nmsp.number() != cpy.number()) {
-            throw std::runtime_error("Copied item has differing member.");
-          }
-          if (!(nmsp.ref().getObjectID() == cpy.ref().getObjectID())) {
-            throw std::runtime_error("Copied item has wrong OneToOne references.");
-          }
+  auto cpytest = ex42::ExampleWithARelationCollection{};
+  if (nmspaces.isValid() && copies.isValid()) {
+    for (size_t j = 0; j < nmspaces.size(); j++) {
+      auto nmsp = nmspaces[j];
+      auto cpy = copies[j];
+      cpytest.push_back(nmsp.clone());
+      if (nmsp.ref().isAvailable()) {
+        if (nmsp.ref().component().x != cpy.ref().component().x ||
+            nmsp.ref().component().y != cpy.ref().component().y) {
+          throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
         }
-        auto cpy_it = cpy.refs_begin();
-        for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
-          if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
-            throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
-          }
-          if (!(it->getObjectID() == cpy_it->getObjectID())) {
-            throw std::runtime_error("Copied item has wrong OneToMany references.");
-          }
+        // check direct accessors of POD sub members
+        if (nmsp.ref().x() != cpy.ref().x()) {
+          throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
+        }
+        if (nmsp.number() != cpy.number()) {
+          throw std::runtime_error("Copied item has differing member.");
+        }
+        if (!(nmsp.ref().getObjectID() == cpy.ref().getObjectID())) {
+          throw std::runtime_error("Copied item has wrong OneToOne references.");
         }
       }
-    } else {
-      throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
+      auto cpy_it = cpy.refs_begin();
+      for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
+        if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
+          throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
+        }
+        if (!(it->getObjectID() == cpy_it->getObjectID())) {
+          throw std::runtime_error("Copied item has wrong OneToMany references.");
+        }
+      }
     }
+  } else {
+    throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 1}) {

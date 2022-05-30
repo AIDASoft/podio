@@ -5,10 +5,25 @@
 #include <string>
 #include <vector>
 
-static const std::vector<std::string> collsToWrite = {
-    "mcparticles",      "moreMCs",        "arrays",   "mcParticleRefs", "strings",     "hits",
-    "hitRefs",          "refs",           "refs2",    "clusters",       "OneRelation", "info",
-    "WithVectorMember", "fixedWidthInts", "userInts", "userDoubles"};
+static const std::vector<std::string> collsToWrite = {"mcparticles",
+                                                      "moreMCs",
+                                                      "arrays",
+                                                      "mcParticleRefs",
+                                                      "strings",
+                                                      "hits",
+                                                      "hitRefs",
+                                                      "refs",
+                                                      "refs2",
+                                                      "clusters",
+                                                      "OneRelation",
+                                                      "info",
+                                                      "WithVectorMember",
+                                                      "fixedWidthInts",
+                                                      "userInts",
+                                                      "userDoubles",
+                                                      "WithNamespaceMember",
+                                                      "WithNamespaceRelation",
+                                                      "WithNamespaceRelationCopy"};
 
 int main(int, char**) {
   auto writer = podio::ROOTFrameWriter("example_frame.root");

@@ -6,8 +6,10 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleReferencingTypeCollection.h"
+#include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithArrayCollection.h"
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
+#include "datamodel/ExampleWithNamespaceCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
@@ -270,6 +272,37 @@ auto createUserDataCollections(int i) {
   return retType;
 }
 
+auto createNamespaceRelationCollection(int i) {
+  auto retVal = std::tuple<ex42::ExampleWithNamespaceCollection, ex42::ExampleWithARelationCollection,
+                           ex42::ExampleWithARelationCollection>{};
+  auto& [namesps, namesprels, cpytest] = retVal;
+
+  for (int j = 0; j < 5; j++) {
+    auto rel = ex42::MutableExampleWithARelation();
+    rel.number(0.5 * j);
+    auto exWithNamesp = ex42::MutableExampleWithNamespace();
+    exWithNamesp.component().x = i;
+    exWithNamesp.component().y = 1000 * i;
+    namesps.push_back(exWithNamesp);
+    if (j != 3) { // also check for empty relations
+      rel.ref(exWithNamesp);
+      for (int k = 0; k < 5; k++) {
+        auto namesp = ex42::MutableExampleWithNamespace();
+        namesp.x(3 * k);
+        namesp.component().y = k;
+        namesps.push_back(namesp);
+        rel.addrefs(namesp);
+      }
+    }
+    namesprels.push_back(rel);
+  }
+  for (auto&& namesprel : namesprels) {
+    cpytest.push_back(namesprel.clone());
+  }
+
+  return retVal;
+}
+
 podio::Frame makeFrame(int iFrame) {
   podio::Frame frame{};
 
@@ -301,6 +334,11 @@ podio::Frame makeFrame(int iFrame) {
   auto [usrInts, usrDoubles] = createUserDataCollections(iFrame);
   frame.put(std::move(usrInts), "userInts");
   frame.put(std::move(usrDoubles), "userDoubles");
+
+  auto [namesps, namespsrels, cpytest] = createNamespaceRelationCollection(iFrame);
+  frame.put(std::move(namesps), "WithNamespaceMember");
+  frame.put(std::move(namespsrels), "WithNamespaceRelation");
+  frame.put(std::move(cpytest), "WithNamespaceRelationCopy");
 
   // Parameters
   frame.putParameter("anInt", 42 + iFrame);
