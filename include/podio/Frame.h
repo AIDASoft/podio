@@ -105,6 +105,10 @@ public:
   template <typename CollT, typename = EnableIfCollectionRValue<CollT>>
   const CollT& put(CollT&& coll, const std::string& name);
 
+  /** Move a collection into the Frame
+   */
+  void put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name);
+
   /** Add a value to the parameters of the Frame (if the type is supported).
    * Copy the value into the internal store
    */
@@ -159,6 +163,13 @@ const CollT& Frame::get(const std::string& name) const {
   // TODO: Handle non-existing collections
   static const auto emptyColl = CollT();
   return emptyColl;
+}
+
+void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {
+  const auto* retColl = m_self->put(std::move(coll), name);
+  if (!retColl) {
+    // TODO: Handle collisions
+  }
 }
 
 template <typename CollT, typename>
