@@ -100,7 +100,7 @@ The following keys / variables are filled for each datatype
 | `forward_declarations`        | The forward declarations for the user facing classes header files. This is a nested dict, where the keys are namespaces and the leaf values are classes. |
 | `forward_declarations_obj`     | The forward declarations for the `Obj` classes header files.                                                                                             |
 | `is_pod`                      | Flag value indicating whether the `Data` class of this datatype is a POD or if it contains an STL member                                                 |
-| `is_trivial_type`        | Describes a general class of data types i.e. ones which have no relations or vector members.                            |
+| `is_trivial_type`        | Flag that indicates that this is a *trivial* data type, i.e. one without relations or vector members.                            |
 | `ostream_collection_settings` | A dict with a single `header_contents` key that is necessary for the output stream overload implementation of collections                                |
 
 
