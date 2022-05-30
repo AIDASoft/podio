@@ -28,6 +28,14 @@ public:
   ROOTFrameWriter(const ROOTFrameWriter&) = delete;
   ROOTFrameWriter& operator=(const ROOTFrameWriter&) = delete;
 
+  /** Store the given frame with the given category. Store all available
+   * collections from the Frame.
+   *
+   * NOTE: The contents of the first Frame that is written in this way
+   * determines the contents that will be written for all subsequent Frames.
+   */
+  void writeFrame(const podio::Frame& frame, const std::string& category);
+
   /** Store the given Frame with the given category. Store only the
    * collections that are passed.
    *

@@ -20,7 +20,7 @@ int main(int, char**) {
 
   for (int i = 100; i < 111; ++i) {
     auto frame = makeFrame(i);
-    writer.writeFrame(frame, "other_events", collsToWrite);
+    writer.writeFrame(frame, "other_events");
   }
 
   writer.finish();

@@ -11,6 +11,7 @@
 #include "sio/definitions.h"
 
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <string>
 #include <vector>
@@ -44,6 +45,7 @@ public:
     if (m_idTable->present(name)) {
       const auto index = m_idTable->collectionID(name);
       // index because collection indices start at 1!
+      m_availableBlocks[index] = 1;
       return {dynamic_cast<podio::SIOBlock*>(m_blocks[index].get())->getBuffers()};
     }
 
@@ -56,7 +58,19 @@ public:
 
   std::unique_ptr<podio::GenericParameters> getParameters() {
     unpackBuffers();
+    m_availableBlocks[0] = 0;
     return std::make_unique<podio::GenericParameters>(std::move(m_parameters));
+  }
+
+  std::vector<std::string> getAvailableCollections() const {
+    std::vector<std::string> collections;
+    for (size_t i = 0; i < m_blocks.size(); ++i) {
+      if (m_availableBlocks[i]) {
+        collections.push_back(m_idTable->name(i));
+      }
+    }
+
+    return collections;
   }
 
 private:
@@ -88,6 +102,8 @@ private:
       auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_idTable->names()[i], subsetColl);
       m_blocks.push_back(blk);
     }
+
+    m_availableBlocks.resize(m_blocks.size(), 1);
   }
 
   // sio::record_info m_rec_info{};
@@ -100,6 +116,7 @@ private:
 
   std::vector<std::string> m_typeNames{};
   std::vector<short> m_subsetCollectionBits{};
+  std::vector<short> m_availableBlocks{}; ///< The blocks that have already been retrieved
 
   sio::block_list m_blocks{};
 

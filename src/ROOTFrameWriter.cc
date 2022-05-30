@@ -14,6 +14,10 @@ ROOTFrameWriter::ROOTFrameWriter(const std::string& filename) {
   m_file = std::make_unique<TFile>(filename.c_str(), "recreate");
 }
 
+void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
+  writeFrame(frame, category, frame.getAvailableCollections());
+}
+
 void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category,
                                  const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);

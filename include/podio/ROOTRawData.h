@@ -47,6 +47,16 @@ public:
     return std::make_unique<podio::GenericParameters>(std::move(m_parameters));
   }
 
+  std::vector<std::string> getAvailableCollections() const {
+    std::vector<std::string> collections;
+    collections.reserve(m_buffers.size());
+    for (const auto& [name, _] : m_buffers) {
+      collections.push_back(name);
+    }
+
+    return collections;
+  }
+
 private:
   // TODO: switch to something more elegant once the basic functionality and
   // interface is better defined

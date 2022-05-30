@@ -15,6 +15,7 @@
 #include <string>
 #include <type_traits>
 #include <unordered_map>
+#include <vector>
 
 namespace podio {
 
@@ -27,7 +28,8 @@ template <typename T>
 using EnableIfCollectionRValue = typename std::enable_if_t<isCollection<T> && !std::is_lvalue_reference_v<T>>;
 
 namespace detail {
-  /// Type necessary for constructing frames without raw data
+  /** The minimal interface for raw data types
+   */
   struct EmptyRawData {
     podio::CollectionIDTable getIDTable() const {
       return {};
@@ -35,6 +37,12 @@ namespace detail {
 
     std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string&) {
       return std::nullopt;
+    }
+
+    /** Get the still available, i.e. yet unpacked, collections from the raw data
+     */
+    std::vector<std::string> getAvailableCollections() const {
+      return {};
     }
   };
 } // namespace detail
@@ -58,6 +66,8 @@ class Frame {
     virtual const podio::CollectionBase* put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) = 0;
     virtual podio::GenericParameters& parameters() = 0;
     virtual const podio::GenericParameters& parameters() const = 0;
+
+    virtual std::vector<std::string> availableCollections() const = 0;
 
     // Writing interface. Need this to be able to store all necessary information
     // TODO: Figure out whether this can be "hidden" somehow
@@ -107,6 +117,8 @@ class Frame {
       // Make a copy
       return {m_idTable.ids(), m_idTable.names()};
     }
+
+    std::vector<std::string> availableCollections() const override;
 
   private:
     podio::CollectionBase* doGet(const std::string& name, bool setReferences = true) const;
@@ -197,6 +209,13 @@ public:
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   podio::GenericDataReturnType<T> getParameter(const std::string& key) const {
     return m_self->parameters().getValue<T>(key);
+  }
+
+  /** Get all **currently** available collections (including potentially
+   * unpacked ones from raw data)
+   */
+  std::vector<std::string> getAvailableCollections() const {
+    return m_self->availableCollections();
   }
 
   // Interfaces for writing below
@@ -371,6 +390,28 @@ const podio::CollectionBase* Frame::FrameModel<RawDataT>::put(std::unique_ptr<po
 
   return nullptr;
 }
+
+template <typename RawDataT>
+std::vector<std::string> Frame::FrameModel<RawDataT>::availableCollections() const {
+  // TODO: Check if there is a more efficient way to do this. Currently this is
+  // done very conservatively, but in a way that should always work, regardless
+  // of assumptions. It might be possible to simply return what is in the
+  // idTable here, because that should in principle encompass everything that is
+  // in the raw data as well as things that have been put into the frame
+
+  // Lock both the internal map and the rawdata for this
+  std::scoped_lock lock{*m_mapMtx, *m_rawDataMtx};
+
+  auto collections = m_rawData->getAvailableCollections();
+  collections.reserve(collections.size() + m_collections.size());
+
+  for (const auto& [name, _] : m_collections) {
+    collections.push_back(name);
+  }
+
+  return collections;
+}
+
 } // namespace podio
 
 #endif // PODIO_FRAME_H
