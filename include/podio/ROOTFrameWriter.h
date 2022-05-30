@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 
 // forward declarations
@@ -27,42 +28,50 @@ public:
   ROOTFrameWriter(const ROOTFrameWriter&) = delete;
   ROOTFrameWriter& operator=(const ROOTFrameWriter&) = delete;
 
-  void writeFrame(const podio::Frame& frame);
+  /** Store the given Frame with the given category. Store only the
+   * collections that are passed.
+   *
+   * NOTE: The contents of the first Frame that is written in this way
+   * determines the contents that will be written for all subsequent Frames.
+   */
+  void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
 
-  /// Register a collection to be written (without check if it is actually present!)
-  void registerForWrite(const std::string& name);
-
+  /** Write the current file, including all the necessary metadata to read it again.
+   */
   void finish();
 
 private:
   using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
 
-  std::tuple<TTree*, std::vector<root_utils::CollectionBranches>>
-  initTree(const std::vector<StoreCollection>& collections, /*const*/ podio::GenericParameters& parameters,
-           podio::CollectionIDTable&& idTable, const std::string& category);
+  // collectionID, collectionType, subsetCollection
+  // NOTE: same as in rootUtils.h private header!
+  using CollectionInfoT = std::tuple<int, std::string, bool>;
+
+  /**
+   * Helper struct to group together all necessary state to write / process a
+   * given category. Created during the first writing of a category
+   */
+  struct CategoryInfo {
+    TTree* tree{nullptr};                                   ///< The TTree to which this category is written
+    std::vector<root_utils::CollectionBranches> branches{}; ///< The branches for this category
+    std::vector<CollectionInfoT> collInfo{};                ///< Collection info for this category
+    podio::CollectionIDTable idTable{};                     ///< The collection id table for this category
+    std::vector<std::string> collsToWrite{};                ///< The collections to write for this category
+  };
+
+  /// Initialize the branches for this category
+  void initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
+                    /*const*/ podio::GenericParameters& parameters);
+
+  /// Get the (potentially uninitialized category information for this category)
+  CategoryInfo& getCategoryInfo(const std::string& category);
 
   static void resetBranches(std::vector<root_utils::CollectionBranches>& branches,
                             const std::vector<ROOTFrameWriter::StoreCollection>& collections,
                             /*const*/ podio::GenericParameters* parameters);
 
-  std::unique_ptr<TFile> m_file{nullptr}; ///< The storage file
-  TTree* m_dataTree{nullptr};             ///< Collection data and parameters for each frame
-
-  /// The tree to store all the necessary metadata to read this file again
-  TTree* m_metaTree{nullptr};
-
-  std::vector<std::string> m_collsToWrite{}; ///< The collections that should be written
-
-  /// Cached branches for writing collections
-  std::vector<root_utils::CollectionBranches> m_collectionBranches{};
-
-  podio::CollectionIDTable m_idTable{}; ///< The collection id table
-
-  // collectionID, collectionType, subsetCollection
-  // NOTE: same as in rootUtils.h private header!
-  using CollectionInfoT = std::tuple<int, std::string, bool>;
-
-  std::vector<CollectionInfoT> m_collectionInfo{};
+  std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
+  std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
 };
 
 } // namespace podio

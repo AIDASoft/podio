@@ -2,10 +2,10 @@
 
 #include "podio/ROOTFrameWriter.h"
 
-#include <array>
-#include <string_view>
+#include <string>
+#include <vector>
 
-static constexpr std::array<std::string_view, 20> collsToWrite = {
+static const std::vector<std::string> collsToWrite = {
     "mcparticles",      "moreMCs",        "arrays",   "mcParticleRefs", "strings",     "hits",
     "hitRefs",          "refs",           "refs2",    "clusters",       "OneRelation", "info",
     "WithVectorMember", "fixedWidthInts", "userInts", "userDoubles"};
@@ -13,15 +13,14 @@ static constexpr std::array<std::string_view, 20> collsToWrite = {
 int main(int, char**) {
   auto writer = podio::ROOTFrameWriter("example_frame.root");
 
-  for (const auto n : collsToWrite) {
-    if (!n.empty()) {
-      writer.registerForWrite(std::string(n));
-    }
-  }
-
   for (int i = 0; i < 10; ++i) {
     auto frame = makeFrame(i);
-    writer.writeFrame(frame);
+    writer.writeFrame(frame, "events", collsToWrite);
+  }
+
+  for (int i = 100; i < 111; ++i) {
+    auto frame = makeFrame(i);
+    writer.writeFrame(frame, "other_events", collsToWrite);
   }
 
   writer.finish();

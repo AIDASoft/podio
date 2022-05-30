@@ -2,8 +2,8 @@
 #include "podio/CollectionBase.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
-
 #include "podio/podioVersion.h"
+
 #include "rootUtils.h"
 
 #include "TTree.h"
@@ -12,52 +12,52 @@ namespace podio {
 
 ROOTFrameWriter::ROOTFrameWriter(const std::string& filename) {
   m_file = std::make_unique<TFile>(filename.c_str(), "recreate");
-
-  m_metaTree = new TTree(root_utils::metaTreeName, "metadata tree for podio I/O functionality");
-  m_metaTree->SetDirectory(m_file.get());
 }
 
-void ROOTFrameWriter::writeFrame(const podio::Frame& frame) {
-  std::vector<StoreCollection> collections;
-  collections.reserve(m_collsToWrite.size());
+void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category,
+                                 const std::vector<std::string>& collsToWrite) {
+  auto& catInfo = getCategoryInfo(category);
+  // Use the TTree as proxy here to decide whether this category has already
+  // been initialized
+  if (catInfo.tree == nullptr) {
+    catInfo.idTable = frame.getCollectionIDTableForWrite();
+    catInfo.collsToWrite = collsToWrite;
+    catInfo.tree = new TTree(category.c_str(), (category + " data tree").c_str());
+    catInfo.tree->SetDirectory(m_file.get());
+  }
 
-  for (const auto& name : m_collsToWrite) {
+  std::vector<StoreCollection> collections;
+  collections.reserve(catInfo.collsToWrite.size());
+  for (const auto& name : catInfo.collsToWrite) {
     auto* coll = frame.getCollectionForWrite(name);
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
-  if (!m_dataTree) {
-    // If we do not have a data tree yet, initialize it and create all the necessary branches in the process
-    std::tie(m_dataTree, m_collectionBranches) =
-        initTree(collections, const_cast<podio::GenericParameters&>(frame.getGenericParametersForWrite()),
-                 frame.getCollectionIDTableForWrite(), "events");
+  // We will at least have a parameters branch, even if there are no
+  // collections
+  if (catInfo.branches.empty()) {
+    initBranches(catInfo, collections, const_cast<podio::GenericParameters&>(frame.getGenericParametersForWrite()));
 
   } else {
-    // TODO: Can this be done without the const_cast? (also above)
-    resetBranches(m_collectionBranches, collections,
+    resetBranches(catInfo.branches, collections,
                   &const_cast<podio::GenericParameters&>(frame.getGenericParametersForWrite()));
   }
 
-  m_dataTree->Fill();
+  catInfo.tree->Fill();
 }
 
-std::tuple<TTree*, std::vector<root_utils::CollectionBranches>>
-ROOTFrameWriter::initTree(const std::vector<StoreCollection>& collections,
-                          /*const*/ podio::GenericParameters& parameters, podio::CollectionIDTable&& idTable,
-                          const std::string& category) {
-  auto* tree = new TTree(category.c_str(), (category + " data tree").c_str());
-  tree->SetDirectory(m_file.get());
+ROOTFrameWriter::CategoryInfo& ROOTFrameWriter::getCategoryInfo(const std::string& category) {
+  if (auto it = m_categories.find(category); it != m_categories.end()) {
+    return it->second;
+  }
 
-  // create the necessary branches for storing the metadata and connect them to
-  // the book-keeping members
-  m_idTable = std::move(idTable);
-  m_metaTree->Branch(root_utils::idTableName(category).c_str(), &m_idTable);
+  auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
+  return it->second;
+}
 
-  m_collectionInfo.reserve(collections.size());
-  m_metaTree->Branch(root_utils::collInfoName(category).c_str(), &m_collectionInfo);
-
-  auto allBranches = std::vector<root_utils::CollectionBranches>{};
-  allBranches.reserve(collections.size() + 1); // collections + parameters
+void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
+                                   /*const*/ podio::GenericParameters& parameters) {
+  catInfo.branches.reserve(collections.size() + 1); // collections + parameters
 
   // First collections
   for (auto& [name, coll] : collections) {
@@ -67,7 +67,7 @@ ROOTFrameWriter::initTree(const std::vector<StoreCollection>& collections,
     // data buffer branch, only for non-subset collections
     if (buffers.data) {
       auto bufferDataType = "vector<" + coll->getDataTypeName() + ">";
-      branches.data = tree->Branch(name.c_str(), bufferDataType.c_str(), buffers.data);
+      branches.data = catInfo.tree->Branch(name.c_str(), bufferDataType.c_str(), buffers.data);
     }
 
     // reference collections
@@ -75,7 +75,7 @@ ROOTFrameWriter::initTree(const std::vector<StoreCollection>& collections,
       int i = 0;
       for (auto& c : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i++);
-        branches.refs.push_back(tree->Branch(brName.c_str(), c.get()));
+        branches.refs.push_back(catInfo.tree->Branch(brName.c_str(), c.get()));
       }
     }
 
@@ -85,20 +85,18 @@ ROOTFrameWriter::initTree(const std::vector<StoreCollection>& collections,
       for (auto& [type, vec] : (*vmInfo)) {
         const auto typeName = "vector<" + type + ">";
         const auto brName = root_utils::vecBranch(name, i++);
-        branches.vecs.push_back(tree->Branch(brName.c_str(), typeName.c_str(), vec));
+        branches.vecs.push_back(catInfo.tree->Branch(brName.c_str(), typeName.c_str(), vec));
       }
     }
 
-    allBranches.push_back(branches);
-    m_collectionInfo.emplace_back(m_idTable.collectionID(name), coll->getTypeName(), coll->isSubsetCollection());
+    catInfo.branches.push_back(branches);
+    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name), coll->getTypeName(), coll->isSubsetCollection());
   }
 
   // Also make branches for the parameters
   root_utils::CollectionBranches branches;
-  branches.data = tree->Branch(root_utils::paramBranchName, &parameters);
-  allBranches.push_back(branches);
-
-  return {tree, allBranches};
+  branches.data = catInfo.tree->Branch(root_utils::paramBranchName, &parameters);
+  catInfo.branches.push_back(branches);
 }
 
 void ROOTFrameWriter::resetBranches(std::vector<root_utils::CollectionBranches>& branches,
@@ -114,16 +112,21 @@ void ROOTFrameWriter::resetBranches(std::vector<root_utils::CollectionBranches>&
   branches.back().data->SetAddress(&parameters);
 }
 
-void ROOTFrameWriter::registerForWrite(const std::string& name) {
-  m_collsToWrite.push_back(name);
-}
-
 void ROOTFrameWriter::finish() {
+  auto* metaTree = new TTree(root_utils::metaTreeName, "metadata tree for podio I/O functionality");
+  metaTree->SetDirectory(m_file.get());
+
+  // Store the collection id table and collection info for reading in the meta tree
+  for (/*const*/ auto& [category, info] : m_categories) {
+    metaTree->Branch(root_utils::idTableName(category).c_str(), &info.idTable);
+    metaTree->Branch(root_utils::collInfoName(category).c_str(), &info.collInfo);
+  }
+
   // Store the current podio build version into the meta data tree
   auto podioVersion = podio::version::build_version;
-  m_metaTree->Branch(root_utils::versionBranchName, &podioVersion);
+  metaTree->Branch(root_utils::versionBranchName, &podioVersion);
 
-  m_metaTree->Fill();
+  metaTree->Fill();
 
   m_file->Write();
   m_file->Close();
