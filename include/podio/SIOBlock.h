@@ -71,6 +71,15 @@ public:
 
   SIOCollectionIDTableBlock(podio::EventStore* store);
 
+  SIOCollectionIDTableBlock(const std::vector<std::string>& names, const std::vector<int>& ids,
+                            std::vector<std::string>&& types, std::vector<short>&& isSubsetColl) :
+      sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
+      _names(names),
+      _ids(ids),
+      _types(std::move(types)),
+      _isSubsetColl(std::move(isSubsetColl)) {
+  }
+
   SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
   SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
 
@@ -225,6 +234,10 @@ private:
 
 struct SIOFileTOCRecordBlock : public sio::block {
   SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {
+  }
+
+  SIOFileTOCRecordBlock(SIOFileTOCRecord* r) :
+      sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)), record(r) {
   }
 
   SIOFileTOCRecordBlock(const SIOFileTOCRecordBlock&) = delete;

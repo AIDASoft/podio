@@ -121,7 +121,14 @@ endif()
 
 
 if (TARGET TestDataModelSioBlocks)
-  set(sio_dependent_tests write_sio.cpp read_sio.cpp read_and_write_sio.cpp write_timed_sio.cpp read_timed_sio.cpp read_frame_sio.cpp)
+  set(sio_dependent_tests
+    write_sio.cpp
+    read_sio.cpp
+    read_and_write_sio.cpp
+    write_timed_sio.cpp
+    read_timed_sio.cpp
+    read_frame_sio.cpp
+    write_frame_sio.cpp)
   set(sio_libs podio::podioSioIO)
   foreach( sourcefile ${sio_dependent_tests} )
     CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
