@@ -63,11 +63,7 @@ public:
   SIOCollectionIDTableBlock() : sio::block("CollectionIDs", sio::version::encode_version(0, 3)) {
   }
 
-  SIOCollectionIDTableBlock(podio::EventStore* store) :
-      sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
-      _store(store),
-      _table(store->getCollectionIDTable()) {
-  }
+  SIOCollectionIDTableBlock(podio::EventStore* store);
 
   SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
   SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
@@ -89,7 +85,6 @@ public:
   }
 
 private:
-  podio::EventStore* _store{nullptr};
   podio::CollectionIDTable* _table{nullptr};
   std::vector<std::string> _types{};
   std::vector<short> _isSubsetColl{};

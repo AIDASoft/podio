@@ -12,6 +12,25 @@
 #endif
 
 namespace podio {
+SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
+    sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
+    // _store(store),
+    _table(store->getCollectionIDTable()) {
+  _types.reserve(_table->names().size());
+  _isSubsetColl.reserve(_table->names().size());
+  for (const int id : _table->ids()) {
+    CollectionBase* tmp;
+    if (!store->get(id, tmp)) {
+      std::cerr
+          << "PODIO-ERROR cannot construct CollectionIDTableBlock because a collection is missing from the store (id: "
+          << id << ", name: " << _table->name(id) << ")" << std::endl;
+    }
+
+    _types.push_back(tmp->getValueTypeName());
+    _isSubsetColl.push_back(tmp->isSubsetCollection());
+  }
+}
+
 void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type version) {
   std::vector<std::string> names;
   std::vector<int> ids;
@@ -35,19 +54,8 @@ void SIOCollectionIDTableBlock::write(sio::write_device& device) {
   device.data(_table->names());
   device.data(_table->ids());
 
-  std::vector<std::string> typeNames;
-  std::vector<short> isSubsetColl;
-  typeNames.reserve(_table->ids().size());
-  for (const int id : _table->ids()) {
-    CollectionBase* tmp;
-    if (!_store->get(id, tmp)) {
-      std::cerr << "ERROR during writing of CollectionID table" << std::endl;
-    }
-    typeNames.push_back(tmp->getValueTypeName());
-    isSubsetColl.push_back(tmp->isSubsetCollection());
-  }
-  device.data(typeNames);
-  device.data(isSubsetColl);
+  device.data(_types);
+  device.data(_isSubsetColl);
 
   device.data(podioVersion.major);
   device.data(podioVersion.minor);
