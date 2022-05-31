@@ -296,7 +296,6 @@ class ClassDefinitionValidator:
       if field not in definition:
         definition[field] = {}
 
-
 class PodioConfigReader:
   """Config reader that does basic parsing of the member definitions and puts
   everything into a somewhat uniform structure without doing any fancy
@@ -415,7 +414,7 @@ class PodioConfigReader:
   def read(self):
     """Read the datamodel definition from the yamlfile"""
     stream = open(self.yamlfile, "r")
-    content = ordered_load(stream, yaml.SafeLoader)
+    content = yaml.load(stream, yaml.SafeLoader)
 
     if "components" in content:
       for klassname, value in content["components"].items():
