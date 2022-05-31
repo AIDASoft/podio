@@ -16,7 +16,29 @@
 #include "podio/Frame.h"
 #include "podio/UserDataCollection.h"
 
+#include <string>
 #include <tuple>
+#include <vector>
+
+static const std::vector<std::string> collsToWrite = {"mcparticles",
+                                                      "moreMCs",
+                                                      "arrays",
+                                                      "mcParticleRefs",
+                                                      "strings",
+                                                      "hits",
+                                                      "hitRefs",
+                                                      "refs",
+                                                      "refs2",
+                                                      "clusters",
+                                                      "OneRelation",
+                                                      "info",
+                                                      "WithVectorMember",
+                                                      "fixedWidthInts",
+                                                      "userInts",
+                                                      "userDoubles",
+                                                      "WithNamespaceMember",
+                                                      "WithNamespaceRelation",
+                                                      "WithNamespaceRelationCopy"};
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
@@ -347,6 +369,23 @@ podio::Frame makeFrame(int iFrame) {
   frame.putParameter("SomeVectorData", {1, 2, 3, 4});
 
   return frame;
+}
+
+template <typename WriterT>
+void write_frames(const std::string& filename) {
+  WriterT writer(filename);
+
+  for (int i = 0; i < 10; ++i) {
+    auto frame = makeFrame(i);
+    writer.writeFrame(frame, "events", collsToWrite);
+  }
+
+  for (int i = 100; i < 111; ++i) {
+    auto frame = makeFrame(i);
+    writer.writeFrame(frame, "other_events");
+  }
+
+  writer.finish();
 }
 
 #endif // PODIO_TESTS_WRITE_FRAME_H
