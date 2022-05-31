@@ -296,6 +296,7 @@ class ClassDefinitionValidator:
       if field not in definition:
         definition[field] = {}
 
+
 class PodioConfigReader:
   """Config reader that does basic parsing of the member definitions and puts
   everything into a somewhat uniform structure without doing any fancy
