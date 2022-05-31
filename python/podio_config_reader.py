@@ -297,23 +297,6 @@ class ClassDefinitionValidator:
         definition[field] = {}
 
 
-def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):  # pylint: disable=invalid-name
-  """Load the yaml file such that the returned dictionary is in the same order as
-  it was in the file"""
-  class OrderedLoader(Loader):  # pylint: disable=too-many-ancestors
-    """Extend the passed yaml loader"""
-
-  def construct_mapping(loader, node):
-    """Constructor function for insterting yaml objects into the dictionary"""
-    loader.flatten_mapping(node)
-    return object_pairs_hook(loader.construct_pairs(node))
-
-  OrderedLoader.add_constructor(
-      yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-      construct_mapping)
-  return yaml.load(stream, OrderedLoader)
-
-
 class PodioConfigReader:
   """Config reader that does basic parsing of the member definitions and puts
   everything into a somewhat uniform structure without doing any fancy
