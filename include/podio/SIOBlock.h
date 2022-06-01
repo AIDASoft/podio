@@ -72,7 +72,7 @@ public:
   void write(sio::write_device& device) override;
 
   podio::CollectionIDTable* getTable() {
-    return _table;
+    return new podio::CollectionIDTable(std::move(_ids), std::move(_names));
   }
   const std::vector<std::string>& getTypeNames() const {
     return _types;
@@ -85,7 +85,8 @@ public:
   }
 
 private:
-  podio::CollectionIDTable* _table{nullptr};
+  std::vector<std::string> _names{};
+  std::vector<int> _ids{};
   std::vector<std::string> _types{};
   std::vector<short> _isSubsetColl{};
   podio::version::Version podioVersion{podio::version::build_version};
