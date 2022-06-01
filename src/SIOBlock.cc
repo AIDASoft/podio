@@ -39,12 +39,6 @@ void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type
   if (version >= sio::version::encode_version(0, 2)) {
     device.data(_isSubsetColl);
   }
-
-  if (version >= sio::version::encode_version(0, 3)) {
-    device.data(podioVersion.major);
-    device.data(podioVersion.minor);
-    device.data(podioVersion.patch);
-  }
 }
 
 void SIOCollectionIDTableBlock::write(sio::write_device& device) {
@@ -53,10 +47,6 @@ void SIOCollectionIDTableBlock::write(sio::write_device& device) {
 
   device.data(_types);
   device.data(_isSubsetColl);
-
-  device.data(podioVersion.major);
-  device.data(podioVersion.minor);
-  device.data(podioVersion.patch);
 }
 
 template <typename MappedT>
