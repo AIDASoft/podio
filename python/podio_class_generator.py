@@ -431,8 +431,8 @@ class ClassGenerator:
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c) for c in self.reader.components.keys()],
-            'datatypes': [DataType(d) for d in self.reader.datatypes.keys()]}
+    data = {'components': [DataType(c) for c in self.reader.components],
+            'datatypes': [DataType(d) for d in self.reader.datatypes]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, classname):
