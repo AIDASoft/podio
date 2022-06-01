@@ -4,7 +4,6 @@
 import copy
 import re
 import warnings
-from collections import OrderedDict
 import yaml
 
 from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
@@ -306,8 +305,8 @@ class PodioConfigReader:
 
   def __init__(self, yamlfile):
     self.yamlfile = yamlfile
-    self.datatypes = OrderedDict()
-    self.components = OrderedDict()
+    self.datatypes = dict()
+    self.components = dict()
     self.options = {
         # should getters / setters be prefixed with get / set?
         "getSyntax": False,
