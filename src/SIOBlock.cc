@@ -13,8 +13,7 @@
 
 namespace podio {
 SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
-    sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
-    _table(store->getCollectionIDTable()) {
+    sio::block("CollectionIDs", sio::version::encode_version(0, 3)), _table(store->getCollectionIDTable()) {
   _types.reserve(_table->names().size());
   _isSubsetColl.reserve(_table->names().size());
   for (const int id : _table->ids()) {
