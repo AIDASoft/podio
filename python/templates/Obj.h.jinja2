@@ -32,7 +32,7 @@ public:
   {{ obj_type }}(const podio::ObjectID id, {{ class.bare_type }}Data data);
   /// No assignment operator
   {{ obj_type }}& operator=(const {{ obj_type }}&) = delete;
-{% if obj_needs_destructor %}
+{% if is_trivial_type %}
   virtual ~{{ obj_type }}();
 {% else %}
   virtual ~{{ obj_type }}() = default;

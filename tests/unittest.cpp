@@ -450,6 +450,19 @@ TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
   // Also in the other directon
   clusterRef.energy(-42);
   REQUIRE(cluster.energy() == -42);
+
+  clusters.setID(42);
+  for (auto c : clusters) {
+    REQUIRE(c.getObjectID().collectionID == 42);
+  }
+
+  // Setting the ID on a subset collection should not change the IDs of the
+  // reference objects as otherwise we cannot use them in I/O
+  clusterRefs.setID(314);
+  REQUIRE(clusterRefs.getID() == 314);
+  for (auto c : clusterRefs) {
+    REQUIRE(c.getObjectID().collectionID == 42);
+  }
 }
 
 TEST_CASE("Collection iterators work with subset collections", "[LEAK-FAIL][subset-colls]") {
