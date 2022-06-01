@@ -15,7 +15,7 @@ class ICollectionProvider;
 class CollectionBase {
 public:
   /// prepare buffers for serialization
-  virtual void prepareForWrite() = 0;
+  virtual void prepareForWrite() const = 0;
 
   /// re-create collection from buffers after read
   virtual void prepareAfterRead() = 0;

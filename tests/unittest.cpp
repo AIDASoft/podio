@@ -1,6 +1,8 @@
 // STL
+#include <cstdint>
 #include <map>
 #include <stdexcept>
+#include <thread>
 #include <type_traits>
 #include <vector>
 
@@ -263,6 +265,54 @@ TEST_CASE("write_buffer", "[basics][io]") {
   auto& ref_coll = store.create<ExampleWithOneRelationCollection>("onerel");
   auto withRef = ref_coll.create();
   REQUIRE_NOTHROW(ref_coll.prepareForWrite());
+}
+
+TEST_CASE("thread-safe prepareForWrite", "[basics][multithread]") {
+  // setup a collection that we can then prepareForWrite from multiple threads
+  constexpr auto nElements = 100u;
+  ExampleHitCollection hits{};
+  podio::UserDataCollection<std::uint64_t> userInts{};
+  for (size_t i = 0; i < nElements; ++i) {
+    hits.create(i, i * 0.5, i * 1.5, i * 2.5, 3.14);
+    userInts.push_back(i);
+  }
+
+  constexpr int nThreads = 10;
+  std::vector<std::thread> threads{};
+  threads.reserve(nThreads);
+
+  for (int i = 0; i < nThreads; ++i) {
+    threads.emplace_back([&hits, &userInts, i]() {
+      hits.prepareForWrite();
+      userInts.prepareForWrite();
+    });
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  // NOTE: doing this on a single thread, because getBuffers is not threadsafe
+  auto buffers = hits.getBuffers();
+  auto* dataVec = buffers.dataAsVector<ExampleHitData>();
+  REQUIRE(dataVec->size() == nElements);
+
+  auto intBuffers = userInts.getBuffers();
+  auto* intVec = intBuffers.dataAsVector<std::uint64_t>();
+  REQUIRE(intVec->size() == nElements);
+
+  size_t i = 0;
+  for (const auto& h : *dataVec) {
+    REQUIRE(h.energy == 3.14);
+    REQUIRE(h.cellID == i);
+    REQUIRE(h.x == i * 0.5);
+    REQUIRE(h.y == i * 1.5);
+    REQUIRE(h.z == i * 2.5);
+
+    REQUIRE((*intVec)[i] == i);
+
+    i++;
+  }
 }
 
 /*
