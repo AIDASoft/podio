@@ -592,7 +592,7 @@ auto createCollections(const size_t nElements = 3u) {
 // Helper functionality to keep the tests below with a common setup a bit shorter
 void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClusterCollection& clusters,
                       /*const*/ ExampleWithVectorMemberCollection& vectors,
-                      /*const*/ podio::UserDataCollection<float>& userData, /*const*/ size_t nElements = 3u) {
+                      /*const*/ podio::UserDataCollection<float>& userData, const size_t nElements = 3u) {
   // Basics
   REQUIRE(hits.size() == nElements);
   REQUIRE(clusters.size() == nElements);
@@ -629,12 +629,6 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
       REQUIRE(hitPOD.cellID == static_cast<unsigned long long>(iHit));
       REQUIRE(hitPOD.energy == 100.f * iHit);
     }
-  } else {
-    // NOTE: Just basic tests here really. Checking the contents as well here
-    // requires information that is not easily available at the moment
-    REQUIRE(hitBuffers.data == nullptr);
-    REQUIRE(hitBuffers.references->size() == 1);
-    REQUIRE(hitBuffers.vectorMembers->empty());
   }
 
   clusters.prepareForWrite();
@@ -650,12 +644,6 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
       REQUIRE(hitID.index == (int)iHit);
       REQUIRE(static_cast<unsigned>(hitID.collectionID) == hits.getID());
     }
-  } else {
-    // NOTE: Just basic tests here really. Checking the contents as well here
-    // requires information that is not easily available at the moment
-    REQUIRE(clusterBuffers.data == nullptr);
-    REQUIRE(clusterBuffers.references->size() == 1);
-    REQUIRE(clusterBuffers.vectorMembers->empty());
   }
 
   vectors.prepareForWrite();
@@ -670,12 +658,6 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
       REQUIRE((*countBuffer)[iC * 2] == iC);
       REQUIRE((*countBuffer)[iC * 2 + 1] == 42 + iC);
     }
-  } else {
-    // NOTE: Just basic tests here really. Checking the contents as well here
-    // requires information that is not easily available at the moment
-    REQUIRE(vecMemBuffers.data == nullptr);
-    REQUIRE(vecMemBuffers.references->size() == 1);
-    REQUIRE(vecMemBuffers.vectorMembers->empty());
   }
 }
 
