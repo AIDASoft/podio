@@ -101,9 +101,11 @@ public:
 
   void setID(unsigned ID) final {
     m_collectionID = ID;
-    std::for_each(m_storage.entries.begin(), m_storage.entries.end(),
+    if (!m_isSubsetColl) {
+      std::for_each(m_storage.entries.begin(), m_storage.entries.end(),
                   [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<int>(ID)}; }
-    );
+      );
+    }
     m_isValid = true;
   };
 
