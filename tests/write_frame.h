@@ -380,7 +380,7 @@ void write_frames(const std::string& filename) {
     writer.writeFrame(frame, "events", collsToWrite);
   }
 
-  for (int i = 100; i < 111; ++i) {
+  for (int i = 100; i < 110; ++i) {
     auto frame = makeFrame(i);
     writer.writeFrame(frame, "other_events");
   }

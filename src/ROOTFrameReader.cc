@@ -164,7 +164,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
     const std::string name = branches->At(i)->GetName();
     const auto fUnder = name.find("___");
     if (fUnder != std::string::npos) {
-      brNames.emplace_back(name.substr(0, name.find('_')));
+      brNames.emplace_back(name.substr(0, fUnder));
     }
   }
 
