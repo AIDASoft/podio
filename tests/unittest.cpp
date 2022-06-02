@@ -282,7 +282,7 @@ TEST_CASE("thread-safe prepareForWrite", "[basics][multithread]") {
   threads.reserve(nThreads);
 
   for (int i = 0; i < nThreads; ++i) {
-    threads.emplace_back([&hits, &userInts, i]() {
+    threads.emplace_back([&hits, &userInts]() {
       hits.prepareForWrite();
       userInts.prepareForWrite();
     });
