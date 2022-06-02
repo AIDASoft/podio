@@ -2,24 +2,15 @@
 # -*- coding: utf-8 -*-
 """Podio class generator script"""
 
-from __future__ import unicode_literals, absolute_import, print_function
-
 import os
 import sys
 import subprocess
 import pickle
 from copy import deepcopy
 
-# collections.abc not available for python2, so again some special care here
-try:
-  from collections.abc import Mapping
-except ImportError:
-  from collections import Mapping
+from collections.abc import Mapping
 
-try:
-  from itertools import zip_longest
-except ImportError:
-  from itertools import izip_longest as zip_longest
+from itertools import zip_longest
 
 import jinja2
 
@@ -440,8 +431,8 @@ class ClassGenerator:
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c) for c in self.reader.components.keys()],
-            'datatypes': [DataType(d) for d in self.reader.datatypes.keys()]}
+    data = {'components': [DataType(c) for c in self.reader.components],
+            'datatypes': [DataType(d) for d in self.reader.datatypes]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, classname):

@@ -1,6 +1,5 @@
 """Unit tests for the EventStore class"""
 
-from __future__ import print_function, absolute_import, unicode_literals
 
 import os
 import unittest

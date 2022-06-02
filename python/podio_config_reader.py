@@ -1,11 +1,9 @@
 """Datamodel yaml configuration file reading and validation utilities"""
 
-from __future__ import absolute_import, unicode_literals, print_function
 
 import copy
 import re
 import warnings
-from collections import OrderedDict
 import yaml
 
 from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES
@@ -298,23 +296,6 @@ class ClassDefinitionValidator:
         definition[field] = {}
 
 
-def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):  # pylint: disable=invalid-name
-  """Load the yaml file such that the returned dictionary is in the same order as
-  it was in the file"""
-  class OrderedLoader(Loader):  # pylint: disable=too-many-ancestors
-    """Extend the passed yaml loader"""
-
-  def construct_mapping(loader, node):
-    """Constructor function for insterting yaml objects into the dictionary"""
-    loader.flatten_mapping(node)
-    return object_pairs_hook(loader.construct_pairs(node))
-
-  OrderedLoader.add_constructor(
-      yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-      construct_mapping)
-  return yaml.load(stream, OrderedLoader)
-
-
 class PodioConfigReader:
   """Config reader that does basic parsing of the member definitions and puts
   everything into a somewhat uniform structure without doing any fancy
@@ -324,8 +305,8 @@ class PodioConfigReader:
 
   def __init__(self, yamlfile):
     self.yamlfile = yamlfile
-    self.datatypes = OrderedDict()
-    self.components = OrderedDict()
+    self.datatypes = dict()
+    self.components = dict()
     self.options = {
         # should getters / setters be prefixed with get / set?
         "getSyntax": False,
@@ -433,7 +414,7 @@ class PodioConfigReader:
   def read(self):
     """Read the datamodel definition from the yamlfile"""
     stream = open(self.yamlfile, "r")
-    content = ordered_load(stream, yaml.SafeLoader)
+    content = yaml.load(stream, yaml.SafeLoader)
 
     if "components" in content:
       for klassname, value in content["components"].items():

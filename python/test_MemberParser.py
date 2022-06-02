@@ -4,7 +4,6 @@ Tests for the MemberParser highlighting what it is currently capable of and
 what trips it up
 """
 
-from __future__ import print_function, absolute_import, unicode_literals
 import unittest
 
 from podio_config_reader import MemberParser, DefinitionError
