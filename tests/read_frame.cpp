@@ -12,12 +12,12 @@ int main() {
   }
 
   for (size_t i = 0; i < reader.getEntries("events"); ++i) {
-    auto frame = podio::Frame(reader.readNextEvent("events"));
+    auto frame = podio::Frame(reader.readNextFrame("events"));
     processEvent(frame, i, reader.currentFileVersion());
   }
 
   for (size_t i = 0; i < reader.getEntries("other_events"); ++i) {
-    auto frame = podio::Frame(reader.readNextEvent("other_events"));
+    auto frame = podio::Frame(reader.readNextFrame("other_events"));
     processEvent(frame, i + 100, reader.currentFileVersion());
   }
 

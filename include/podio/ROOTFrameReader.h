@@ -47,7 +47,7 @@ public:
   void openFiles(const std::vector<std::string>& filenames);
 
   /// Read all collections requested
-  std::unique_ptr<podio::ROOTRawData> readNextEvent(const std::string& category);
+  std::unique_ptr<podio::ROOTRawData> readNextFrame(const std::string& category);
 
   /// Returns number of entries for the given category
   unsigned getEntries(const std::string& category) const;
