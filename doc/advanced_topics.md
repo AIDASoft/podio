@@ -73,3 +73,15 @@ The example event store provided with PODIO is as of writing not thread-safe. Ne
 
 PODIO contains one example `podio::EventStore` class.
 To implement your own transient event store, the only requirement is to set the collectionID of each collection to a unique ID on creation.
+
+## Running pre-commit
+
+ - Install [homebrew](https://brew.sh/)
+ 
+ - Install pre-commit
+    
+    `$ brew install pre-commit`
+ 
+ - Run pre-commit manually
+  
+    `$ pre-commit run --all-files`
