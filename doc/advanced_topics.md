@@ -77,11 +77,11 @@ To implement your own transient event store, the only requirement is to set the 
 ## Running pre-commit
 
  - Install [homebrew](https://brew.sh/)
- 
+
  - Install pre-commit
-    
+
     `$ brew install pre-commit`
- 
+
  - Run pre-commit manually
-  
+
     `$ pre-commit run --all-files`
