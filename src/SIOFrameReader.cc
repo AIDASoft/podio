@@ -1,10 +1,34 @@
 #include "podio/SIOFrameReader.h"
 #include "podio/SIOBlock.h"
 
-#include "sio/compression/zlib.h"
+#include <sio/api.h>
+#include <sio/compression/zlib.h>
 #include <sio/definitions.h>
 
+#include <utility>
+
 namespace podio {
+
+namespace sio_utils {
+  // Read the record into a buffer and potentially uncompress it
+  std::pair<sio::buffer, sio::record_info> readRecord(sio::ifstream& stream, bool decompress = true,
+                                                      std::size_t initBufferSize = sio::mbyte) {
+    sio::record_info recInfo;
+    sio::buffer infoBuffer{sio::max_record_info_len};
+    sio::buffer recBuffer{initBufferSize};
+    sio::api::read_record_info(stream, recInfo, infoBuffer);
+    sio::api::read_record_data(stream, recInfo, recBuffer);
+
+    if (decompress) {
+      sio::buffer uncBuffer{recInfo._uncompressed_length};
+      sio::zlib_compression compressor;
+      compressor.uncompress(recBuffer.span(), uncBuffer);
+      return std::make_pair(std::move(uncBuffer), recInfo);
+    }
+
+    return std::make_pair(std::move(recBuffer), recInfo);
+  }
+} // namespace sio_utils
 
 SIOFrameReader::SIOFrameReader() {
   auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
@@ -12,47 +36,35 @@ SIOFrameReader::SIOFrameReader() {
 
 void SIOFrameReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
-  readCollectionIDTable();
+  if (!m_stream.is_open()) {
+    SIO_THROW(sio::error_code::not_open, "Cannot open input file '" + filename + "' for reading");
+  }
+
+  // NOTE: reading TOC record first because that jumps back to the start of the file!
   readFileTOCRecord();
+  readPodioHeader();
 }
 
-std::unique_ptr<SIORawData> SIOFrameReader::readNextEvent() {
-  // skip possible intermediate records that are not event data
-  sio::api::go_to_record(m_stream, "event_record");
+std::unique_ptr<SIORawData> SIOFrameReader::readNextFrame(const std::string& category) {
+  // Skip to where the next record of this category starts in the file, based on
+  // how many times we have already read this category
+  //
+  // NOTE: exploiting the fact that the operator[] of a map will create a
+  // default initialized entry for us if not present yet
+  const auto recordPos = m_tocRecord.getPosition(category, m_categoryCtr[category]);
+  m_stream.seekg(recordPos);
 
-  sio::record_info recInfo;
-  sio::buffer infoBuffer{sio::max_record_info_len};
-  sio::buffer recBuffer{sio::mbyte}; // correct size?
-  sio::api::read_record_info(m_stream, recInfo, infoBuffer);
-  sio::api::read_record_data(m_stream, recInfo, recBuffer);
+  auto [tableBuffer, tableInfo] = sio_utils::readRecord(m_stream, false);
+  auto [dataBuffer, dataInfo] = sio_utils::readRecord(m_stream, false);
 
-  m_eventNumber++;
-  return std::make_unique<SIORawData>(std::move(recBuffer), recInfo._uncompressed_length, m_table, m_typeNames,
-                                      m_subsetCollectionBits);
+  m_categoryCtr[category]++;
+
+  return std::make_unique<SIORawData>(std::move(dataBuffer), dataInfo._uncompressed_length, std::move(tableBuffer),
+                                      tableInfo._uncompressed_length);
 }
 
-void SIOFrameReader::readCollectionIDTable() {
-  sio::buffer infoBuffer{sio::max_record_info_len};
-  sio::buffer recBuffer{sio::mbyte};
-  sio::record_info recInfo;
-  sio::api::read_record_info(m_stream, recInfo, infoBuffer);
-  sio::api::read_record_data(m_stream, recInfo, recBuffer);
-
-  sio::buffer uncBuffer{sio::mbyte};
-  uncBuffer.resize(recInfo._uncompressed_length);
-  sio::zlib_compression compressor;
-  compressor.uncompress(recBuffer.span(), uncBuffer);
-
-  sio::block_list blocks;
-  blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>());
-  blocks.emplace_back(std::make_shared<SIOVersionBlock>());
-  sio::api::read_blocks(uncBuffer.span(), blocks);
-
-  auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
-  m_table = std::shared_ptr<podio::CollectionIDTable>(idTableBlock->getTable());
-  m_typeNames = idTableBlock->getTypeNames();
-  m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
-  m_fileVersion = static_cast<SIOVersionBlock*>(blocks[1].get())->version;
+unsigned SIOFrameReader::getEntries(const std::string& category) const {
+  return m_tocRecord.getNRecords(category);
 }
 
 bool SIOFrameReader::readFileTOCRecord() {
@@ -67,16 +79,7 @@ bool SIOFrameReader::readFileTOCRecord() {
     const uint32_t position = firstWords & 0xffffffff;
     m_stream.seekg(position);
 
-    sio::record_info recInfo;
-    sio::buffer infoBuffer{sio::max_record_info_len};
-    sio::buffer recBuffer{sio::mbyte};
-    sio::api::read_record_info(m_stream, recInfo, infoBuffer);
-    sio::api::read_record_data(m_stream, recInfo, recBuffer);
-
-    sio::buffer uncBuffer{sio::mbyte};
-    uncBuffer.resize(recInfo._uncompressed_length);
-    sio::zlib_compression compressor;
-    compressor.uncompress(recBuffer.span(), uncBuffer);
+    const auto& [uncBuffer, _] = sio_utils::readRecord(m_stream);
 
     sio::block_list blocks;
     auto tocBlock = std::make_shared<SIOFileTOCRecordBlock>();
@@ -92,6 +95,16 @@ bool SIOFrameReader::readFileTOCRecord() {
   m_stream.clear();
   m_stream.seekg(0);
   return false;
+}
+
+void SIOFrameReader::readPodioHeader() {
+  const auto& [buffer, _] = sio_utils::readRecord(m_stream, false, sizeof(podio::version::Version));
+
+  sio::block_list blocks;
+  blocks.emplace_back(std::make_shared<SIOVersionBlock>());
+  sio::api::read_blocks(buffer.span(), blocks);
+
+  m_fileVersion = static_cast<SIOVersionBlock*>(blocks[0].get())->version;
 }
 
 } // namespace podio

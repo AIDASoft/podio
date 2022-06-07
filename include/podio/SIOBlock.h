@@ -71,11 +71,11 @@ public:
 
   SIOCollectionIDTableBlock(podio::EventStore* store);
 
-  SIOCollectionIDTableBlock(const std::vector<std::string>& names, const std::vector<int>& ids,
-                            std::vector<std::string>&& types, std::vector<short>&& isSubsetColl) :
+  SIOCollectionIDTableBlock(std::vector<std::string>&& names, std::vector<int>&& ids, std::vector<std::string>&& types,
+                            std::vector<short>&& isSubsetColl) :
       sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
-      _names(names),
-      _ids(ids),
+      _names(std::move(names)),
+      _ids(std::move(ids)),
       _types(std::move(types)),
       _isSubsetColl(std::move(isSubsetColl)) {
   }
@@ -222,6 +222,13 @@ public:
   void addRecord(const std::string& name, PositionType startPos);
 
   size_t getNRecords(const std::string& name) const;
+
+  /** Get the position of the iEntry-th record with the given name. If no entry
+   * with the given name is recorded, return 0. Note there is no internal check
+   * on whether the given name actually has iEntry records. Use getNRecords to
+   * check for that if necessary.
+   */
+  PositionType getPosition(const std::string& name, unsigned iEntry = 0) const;
 
 private:
   friend struct SIOFileTOCRecordBlock;

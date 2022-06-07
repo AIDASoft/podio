@@ -5,9 +5,11 @@
 #include "podio/SIORawData.h"
 #include "podio/podioVersion.h"
 
-#include "sio/api.h"
+#include <sio/definitions.h>
 
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 namespace podio {
 
@@ -20,11 +22,9 @@ public:
   ~SIOFrameReader() = default;
 
   /// Read all collections requested
-  std::unique_ptr<podio::SIORawData> readNextEvent();
+  std::unique_ptr<podio::SIORawData> readNextFrame(const std::string& category);
 
-  unsigned getEntries() const {
-    return m_tocRecord.getNRecords("event_record");
-  }
+  unsigned getEntries(const std::string& category) const;
 
   void openFile(const std::string& filename);
 
@@ -33,21 +33,19 @@ public:
   }
 
 private:
+  void readPodioHeader();
+
   /// read the TOC record
   bool readFileTOCRecord();
 
-  void readCollectionIDTable();
+  sio::ifstream m_stream{}; ///< The stream from which we read
 
-  sio::ifstream m_stream{};
+  /// Count how many times each category has been read already
+  std::unordered_map<std::string, unsigned> m_categoryCtr{};
 
-  // TODO: Move these somewhere else
-  std::vector<std::string> m_typeNames{};
-  std::vector<short> m_subsetCollectionBits{};
-
-  std::shared_ptr<podio::CollectionIDTable> m_table{nullptr};
-  unsigned m_eventNumber{0};
-
+  /// Table of content record where starting points of categories can be read from
   SIOFileTOCRecord m_tocRecord{};
+  /// The podio version that has been used to write the file
   podio::version::Version m_fileVersion{0};
 };
 

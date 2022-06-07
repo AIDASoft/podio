@@ -53,6 +53,11 @@ public:
   /// Prints collection information
   void print() const;
 
+  /// Does this table hold any information?
+  bool empty() const {
+    return m_names.empty();
+  }
+
 private:
   std::vector<int> m_collectionIDs{};
   std::vector<std::string> m_names{};

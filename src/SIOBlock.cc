@@ -210,6 +210,16 @@ size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
   return 0;
 }
 
+SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(const std::string& name, unsigned iEntry) const {
+  const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
+                               [&name](const auto& keyVal) { return keyVal.first == name; });
+  if (it != m_recordMap.end()) {
+    return it->second[iEntry];
+  }
+
+  return 0;
+}
+
 void SIOFileTOCRecordBlock::read(sio::read_device& device, sio::version_type) {
   int size;
   device.data(size);

@@ -19,17 +19,28 @@ namespace sio_utils {
 
   std::shared_ptr<SIOCollectionIDTableBlock> createCollIDBlock(const std::vector<StoreCollection>& collections,
                                                                const podio::CollectionIDTable& collIdTable) {
+    // Need to make sure that the type names and subset collection bits are in
+    // the same order here!
     std::vector<std::string> types;
     types.reserve(collections.size());
     std::vector<short> subsetColl;
     subsetColl.reserve(collections.size());
+    std::vector<std::string> names;
+    names.reserve(collections.size());
+    std::vector<int> ids;
+    ids.reserve(collections.size());
 
-    for (const auto& [_, coll] : collections) {
+    for (const auto& [name, coll] : collections) {
+      names.emplace_back(name);
+      ids.emplace_back(collIdTable.collectionID(name));
       types.emplace_back(coll->getValueTypeName());
       subsetColl.emplace_back(coll->isSubsetCollection());
     }
 
-    return std::make_shared<SIOCollectionIDTableBlock>(collIdTable.names(), collIdTable.ids(), std::move(types),
+    // for (const auto& [_, coll] : collections) {
+    // }
+
+    return std::make_shared<SIOCollectionIDTableBlock>(std::move(names), std::move(ids), std::move(types),
                                                        std::move(subsetColl));
   }
 
@@ -104,9 +115,9 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   // information is contained within the record.
   sio::block_list tableBlocks;
   tableBlocks.emplace_back(sio_utils::createCollIDBlock(collections, frame.getCollectionIDTableForWrite()));
-  m_tocRecord.addRecord(category, sio_utils::writeRecord(tableBlocks, category + "_idTable", m_stream));
+  m_tocRecord.addRecord(category, sio_utils::writeRecord(tableBlocks, category + "_HEADER", m_stream));
 
-  auto blocks = sio_utils::createBlocks(collections, frame.getGenericParametersForWrite());
+  const auto blocks = sio_utils::createBlocks(collections, frame.getGenericParametersForWrite());
   sio_utils::writeRecord(blocks, category, m_stream);
 }
 
