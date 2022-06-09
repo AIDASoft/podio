@@ -234,8 +234,7 @@ public:
   const podio::CollectionBase* getCollectionForWrite(const std::string& name) const {
     const auto* coll = m_self->get(name);
     if (coll) {
-      // TODO: make prepareForWrite threadsafe and get rid of the const_cast here
-      const_cast<podio::CollectionBase*>(coll)->prepareForWrite();
+      coll->prepareForWrite();
     }
 
     return coll;
