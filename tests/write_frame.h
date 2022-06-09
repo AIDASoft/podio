@@ -240,7 +240,7 @@ auto createInfoCollection(int i) {
   return info;
 }
 
-auto createFixedWitchCollection() {
+auto createFixedWidthCollection() {
   auto fixedWidthInts = ExampleWithFixedWidthIntegersCollection();
 
   auto maxValues = fixedWidthInts.create();
@@ -331,7 +331,7 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createArrayCollection(iFrame), "arrays");
   frame.put(createVectorMemberCollection(iFrame), "WithVectorMember");
   frame.put(createInfoCollection(iFrame), "info");
-  frame.put(createFixedWitchCollection(), "fixedWidthInts");
+  frame.put(createFixedWidthCollection(), "fixedWidthInts");
 
   auto& mcps = frame.put(createMCCollection(), "mcparticles");
 
