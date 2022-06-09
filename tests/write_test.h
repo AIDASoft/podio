@@ -161,26 +161,28 @@ void write(podio::EventStore& store, WriterT& writer) {
     }
     //-------- print relations for debugging:
     for (auto p : mcps) {
-      std::cout << " particle " << p.getObjectID().index << " has daughters: ";
-      for (auto it = p.daughters_begin(), end = p.daughters_end(); it != end; ++it) {
-        std::cout << " " << it->getObjectID().index;
-      }
-      std::cout << "  and parents: ";
-      for (auto it = p.parents_begin(), end = p.parents_end(); it != end; ++it) {
-        std::cout << " " << it->getObjectID().index;
-      }
-      std::cout << std::endl;
+      // TODO: proper logging
+      //std::cout << " particle " << p.getObjectID().index << " has daughters: ";
+      //for (auto it = p.daughters_begin(), end = p.daughters_end(); it != end; ++it) {
+      //  std::cout << " " << it->getObjectID().index;
+      //}
+      //std::cout << "  and parents: ";
+      //for (auto it = p.parents_begin(), end = p.parents_end(); it != end; ++it) {
+      //  std::cout << " " << it->getObjectID().index;
+      //}
+      //std::cout << std::endl;
 
       // make sure that this does not crash when we do it on an immutable object
       ExampleMC constP{p};
-      std::cout << "The const particle still has the same relations: daughters: ";
-      for (auto it = constP.daughters_begin(); it != constP.daughters_end(); ++it) {
-        std::cout << " " << it->getObjectID().index;
-      }
-      std::cout << " and parents: ";
-      for (auto it = constP.parents_begin(); it != constP.parents_end(); ++it) {
-        std::cout << " " << it->getObjectID().index;
-      }
+      // TODO: proper logging
+      //std::cout << "The const particle still has the same relations: daughters: ";
+      //for (auto it = constP.daughters_begin(); it != constP.daughters_end(); ++it) {
+      //  std::cout << " " << it->getObjectID().index;
+      //}
+      //std::cout << " and parents: ";
+      //for (auto it = constP.parents_begin(); it != constP.parents_end(); ++it) {
+      //  std::cout << " " << it->getObjectID().index;
+      //}
     }
     //-------------------------------
 
