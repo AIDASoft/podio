@@ -44,6 +44,12 @@ namespace detail {
     std::vector<std::string> getAvailableCollections() const {
       return {};
     }
+
+    /** Get the parameters that are stored in the raw data
+     */
+    std::unique_ptr<podio::GenericParameters> getParameters() {
+      return std::make_unique<podio::GenericParameters>();
+    }
   };
 } // namespace detail
 
@@ -81,7 +87,6 @@ class Frame {
   template <typename RawDataT>
   struct FrameModel final : FrameConcept, public ICollectionProvider {
 
-    FrameModel();
     FrameModel(std::unique_ptr<RawDataT> rawData);
     ~FrameModel() = default;
     FrameModel(const FrameModel&) = delete;
@@ -247,7 +252,7 @@ public:
 
 // implementations below
 
-Frame::Frame() : m_self(std::make_unique<FrameModel<detail::EmptyRawData>>()) {
+Frame::Frame() : Frame(std::make_unique<detail::EmptyRawData>()) {
 }
 
 template <typename RawDataT>
@@ -281,13 +286,6 @@ const CollT& Frame::put(CollT&& coll, const std::string& name) {
   // TODO: Handle collision case
   static const auto emptyColl = CollT();
   return emptyColl;
-}
-
-template <typename RawDataT>
-Frame::FrameModel<RawDataT>::FrameModel() :
-    m_mapMtx(std::make_unique<std::mutex>()),
-    m_rawDataMtx(std::make_unique<std::mutex>()),
-    m_parameters(std::make_unique<podio::GenericParameters>()) {
 }
 
 template <typename RawDataT>
