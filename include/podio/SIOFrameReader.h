@@ -21,6 +21,10 @@ public:
   SIOFrameReader();
   ~SIOFrameReader() = default;
 
+  // non copyable
+  SIOFrameReader(const SIOFrameReader&) = delete;
+  SIOFrameReader& operator=(const SIOFrameReader&) = delete;
+
   /// Read all collections requested
   std::unique_ptr<podio::SIORawData> readNextFrame(const std::string& category);
 
