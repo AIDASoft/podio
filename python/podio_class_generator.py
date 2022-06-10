@@ -51,14 +51,14 @@ def write_file_if_changed(filename, content, force_write=False):
   """Write the file contents only if it has changed or if the file does not exist
   yet. Return whether the file has been written or not"""
   try:
-    with open(filename, 'r') as infile:
+    with open(filename, 'r', encoding='utf-8') as infile:
       existing_content = infile.read()
       changed = existing_content != content
   except FileNotFoundError:
     changed = True
 
   if changed or force_write:
-    with open(filename, 'w') as outfile:
+    with open(filename, 'w', encoding='utf-8') as outfile:
       outfile.write(content)
     return True
 
@@ -145,8 +145,8 @@ class ClassGenerator:
     if not self.dryrun:
       self.generated_files.append(fullname)
       if self.clang_format:
-        cfproc = subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        content = cfproc.communicate(input=content.encode())[0].decode()
+        with subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as cfproc:
+          content = cfproc.communicate(input=content.encode())[0].decode()
 
       changed = write_file_if_changed(fullname, content)
       self.any_changes = changed or self.any_changes
@@ -176,7 +176,7 @@ class ClassGenerator:
 
     fn_templates = []
     for ending in endings:
-      template_name = '{fn}.{end}.jinja2'.format(fn=template_base, end=ending)
+      template_name = f'{template_base}.{ending}.jinja2'
       filename = get_fn_format(template_base).format(name=name, end=ending)
       fn_templates.append((filename, template_name))
 
@@ -331,16 +331,16 @@ class ClassGenerator:
       """
       if not isinstance(member_header, Mapping):
         # Assume that we have a string and format it according to the width
-        return '{{:>{width}}}'.format(width=col_width).format(member_header)
+        return f'{{:>{col_width}}}'.format(member_header)
 
       components = member_header.get('components', None)
       name = member_header['name']
       if components is None:
-        return '{{:>{width}}}'.format(width=col_width).format(name)
+        return f'{{:>{col_width}}}'.format(name)
 
       n_comps = len(components)
-      comp_str = '[ {}]'.format(', '.join(components))
-      return '{{:>{width}}}'.format(width=col_width * n_comps).format(name + ' ' + comp_str)
+      comp_str = f'[ {", ".join(components)}]'
+      return f'{{:>{col_width * n_comps}}}'.format(name + ' ' + comp_str)
 
     datatype['ostream_collection_settings'] = {
         'header_contents': header_contents
@@ -372,7 +372,7 @@ class ClassGenerator:
 
       for stl_type in ClassDefinitionValidator.allowed_stl_types:
         if member.full_type == 'std::' + stl_type:
-          includes.add("#include <{}>".format(stl_type))
+          includes.add(f"#include <{stl_type}>")
 
       if self._needs_include(member):
         includes.add(self._build_include(member.bare_type))
@@ -439,7 +439,7 @@ class ClassGenerator:
     """Return the include statement."""
     if self.include_subfolder:
       classname = os.path.join(self.package_name, classname)
-    return '#include "%s.h"' % classname
+    return f'#include "{classname}.h"'
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
@@ -460,7 +460,7 @@ def verify_io_handlers(handler):
       )
   if handler in valid_handlers:
     return handler
-  raise argparse.ArgumentTypeError('{} is not a valid io handler'.format(handler))
+  raise argparse.ArgumentTypeError(f'{handler} is not a valid io handler')
 
 
 if __name__ == "__main__":

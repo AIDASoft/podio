@@ -128,7 +128,7 @@ if __name__ == "__main__":
   gSystem.Load("libTestDataModel")
   # creating example file for the tests
   if not os.path.isfile('example.root'):
-    WRITE_CMD = '{podio}/tests/write'.format(podio=os.environ['PODIO'])
+    WRITE_CMD = f'{os.environ["PODIO"]}/tests/write'
     print(WRITE_CMD)
     call(WRITE_CMD)
   unittest.main()
