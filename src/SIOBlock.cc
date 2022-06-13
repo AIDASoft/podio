@@ -174,7 +174,11 @@ std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
   std::vector<std::string> libs;
 
   std::string dir;
-  std::istringstream stream(std::getenv("LD_LIBRARY_PATH"));
+  const auto ldLibPath = std::getenv("LD_LIBRARY_PATH");
+  if (!ldLibPath) {
+    return libs;
+  }
+  std::istringstream stream(ldLibPath);
   while (std::getline(stream, dir, ':')) {
     if (not fs::exists(dir)) {
       continue;

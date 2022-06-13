@@ -13,7 +13,20 @@ namespace podio {
 class ICollectionProvider;
 
 class CollectionBase {
+protected:
+  /// default constructor
+  CollectionBase() = default;
+  /// Move constructor
+  CollectionBase(CollectionBase&&) = default;
+  /// Move assignment
+  CollectionBase& operator=(CollectionBase&&) = default;
+
 public:
+  /// No copy c'tor because collections are move-only
+  CollectionBase(const CollectionBase&) = delete;
+  /// No copy assignment because collections are move-only
+  CollectionBase& operator=(const CollectionBase&) = delete;
+
   /// prepare buffers for serialization
   virtual void prepareForWrite() = 0;
 
