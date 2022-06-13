@@ -30,7 +30,7 @@ REPORT_TEXT = """
   in
     {installdir}/
   Read instructions in
-  the HOWTO.TXT to run
+  the README.md to run
   your first example!
 """
 
