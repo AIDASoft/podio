@@ -21,8 +21,8 @@ class MemberParser:
   # builtin types above. Currently this is done by simple brute-forcing.
   # To "ensure" that the builtin matching is greedy and picks up as much as
   # possible, sort the types by their length in descending order
-  builtin_str = r'|'.join(r'(?:{})'.format(t) for t in sorted(BUILTIN_TYPES, key=len, reverse=True))
-  type_str = r'({builtin_re}|(?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*)'.format(builtin_re=builtin_str)
+  builtin_str = r'|'.join(rf'(?:{t})' for t in sorted(BUILTIN_TYPES, key=len, reverse=True))
+  type_str = rf'({builtin_str}|(?:\:{{2}})?[a-zA-Z]+[a-zA-Z0-9:_]*)'
   type_re = re.compile(type_str)
 
   # Names can be almost anything as long as it doesn't start with a digit and
@@ -34,17 +34,15 @@ class MemberParser:
   # stripping of trailing whitespaces is done later as it is hard to do with regex
   comment_str = r'\/\/ *(.*)'
   # std::array declaration with some whitespace distribution freedom
-  array_str = r' *std::array *< *{typ} *, *([0-9]+) *>'.format(typ=type_str)
+  array_str = rf' *std::array *< *{type_str} *, *([0-9]+) *>'
 
   array_re = re.compile(array_str)
-  full_array_re = re.compile(r'{array} *{name} *{comment}'.format(
-      array=array_str, name=name_str, comment=comment_str))
-  member_re = re.compile(r' *{typ} +{name} *{comment}'.format(
-      typ=type_str, name=name_str, comment=comment_str))
+  full_array_re = re.compile(rf'{array_str} *{name_str} *{comment_str}')
+  member_re = re.compile(rf' *{type_str} +{name_str} *{comment_str}')
 
   # For cases where we don't require a description
-  bare_member_re = re.compile(r' *{typ} +{name}'.format(typ=type_str, name=name_str))
-  bare_array_re = re.compile(r' *{array} +{name}'.format(array=array_str, name=name_str))
+  bare_member_re = re.compile(rf' *{type_str} +{name_str}')
+  bare_array_re = re.compile(rf' *{array_str} +{name_str}')
 
   @staticmethod
   def _parse_with_regexps(string, regexps_callbacks):
@@ -55,7 +53,7 @@ class MemberParser:
       if match is not None:
         return callback(match)
 
-    raise DefinitionError("'%s' is not a valid member definition" % string)
+    raise DefinitionError(f"'{string}' is not a valid member definition")
 
   @staticmethod
   def _full_array_conv(match):
@@ -160,14 +158,13 @@ class ClassDefinitionValidator:
     for name, component in self.components.items():
       for field in component:
         if field not in ['Members', 'ExtraCode']:
-          raise DefinitionError("{} defines a '{}' field which is not allowed for a component"
-                                .format(name, field))
+          raise DefinitionError(f"{name} defines a '{field}' field which is not allowed for a component")
 
       if 'ExtraCode' in component:
         for key in component['ExtraCode']:
           if key not in ('declaration', 'includes'):
-            raise DefinitionError("'{}' field found in 'ExtraCode' of component '{}'."
-                                  " Only 'declaration' and 'includes' are allowed here".format(key, name))
+            raise DefinitionError(f"'{key}' field found in 'ExtraCode' of component '{name}'."
+                                  " Only 'declaration' and 'includes' are allowed here")
 
       for member in component['Members']:
         is_builtin = member.is_builtin or member.is_builtin_array
@@ -175,8 +172,8 @@ class ClassDefinitionValidator:
         is_component = member.full_type in self.components or is_component_array
 
         if not is_builtin and not is_component:
-          raise DefinitionError("{} defines a member of type '{}' which is not allowed in components"
-                                .format(member.name, member.full_type))
+          raise DefinitionError(f"{member.name} defines a member of type '{member.full_type}' which is not allowed in"
+                                " components")
 
   def _check_datatypes(self):
     """Check the datatypes"""
@@ -201,49 +198,44 @@ class ClassDefinitionValidator:
     for member in members:
       for stl_type in self.allowed_stl_types:
         if member.full_type.startswith('std::' + stl_type):
-          self.warnings.add("{} defines a std::{} member ('{}') that spoils PODness"
-                            .format(classname, stl_type, member.name))
+          self.warnings.add(f"{classname} defines a std::{stl_type} member ('{member.name}') that spoils PODness")
 
       is_builtin = member.is_builtin or member.is_builtin_array
       in_definitions = member.full_type in all_types or member.array_type in all_types
 
       if not is_builtin and not in_definitions:
-        raise DefinitionError("'{}' defines member '{}' of type '{}' that is not declared!"
-                              .format(classname, member.name, member.full_type))
+        raise DefinitionError(f"'{classname}' defines member '{member.name}' of type '{member.full_type}' that is not"
+                              " declared!")
 
       if member.name in all_members:
-        raise DefinitionError("'{}' clashes with another member in class '{}', previously defined in '{}'"
-                              .format(member.name, classname, all_members[member.name]))
+        raise DefinitionError(f"'{member.name}' clashes with another member in class '{classname}', previously defined"
+                              f" in '{all_members[member.name]}'")
 
       all_members[member.name] = classname
       if self.expose_pod_members and not member.is_builtin and not member.is_array:
         for sub_member in self.components[member.full_type]['Members']:
           if sub_member.name in all_members:
-            raise DefinitionError("'{}' clashes with another member name in class '{}'"
-                                  " (defined in the component '{}' and '{}')"
-                                  .format(sub_member.name, classname, member.name, all_members[sub_member.name]))
+            raise DefinitionError(f"'{sub_member.name}' clashes with another member name in class '{classname}'"
+                                  f" (defined in the component '{member.name}' and '{all_members[sub_member.name]}')")
 
-          all_members[sub_member.name] = "member '{}'".format(member.name)
+          all_members[sub_member.name] = f"member '{member.name}'"
 
   def _check_relations(self, classname, definition):
     """Check the relations of a class"""
     many_relations = definition.get("OneToManyRelations", [])
     for relation in many_relations:
       if relation.full_type not in self.datatypes:
-        raise DefinitionError("'{}' declares a non-allowed many-relation to '{}'"
-                              .format(classname, relation.full_type))
+        raise DefinitionError(f"'{classname}' declares a non-allowed many-relation to '{relation.full_type}'")
 
     one_relations = definition.get("OneToOneRelations", [])
     for relation in one_relations:
       if relation.full_type not in self.datatypes:
-        raise DefinitionError("'{}' declares a non-allowed single-relation to '{}'"
-                              .format(classname, relation.full_type))
+        raise DefinitionError(f"'{classname}' declares a non-allowed single-relation to '{relation.full_type}'")
 
     vector_members = definition.get("VectorMembers", [])
     for vecmem in vector_members:
       if not vecmem.is_builtin and vecmem.full_type not in self.components:
-        raise DefinitionError("'{}' declares a non-allowed vector member of type '{}'"
-                              .format(classname, vecmem.full_type))
+        raise DefinitionError(f"'{classname}' declares a non-allowed vector member of type '{vecmem.full_type}'")
 
   def _check_keys(self, classname, definition):
     """Check the keys of a datatype"""
@@ -253,16 +245,15 @@ class ClassDefinitionValidator:
     if invalid_keys:
       not_yet_impl = [k for k in invalid_keys if k in self.not_yet_implemented_keys]
       if not_yet_impl:
-        not_yet_impl = ' (not yet implemented: {})'.format(not_yet_impl)
+        not_yet_impl = f' (not yet implemented: {not_yet_impl})'
       else:
         not_yet_impl = ''
 
-      raise DefinitionError("'{}' defines invalid categories: {}{}"
-                            .format(classname, invalid_keys, not_yet_impl))
+      raise DefinitionError(f"'{classname}' defines invalid categories: {invalid_keys}{not_yet_impl}")
 
     for key in self.required_datatype_keys:
       if key not in definition:
-        raise DefinitionError("'{}' does not define '{}'".format(classname, key))
+        raise DefinitionError(f"'{classname}' does not define '{key}'")
 
     if 'ExtraCode' in definition:
       extracode = definition['ExtraCode']
@@ -270,12 +261,11 @@ class ClassDefinitionValidator:
       if invalid_keys:
         not_yet_impl = [k for k in invalid_keys if k in self.not_yet_implemented_extra_code]
         if not_yet_impl:
-          not_yet_impl = ' (not yet implemented: {})'.format(not_yet_impl)
+          not_yet_impl = f' (not yet implemented: {not_yet_impl})'
         else:
           not_yet_impl = ''
 
-        raise DefinitionError("{} defines invalid 'ExtraCode' categories: {} (not yet implemented: {})"
-                              .format(classname, invalid_keys, not_yet_impl))
+        raise DefinitionError("{classname} defines invalid 'ExtraCode' categories: {invalid_keys}{not_yet_impl}")
 
   def _fill_defaults(self, definition):
     """Fill some of the fields with empty defaults in order to make it easier to
@@ -305,8 +295,8 @@ class PodioConfigReader:
 
   def __init__(self, yamlfile):
     self.yamlfile = yamlfile
-    self.datatypes = dict()
-    self.components = dict()
+    self.datatypes = {}
+    self.components = {}
     self.options = {
         # should getters / setters be prefixed with get / set?
         "getSyntax": False,
@@ -366,7 +356,7 @@ class PodioConfigReader:
           else:
             component['Members'].append(MemberVariable(name=name, type=klass))
         else:
-          raise DefinitionError("'{}: {}' is not a valid member definition".format(name, klass))
+          raise DefinitionError(f"'{name}: {klass}' is not a valid member definition")
 
     return component
 
@@ -413,8 +403,8 @@ class PodioConfigReader:
 
   def read(self):
     """Read the datamodel definition from the yamlfile"""
-    stream = open(self.yamlfile, "r")
-    content = yaml.load(stream, yaml.SafeLoader)
+    with open(self.yamlfile, "r", encoding='utf-8') as stream:
+      content = yaml.load(stream, yaml.SafeLoader)
 
     if "components" in content:
       for klassname, value in content["components"].items():

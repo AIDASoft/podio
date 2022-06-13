@@ -53,7 +53,7 @@ class EventStore:
   def __str__(self):
     result = "Content:"
     for item in self.current_store.getCollectionNames():
-      result += "\n\t%s" % item
+      result += f"\n\t{item}"
     return result
 
   def get(self, name):
