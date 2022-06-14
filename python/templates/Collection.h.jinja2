@@ -24,6 +24,8 @@
 #include <array>
 #include <algorithm>
 #include <ostream>
+#include <mutex>
+#include <memory>
 
 {{ utils.namespace_open(class.namespace) }}
 
@@ -92,7 +94,7 @@ public:
   /// Append object to the collection
   void push_back({{class.bare_type}} object);
 
-  void prepareForWrite() final;
+  void prepareForWrite() const final;
   void prepareAfterRead() final;
   bool setReferences(const podio::ICollectionProvider* collectionProvider) final;
 
@@ -143,10 +145,11 @@ private:
   friend class {{ class.bare_type }}CollectionData;
 
   bool m_isValid{false};
-  bool m_isPrepared{false};
+  mutable bool m_isPrepared{false};
   bool m_isSubsetColl{false};
   int m_collectionID{0};
-  {{ class.bare_type }}CollectionData m_storage{};
+  mutable std::unique_ptr<std::mutex> m_storageMtx{std::make_unique<std::mutex>()};
+  mutable {{ class.bare_type }}CollectionData m_storage{};
 };
 
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& v);
