@@ -75,7 +75,7 @@ public:
   ~UserDataCollection() = default;
 
   /// prepare buffers for serialization
-  void prepareForWrite() override {
+  void prepareForWrite() const override {
   }
 
   /// re-create collection from buffers after read
