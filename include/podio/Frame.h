@@ -62,9 +62,13 @@ class Frame {
      */
     const podio::CollectionBase* put(std::unique_ptr<CollectionBase> coll, const std::string& name) final;
 
+    /** Get a reference to the internally used GenericParameters
+     */
     podio::GenericParameters& parameters() override {
       return m_parameters;
     }
+    /** Get a const reference to the internally used GenericParameters
+     */
     const podio::GenericParameters& parameters() const override {
       return m_parameters;
     };
@@ -105,7 +109,7 @@ public:
   template <typename CollT, typename = EnableIfCollectionRValue<CollT>>
   const CollT& put(CollT&& coll, const std::string& name);
 
-  /** Move a collection into the Frame
+  /** Move a collection into the Frame handing over ownership to the Frame
    */
   void put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name);
 
