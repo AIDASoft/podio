@@ -1,7 +1,7 @@
 {% macro vectorized_access(class, member) %}
 template<size_t arraysize>
 const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collection::{{ member.name }}() const {
-  std::array<{{ member.full_type }}, arraysize> tmp;
+  std::array<{{ member.full_type }}, arraysize> tmp{};
   const auto valid_size = std::min(arraysize, m_storage.entries.size());
   for (unsigned i = 0; i < valid_size; ++i) {
     tmp[i] = m_storage.entries[i]->data.{{ member.name }};
