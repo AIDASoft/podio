@@ -1,3 +1,83 @@
+# v00-14-02
+
+* 2022-06-15 Thomas Madlener ([PR#304](https://github.com/AIDASoft/podio/pull/304))
+  - Use the releases v3.0.1 version of Catch2 instead of an unreleased commit
+
+* 2022-06-15 Thomas Madlener ([PR#303](https://github.com/AIDASoft/podio/pull/303))
+  - Default initialize the array for the vectorized access.
+
+* 2022-06-14 soumil ([PR#296](https://github.com/AIDASoft/podio/pull/296))
+  - Add instructions on how to run pre-commit locally to the documentation
+
+* 2022-06-14 Thomas Madlener ([PR#295](https://github.com/AIDASoft/podio/pull/295))
+  - Mark `CollectionBase::prepareForWrite` as `const` and make sure that the generated implementations are thread safe.
+
+* 2022-06-14 Thomas Madlener ([PR#286](https://github.com/AIDASoft/podio/pull/286))
+  - Make sure that vector member buffers for writing point to the correct place even if a collection has been moved, by resetting them when the buffers are requested.
+  - Add checks for this to the unittests, as this is sort of an interface for I/O backends.
+
+* 2022-06-13 Kalina Stoimenova ([PR#301](https://github.com/AIDASoft/podio/pull/301))
+  - Fixed the text in the cmake message for code generation to point to the correct readme file
+
+* 2022-06-13 Thomas Madlener ([PR#300](https://github.com/AIDASoft/podio/pull/300))
+  - Newer versions of pylint have removed a few options and a few checks that aimed at python2-python3 compatibility.
+
+* 2022-06-13 Thomas Madlener ([PR#299](https://github.com/AIDASoft/podio/pull/299))
+  - Explicitly add constructors to `CollectionBase`
+  - Make sure to not use an unset `LD_LIBRARY_PATH` for detecting sio blocks shared libraries.
+
+* 2022-06-02 soumil ([PR#293](https://github.com/AIDASoft/podio/pull/293))
+  - Removing python2 compatibility imports
+  - Removing ordered loading (obsolete) function
+
+* 2022-06-01 Thomas Madlener ([PR#285](https://github.com/AIDASoft/podio/pull/285))
+  - Fix potential bug in setting the collection ID for subset collections
+
+* 2022-05-30 soumil ([PR#291](https://github.com/AIDASoft/podio/pull/291))
+  - Replace the `obj_needs_destructor` flag in the generator code and templates with the `is_trivial_type` flag, since that is the more appropriate name. (Fixes #288)
+
+* 2022-05-27 Thomas Madlener ([PR#274](https://github.com/AIDASoft/podio/pull/274))
+  - Add documentation for the Jinja2 templates and the code generation process in general to make working with these parts of PODIO easier.
+
+* 2022-05-23 Thomas Madlener ([PR#262](https://github.com/AIDASoft/podio/pull/262))
+  - Make the getters and setters for the `GenericParameters` templated functions and add a deprecation warning for the untemplated ones.
+  - Define a `SupportedGenericDataTypes` tuple defining the types (and vectors of those) that can be stored in `GenericParameters`
+  - Add a `podio/utilities/TypeHelpers.h` header with some type handling helpers.
+
+* 2022-05-20 Thomas Madlener ([PR#277](https://github.com/AIDASoft/podio/pull/277))
+  - Avoid fetching the (remote) legacy input file for tests unnecessarily every time cmake is run.
+
+* 2022-05-17 Thomas Madlener ([PR#284](https://github.com/AIDASoft/podio/pull/284))
+  - Make sure the `EventStore` doesn't try to read event meta data multiple times per event
+  - Add a `empty` method to `GenericParameters` to check if any parameters are stored.
+
+* 2022-04-04 Thomas Madlener ([PR#280](https://github.com/AIDASoft/podio/pull/280))
+  - Only use `--color` option for diff in `clang-format` wrapper script if it is supported by the underlying `diffutils`.
+
+* 2022-04-02 Thomas Madlener ([PR#254](https://github.com/AIDASoft/podio/pull/254))
+  - Add a `.clang-format` and `.clang-tidy` config file for consistent formatting and following a few coding guidelines.
+  - Add pre-commit hooks that run `clang-tidy` and `clang-format` 
+  - Make all currently present files follow the formatting and guidelines of the present configuration.
+  - Make the `PODIO_GENERATE_DATAMODEL` macro look for a `.clang-format` file and the presence of `clang-format`and automatically format all the generated files if both are there.
+
+* 2022-04-01 Thomas Madlener ([PR#279](https://github.com/AIDASoft/podio/pull/279))
+  - Fix test environment to work again in newest Key4hep release by unsetting `ROOT_INCLUDE_PATH` in the test environment to avoid potential clashes with existing other installations in the environment.
+  - Add CI build against the Key4hep nightlies.
+  - Switch to use the Catch2 installation from Key4hep for the workflows.
+
+* 2022-03-31 Thomas Madlener ([PR#253](https://github.com/AIDASoft/podio/pull/253))
+  - Add a basic setup for [pre-commit](https://pre-commit.com) and replace the python linting github workflow with one that is run via pre-commit.
+    - Add additional checks for consistent line-endings and removal of trailing whitespaces.
+  - Update pylint and flake8 config to no longer check for python2/python3 compatibility but instead follow the same guidelines as e.g. in ILCDirac.
+  - Fix all issues that were uncovered.
+
+* 2022-03-23 Thomas Madlener ([PR#270](https://github.com/AIDASoft/podio/pull/270))
+  - Remove duplicated printing of component members in the `std::ostream& operator<<` overloads of the datatypes. Fixes #269 
+  - Add an example datatype that broke compilation before these fixes.
+
+* 2022-03-18 Andre Sailer ([PR#265](https://github.com/AIDASoft/podio/pull/265))
+  -  CI: use clang12 and gcc11 for tests based on dev stacks
+
 # v00-14-01
 
 * 2022-03-04 Thomas Madlener ([PR#261](https://github.com/aidasoft/podio/pull/261))
