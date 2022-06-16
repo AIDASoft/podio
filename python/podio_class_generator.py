@@ -131,6 +131,10 @@ class ClassGenerator:
     print("     'Homage to the Square' - Josef Albers")
     print()
 
+    for warning in self.reader.warnings:
+      print(warning)
+    print()
+
   def _eval_template(self, template, data):
     """Fill the specified template"""
     return self.env.get_template(template).render(data)
