@@ -199,6 +199,8 @@ class ClassDefinitionValidator:
       for stl_type in self.allowed_stl_types:
         if member.full_type.startswith('std::' + stl_type):
           self.warnings.add(f"{classname} defines a std::{stl_type} member ('{member.name}') that spoils PODness")
+          self.warnings.add('Deprecation warning: Support for std::string members in datatypes will be removed'
+                            ' in the near future')
 
       is_builtin = member.is_builtin or member.is_builtin_array
       in_definitions = member.full_type in all_types or member.array_type in all_types
