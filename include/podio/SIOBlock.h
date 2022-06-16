@@ -60,14 +60,10 @@ protected:
  */
 class SIOCollectionIDTableBlock : public sio::block {
 public:
-  SIOCollectionIDTableBlock() : sio::block("CollectionIDs", sio::version::encode_version(0, 3)) {
+  SIOCollectionIDTableBlock() : sio::block("CollectionIDs", sio::version::encode_version(0, 4)) {
   }
 
-  SIOCollectionIDTableBlock(podio::EventStore* store) :
-      sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
-      _store(store),
-      _table(store->getCollectionIDTable()) {
-  }
+  SIOCollectionIDTableBlock(podio::EventStore* store);
 
   SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
   SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
@@ -76,7 +72,7 @@ public:
   void write(sio::write_device& device) override;
 
   podio::CollectionIDTable* getTable() {
-    return _table;
+    return new podio::CollectionIDTable(std::move(_ids), std::move(_names));
   }
   const std::vector<std::string>& getTypeNames() const {
     return _types;
@@ -84,16 +80,31 @@ public:
   const std::vector<short>& getSubsetCollectionBits() const {
     return _isSubsetColl;
   }
-  podio::version::Version getPodioVersion() const {
-    return podioVersion;
-  }
 
 private:
-  podio::EventStore* _store{nullptr};
-  podio::CollectionIDTable* _table{nullptr};
+  std::vector<std::string> _names{};
+  std::vector<int> _ids{};
   std::vector<std::string> _types{};
   std::vector<short> _isSubsetColl{};
-  podio::version::Version podioVersion{podio::version::build_version};
+};
+
+struct SIOVersionBlock : public sio::block {
+  SIOVersionBlock() : sio::block("podio_version", sio::version::encode_version(1, 0)) {
+  }
+
+  SIOVersionBlock(podio::version::Version v) :
+      sio::block("podio_version", sio::version::encode_version(1, 0)), version(v) {
+  }
+
+  void write(sio::write_device& device) override {
+    device.data(version);
+  }
+
+  void read(sio::read_device& device, sio::version_type) override {
+    device.data(version);
+  }
+
+  podio::version::Version version{};
 };
 
 /**

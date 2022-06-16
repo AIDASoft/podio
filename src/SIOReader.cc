@@ -135,13 +135,14 @@ void SIOReader::readCollectionIDTable() {
 
   sio::block_list blocks;
   blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>());
+  blocks.emplace_back(std::make_shared<SIOVersionBlock>());
   sio::api::read_blocks(m_unc_buffer.span(), blocks);
 
   auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
   m_table = idTableBlock->getTable();
   m_typeNames = idTableBlock->getTypeNames();
   m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
-  m_fileVersion = idTableBlock->getPodioVersion();
+  m_fileVersion = static_cast<SIOVersionBlock*>(blocks[1].get())->version;
 }
 
 void SIOReader::readMetaDataRecord(const std::shared_ptr<SIONumberedMetaDataBlock>& mdBlock) {
