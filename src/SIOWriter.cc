@@ -143,8 +143,9 @@ void SIOWriter::writeCollectionIDTable() {
   m_com_buffer.clear();
   sio::block_list blocks;
   blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>(m_store));
+  blocks.emplace_back(std::make_shared<SIOVersionBlock>(podio::version::build_version));
 
-  auto rec_info = sio::api::write_record("CollectionIDs", m_buffer, blocks, 0);
+  auto rec_info = sio::api::write_record("file_metadata", m_buffer, blocks, 0);
 
   sio::zlib_compression compressor;
   compressor.set_level(6);
@@ -152,7 +153,7 @@ void SIOWriter::writeCollectionIDTable() {
 
   sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
 
-  m_tocRecord.addRecord("CollectionIDs", rec_info._file_start);
+  m_tocRecord.addRecord("file_metadata", rec_info._file_start);
 }
 
 } // namespace podio
