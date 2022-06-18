@@ -61,6 +61,7 @@ set(USE_SANITIZER ""
 ADD_SANITIZER_FLAGS()
 option(FORCE_RUN_ALL_TESTS "Run all the tests even those with known problems" OFF)
 
+option(CLANG_FORMAT "Enable or disable clang-format." OFF)
 option(CLANG_TIDY "Run clang-tidy after compilation." OFF)
 ADD_CLANG_TIDY()
 

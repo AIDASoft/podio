@@ -141,7 +141,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   set(CLANG_FORMAT_ARG "")
   find_program(CLANG_FORMAT_EXE NAMES "clang-format")
   find_file(CLANG_FORMAT_FILE .clang-format PATH ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
-  if(CLANG_FORMAT_EXE AND CLANG_FORMAT_FILE)
+  if(CLANG_FORMAT AND CLANG_FORMAT_EXE AND CLANG_FORMAT_FILE)
     message(STATUS "Found .clang-format file and clang-format executable. Will pass it to podio class generator")
     set(CLANG_FORMAT_ARG "--clangformat")
   endif()
