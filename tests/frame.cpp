@@ -127,6 +127,16 @@ std::string makeName(const std::string& prefix, int index) {
   return prefix + "_" + std::to_string(index);
 }
 
+// The Catch2 assertions are not threadsafe
+// https://github.com/catchorg/Catch2/blob/devel/docs/limitations.md#thread-safe-assertions
+// This is a poor-mans implementation where it is our responsibility to only
+// pass in unshared counters
+void CHECK_INCREASE(const bool condition, int& counter) {
+  if (condition) {
+    counter++;
+  }
+}
+
 TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][multithread]") {
   constexpr int nThreads = 10;
   std::vector<std::thread> threads;
@@ -135,9 +145,15 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
   // create a pre-populated frame
   auto frame = createFrame();
 
+  // The Catch2 assertions are not threadsafe:
+  // https://github.com/catchorg/Catch2/blob/devel/docs/limitations.md#thread-safe-assertions
+  // Count the successes in this array here and check them outside
+  // Once the Catch2 deficiencies are resolved, this can be changed again
+  std::array<int, nThreads> successes{};
+
   // Fill collections from different threads
   for (int i = 0; i < nThreads; ++i) {
-    threads.emplace_back([&frame, i]() {
+    threads.emplace_back([&frame, i, &successes]() {
       auto clusters = ExampleClusterCollection();
       clusters.create(i * 3.14);
       clusters.create(i * 3.14);
@@ -145,9 +161,9 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
 
       // Retrieve a few collections in between and do iust a very basic testing
       auto& existingClu = frame.get<ExampleClusterCollection>("clusters");
-      REQUIRE(existingClu.size() == 2);
+      CHECK_INCREASE(existingClu.size() == 2, successes[i]);
       auto& existingHits = frame.get<ExampleHitCollection>("hits");
-      REQUIRE(existingHits.size() == 2);
+      CHECK_INCREASE(existingHits.size() == 2, successes[i]);
 
       auto hits = ExampleHitCollection();
       hits.create(i * 100ULL);
@@ -170,6 +186,9 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
 
   // Check the frame contents after all threads have finished
   for (int i = 0; i < nThreads; ++i) {
+    // Check whether the insertsions are as expected
+    REQUIRE(successes[i] == 2);
+
     auto& hits = frame.get<ExampleHitCollection>(makeName("hits", i));
     REQUIRE(hits.size() == 3);
     for (const auto h : hits) {
@@ -293,22 +312,28 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
   frame.putParameter("string_par", "some string");
   frame.putParameter("float_pars", {1.23f, 4.56f, 7.89f});
 
+  // The Catch2 assertions are not threadsafe:
+  // https://github.com/catchorg/Catch2/blob/devel/docs/limitations.md#thread-safe-assertions
+  // Count the successes in this array here and check them outside
+  // Once the Catch2 deficiencies are resolved, this can be changed again
+  std::array<int, nThreads> successes{};
+
   for (int i = 0; i < nThreads; ++i) {
-    threads.emplace_back([&frame, i]() {
+    threads.emplace_back([&frame, i, &successes]() {
       frame.putParameter(makeName("int", i), i);
       frame.putParameter(makeName("float", i), (float)i);
 
-      REQUIRE(frame.getParameter<int>("int_par") == 42);
-      REQUIRE(frame.getParameter<float>(makeName("float", i)) == (float)i);
+      CHECK_INCREASE(frame.getParameter<int>("int_par") == 42, successes[i]);
+      CHECK_INCREASE(frame.getParameter<float>(makeName("float", i)) == (float)i, successes[i]);
 
       frame.putParameter(makeName("string", i), std::to_string(i));
-      REQUIRE(frame.getParameter<std::string>("string_par") == "some string");
+      CHECK_INCREASE(frame.getParameter<std::string>("string_par") == "some string", successes[i]);
 
       const auto& floatPars = frame.getParameter<std::vector<float>>("float_pars");
-      REQUIRE(floatPars.size() == 3);
-      REQUIRE(floatPars[0] == 1.23f);
-      REQUIRE(floatPars[1] == 4.56f);
-      REQUIRE(floatPars[2] == 7.89f);
+      CHECK_INCREASE(floatPars.size() == 3, successes[i]);
+      CHECK_INCREASE(floatPars[0] == 1.23f, successes[i]);
+      CHECK_INCREASE(floatPars[1] == 4.56f, successes[i]);
+      CHECK_INCREASE(floatPars[2] == 7.89f, successes[i]);
 
       // Fill in a lot of new parameters to trigger rehashing of the internal
       // map, which invalidates iterators
@@ -326,6 +351,9 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
   }
 
   for (int i = 0; i < nThreads; ++i) {
+    // Check the insertion successes
+    REQUIRE(successes[i] == 7);
+
     REQUIRE(frame.getParameter<int>(makeName("int", i)) == i);
     REQUIRE(frame.getParameter<float>(makeName("float", i)) == (float)i);
     REQUIRE(frame.getParameter<std::string>(makeName("string", i)) == std::to_string(i));
