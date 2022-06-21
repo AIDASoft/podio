@@ -24,7 +24,7 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
       # with existing headers from other installations
-      ROOT_INCLUDE_PATH=
+      ROOT_INCLUDE_PATH=${PROJECT_SOURCE_DIR}/include
     )
 endfunction()
 
