@@ -75,7 +75,16 @@ The definition of a member is done in the `Members` section in the form:
       <type> <name> // <comment>
 ```
 
-where `type` can be any buildin-type or a `component`.
+where `type` can be any builtin-type or a `component`.
+
+It is also possible to specify default values for members via
+```yaml
+    Members:
+      <type> <name>{<default-value>} // <comment>
+```
+Note that in this case it is extremely expensive to check whether the provided `default-value` results in valid c++.
+Hence, there is only a very basic syntax check, but no actual type check, and wrong default values will be caught only when trying to compile the datamodel.
+
 
 ### Definition of references between objects:
 There can be one-to-one-relations and one-to-many relations being stored in a particular class. This happens either in the `OneToOneRelations` or `OneToManyRelations` section of the data definition. The definition has again the form:
