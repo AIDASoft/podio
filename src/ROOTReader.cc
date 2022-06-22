@@ -15,6 +15,9 @@
 #include <memory>
 
 namespace podio {
+// todo: see https://github.com/AIDASoft/podio/issues/290
+ROOTReader::~ROOTReader() { // NOLINT(modernize-use-equals-default)
+}
 
 std::pair<TTree*, unsigned> ROOTReader::getLocalTreeAndEntry(const std::string& treename) {
   auto localEntry = m_chain->LoadTree(m_eventNumber);
