@@ -15,7 +15,6 @@
 #include <memory>
 
 namespace podio {
-  
 // todo: see https://github.com/AIDASoft/podio/issues/290
 ROOTReader::~ROOTReader() { // NOLINT(modernize-use-equals-default)
 }
