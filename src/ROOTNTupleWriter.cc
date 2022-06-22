@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "rootUtils.h"
 
 #include "podio/CollectionBase.h"
@@ -90,8 +92,12 @@ void ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collecti
       int i = 0;
       for (auto& c : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i);
-        std::cout << brName << std::endl;
-        //TODO:
+        auto collClassName = "vector<podio::ObjectID>";
+        auto field = rnt::Detail::RFieldBase::Create(brName,  collClassName).Unwrap();
+        void* vv =  (c.get()); 
+        m_events->GetDefaultEntry()->CaptureValue(field->CaptureValue(vv));
+        m_events->GetFieldZero()->Attach(std::move(field));
+
         ++i;
       }
     }
