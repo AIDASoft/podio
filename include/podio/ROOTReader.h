@@ -35,7 +35,8 @@ class ROOTReader : public IReader {
 
 public:
   ROOTReader() = default;
-  ~ROOTReader() = default;
+  // todo: see https://github.com/AIDASoft/podio/issues/290
+  ~ROOTReader(); // NOLINT(modernize-use-equals-default)
 
   // non-copyable
   ROOTReader(const ROOTReader&) = delete;
