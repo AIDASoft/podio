@@ -22,6 +22,13 @@ class TTree;
 
 namespace podio {
 
+namespace detail {
+  // Information about the data vector as wall as the collection class type
+  // and the index in the collection branches cache vector
+  using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
+
+} // namespace detail
+
 class EventStore;
 class CollectionBase;
 class CollectionIDTable;
@@ -60,11 +67,6 @@ public:
     return m_fileVersion;
   }
 
-  // Information about the data vector as wall as the collection class type
-  // and the index in the collection branches cache vector
-  // TODO: Make this private again
-  using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
-
 private:
   /**
    * Helper struct to group together all the necessary state to read / process a
@@ -74,11 +76,12 @@ private:
     /// constructor from chain for more convenient map instertion
     CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
     }
-    std::unique_ptr<TChain> chain{nullptr};                              ///< The TChain with the data
-    unsigned entry{0};                                                   ///< The next entry to read
-    std::vector<std::pair<std::string, CollectionInfo>> storedClasses{}; ///< The stored collections in this category
-    std::vector<root_utils::CollectionBranches> branches{};              ///< The branches for this category
-    std::shared_ptr<CollectionIDTable> table{nullptr};                   ///< The collection ID table for this category
+    std::unique_ptr<TChain> chain{nullptr};                                      ///< The TChain with the data
+    unsigned entry{0};                                                           ///< The next entry to read
+    std::vector<std::pair<std::string, detail::CollectionInfo>> storedClasses{}; ///< The stored collections in this
+                                                                                 ///< category
+    std::vector<root_utils::CollectionBranches> branches{};                      ///< The branches for this category
+    std::shared_ptr<CollectionIDTable> table{nullptr}; ///< The collection ID table for this category
   };
 
   void initCategory(CategoryInfo& catInfo, const std::string& category);

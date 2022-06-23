@@ -16,8 +16,7 @@
 
 namespace podio {
 
-std::tuple<std::vector<root_utils::CollectionBranches>,
-           std::vector<std::pair<std::string, ROOTFrameReader::CollectionInfo>>>
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionInfoT>& collInfo);
 
@@ -222,15 +221,14 @@ unsigned ROOTFrameReader::getEntries(const std::string& category) const {
   return 0;
 }
 
-std::tuple<std::vector<root_utils::CollectionBranches>,
-           std::vector<std::pair<std::string, ROOTFrameReader::CollectionInfo>>>
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionInfoT>& collInfo) {
 
   size_t collectionIndex{0};
   std::vector<root_utils::CollectionBranches> collBranches;
   collBranches.reserve(collInfo.size() + 1);
-  std::vector<std::pair<std::string, ROOTFrameReader::CollectionInfo>> storedClasses;
+  std::vector<std::pair<std::string, detail::CollectionInfo>> storedClasses;
   storedClasses.reserve(collInfo.size());
 
   for (const auto& [collID, collType, isSubsetColl] : collInfo) {
