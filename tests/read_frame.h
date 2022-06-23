@@ -34,20 +34,20 @@ int read_frames(const std::string& filename) {
   // Read the frames in a different order than when writing them here to make
   // sure that the writing/reading order does not impose any usage requirements
   for (size_t i = 0; i < reader.getEntries("events"); ++i) {
-    auto frame = podio::Frame(reader.readNextFrame("events"));
+    auto frame = podio::Frame(reader.readNextEntry("events"));
     processEvent(frame, i, reader.currentFileVersion());
 
-    auto otherFrame = podio::Frame(reader.readNextFrame("other_events"));
+    auto otherFrame = podio::Frame(reader.readNextEntry("other_events"));
     processEvent(otherFrame, i + 100, reader.currentFileVersion());
   }
 
-  if (reader.readNextFrame("events")) {
+  if (reader.readNextEntry("events")) {
     std::cerr << "Trying to read more frame data than is present should return a nullptr" << std::endl;
     return 1;
   }
 
   std::cout << "========================================================\n" << std::endl;
-  if (reader.readNextFrame("not_present")) {
+  if (reader.readNextEntry("not_present")) {
     std::cerr << "Trying to read non-existant frame data should return a nullptr" << std::endl;
     return 1;
   }

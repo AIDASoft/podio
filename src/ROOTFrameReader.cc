@@ -32,8 +32,8 @@ GenericParameters ROOTFrameReader::readEventMetaData(ROOTFrameReader::CategoryIn
   return params;
 }
 
-std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextFrame(const std::string& category) {
-  auto& catInfo = getCategoryInfo(category);
+std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEntry(const std::string& name) {
+  auto& catInfo = getCategoryInfo(name);
   if (!catInfo.chain) {
     return nullptr;
   }

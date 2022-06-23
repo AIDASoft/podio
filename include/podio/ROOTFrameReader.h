@@ -54,11 +54,11 @@ public:
   void openFiles(const std::vector<std::string>& filenames);
 
   /**
-   * Read the next data from which a Frame can be constructed for a given
-   * category. In case there are no more frames left for this category or in
-   * case the category is not present, this returns a nullptr.
+   * Read the next data entry from which a Frame can be constructed for the
+   * given name. In case there are no more entries left for this name or in
+   * case there is no data for this name, this returns a nullptr.
    */
-  std::unique_ptr<podio::ROOTRawData> readNextFrame(const std::string& category);
+  std::unique_ptr<podio::ROOTRawData> readNextEntry(const std::string& name);
 
   /// Returns number of entries for the given category
   unsigned getEntries(const std::string& category) const;

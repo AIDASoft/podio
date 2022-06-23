@@ -25,8 +25,12 @@ public:
   SIOFrameReader(const SIOFrameReader&) = delete;
   SIOFrameReader& operator=(const SIOFrameReader&) = delete;
 
-  /// Read all collections requested
-  std::unique_ptr<podio::SIORawData> readNextFrame(const std::string& category);
+  /**
+   * Read the next data entry from which a Frame can be constructed for the
+   * given name. In case there are no more entries left for this name or in
+   * case there is no data for this name, this returns a nullptr.
+   */
+  std::unique_ptr<podio::SIORawData> readNextEntry(const std::string& name);
 
   unsigned getEntries(const std::string& category) const;
 
