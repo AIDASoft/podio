@@ -60,14 +60,14 @@ void SIOWriter::writeEvent() {
   m_tocRecord.addRecord("event_record", rec_info._file_start);
 }
 
-sio::block_list SIOWriter::createBlocks() {
+sio::block_list SIOWriter::createBlocks() const {
   sio::block_list blocks;
   blocks.emplace_back(m_eventMetaData);
 
   for (const auto& name : m_collectionsToWrite) {
     const podio::CollectionBase* col{nullptr};
     m_store->get(name, col);
-    const_cast<podio::CollectionBase*>(col)->prepareForWrite();
+    col->prepareForWrite();
 
     blocks.emplace_back(podio::SIOBlockFactory::instance().createBlock(col, name));
   }

@@ -33,7 +33,7 @@ public:
 
 private:
   void writeCollectionIDTable();
-  sio::block_list createBlocks();
+  sio::block_list createBlocks() const;
 
   // members
   std::string m_filename{};
