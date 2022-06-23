@@ -37,9 +37,6 @@ namespace sio_utils {
       subsetColl.emplace_back(coll->isSubsetCollection());
     }
 
-    // for (const auto& [_, coll] : collections) {
-    // }
-
     return std::make_shared<SIOCollectionIDTableBlock>(std::move(names), std::move(ids), std::move(types),
                                                        std::move(subsetColl));
   }

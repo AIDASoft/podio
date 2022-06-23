@@ -76,7 +76,7 @@ private:
    * reading from a TTree / TChain (i.e. collection infos, branches, ...)
    */
   struct CategoryInfo {
-    /// constructor from chain for more convenient map instertion
+    /// constructor from chain for more convenient map insertion
     CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
     }
     std::unique_ptr<TChain> chain{nullptr};                                      ///< The TChain with the data

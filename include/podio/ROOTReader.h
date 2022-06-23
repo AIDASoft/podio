@@ -25,7 +25,6 @@ class CollectionBase;
 class Registry;
 class CollectionIDTable;
 class GenericParameters;
-struct CollectionBuffers;
 
 /**
 This class has the function to read available data from disk

@@ -31,10 +31,10 @@ public:
   // SIOBlock(name + "__{{ class.bare_type }}", sio::version::encode_version(0, 1)) {}
   SIOBlock(name, sio::version::encode_version(0, 1)) {}
 
-  // Read the particle data from the device
+  // Read the collection data from the device
   void read(sio::read_device& device, sio::version_type version) override;
 
-  // Write the particle data to the device
+  // Write the collection data to the device
   void write(sio::write_device& device) override;
 
   void createBuffers(bool isSubsetColl) override;
