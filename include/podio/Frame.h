@@ -30,7 +30,7 @@ using EnableIfCollectionRValue = typename std::enable_if_t<isCollection<T> && !s
 namespace detail {
   /** The minimal interface for raw data types
    */
-  struct EmptyRawData {
+  struct EmptyFrameData {
     podio::CollectionIDTable getIDTable() const {
       return {};
     }
@@ -53,8 +53,8 @@ namespace detail {
   };
 } // namespace detail
 
-template <typename RawDataT>
-std::optional<podio::CollectionReadBuffers> unpack(RawDataT* data, const std::string& name) {
+template <typename FrameDataT>
+std::optional<podio::CollectionReadBuffers> unpack(FrameDataT* data, const std::string& name) {
   return data->getCollectionBuffers(name);
 }
 
@@ -84,10 +84,10 @@ class Frame {
    * The interface implementation of the abstract FrameConcept that is necessary
    * for a type-erased implementation of the Frame class
    */
-  template <typename RawDataT>
+  template <typename FrameDataT>
   struct FrameModel final : FrameConcept, public ICollectionProvider {
 
-    FrameModel(std::unique_ptr<RawDataT> rawData);
+    FrameModel(std::unique_ptr<FrameDataT> data);
     ~FrameModel() = default;
     FrameModel(const FrameModel&) = delete;
     FrameModel& operator=(const FrameModel&) = delete;
@@ -130,11 +130,11 @@ class Frame {
 
     using CollectionMapT = std::unordered_map<std::string, std::unique_ptr<podio::CollectionBase>>;
 
-    mutable CollectionMapT m_collections{};                    ///< The internal map for storing unpacked collections
-    mutable std::unique_ptr<std::mutex> m_mapMtx{nullptr};     ///< The mutex for guarding the internal collection map
-    std::unique_ptr<RawDataT> m_rawData{nullptr};              ///< The raw data read from file
-    mutable std::unique_ptr<std::mutex> m_rawDataMtx{nullptr}; ///< The mutex for guarding the raw data
-    podio::CollectionIDTable m_idTable{};                      ///< The collection ID table
+    mutable CollectionMapT m_collections{};                 ///< The internal map for storing unpacked collections
+    mutable std::unique_ptr<std::mutex> m_mapMtx{nullptr};  ///< The mutex for guarding the internal collection map
+    std::unique_ptr<FrameDataT> m_data{nullptr};            ///< The raw data read from file
+    mutable std::unique_ptr<std::mutex> m_dataMtx{nullptr}; ///< The mutex for guarding the raw data
+    podio::CollectionIDTable m_idTable{};                   ///< The collection ID table
     std::unique_ptr<podio::GenericParameters> m_parameters{nullptr}; ///< The generic parameter store for this frame
     mutable std::set<int> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet put
                                             ///< into the map)
@@ -149,8 +149,8 @@ public:
 
   /** Frame constructor from (almost) arbitrary raw data
    */
-  template <typename RawDataT>
-  Frame(std::unique_ptr<RawDataT>);
+  template <typename FrameDataT>
+  Frame(std::unique_ptr<FrameDataT>);
 
   // The frame is a non-copyable type
   Frame(const Frame&) = delete;
@@ -252,11 +252,11 @@ public:
 
 // implementations below
 
-Frame::Frame() : Frame(std::make_unique<detail::EmptyRawData>()) {
+Frame::Frame() : Frame(std::make_unique<detail::EmptyFrameData>()) {
 }
 
-template <typename RawDataT>
-Frame::Frame(std::unique_ptr<RawDataT> rawData) : m_self(std::make_unique<FrameModel<RawDataT>>(std::move(rawData))) {
+template <typename FrameDataT>
+Frame::Frame(std::unique_ptr<FrameDataT> data) : m_self(std::make_unique<FrameModel<FrameDataT>>(std::move(data))) {
 }
 
 template <typename CollT, typename>
@@ -288,22 +288,22 @@ const CollT& Frame::put(CollT&& coll, const std::string& name) {
   return emptyColl;
 }
 
-template <typename RawDataT>
-Frame::FrameModel<RawDataT>::FrameModel(std::unique_ptr<RawDataT> rawData) :
+template <typename FrameDataT>
+Frame::FrameModel<FrameDataT>::FrameModel(std::unique_ptr<FrameDataT> data) :
     m_mapMtx(std::make_unique<std::mutex>()),
-    m_rawData(std::move(rawData)),
-    m_rawDataMtx(std::make_unique<std::mutex>()),
-    m_idTable(std::move(m_rawData->getIDTable())),
-    m_parameters(std::move(m_rawData->getParameters())) {
+    m_data(std::move(data)),
+    m_dataMtx(std::make_unique<std::mutex>()),
+    m_idTable(std::move(m_data->getIDTable())),
+    m_parameters(std::move(m_data->getParameters())) {
 }
 
-template <typename RawDataT>
-const podio::CollectionBase* Frame::FrameModel<RawDataT>::get(const std::string& name) const {
+template <typename FrameDataT>
+const podio::CollectionBase* Frame::FrameModel<FrameDataT>::get(const std::string& name) const {
   return doGet(name);
 }
 
-template <typename RawDataT>
-podio::CollectionBase* Frame::FrameModel<RawDataT>::doGet(const std::string& name, bool setReferences) const {
+template <typename FrameDataT>
+podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& name, bool setReferences) const {
   {
     // First check whether the collection is in the map already
     //
@@ -318,13 +318,13 @@ podio::CollectionBase* Frame::FrameModel<RawDataT>::doGet(const std::string& nam
   podio::CollectionBase* retColl = nullptr;
 
   // Now try to get it from the raw data if we have the possibility
-  if (m_rawData) {
+  if (m_data) {
     // Have the buffers in the outer scope here to hold the raw data lock as
     // briefly as possible
     auto buffers = std::optional<podio::CollectionReadBuffers>{std::nullopt};
     {
-      std::lock_guard lock{*m_rawDataMtx};
-      buffers = unpack(m_rawData.get(), name);
+      std::lock_guard lock{*m_dataMtx};
+      buffers = unpack(m_data.get(), name);
     }
     if (buffers) {
       auto coll = buffers->createCollection(buffers.value(), buffers->data == nullptr);
@@ -347,8 +347,8 @@ podio::CollectionBase* Frame::FrameModel<RawDataT>::doGet(const std::string& nam
   return retColl;
 }
 
-template <typename RawDataT>
-bool Frame::FrameModel<RawDataT>::get(int collectionID, CollectionBase*& collection) const {
+template <typename FrameDataT>
+bool Frame::FrameModel<FrameDataT>::get(int collectionID, CollectionBase*& collection) const {
   const auto& name = m_idTable.name(collectionID);
   const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
 
@@ -369,9 +369,9 @@ bool Frame::FrameModel<RawDataT>::get(int collectionID, CollectionBase*& collect
   return false;
 }
 
-template <typename RawDataT>
-const podio::CollectionBase* Frame::FrameModel<RawDataT>::put(std::unique_ptr<podio::CollectionBase> coll,
-                                                              const std::string& name) {
+template <typename FrameDataT>
+const podio::CollectionBase* Frame::FrameModel<FrameDataT>::put(std::unique_ptr<podio::CollectionBase> coll,
+                                                                const std::string& name) {
   {
     std::lock_guard lock{*m_mapMtx};
     auto [it, success] = m_collections.try_emplace(name, std::move(coll));
@@ -388,8 +388,8 @@ const podio::CollectionBase* Frame::FrameModel<RawDataT>::put(std::unique_ptr<po
   return nullptr;
 }
 
-template <typename RawDataT>
-std::vector<std::string> Frame::FrameModel<RawDataT>::availableCollections() const {
+template <typename FrameDataT>
+std::vector<std::string> Frame::FrameModel<FrameDataT>::availableCollections() const {
   // TODO: Check if there is a more efficient way to do this. Currently this is
   // done very conservatively, but in a way that should always work, regardless
   // of assumptions. It might be possible to simply return what is in the
@@ -397,9 +397,9 @@ std::vector<std::string> Frame::FrameModel<RawDataT>::availableCollections() con
   // in the raw data as well as things that have been put into the frame
 
   // Lock both the internal map and the rawdata for this
-  std::scoped_lock lock{*m_mapMtx, *m_rawDataMtx};
+  std::scoped_lock lock{*m_mapMtx, *m_dataMtx};
 
-  auto collections = m_rawData->getAvailableCollections();
+  auto collections = m_data->getAvailableCollections();
   collections.reserve(collections.size() + m_collections.size());
 
   for (const auto& [name, _] : m_collections) {
