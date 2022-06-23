@@ -45,7 +45,7 @@ void SIOFrameReader::openFile(const std::string& filename) {
   readPodioHeader();
 }
 
-std::unique_ptr<SIORawData> SIOFrameReader::readNextEntry(const std::string& name) {
+std::unique_ptr<SIOFrameData> SIOFrameReader::readNextEntry(const std::string& name) {
   // Skip to where the next record of this name starts in the file, based on
   // how many times we have already read this name
   //
@@ -62,8 +62,8 @@ std::unique_ptr<SIORawData> SIOFrameReader::readNextEntry(const std::string& nam
 
   m_nameCtr[name]++;
 
-  return std::make_unique<SIORawData>(std::move(dataBuffer), dataInfo._uncompressed_length, std::move(tableBuffer),
-                                      tableInfo._uncompressed_length);
+  return std::make_unique<SIOFrameData>(std::move(dataBuffer), dataInfo._uncompressed_length, std::move(tableBuffer),
+                                        tableInfo._uncompressed_length);
 }
 
 unsigned SIOFrameReader::getEntries(const std::string& name) const {

@@ -2,7 +2,7 @@
 #define PODIO_ROOTFRAMEREADER_H
 
 #include "podio/CollectionBranches.h"
-#include "podio/ROOTRawData.h"
+#include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
 
 #include "TChain.h"
@@ -58,7 +58,7 @@ public:
    * given name. In case there are no more entries left for this name or in
    * case there is no data for this name, this returns a nullptr.
    */
-  std::unique_ptr<podio::ROOTRawData> readNextEntry(const std::string& name);
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name);
 
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;

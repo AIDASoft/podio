@@ -32,7 +32,7 @@ GenericParameters ROOTFrameReader::readEventMetaData(ROOTFrameReader::CategoryIn
   return params;
 }
 
-std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEntry(const std::string& name) {
+std::unique_ptr<ROOTFrameData> ROOTFrameReader::readNextEntry(const std::string& name) {
   auto& catInfo = getCategoryInfo(name);
   if (!catInfo.chain) {
     return nullptr;
@@ -41,7 +41,7 @@ std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEntry(const std::string& n
     return nullptr;
   }
 
-  ROOTRawData::BufferMap buffers;
+  ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
     buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i));
   }
@@ -49,7 +49,7 @@ std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextEntry(const std::string& n
   auto parameters = readEventMetaData(catInfo);
 
   catInfo.entry++;
-  return std::make_unique<ROOTRawData>(std::move(buffers), catInfo.table, std::move(parameters));
+  return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
 podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameReader::CategoryInfo& catInfo,

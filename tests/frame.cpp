@@ -5,8 +5,6 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 
-#include "podio/ROOTRawData.h"
-
 #include <string>
 #include <thread>
 #include <vector>
@@ -361,8 +359,3 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
     REQUIRE(frame.getParameter<std::string>(makeName("string", i)) == std::to_string(i));
   }
 }
-
-// TEST_CASE("Frame construction with RawData", "[frame][basics]") {
-//   auto rd = std::make_unique<podio::ROOTRawData>();
-//   auto frame = podio::Frame(std::move(rd));
-// }

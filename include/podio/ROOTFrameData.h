@@ -1,5 +1,5 @@
-#ifndef PODIO_ROOTRAWDATA_H
-#define PODIO_ROOTRAWDATA_H
+#ifndef PODIO_ROOTFRAMEDATA_H
+#define PODIO_ROOTFRAMEDATA_H
 
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
@@ -12,20 +12,20 @@
 
 namespace podio {
 
-class ROOTRawData {
+class ROOTFrameData {
   using CollIDPtr = std::shared_ptr<const podio::CollectionIDTable>;
 
 public:
   using BufferMap = std::unordered_map<std::string, podio::CollectionReadBuffers>;
 
-  ROOTRawData() = delete;
-  ~ROOTRawData() = default;
-  ROOTRawData(ROOTRawData&&) = default;
-  ROOTRawData& operator=(ROOTRawData&&) = default;
-  ROOTRawData(const ROOTRawData&) = delete;
-  ROOTRawData& operator=(const ROOTRawData&) = delete;
+  ROOTFrameData() = delete;
+  ~ROOTFrameData() = default;
+  ROOTFrameData(ROOTFrameData&&) = default;
+  ROOTFrameData& operator=(ROOTFrameData&&) = default;
+  ROOTFrameData(const ROOTFrameData&) = delete;
+  ROOTFrameData& operator=(const ROOTFrameData&) = delete;
 
-  ROOTRawData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params) :
+  ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params) :
       m_buffers(std::move(buffers)), m_idTable(idTable), m_parameters(std::move(params)) {
   }
 
@@ -61,10 +61,10 @@ private:
   // TODO: switch to something more elegant once the basic functionality and
   // interface is better defined
   BufferMap m_buffers{};
-  // This is co-owned by each rawdata and the original reader. (for now at least)
+  // This is co-owned by each FrameData and the original reader. (for now at least)
   CollIDPtr m_idTable{nullptr};
   podio::GenericParameters m_parameters{};
 };
 } // namespace podio
 
-#endif // PODIO_ROOTRAWDATA_H
+#endif // PODIO_ROOTFRAMEDATA_H

@@ -1,5 +1,5 @@
-#ifndef PODIO_SIORAWDATA_H
-#define PODIO_SIORAWDATA_H
+#ifndef PODIO_SIOFRAMEDATA_H
+#define PODIO_SIOFRAMEDATA_H
 
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
@@ -16,20 +16,30 @@
 #include <vector>
 
 namespace podio {
-class SIORawData {
-  // using CollIDPtr = std::shared_ptr<const podio::CollectionIDTable>;
+/**
+ * The Frame data container for the SIO backend. It is constructed from the
+ * compressed sio::buffers that is read from file and does all the necessary
+ * unpacking and decompressing internally after construction.
+ */
+class SIOFrameData {
 
 public:
-  SIORawData() = delete;
-  ~SIORawData() = default;
+  SIOFrameData() = delete;
+  ~SIOFrameData() = default;
 
-  SIORawData(const SIORawData&) = delete;
-  SIORawData& operator=(const SIORawData&) = delete;
+  SIOFrameData(const SIOFrameData&) = delete;
+  SIOFrameData& operator=(const SIOFrameData&) = delete;
 
-  SIORawData(SIORawData&&) = default;
-  SIORawData& operator=(SIORawData&&) = default;
+  SIOFrameData(SIOFrameData&&) = default;
+  SIOFrameData& operator=(SIOFrameData&&) = default;
 
-  SIORawData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize) :
+  /**
+   * Constructor from the collBuffers containing the collection data and a
+   * tableBuffer containing the necessary information for unpacking the
+   * collections. The two size parameters denote the uncompressed size of the
+   * respective buffers.
+   */
+  SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize) :
       m_recBuffer(std::move(collBuffers)),
       m_tableBuffer(std::move(tableBuffer)),
       m_dataSize(dataSize),
@@ -76,4 +86,4 @@ private:
 };
 } // namespace podio
 
-#endif // PODIO_SIORAWDATA_H
+#endif // PODIO_SIOFRAMEDATA_H

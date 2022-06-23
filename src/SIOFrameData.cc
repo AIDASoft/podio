@@ -1,5 +1,5 @@
-#include "podio/SIORawData.h"
 #include "podio/SIOBlock.h"
+#include "podio/SIOFrameData.h"
 
 #include <sio/compression/zlib.h>
 
@@ -7,7 +7,7 @@
 #include <iterator>
 
 namespace podio {
-std::optional<podio::CollectionReadBuffers> SIORawData::getCollectionBuffers(const std::string& name) {
+std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(const std::string& name) {
   unpackBuffers();
 
   if (m_idTable.present(name)) {
@@ -26,13 +26,13 @@ std::optional<podio::CollectionReadBuffers> SIORawData::getCollectionBuffers(con
   return std::nullopt;
 }
 
-std::unique_ptr<podio::GenericParameters> SIORawData::getParameters() {
+std::unique_ptr<podio::GenericParameters> SIOFrameData::getParameters() {
   unpackBuffers();
   m_availableBlocks[0] = 0;
   return std::make_unique<podio::GenericParameters>(std::move(m_parameters));
 }
 
-std::vector<std::string> SIORawData::getAvailableCollections() {
+std::vector<std::string> SIOFrameData::getAvailableCollections() {
   unpackBuffers();
   std::vector<std::string> collections;
   for (size_t i = 0; i < m_blocks.size(); ++i) {
@@ -44,7 +44,7 @@ std::vector<std::string> SIORawData::getAvailableCollections() {
   return collections;
 }
 
-void SIORawData::unpackBuffers() {
+void SIOFrameData::unpackBuffers() {
   // Only do the unpacking once. Use the block as proxy for deciding whether
   // we have already unpacked things, since that is the main thing we do in
   // here: create blocks and read the data into them
@@ -64,7 +64,7 @@ void SIORawData::unpackBuffers() {
   sio::api::read_blocks(uncBuffer.span(), m_blocks);
 }
 
-void SIORawData::createBlocks() {
+void SIOFrameData::createBlocks() {
   m_blocks.reserve(m_typeNames.size() + 1);
   // First block during writing is parameters / metadata, then collections
   auto parameters = std::make_shared<podio::SIOEventMetaDataBlock>();
@@ -80,7 +80,7 @@ void SIORawData::createBlocks() {
   m_availableBlocks.resize(m_blocks.size(), 1);
 }
 
-void SIORawData::readIdTable() {
+void SIOFrameData::readIdTable() {
   sio::buffer uncBuffer{m_tableSize};
   sio::zlib_compression compressor;
   compressor.uncompress(m_tableBuffer.span(), uncBuffer);

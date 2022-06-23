@@ -2,7 +2,7 @@
 #define PODIO_SIOFRAMEREADER_H
 
 #include "podio/SIOBlock.h"
-#include "podio/SIORawData.h"
+#include "podio/SIOFrameData.h"
 #include "podio/podioVersion.h"
 
 #include <sio/definitions.h>
@@ -30,7 +30,7 @@ public:
    * given name. In case there are no more entries left for this name or in
    * case there is no data for this name, this returns a nullptr.
    */
-  std::unique_ptr<podio::SIORawData> readNextEntry(const std::string& name);
+  std::unique_ptr<podio::SIOFrameData> readNextEntry(const std::string& name);
 
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
