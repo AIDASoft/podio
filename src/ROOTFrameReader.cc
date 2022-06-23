@@ -213,8 +213,8 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   }
 }
 
-unsigned ROOTFrameReader::getEntries(const std::string& category) const {
-  if (auto it = m_categories.find(category); it != m_categories.end()) {
+unsigned ROOTFrameReader::getEntries(const std::string& name) const {
+  if (auto it = m_categories.find(name); it != m_categories.end()) {
     return it->second.chain->GetEntries();
   }
 

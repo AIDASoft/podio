@@ -46,12 +46,12 @@ void SIOFrameReader::openFile(const std::string& filename) {
 }
 
 std::unique_ptr<SIORawData> SIOFrameReader::readNextEntry(const std::string& name) {
-  // Skip to where the next record of this category starts in the file, based on
-  // how many times we have already read this category
+  // Skip to where the next record of this name starts in the file, based on
+  // how many times we have already read this name
   //
   // NOTE: exploiting the fact that the operator[] of a map will create a
   // default initialized entry for us if not present yet
-  const auto recordPos = m_tocRecord.getPosition(name, m_categoryCtr[name]);
+  const auto recordPos = m_tocRecord.getPosition(name, m_nameCtr[name]);
   if (recordPos == 0) {
     return nullptr;
   }
@@ -60,14 +60,14 @@ std::unique_ptr<SIORawData> SIOFrameReader::readNextEntry(const std::string& nam
   auto [tableBuffer, tableInfo] = sio_utils::readRecord(m_stream, false);
   auto [dataBuffer, dataInfo] = sio_utils::readRecord(m_stream, false);
 
-  m_categoryCtr[name]++;
+  m_nameCtr[name]++;
 
   return std::make_unique<SIORawData>(std::move(dataBuffer), dataInfo._uncompressed_length, std::move(tableBuffer),
                                       tableInfo._uncompressed_length);
 }
 
-unsigned SIOFrameReader::getEntries(const std::string& category) const {
-  return m_tocRecord.getNRecords(category);
+unsigned SIOFrameReader::getEntries(const std::string& name) const {
+  return m_tocRecord.getNRecords(name);
 }
 
 bool SIOFrameReader::readFileTOCRecord() {

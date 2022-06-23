@@ -60,8 +60,8 @@ public:
    */
   std::unique_ptr<podio::ROOTRawData> readNextEntry(const std::string& name);
 
-  /// Returns number of entries for the given category
-  unsigned getEntries(const std::string& category) const;
+  /// Returns number of entries for the given name
+  unsigned getEntries(const std::string& name) const;
 
   podio::version::Version currentFileVersion() const {
     return m_fileVersion;
@@ -70,7 +70,10 @@ public:
 private:
   /**
    * Helper struct to group together all the necessary state to read / process a
-   * given category.
+   * given category. A "category" in this case describes all frames with the
+   * same name which are constrained by the ROOT file structure that we use to
+   * have the same contents. It encapsulates all state that is necessary for
+   * reading from a TTree / TChain (i.e. collection infos, branches, ...)
    */
   struct CategoryInfo {
     /// constructor from chain for more convenient map instertion
@@ -84,12 +87,25 @@ private:
     std::shared_ptr<CollectionIDTable> table{nullptr}; ///< The collection ID table for this category
   };
 
-  void initCategory(CategoryInfo& catInfo, const std::string& category);
+  /**
+   * Initialze the passed CategoryInfo by setting up the necessary branches,
+   * collection infos and all necessary meta data to be able to read entries
+   * with this name
+   */
+  void initCategory(CategoryInfo& catInfo, const std::string& name);
 
-  CategoryInfo& getCategoryInfo(const std::string& category);
+  /**
+   * Get the category information for the given name. In case there is no TTree
+   * with contents for the given name this will return a CategoryInfo with an
+   * uninitialized chain (nullptr) member
+   */
+  CategoryInfo& getCategoryInfo(const std::string& name);
 
   GenericParameters readEventMetaData(CategoryInfo& catInfo);
 
+  /**
+   * Get / read the buffers at index iColl in the passed category information
+   */
   podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl);
 
   std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree

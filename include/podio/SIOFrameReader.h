@@ -32,7 +32,8 @@ public:
    */
   std::unique_ptr<podio::SIORawData> readNextEntry(const std::string& name);
 
-  unsigned getEntries(const std::string& category) const;
+  /// Returns number of entries for the given name
+  unsigned getEntries(const std::string& name) const;
 
   void openFile(const std::string& filename);
 
@@ -48,10 +49,10 @@ private:
 
   sio::ifstream m_stream{}; ///< The stream from which we read
 
-  /// Count how many times each category has been read already
-  std::unordered_map<std::string, unsigned> m_categoryCtr{};
+  /// Count how many times each an entry of this name has been read already
+  std::unordered_map<std::string, unsigned> m_nameCtr{};
 
-  /// Table of content record where starting points of categories can be read from
+  /// Table of content record where starting points of named entries can be read from
   SIOFileTOCRecord m_tocRecord{};
   /// The podio version that has been used to write the file
   podio::version::Version m_fileVersion{0};
