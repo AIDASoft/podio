@@ -52,6 +52,9 @@ std::unique_ptr<SIORawData> SIOFrameReader::readNextFrame(const std::string& cat
   // NOTE: exploiting the fact that the operator[] of a map will create a
   // default initialized entry for us if not present yet
   const auto recordPos = m_tocRecord.getPosition(category, m_categoryCtr[category]);
+  if (recordPos == 0) {
+    return nullptr;
+  }
   m_stream.seekg(recordPos);
 
   auto [tableBuffer, tableInfo] = sio_utils::readRecord(m_stream, false);

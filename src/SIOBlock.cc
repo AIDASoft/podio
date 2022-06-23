@@ -214,7 +214,9 @@ SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(const std::string& 
   const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
                                [&name](const auto& keyVal) { return keyVal.first == name; });
   if (it != m_recordMap.end()) {
-    return it->second[iEntry];
+    if (iEntry < it->second.size()) {
+      return it->second[iEntry];
+    }
   }
 
   return 0;

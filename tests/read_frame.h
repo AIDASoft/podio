@@ -41,6 +41,17 @@ int read_frames(const std::string& filename) {
     processEvent(otherFrame, i + 100, reader.currentFileVersion());
   }
 
+  if (reader.readNextFrame("events")) {
+    std::cerr << "Trying to read more frame data than is present should return a nullptr" << std::endl;
+    return 1;
+  }
+
+  std::cout << "========================================================\n" << std::endl;
+  if (reader.readNextFrame("not_present")) {
+    std::cerr << "Trying to read non-existant frame data should return a nullptr" << std::endl;
+    return 1;
+  }
+
   return 0;
 }
 

@@ -35,6 +35,12 @@ GenericParameters ROOTFrameReader::readEventMetaData(ROOTFrameReader::CategoryIn
 
 std::unique_ptr<ROOTRawData> ROOTFrameReader::readNextFrame(const std::string& category) {
   auto& catInfo = getCategoryInfo(category);
+  if (!catInfo.chain) {
+    return nullptr;
+  }
+  if (catInfo.entry >= catInfo.chain->GetEntries()) {
+    return nullptr;
+  }
 
   ROOTRawData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
@@ -129,8 +135,11 @@ ROOTFrameReader::CategoryInfo& ROOTFrameReader::getCategoryInfo(const std::strin
     return it->second;
   }
 
-  // TODO: Proper error handling. How do we want to deal with this?
-  throw std::runtime_error("No category " + category + " available");
+  // Use a nullptr TChain to signify an invalid category request
+  // TODO: Warn / log
+  static auto invalidCategory = CategoryInfo{nullptr};
+
+  return invalidCategory;
 }
 
 void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& category) {
