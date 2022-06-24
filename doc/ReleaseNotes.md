@@ -1,3 +1,11 @@
+# v00-14-03
+
+* 2022-06-24 Valentin Volkl ([PR#309](https://github.com/AIDASoft/podio/pull/309))
+  - backport of [#307](https://github.com/AIDASoft/podio/pulls/307)
+
+* 2022-06-24 Thomas Madlener ([PR#308](https://github.com/AIDASoft/podio/pull/308))
+  - backport of [#282](https://github.com/AIDASoft/podio/pulls/282)
+
 # v00-14-02
 
 * 2022-06-15 Thomas Madlener ([PR#304](https://github.com/AIDASoft/podio/pull/304))
