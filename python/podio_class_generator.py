@@ -175,8 +175,8 @@ class ClassGenerator:
     endings = {
         'Data': ('h',),
         'Component': ('h',),
-        'PrintInfo': ('h',)
-        }.get(template_base, ('h', 'cc'))
+        'PrintInfo': ('h',),
+        }.get(template_base, ('h', 'cc','jl'))
 
     fn_templates = []
     for ending in endings:
