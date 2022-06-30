@@ -175,7 +175,7 @@ class MemberVariable:
       self.namespace, self.bare_type = _get_namespace_class(self.full_type)
 
     self.julia_type = get_julia_type(cpp_type=self.bare_type, is_array=self.is_array,
-                                            array_type=self.array_type, array_size=self.array_size)
+                                     array_type=self.array_type, array_size=self.array_size)
 
   def __str__(self):
     """string representation"""
