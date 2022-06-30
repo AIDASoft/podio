@@ -34,7 +34,9 @@ def get_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=No
                        "bool": "Bool", "long": "Int32", "unsigned int": "UInt32",
                        "unsigned long": "UInt32", "char": "Char", "short": "Int16",
                        "long long": "Int64", "unsigned long long": "UInt64"}
-
+  # is a global type as described in test_MemberParser.py #L121
+  if cpp_type and cpp_type.startswith("::"):
+    cpp_type = cpp_type[2:]
   if cpp_type in builtin_types_map:
     return builtin_types_map[cpp_type]
 
