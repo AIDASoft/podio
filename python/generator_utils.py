@@ -28,6 +28,31 @@ def _prefix_name(name, prefix):
   return name
 
 
+def parse_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=None):
+  """Parse the given c++ type to a Julia type"""
+  builtin_types_map = {"int": "Int32", "float": "Float32", "double": "Float64",
+                       "bool": "Bool", "long": "Int32", "unsigned int": "UInt32",
+                       "unsigned long": "UInt32", "char": "Char", "short": "Int16",
+                       "long long": "Int64", "unsigned long long": "UInt64", "std::string": "String"}
+
+  if cpp_type in BUILTIN_TYPES:
+    return builtin_types_map[cpp_type]
+
+  if not is_array:
+    if cpp_type.startswith('std::'):
+      cpp_type = cpp_type[5:]
+    if cpp_type in ALLOWED_FIXED_WIDTH_TYPES:
+      regex_string = re.split("(u|)int(8|16|32|64)_t", cpp_type)
+      cpp_type = regex_string[1].upper() + "Int" + regex_string[2]
+      return cpp_type
+
+  else:
+    array_type = parse_julia_type(cpp_type=array_type)
+    return f"MVector{'{'}{array_size}, {array_type}{'}'}"
+
+  return cpp_type
+
+
 class DefinitionError(Exception):
   """Exception raised by the ClassDefinitionValidator for invalid definitions.
   Mainly here to distinguish it from plain exceptions that are otherwise raised.
@@ -86,40 +111,6 @@ class DataType:
 
 class MemberVariable:
   """Simple class to hold information about a member variable"""
-
-  def parse_julia_type(self, **kwargs):
-    """Parse the given c++ type to a Julia type"""
-    self.cpp_type = kwargs.pop('cpp_type', None)
-    is_array = kwargs.pop('is_array', False)
-
-    builtin_types_map = {"int": "Int32", "float": "Float32", "double": "Float64",
-                         "bool": "Bool", "long": "Int32", "unsigned int": "UInt32",
-                         "unsigned long": "UInt32", "char": "Char", "short": "Int16",
-                         "long long": "Int64", "unsigned long long": "UInt64", "std::string": "String"}
-
-    if self.cpp_type in BUILTIN_TYPES:
-      return builtin_types_map[self.cpp_type]
-
-    if not is_array:
-      if self.cpp_type.startswith('std::'):
-        self.cpp_type = self.cpp_type[5:]
-      if self.cpp_type in ALLOWED_FIXED_WIDTH_TYPES:
-        if ALL_FIXED_WIDTH_TYPES_RGX.match(self.cpp_type):
-          regex_string = re.search("(8|16|32|64)", self.cpp_type).group()
-          if self.cpp_type.startswith('u'):
-            self.cpp_type = ("UInt" + regex_string)
-          elif self.cpp_type.startswith('i'):
-            self.cpp_type = ("Int" + regex_string)
-          return self.cpp_type
-
-    if is_array:
-      array_size = kwargs.pop('array_size', None)
-      array_type = kwargs.pop('array_type', None)
-      if array_type is not None:
-        array_type = self.parse_julia_type(cpp_type=array_type)
-      return f"MVector{'{'}{array_size}, {array_type}{'}'}"
-    return self.cpp_type
-
   def __init__(self, name, **kwargs):
     self.name = name
     self.full_type = kwargs.pop('type', '')
@@ -183,7 +174,7 @@ class MemberVariable:
     else:
       self.namespace, self.bare_type = _get_namespace_class(self.full_type)
 
-    self.julia_type = self.parse_julia_type(cpp_type=self.bare_type, is_array=self.is_array,
+    self.julia_type = parse_julia_type(cpp_type=self.bare_type, is_array=self.is_array,
                                             array_type=self.array_type, array_size=self.array_size)
 
   def __str__(self):
