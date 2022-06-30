@@ -48,7 +48,7 @@ def get_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=No
 
   else:
     array_type = get_julia_type(cpp_type=array_type)
-    return f"MVector{'{'}{array_size}, {array_type}{'}'}"
+    return f"MVector{{{array_size}, {array_type}}}"
 
   return cpp_type
 
