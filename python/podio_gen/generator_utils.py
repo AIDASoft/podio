@@ -29,6 +29,33 @@ def _prefix_name(name, prefix):
   return name
 
 
+def get_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=None):
+  """Parse the given c++ type to a Julia type"""
+  builtin_types_map = {"int": "Int32", "float": "Float32", "double": "Float64",
+                       "bool": "Bool", "long": "Int32", "unsigned int": "UInt32",
+                       "unsigned long": "UInt32", "char": "Char", "short": "Int16",
+                       "long long": "Int64", "unsigned long long": "UInt64"}
+  # is a global type as described in test_MemberParser.py #L121
+  if cpp_type and cpp_type.startswith("::"):
+    cpp_type = cpp_type[2:]
+  if cpp_type in builtin_types_map:
+    return builtin_types_map[cpp_type]
+
+  if not is_array:
+    if cpp_type.startswith('std::'):
+      cpp_type = cpp_type[5:]
+    if cpp_type in ALLOWED_FIXED_WIDTH_TYPES:
+      regex_string = re.split("(u|)int(8|16|32|64)_t", cpp_type)
+      cpp_type = regex_string[1].upper() + "Int" + regex_string[2]
+      return cpp_type
+
+  else:
+    array_type = get_julia_type(cpp_type=array_type)
+    return f"MVector{{{array_size}, {array_type}}}"
+
+  return cpp_type
+
+
 class DefinitionError(Exception):
   """Exception raised by the ClassDefinitionValidator for invalid definitions.
   Mainly here to distinguish it from plain exceptions that are otherwise raised.
@@ -97,6 +124,7 @@ class MemberVariable:
     self.is_array = False
     # ensure that this will break somewhere if requested but not set
     self.namespace, self.bare_type = None, None
+    self.julia_type = None
     self.array_namespace, self.array_bare_type = None, None
 
     self.array_type = kwargs.pop('array_type', None)
@@ -151,6 +179,9 @@ class MemberVariable:
     else:
       self.namespace, self.bare_type = _get_namespace_class(self.full_type)
 
+    self.julia_type = get_julia_type(cpp_type=self.bare_type, is_array=self.is_array,
+                                     array_type=self.array_type, array_size=self.array_size)
+  
   @property
   def docstring(self):
     """Docstring to be used in code generation"""
