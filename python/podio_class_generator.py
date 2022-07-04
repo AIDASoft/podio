@@ -237,7 +237,7 @@ class ClassGenerator:
           fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
         includes_cc.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia = True))
+        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
@@ -246,10 +246,10 @@ class ClassGenerator:
       if not relation.is_builtin:
         if relation.full_type == datatype['class'].full_type:
           includes_cc.add(self._build_include(datatype['class'].bare_type))
-          includes_jl.add(self._build_include(datatype['class'].bare_type, julia = True))
+          includes_jl.add(self._build_include(datatype['class'].bare_type, julia=True))
         else:
           includes.add(self._build_include(relation.bare_type))
-          includes_jl.add(self._build_include(relation.bare_type, julia = True))
+          includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     datatype['forward_declarations_obj'] = fwd_declarations
     datatype['includes_obj'] = self._sort_includes(includes)
@@ -276,7 +276,7 @@ class ClassGenerator:
         fwd_declarations[relation.namespace].append(relation.bare_type)
         fwd_declarations[relation.namespace].append('Mutable' + relation.bare_type)
         includes_cc.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia = True))
+        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
@@ -285,12 +285,12 @@ class ClassGenerator:
     for relation in datatype['OneToManyRelations']:
       if self._needs_include(relation):
         includes.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia = True))
+        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     for vectormember in datatype['VectorMembers']:
       if vectormember.full_type in self.reader.components:
         includes.add(self._build_include(vectormember.bare_type))
-        includes_jl.add(self._build_include(vectormember.bare_type, julia = True))
+        includes_jl.add(self._build_include(vectormember.bare_type, julia=True))
 
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
     # TODO: in principle only the mutable classes would need these includes!  # pylint: disable=fixme
@@ -316,9 +316,9 @@ class ClassGenerator:
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       if datatype['class'].bare_type != relation.bare_type:
         includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
-        includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia = True))
+        includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
         includes.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia = True))
+        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')
@@ -379,15 +379,15 @@ class ClassGenerator:
 
     return data
 
-  def _get_member_includes(self, members, julia = False):
+  def _get_member_includes(self, members, julia=False):
     """Process all members and gather the necessary includes"""
-    includes, includes_jl = set(),set()
+    includes, includes_jl = set(), set()
     includes.update(*(m.includes for m in members))
     includes_jl.update(*(m.jl_imports for m in members))
     for member in members:
       if member.is_array and not member.is_builtin_array:
         includes.add(self._build_include(member.array_bare_type))
-        includes_jl.add(self._build_include(member.array_bare_type, julia = True))
+        includes_jl.add(self._build_include(member.array_bare_type, julia=True))
 
       for stl_type in ClassDefinitionValidator.allowed_stl_types:
         if member.full_type == 'std::' + stl_type:
@@ -395,12 +395,11 @@ class ClassGenerator:
 
       if self._needs_include(member):
         includes.add(self._build_include(member.bare_type))
-        includes_jl.add(self._build_include(member.bare_type, julia = True))
+        includes_jl.add(self._build_include(member.bare_type, julia=True))
 
     if not julia:
       return self._sort_includes(includes)
-    else:
-      return includes_jl
+    return includes_jl
 
   def _write_cmake_lists_file(self):
     """Write the names of all generated header and src files into cmake lists"""
@@ -458,14 +457,13 @@ class ClassGenerator:
             'datatypes': [DataType(d) for d in self.reader.datatypes]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
-  def _build_include(self, classname, julia = False):
+  def _build_include(self, classname, julia=False):
     """Return the include statement."""
     if self.include_subfolder:
       classname = os.path.join(self.package_name, classname)
     if not julia:
       return f'#include "{classname}.h"'
-    else:
-      return f'include("{classname}.jl")'
+    return f'include("{classname}.jl")'
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
