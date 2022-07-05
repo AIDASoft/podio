@@ -168,7 +168,8 @@ class ClassGenerator:
                  'Obj': 'Obj',
                  'SIOBlock': 'SIOBlock',
                  'Collection': 'Collection',
-                 'CollectionData': 'CollectionData'}
+                 'CollectionData': 'CollectionData'
+                 }
 
       return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
 
@@ -176,7 +177,7 @@ class ClassGenerator:
         'Data': ('h',),
         'Component': ('h',),
         'PrintInfo': ('h',),
-        'Julia': ('jl',),
+        'MutableStruct': ('jl',),
         }.get(template_base, ('h', 'cc'))
 
     fn_templates = []
@@ -194,26 +195,27 @@ class ClassGenerator:
     data['package_name'] = self.package_name
     data['use_get_syntax'] = self.get_syntax
     data['incfolder'] = self.incfolder
-
     for filename, template in self._get_filenames_templates(template_base, data['class'].bare_type):
       self._write_file(filename, self._eval_template(template, data))
 
   def _process_component(self, name, component):
     """Process one component"""
-    includes = set()
+    includes, includes_jl = set(), set()
     includes.update(*(m.includes for m in component['Members']))
-
+    includes_jl.update(*(m.jl_imports for m in component['Members']))
     for member in component['Members']:
       if member.full_type in self.reader.components or member.array_type in self.reader.components:
         includes.add(self._build_include(member.bare_type))
+        includes_jl.add(self._build_include(member.bare_type, julia=True))
 
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
+    component['includes_jl'] = includes_jl
     component['class'] = DataType(name)
 
     self._fill_templates('Component', component)
-    self._fill_templates('Julia', component)
+    self._fill_templates('MutableStruct', component)
 
   def _process_datatype(self, name, definition):
     """Process one datatype"""
@@ -224,23 +226,38 @@ class ClassGenerator:
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
     self._fill_templates('CollectionData', datatype)
-    self._fill_templates('Julia', datatype)
+    self._fill_templates('MutableStruct', datatype)
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
 
+  def _preprocess_for_julia(self, datatype):
+    includes_jl = set()
+    for relation in datatype['OneToManyRelations'] + datatype['VectorMembers'] + datatype['OneToOneRelations']:
+      if self._needs_include(relation):
+        if not relation.is_builtin:
+          if relation.full_type == datatype['class'].full_type:
+            includes_jl.add(self._build_include(datatype['class'].bare_type, julia=True))
+          else:
+            includes_jl.add(self._build_include(relation.bare_type, julia=True))
+          # if datatype['class'].bare_type != relation.bare_type:
+          #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
+    try:
+      includes_jl.remove(self._build_include(datatype['class'].bare_type, julia=True))
+    except KeyError:
+      pass
+    datatype['includes_jl'].update((includes_jl))
+
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
     fwd_declarations = {}
-    includes, includes_cc, includes_jl = set(), set(), set()
-
+    includes, includes_cc = set(), set()
     for relation in datatype['OneToOneRelations']:
       if relation.full_type != datatype['class'].full_type:
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
         includes_cc.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
@@ -249,15 +266,12 @@ class ClassGenerator:
       if not relation.is_builtin:
         if relation.full_type == datatype['class'].full_type:
           includes_cc.add(self._build_include(datatype['class'].bare_type))
-          includes_jl.add(self._build_include(datatype['class'].bare_type, julia=True))
         else:
           includes.add(self._build_include(relation.bare_type))
-          includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     datatype['forward_declarations_obj'] = fwd_declarations
     datatype['includes_obj'] = self._sort_includes(includes)
     datatype['includes_cc_obj'] = self._sort_includes(includes_cc)
-    datatype['includes_jl'].update(self._sort_includes(includes_jl))
     trivial_types = datatype['VectorMembers'] or datatype['OneToManyRelations'] or datatype['OneToOneRelations']
     datatype['is_trivial_type'] = trivial_types
 
@@ -266,7 +280,6 @@ class ClassGenerator:
     includes = set(datatype['includes_data'])
     fwd_declarations = {}
     includes_cc = set()
-    includes_jl = set()
 
     for member in datatype["Members"]:
       if self.expose_pod_members and not member.is_builtin and not member.is_array:
@@ -279,7 +292,6 @@ class ClassGenerator:
         fwd_declarations[relation.namespace].append(relation.bare_type)
         fwd_declarations[relation.namespace].append('Mutable' + relation.bare_type)
         includes_cc.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
@@ -288,12 +300,10 @@ class ClassGenerator:
     for relation in datatype['OneToManyRelations']:
       if self._needs_include(relation):
         includes.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     for vectormember in datatype['VectorMembers']:
       if vectormember.full_type in self.reader.components:
         includes.add(self._build_include(vectormember.bare_type))
-        includes_jl.add(self._build_include(vectormember.bare_type, julia=True))
 
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
     # TODO: in principle only the mutable classes would need these includes!  # pylint: disable=fixme
@@ -311,25 +321,21 @@ class ClassGenerator:
     datatype['includes_cc'] = self._sort_includes(includes_cc)
     datatype['forward_declarations'] = fwd_declarations
     datatype['includes_jl'] = set()
-    datatype['includes_jl'].update(self._sort_includes(includes_jl))
 
   def _preprocess_for_collection(self, datatype):
     """Do the necessary preprocessing for the collection"""
-    includes_cc, includes, includes_jl = set(), set(), set()
+    includes_cc, includes = set(), set()
 
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       if datatype['class'].bare_type != relation.bare_type:
         includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
-        includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
         includes.add(self._build_include(relation.bare_type))
-        includes_jl.add(self._build_include(relation.bare_type, julia=True))
 
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')
 
     datatype['includes_coll_cc'] = self._sort_includes(includes_cc)
     datatype['includes_coll_data'] = self._sort_includes(includes)
-    datatype['includes_jl'].update(self._sort_includes(includes_jl))
 
     # the ostream operator needs a bit of help from the python side in the form
     # of some pre processing but also in the form of formatting, both are done
@@ -380,6 +386,7 @@ class ClassGenerator:
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
+    self._preprocess_for_julia(data)
 
     return data
 
@@ -463,11 +470,11 @@ class ClassGenerator:
 
   def _build_include(self, classname, julia=False):
     """Return the include statement."""
+    if julia:
+      return f'include("{classname}.jl")'
     if self.include_subfolder:
       classname = os.path.join(self.package_name, classname)
-    if not julia:
-      return f'#include "{classname}.h"'
-    return f'include("{classname}.jl")'
+    return f'#include "{classname}.h"'
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
