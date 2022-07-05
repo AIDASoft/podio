@@ -142,7 +142,7 @@ class ClassGenerator:
   def _write_file(self, name, content):
     """Write the content to file. Dispatch to the correct directory depending on
     whether it is a header or a .cc file."""
-    if name.endswith("h"):
+    if name.endswith("h") or name.endswith("jl"):
       fullname = os.path.join(self.install_dir, self.package_name, name)
     else:
       fullname = os.path.join(self.install_dir, "src", name)
@@ -176,6 +176,7 @@ class ClassGenerator:
         'Data': ('h',),
         'Component': ('h',),
         'PrintInfo': ('h',),
+        'Julia': ('jl',),
         }.get(template_base, ('h', 'cc'))
 
     fn_templates = []
@@ -212,6 +213,7 @@ class ClassGenerator:
     component['class'] = DataType(name)
 
     self._fill_templates('Component', component)
+    self._fill_templates('Julia', component)
 
   def _process_datatype(self, name, definition):
     """Process one datatype"""
@@ -222,6 +224,7 @@ class ClassGenerator:
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
     self._fill_templates('CollectionData', datatype)
+    self._fill_templates('Julia', datatype)
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
@@ -254,7 +257,7 @@ class ClassGenerator:
     datatype['forward_declarations_obj'] = fwd_declarations
     datatype['includes_obj'] = self._sort_includes(includes)
     datatype['includes_cc_obj'] = self._sort_includes(includes_cc)
-    datatype['includes_jl'] += self._sort_includes(includes_jl)
+    datatype['includes_jl'].update(self._sort_includes(includes_jl))
     trivial_types = datatype['VectorMembers'] or datatype['OneToManyRelations'] or datatype['OneToOneRelations']
     datatype['is_trivial_type'] = trivial_types
 
@@ -307,7 +310,8 @@ class ClassGenerator:
     datatype['includes'] = self._sort_includes(includes)
     datatype['includes_cc'] = self._sort_includes(includes_cc)
     datatype['forward_declarations'] = fwd_declarations
-    datatype['includes_jl'] = self._sort_includes(includes_jl)
+    datatype['includes_jl'] = set()
+    datatype['includes_jl'].update(self._sort_includes(includes_jl))
 
   def _preprocess_for_collection(self, datatype):
     """Do the necessary preprocessing for the collection"""
@@ -325,7 +329,7 @@ class ClassGenerator:
 
     datatype['includes_coll_cc'] = self._sort_includes(includes_cc)
     datatype['includes_coll_data'] = self._sort_includes(includes)
-    datatype['includes_jl'] += (self._sort_includes(includes_jl))
+    datatype['includes_jl'].update(self._sort_includes(includes_jl))
 
     # the ostream operator needs a bit of help from the python side in the form
     # of some pre processing but also in the form of formatting, both are done
