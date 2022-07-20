@@ -15,6 +15,10 @@
 #include "podio/ObjectID.h"
 #include <ostream>
 
+#ifdef PODIO_JSON_OUTPUT
+#include "nlohmann/json.hpp"
+#endif
+
 {{ utils.forward_decls(forward_declarations) }}
 
 {{ utils.namespace_open(class.namespace) }}
@@ -46,6 +50,8 @@ public:
 private:
   {{ class.bare_type }}Obj* m_obj;
 };
+
+{{ macros.json_output(class.bare_type, prefix='Mutable') }}
 
 {{ utils.namespace_close(class.namespace) }}
 

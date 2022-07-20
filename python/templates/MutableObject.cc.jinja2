@@ -26,4 +26,8 @@ Mutable{{ class.bare_type }}::operator {{ class.bare_type }}() const { return {{
 
 {{ macros.common_object_funcs(class, prefix='Mutable') }}
 
+{{ macros.json_output(class, Members,
+                      OneToOneRelations, OneToManyRelations,
+                      VectorMembers, use_get_syntax, prefix='Mutable')}}
+
 {{ utils.namespace_close(class.namespace) }}

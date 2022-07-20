@@ -10,6 +10,10 @@ PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
 
 # Use the cmake building blocks to add the different parts (conditionally)
 PODIO_ADD_DATAMODEL_CORE_LIB(TestDataModel "${headers}" "${sources}")
+find_package(nlohmann_json REQUIRED)
+target_compile_definitions(TestDataModel PUBLIC PODIO_JSON_OUTPUT)
+target_link_libraries(TestDataModel PUBLIC nlohmann_json::nlohmann_json)
+
 PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
 PODIO_ADD_SIO_IO_BLOCKS(TestDataModel "${headers}" "${sources}")
 

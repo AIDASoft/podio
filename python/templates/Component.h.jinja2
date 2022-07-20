@@ -9,6 +9,10 @@
 {% endfor %}
 #include <ostream>
 
+#ifdef PODIO_JSON_OUTPUT
+#include "nlohmann/json.hpp"
+#endif
+
 {{ utils.namespace_open(class.namespace) }}
 
 class {{ class.bare_type }} {
@@ -35,7 +39,17 @@ inline std::ostream& operator<<(std::ostream& o, const {{class.full_type}}& valu
   return o;
 }
 
-{{ utils.namespace_close(class.namespace) }}
+#ifdef PODIO_JSON_OUTPUT
+inline void to_json(nlohmann::json& j, const {{ class.bare_type }}& value) {
+  j = nlohmann::json{
+{% set comma = joiner(",") %}
+{% for member in Members %}
+  {{ comma() }}{"{{ member.name }}", value.{{ member.name }}}
+{% endfor %}
+  };
+}
+#endif
 
+{{ utils.namespace_close(class.namespace) }}
 
 #endif

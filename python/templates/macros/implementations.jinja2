@@ -208,3 +208,36 @@ std::ostream& operator<<(std::ostream& o, const {{ type }}& value) {
   return o;
 }
 {%- endmacro %}
+
+{% macro json_output(class, members, single_relations, multi_relations, vector_members, get_syntax, prefix='') %}
+#ifdef PODIO_JSON_OUTPUT
+void to_json(nlohmann::json& j, const {{ prefix }}{{ class.bare_type }}& value) {
+  j = nlohmann::json{
+{% set comma = joiner(",") %}
+{% for member in members %}
+    {{ comma() }}{"{{ member.name }}", value.{{ member.getter_name(get_syntax)}}()}
+{% endfor %}
+{% for member in vector_members %}
+    {{ comma() }}{"{{ member.name }}", value.{{ member.getter_name(get_syntax) }}()}
+{% endfor %}
+  };
+
+{% for relation in single_relations %}
+    j["{{ relation.name }}"] = nlohmann::json{
+      {"collectionID", value.{{ relation.getter_name(get_syntax) }}().getObjectID().collectionID },
+      {"index", value.{{ relation.getter_name(get_syntax) }}().getObjectID().index }};
+
+{% endfor %}
+
+{% for relation in multi_relations %}
+  j["{{ relation.name }}"] = nlohmann::json::array();
+  for (const auto v : value.{{ relation.getter_name(get_syntax) }}()) {
+    j["{{ relation.name }}"].emplace_back(nlohmann::json{
+      {"collectionID", v.getObjectID().collectionID },
+      {"index", v.getObjectID().index }});
+  }
+
+{% endfor %}
+}
+#endif
+{% endmacro %}

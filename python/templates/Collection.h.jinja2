@@ -18,6 +18,10 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 
+#ifdef PODIO_JSON_OUTPUT
+#include "nlohmann/json.hpp"
+#endif
+
 #include <string>
 #include <vector>
 #include <deque>
@@ -176,6 +180,10 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
 {% for member in Members %}
 {{ macros.vectorized_access(class, member) }}
 {% endfor %}
+
+#ifdef PODIO_JSON_OUTPUT
+void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collection);
+#endif
 
 {{ utils.namespace_close(class.namespace) }}
 
