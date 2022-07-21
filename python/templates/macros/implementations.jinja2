@@ -231,7 +231,7 @@ void to_json(nlohmann::json& j, const {{ prefix }}{{ class.bare_type }}& value) 
 
 {% for relation in multi_relations %}
   j["{{ relation.name }}"] = nlohmann::json::array();
-  for (const auto v : value.{{ relation.getter_name(get_syntax) }}()) {
+  for (const auto& v : value.{{ relation.getter_name(get_syntax) }}()) {
     j["{{ relation.name }}"].emplace_back(nlohmann::json{
       {"collectionID", v.getObjectID().collectionID },
       {"index", v.getObjectID().index }});
