@@ -33,9 +33,9 @@ public:
   /// No assignment operator
   {{ obj_type }}& operator=(const {{ obj_type }}&) = delete;
 {% if is_trivial_type %}
-  virtual ~{{ obj_type }}();
-{% else %}
   virtual ~{{ obj_type }}() = default;
+{% else %}
+  virtual ~{{ obj_type }}();
 {% endif %}
 
 public:
