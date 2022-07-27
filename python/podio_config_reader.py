@@ -413,4 +413,4 @@ class PodioConfigReader:
         'components': self.components,
         'datatypes': self.datatypes,
         }
-    validator.validate(datamodel, False)
+    validator.validate(datamodel, self.options.get('exposePODMembers', False))
