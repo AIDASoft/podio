@@ -9,7 +9,6 @@
 #include "catch2/catch_test_macros.hpp"
 
 // podio specific includes
-#include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "podio/EventStore.h"
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
@@ -21,6 +20,8 @@
 #include "datamodel/ExampleForCyclicDependency2Collection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
+#include "datamodel/ExampleWithUserInitCollection.h"
+#include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "datamodel/MutableExampleWithComponent.h"
 #include "podio/UserDataCollection.h"
 
@@ -377,6 +378,33 @@ TEST_CASE("Equality", "[basics]") {
   auto returned_cluster = rel.cluster();
   REQUIRE(cluster == returned_cluster);
   REQUIRE(returned_cluster == cluster);
+}
+
+TEST_CASE("UserInitialization", "[basics][code-gen]") {
+  ExampleWithUserInitCollection coll;
+  // Default initialization values should work even through the create factory
+  auto elem = coll.create();
+  REQUIRE(elem.i16Val() == 42);
+  REQUIRE(elem.floats()[0] == 3.14f);
+  REQUIRE(elem.floats()[1] == 1.23f);
+  REQUIRE(elem.s().x == 10);
+  REQUIRE(elem.s().y == 11);
+  REQUIRE(elem.d() == 9.876e5);
+  REQUIRE(elem.comp().i == 42);
+  REQUIRE(elem.comp().arr[0] == 1.2);
+  REQUIRE(elem.comp().arr[1] == 3.4);
+
+  // And obviously when initialized directly
+  auto ex = ExampleWithUserInit{};
+  REQUIRE(ex.i16Val() == 42);
+  REQUIRE(ex.floats()[0] == 3.14f);
+  REQUIRE(ex.floats()[1] == 1.23f);
+  REQUIRE(ex.s().x == 10);
+  REQUIRE(ex.s().y == 11);
+  REQUIRE(ex.d() == 9.876e5);
+  REQUIRE(ex.comp().i == 42);
+  REQUIRE(ex.comp().arr[0] == 1.2);
+  REQUIRE(ex.comp().arr[1] == 3.4);
 }
 
 TEST_CASE("NonPresentCollection", "[basics][event-store]") {

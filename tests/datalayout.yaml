@@ -40,6 +40,11 @@ components :
       - std::int64_t fixedInteger64 // int with exactly 64 bits
       - int32_t fixedInteger32 // int with exactly 32 bits
 
+  CompWithInit:
+    Members:
+      - int i{42} // is there even another value to initialize ints to?
+      - std::array<double, 10> arr {1.2, 3.4} // half initialized double array
+
 datatypes :
 
   EventInfo:
@@ -175,3 +180,13 @@ datatypes :
       - uint32_t fixedU32 // unsigned int with exactly 32 bits
       - StructWithFixedWithTypes fixedWidthStruct // struct with more fixed width types
       - std::array<int16_t, 2> fixedWidthArray // 32 bits split into two times 16 bits
+
+  ExampleWithUserInit:
+    Description: "Datatype with user defined initialization values"
+    Author: "Thomas Madlener"
+    Members:
+      - std::int16_t i16Val{42} // some int16 value
+      - std::array<float, 2> floats {3.14f, 1.23f} // some float values
+      - ex2::NamespaceStruct s{10, 11} // one that we happen to know works
+      - double d{9.876e5} // double val
+      - CompWithInit comp // To make sure that the default initializer of the component does what it should

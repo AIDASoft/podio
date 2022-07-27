@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Module holding some generator utility functions
 """
@@ -89,6 +89,7 @@ class MemberVariable:
     self.name = name
     self.full_type = kwargs.pop('type', '')
     self.description = kwargs.pop('description', '')
+    self.default_val = kwargs.pop('default_val', None)
     self.is_builtin = False
     self.is_builtin_array = False
     self.is_array = False
@@ -102,7 +103,7 @@ class MemberVariable:
     self.includes = set()
 
     if kwargs:
-      raise ValueError(f"Unused kwargs in MemberVariable: {kwargs.keys()}")
+      raise ValueError(f"Unused kwargs in MemberVariable: {list(kwargs.keys())}")
 
     if self.array_type is not None and self.array_size is not None:
       self.is_array = True
@@ -122,6 +123,10 @@ class MemberVariable:
       self.includes.add('#include <array>')
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
+    # Check if this is a string and add the corresponding include
+    if self.full_type == 'std::string':
+      self.includes.add('#include <string>')
+
     # We still have to check if this type is a valid fixed width type that we
     # also consider to be builtin types
     if not self.is_builtin:
@@ -155,7 +160,11 @@ class MemberVariable:
     else:
       scoped_type = self.full_type
 
-    definition = rf'{scoped_type} {self.name}{{}};'
+    if self.default_val:
+      definition = rf'{scoped_type} {self.name}{{{self.default_val}}};'
+    else:
+      definition = rf'{scoped_type} {self.name}{{}};'
+
     if self.description:
       definition += rf' ///< {self.description}'
     return definition
