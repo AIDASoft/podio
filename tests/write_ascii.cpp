@@ -8,7 +8,6 @@
 #include "datamodel/ExampleWithComponentCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
-#include "datamodel/ExampleWithStringCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 // STL
@@ -37,7 +36,6 @@ int main() {
   auto& vecs = store.create<ExampleWithVectorMemberCollection>("WithVectorMember");
   auto& namesps = store.create<ex42::ExampleWithNamespaceCollection>("WithNamespaceMember");
   auto& namesprels = store.create<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
-  auto& strings = store.create<ExampleWithStringCollection>("strings");
   writer.registerForWrite<EventInfoCollection>("info");
   writer.registerForWrite<ExampleMCCollection>("mcparticles");
   writer.registerForWrite<ExampleHitCollection>("hits");
@@ -49,7 +47,6 @@ int main() {
   writer.registerForWrite<ExampleWithVectorMemberCollection>("WithVectorMember");
   writer.registerForWrite<ex42::ExampleWithNamespaceCollection>("WithNamespaceMember");
   writer.registerForWrite<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
-  writer.registerForWrite<ExampleWithStringCollection>("strings");
 
   unsigned nevents = 1; // 2000;
 
@@ -194,9 +191,6 @@ int main() {
     auto rel = ex42::MutableExampleWithARelation();
     rel.ref(namesp);
     namesprels.push_back(rel);
-
-    auto string = ExampleWithString("SomeString");
-    strings.push_back(string);
 
     writer.writeEvent();
     store.clearCollections();

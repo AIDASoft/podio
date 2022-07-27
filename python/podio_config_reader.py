@@ -129,26 +129,16 @@ class ClassDefinitionValidator:
   # documented but not yet implemented
   not_yet_implemented_extra_code = ('declarationFile', 'implementationFile')
 
-  # stl types that are allowed to appear (other than array)
-  allowed_stl_types = ('string',)
-
   def __init__(self):
     self.components = None
     self.datatypes = None
     self.expose_pod_members = False
-    self.warnings = set()
-
-  def _clear(self):
-    """Reset all the internal state such that one instance can be used for multiple
-    validations"""
-    self.warnings = set()
 
   def validate(self, datamodel, expose_pod_members):
     """Validate the datamodel"""
     self.components = datamodel['components']
     self.datatypes = datamodel['datatypes']
     self.expose_pod_members = expose_pod_members
-    self._clear()
 
     self._check_components()
     self._check_datatypes()
@@ -196,12 +186,6 @@ class ClassDefinitionValidator:
 
     all_members = {}
     for member in members:
-      for stl_type in self.allowed_stl_types:
-        if member.full_type.startswith('std::' + stl_type):
-          self.warnings.add(f"{classname} defines a std::{stl_type} member ('{member.name}') that spoils PODness")
-          self.warnings.add('Deprecation warning: Support for std::string members in datatypes will be removed'
-                            ' in the near future')
-
       is_builtin = member.is_builtin or member.is_builtin_array
       in_definitions = member.full_type in all_types or member.array_type in all_types
 
@@ -307,7 +291,6 @@ class PodioConfigReader:
         # use subfolder when including package header files
         "includeSubfolder": False,
         }
-    self.warnings = set()
 
   @staticmethod
   def _handle_extracode(definition):
@@ -427,4 +410,3 @@ class PodioConfigReader:
         'datatypes': self.datatypes,
         }
     validator.validate(datamodel, False)
-    self.warnings = validator.warnings

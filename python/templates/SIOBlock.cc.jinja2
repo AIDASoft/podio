@@ -9,25 +9,6 @@
 #include <sio/io_device.h>
 #include <sio/version.h>
 
-{% if not is_pod %}
-namespace podio {
-// Write a dedicated overload to operate on this class, since it defines non-pod members
-template<typename devT>
-void handlePODDataSIO(devT& device, {{ class.namespace }}::{{ class.bare_type }}Data* data, size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-{% for member in Members %}
-    device.data(data[i].{{ member.name }});
-{% endfor %}
-
-{% for member in VectorMembers + OneToManyRelations %}
-    device.data(data[i].{{ member.name }}_begin);
-    device.data(data[i].{{ member.name }}_end);
-{% endfor %}
-  }
-}
-}
-{% endif %}
-
 {{ utils.namespace_open(class.namespace) }}
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
