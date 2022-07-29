@@ -144,6 +144,17 @@ Some customization of the generated code is possible through flags. These flags 
 - `exposePODMembers`: whether get and set methods are also generated for members of a member-component. In the example corresponding methods would be generated to directly set / get `x` through `ExampleType`.
 
 
+## Extending a datamodel / using types from an upstream datamodel
+It is possible to extend another datamodel with your own types, resp. use some datatypes or components from an upstream datamodel in your own datamodel.
+This can be useful for prototyping new datatypes or for accomodating special requirements without having to reimplement / copy a complete datamodel.
 
+To pass an upstream datamodel to the class generator use the `--upstream-edm` option that takes the package name as well as the yaml definition file of the upstream datamodel separated by a colon (':').
+This will effectively make all components and datatpes of the upstream datamodel available to the current definition for validation and generation of the necessary includes.
+Nevertheless, only the code for the datatypes and components defined in the current yaml file will be generated.
+The podio `PODIO_GENERATE_DATAMODEL` cmake macro has gained an additional parameter `UPSTREAM_EDM` to pass the arguments to the generator via the cmake macros.
 
+### Potential pitfalls
+- The cmake macros do not handle linking against an upstream datamodel automatically. It is the users responsibility to explicitly link against the upstream datamodel.
+- When generating two datamodels side-by-side and into the same output directory and using the `ROOT` backend, the generated `selection.xml` file might be overwritten if both datamodels are generated into the same output directory.
 
+Limiting this functionality to one upstream datamodel is a conscious choice to limit the potential for abuse of this feature.
