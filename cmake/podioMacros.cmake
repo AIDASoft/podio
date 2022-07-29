@@ -121,6 +121,8 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 #   Parameters:
 #      OUTPUT_FOLDER        OPTIONAL: The folder in which the output files should be placed
 #                           Default is ${CMAKE_CURRENT_SOURCE_DIR}
+#      UPSTREAM_EDM         OPTIONAL: The upstream edm and its package name that are passed to the
+#                           generator via --upstream-edm
 #      IO_BACKEND_HANDLERS  OPTIONAL: The I/O backend handlers that should be generated. The list is
 #                           passed directly to podio_class_generator.py and validated there
 #                           Default is ROOT
@@ -130,10 +132,15 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 # this is essentially a no-op, and should not cause re-compilation.
 #---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "IO_BACKEND_HANDLERS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER;UPSTREAM_EDM" "IO_BACKEND_HANDLERS" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
+  SET(UPSTREAM_EDM_ARG "")
+  IF (ARG_UPSTREAM_EDM)
+    SET(UPSTREAM_EDM_ARG "--upstream-edm=${ARG_UPSTREAM_EDM}")
+  ENDIF()
+
   IF(NOT ARG_IO_BACKEND_HANDLERS)
     # At least build the ROOT selection.xml by default for now
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
@@ -182,7 +189,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   message(STATUS "Creating '${datamodel}' datamodel")
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
+    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE podio_generate_command_retval
     )

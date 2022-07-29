@@ -247,7 +247,7 @@ class ClassGenerator:
     for relation in datatype['VectorMembers'] + datatype['OneToManyRelations']:
       if not relation.is_builtin:
         if relation.full_type == datatype['class'].full_type:
-          includes_cc.add(self._build_include_for_class(datatype['class'].bare_type, self._needs_include(datatype['class'].full_type)))
+          includes_cc.add(self._build_include(datatype['class']))
         else:
           includes.add(self._build_include(relation))
 
@@ -477,6 +477,7 @@ def verify_io_handlers(handler):
   if handler in valid_handlers:
     return handler
   raise argparse.ArgumentTypeError(f'{handler} is not a valid io handler')
+
 
 def read_upstream_edm(name_path):
   """Read an upstream EDM yaml definition file to make the types that are defined
