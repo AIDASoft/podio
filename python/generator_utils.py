@@ -184,7 +184,7 @@ class MemberVariable:
     return _prefix_name(self.name, 'set')
 
 
-class DataModel:
+class DataModel:  # pylint: disable=too-few-public-methods
   """A class for holding a complete datamodel read from a configuration file"""
   def __init__(self, datatypes=None, components=None, options=None):
     self.datatypes = datatypes or {}
