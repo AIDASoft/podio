@@ -7,6 +7,7 @@ import sys
 import subprocess
 import pickle
 from copy import deepcopy
+from enum import IntEnum
 
 from collections.abc import Mapping
 
@@ -65,6 +66,13 @@ def write_file_if_changed(filename, content, force_write=False):
   return False
 
 
+class IncludeFrom(IntEnum):
+  """Enum to signify if an include is needed and from where it should come"""
+  NOWHERE = 0  # No include needed
+  INTERNAL = 1  # include from within the datamodel
+  EXTERNAL = 2  # include from an upstream datamodel
+
+
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
@@ -82,8 +90,6 @@ class ClassGenerator:
       print(f'Error while generating the datamodel: {err}')
       sys.exit(1)
 
-    self.include_subfolder = self.datamodel.options["includeSubfolder"]
-
     self.env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                   keep_trailing_newline=True,
                                   lstrip_blocks=True,
@@ -92,6 +98,7 @@ class ClassGenerator:
     self.get_syntax = self.datamodel.options["getSyntax"]
     self.incfolder = self.datamodel.options['includeSubfolder']
     self.expose_pod_members = self.datamodel.options["exposePODMembers"]
+    self.upstream_edm = upstream_edm
 
     self.clang_format = []
     self.generated_files = []
@@ -199,8 +206,8 @@ class ClassGenerator:
     includes.update(*(m.includes for m in component['Members']))
 
     for member in component['Members']:
-      if member.full_type in self.datamodel.components or member.array_type in self.datamodel.components:
-        includes.add(self._build_include(member.bare_type))
+      if not (member.is_builtin or member.is_builtin_array):
+        includes.add(self._build_include(member))
 
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
@@ -232,7 +239,7 @@ class ClassGenerator:
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
-        includes_cc.add(self._build_include(relation.bare_type))
+        includes_cc.add(self._build_include(relation))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
@@ -240,9 +247,9 @@ class ClassGenerator:
     for relation in datatype['VectorMembers'] + datatype['OneToManyRelations']:
       if not relation.is_builtin:
         if relation.full_type == datatype['class'].full_type:
-          includes_cc.add(self._build_include(datatype['class'].bare_type))
+          includes_cc.add(self._build_include_for_class(datatype['class'].bare_type, self._needs_include(datatype['class'].full_type)))
         else:
-          includes.add(self._build_include(relation.bare_type))
+          includes.add(self._build_include(relation))
 
     datatype['forward_declarations_obj'] = fwd_declarations
     datatype['includes_obj'] = self._sort_includes(includes)
@@ -261,24 +268,24 @@ class ClassGenerator:
         member.sub_members = self.datamodel.components[member.full_type]['Members']
 
     for relation in datatype['OneToOneRelations']:
-      if self._needs_include(relation):
+      if self._needs_include(relation.full_type):
         if relation.namespace not in fwd_declarations:
           fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
         fwd_declarations[relation.namespace].append('Mutable' + relation.bare_type)
-        includes_cc.add(self._build_include(relation.bare_type))
+        includes_cc.add(self._build_include(relation))
 
     if datatype['VectorMembers'] or datatype['OneToManyRelations']:
       includes.add('#include <vector>')
       includes.add('#include "podio/RelationRange.h"')
 
     for relation in datatype['OneToManyRelations']:
-      if self._needs_include(relation):
-        includes.add(self._build_include(relation.bare_type))
+      if self._needs_include(relation.full_type):
+        includes.add(self._build_include(relation))
 
     for vectormember in datatype['VectorMembers']:
       if vectormember.full_type in self.datamodel.components:
-        includes.add(self._build_include(vectormember.bare_type))
+        includes.add(self._build_include(vectormember))
 
     includes.update(datatype.get('ExtraCode', {}).get('includes', '').split('\n'))
     # TODO: in principle only the mutable classes would need these includes!  # pylint: disable=fixme
@@ -288,7 +295,7 @@ class ClassGenerator:
     # just generating in the includes. This would lead to a circular include, so
     # remove "ourselves" again from the necessary includes
     try:
-      includes.remove(self._build_include(datatype['class'].bare_type))
+      includes.remove(self._build_include_for_class(datatype['class'].bare_type, IncludeFrom.INTERNAL))
     except KeyError:
       pass
 
@@ -302,8 +309,9 @@ class ClassGenerator:
 
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       if datatype['class'].bare_type != relation.bare_type:
-        includes_cc.add(self._build_include(relation.bare_type + 'Collection'))
-        includes.add(self._build_include(relation.bare_type))
+        include_from = self._needs_include(relation.full_type)
+        includes_cc.add(self._build_include_for_class(relation.bare_type + 'Collection', include_from))
+        includes.add(self._build_include_for_class(relation.bare_type, include_from))
 
     if datatype['VectorMembers']:
       includes_cc.add('#include <numeric>')
@@ -367,10 +375,12 @@ class ClassGenerator:
     includes.update(*(m.includes for m in members))
     for member in members:
       if member.is_array and not member.is_builtin_array:
-        includes.add(self._build_include(member.array_bare_type))
+        include_from = IncludeFrom.INTERNAL
+        if self.upstream_edm and member.array_type in self.upstream_edm.components:
+          include_from = IncludeFrom.EXTERNAL
+        includes.add(self._build_include_for_class(member.array_bare_type, include_from))
 
-      if self._needs_include(member):
-        includes.add(self._build_include(member.bare_type))
+      includes.add(self._build_include(member))
 
     return self._sort_includes(includes)
 
@@ -410,9 +420,16 @@ class ClassGenerator:
                           '\n'.join(full_contents),
                           self.any_changes)
 
-  def _needs_include(self, member):
+  def _needs_include(self, classname) -> IncludeFrom:
     """Check whether the member needs an include from within the datamodel"""
-    return member.full_type in self.datamodel.components or member.full_type in self.datamodel.datatypes
+    if classname in self.datamodel.components or classname in self.datamodel.datatypes:
+      return IncludeFrom.INTERNAL
+
+    if self.upstream_edm:
+      if classname in self.upstream_edm.components or classname in self.upstream_edm.datatypes:
+        return IncludeFrom.EXTERNAL
+
+    return IncludeFrom.NOWHERE
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
@@ -420,21 +437,35 @@ class ClassGenerator:
             'datatypes': [DataType(d) for d in self.datamodel.datatypes]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
-  def _build_include(self, classname):
-    """Return the include statement."""
-    if self.include_subfolder:
-      classname = os.path.join(self.package_name, classname)
-    return f'#include "{classname}.h"'
+  def _build_include(self, member):
+    """Return the include statment for the passed member."""
+    return self._build_include_for_class(member.bare_type, self._needs_include(member.full_type))
+
+  def _build_include_for_class(self, classname, include_from: IncludeFrom) -> str:
+    """Return the include statement for the passed classname"""
+    if include_from == IncludeFrom.INTERNAL:
+      return f'#include "{self.datamodel.options["includeSubfolder"]}{classname}.h"'
+    if include_from == IncludeFrom.EXTERNAL:
+      return f'#include "{self.upstream_edm.options["includeSubfolder"]}{classname}.h"'
+
+    # The empty string is filtered by _sort_includes (plus it doesn't hurt in
+    # the generated code)
+    return ''
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
     package_includes = sorted(i for i in includes if self.package_name in i)
     podio_includes = sorted(i for i in includes if 'podio' in i)
     stl_includes = sorted(i for i in includes if '<' in i and '>' in i)
+
+    upstream_includes = []
+    if self.upstream_edm:
+      upstream_includes = sorted(i for i in includes if self.upstream_edm.options['includeSubfolder'] in i)
+
     # Are ther includes that fulfill more than one of the above conditions? Are
     # there includes that fulfill none?
 
-    return package_includes + podio_includes + stl_includes
+    return package_includes + upstream_includes + podio_includes + stl_includes
 
 
 def verify_io_handlers(handler):
@@ -453,7 +484,6 @@ def read_upstream_edm(name_path):
   if name_path is None:
     return None
 
-  import argparse
   try:
     name, path = name_path.split(':')
   except ValueError:
