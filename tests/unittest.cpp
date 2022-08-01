@@ -527,8 +527,8 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   auto collection = ExampleHitCollection();
 
   // input iterator traits
-  STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::iterator>::iterator_category,
-                                std::input_iterator_tag>);
+  STATIC_REQUIRE(
+      std::is_same_v<std::iterator_traits<decltype(collection)::iterator>::iterator_category, std::input_iterator_tag>);
   STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::const_iterator>::iterator_category,
                                 std::input_iterator_tag>);
   STATIC_REQUIRE(std::is_same_v<std::iterator_traits<decltype(collection)::reverse_iterator>::iterator_category,
@@ -542,8 +542,9 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
                                       std::forward_iterator_tag>);
   STATIC_REQUIRE_FALSE(std::is_same_v<std::iterator_traits<decltype(collection)::reverse_iterator>::iterator_category,
                                       std::forward_iterator_tag>);
-  STATIC_REQUIRE_FALSE(std::is_same_v<std::iterator_traits<decltype(collection)::const_reverse_iterator>::iterator_category,
-                                      std::forward_iterator_tag>);
+  STATIC_REQUIRE_FALSE(
+      std::is_same_v<std::iterator_traits<decltype(collection)::const_reverse_iterator>::iterator_category,
+                     std::forward_iterator_tag>);
 
 #if __cpp_concepts
   // input iterator concepts (C++20)
