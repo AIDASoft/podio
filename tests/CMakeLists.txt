@@ -203,6 +203,10 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?")
     # it fails to succesfully launch the executable and execute any test. Here
     # we just include them in order to have them show up as failing
     add_test(NAME unittest COMMAND unittest ${filter_tests})
+    set_property(TEST unittest
+      PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
+      )
   endif()
 else()
   include(Catch)
@@ -210,6 +214,9 @@ else()
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
+      PROPERTIES
+        ENVIRONMENT
+        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
   )
 endif()
 
