@@ -503,7 +503,7 @@ TEST_CASE("const correct iterators on collections", "[const-correctness]") {
                                                           // objects
 }
 
-TEST_CASE("Iterator dereferencing", "[!shouldfail]") {
+TEST_CASE("Iterator dereferencing", "[!shouldfail][iterators]") {
   // a collection to play with
   auto collection = ExampleHitCollection();
 
@@ -522,7 +522,7 @@ TEST_CASE("Iterator dereferencing", "[!shouldfail]") {
   REQUIRE(collection.begin()->cellID() == 0x42ULL);
 }
 
-TEST_CASE("Iterator concepts", "[iterator-concepts]") {
+TEST_CASE("Iterator concepts", "[iterator-concepts][iterators]") {
   // a collection to play with
   auto collection = ExampleHitCollection();
 
@@ -614,7 +614,7 @@ TEST_CASE("Iterator concepts", "[iterator-concepts]") {
   REQUIRE(not_found_reverse == collection.rend());
 }
 
-TEST_CASE("Ranges (C++20)", "[ranges]") {
+TEST_CASE("Ranges (C++20)", "[ranges][iterators]") {
 #ifdef __cpp_lib_ranges
   // a collection to play with
   auto collection = ExampleHitCollection();
