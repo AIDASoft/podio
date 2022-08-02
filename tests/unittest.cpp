@@ -614,8 +614,8 @@ TEST_CASE("Iterator concepts", "[iterator-concepts][iterators]") {
   REQUIRE(not_found_reverse == collection.rend());
 }
 
-TEST_CASE("Ranges (C++20)", "[ranges][iterators]") {
 #ifdef __cpp_lib_ranges
+TEST_CASE("Ranges (C++20)", "[ranges][iterators]") {
   // a collection to play with
   auto collection = ExampleHitCollection();
 
@@ -680,8 +680,8 @@ TEST_CASE("Ranges (C++20)", "[ranges][iterators]") {
   // views are references
   REQUIRE(collection1.begin().cellID() == 1);
   #endif
-#endif
 }
+#endif
 
 TEST_CASE("Subset collection basics", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
