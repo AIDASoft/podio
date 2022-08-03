@@ -185,3 +185,18 @@ else()
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
   )
 endif()
+
+# Build the extension data model and link it against the upstream model
+PODIO_GENERATE_DATAMODEL(extension_model datalayout_extension.yaml ext_headers ext_sources
+  UPSTREAM_EDM datamodel:datalayout.yaml
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
+
+PODIO_ADD_DATAMODEL_CORE_LIB(ExtensionDataModel "${ext_headers}" "${ext_sources}"
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
+target_link_libraries(ExtensionDataModel PUBLIC TestDataModel)
+
+PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/src/selection.xml
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
+
+PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
