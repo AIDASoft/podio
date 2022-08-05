@@ -277,7 +277,7 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
   ENDIF()
 
   IF (NOT EXISTS ${selectionfile})
-    message(WARNING "Not adding the ROOT dictionaries for ${CORE_LIB}, because \'${selectionfile}\' does not exist")
+    message(STATUS "Not adding the ROOT dictionaries for ${CORE_LIB}, because \'${selectionfile}\' does not exist")
     RETURN()
   ENDIF()
 
