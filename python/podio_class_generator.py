@@ -169,7 +169,7 @@ class ClassGenerator:
                  'SIOBlock': 'SIOBlock',
                  'Collection': 'Collection',
                  'CollectionData': 'CollectionData',
-                 'MutableStruct':'Struct'
+                 'MutableStruct': 'Struct'
                  }
 
       return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
@@ -213,7 +213,7 @@ class ClassGenerator:
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
-    component['includes_jl'] = {'struct': includes_jl, 'constructor':includes_jl}
+    component['includes_jl'] = {'struct': includes_jl, 'constructor': includes_jl}
     component['class'] = DataType(name)
 
     self._fill_templates('Component', component)
@@ -236,6 +236,7 @@ class ClassGenerator:
       self._fill_templates('SIOBlock', datatype)
 
   def _preprocess_for_julia(self, datatype):
+    """Do the preprocessing that is necessary for Julia code generation"""
     includes_jl = set()
     for relation in datatype['OneToManyRelations'] + datatype['VectorMembers'] + datatype['OneToOneRelations']:
       if self._needs_include(relation):
@@ -253,10 +254,11 @@ class ClassGenerator:
     datatype['includes_jl']['constructor'].update((includes_jl))
 
   def _get_params(self, datatype):
+    """Get the parameteric types for MutableStructs"""
     params = set()
     for relation in datatype['OneToManyRelations'] + datatype['VectorMembers'] + datatype['OneToOneRelations']:
-        if not relation.is_builtin:
-          params.add(relation.bare_type)
+      if not relation.is_builtin:
+        params.add(relation.bare_type)
     return list(params)
 
   def _preprocess_for_obj(self, datatype):
@@ -391,10 +393,9 @@ class ClassGenerator:
     data = deepcopy(definition)
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
-    data['includes_jl'] = {'constructor' : self._get_member_includes(definition["Members"], julia=True),
-                          'struct': self._get_member_includes(definition["Members"], julia=True),
-                          'is_pod': self._is_pod_type(definition['Members'])
-                          }
+    data['includes_jl'] = {'constructor': self._get_member_includes(definition["Members"], julia=True),
+                           'struct': self._get_member_includes(definition["Members"], julia=True),
+                           'is_pod': self._is_pod_type(definition['Members'])}
     data['params_jl'] = self._get_params(data)
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
