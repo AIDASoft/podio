@@ -26,4 +26,8 @@
                            OneToOneRelations, OneToManyRelations + VectorMembers,
                            use_get_syntax) }}
 
+{{ macros.json_output(class, Members,
+                      OneToOneRelations, OneToManyRelations,
+                      VectorMembers, use_get_syntax)}}
+
 {{ utils.namespace_close(class.namespace) }}

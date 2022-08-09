@@ -53,6 +53,33 @@ If not taking advantage of this implementation, the data reader or the event sto
 
 The strong assumption here is that all references are being followed up directly and no later on-demand reading is done.
 
+### Dumping JSON
+
+It is possible to turn on an automatic conversion to JSON for podio generated datamodels using the [nlohmann/json](https://github.com/nlohmann/json) library.
+To enable this feature the **core datamodel library** has to be compiled with the `PODIO_JSON_OUTPUT` and linked against the nlohmann/json library (needs at least version 3.10).
+In cmake the necessary steps are (assuming that `datamodel` is the datamodel core library)
+```cmake
+find_library(nlohmann_json 3.10 REQUIRED)
+target_link_library(datamodel PUBLIC nlohmann_json::nlohmann_json)
+target_compile_definitions(datamodel PUBLIC PODIO_JSON_OUTPUT)
+```
+
+With JSON support enabled it is possible to convert collections (or single objects) to JSON simply via
+```cpp
+#include "nlohmann/json.hpp"
+
+auto collection = // get collection from somewhere
+
+nlohmann::json json{
+   {"collectionName", collection}
+};
+```
+
+Each element of the collection will be converted to a JSON object, where the keys are the same as in the datamodel definiton.
+Components contained in the objects will similarly be similarly converted.
+
+**JSON is not foreseen as a mode for persistency, i.e. there is no plan to add the conversion from JSON to the in memory representation of the datamodel.**
+
 ## Thread-safety
 
 PODIO was written with thread-safety in mind and avoids the usage of globals and statics.

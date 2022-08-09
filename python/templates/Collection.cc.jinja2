@@ -146,6 +146,15 @@ podio::CollectionBuffers {{ collection_type }}::getBuffers() {
   return m_storage.getCollectionBuffers(m_isSubsetColl);
 }
 
+#ifdef PODIO_JSON_OUTPUT
+void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
+  j = nlohmann::json::array();
+  for (auto&& elem : collection) {
+    j.emplace_back(elem);
+  }
+}
+#endif
+
 {% endwith %}
 
 {{ iterator_definitions(class) }}

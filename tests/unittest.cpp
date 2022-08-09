@@ -944,3 +944,42 @@ TEST_CASE("GenericParameters return types", "[generic-parameters][static-checks]
                                                                                                          // vectors of
                                                                                                          // strings
 }
+
+#ifdef PODIO_JSON_OUTPUT
+  #include "nlohmann/json.hpp"
+
+TEST_CASE("JSON", "[json]") {
+  const auto& [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
+  const nlohmann::json json{
+      {"clusters", clusterColl}, {"hits", hitColl}, {"vectors", vecMemColl}, {"userData", userDataColl}};
+
+  REQUIRE(json["clusters"].size() == 3);
+
+  int i = 0;
+  for (const auto& clu : json["clusters"]) {
+    REQUIRE(clu["Hits"][0]["index"] == i++);
+  }
+
+  i = 0;
+  REQUIRE(json["hits"].size() == 3);
+  for (const auto& hit : json["hits"]) {
+    REQUIRE(hit["cellID"] == i);
+    REQUIRE(hit["energy"] == 100.f * i);
+    i++;
+  }
+
+  i = 0;
+  REQUIRE(json["vectors"].size() == 3);
+  for (const auto& vec : json["vectors"]) {
+    REQUIRE(vec["count"].size() == 2);
+    REQUIRE(vec["count"][0] == i);
+    REQUIRE(vec["count"][1] == i + 42);
+    i++;
+  }
+
+  REQUIRE(json["userData"].size() == 3);
+  for (size_t j = 0; j < 3; ++j) {
+    REQUIRE(json["userData"][j] == 3.14f * j);
+  }
+}
+#endif
