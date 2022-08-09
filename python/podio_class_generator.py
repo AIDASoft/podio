@@ -168,7 +168,8 @@ class ClassGenerator:
                  'Obj': 'Obj',
                  'SIOBlock': 'SIOBlock',
                  'Collection': 'Collection',
-                 'CollectionData': 'CollectionData'
+                 'CollectionData': 'CollectionData',
+                 'MutableStruct':'Struct'
                  }
 
       return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
@@ -178,6 +179,7 @@ class ClassGenerator:
         'Component': ('h',),
         'PrintInfo': ('h',),
         'MutableStruct': ('jl',),
+        'Constructor': ('jl',),
         }.get(template_base, ('h', 'cc'))
 
     fn_templates = []
@@ -211,11 +213,12 @@ class ClassGenerator:
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
-    component['includes_jl'] = includes_jl
+    component['includes_jl'] = {'struct': includes_jl, 'constructor':includes_jl}
     component['class'] = DataType(name)
 
     self._fill_templates('Component', component)
     self._fill_templates('MutableStruct', component)
+    self._fill_templates('Constructor', component)
 
   def _process_datatype(self, name, definition):
     """Process one datatype"""
@@ -227,6 +230,7 @@ class ClassGenerator:
     self._fill_templates('Collection', datatype)
     self._fill_templates('CollectionData', datatype)
     self._fill_templates('MutableStruct', datatype)
+    self._fill_templates('Constructor', datatype)
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
@@ -237,16 +241,23 @@ class ClassGenerator:
       if self._needs_include(relation):
         if not relation.is_builtin:
           if relation.full_type == datatype['class'].full_type:
-            includes_jl.add(self._build_include(datatype['class'].bare_type, julia=True))
+            includes_jl.add(self._build_include(datatype['class'].bare_type, julia=True, is_struct=True))
           else:
-            includes_jl.add(self._build_include(relation.bare_type, julia=True))
+            includes_jl.add(self._build_include(relation.bare_type, julia=True, is_struct=True))
           # if datatype['class'].bare_type != relation.bare_type:
           #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
     try:
-      includes_jl.remove(self._build_include(datatype['class'].bare_type, julia=True))
+      includes_jl.remove(self._build_include(datatype['class'].bare_type, julia=True, is_struct=True))
     except KeyError:
       pass
-    datatype['includes_jl'].update((includes_jl))
+    datatype['includes_jl']['constructor'].update((includes_jl))
+
+  def _get_params(self, datatype):
+    params = set()
+    for relation in datatype['OneToManyRelations'] + datatype['VectorMembers'] + datatype['OneToOneRelations']:
+        if not relation.is_builtin:
+          params.add(relation.bare_type)
+    return list(params)
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
@@ -320,7 +331,6 @@ class ClassGenerator:
     datatype['includes'] = self._sort_includes(includes)
     datatype['includes_cc'] = self._sort_includes(includes_cc)
     datatype['forward_declarations'] = fwd_declarations
-    datatype['includes_jl'] = set()
 
   def _preprocess_for_collection(self, datatype):
     """Do the necessary preprocessing for the collection"""
@@ -381,8 +391,11 @@ class ClassGenerator:
     data = deepcopy(definition)
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
-    data['includes_data_jl'] = self._get_member_includes(definition["Members"], julia=True)
-    data['is_pod'] = self._is_pod_type(definition["Members"])
+    data['includes_jl'] = {'constructor' : self._get_member_includes(definition["Members"], julia=True),
+                          'struct': self._get_member_includes(definition["Members"], julia=True),
+                          'is_pod': self._is_pod_type(definition['Members'])
+                          }
+    data['params_jl'] = self._get_params(data)
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
@@ -468,8 +481,10 @@ class ClassGenerator:
             'datatypes': [DataType(d) for d in self.reader.datatypes]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
-  def _build_include(self, classname, julia=False):
+  def _build_include(self, classname, julia=False, is_struct=False):
     """Return the include statement."""
+    if is_struct:
+      return f'include("{classname}Struct.jl")'
     if julia:
       return f'include("{classname}.jl")'
     if self.include_subfolder:

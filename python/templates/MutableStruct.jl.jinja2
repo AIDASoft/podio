@@ -1,43 +1,22 @@
-{% for include in includes_jl %}
+{% for include in includes_jl['struct'] %}
 {{ include }}
 {% endfor %}
-{% for include in includes_data_jl %}
-{{ include }}
-{% endfor %}
-mutable struct {{ class.bare_type }}
+mutable struct {{ class.bare_type }}{% if params_jl %}{ {% for relation in params_jl %} {{ relation }}T, {% endfor %} }{% endif %}
+
 {% for member in Members %}
 	{{ member.name }}::{{ member.julia_type }}
 {% endfor %}
 {% for relation in OneToManyRelations %}
-	{{ relation.name }}::Vector{ {{ relation.julia_type }} }
+	{{ relation.name }}::Vector{ {{ relation.julia_type }}T }
 {% endfor %}
 {% for relation in OneToOneRelations %}
-	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }} }
+	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}T }
 {% endfor %}
 {% for member in VectorMembers %}
-	{{ member.name }}::Vector{ {{ member.julia_type }} }
-{% endfor %}
-end
-
-function {{ class.bare_type }}()
-	return {{ class.bare_type }}(
-	{% for member in Members %}
-	{% if member.is_array %}
-	{{ member.julia_type }}(undef),
-	{% elif member.is_builtin %}
-	{{ member.julia_type }}(0),
+	{% if not member.is_builtin %}
+	{{ member.name }}::Vector{ {{ member.julia_type }}T }
 	{% else %}
-	{{ member.julia_type }}(),
+	{{ member.name }}::Vector{ {{ member.julia_type }} }
 	{% endif %}
-	{% endfor %}
-	{% for relation in OneToManyRelations %}
-	Vector{ {{ relation.julia_type }} }(),
-	{% endfor %}
-	{% for relation in OneToOneRelations %}
-	nothing,
-	{% endfor %}
-	{% for member in VectorMembers %}
-	Vector{ {{ member.julia_type }} }([]),
-	{% endfor %}
-	)
+{% endfor %}
 end
