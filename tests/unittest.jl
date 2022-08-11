@@ -32,7 +32,7 @@ function test_relations()
     mcp1.PDG = 12
     mcp2.PDG = 13
 
-    # passes if values are changed in parents 
+    # passes if values are changed in parents
 
     @test mcp3.parents[1].PDG == 12
     @test mcp4.parents[1].PDG == 13
@@ -65,7 +65,7 @@ function test_cyclic_dependency()
 end
 
 function test_one_to_one_relations()
-	
+
 	c1 = ExampleCluster()
 	c1.energy = Float64(5)
 
