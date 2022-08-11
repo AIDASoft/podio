@@ -253,7 +253,7 @@ class ClassGenerator:
       pass
     datatype['includes_jl']['constructor'].update((includes_jl))
 
-  def _get_params(self, datatype):
+  def _get_julia_params(self, datatype):
     """Get the parameteric types for MutableStructs"""
     params = set()
     for relation in datatype['OneToManyRelations'] + datatype['VectorMembers'] + datatype['OneToOneRelations']:
@@ -396,7 +396,7 @@ class ClassGenerator:
     data['includes_jl'] = {'constructor': self._get_member_includes(definition["Members"], julia=True),
                            'struct': self._get_member_includes(definition["Members"], julia=True),
                            'is_pod': self._is_pod_type(definition['Members'])}
-    data['params_jl'] = self._get_params(data)
+    data['params_jl'] = self._get_julia_params(data)
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
