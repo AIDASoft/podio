@@ -1,3 +1,51 @@
+# v00-15
+
+* 2022-08-09 Thomas Madlener ([PR#312](https://github.com/AIDASoft/podio/pull/312))
+  - Add support for converting objects and collections to JSON using [nlohmann/json](https://github.com/nlohmann/json).
+    - To enable JSON support it is necessary to build the datamodel with `PODIO_JSON_OUTPUT` and to link against the nlohmann/json library.
+
+* 2022-08-05 Wouter Deconinck ([PR#318](https://github.com/AIDASoft/podio/pull/318))
+  - CMake: PODIO_ADD_ROOT_IO_DICT: Bugfix for data models in `OUTPUT_FOLDER` not equal to source dir in root dictionary generation cmake macro. 
+    - Now `SELECTION_XML` can be passed either as absolute path or relative to `OUTPUT_FOLDER`.
+
+* 2022-08-03 Thomas Madlener ([PR#317](https://github.com/AIDASoft/podio/pull/317))
+  - Make it possible to pass an upstream datamodel to the class generator such that datatypes and components defined there can be used in an unrelated datamodel. This makes it possible to extend datamodels and to prototype new datatypes with the aim of upstreaming them eventually without having to redefine all the necessary components.
+  - Refactor the internals of the config reader / class generator slightly to make it possible to hold multiple datamodels in memory
+
+* 2022-08-02 Thomas Madlener ([PR#316](https://github.com/AIDASoft/podio/pull/316))
+  - Remove macOS CI workflows because github hosted runners will deprecate macOS 10.15 ([announcement](https://github.com/actions/virtual-environments/issues/5583)) and later versions of macOS no longer support fuse and as a consequence CVMFS.
+
+* 2022-07-27 Thomas Madlener ([PR#315](https://github.com/AIDASoft/podio/pull/315))
+  - Make the `is_trivial_type` flag available in the template engine behave as expected (it behaved exactly oppositely to what was documented and what one would intuitively expect). The flag was originally introduced in #288
+
+* 2022-07-27 Thomas Madlener ([PR#283](https://github.com/AIDASoft/podio/pull/283))
+  - Allow users to define default values for member variables, instead of default initializing all of them.
+    - The syntax for specifying a default value is `- <type> <name>{<init-value>} // <description>`.
+    - The passed value is not validated in any way. **Apart from a very basic syntax check, there is no validation that the provided default initialization values are actually valid**. This means that generated code might not compile.
+  - Remove some of the python2 compatibility and do some cleanup
+
+* 2022-07-27 Thomas Madlener ([PR#276](https://github.com/AIDASoft/podio/pull/276))
+  - Remove support for having std::string members in datatypes and components, as they break PODness and it seems that this feature was not in use in any case.
+  - Make ROOTReader slightly more robust against missing datatypes in dictionaries when reading files.
+
+* 2022-06-22 Valentin Volkl ([PR#307](https://github.com/AIDASoft/podio/pull/307))
+  - hotfix for https://github.com/AIDASoft/podio/issues/290: revert a clang-tidy change to make sure that there are no unknown symbols in podioDict
+
+* 2022-06-21 Thomas Madlener ([PR#282](https://github.com/AIDASoft/podio/pull/282))
+  - Add a `PODIO_USE_CLANG_FORMAT` option to the cmake configuration to toggle the autodiscovery of `clang-format` and a `.clang-format` configuration file. This option is also available for downstream packages that use podio to generate their EDM. 
+    - The default is `AUTO`, where we try to discover a suitable `clang-format` version as well as a `.clang-format` file and use it if we find it.
+    - If set to `OFF` podio will not try to see whether `clang-format` and a `.clang-format` file are available and will also not try to format the code accordingly.
+    - If set to `ON` podio will actually require a suitable `clang-format` version and the presence of a `.clang-format` file and will fail at the cmake stage if not present.
+
+* 2022-06-16 Thomas Madlener ([PR#305](https://github.com/AIDASoft/podio/pull/305))
+  - Make sure generator warnings are printed
+  - Add a deprecation warning for the upcoming removal of support of `std::string` in data types. (See also #276)
+
+* 2022-06-16 Thomas Madlener ([PR#294](https://github.com/AIDASoft/podio/pull/294))
+  - Remove the `EventStore`, `CollectionIDTable` and `version::Version` members from the `SIOCollectionIDTableBlock` to make it easier to use in the `Frame` context
+  - Move the `podio:version::build_version` into its own `SIOVersionBlock`
+  - **This is a breaking change for the SIO backend and it will not be able to read files that have been written prior to this**
+
 # v00-14-02
 
 * 2022-06-15 Thomas Madlener ([PR#304](https://github.com/AIDASoft/podio/pull/304))
