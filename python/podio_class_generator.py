@@ -148,7 +148,7 @@ class ClassGenerator:
       fullname = os.path.join(self.install_dir, "src", name)
     if not self.dryrun:
       self.generated_files.append(fullname)
-      if self.clang_format:
+      if self.clang_format and not name.endswith('jl'):
         with subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as cfproc:
           content = cfproc.communicate(input=content.encode())[0].decode()
 
