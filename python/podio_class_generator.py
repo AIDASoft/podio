@@ -169,7 +169,8 @@ class ClassGenerator:
                  'SIOBlock': 'SIOBlock',
                  'Collection': 'Collection',
                  'CollectionData': 'CollectionData',
-                 'MutableStruct': 'Struct'
+                 'MutableStruct': 'Struct',
+                 'JuliaCollection': 'Collection'
                  }
 
       return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
@@ -180,6 +181,7 @@ class ClassGenerator:
         'PrintInfo': ('h',),
         'MutableStruct': ('jl',),
         'Constructor': ('jl',),
+        'JuliaCollection': ('jl',),
         }.get(template_base, ('h', 'cc'))
 
     fn_templates = []
@@ -231,6 +233,7 @@ class ClassGenerator:
     self._fill_templates('CollectionData', datatype)
     self._fill_templates('MutableStruct', datatype)
     self._fill_templates('Constructor', datatype)
+    self._fill_templates('JuliaCollection', datatype)
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)

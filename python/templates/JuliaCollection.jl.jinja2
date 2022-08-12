@@ -1,0 +1,2 @@
+include("{{ class.bare_type }}.jl")
+{{ class.bare_type }}Collection = Vector{ {{ class.bare_type }}{% if params_jl %}{ {% for relation in params_jl %} {{ relation }}, {% endfor %} }{% endif %} }
