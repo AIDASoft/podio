@@ -249,7 +249,8 @@ class ClassGenerator:
     datatype['includes_jl']['constructor'].update((includes_jl))
     datatype['includes_jl']['struct'].update((includes_jl_struct))
 
-  def _get_julia_params(self, datatype):
+  @staticmethod
+  def _get_julia_params(datatype):
     """Get the relations as parameteric types for MutableStructs"""
     params = set()
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
