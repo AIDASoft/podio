@@ -237,26 +237,22 @@ class ClassGenerator:
 
   def _preprocess_for_julia(self, datatype):
     """Do the preprocessing that is necessary for Julia code generation"""
-    includes_jl = set()
-    for relation in datatype['OneToManyRelations'] + datatype['VectorMembers'] + datatype['OneToOneRelations']:
-      if self._needs_include(relation):
-        if not relation.is_builtin:
-          if relation.full_type == datatype['class'].full_type:
-            includes_jl.add(self._build_include(datatype['class'].bare_type, julia=True, is_struct=True))
-          else:
-            includes_jl.add(self._build_include(relation.bare_type, julia=True, is_struct=True))
-          # if datatype['class'].bare_type != relation.bare_type:
-          #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
-    try:
-      includes_jl.remove(self._build_include(datatype['class'].bare_type, julia=True, is_struct=True))
-    except KeyError:
-      pass
+    includes_jl, includes_jl_struct = set(), set()
+    for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations'] + datatype['VectorMembers']:
+      if self._needs_include(relation) and not relation.is_builtin:
+        includes_jl.add(self._build_include(relation.bare_type, julia=True, is_struct=True))
+        # if datatype['class'].bare_type != relation.bare_type:
+        #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
+    for member in datatype['VectorMembers']:
+      if self._needs_include(member) and not member.is_builtin:
+        includes_jl_struct.add(self._build_include(member.bare_type, julia=True))
     datatype['includes_jl']['constructor'].update((includes_jl))
+    datatype['includes_jl']['struct'].update((includes_jl_struct))
 
   def _get_julia_params(self, datatype):
-    """Get the parameteric types for MutableStructs"""
+    """Get the relations as parameteric types for MutableStructs"""
     params = set()
-    for relation in datatype['OneToManyRelations'] + datatype['VectorMembers'] + datatype['OneToOneRelations']:
+    for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       if not relation.is_builtin:
         params.add(relation.bare_type)
     return list(params)
@@ -394,8 +390,8 @@ class ClassGenerator:
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     data['includes_jl'] = {'constructor': self._get_member_includes(definition["Members"], julia=True),
-                           'struct': self._get_member_includes(definition["Members"], julia=True),
-                           'is_pod': self._is_pod_type(definition['Members'])}
+                           'struct': self._get_member_includes(definition["Members"], julia=True)}
+    data['is_pod'] = self._is_pod_type(definition['Members'])
     data['params_jl'] = self._get_julia_params(data)
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)

@@ -13,10 +13,6 @@ mutable struct {{ class.bare_type }}{% if params_jl %}{ {% for relation in param
 	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}T }
 {% endfor %}
 {% for member in VectorMembers %}
-	{% if not member.is_builtin %}
-	{{ member.name }}::Vector{ {{ member.julia_type }}T }
-	{% else %}
 	{{ member.name }}::Vector{ {{ member.julia_type }} }
-	{% endif %}
 {% endfor %}
 end
