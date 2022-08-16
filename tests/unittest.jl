@@ -75,4 +75,23 @@ using Test
 		@test c2.cluster.energy == Float64(5)
 
 	end
+
+	@testset "Collections" begin
+	    mcp1 = ExampleMC()
+	    mcp1.PDG = 2212
+	    mcp2 = ExampleMC()
+	    mcp2.PDG = 2212
+	    mcp3 = ExampleMC()
+	    mcp3.PDG = 1
+	    push!(mcp3.parents,mcp1)
+	    a = ExampleMCCollection([mcp1,mcp2,mcp3])
+	    mc1=a[1]
+	    mc2=a[2]
+	    mc3=a[3]
+	    @test mc1.PDG == 2212
+	    @test mc2.PDG == 2212
+	    @test mc3.PDG == 1
+	    @test length(mc3.parents)== 1
+	    @test mc3.parents[1] == mc1
+	end
 end;
