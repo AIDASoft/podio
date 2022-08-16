@@ -207,3 +207,12 @@ PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
+
+find_program(Julia_EXECUTABLE julia)
+if (Julia_EXECUTABLE)
+  message(STATUS "Found Julia, will add the Julia tests")
+  add_test(NAME julia-unittests COMMAND julia unittest.jl)
+  set_tests_properties(julia-unittests PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    )
+endif()
