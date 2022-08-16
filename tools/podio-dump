@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""podio-dump tool to dump contents of podio files"""
 
 from EventStore import EventStore
 

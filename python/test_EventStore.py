@@ -93,4 +93,3 @@ class EventStoreBaseTestCaseMixin:
     with EventStore([self.filename]) as store:
       self.assertTrue(len(store) >= 0)
       self.assertTrue(store.isValid())
-
