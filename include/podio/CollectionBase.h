@@ -4,6 +4,7 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/ObjectID.h"
 
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -69,6 +70,9 @@ public:
 
   /// declare this collection to be a subset collection
   virtual void setSubsetCollection(bool setSubset = true) = 0;
+
+  /// print this collection to the passed stream
+  virtual void print(std::ostream& os = std::cout) const = 0;
 };
 
 } // namespace podio
