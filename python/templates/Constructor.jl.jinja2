@@ -3,7 +3,7 @@ include("{{ class.bare_type }}Struct.jl")
 {{ include }}
 {% endfor %}
 function {{ class.bare_type }}()
-	return {{ class.bare_type }}{% if params_jl %}{ {% for relation in params_jl %} {{ relation }}, {% endfor %} }{% endif %}(
+	return {{ class.bare_type }}{% if params_jl %}{ {{ params_jl | join(',') }} }{% endif %}(
 	{% for member in Members %}
 	{% if member.is_array %}
 	{{ member.julia_type }}(undef),
