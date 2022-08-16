@@ -21,6 +21,7 @@ SET(sio_sources
 )
 
 SET(python_sources
+  IOHelpers.cc
   PythonEventStore.cc
   )
 

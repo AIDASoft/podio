@@ -1,20 +1,10 @@
 """Unit tests for the EventStore class"""
 
-
-import os
-import unittest
 from EventStore import EventStore
 
-from ROOT import TFile
 
-
-class EventStoreTestCase(unittest.TestCase):
+class EventStoreBaseTestCase:
   """EventStore unit tests"""
-  def setUp(self):
-    self.filename = str('example.root')
-    self.assertTrue(os.path.isfile(self.filename))
-    self.store = EventStore([self.filename])
-
   def test_eventloop(self):
     self.assertTrue(len(self.store) >= 0)
     self.assertEqual(self.store.current_store.getEntries(),
@@ -92,43 +82,7 @@ class EventStoreTestCase(unittest.TestCase):
     # testing that the hits stored as a one to many relation
     # import pdb; pdb.set_trace()
 
-  def test_chain(self):
-    self.store = EventStore([self.filename,
-                             self.filename])
-    rootfile = TFile(self.filename)
-    events = rootfile.Get(str('events'))
-    numbers = []
-    for event in self.store:
-      evinfo = event.get("info")
-      numbers.append(evinfo[0].Number())
-
-    self.assertEqual(len(numbers), 2 * events.GetEntries())
-    # testing that numbers is [0, .. 1999, 0, .. 1999]
-    self.assertEqual(numbers, list(range(events.GetEntries())) * 2)
-    # trying to go to an event beyond the last one
-    self.assertRaises(ValueError, self.store.__getitem__, 4001)
-    # this is in the first event in the second file,
-    # so its event number should be 0.
-    self.assertEqual(self.store[2000].get("info")[0].Number(), 0)
-
   def test_context_managers(self):
     with EventStore([self.filename]) as store:
       self.assertTrue(len(store) >= 0)
       self.assertTrue(store.isValid())
-
-  def test_no_file(self):
-    '''Test that non-accessible files are gracefully handled.'''
-    with self.assertRaises(ValueError):
-      self.store = EventStore('foo.root')
-
-
-if __name__ == "__main__":
-  from ROOT import gSystem
-  from subprocess import call
-  gSystem.Load("libTestDataModel")
-  # creating example file for the tests
-  if not os.path.isfile('example.root'):
-    WRITE_CMD = f'{os.environ["PODIO"]}/tests/write'
-    print(WRITE_CMD)
-    call(WRITE_CMD)
-  unittest.main()

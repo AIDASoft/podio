@@ -150,7 +150,8 @@ set_property(TEST pyunittest
              PROPERTY ENVIRONMENT
                       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
-                      ROOT_INCLUDE_PATH=
+                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel
+                      SKIP_SIO_TESTS=$<NOT:$<BOOL:${ENABLE_SIO}>>
                       )
 set_property(TEST pyunittest PROPERTY DEPENDS write)
 
