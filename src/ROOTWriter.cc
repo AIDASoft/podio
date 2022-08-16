@@ -100,7 +100,7 @@ void ROOTWriter::finish() {
   // now we want to safe the metadata. This includes info about the
   // collections
   const auto collIDTable = m_store->getCollectionIDTable();
-  m_metadatatree->Branch("CollectionIDs", collIDTable);
+  m_metadatatree->Branch("CollectionIDs", collIDTable.get());
 
   // collectionID, collection type, subset collection
   std::vector<root_utils::CollectionInfoT> collectionInfo;

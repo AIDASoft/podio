@@ -23,7 +23,8 @@ public:
       m_end(ClockT::now()),
       m_recorder(recorder),
       m_perEventTree(m_recorder.addTree(
-          "event_times", {"read_collections", "read_ev_md", "read_run_md", "read_coll_md", "end_of_event"})) {
+          "event_times",
+          {"read_collections", "read_ev_md", "read_run_md", "read_coll_md", "end_of_event", "read_event"})) {
     m_recorder.addTree("setup_times", {"constructor", "open_file", "close_file", "read_collection_ids", "get_entries"});
     m_recorder.recordTime("setup_times", "constructor", m_end - m_start);
   }
@@ -46,7 +47,7 @@ public:
   }
 
   /// Get CollectionIDTable of read-in data
-  CollectionIDTable* getCollectionIDTable() override {
+  std::shared_ptr<CollectionIDTable> getCollectionIDTable() override {
     return runTimed(false, "read_collection_ids", &IReader::getCollectionIDTable);
   }
 
@@ -88,6 +89,15 @@ public:
 
   void closeFile() override {
     runVoidTimed(false, "close_file", &IReader::closeFile);
+  }
+
+  void readEvent() override {
+    runVoidTimed(true, "read_event", &IReader::readEvent);
+  }
+
+  void goToEvent(unsigned ev) override {
+    // TODO: Do we need to time this? Not really used at the moment
+    m_reader.goToEvent(ev);
   }
 
   podio::version::Version currentFileVersion() const override {

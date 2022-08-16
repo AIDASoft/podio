@@ -14,7 +14,7 @@
 namespace podio {
 SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
     sio::block("CollectionIDs", sio::version::encode_version(0, 3)) {
-  const auto* table = store->getCollectionIDTable();
+  const auto table = store->getCollectionIDTable();
   _names = table->names();
   _ids = table->ids();
   _types.reserve(_names.size());
