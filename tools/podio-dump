@@ -26,6 +26,10 @@ def dump_evt_detailed(event, ievt):
   print('{:#^82}'.format(f' Event {ievt} '))
   print()
 
+  print('Parameters', flush=True)
+  event.metadata().print()
+  print(flush=True)
+
   for name in event.collections():
     print(name, flush=True)
     event.get(name).print()

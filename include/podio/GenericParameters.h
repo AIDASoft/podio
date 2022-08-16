@@ -5,6 +5,7 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
@@ -176,6 +177,8 @@ public:
     _floatMap.clear();
     _stringMap.clear();
   }
+
+  void print(std::ostream& os = std::cout, bool flush = true);
 
   /// Check if no parameter is stored (i.e. if all internal maps are empty)
   bool empty() const {

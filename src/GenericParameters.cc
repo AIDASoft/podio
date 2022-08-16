@@ -1,6 +1,7 @@
 #include "podio/GenericParameters.h"
 
 #include <algorithm>
+#include <iomanip>
 
 namespace podio {
 
@@ -80,6 +81,42 @@ void GenericParameters::setValues(const std::string& key, const FloatVec& values
 
 void GenericParameters::setValues(const std::string& key, const StringVec& values) {
   setValue(key, values);
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& values) {
+  os << "[";
+  if (!values.empty()) {
+    os << values[0];
+    for (size_t i = 1; i < values.size(); ++i) {
+      os << ", " << values[i];
+    }
+  }
+
+  return os << "]";
+}
+
+template <typename MapType>
+void printMap(const MapType& map, std::ostream& os) {
+  os << std::left << std::setw(30) << "Key "
+     << "Value " << '\n';
+  os << "--------------------------------------------------------------------------------\n";
+  for (const auto& [key, value] : map) {
+    os << std::left << std::setw(30) << key << value << '\n';
+  }
+}
+
+void GenericParameters::print(std::ostream& os, bool flush) {
+  os << "int parameters\n\n";
+  printMap(getMap<int>(), os);
+  os << "\nfloat parameters\n";
+  printMap(getMap<float>(), os);
+  os << "\nstd::string parameters\n";
+  printMap(getMap<std::string>(), os);
+
+  if (flush) {
+    os.flush();
+  }
 }
 
 } // namespace podio

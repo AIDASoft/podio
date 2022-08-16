@@ -2,6 +2,7 @@
 #define PODIO_PYTHONEVENTSTORE_H
 
 #include "podio/EventStore.h"
+#include "podio/GenericParameters.h"
 #include "podio/IReader.h"
 
 #include <memory>
@@ -39,6 +40,10 @@ public:
 
   /// list available collections
   const std::vector<std::string>& getCollectionNames() const;
+
+  const podio::GenericParameters& getEventMetaData() {
+    return m_store.getEventMetaData();
+  }
 
 private:
   std::unique_ptr<podio::IReader> m_reader;

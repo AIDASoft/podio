@@ -77,6 +77,10 @@ class EventStore:
     """Get all collection names."""
     return [str(c) for c in self.current_store.getCollectionNames()]
 
+  def metadata(self):
+    """Get the metadata of the current event"""
+    return self.current_store.getEventMetaData()
+
   def isValid(self):
     """Check if the EventStore is in a valid state"""
     return self.current_store is not None and self.current_store.isValid()
