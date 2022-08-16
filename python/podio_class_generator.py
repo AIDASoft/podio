@@ -246,12 +246,12 @@ class ClassGenerator:
     includes_jl, includes_jl_struct = set(), set()
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations'] + datatype['VectorMembers']:
       includes_jl.add(self._build_julia_include(relation, is_struct=True))
-        # if datatype['class'].bare_type != relation.bare_type:
-        #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
+      # if datatype['class'].bare_type != relation.bare_type:
+      #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
 
     for member in datatype['VectorMembers']:
       if self._needs_include(member) and not member.is_builtin:
-        includes_jl_struct.add(self._build_julia_include(member, julia=True))
+        includes_jl_struct.add(self._build_julia_include(member))
     datatype['includes_jl']['constructor'].update((includes_jl))
     datatype['includes_jl']['struct'].update((includes_jl_struct))
 
