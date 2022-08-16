@@ -145,7 +145,10 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection&
   return o;
 }
 
-void {{ class.bare_type }}Collection::print(std::ostream& os) const {
+void {{ class.bare_type }}Collection::print(std::ostream& os, bool flush) const {
   os << *this;
+  if (flush) {
+    os.flush();
+  }
 }
 {%- endmacro %}

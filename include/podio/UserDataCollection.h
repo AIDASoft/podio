@@ -143,7 +143,7 @@ public:
   }
 
   /// Print this collection to the passed stream
-  void print(std::ostream& os = std::cout) const override {
+  void print(std::ostream& os = std::cout, bool flush = true) const override {
     os << "[";
     if (!_vec.empty()) {
       os << _vec[0];
@@ -152,6 +152,10 @@ public:
       }
     }
     os << "]";
+
+    if (flush) {
+      os.flush(); // Necessary for python
+    }
   }
 
   // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)

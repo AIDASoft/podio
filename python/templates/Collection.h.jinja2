@@ -59,7 +59,7 @@ public:
   void clear() final;
 
   /// Print this collection to the passed stream
-  void print(std::ostream& os=std::cout) const final;
+  void print(std::ostream& os=std::cout, bool flush=true) const final;
 
   /// operator to allow pointer like calling of members a la LCIO
   {{ class.bare_type }}Collection* operator->() { return ({{ class.bare_type }}Collection*) this; }

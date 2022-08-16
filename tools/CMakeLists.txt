@@ -1,0 +1,1 @@
+install(PROGRAMS podio-dump DESTINATION ${CMAKE_INSTALL_BINDIR})

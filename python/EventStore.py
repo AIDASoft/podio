@@ -73,6 +73,10 @@ class EventStore:
       coll.__getitem__ = getitem
     return coll
 
+  def collections(self):
+    """Get all collection names."""
+    return [str(c) for c in self.current_store.getCollectionNames()]
+
   def isValid(self):
     """Check if the EventStore is in a valid state"""
     return self.current_store is not None and self.current_store.isValid()

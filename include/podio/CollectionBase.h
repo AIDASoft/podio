@@ -72,7 +72,7 @@ public:
   virtual void setSubsetCollection(bool setSubset = true) = 0;
 
   /// print this collection to the passed stream
-  virtual void print(std::ostream& os = std::cout) const = 0;
+  virtual void print(std::ostream& os = std::cout, bool flush = true) const = 0;
 };
 
 } // namespace podio
