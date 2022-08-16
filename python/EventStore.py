@@ -74,11 +74,11 @@ class EventStore:
     return coll
 
   def collections(self):
-    """Get all collection names."""
+    """Return list of all collection names."""
     return [str(c) for c in self.current_store.getCollectionNames()]
 
   def metadata(self):
-    """Get the metadata of the current event"""
+    """Get the metadata of the current event as GenericParameters"""
     return self.current_store.getEventMetaData()
 
   def isValid(self):

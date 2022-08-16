@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Python unit tests for the ROOT backend"""
 
 import unittest
 import os
@@ -6,10 +7,10 @@ import os
 from ROOT import TFile
 
 from EventStore import EventStore
-from test_EventStore import EventStoreBaseTestCase
+from test_EventStore import EventStoreBaseTestCaseMixin
 
 
-class EventStoreRootTestCase(EventStoreBaseTestCase, unittest.TestCase):
+class EventStoreRootTestCase(EventStoreBaseTestCaseMixin, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
     """Setup an EventStore reading from a ROOT file"""

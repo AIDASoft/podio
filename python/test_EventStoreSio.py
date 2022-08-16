@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
+"""Python unit tests for the SIO backend"""
 
 import unittest
 import os
 
 from EventStore import EventStore
-from test_EventStore import EventStoreBaseTestCase
+from test_EventStore import EventStoreBaseTestCaseMixin
 
 
 SKIP_SIO_TESTS = os.environ.get('SKIP_SIO_TESTS', '1') == '1'
 
 
 @unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")
-class EventStoreSioTestCase(EventStoreBaseTestCase, unittest.TestCase):
+class EventStoreSioTestCase(EventStoreBaseTestCaseMixin, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
     """setup an EventStore reading an SIO file"""

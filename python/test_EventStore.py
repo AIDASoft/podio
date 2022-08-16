@@ -2,9 +2,8 @@
 
 from EventStore import EventStore
 
-#pylint: disable=no-member # pylint does not realize that the store is populated by inheriting classes
 
-class EventStoreBaseTestCase:
+class EventStoreBaseTestCaseMixin:
   """EventStore unit tests
 
   These define some tests that should work regardless of the backend that is
@@ -95,4 +94,3 @@ class EventStoreBaseTestCase:
       self.assertTrue(len(store) >= 0)
       self.assertTrue(store.isValid())
 
-# pylint: enable=no-member
