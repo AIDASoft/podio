@@ -1,9 +1,10 @@
-include("../Tmp/data/ExampleMC.jl")
-include("../Tmp/data/ExampleWithVectorMember.jl")
-include("../Tmp/data/ExampleForCyclicDependency1.jl")
-include("../Tmp/data/ExampleForCyclicDependency2.jl")
-include("../Tmp/data/ExampleWithOneRelation.jl")
-include("../Tmp/data/ExampleCluster.jl")
+include("datamodel/ExampleMC.jl")
+include("datamodel/ExampleWithVectorMember.jl")
+include("datamodel/ExampleForCyclicDependency1.jl")
+include("datamodel/ExampleForCyclicDependency2.jl")
+include("datamodel/ExampleWithOneRelation.jl")
+include("datamodel/ExampleCluster.jl")
+include("datamodel/ExampleMCCollection.jl")
 
 using Test
 @testset "Julia Bindings" begin
