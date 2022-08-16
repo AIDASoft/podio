@@ -12,6 +12,7 @@ from test_EventStore import EventStoreBaseTestCase
 class EventStoreRootTestCase(EventStoreBaseTestCase, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
+    """Setup an EventStore reading from a ROOT file"""
     self.filename = 'example.root'
     self.assertTrue(os.path.isfile(self.filename))
     self.store = EventStore(['example.root'])
@@ -22,10 +23,10 @@ class EventStoreRootTestCase(EventStoreBaseTestCase, unittest.TestCase):
     rootfile = TFile(self.filename)
     events = rootfile.Get(str('events'))
     numbers = []
-    for iev, event in enumerate(self.store):
+    for iev, _ in enumerate(self.store):
       evinfo = self.store.get("info")
       numbers.append(evinfo[0].Number())
-    self.assertEqual(iev + 1, 2 * events.GetEntries())
+    self.assertEqual(iev + 1, 2 * events.GetEntries())  # pylint: disable=undefined-loop-variable
     # testing that numbers is [0, .. 1999, 0, .. 1999]
     self.assertEqual(numbers, list(range(events.GetEntries())) * 2)
     # trying to go to an event beyond the last one

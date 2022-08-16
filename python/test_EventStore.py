@@ -2,9 +2,17 @@
 
 from EventStore import EventStore
 
+#pylint: disable=no-member # pylint does not realize that the store is populated by inheriting classes
 
 class EventStoreBaseTestCase:
-  """EventStore unit tests"""
+  """EventStore unit tests
+
+  These define some tests that should work regardless of the backend that is
+  used. In order to not have to duplicate this functionality for each backend,
+  this base class defines the common tests and inheriting classes define a
+  corresponding setUp method that sets up the correct EventStore and potentially
+  additional backend specific functionality
+  """
   def test_eventloop(self):
     self.assertTrue(len(self.store) >= 0)
     self.assertEqual(self.store.current_store.getEntries(),
@@ -86,3 +94,5 @@ class EventStoreBaseTestCase:
     with EventStore([self.filename]) as store:
       self.assertTrue(len(store) >= 0)
       self.assertTrue(store.isValid())
+
+# pylint: enable=no-member
