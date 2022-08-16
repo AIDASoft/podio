@@ -2,7 +2,7 @@
 
 
 from ROOT import gSystem
-gSystem.Load("libpodioRootIO")  # noqa: E402
+gSystem.Load("libpodioPythonStore")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 
