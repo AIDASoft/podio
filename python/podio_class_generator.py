@@ -145,13 +145,13 @@ class ClassGenerator:
   def _write_file(self, name, content):
     """Write the content to file. Dispatch to the correct directory depending on
     whether it is a header or a .cc file."""
-    if name.endswith("h"):
+    if name.endswith("h") or name.endswith("jl"):
       fullname = os.path.join(self.install_dir, self.package_name, name)
     else:
       fullname = os.path.join(self.install_dir, "src", name)
     if not self.dryrun:
       self.generated_files.append(fullname)
-      if self.clang_format:
+      if self.clang_format and not name.endswith('jl'):
         with subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as cfproc:
           content = cfproc.communicate(input=content.encode())[0].decode()
 
@@ -171,7 +171,10 @@ class ClassGenerator:
                  'Obj': 'Obj',
                  'SIOBlock': 'SIOBlock',
                  'Collection': 'Collection',
-                 'CollectionData': 'CollectionData'}
+                 'CollectionData': 'CollectionData',
+                 'MutableStruct': 'Struct',
+                 'JuliaCollection': 'Collection'
+                 }
 
       return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
 
@@ -179,6 +182,9 @@ class ClassGenerator:
         'Data': ('h',),
         'Component': ('h',),
         'PrintInfo': ('h',),
+        'MutableStruct': ('jl',),
+        'Constructor': ('jl',),
+        'JuliaCollection': ('jl',),
         }.get(template_base, ('h', 'cc'))
 
     fn_templates = []
@@ -196,25 +202,28 @@ class ClassGenerator:
     data['package_name'] = self.package_name
     data['use_get_syntax'] = self.get_syntax
     data['incfolder'] = self.incfolder
-
     for filename, template in self._get_filenames_templates(template_base, data['class'].bare_type):
       self._write_file(filename, self._eval_template(template, data))
 
   def _process_component(self, name, component):
     """Process one component"""
-    includes = set()
+    includes, includes_jl = set(), set()
     includes.update(*(m.includes for m in component['Members']))
-
+    includes_jl.update(*(m.jl_imports for m in component['Members']))
     for member in component['Members']:
       if not (member.is_builtin or member.is_builtin_array):
         includes.add(self._build_include(member))
+        includes_jl.add(self._build_julia_include(member))
 
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
+    component['includes_jl'] = {'struct': includes_jl, 'constructor': includes_jl}
     component['class'] = DataType(name)
 
     self._fill_templates('Component', component)
+    self._fill_templates('MutableStruct', component)
+    self._fill_templates('Constructor', component)
 
   def _process_datatype(self, name, definition):
     """Process one datatype"""
@@ -225,15 +234,40 @@ class ClassGenerator:
     self._fill_templates('Obj', datatype)
     self._fill_templates('Collection', datatype)
     self._fill_templates('CollectionData', datatype)
+    self._fill_templates('MutableStruct', datatype)
+    self._fill_templates('Constructor', datatype)
+    self._fill_templates('JuliaCollection', datatype)
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
+
+  def _preprocess_for_julia(self, datatype):
+    """Do the preprocessing that is necessary for Julia code generation"""
+    includes_jl, includes_jl_struct = set(), set()
+    for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations'] + datatype['VectorMembers']:
+      includes_jl.add(self._build_julia_include(relation, is_struct=True))
+        # if datatype['class'].bare_type != relation.bare_type:
+        #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
+
+    for member in datatype['VectorMembers']:
+      if self._needs_include(member) and not member.is_builtin:
+        includes_jl_struct.add(self._build_julia_include(member, julia=True))
+    datatype['includes_jl']['constructor'].update((includes_jl))
+    datatype['includes_jl']['struct'].update((includes_jl_struct))
+
+  @staticmethod
+  def _get_julia_params(datatype):
+    """Get the relations as parameteric types for MutableStructs"""
+    params = set()
+    for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
+      if not relation.is_builtin:
+        params.add(relation.bare_type)
+    return list(params)
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
     fwd_declarations = {}
     includes, includes_cc = set(), set()
-
     for relation in datatype['OneToOneRelations']:
       if relation.full_type != datatype['class'].full_type:
         if relation.namespace not in fwd_declarations:
@@ -363,26 +397,35 @@ class ClassGenerator:
     data = deepcopy(definition)
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
+    data['includes_jl'] = {'constructor': self._get_member_includes(definition["Members"], julia=True),
+                           'struct': self._get_member_includes(definition["Members"], julia=True)}
+    data['params_jl'] = self._get_julia_params(data)
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
+    self._preprocess_for_julia(data)
 
     return data
 
-  def _get_member_includes(self, members):
+  def _get_member_includes(self, members, julia=False):
     """Process all members and gather the necessary includes"""
-    includes = set()
+    includes, includes_jl = set(), set()
     includes.update(*(m.includes for m in members))
+    includes_jl.update(*(m.jl_imports for m in members))
     for member in members:
       if member.is_array and not member.is_builtin_array:
         include_from = IncludeFrom.INTERNAL
         if self.upstream_edm and member.array_type in self.upstream_edm.components:
           include_from = IncludeFrom.EXTERNAL
         includes.add(self._build_include_for_class(member.array_bare_type, include_from))
+        includes_jl.add(self._build_julia_include_for_class(member.array_bare_type, include_from))
 
       includes.add(self._build_include(member))
+      includes_jl.add(self._build_julia_include(member))
 
-    return self._sort_includes(includes)
+    if not julia:
+      return self._sort_includes(includes)
+    return includes_jl
 
   def _write_cmake_lists_file(self):
     """Write the names of all generated header and src files into cmake lists"""
@@ -451,6 +494,25 @@ class ClassGenerator:
     # The empty string is filtered by _sort_includes (plus it doesn't hurt in
     # the generated code)
     return ''
+
+  def _build_julia_include(self, member, is_struct=False) -> str:
+    """Return the include statement for julia"""
+    return self._build_julia_include_for_class(member.bare_type, self._needs_include(member.full_type), is_struct)
+
+  def _build_julia_include_for_class(self, classname, include_from: IncludeFrom, is_struct=False) -> str:
+    """Return the include statement for julia for this specific class"""
+    if include_from == IncludeFrom.INTERNAL:
+      # If we have an internal include all includes should be relative
+      inc_folder = ''
+    if include_from == IncludeFrom.EXTERNAL:
+      inc_folder = f'{self.upstream_edm.options["includeSubfolder"]}'
+    if include_from == IncludeFrom.NOWHERE:
+      # We don't need an include in this case
+      return ''
+
+    if is_struct:
+      return f'include("{inc_folder}{classname}Struct.jl")'
+    return f'include("{inc_folder}{classname}.jl")'
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
