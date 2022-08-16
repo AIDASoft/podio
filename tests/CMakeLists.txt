@@ -67,3 +67,12 @@ CREATE_PODIO_TEST(write_ascii.cpp "")
 configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
 
 ExternalData_Add_Target(legacy_test_cases)
+
+find_program(Julia_EXECUTABLE julia)
+if (Julia_EXECUTABLE)
+  message(STATUS "Found Julia, will add the Julia tests")
+  add_test(NAME julia-unittests COMMAND julia unittest.jl)
+  set_tests_properties(julia-unittests PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    )
+endif()
