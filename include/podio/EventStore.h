@@ -82,8 +82,8 @@ public:
   /// set the reader
   void setReader(IReader* reader);
 
-  std::shared_ptr<CollectionIDTable> getCollectionIDTable() const {
-    return m_table;
+  CollectionIDTable* getCollectionIDTable() const {
+    return m_table.get();
   }
 
   virtual bool isValid() const final;
