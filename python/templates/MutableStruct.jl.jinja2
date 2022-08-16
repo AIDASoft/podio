@@ -1,7 +1,7 @@
 {% for include in includes_jl['struct'] %}
 {{ include }}
 {% endfor %}
-mutable struct {{ class.bare_type }}{% if params_jl %}{ {% for relation in params_jl %} {{ relation }}T, {% endfor %} }{% endif %}
+mutable struct {{ class.bare_type }}{% if params_jl %}{ {{ params_jl | join('T, ') }} }{% endif %}
 
 {% for member in Members %}
 	{{ member.name }}::{{ member.julia_type }}
