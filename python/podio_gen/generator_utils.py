@@ -131,6 +131,7 @@ class MemberVariable:
     self.array_size = kwargs.pop('array_size', None)
 
     self.includes = set()
+    self.jl_imports = set()
 
     if kwargs:
       raise ValueError(f"Unused kwargs in MemberVariable: {list(kwargs.keys())}")
@@ -151,6 +152,7 @@ class MemberVariable:
 
       self.full_type = rf'std::array<{self.array_type}, {self.array_size}>'
       self.includes.add('#include <array>')
+      self.jl_imports.add('using StaticArrays')
 
     self.is_builtin = self.full_type in BUILTIN_TYPES
 

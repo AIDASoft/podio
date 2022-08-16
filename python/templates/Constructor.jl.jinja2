@@ -1,0 +1,26 @@
+include("{{ class.bare_type }}Struct.jl")
+{% for include in includes_jl['constructor'] %}
+{{ include }}
+{% endfor %}
+function {{ class.bare_type }}()
+	return {{ class.bare_type }}{% if params_jl %}{ {{ params_jl | join(',') }} }{% endif %}(
+	{% for member in Members %}
+	{% if member.is_array %}
+	{{ member.julia_type }}(undef),
+	{% elif member.is_builtin %}
+	{{ member.julia_type }}(0),
+	{% else %}
+	{{ member.julia_type }}(),
+	{% endif %}
+	{% endfor %}
+	{% for relation in OneToManyRelations %}
+	Vector{ {{ relation.julia_type }} }(),
+	{% endfor %}
+	{% for relation in OneToOneRelations %}
+	nothing,
+	{% endfor %}
+	{% for member in VectorMembers %}
+	Vector{ {{ member.julia_type }} }([]),
+	{% endfor %}
+	)
+end

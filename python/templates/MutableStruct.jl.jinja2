@@ -1,0 +1,18 @@
+{% for include in includes_jl['struct'] %}
+{{ include }}
+{% endfor %}
+mutable struct {{ class.bare_type }}{% if params_jl %}{ {{ params_jl | join('T, ') }} }{% endif %}
+
+{% for member in Members %}
+	{{ member.name }}::{{ member.julia_type }}
+{% endfor %}
+{% for relation in OneToManyRelations %}
+	{{ relation.name }}::Vector{ {{ relation.julia_type }}T }
+{% endfor %}
+{% for relation in OneToOneRelations %}
+	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}T }
+{% endfor %}
+{% for member in VectorMembers %}
+	{{ member.name }}::Vector{ {{ member.julia_type }} }
+{% endfor %}
+end
