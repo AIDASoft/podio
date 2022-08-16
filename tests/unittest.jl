@@ -6,7 +6,7 @@ include("../Tmp/data/ExampleWithOneRelation.jl")
 include("../Tmp/data/ExampleCluster.jl")
 
 using Test
-@testset "All" begin
+@testset "Julia Bindings" begin
 	@testset "Relations" begin
 
 	    mcp1 = ExampleMC()
