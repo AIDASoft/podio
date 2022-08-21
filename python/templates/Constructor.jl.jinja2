@@ -1,3 +1,5 @@
+module {{ class.bare_type }}Module
+export {{ class.bare_type }}
 include("{{ class.bare_type }}Struct.jl")
 {% for include in includes_jl['constructor'] %}
 {{ include }}
@@ -23,4 +25,5 @@ function {{ class.bare_type }}()
 	Vector{ {{ member.julia_type }} }([]),
 	{% endfor %}
 	)
+end
 end
