@@ -231,8 +231,8 @@ class MemberParserTest(unittest.TestCase):
     for inp in invalid_inputs:
       try:
         self.assertRaises(DefinitionError, parser.parse, inp)
-      except AssertionError:
-        raise AssertionError(f"'{inp}' should raise a DefinitionError from the MemberParser")
+      except AssertionError as exc:
+        raise AssertionError(f"'{inp}' should raise a DefinitionError from the MemberParser") from exc
 
   def test_parse_valid_no_description(self):
     """Test that member variable definitions are OK without description"""

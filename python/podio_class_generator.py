@@ -550,17 +550,17 @@ def read_upstream_edm(name_path):
 
   try:
     name, path = name_path.split(':')
-  except ValueError:
+  except ValueError as exc:
     raise argparse.ArgumentTypeError('upstream-edm argument needs to be the upstream package '
-                                     'name and the upstream edm yaml file separated by a colon')
+                                     'name and the upstream edm yaml file separated by a colon') from exc
 
   if not os.path.isfile(path):
     raise argparse.ArgumentTypeError(f'{path} needs to be an EDM yaml file')
 
   try:
     return PodioConfigReader.read(path, name)
-  except DefinitionError:
-    raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition')
+  except DefinitionError as exc:
+    raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition') from exc
 
 
 if __name__ == "__main__":
