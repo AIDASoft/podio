@@ -1,11 +1,16 @@
 include("datamodel/ExampleMC.jl")
+using .ExampleMCModule: ExampleMC
 include("datamodel/ExampleWithVectorMember.jl")
+using .ExampleWithVectorMemberModule: ExampleWithVectorMember
 include("datamodel/ExampleForCyclicDependency1.jl")
+using .ExampleForCyclicDependency1Module: ExampleForCyclicDependency1
 include("datamodel/ExampleForCyclicDependency2.jl")
+using .ExampleForCyclicDependency2Module: ExampleForCyclicDependency2
 include("datamodel/ExampleWithOneRelation.jl")
+using .ExampleWithOneRelationModule: ExampleWithOneRelation 
 include("datamodel/ExampleCluster.jl")
+using .ExampleClusterModule: ExampleCluster
 include("datamodel/ExampleMCCollection.jl")
-
 using Test
 @testset "Julia Bindings" begin
 	@testset "Relations" begin

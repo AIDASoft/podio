@@ -11,11 +11,16 @@
 }{%- endif -%}
 {% endmacro %}
 
-mutable struct {{ class.bare_type }}{{ julia_parameters(params_jl) }}
+mutable struct {{ class.bare_type }}Struct{{ julia_parameters(params_jl) }}
 
 {% for member in Members %}
+	{% if member.is_array or member.is_builtin %}
 	{{ member.name }}::{{ member.julia_type }}
+	{% else %}
+	{{ member.name }}::Main.{{ member.julia_type }}Struct
+	{% endif %}
 {% endfor %}
+
 {% for relation in OneToManyRelations %}
 	{{ relation.name }}::Vector{ {{ relation.julia_type }}T }
 {% endfor %}

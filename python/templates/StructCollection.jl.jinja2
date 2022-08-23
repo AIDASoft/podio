@@ -1,0 +1,10 @@
+{% for include in includes_jl %}
+{{ include }}
+{% endfor %}
+{% for include in includes_data_jl %}
+{{ include }}
+{% endfor %}
+{% for member in Members %}
+{{ member }}
+{% endfor %}
+{{ class.bare_type }} = Vector{ {{ a }} }

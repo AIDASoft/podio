@@ -513,7 +513,7 @@ class ClassGenerator:
 
     if is_struct:
       return f'include("{inc_folder}{classname}Struct.jl")'
-    return f'include("{inc_folder}{classname}.jl")\nusing {inc_folder}{classname}Module: {inc_folder}{classname}'
+    return f'include("{inc_folder}{classname}.jl")\nusing .{classname}Module: {classname}'
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
