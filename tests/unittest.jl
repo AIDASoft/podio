@@ -1,5 +1,3 @@
-include("datamodel/ExampleMC.jl")
-using .ExampleMCModule: ExampleMC
 include("datamodel/ExampleWithVectorMember.jl")
 using .ExampleWithVectorMemberModule: ExampleWithVectorMember
 include("datamodel/ExampleForCyclicDependency1.jl")
