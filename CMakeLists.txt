@@ -155,6 +155,7 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(python)
 add_subdirectory(src)
+add_subdirectory(tools)
 if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
