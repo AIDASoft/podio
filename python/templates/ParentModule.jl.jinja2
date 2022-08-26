@@ -1,0 +1,12 @@
+{% for child in children %}
+include("{{ child }}.jl")
+{% endfor %}
+
+module {{ class.bare_type }}
+
+{% for child in children %}
+using ..{{child}}Module: {{child}}
+export {{child}}
+
+{% endfor %}
+end

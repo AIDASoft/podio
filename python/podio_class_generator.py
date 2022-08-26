@@ -104,6 +104,29 @@ class ClassGenerator:
     self.generated_files = []
     self.any_changes = False
 
+  def _get_namespace_dict(self):
+    """generate the dictionary of parent namespaces"""
+    namespace = {}
+    for component_name in self.datamodel.components.keys():
+      if '::' in component_name:
+        parent_namespace, child = component_name.split('::')
+        if parent_namespace not in namespace:
+          namespace[parent_namespace] = []
+        namespace[parent_namespace].append(child)
+
+    for datatype_name in self.datamodel.datatypes.keys():
+      if '::' in datatype_name:
+        parent_namespace, child = datatype_name.split('::')
+        if parent_namespace not in namespace:
+          namespace[parent_namespace] = []
+        namespace[parent_namespace].append(child)
+
+    for parent, child in namespace.items():
+      namespace_dict = {}
+      namespace_dict['class'] = DataType(parent)
+      namespace_dict['children'] = child
+      self._fill_templates("ParentModule", namespace_dict)
+
   def process(self):
     """Run the actual generation"""
     for name, component in self.datamodel.components.items():
@@ -112,6 +135,7 @@ class ClassGenerator:
     for name, datatype in self.datamodel.datatypes.items():
       self._process_datatype(name, datatype)
 
+    self._get_namespace_dict()
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
     self.print_report()
@@ -185,6 +209,7 @@ class ClassGenerator:
         'MutableStruct': ('jl',),
         'Constructor': ('jl',),
         'JuliaCollection': ('jl',),
+        'ParentModule': ('jl',),
         }.get(template_base, ('h', 'cc'))
 
     fn_templates = []

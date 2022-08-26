@@ -5,10 +5,13 @@ using .ExampleForCyclicDependency1Module: ExampleForCyclicDependency1
 include("datamodel/ExampleForCyclicDependency2.jl")
 using .ExampleForCyclicDependency2Module: ExampleForCyclicDependency2
 include("datamodel/ExampleWithOneRelation.jl")
-using .ExampleWithOneRelationModule: ExampleWithOneRelation 
+using .ExampleWithOneRelationModule: ExampleWithOneRelation
 include("datamodel/ExampleCluster.jl")
 using .ExampleClusterModule: ExampleCluster
 include("datamodel/ExampleMCCollection.jl")
+include("datamodel/ex2.jl")
+include("datamodel/ex42.jl")
+
 using Test
 @testset "Julia Bindings" begin
 	@testset "Relations" begin
@@ -97,5 +100,42 @@ using Test
 	    @test mc3.PDG == 1
 	    @test length(mc3.parents)== 1
 	    @test mc3.parents[1] == mc1
+	end
+
+	@testset "Namespaces" begin
+
+		using .ex2: NamespaceStruct, NamespaceInNamespaceStruct
+
+		s1 = NamespaceStruct()
+		s1.x = Int32(1)
+		s1.y = Int32(2)
+
+		s2 = NamespaceInNamespaceStruct()
+		s2.data = s1
+
+		using .ex42: ExampleWithNamespace, ExampleWithARelation
+
+		s3 = NamespaceStruct()
+		s3.x = Int32(2)
+		s3.y = Int32(3)
+
+		ex1 = ExampleWithNamespace()
+		ex1.component = s3
+
+		ex3 = ExampleWithARelation()
+		ex3.number = Float32(5.55)
+		push!(ex3.refs, ex1)
+		ex3.ref = ex1
+
+		@test s1.x == Int32(1)
+		@test s1.y == Int32(2)
+		@test s2.data.x == Int32(1)
+		@test s2.data.y == Int32(2)
+		@test ex1.component.x == Int32(2)
+		@test ex1.component.y == Int32(3)
+		@test ex3.number == Float32(5.55)
+		@test ex3.refs[1] === ex1
+		@test ex3.ref.component.x == Int32(2)
+		@test ex3.ref.component.y == Int32(3)
 	end
 end;
