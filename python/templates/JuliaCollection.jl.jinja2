@@ -2,4 +2,4 @@
 include("{{ class.bare_type }}.jl")
 using .{{ class.bare_type }}Module: {{class.bare_type}}
 
-{{ class.bare_type }}Collection = Vector{ Main.{{ class.bare_type }}Struct{{ params.julia_parameters(params_jl, "Main.", "Struct") }} }
+{{ class.bare_type }}Collection = Vector{ Main.{{ class.bare_type }}Struct{{ params.julia_parameters(params_jl, prefix="Main.", suffix="Struct") }} }
