@@ -108,18 +108,18 @@ class ClassGenerator:
     """generate the dictionary of parent namespaces"""
     namespace = {}
     for component_name in self.datamodel.components.keys():
-component = DataType(component_name)
-parent_namespace, child = component.namespace, component.bare_type
-        if parent_namespace not in namespace:
-          namespace[parent_namespace] = []
-        namespace[parent_namespace].append(child)
+      component = DataType(component_name)
+      parent_namespace, child = component.namespace, component.bare_type
+      if parent_namespace not in namespace:
+        namespace[parent_namespace] = []
+      namespace[parent_namespace].append(child)
 
     for datatype_name in self.datamodel.datatypes.keys():
-      if '::' in datatype_name:
-        parent_namespace, child = datatype_name.split('::')
-        if parent_namespace not in namespace:
-          namespace[parent_namespace] = []
-        namespace[parent_namespace].append(child)
+      datatype = DataType(datatype_name)
+      parent_namespace, child = datatype.namespace, datatype.bare_type
+      if parent_namespace not in namespace:
+        namespace[parent_namespace] = []
+      namespace[parent_namespace].append(child)
 
     for parent, child in namespace.items():
       namespace_dict = {}
