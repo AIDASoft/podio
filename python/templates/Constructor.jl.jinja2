@@ -25,7 +25,11 @@ function {{ class.bare_type }}()
 	nothing,
 	{% endfor %}
 	{% for member in VectorMembers %}
+	{% if member.is_builtin %}
 	Vector{ {{ member.julia_type }} }([]),
+	{% else %}
+	Vector{ Main.{{ member.julia_type }}Struct }([]),
+	{% endif %}
 	{% endfor %}
 	)
 end

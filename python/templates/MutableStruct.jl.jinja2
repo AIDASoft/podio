@@ -19,6 +19,10 @@ mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"
 	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}T }
 {% endfor %}
 {% for member in VectorMembers %}
+	{% if member.is_builtin %}
 	{{ member.name }}::Vector{ {{ member.julia_type }} }
+	{% else %}
+	{{ member.name }}::Vector{ Main.{{ member.julia_type }}Struct }
+	{% endif %}
 {% endfor %}
 end
