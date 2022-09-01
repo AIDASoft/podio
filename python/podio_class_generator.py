@@ -111,15 +111,16 @@ class ClassGenerator:
       component = DataType(component_name)
       parent_namespace, child = component.namespace, component.bare_type
       if parent_namespace not in namespace:
-        namespace[parent_namespace] = []
-      namespace[parent_namespace].append(child)
+        namespace[parent_namespace] = {'Components':[], 'Datatypes':[], 'Collections':[]}
+      namespace[parent_namespace]['Components'].append(child)
 
     for datatype_name in self.datamodel.datatypes.keys():
       datatype = DataType(datatype_name)
       parent_namespace, child = datatype.namespace, datatype.bare_type
       if parent_namespace not in namespace:
-        namespace[parent_namespace] = []
-      namespace[parent_namespace].append(child)
+        namespace[parent_namespace] = {'Components':[], 'Datatypes':[], 'Collections':[]}
+      namespace[parent_namespace]['Datatypes'].append(child)
+      namespace[parent_namespace]['Collections'].append(child + 'Collection')
 
     for parent, child in namespace.items():
       namespace_dict = {}
