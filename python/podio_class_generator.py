@@ -104,6 +104,30 @@ class ClassGenerator:
     self.generated_files = []
     self.any_changes = False
 
+  def _get_namespace_dict(self):
+    """generate the dictionary of parent namespaces"""
+    namespace = {}
+    for component_name in self.datamodel.components.keys():
+      component = DataType(component_name)
+      parent_namespace, child = component.namespace, component.bare_type
+      if parent_namespace not in namespace:
+        namespace[parent_namespace] = {'Components': [], 'Datatypes': [], 'Collections': []}
+      namespace[parent_namespace]['Components'].append(child)
+
+    for datatype_name in self.datamodel.datatypes.keys():
+      datatype = DataType(datatype_name)
+      parent_namespace, child = datatype.namespace, datatype.bare_type
+      if parent_namespace not in namespace:
+        namespace[parent_namespace] = {'Components': [], 'Datatypes': [], 'Collections': []}
+      namespace[parent_namespace]['Datatypes'].append(child)
+      namespace[parent_namespace]['Collections'].append(child + 'Collection')
+
+    for parent, child in namespace.items():
+      namespace_dict = {}
+      namespace_dict['class'] = DataType(parent)
+      namespace_dict['children'] = child
+      self._fill_templates("ParentModule", namespace_dict)
+
   def process(self):
     """Run the actual generation"""
     for name, component in self.datamodel.components.items():
@@ -112,6 +136,7 @@ class ClassGenerator:
     for name, datatype in self.datamodel.datatypes.items():
       self._process_datatype(name, datatype)
 
+    self._get_namespace_dict()
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
     self.print_report()
@@ -185,6 +210,7 @@ class ClassGenerator:
         'MutableStruct': ('jl',),
         'Constructor': ('jl',),
         'JuliaCollection': ('jl',),
+        'ParentModule': ('jl',),
         }.get(template_base, ('h', 'cc'))
 
     fn_templates = []
@@ -244,14 +270,16 @@ class ClassGenerator:
   def _preprocess_for_julia(self, datatype):
     """Do the preprocessing that is necessary for Julia code generation"""
     includes_jl, includes_jl_struct = set(), set()
-    for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations'] + datatype['VectorMembers']:
+    for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       includes_jl.add(self._build_julia_include(relation, is_struct=True))
-      # if datatype['class'].bare_type != relation.bare_type:
-      #   includes_jl.add(self._build_include(relation.bare_type + 'Collection', julia=True))
-
     for member in datatype['VectorMembers']:
-      if self._needs_include(member) and not member.is_builtin:
-        includes_jl_struct.add(self._build_julia_include(member))
+      if not member.is_builtin:
+        includes_jl_struct.add(self._build_julia_include(member, is_struct=True))
+        includes_jl.add(self._build_julia_include(member))
+    try:
+      includes_jl.remove(self._build_julia_include(datatype['class'], is_struct=True))
+    except KeyError:
+      pass
     datatype['includes_jl']['constructor'].update((includes_jl))
     datatype['includes_jl']['struct'].update((includes_jl_struct))
 
@@ -512,7 +540,7 @@ class ClassGenerator:
 
     if is_struct:
       return f'include("{inc_folder}{classname}Struct.jl")'
-    return f'include("{inc_folder}{classname}.jl")'
+    return f'include("{inc_folder}{classname}.jl")\nusing .{classname}Module: {classname}'
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
@@ -549,17 +577,17 @@ def read_upstream_edm(name_path):
 
   try:
     name, path = name_path.split(':')
-  except ValueError:
+  except ValueError as exc:
     raise argparse.ArgumentTypeError('upstream-edm argument needs to be the upstream package '
-                                     'name and the upstream edm yaml file separated by a colon')
+                                     'name and the upstream edm yaml file separated by a colon') from exc
 
   if not os.path.isfile(path):
     raise argparse.ArgumentTypeError(f'{path} needs to be an EDM yaml file')
 
   try:
     return PodioConfigReader.read(path, name)
-  except DefinitionError:
-    raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition')
+  except DefinitionError as exc:
+    raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition') from exc
 
 
 if __name__ == "__main__":

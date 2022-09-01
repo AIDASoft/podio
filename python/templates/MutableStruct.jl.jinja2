@@ -1,21 +1,17 @@
+{% import "macros/params.jinja2" as params %}
 {% for include in includes_jl['struct'] %}
 {{ include }}
 {% endfor %}
-
-{% macro julia_parameters(params) %}
-{%- if params_jl -%}{
-{%- set comma = joiner(',') -%}
-{%- for par in params -%}
-{{ comma() }}{{ par }}T
-{%- endfor -%}
-}{%- endif -%}
-{% endmacro %}
-
-mutable struct {{ class.bare_type }}{{ julia_parameters(params_jl) }}
+mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"" ,"T" ) }}
 
 {% for member in Members %}
+	{% if member.is_array or member.is_builtin %}
 	{{ member.name }}::{{ member.julia_type }}
+	{% else %}
+	{{ member.name }}::Main.{{ member.julia_type }}Struct
+	{% endif %}
 {% endfor %}
+
 {% for relation in OneToManyRelations %}
 	{{ relation.name }}::Vector{ {{ relation.julia_type }}T }
 {% endfor %}
@@ -23,6 +19,10 @@ mutable struct {{ class.bare_type }}{{ julia_parameters(params_jl) }}
 	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}T }
 {% endfor %}
 {% for member in VectorMembers %}
+	{% if member.is_builtin %}
 	{{ member.name }}::Vector{ {{ member.julia_type }} }
+	{% else %}
+	{{ member.name }}::Vector{ Main.{{ member.julia_type }}Struct }
+	{% endif %}
 {% endfor %}
 end

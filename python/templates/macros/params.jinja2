@@ -1,0 +1,8 @@
+{% macro julia_parameters(params, prefix, suffix) %}
+{%- if params -%}{
+{%- set comma = joiner(',') -%}
+{%- for par in params -%}
+{{ comma() }}{{ prefix }}{{ par }}{{ suffix }}
+{%- endfor -%}
+}{%- endif -%}
+{%- endmacro -%}
