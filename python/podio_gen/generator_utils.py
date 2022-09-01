@@ -51,6 +51,10 @@ def get_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=No
 
   else:
     array_type = get_julia_type(cpp_type=array_type)
+    if '::' in array_type:
+      array_type = array_type.split('::')[1]
+    if array_type not in builtin_types_map.values():
+      array_type = 'Main.' + array_type + 'Struct'
     return f"MVector{{{array_size}, {array_type}}}"
 
   return cpp_type

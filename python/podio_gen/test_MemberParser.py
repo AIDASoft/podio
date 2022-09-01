@@ -120,7 +120,7 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.description, r'with a top level type')
     self.assertTrue(not parsed.is_builtin_array)
     self.assertEqual(parsed.array_type, r'::GlobalType')
-    self.assertEqual(parsed.julia_type, r'MVector{1, GlobalType}')
+    self.assertEqual(parsed.julia_type, r'MVector{1, Main.GlobalTypeStruct}')
 
     parsed = parser.parse(r'std::array<std::int16_t, 42> fixedWidthArray // a fixed width type array')
     self.assertEqual(parsed.full_type, r'std::array<std::int16_t, 42>')
@@ -232,7 +232,6 @@ class MemberParserTest(unittest.TestCase):
       try:
         self.assertRaises(DefinitionError, parser.parse, inp)
       except AssertionError:
-        # pylint: disable-next=raise-missing-from
         raise AssertionError(f"'{inp}' should raise a DefinitionError from the MemberParser")
 
   def test_parse_valid_no_description(self):

@@ -1,2 +1,5 @@
+{% import "macros/params.jinja2" as params %}
 include("{{ class.bare_type }}.jl")
-{{ class.bare_type }}Collection = Vector{ {{ class.bare_type }}{% if params_jl %}{ {{ params_jl | join(',') }} }{% endif %} }
+using .{{ class.bare_type }}Module: {{class.bare_type}}
+
+{{ class.bare_type }}Collection = Vector{ Main.{{ class.bare_type }}Struct{{ params.julia_parameters(params_jl, prefix="Main.", suffix="Struct") }} }
