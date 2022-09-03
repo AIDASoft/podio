@@ -149,7 +149,7 @@ It is possible to extend another datamodel with your own types, resp. use some d
 This can be useful for prototyping new datatypes or for accomodating special requirements without having to reimplement / copy a complete datamodel.
 
 To pass an upstream datamodel to the class generator use the `--upstream-edm` option that takes the package name as well as the yaml definition file of the upstream datamodel separated by a colon (':').
-This will effectively make all components and datatpes of the upstream datamodel available to the current definition for validation and generation of the necessary includes.
+This will effectively make all components and datatypes of the upstream datamodel available to the current definition for validation and generation of the necessary includes.
 Nevertheless, only the code for the datatypes and components defined in the current yaml file will be generated.
 The podio `PODIO_GENERATE_DATAMODEL` cmake macro has gained an additional parameter `UPSTREAM_EDM` to pass the arguments to the generator via the cmake macros.
 
