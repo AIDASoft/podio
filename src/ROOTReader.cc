@@ -109,7 +109,7 @@ CollectionBase* ROOTReader::getCollection(const std::pair<std::string, Collectio
   }
 
   // set the addresses
-  root_utils::setCollectionAddresses(collection, branches);
+  root_utils::setCollectionAddresses(collection->getBuffers(), branches);
 
   return readCollectionData(branches, collection, localEntry, name);
 }

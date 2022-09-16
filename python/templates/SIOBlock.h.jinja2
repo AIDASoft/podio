@@ -13,6 +13,10 @@
 #include <typeindex>
 #include <string>
 
+namespace podio {
+  struct CollectionReadBuffers;
+}
+
 {{ utils.namespace_open(class.namespace) }}
 
 {% with block_class = class.bare_type + 'SIOBlock' %}
@@ -27,15 +31,18 @@ public:
   // SIOBlock(name + "__{{ class.bare_type }}", sio::version::encode_version(0, 1)) {}
   SIOBlock(name, sio::version::encode_version(0, 1)) {}
 
-  // Read the particle data from the device
-  virtual void read(sio::read_device& device, sio::version_type version) override;
+  // Read the collection data from the device
+  void read(sio::read_device& device, sio::version_type version) override;
 
-  // Write the particle data to the device
-  virtual void write(sio::write_device& device) override;
+  // Write the collection data to the device
+  void write(sio::write_device& device) override;
 
-  virtual void createCollection(const bool subsetCollection=false) override;
+  void createBuffers(bool isSubsetColl) override;
 
   SIOBlock* create(const std::string& name) const override { return new {{ block_class }}(name); }
+
+private:
+  podio::CollectionReadBuffers createBuffers() const;
 };
 
 static {{ block_class }} _dummy{{ block_class }};

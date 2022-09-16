@@ -44,7 +44,10 @@ public:
   virtual unsigned getID() const = 0;
 
   /// Get the collection buffers for this collection
-  virtual podio::CollectionBuffers getBuffers() = 0;
+  virtual podio::CollectionWriteBuffers getBuffers() = 0;
+
+  /// Create (empty) collection buffers from which a collection can be constructed
+  virtual podio::CollectionReadBuffers createBuffers() /*const*/ = 0;
 
   /// check for validity of the container after read
   virtual bool isValid() const = 0;

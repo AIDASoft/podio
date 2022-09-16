@@ -2,6 +2,7 @@
 #define PODIO_USERDATACOLLECTION_H
 
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
@@ -68,6 +69,9 @@ private:
 
 public:
   UserDataCollection() = default;
+  /// Constructor from an existing vector (wich will be moved from!)
+  UserDataCollection(std::vector<BasicType>&& vec) : _vec(std::move(vec)) {
+  }
   UserDataCollection(const UserDataCollection&) = delete;
   UserDataCollection& operator=(const UserDataCollection&) = delete;
   UserDataCollection(UserDataCollection&&) = default;
@@ -98,9 +102,19 @@ public:
   }
 
   /// Get the collection buffers for this collection
-  podio::CollectionBuffers getBuffers() override {
+  podio::CollectionWriteBuffers getBuffers() override {
     _vecPtr = &_vec; // Set the pointer to the correct internal vector
     return {&_vecPtr, &m_refCollections, &m_vecmem_info};
+  }
+
+  podio::CollectionReadBuffers createBuffers() /*const*/ final {
+    return {nullptr, nullptr, nullptr,
+            [](podio::CollectionReadBuffers buffers, bool) {
+              return std::make_unique<UserDataCollection<BasicType>>(std::move(*buffers.dataAsVector<BasicType>()));
+            },
+            [](podio::CollectionReadBuffers& buffers) {
+              buffers.data = podio::CollectionWriteBuffers::asVector<BasicType>(buffers.data);
+            }};
   }
 
   /// check for validity of the container after read

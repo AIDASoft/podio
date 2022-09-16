@@ -11,6 +11,8 @@ SET(root_sources
   rootUtils.h
   ROOTWriter.cc
   ROOTReader.cc
+  ROOTFrameWriter.cc
+  ROOTFrameReader.cc
 )
 
 SET(sio_sources
@@ -18,6 +20,9 @@ SET(sio_sources
   SIOWriter.cc
   SIOBlockUserData.cc
   SIOBlock.cc
+  SIOFrameWriter.cc
+  SIOFrameReader.cc
+  SIOFrameData.cc
 )
 
 SET(python_sources

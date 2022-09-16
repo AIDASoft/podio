@@ -35,7 +35,17 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
     )
 endfunction()
 
-set(root_dependent_tests write.cpp read.cpp read-multiple.cpp relation_range.cpp read_and_write.cpp read_and_write_associated.cpp write_timed.cpp read_timed.cpp)
+set(root_dependent_tests
+  write.cpp
+  read.cpp
+  read-multiple.cpp
+  relation_range.cpp
+  read_and_write.cpp
+  read_and_write_associated.cpp
+  write_timed.cpp
+  read_timed.cpp
+  read_frame.cpp
+  write_frame_root.cpp)
 set(root_libs TestDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
@@ -111,7 +121,14 @@ endif()
 
 
 if (TARGET TestDataModelSioBlocks)
-  set(sio_dependent_tests write_sio.cpp read_sio.cpp read_and_write_sio.cpp write_timed_sio.cpp read_timed_sio.cpp)
+  set(sio_dependent_tests
+    write_sio.cpp
+    read_sio.cpp
+    read_and_write_sio.cpp
+    write_timed_sio.cpp
+    read_timed_sio.cpp
+    read_frame_sio.cpp
+    write_frame_sio.cpp)
   set(sio_libs podio::podioSioIO)
   foreach( sourcefile ${sio_dependent_tests} )
     CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
@@ -129,6 +146,7 @@ set_property(TEST read PROPERTY DEPENDS write)
 set_property(TEST read-multiple PROPERTY DEPENDS write)
 set_property(TEST read_and_write PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
+set_property(TEST read_frame PROPERTY DEPENDS write_frame_root)
 
 add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
 target_link_libraries(check_benchmark_outputs ROOT::Tree)
@@ -140,6 +158,7 @@ if (TARGET read_sio)
   set_property(TEST read_sio PROPERTY DEPENDS write_sio)
   set_property(TEST read_and_write_sio PROPERTY DEPENDS write_sio)
   set_property(TEST read_timed_sio PROPERTY DEPENDS write_timed_sio)
+  set_property(TEST read_frame_sio PROPERTY DEPENDS write_frame_sio)
 
   add_test(NAME check_benchmark_outputs_sio COMMAND check_benchmark_outputs write_benchmark_sio.root read_benchmark_sio.root)
   set_property(TEST check_benchmark_outputs_sio PROPERTY DEPENDS read_timed_sio write_timed_sio)
@@ -159,7 +178,7 @@ set_property(TEST pyunittest PROPERTY DEPENDS write)
 configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
 find_package(Threads REQUIRED)
-add_executable(unittest unittest.cpp)
+add_executable(unittest unittest.cpp frame.cpp)
 target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads)
 
 # The unittests are a bit better and they are labelled so we can put together a
@@ -184,6 +203,10 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?")
     # it fails to succesfully launch the executable and execute any test. Here
     # we just include them in order to have them show up as failing
     add_test(NAME unittest COMMAND unittest ${filter_tests})
+    set_property(TEST unittest
+      PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
+      )
   endif()
 else()
   include(Catch)
@@ -191,6 +214,9 @@ else()
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
+      PROPERTIES
+        ENVIRONMENT
+        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
   )
 endif()
 

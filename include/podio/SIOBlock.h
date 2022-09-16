@@ -35,7 +35,11 @@ public:
   SIOBlock& operator=(const SIOBlock&) = delete;
 
   podio::CollectionBase* getCollection() {
-    return _col;
+    return m_buffers.createCollection(m_buffers, m_subsetColl).release();
+  }
+
+  podio::CollectionReadBuffers getBuffers() const {
+    return m_buffers;
   }
 
   std::string name() {
@@ -43,16 +47,18 @@ public:
   }
 
   void setCollection(podio::CollectionBase* col) {
-    _col = col;
+    m_subsetColl = col->isSubsetCollection();
+    m_buffers = col->getBuffers();
   }
 
   virtual SIOBlock* create(const std::string& name) const = 0;
 
   // create a new collection for this block
-  virtual void createCollection(const bool subsetCollection = false) = 0;
+  virtual void createBuffers(const bool subsetCollection = false) = 0;
 
 protected:
-  podio::CollectionBase* _col{};
+  bool m_subsetColl{false};
+  podio::CollectionReadBuffers m_buffers{};
 };
 
 /**
@@ -64,6 +70,15 @@ public:
   }
 
   SIOCollectionIDTableBlock(podio::EventStore* store);
+
+  SIOCollectionIDTableBlock(std::vector<std::string>&& names, std::vector<int>&& ids, std::vector<std::string>&& types,
+                            std::vector<short>&& isSubsetColl) :
+      sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
+      _names(std::move(names)),
+      _ids(std::move(ids)),
+      _types(std::move(types)),
+      _isSubsetColl(std::move(isSubsetColl)) {
+  }
 
   SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
   SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
@@ -208,6 +223,13 @@ public:
 
   size_t getNRecords(const std::string& name) const;
 
+  /** Get the position of the iEntry-th record with the given name. If no entry
+   * with the given name is recorded, return 0. Note there is no internal check
+   * on whether the given name actually has iEntry records. Use getNRecords to
+   * check for that if necessary.
+   */
+  PositionType getPosition(const std::string& name, unsigned iEntry = 0) const;
+
 private:
   friend struct SIOFileTOCRecordBlock;
 
@@ -219,6 +241,10 @@ private:
 
 struct SIOFileTOCRecordBlock : public sio::block {
   SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {
+  }
+
+  SIOFileTOCRecordBlock(SIOFileTOCRecord* r) :
+      sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)), record(r) {
   }
 
   SIOFileTOCRecordBlock(const SIOFileTOCRecordBlock&) = delete;

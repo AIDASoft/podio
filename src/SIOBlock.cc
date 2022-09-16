@@ -113,12 +113,12 @@ void SIONumberedMetaDataBlock::write(sio::write_device& device) {
 }
 
 std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name,
-                                                       const bool isRefColl) const {
+                                                       const bool isSubsetColl) const {
   const auto it = _map.find(typeStr);
 
   if (it != _map.end()) {
     auto blk = std::shared_ptr<SIOBlock>(it->second->create(name));
-    blk->createCollection(isRefColl);
+    blk->createBuffers(isSubsetColl);
     return blk;
   } else {
     return nullptr;
@@ -207,6 +207,18 @@ size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
   if (it != m_recordMap.cend()) {
     return it->second.size();
   }
+  return 0;
+}
+
+SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(const std::string& name, unsigned iEntry) const {
+  const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
+                               [&name](const auto& keyVal) { return keyVal.first == name; });
+  if (it != m_recordMap.end()) {
+    if (iEntry < it->second.size()) {
+      return it->second[iEntry];
+    }
+  }
+
   return 0;
 }
 

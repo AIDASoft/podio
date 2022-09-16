@@ -67,6 +67,7 @@ sio::block_list SIOWriter::createBlocks() const {
   for (const auto& name : m_collectionsToWrite) {
     const podio::CollectionBase* col{nullptr};
     m_store->get(name, col);
+    col->prepareForWrite();
 
     blocks.emplace_back(podio::SIOBlockFactory::instance().createBlock(col, name));
   }

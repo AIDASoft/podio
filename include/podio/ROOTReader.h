@@ -2,7 +2,6 @@
 #define PODIO_ROOTREADER_H
 
 #include "podio/CollectionBranches.h"
-#include "podio/ICollectionProvider.h"
 #include "podio/IReader.h"
 
 #include <algorithm>
@@ -26,6 +25,7 @@ class CollectionBase;
 class Registry;
 class CollectionIDTable;
 class GenericParameters;
+
 /**
 This class has the function to read available data from disk
 and to prepare collections and buffers.

@@ -47,6 +47,7 @@ public:
   using iterator = {{ class.bare_type }}MutableCollectionIterator;
 
   {{ class.bare_type }}Collection();
+  {{ class.bare_type }}Collection({{ class.bare_type }}CollectionData&& data, bool isSubsetColl);
   // This is a move-only type
   {{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete;
   {{ class.bare_type }}Collection& operator=(const {{ class.bare_type}}Collection& ) = delete;
@@ -106,7 +107,10 @@ public:
   bool setReferences(const podio::ICollectionProvider* collectionProvider) final;
 
   /// Get the collection buffers for this collection
-  podio::CollectionBuffers getBuffers() final;
+  podio::CollectionWriteBuffers getBuffers() final;
+
+  /// Create (empty) collection buffers from which a collection can be constructed
+  podio::CollectionReadBuffers createBuffers() /*const*/ final;
 
   void setID(unsigned ID) final {
     m_collectionID = ID;

@@ -25,10 +25,12 @@ CollectionBase* SIOReader::readCollection(const std::string& name) {
     readEvent();
   }
 
+  // Have we unpacked this already?
   auto p =
       std::find_if(begin(m_inputs), end(m_inputs), [&name](const SIOReader::Input& t) { return t.second == name; });
 
   if (p != end(m_inputs)) {
+    p->first->setID(m_table->collectionID(name));
     p->first->prepareAfterRead();
     return p->first;
   }
@@ -87,8 +89,9 @@ void SIOReader::readEvent() {
   compressor.uncompress(m_rec_buffer.span(), m_unc_buffer);
   sio::api::read_blocks(m_unc_buffer.span(), m_blocks);
 
-  for (auto& [collection, name] : m_inputs) {
-    collection->setID(m_table->collectionID(name));
+  for (size_t i = 1; i < m_blocks.size(); ++i) {
+    auto* blk = static_cast<podio::SIOBlock*>(m_blocks[i].get());
+    m_inputs.emplace_back(blk->getCollection(), m_table->names()[i - 1]);
   }
 
   m_lastEventRead = m_eventNumber;
@@ -132,7 +135,6 @@ void SIOReader::createBlocks() {
     const bool subsetColl = !m_subsetCollectionBits.empty() && m_subsetCollectionBits[i];
     auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i], subsetColl);
     m_blocks.push_back(blk);
-    m_inputs.emplace_back(blk->getCollection(), m_table->names()[i]);
   }
 }
 

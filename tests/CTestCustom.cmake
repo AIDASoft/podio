@@ -21,12 +21,17 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read-multiple
     read-legacy-files
 
+    write_frame_root
+    read_frame
+
     write_sio
     read_sio
     read_and_write_sio
     write_timed_sio
     read_timed_sio
     check_benchmark_outputs_sio
+    write_frame_sio
+    read_frame_sio
 
     write_ascii
 

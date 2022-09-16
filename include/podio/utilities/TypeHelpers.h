@@ -101,6 +101,16 @@ namespace detail {
   static constexpr bool isVector = IsVectorHelper<T>::value;
 
 } // namespace detail
+
+// forward declaration to be able to use it below
+class CollectionBase;
+
+/**
+ * Alias template for checking whether a passed type T inherits from podio::CollectionBase
+ */
+template <typename T>
+static constexpr bool isCollection = std::is_base_of_v<CollectionBase, T>;
+
 } // namespace podio
 
 #endif // PODIO_UTILITIES_TYPEHELPERS_H

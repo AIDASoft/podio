@@ -8,9 +8,9 @@
 
 
 {% macro vector_member_read(member, index) %}
-  auto* vec{{ index }} = *reinterpret_cast<std::vector<{{ member.full_type }}>**>(vecMemInfo->at({{ index }}).second);
+  auto* vec{{ index }} = reinterpret_cast<std::vector<{{ member.full_type }}>*>(vecMemInfo->at({{ index }}).second);
   size = 0u;
   device.data(size);
   vec{{ index }}->resize(size);
-  podio::handlePODDataSIO(device, &(*vec{{ index }})[0], size);
+  podio::handlePODDataSIO(device, vec{{ index }}->data(), size);
 {% endmacro %}
