@@ -2,7 +2,7 @@
 
 
 from ROOT import gSystem
-gSystem.Load("libpodioRootIO")  # noqa: E402
+gSystem.Load("libpodioPythonStore")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 
@@ -72,6 +72,14 @@ class EventStore:
     if not hasattr(coll, '__getitem__'):
       coll.__getitem__ = getitem
     return coll
+
+  def collections(self):
+    """Return list of all collection names."""
+    return [str(c) for c in self.current_store.getCollectionNames()]
+
+  def metadata(self):
+    """Get the metadata of the current event as GenericParameters"""
+    return self.current_store.getEventMetaData()
 
   def isValid(self):
     """Check if the EventStore is in a valid state"""

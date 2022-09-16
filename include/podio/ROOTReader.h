@@ -48,10 +48,10 @@ public:
   void closeFiles();
 
   /// Read all collections requested
-  void readEvent();
+  void readEvent() override;
 
   /// Read CollectionIDTable from ROOT file
-  CollectionIDTable* getCollectionIDTable() override {
+  std::shared_ptr<CollectionIDTable> getCollectionIDTable() override {
     return m_table;
   }
 
@@ -62,7 +62,7 @@ public:
   void endOfEvent() override;
 
   /// Preparing to read a given event
-  void goToEvent(unsigned evnum);
+  void goToEvent(unsigned evnum) override;
 
   podio::version::Version currentFileVersion() const override {
     return m_fileVersion;
@@ -104,7 +104,7 @@ private:
   // collection after it has been read the very first time
   std::map<std::string, CollectionInfo> m_storedClasses{};
 
-  CollectionIDTable* m_table{nullptr};
+  std::shared_ptr<CollectionIDTable> m_table{nullptr};
   TChain* m_chain{nullptr};
   unsigned m_eventNumber{0};
 

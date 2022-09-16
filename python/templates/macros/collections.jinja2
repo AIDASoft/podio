@@ -144,4 +144,11 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection&
   o.flags(old_flags);
   return o;
 }
+
+void {{ class.bare_type }}Collection::print(std::ostream& os, bool flush) const {
+  os << *this;
+  if (flush) {
+    os.flush();
+  }
+}
 {%- endmacro %}

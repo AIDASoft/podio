@@ -150,8 +150,9 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   // NOTE: This is a small pessimization, if we do not read all collections
   // afterwards, but it makes the handling much easier in general
   auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
-  m_table = new CollectionIDTable();
-  metadatatree->SetBranchAddress("CollectionIDs", &m_table);
+  m_table = std::make_shared<podio::CollectionIDTable>();
+  auto* table = m_table.get();
+  metadatatree->SetBranchAddress("CollectionIDs", &table);
 
   podio::version::Version* versionPtr{nullptr};
   if (auto* versionBranch = root_utils::getBranch(metadatatree, "PodioVersion")) {

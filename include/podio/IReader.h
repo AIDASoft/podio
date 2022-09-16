@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,7 @@ public:
   /// Does not set references yet.
   virtual CollectionBase* readCollection(const std::string& name) = 0;
   /// Get CollectionIDTable of read-in data
-  virtual CollectionIDTable* getCollectionIDTable() = 0;
+  virtual std::shared_ptr<CollectionIDTable> getCollectionIDTable() = 0;
   /// read event meta data from file
   virtual GenericParameters* readEventMetaData() = 0;
   virtual std::map<int, GenericParameters>* readCollectionMetaData() = 0;
@@ -43,6 +44,9 @@ public:
 
   virtual void openFile(const std::string& filename) = 0;
   virtual void closeFile() = 0;
+
+  virtual void readEvent() = 0;
+  virtual void goToEvent(unsigned iEvent) = 0;
 
   /// Get the podio version with which the current file has been written
   virtual podio::version::Version currentFileVersion() const = 0;

@@ -13,8 +13,6 @@
     <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>
     </class>
-    <class name="podio::PythonEventStore">
-    </class>
     <class name="podio::version::Version"/>
     <class name="podio::ObjectID"/>
     <class name="vector<podio::ObjectID>"/>

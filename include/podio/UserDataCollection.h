@@ -142,6 +142,22 @@ public:
   void setSubsetCollection(bool) override {
   }
 
+  /// Print this collection to the passed stream
+  void print(std::ostream& os = std::cout, bool flush = true) const override {
+    os << "[";
+    if (!_vec.empty()) {
+      os << _vec[0];
+      for (size_t i = 0; i < _vec.size(); ++i) {
+        os << ", " << _vec[i];
+      }
+    }
+    os << "]";
+
+    if (flush) {
+      os.flush(); // Necessary for python
+    }
+  }
+
   // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)
 
   typename std::vector<BasicType>::iterator begin() {
@@ -184,6 +200,12 @@ public:
 
 // don't make this macro public as it should only be used internally here...
 #undef PODIO_ADD_USER_TYPE
+
+template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
+std::ostream& operator<<(std::ostream& o, const podio::UserDataCollection<BasicType>& coll) {
+  coll.print(o);
+  return o;
+}
 
 } // namespace podio
 

@@ -112,8 +112,8 @@ private:
   bool doGet(const std::string& name, CollectionBase*& collection, bool setReferences = true) const;
   /// check if a collection of given name already exists
   bool collectionRegistered(const std::string& name) const;
-  void setCollectionIDTable(CollectionIDTable* table) {
-    m_table.reset(table);
+  void setCollectionIDTable(std::shared_ptr<CollectionIDTable> table) {
+    m_table = std::move(table);
   }
 
   // members
@@ -121,7 +121,7 @@ private:
   mutable CollContainer m_collections{};
   mutable std::vector<CollectionBase*> m_cachedCollections{};
   IReader* m_reader{nullptr};
-  std::unique_ptr<CollectionIDTable> m_table;
+  std::shared_ptr<CollectionIDTable> m_table;
 
   GenericParameters m_evtMD{};
   RunMDMap m_runMDMap{};
