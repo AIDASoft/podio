@@ -17,7 +17,7 @@
 
 {% with collection_type = class.bare_type + 'Collection' %}
 {{ collection_type }}::{{ collection_type }}() :
-  m_isValid(false), m_isPrepared(false), m_isSubsetColl(false), m_collectionID(0), m_storage() {}
+  m_isValid(false), m_isPrepared(false), m_isSubsetColl(false), m_collectionID(0), m_storageMtx(std::make_unique<std::mutex>()), m_storage() {}
 
 {{ collection_type }}::{{ collection_type }}({{ collection_type }}Data&& data, bool isSubsetColl) :
   m_isValid(false), m_isPrepared(false), m_isSubsetColl(isSubsetColl), m_collectionID(0), m_storage(std::move(data)) {}
