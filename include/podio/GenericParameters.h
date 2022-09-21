@@ -84,7 +84,7 @@ private:
   using MutexPtr = std::unique_ptr<std::mutex>;
 
 public:
-  GenericParameters() = default;
+  GenericParameters();
 
   /// GenericParameters are copyable
   /// NOTE: This is currently mainly done to keep the ROOT I/O happy, because
@@ -271,11 +271,11 @@ private:
   }
 
 private:
-  IntMap _intMap{};                                             ///< The map storing the integer values
+  IntMap _intMap{};                      ///< The map storing the integer values
   mutable MutexPtr m_intMtx{nullptr};    ///< The mutex guarding the integer map
-  FloatMap _floatMap{};                                         ///< The map storing the float values
+  FloatMap _floatMap{};                  ///< The map storing the float values
   mutable MutexPtr m_floatMtx{nullptr};  ///< The mutex guarding the float map
-  StringMap _stringMap{};                                       ///< The map storing the double values
+  StringMap _stringMap{};                ///< The map storing the double values
   mutable MutexPtr m_stringMtx{nullptr}; ///< The mutex guarding the float map
 };
 
