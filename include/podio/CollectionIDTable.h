@@ -11,8 +11,7 @@ namespace podio {
 class CollectionIDTable {
 
 public:
-  /// default constructor
-  CollectionIDTable() = default;
+  CollectionIDTable();
   ~CollectionIDTable() = default;
 
   CollectionIDTable(const CollectionIDTable&) = delete;

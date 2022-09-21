@@ -5,6 +5,10 @@
 
 namespace podio {
 
+CollectionIDTable::CollectionIDTable(): m_collectionIDs(), m_names(), m_mutex(std::make_unique<std::mutex>()) {
+
+}
+
 const std::string CollectionIDTable::name(int ID) const {
   std::lock_guard<std::mutex> lock(*m_mutex);
   const auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
