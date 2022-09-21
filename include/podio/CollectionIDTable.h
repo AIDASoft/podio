@@ -61,7 +61,7 @@ public:
 private:
   std::vector<int> m_collectionIDs{};
   std::vector<std::string> m_names{};
-  mutable std::unique_ptr<std::mutex> m_mutex{std::make_unique<std::mutex>()};
+  mutable std::unique_ptr<std::mutex> m_mutex{};
 };
 
 } // namespace podio

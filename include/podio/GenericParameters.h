@@ -272,11 +272,11 @@ private:
 
 private:
   IntMap _intMap{};                                             ///< The map storing the integer values
-  mutable MutexPtr m_intMtx{std::make_unique<std::mutex>()};    ///< The mutex guarding the integer map
+  mutable MutexPtr m_intMtx{};    ///< The mutex guarding the integer map
   FloatMap _floatMap{};                                         ///< The map storing the float values
-  mutable MutexPtr m_floatMtx{std::make_unique<std::mutex>()};  ///< The mutex guarding the float map
+  mutable MutexPtr m_floatMtx{};  ///< The mutex guarding the float map
   StringMap _stringMap{};                                       ///< The map storing the double values
-  mutable MutexPtr m_stringMtx{std::make_unique<std::mutex>()}; ///< The mutex guarding the float map
+  mutable MutexPtr m_stringMtx{}; ///< The mutex guarding the float map
 };
 
 template <typename T, typename>
