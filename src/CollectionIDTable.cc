@@ -5,7 +5,7 @@
 
 namespace podio {
 
-CollectionIDTable::CollectionIDTable(): m_collectionIDs(), m_names(), m_mutex(std::make_unique<std::mutex>()) {
+CollectionIDTable::CollectionIDTable(): m_mutex(std::make_unique<std::mutex>()) {
 
 }
 
