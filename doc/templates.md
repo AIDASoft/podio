@@ -32,6 +32,11 @@ They are broadly split along the classes that are generated for each datatype or
 | `CollectionData.{h,cc}.jinja2`  | The classes managing the collection storage (not user facing!)                                          | `[<package>/]<datatype-name>CollectionData.h`, `src/<datatype-name>CollectionData.cc` |
 | `selection.xml.jinja2`          | The `selection.xml` file that is necessary for generating a root dictionary for the generated datamodel | `src/selection.xml`                                                                   |
 | `SIOBlock.{h,cc}.jinja2`        | The SIO blocks that are necessary for the SIO backend                                                   | `[<package>/]<datatype-name>SIOBlock.h`, `src/<datatype-name>SIOBlock.cc`             |
+| `MutableStruct.jl.jinja2`		  | The Structs define components and datatypes for julia 													|`[<package>/]<datatype-name>Struct.jl`, `[<package>/]<component-name>Struct.jl`	   |
+| `Constructor.jl.jinja2`		  | Initializes components and datatypes for julia 										                	|`[<package>/]<datatype-name>.jl`, `[<package>/]<component-name>.jl`				   |
+| `JuliaCollection.jl.jinja2`	  | Vectorizes components and datatypes for julia 										                    |`[<package>/]<datatype-name>Collection.jl`											   |
+| `ParentModule.jl.jinja2`	      | The top level namespace with collected children										    				|`[<package>/]<datatype-name>Collection.jl`											   |
+
 
 The presence of a `[<package>]` subdirectory for the header files is controlled by the `includeSubfolder` option in the yaml definition file.
 
@@ -123,6 +128,8 @@ In principle all members are accessible in the templates, however, the most impo
 | `getter_name` | Method for generating the correct name for getter functions, depending on the `getSyntax` option in the yaml definition file.                                               |
 | `setter_name` | Method for generating the correct name for setter functions, depending on the `getSyntax` option in the yaml definition file and on whether the member is a relation or not |
 | `signature`   | The signature of a data member that can be used in function signatures, corresponds to `{{ full_type }} {{ name }}`                                                         |
+| `jl_imports`  | Import required for `StaticArrays: MVector`                                                                                                                                 |
+| `julia_type`  | Equivalent julia type for the c++ type                                                                                                                                      |
 
 ### `DataType`
 Defined in [`python/generator_utils.py`](/python/generator_utils.py).
@@ -134,3 +141,6 @@ The available fields are
 | `bare_type` | The type without the namespace                                                 |
 | `namespace` | The (potentially empty) namespace                                              |
 | `full_type` | The fully qualified type, corresponding to `{{ namespace }}::{{ bare_type }}`. |
+
+### Julia code generation
+Julia code generation was done as a part of Google Summer of Code [*documented here*](https://hepsoftwarefoundation.org/gsoc/blogs/2022/blog_PODIO_SoumilBaldota.html) in detail.
