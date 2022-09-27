@@ -1,6 +1,10 @@
 <lcgdict>
   <selection>
-    <class name="podio::GenericParameters"/>
+    <class name="podio::GenericParameters">
+        <field name="m_intMtx" transient="true"/>
+        <field name="m_floatMtx" transient="true"/>
+        <field name="m_stringMtx" transient="true"/>
+    </class>
     <class name="podio::IntVec"/>
     <class name="podio::FloatVec"/>
     <class name="podio::StringVec"/>
