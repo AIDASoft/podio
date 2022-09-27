@@ -9,8 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         sio: [ON]
-        LCG: ["LCG_102/x86_64-ubuntu2004-gcc9-opt",
-              "dev3/x86_64-ubuntu2004-gcc9-opt",
+        LCG: ["dev3/x86_64-ubuntu2004-gcc9-opt",
               "dev4/x86_64-ubuntu2004-gcc9-opt"]
     steps:
     - uses: actions/checkout@v2
