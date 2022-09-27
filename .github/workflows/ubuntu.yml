@@ -14,11 +14,12 @@ jobs:
               "dev4/x86_64-ubuntu2004-gcc9-opt"]
     steps:
     - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: aidasoft/run-lcg-view@v4
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
+          echo "::group::Run CMake"
           mkdir build install
           cd build
           cmake -DENABLE_SIO=${{ matrix.sio }} \
@@ -27,6 +28,13 @@ jobs:
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
             -DUSE_EXTERNAL_CATCH2=OFF \
             -G Ninja ..
+          echo "::endgroup::"
+          echo "::group::Build"
           ninja -k0
+          echo "::endgroup"
+          echo "::group::Run tests"
           ctest --output-on-failure
+          echo "::endgroup::"
+          echo "::group::Install"
           ninja install
+          echo "::endgroup::"
