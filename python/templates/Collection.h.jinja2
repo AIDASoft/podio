@@ -145,8 +145,7 @@ public:
   }
 
 {% for member in Members %}
-  template<size_t arraysize>
-  const std::array<{{ member.full_type }}, arraysize> {{ member.name }}() const;
+  std::vector<{{ member.full_type }}> {{ member.name }}(const size_t nElem = 0) const;
 {% endfor %}
 
 private:
@@ -183,10 +182,6 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
 {% endif %}
   return Mutable{{ class.bare_type }}(obj);
 }
-
-{% for member in Members %}
-{{ macros.vectorized_access(class, member) }}
-{% endfor %}
 
 #ifdef PODIO_JSON_OUTPUT
 void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collection);

@@ -177,21 +177,24 @@ TEST_CASE("Looping", "[basics]") {
 }
 
 TEST_CASE("Notebook", "[basics]") {
-  bool success = true;
   auto store = podio::EventStore();
   auto& hits = store.create<ExampleHitCollection>("hits");
   for (unsigned i = 0; i < 12; ++i) {
     auto hit = hits.create(0xcaffeeULL, 0., 0., 0., double(i));
   }
-  auto energies = hits.energy<10>();
+
+  // Request only subset
+  auto energies = hits.energy(10);
+  REQUIRE(energies.size() == 10);
   int index = 0;
   for (auto energy : energies) {
-    if (double(index) != energy) {
-      success = false;
-    }
+    REQUIRE(double(index) == energy);
     ++index;
   }
-  REQUIRE(success);
+
+  // Make sure there are no "invented" values
+  REQUIRE(hits.energy(24).size() == hits.size());
+  REQUIRE(hits.energy().size() == hits.size());
 }
 
 TEST_CASE("OneToOneRelations", "[basics][relations]") {
