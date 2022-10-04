@@ -88,12 +88,14 @@ copy of only the data that are needed for a particular calculation. This
 pattern is supported by providing access like
 
 ```cpp
-    auto x_array = hits.x<10>(); // returning values of
-    auto y_array = hits.y<10>(); // the first 10 elements
+    auto x_array = hits.x();   // returning all values
+    auto y_array = hits.y(10); // or only the first 10 elements
 ```
 
-The resulting `std::array` can then be used in (auto-)vectorizable code.
-If less objects than requested are contained in the collection, the remaining entries are default initialized.
+The resulting `std::vector` can then be used in (auto-)vectorizable code.
+Passing in a size argument is optional; If no argument is passed all elements will be returned,
+if an argument is passed only as many elements as requested will be returned.
+If the collection holds less elements than are requested, only as elements as are available will be returned.
 
 ### EventStore functionality
 

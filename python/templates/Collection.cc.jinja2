@@ -174,6 +174,10 @@ podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
   return readBuffers;
 }
 
+{% for member in Members %}
+{{ macros.vectorized_access(class, member) }}
+{% endfor %}
+
 #ifdef PODIO_JSON_OUTPUT
 void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
   j = nlohmann::json::array();
