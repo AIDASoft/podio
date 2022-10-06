@@ -1,3 +1,31 @@
+# v00-16
+
+* 2022-10-04 Thomas Madlener ([PR#337](https://github.com/AIDASoft/podio/pull/337))
+  - Make the notebook pattern functionality return `std::vector`s instead of `std::array` to avoid having to specify a static size. Fixes #332 
+  - **Backwards incompatible change** as the return type as well as the call signature for the notebook pattern change.
+
+* 2022-09-27 Andre Sailer ([PR#336](https://github.com/AIDASoft/podio/pull/336))
+  - podioConfig.cmake: silence warning about cmake policy CMP00012
+  - CMake: explicitly look for catch2 version 3 and fail at cmake instead of compile step
+
+* 2022-09-27 Thomas Madlener ([PR#334](https://github.com/AIDASoft/podio/pull/334))
+  - Fix a warning/error message from ROOT from attempts to stream the `std::mutex` members of `GenericParameters` by marking them as transient for the dictionary generation.
+
+* 2022-09-16 Thomas Madlener ([PR#323](https://github.com/AIDASoft/podio/pull/323))
+  - Add a `podio-dump` python script (installed to `<prefix>/bin` that can be used to dump event contents to stdout. By default prints an overview over the collections and their types, but can also be used to dump full events, via the `-d` or `--detailed` flag. Use `--help` to get all available options and their descriptions.
+  - To allow `podio-dump` to work with all available backends also add support for reading SIO via the `PythonEventStore`.
+    - Split off the necessary c++ functionality into a separate `podioPythonStore` library (+ necessary ROOT dictionaries).
+  - Add a `print` function to the collections for easier dumping from the python side.
+  - Add a `print` function to the `GenericParameters`
+  - Make `goToEvent` is a part of the `IReader` interface and correctly implemented it for the `SIOReader`.
+
+* 2022-09-16 Thomas Madlener ([PR#287](https://github.com/AIDASoft/podio/pull/287))
+  - Introduce the `podio::Frame` as a generalized, thread-safe (event) data container.
+    - This first version offers all necessary functionality and an almost finalized interface, i.e. we plan to keep this as stable as possible, but we might still change things if it turns out that there are better ways to do some things
+    - For details about the basic interface and the underlying design considerations please consult the corresponding [documentation](https://github.com/AIDASoft/podio/doc/frame.md)
+  - **This will be the only way to work with podio data starting from version 1.0**
+    - For now the current I/O implementations remain in place unchanged, but they will be deprecated (and removed) in the not too distant future
+
 # v00-15
 
 * 2022-08-09 Thomas Madlener ([PR#312](https://github.com/AIDASoft/podio/pull/312))
