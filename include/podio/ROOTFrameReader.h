@@ -61,11 +61,12 @@ public:
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name);
 
   /**
-   * Read specific event. In case the frame can't be constructed or there is
-   * not such event, this returns a nullptr.
+   * Read the specified data entry from which a Frame can be constructed for
+   * the given name. In case the entry does not exist for this name or in case
+   * there is no data for this name, this returns a nullptr.
    */
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name,
-                                                  const unsigned long entNum);
+                                                  const unsigned entry);
 
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
@@ -109,6 +110,13 @@ private:
   CategoryInfo& getCategoryInfo(const std::string& name);
 
   GenericParameters readEventMetaData(CategoryInfo& catInfo);
+
+  /**
+   * Read the data entry from which a Frame can be constructed for the given
+   * name. In case the entry does not exist for this category, this returns a
+   * nullptr.
+   */
+  std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTFrameReader::CategoryInfo& catInfo);
 
   /**
    * Get / read the buffers at index iColl in the passed category information

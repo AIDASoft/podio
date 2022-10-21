@@ -37,6 +37,22 @@ std::unique_ptr<ROOTFrameData> ROOTFrameReader::readNextEntry(const std::string&
   if (!catInfo.chain) {
     return nullptr;
   }
+
+  return readEntry(catInfo);
+}
+
+std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(const std::string& name,
+                                                          const unsigned entNum) {
+  auto& catInfo = getCategoryInfo(name);
+  if (!catInfo.chain) {
+    return nullptr;
+  }
+  catInfo.entry = entNum;
+
+  return readEntry(catInfo);
+}
+
+std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(ROOTFrameReader::CategoryInfo& catInfo) {
   if (catInfo.entry >= catInfo.chain->GetEntries()) {
     return nullptr;
   }
@@ -49,27 +65,6 @@ std::unique_ptr<ROOTFrameData> ROOTFrameReader::readNextEntry(const std::string&
   auto parameters = readEventMetaData(catInfo);
 
   catInfo.entry++;
-  return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
-}
-
-std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(const std::string& name,
-                                                          const unsigned long entNum) {
-  auto& catInfo = getCategoryInfo(name);
-  if (!catInfo.chain) {
-    return nullptr;
-  }
-  catInfo.entry = entNum;
-  if (catInfo.entry >= catInfo.chain->GetEntries()) {
-    return nullptr;
-  }
-
-  ROOTFrameData::BufferMap buffers;
-  for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
-    buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i));
-  }
-
-  auto parameters = readEventMetaData(catInfo);
-
   return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
