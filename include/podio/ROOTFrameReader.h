@@ -60,6 +60,13 @@ public:
    */
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name);
 
+  /**
+   * Read specific event. In case the frame can't be constructed or there is
+   * not such event, this returns a nullptr.
+   */
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name,
+                                                  const unsigned long entNum);
+
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
 

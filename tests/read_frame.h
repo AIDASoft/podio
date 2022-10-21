@@ -52,6 +52,15 @@ int read_frames(const std::string& filename) {
     return 1;
   }
 
+  // Reading specific entry
+  {
+    auto frame = podio::Frame(reader.readEntry("events", 4));
+    processEvent(frame, 4, reader.currentFileVersion());
+
+    auto otherFrame = podio::Frame(reader.readEntry("other_events", 4));
+    processEvent(otherFrame, 4 + 100, reader.currentFileVersion());
+  }
+
   return 0;
 }
 
