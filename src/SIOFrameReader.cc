@@ -66,6 +66,12 @@ std::unique_ptr<SIOFrameData> SIOFrameReader::readNextEntry(const std::string& n
                                         tableInfo._uncompressed_length);
 }
 
+std::unique_ptr<SIOFrameData> SIOFrameReader::readEntry(const std::string& name, const unsingned entry);
+  m_nameCtr[name] = entry;
+
+  return readEntry(name);
+}
+
 unsigned SIOFrameReader::getEntries(const std::string& name) const {
   return m_tocRecord.getNRecords(name);
 }
