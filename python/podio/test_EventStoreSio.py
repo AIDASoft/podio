@@ -4,8 +4,8 @@
 import unittest
 import os
 
-from EventStore import EventStore
-from test_EventStore import EventStoreBaseTestCaseMixin
+from podio.EventStore import EventStore
+from podio.test_EventStore import EventStoreBaseTestCaseMixin
 
 
 SKIP_SIO_TESTS = os.environ.get('SKIP_SIO_TESTS', '1') == '1'

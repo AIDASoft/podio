@@ -6,7 +6,7 @@ import re
 import warnings
 import yaml
 
-from generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES, DataModel
+from podio.generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES, DataModel
 
 
 class MemberParser:

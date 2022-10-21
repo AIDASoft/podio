@@ -1,6 +1,6 @@
 """Unit tests for the EventStore class"""
 
-from EventStore import EventStore
+from podio.EventStore import EventStore
 
 
 class EventStoreBaseTestCaseMixin:
