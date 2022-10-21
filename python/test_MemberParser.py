@@ -216,6 +216,7 @@ class MemberParserTest(unittest.TestCase):
       try:
         self.assertRaises(DefinitionError, parser.parse, inp)
       except AssertionError:
+        # pylint: disable-next=raise-missing-from
         raise AssertionError(f"'{inp}' should raise a DefinitionError from the MemberParser")
 
   def test_parse_valid_no_description(self):

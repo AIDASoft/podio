@@ -6,8 +6,8 @@ from EventStore import EventStore
 
 def dump_evt_overview(event, ievt):
   """Print an overview table of the event contents of the given event"""
-  print('{:#^82}'.format(f' Event {ievt} '))
-  print('{:<30} {:<40} {:<10}'.format('Name', 'Type', 'Size'))
+  print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
+  print(f'{"Name":<30} {"Type":<40} {"Size":<10}')
   print('-' * 82)
   for name in event.collections():
     coll = event.get(name)
@@ -24,7 +24,7 @@ def dump_overview(store, events):
 def dump_evt_detailed(event, ievt):
   """Dump this event in all its glory"""
   print()
-  print('{:#^82}'.format(f' Event {ievt} '))
+  print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
   print()
 
   print('Parameters', flush=True)

@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: [gcc10, clang10]
+        compiler: [gcc11, clang12]
         # Since Leak is usually part of Address, we do not run it separately in
         # CI. Keeping Address and Undefined separate for easier debugging
         sanitizer: [Thread,
@@ -23,12 +23,12 @@ jobs:
         #     sanitizer: MemoryWithOrigin
     steps:
       - uses: actions/checkout@v2
-      - uses: cvmfs-contrib/github-action-cvmfs@v2
-      - uses: aidasoft/run-lcg-view@v2
+      - uses: cvmfs-contrib/github-action-cvmfs@v3
+      - uses: aidasoft/run-lcg-view@v4
         with:
-          release-platform: LCG_99/x86_64-centos7-${{ matrix.compiler }}-opt
+          release-platform: LCG_102/x86_64-centos7-${{ matrix.compiler }}-opt
           run: |
-            set -x
+            echo "::group::Run CMake"
             mkdir build
             cd build
             cmake -DCMAKE_BUILD_TYPE=Debug \
@@ -38,5 +38,10 @@ jobs:
               -DUSE_EXTERNAL_CATCH2=OFF \
               -DENABLE_SIO=ON \
               -G Ninja ..
+            echo "::endgroup::"
+            echo "::group::Build"
             ninja -k0
+            echo "::endgroup::"
+            echo "::group::Run tests"
             ctest --output-on-failure
+            echo "::endgroup::"
