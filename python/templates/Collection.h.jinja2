@@ -82,6 +82,8 @@ public:
   std::string getValueTypeName() const final { return std::string("{{ (class | string ).strip(':') }}"); }
   /// fully qualified type name of stored POD elements - with namespace
   std::string getDataTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Data" }}"); }
+  /// schema version
+  std::string getSchemaVersion() const final { return std::string("{{ class.schema_version }}"); };
 
   bool isSubsetCollection() const final {
     return m_isSubsetColl;

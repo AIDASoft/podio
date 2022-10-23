@@ -112,7 +112,7 @@ void ROOTWriter::finish() {
     m_store->get(name, coll);
     const auto collType = coll->getTypeName();
     // const auto collType = "std::vector<" + coll->getDataTypeName() + ">";
-    collectionInfo.emplace_back(collID, std::move(collType), coll->isSubsetCollection());
+    collectionInfo.emplace_back(collID, std::move(collType), coll->isSubsetCollection(), coll->getSchemaVersion());
   }
 
   m_metadatatree->Branch("CollectionTypeInfo", &collectionInfo);

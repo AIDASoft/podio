@@ -94,7 +94,7 @@ void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<Stor
     }
 
     catInfo.branches.push_back(branches);
-    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name), coll->getTypeName(), coll->isSubsetCollection());
+    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name), coll->getTypeName(), coll->isSubsetCollection(), coll->getSchemaVersion());
   }
 
   // Also make branches for the parameters

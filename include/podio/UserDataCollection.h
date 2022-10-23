@@ -156,6 +156,11 @@ public:
   void setSubsetCollection(bool) override {
   }
 
+  /// The schema version is fixed manually
+  std::string getSchemaVersion() const final {
+    return std::string("v1");
+  }
+
   /// Print this collection to the passed stream
   void print(std::ostream& os = std::cout, bool flush = true) const override {
     os << "[";

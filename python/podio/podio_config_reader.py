@@ -412,6 +412,13 @@ class PodioConfigReader:
     with open(yamlfile, "r", encoding='utf-8') as stream:
       content = yaml.load(stream, yaml.SafeLoader)
 
+    if "schemaversion" in content:
+      schema_version = "v%i" % content["schemaversion"]
+    else:
+      warnings.warn("Please provide a schemaversion entry. It will become mandatory. Setting it to v0 as default",
+                    FutureWarning, stacklevel=3)
+      schema_version = "v0"
+
     components = {}
     if "components" in content:
       for klassname, value in content["components"].items():
@@ -435,6 +442,6 @@ class PodioConfigReader:
 
     # If this doesn't raise an exception everything should in principle work out
     validator = ClassDefinitionValidator()
-    datamodel = DataModel(datatypes, components, options)
+    datamodel = DataModel(datatypes, components, options, schema_version)
     validator.validate(datamodel, upstream_edm)
     return datamodel

@@ -94,9 +94,11 @@ inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionB
 }
 
 // A collection of additional information that describes the collection: the
-// collectionID, the collection (data) type, and whether it is a subset
-// collection
-using CollectionInfoT = std::tuple<int, std::string, bool>;
+// collectionID, the collection (data) type, whether it is a subset
+// collection, and its schema version
+using CollectionInfoT = std::tuple<int, std::string, bool, std::string>;
+// for backwards compatibility
+using CollectionInfoTWithoutSchema = std::tuple<int, std::string, bool>;
 
 inline void readBranchesData(const CollectionBranches& branches, Long64_t entry) {
   // Read all data
@@ -134,7 +136,7 @@ inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable
       dataClass.remove_suffix(5);
       const auto collClass = std::string(dataClass.substr(7)) + "Collection";
       // Assume that there are no subset collections in "old files"
-      collInfo.emplace_back(collID, std::move(collClass), false);
+      collInfo.emplace_back(collID, std::move(collClass), false, "undefined");
     } else {
       std::cerr << "Problems reconstructing collection info for collection: \'" << name << "\'\n";
     }

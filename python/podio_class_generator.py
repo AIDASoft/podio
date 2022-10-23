@@ -100,6 +100,7 @@ class ClassGenerator:
     self.incfolder = self.datamodel.options['includeSubfolder']
     self.expose_pod_members = self.datamodel.options["exposePODMembers"]
     self.upstream_edm = upstream_edm
+    self.schema_version = self.datamodel.schema_version
 
     self.clang_format = []
     self.generated_files = []
@@ -360,7 +361,7 @@ class ClassGenerator:
     # Make a copy here and add the preprocessing steps to that such that the
     # original definition can be left untouched
     data = deepcopy(definition)
-    data['class'] = DataType(name)
+    data['class'] = DataType(name, schema_version=self.schema_version)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)

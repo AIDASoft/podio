@@ -1,5 +1,5 @@
 ---
-schemaversion : 1
+schemaversion : 0
 
 options :
   # should getters / setters be prefixed with get / set?
@@ -9,10 +9,14 @@ options :
   includeSubfolder: True
 
 components :
+
+  ToBeDroppedStruct:
+    Members:
+      - int x
+
   SimpleStruct:
     Members:
       - int x
-      - int y
       - int z
       - std::array<int, 4> p
     # can also add c'tors:
@@ -28,8 +32,8 @@ components :
 
   ex2::NamespaceStruct:
     Members:
-      - int x
-      - int y
+      - std::array<int,2> x
+      - int y_old
 
   ex2::NamespaceInNamespaceStruct:
     Members:
@@ -48,7 +52,7 @@ components :
 
 datatypes :
 
-  EventInfo:
+  EventInfoOldName:
     Description : "Event info"
     Author : "B. Hegner"
     Members :
@@ -191,3 +195,9 @@ datatypes :
       - ex2::NamespaceStruct s{10, 11} // one that we happen to know works
       - double d{9.876e5} // double val
       - CompWithInit comp // To make sure that the default initializer of the component does what it should
+
+  ExampleOfDroppedType:
+    Description: "Datatype with user defined initialization values"
+    Author: "Thomas Madlener"
+    Members:
+      - int x // some member

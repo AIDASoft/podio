@@ -61,6 +61,8 @@ public:
   virtual std::string getValueTypeName() const = 0;
   /// fully qualified type name of stored POD elements - with namespace
   virtual std::string getDataTypeName() const = 0;
+  /// schema version of the collection
+  virtual std::string getSchemaVersion() const = 0;
 
   /// destructor
   virtual ~CollectionBase() = default;
