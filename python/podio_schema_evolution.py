@@ -22,7 +22,7 @@ class AddedComponent(SchemaChange):
         self.component = component
 
     def __str__(self) -> str:
-        return "'%s' has been added" % self.component.name
+        return f"'{self.component.name}' has been added"
 
     def __repr__(self) -> str:
         return "'%s' has been added" % self.component.name
