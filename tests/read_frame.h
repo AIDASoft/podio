@@ -52,13 +52,33 @@ int read_frames(const std::string& filename) {
     return 1;
   }
 
-  // Reading specific entry
+  // Reading specific (jumping to) entry
   {
     auto frame = podio::Frame(reader.readEntry("events", 4));
     processEvent(frame, 4, reader.currentFileVersion());
 
     auto otherFrame = podio::Frame(reader.readEntry("other_events", 4));
     processEvent(otherFrame, 4 + 100, reader.currentFileVersion());
+  }
+
+  // Reading next entry after jump should continue the sequence
+  if (!reader.readNextEntry("events")) {
+    std::cerr << "Trying to read next entry after jump, should read event 5 out of 10" << std::endl;
+    return 1;
+  }
+  if (!reader.readNextEntry("other_events")) {
+    std::cerr << "Trying to read next entry after jump, should read event 5 out of 10" << std::endl;
+    return 1;
+  }
+
+  // Jumping back, before the jump
+  if (!reader.readEntry("events", 2)) {
+    std::cerr << "Trying to read earlier event, should read event 2 out of 10" << std::endl;
+    return 1;
+  }
+  if (!reader.readEntry("other_events", 2)) {
+    std::cerr << "Trying to read earlier event, should read event 2 out of 10" << std::endl;
+    return 1;
   }
 
   return 0;

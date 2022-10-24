@@ -67,6 +67,8 @@ std::unique_ptr<SIOFrameData> SIOFrameReader::readNextEntry(const std::string& n
 }
 
 std::unique_ptr<SIOFrameData> SIOFrameReader::readEntry(const std::string& name, const unsingned entry);
+  // NOTE: Will create or overwrite the entry counter
+  //       All checks are done in the following function
   m_nameCtr[name] = entry;
 
   return readNextEntry(name);
