@@ -44,15 +44,15 @@ std::unique_ptr<ROOTFrameData> ROOTFrameReader::readNextEntry(const std::string&
 std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(const std::string& name,
                                                           const unsigned entNum) {
   auto& catInfo = getCategoryInfo(name);
-  if (!catInfo.chain) {
-    return nullptr;
-  }
   catInfo.entry = entNum;
 
   return readEntry(catInfo);
 }
 
 std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(ROOTFrameReader::CategoryInfo& catInfo) {
+  if (!catInfo.chain) {
+    return nullptr;
+  }
   if (catInfo.entry >= catInfo.chain->GetEntries()) {
     return nullptr;
   }
