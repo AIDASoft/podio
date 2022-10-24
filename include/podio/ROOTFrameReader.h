@@ -65,8 +65,7 @@ public:
    * the given name. In case the entry does not exist for this name or in case
    * there is no data for this name, this returns a nullptr.
    */
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name,
-                                                  const unsigned entry);
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry);
 
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
@@ -112,8 +111,8 @@ private:
   GenericParameters readEventMetaData(CategoryInfo& catInfo);
 
   /**
-   * Read the data entry specified in the passed CategoryInfo, and increase the 
-   * counter aferwards. In case the requested entry is larger than the 
+   * Read the data entry specified in the passed CategoryInfo, and increase the
+   * counter aferwards. In case the requested entry is larger than the
    * available number of entries, return a nullptr.
    */
   std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTFrameReader::CategoryInfo& catInfo);

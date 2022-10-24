@@ -37,8 +37,7 @@ public:
    * the given name. In case the entry does not exist for this name or in
    * case there is no data for this name, this returns a nullptr.
    */
-  std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name,
-                                                 const unsigned entry);
+  std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name, const unsigned entry);
 
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
