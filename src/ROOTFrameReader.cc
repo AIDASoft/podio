@@ -34,18 +34,12 @@ GenericParameters ROOTFrameReader::readEventMetaData(ROOTFrameReader::CategoryIn
 
 std::unique_ptr<ROOTFrameData> ROOTFrameReader::readNextEntry(const std::string& name) {
   auto& catInfo = getCategoryInfo(name);
-  if (!catInfo.chain) {
-    return nullptr;
-  }
-
   return readEntry(catInfo);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(const std::string& name,
-                                                          const unsigned entNum) {
+std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(const std::string& name, const unsigned entNum) {
   auto& catInfo = getCategoryInfo(name);
   catInfo.entry = entNum;
-
   return readEntry(catInfo);
 }
 
