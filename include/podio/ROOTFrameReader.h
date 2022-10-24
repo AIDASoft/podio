@@ -112,9 +112,9 @@ private:
   GenericParameters readEventMetaData(CategoryInfo& catInfo);
 
   /**
-   * Read the data entry from which a Frame can be constructed for the given
-   * name. In case the entry does not exist for this category, this returns a
-   * nullptr.
+   * Read the data entry specified in the passed CategoryInfo, and increase the 
+   * counter aferwards. In case the requested entry is larger than the 
+   * available number of entries, return a nullptr.
    */
   std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTFrameReader::CategoryInfo& catInfo);
 
