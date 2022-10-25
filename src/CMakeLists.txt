@@ -1,34 +1,9 @@
-# This is needed for older ROOTs which do not understand
-# target usage requirements
-
+# --- Core podio library and dictionary without I/O
 SET(sources
   CollectionIDTable.cc
   GenericParameters.cc
   ASCIIWriter.cc
   EventStore.cc)
-
-SET(root_sources
-  rootUtils.h
-  ROOTWriter.cc
-  ROOTReader.cc
-  ROOTFrameWriter.cc
-  ROOTFrameReader.cc
-)
-
-SET(sio_sources
-  SIOReader.cc
-  SIOWriter.cc
-  SIOBlockUserData.cc
-  SIOBlock.cc
-  SIOFrameWriter.cc
-  SIOFrameReader.cc
-  SIOFrameData.cc
-)
-
-SET(python_sources
-  IOHelpers.cc
-  PythonEventStore.cc
-  )
 
 # Main Library, no external dependencies
 add_library(podio SHARED ${sources})
@@ -37,14 +12,6 @@ target_include_directories(podio PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_options(podio PRIVATE -pthread)
-
-# Root dependency, mostly IO
-add_library(podioRootIO SHARED ${root_sources})
-add_library(podio::podioRootIO ALIAS podioRootIO)
-target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree)
-target_include_directories(podioRootIO PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Dict Library
 add_library(podioDict SHARED)
@@ -72,6 +39,31 @@ set_target_properties(podioDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 target_sources(podioDict PRIVATE podioDict.cxx)
 
+# --- Root I/O functionality and corresponding dictionary
+SET(root_sources
+  rootUtils.h
+  ROOTWriter.cc
+  ROOTReader.cc
+  ROOTFrameWriter.cc
+  ROOTFrameReader.cc
+)
+
+# Shared library
+add_library(podioRootIO SHARED ${root_sources})
+add_library(podio::podioRootIO ALIAS podioRootIO)
+target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree)
+target_include_directories(podioRootIO PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+# TODO: dictionaries
+
+# --- Python EventStore for enabling (legacy) python bindings
+SET(python_sources
+  IOHelpers.cc
+  PythonEventStore.cc
+  )
+
 add_library(podioPythonStore SHARED ${python_sources})
 target_link_libraries(podioPythonStore podio podioRootIO)
 LIST(APPEND INSTALL_LIBRARIES podioPythonStore)
@@ -90,8 +82,18 @@ PODIO_GENERATE_DICTIONARY(podioPythonStoreDict ${python_headers} SELECTION pytho
 set_target_properties(podioPythonStoreDict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 target_sources(podioPythonStoreDict PRIVATE podioPythonStoreDict.cxx)
 
-# SIO I/O library
+# --- SIO I/O functionality and corresponding dictionary
 if(ENABLE_SIO)
+  SET(sio_sources
+    SIOReader.cc
+    SIOWriter.cc
+    SIOBlockUserData.cc
+    SIOBlock.cc
+    SIOFrameWriter.cc
+    SIOFrameReader.cc
+    SIOFrameData.cc
+    )
+
   add_library(podioSioIO SHARED ${sio_sources})
   add_library(podio::podioSioIO ALIAS podioSioIO)
 
@@ -105,8 +107,11 @@ if(ENABLE_SIO)
   target_compile_definitions(podioPythonStore PRIVATE PODIO_ENABLE_SIO=1)
 
   LIST(APPEND INSTALL_LIBRARIES podioSioIO)
+
+  # TODO: dictionary
 endif()
 
+# --- Install everything
 install(TARGETS podio podioDict podioPythonStoreDict podioRootIO ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
