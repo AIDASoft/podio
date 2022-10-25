@@ -56,7 +56,21 @@ target_include_directories(podioRootIO PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-# TODO: dictionaries
+# dictionary
+add_library(podioRootIODict SHARED)
+target_include_directories(podioRootIODict PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_link_libraries(podioRootIODict PUBLIC podio::podioRootIO ROOT::Core ROOT::Tree)
+SET(root_headers
+  ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameReader.h
+  ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
+  )
+PODIO_GENERATE_DICTIONARY(podioRootIODict ${root_headers} SELECTION root_selection.xml
+  OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}podioRootIODict${CMAKE_SHARED_LIBRARY_SUFFIX}
+  )
+set_target_properties(podioRootIODict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+target_sources(podioRootIODict PRIVATE podioRootIODict.cxx)
 
 # --- Python EventStore for enabling (legacy) python bindings
 SET(python_sources
@@ -112,7 +126,7 @@ if(ENABLE_SIO)
 endif()
 
 # --- Install everything
-install(TARGETS podio podioDict podioPythonStoreDict podioRootIO ${INSTALL_LIBRARIES}
+install(TARGETS podio podioDict podioPythonStoreDict podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
@@ -120,6 +134,8 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTA
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
   ${CMAKE_CURRENT_BINARY_DIR}/podioPythonStoreDictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioPythonStoreDict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")

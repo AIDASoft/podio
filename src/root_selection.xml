@@ -1,0 +1,6 @@
+<lcgdict>
+  <selection>
+    <class name="podio::ROOTFrameReader"/>
+    <class name="podio::ROOTFrameWriter"/>
+  </selection>
+</lcgdict>
