@@ -6,9 +6,7 @@ import os
 
 from podio.EventStore import EventStore
 from podio.test_EventStore import EventStoreBaseTestCaseMixin
-
-
-SKIP_SIO_TESTS = os.environ.get('SKIP_SIO_TESTS', '1') == '1'
+from podio.test_utils import SKIP_SIO_TESTS
 
 
 @unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")

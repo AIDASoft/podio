@@ -27,6 +27,10 @@ using EnableIfCollection = typename std::enable_if_t<isCollection<T>>;
 template <typename T>
 using EnableIfCollectionRValue = typename std::enable_if_t<isCollection<T> && !std::is_lvalue_reference_v<T>>;
 
+/// Alias template for enabling overloads for r-values
+template <typename T>
+using EnableIfRValue = typename std::enable_if_t<!std ::is_lvalue_reference_v<T>>;
+
 namespace detail {
   /** The minimal interface for raw data types
    */
@@ -152,6 +156,14 @@ public:
   template <typename FrameDataT>
   Frame(std::unique_ptr<FrameDataT>);
 
+  /** Frame constructor from (almost) arbitrary raw data.
+   *
+   * This r-value overload is mainly present for enabling the python bindings,
+   * where cppyy seems to strip the std::unique_ptr somewhere in the process
+   */
+  template <typename FrameDataT, typename = EnableIfRValue<FrameDataT>>
+  Frame(FrameDataT&&);
+
   // The frame is a non-copyable type
   Frame(const Frame&) = delete;
   Frame& operator=(const Frame&) = delete;
@@ -262,6 +274,10 @@ Frame::Frame() : Frame(std::make_unique<detail::EmptyFrameData>()) {
 
 template <typename FrameDataT>
 Frame::Frame(std::unique_ptr<FrameDataT> data) : m_self(std::make_unique<FrameModel<FrameDataT>>(std::move(data))) {
+}
+
+template <typename FrameDataT, typename>
+Frame::Frame(FrameDataT&& data) : Frame(std::make_unique<FrameDataT>(std::move(data))) {
 }
 
 template <typename CollT, typename>
