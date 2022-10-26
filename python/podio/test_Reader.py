@@ -22,8 +22,6 @@ class ReaderTestCaseMixin:
   def test_frame_iterator_valid_category(self):
     """Check that the returned iterators returned by Reader.get behave as expected."""
     # NOTE: very basic iterator tests only, content tests are done elsewhere
-    # TODO: Actually implement content checks somewhere else
-
     frames = self.reader.get('other_events')
     self.assertEqual(len(frames), 10)
 

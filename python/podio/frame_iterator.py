@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Module defining the Frame iterator used by the Reader interface"""
 
+# pylint: disable-next=import-error # gbl is a dynamic module from cppyy
 from cppyy.gbl import std
 from podio.frame import Frame
 
