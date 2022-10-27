@@ -222,6 +222,16 @@ SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(const std::string& 
   return 0;
 }
 
+std::vector<std::string_view> SIOFileTOCRecord::getRecordNames() const {
+  std::vector<std::string_view> cats;
+  cats.reserve(m_recordMap.size());
+  for (const auto& [cat, _] : m_recordMap) {
+    cats.emplace_back(cat);
+  }
+
+  return cats;
+}
+
 void SIOFileTOCRecordBlock::read(sio::read_device& device, sio::version_type) {
   int size;
   device.data(size);

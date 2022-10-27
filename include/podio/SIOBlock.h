@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 namespace podio {
 
@@ -229,6 +230,10 @@ public:
    * check for that if necessary.
    */
   PositionType getPosition(const std::string& name, unsigned iEntry = 0) const;
+
+  /** Get all the record names that are stored in this TOC record
+   */
+  std::vector<std::string_view> getRecordNames() const;
 
 private:
   friend struct SIOFileTOCRecordBlock;
