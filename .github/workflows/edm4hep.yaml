@@ -11,7 +11,7 @@ jobs:
         LCG: ["LCG_102/x86_64-centos7-gcc11-opt",
               "LCG_102/x86_64-ubuntu2004-gcc9-opt"]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: cvmfs-contrib/github-action-cvmfs@v3
       - uses: aidasoft/run-lcg-view@v4
         with:
