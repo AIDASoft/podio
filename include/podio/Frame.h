@@ -167,6 +167,11 @@ public:
   template <typename CollT, typename = EnableIfCollection<CollT>>
   const CollT& get(const std::string& name) const;
 
+  /** Get a collection from the Frame. This is the pointer-to-base version for
+   * type-erased access (e.g. python interface)
+   */
+  const podio::CollectionBase* get(const std::string& name) const;
+
   /** (Destructively) move a collection into the Frame and get a const reference
    * back for further use
    */
@@ -268,6 +273,10 @@ const CollT& Frame::get(const std::string& name) const {
   // TODO: Handle non-existing collections
   static const auto emptyColl = CollT();
   return emptyColl;
+}
+
+const podio::CollectionBase* Frame::get(const std::string& name) const {
+  return m_self->get(name);
 }
 
 void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {
