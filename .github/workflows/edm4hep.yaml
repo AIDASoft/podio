@@ -12,6 +12,16 @@ jobs:
               "LCG_102/x86_64-ubuntu2004-gcc9-opt"]
     steps:
       - uses: actions/checkout@v3
+        with:
+          path: podio
+      - uses: actions/checkout@v3
+        with:
+          repository: key4hep/EDM4hep
+          path: edm4hep
+      - uses: actions/checkout@v3
+        with:
+          repository: catchorg/Catch2
+          path: catch2
       - uses: cvmfs-contrib/github-action-cvmfs@v3
       - uses: aidasoft/run-lcg-view@v4
         with:
@@ -19,17 +29,14 @@ jobs:
           run: |
             STARTDIR=$(pwd)
             echo "::group::Build Catch2"
-            cd /home/runner/work/podio/
-            git clone --branch v3.1.0 --depth 1 https://github.com/catchorg/Catch2
-            cd Catch2
+            cd $STARTDIR/catch2
             mkdir build && cd build
             cmake -DCMAKE_CXX_STANDARD=17 -DCMAKE_INSTALL_PREFIX=../install -G Ninja ..
             ninja -k0 install
-            cd ..
-            export CMAKE_PREFIX_PATH=$(pwd)/install:$CMAKE_PREFIX_PATH
+            export CMAKE_PREFIX_PATH=$STARTDIR/catch2/install:$CMAKE_PREFIX_PATH
             echo "::endgroup::"
             echo "::group::Build podio"
-            cd $STARTDIR
+            cd $STARTDIR/podio
             mkdir build && cd build
             cmake -DENABLE_SIO=ON \
               -DCMAKE_INSTALL_PREFIX=../install \
@@ -42,16 +49,13 @@ jobs:
             echo "::group::Test and install podio"
             ctest --output-on-failure
             ninja install
-            cd ..
-            export ROOT_INCLUDE_PATH=$(pwd)/install/include:$ROOT_INCLUDE_PATH:$CPATH
+            export ROOT_INCLUDE_PATH=$STARTDIR/podio/install/include:$ROOT_INCLUDE_PATH:$CPATH
             unset CPATH
-            export CMAKE_PREFIX_PATH=$(pwd)/install:$CMAKE_PREFIX_PATH
-            export LD_LIBRARY_PATH=$(pwd)/install/lib:$(pwd)/install/lib64:$LD_LIBRARY_PATH
+            export CMAKE_PREFIX_PATH=$STARTDIR/podio/install:$CMAKE_PREFIX_PATH
+            export LD_LIBRARY_PATH=$STARTDIR/podio/install/lib:$STARTDIR/podio/install/lib64:$LD_LIBRARY_PATH
             echo "::endgroup::"
             echo "::group::Build and test EDM4hep"
-            cd /home/runner/work/podio
-            git clone --depth 1 https://github.com/key4hep/EDM4hep
-            cd EDM4hep
+            cd $STARTDIR/edm4hep
             mkdir build && cd build
             cmake -DCMAKE_CXX_STANDARD=17 \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
