@@ -173,6 +173,9 @@ set_property(TEST pyunittest
                       SKIP_SIO_TESTS=$<NOT:$<BOOL:${ENABLE_SIO}>>
                       )
 set_property(TEST pyunittest PROPERTY DEPENDS write)
+if (TARGET write_sio)
+  set_property(TEST pyunittest PROPERTY DEPENDS write_sio)
+endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
