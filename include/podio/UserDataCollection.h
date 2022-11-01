@@ -157,8 +157,8 @@ public:
   }
 
   /// The schema version is fixed manually
-  std::string getSchemaVersion() const final {
-    return std::string("v1");
+  unsigned int getSchemaVersion() const final {
+    return 1;
   }
 
   /// Print this collection to the passed stream

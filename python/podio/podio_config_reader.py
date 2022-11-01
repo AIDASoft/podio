@@ -413,11 +413,11 @@ class PodioConfigReader:
       content = yaml.load(stream, yaml.SafeLoader)
 
     if "schemaversion" in content:
-      schema_version = "v%i" % content["schemaversion"]
+      schema_version = content["schemaversion"]
     else:
-      warnings.warn("Please provide a schemaversion entry. It will become mandatory. Setting it to v0 as default",
+      warnings.warn("Please provide a schemaversion entry. It will become mandatory. Setting it to 0 as default",
                     FutureWarning, stacklevel=3)
-      schema_version = "v0"
+      schema_version = 0
 
     components = {}
     if "components" in content:

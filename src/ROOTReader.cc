@@ -188,7 +188,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
         collectionInfo->emplace_back(collID,
                                      collType,
                                      isSubsetColl,
-                                     "undefined");
+                                     0);
     }
     createCollectionBranches(*collectionInfo);
     delete collectionInfoWithoutSchema;
