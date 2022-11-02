@@ -1,7 +1,46 @@
 #!/usr/bin/env python3
 """podio-dump tool to dump contents of podio files"""
 
+from ROOT import TFile
 from podio.EventStore import EventStore
+from podio import root_io
+from podio import sio_io
+
+
+def _is_frame_sio_file(filename):
+  """Peek into the sio file to determine whether this is a legacy file or not."""
+  with open(filename, 'rb') as sio_file:
+    first_line = str(sio_file.readline())
+    # The SIO Frame writer writes a podio_header_info at the beginning of the
+    # file
+    return first_line.find('podio_header_info') > 0
+
+
+def _is_frame_root_file(filename):
+  """Peek into the root file to determine whether this is a legacy file or not."""
+  file = TFile.Open(filename)
+  # The ROOT Frame writer puts a podio_metadata TTree into the file
+  return bool(file.Get('podio_metadata'))
+
+
+def get_reader(filename):
+  """Peek into the file and determine which reader to use for this.
+
+  Args:
+      filename (str): The input file
+
+  Returns:
+      root_io.Reader, sio_io.Reader or EventStore: The correct reader for this file
+  """
+  if filename.endswith('.sio'):
+    if _is_frame_sio_file(filename):
+      return sio_io.Reader(filename)
+
+  if filename.endswith('.root'):
+    if _is_frame_root_file(filename):
+      return root_io.Reader(filename)
+
+  return EventStore(filename)
 
 
 def dump_evt_overview(event, ievt):
@@ -47,11 +86,13 @@ def dump_detailed(store, events):
 
 def main(args):
   """Main"""
-  store = EventStore([args.inputfile])
-  if args.detailed:
-    dump_detailed(store, args.entries)
-  else:
-    dump_overview(store, args.entries)
+  reader = get_reader(args.inputfile)
+
+  if isinstance(reader, EventStore):
+    if args.detailed:
+      dump_detailed(reader, args.entries)
+    else:
+      dump_overview(reader, args.entries)
 
 
 def parse_entry_range(ent_string):
