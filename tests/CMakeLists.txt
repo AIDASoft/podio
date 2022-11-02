@@ -45,7 +45,8 @@ set(root_dependent_tests
   write_timed.cpp
   read_timed.cpp
   read_frame.cpp
-  write_frame_root.cpp)
+  write_frame_root.cpp
+  read_frame_legacy_root.cpp)
 set(root_libs TestDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
@@ -145,6 +146,7 @@ endif()
 set_property(TEST read PROPERTY DEPENDS write)
 set_property(TEST read-multiple PROPERTY DEPENDS write)
 set_property(TEST read_and_write PROPERTY DEPENDS write)
+set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
 set_property(TEST read_frame PROPERTY DEPENDS write_frame_root)
 

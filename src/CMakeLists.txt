@@ -72,10 +72,12 @@ SET(root_sources
   ROOTReader.cc
   ROOTFrameWriter.cc
   ROOTFrameReader.cc
+  ROOTLegacyReader.cc
 )
 
 SET(root_headers
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameReader.h
+  ${CMAKE_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
 
