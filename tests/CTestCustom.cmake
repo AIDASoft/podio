@@ -41,6 +41,17 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     relation_range
 
     pyunittest
+
+    podio-dump-help
+    podio-dump-root-legacy
+    podio-dump-root
+    podio-dump-detailed-root
+    podio-dump-detailed-root-legacy
+
+    podio-dump-sio-legacy
+    podio-dump-sio
+    podio-dump-detailed-sio
+    podio-dump-detailed-sio-legacy
   )
 
   # ostream_operator is working with Memory sanitizer (at least locally)
