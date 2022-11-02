@@ -48,7 +48,7 @@ class Frame:
     else:
       self._frame = podio.Frame()
 
-    self._collections = tuple(s for s in self._frame.getAvailableCollections())
+    self._collections = tuple(str(s) for s in self._frame.getAvailableCollections())
     self._param_key_types = self._init_param_keys()
 
   @property
