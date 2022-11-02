@@ -43,7 +43,7 @@ def get_reader(filename):
   return EventStore(filename)
 
 
-def dump_evt_overview(event, ievt):
+def dump_evt_overview_legacy(event, ievt):
   """Print an overview table of the event contents of the given event"""
   print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
   print(f'{"Name":<30} {"Type":<40} {"Size":<10}')
@@ -53,14 +53,14 @@ def dump_evt_overview(event, ievt):
     print(f'{name:<30} {coll.getValueTypeName():<40} {len(coll):<10}')
 
 
-def dump_overview(store, events):
+def dump_overview_legacy(store, events):
   """Print an overview for all the desired events"""
   for ievt in events:
     event = store[ievt]
-    dump_evt_overview(event, ievt)
+    dump_evt_overview_legacy(event, ievt)
 
 
-def dump_evt_detailed(event, ievt):
+def dump_evt_detailed_legacy(event, ievt):
   """Dump this event in all its glory"""
   print()
   print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
@@ -76,11 +76,11 @@ def dump_evt_detailed(event, ievt):
     print(flush=True)
 
 
-def dump_detailed(store, events):
+def dump_detailed_legacy(store, events):
   """Dump the complete event contents for all desired events"""
   for ievt in events:
     event = store[ievt]
-    dump_evt_detailed(event, ievt)
+    dump_evt_detailed_legacy(event, ievt)
     print()
 
 
@@ -90,9 +90,9 @@ def main(args):
 
   if isinstance(reader, EventStore):
     if args.detailed:
-      dump_detailed(reader, args.entries)
+      dump_detailed_legacy(reader, args.entries)
     else:
-      dump_overview(reader, args.entries)
+      dump_overview_legacy(reader, args.entries)
 
 
 def parse_entry_range(ent_string):
