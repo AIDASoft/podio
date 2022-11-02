@@ -49,30 +49,30 @@ def main(args):
   """Main"""
   store = EventStore([args.inputfile])
   if args.detailed:
-    dump_detailed(store, args.event)
+    dump_detailed(store, args.entries)
   else:
-    dump_overview(store, args.event)
+    dump_overview(store, args.entries)
 
 
-def parse_evt_range(evt_string):
-  """Parse which events to print"""
+def parse_entry_range(ent_string):
+  """Parse which entries to print"""
   try:
-    return [int(evt_string)]
+    return [int(ent_string)]
   except ValueError:
     pass
 
   try:
-    return [int(i) for i in evt_string.split(',')]
+    return [int(i) for i in ent_string.split(',')]
   except ValueError:
     pass
 
   try:
-    first, last = [int(i) for i in evt_string.split(':')]
+    first, last = [int(i) for i in ent_string.split(':')]
     return list(range(first, last + 1))
   except ValueError:
     pass
 
-  raise argparse.ArgumentTypeError(f'\'{evt_string}\' cannot be parsed into a list of events')
+  raise argparse.ArgumentTypeError(f'\'{ent_string}\' cannot be parsed into a list of entries')
 
 
 if __name__ == '__main__':
@@ -80,11 +80,11 @@ if __name__ == '__main__':
   # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
   parser = argparse.ArgumentParser(description='Dump contents of a podio file to stdout')
   parser.add_argument('inputfile', help='Name of the file to dump content from')
-  parser.add_argument('-e', '--event',
-                      help='Which event(s) to print. A single number, comma separated list of numbers'
-                      ' or "first:last" for an inclusive range of events. Defaults to the first event.',
-                      type=parse_evt_range, default=[0])
-  parser.add_argument('-d', '--detailed', help='Dump the full event contents not just the collection info',
+  parser.add_argument('-e', '--entries',
+                      help='Which entrie(s) to print. A single number, comma separated list of numbers'
+                      ' or "first:last" for an inclusive range of entries. Defaults to the first entry.',
+                      type=parse_entry_range, default=[0])
+  parser.add_argument('-d', '--detailed', help='Dump the full contents not just the collection info',
                       action='store_true', default=False)
 
   clargs = parser.parse_args()
