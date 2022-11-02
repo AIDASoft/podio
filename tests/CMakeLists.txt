@@ -169,12 +169,12 @@ set_property(TEST pyunittest
              PROPERTY ENVIRONMENT
                       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
-                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include
+                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}
                       SKIP_SIO_TESTS=$<NOT:$<BOOL:${ENABLE_SIO}>>
                       )
-set_property(TEST pyunittest PROPERTY DEPENDS write)
+set_property(TEST pyunittest PROPERTY DEPENDS write write_frame_root)
 if (TARGET write_sio)
-  set_property(TEST pyunittest PROPERTY DEPENDS write_sio)
+  set_property(TEST pyunittest PROPERTY DEPENDS write_sio write_frame_sio)
 endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
