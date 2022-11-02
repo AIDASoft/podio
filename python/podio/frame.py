@@ -148,6 +148,40 @@ class Frame:
 
     return _get_param_value(req_type, name)
 
+  def get_parameters(self):
+    """Get the complete podio::GenericParameters object stored in this Frame.
+
+    NOTE: This is mainly intended for dumping things, for actually obtaining
+    parameters please use get_parameter
+
+    Returns:
+        podio.GenericParameters: The stored generic parameters
+    """
+    # Going via the not entirely inteded way here
+    return self._frame.getGenericParametersForWrite()
+
+  def get_param_info(self, name):
+    """Get the parameter type information stored under the given name.
+
+    Args:
+        name (str): The parameter name
+
+    Returns:
+        tuple (str, int): The c++-type of the stored parameter and the number of
+            parameters
+
+    Raise:
+        KeyError: If no parameter is stored under the given name
+    """
+    # This raises the KeyError if the name is not present
+    par_type = self._param_key_types[name].replace('std::vector<', '').replace('>', '')
+    par_value = self.get_parameter(name)
+    n_pars = 1
+    if isinstance(par_value, list):
+      n_pars = len(par_value)
+
+    return par_type, n_pars
+
   def _init_param_keys(self):
     """Initialize the param keys dict for easier lookup of the available parameters.
 
