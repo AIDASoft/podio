@@ -1,3 +1,6 @@
+#ifndef PODIO_SIO_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
+#define PODIO_SIO_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
+
 #include <sio/api.h>
 #include <sio/compression/zlib.h>
 #include <sio/definitions.h>
@@ -26,3 +29,5 @@ namespace sio_utils {
   }
 } // namespace sio_utils
 } // namespace podio
+
+#endif

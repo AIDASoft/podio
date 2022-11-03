@@ -63,4 +63,4 @@ private:
 
 } // namespace podio
 
-#endif // PODIO_SIOFRAMEREADER_H
+#endif // PODIO_SIOLEGACYREADER_H
