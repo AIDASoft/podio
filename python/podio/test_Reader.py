@@ -41,6 +41,9 @@ class ReaderTestCaseMixin:
     # Again only rudimentary checks
     frame = frames[7]
     self.assertEqual(frame.get_parameter('UserEventName'), ' event_number_107')
+    # Valid negative indexing
+    frame = frames[-2]
+    self.assertEqual(frame.get_parameter('UserEventName'), ' event_number_108')
     # jumping back again also works
     frame = frames[3]
     self.assertEqual(frame.get_parameter('UserEventName'), ' event_number_103')
