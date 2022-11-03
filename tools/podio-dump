@@ -3,87 +3,7 @@
 
 import sys
 
-from ROOT import TFile
-from podio.EventStore import EventStore
-from podio import root_io
-from podio import sio_io
-
-
-def _is_frame_sio_file(filename):
-  """Peek into the sio file to determine whether this is a legacy file or not."""
-  with open(filename, 'rb') as sio_file:
-    first_line = str(sio_file.readline())
-    # The SIO Frame writer writes a podio_header_info at the beginning of the
-    # file
-    return first_line.find('podio_header_info') > 0
-
-
-def _is_frame_root_file(filename):
-  """Peek into the root file to determine whether this is a legacy file or not."""
-  file = TFile.Open(filename)
-  # The ROOT Frame writer puts a podio_metadata TTree into the file
-  return bool(file.Get('podio_metadata'))
-
-
-def get_reader(filename):
-  """Peek into the file and determine which reader to use for this.
-
-  Args:
-      filename (str): The input file
-
-  Returns:
-      root_io.Reader, sio_io.Reader or EventStore: The correct reader for this file
-  """
-  if filename.endswith('.sio'):
-    if _is_frame_sio_file(filename):
-      return sio_io.Reader(filename)
-
-  if filename.endswith('.root'):
-    if _is_frame_root_file(filename):
-      return root_io.Reader(filename)
-
-  return EventStore(filename)
-
-
-def dump_evt_overview_legacy(event, ievt):
-  """Print an overview table of the event contents of the given event"""
-  print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
-  print(f'{"Name":<30} {"Type":<40} {"Size":<10}')
-  print('-' * 82)
-  for name in event.collections():
-    coll = event.get(name)
-    print(f'{name:<30} {coll.getValueTypeName():<40} {len(coll):<10}')
-
-
-def dump_overview_legacy(store, events):
-  """Print an overview for all the desired events"""
-  for ievt in events:
-    event = store[ievt]
-    dump_evt_overview_legacy(event, ievt)
-
-
-def dump_evt_detailed_legacy(event, ievt):
-  """Dump this event in all its glory"""
-  print()
-  print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
-  print()
-
-  print('Parameters', flush=True)
-  event.metadata().print()
-  print(flush=True)
-
-  for name in event.collections():
-    print(name, flush=True)
-    event.get(name).print()
-    print(flush=True)
-
-
-def dump_detailed_legacy(store, events):
-  """Dump the complete event contents for all desired events"""
-  for ievt in events:
-    event = store[ievt]
-    dump_evt_detailed_legacy(event, ievt)
-    print()
+from podio.reading import get_reader
 
 
 def print_general_info(reader, filename):
@@ -147,19 +67,14 @@ def main(args):
   """Main"""
   reader = get_reader(args.inputfile)
 
-  if isinstance(reader, EventStore):
-    if args.detailed:
-      dump_detailed_legacy(reader, args.entries)
-    else:
-      dump_overview_legacy(reader, args.entries)
-  else:
-    print_general_info(reader, args.inputfile)
-    if args.category not in reader.categories:
-      print(f'ERROR: Cannot print category \'{args.category}\' (not present in file)')
-      sys.exit(1)
-    frames = reader.get(args.category)
-    for ient in args.entries:
-      print_frame(frames[ient], args.category, ient, args.detailed)
+  print_general_info(reader, args.inputfile)
+  if args.category not in reader.categories:
+    print(f'ERROR: Cannot print category \'{args.category}\' (not present in file)')
+    sys.exit(1)
+
+  frames = reader.get(args.category)
+  for ient in args.entries:
+    print_frame(frames[ient], args.category, ient, args.detailed)
 
 
 def parse_entry_range(ent_string):
