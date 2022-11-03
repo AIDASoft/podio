@@ -108,6 +108,7 @@ if(ENABLE_SIO)
     SIOFrameWriter.cc
     SIOFrameReader.cc
     SIOFrameData.cc
+    sioUtils.h
     )
 
   SET(sio_headers
