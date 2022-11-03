@@ -15,7 +15,7 @@ def _determine_supported_parameter_types():
 
   Returns:
       tuple (str): the tuple with the string representation of all **c++**
-        classes that are supported
+          classes that are supported
   """
   types_tuple = podio.SupportedGenericDataTypes()
   n_types = std.tuple_size[podio.SupportedGenericDataTypes].value
@@ -119,7 +119,7 @@ class Frame:
     for par_type in SUPPORTED_PARAMETER_TYPES:
       keys = params.getKeys[par_type]()
       # Make sure to convert to a python string here to not have a dangling
-      # referenc here for the key. Also make the type an std::vector so that we
+      # reference here for the key. Also make the type an std::vector so that we
       # always call the getter that obtains the full vector and we decide later
       # in the python layer whether we return a single value or a list of values
       keys_dict.update({str(k): f'std::vector<{par_type}>' for k in keys})

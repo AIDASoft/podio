@@ -38,7 +38,7 @@ class BaseReaderMixin:
         category (str): The name of the desired category
 
     Returns:
-      FrameCategoryIterator: The iterator granting access to all Frames of the
-        desired category
+        FrameCategoryIterator: The iterator granting access to all Frames of the
+            desired category
     """
     return FrameCategoryIterator(self._reader, category)

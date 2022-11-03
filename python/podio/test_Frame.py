@@ -4,7 +4,7 @@
 import unittest
 
 from podio.frame import Frame
-# using root_io as that should be present
+# using root_io as that should always be present regardless of which backends are built
 from podio.root_io import Reader
 
 # The expected collections in each frame
