@@ -352,7 +352,7 @@ bool Frame::FrameModel<FrameDataT>::get(int collectionID, CollectionBase*& colle
   const auto& name = m_idTable.name(collectionID);
   const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
 
-  if (!inserted) {
+  if (inserted) {
     auto coll = doGet(name);
     if (coll) {
       collection = coll;
