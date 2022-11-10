@@ -136,6 +136,32 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     throw std::runtime_error("Collection 'clusters' should be present");
   }
 
+  if (fileVersion >= podio::version::Version{0, 13, 2}) {
+    // Read the mcParticleRefs before reading any of the other collections that
+    // are referenced to make sure that all the necessary relations are handled
+    // correctly
+    auto& mcpRefs = store.template get<ExampleMCCollection>("mcParticleRefs");
+    if (!mcpRefs.isValid()) {
+      throw std::runtime_error("Collection 'mcParticleRefs' should be present");
+    }
+
+    // Only doing a very basic check here, that mainly just ensures that the
+    // RelationRange is valid and does not segfault.
+    for (auto ref : mcpRefs) {
+      const auto daughters = ref.daughters();
+      if (!daughters.empty()) {
+        // This will segfault in case things are not working
+        auto d [[maybe_unused]] = daughters[0];
+      }
+
+      const auto parents = ref.parents();
+      if (!parents.empty()) {
+        // This will segfault in case things are not working
+        auto d [[maybe_unused]] = parents[0];
+      }
+    }
+  }
+
   auto& mcps = store.template get<ExampleMCCollection>("mcparticles");
   if (!mcps.isValid()) {
     throw std::runtime_error("Collection 'mcparticles' should be present");
