@@ -83,4 +83,13 @@ class FrameReadTest(unittest.TestCase):
     self.assertEqual(self.event.get_parameter('UserEventName'), ' event_number_0')
     self.assertEqual(self.other_event.get_parameter('UserEventName'), ' event_number_107')
 
-    self.assertEqual(self.event.get_parameter('SomeVectorData'), [1, 2, 3, 4])
+    with self.assertRaises(ValueError):
+      # Parameter name is available with multiple types
+      _ = self.event.get_parameter('SomeVectorData')
+
+    with self.assertRaises(ValueError):
+      # Parameter not available as float (only int and string)
+      _ = self.event.get_parameter('SomeVectorData', as_type='float')
+
+    self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='int'), [1, 2, 3, 4])
+    self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='str'), ["just", "some", "strings"])
