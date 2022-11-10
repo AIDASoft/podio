@@ -150,8 +150,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py.in
                ${CMAKE_CURRENT_SOURCE_DIR}/python/podio/__init__.py)
 
 #--- add license files ---------------------------------------------------------
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
-              ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
         DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 #--- project specific subdirectories -------------------------------------------
