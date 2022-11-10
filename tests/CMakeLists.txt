@@ -164,15 +164,18 @@ if (TARGET read_sio)
   set_property(TEST check_benchmark_outputs_sio PROPERTY DEPENDS read_timed_sio write_timed_sio)
 endif()
 
-add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_SOURCE_DIR}/python)
+add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_SOURCE_DIR}/python/podio)
 set_property(TEST pyunittest
              PROPERTY ENVIRONMENT
                       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
-                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel
+                      ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}
                       SKIP_SIO_TESTS=$<NOT:$<BOOL:${ENABLE_SIO}>>
                       )
-set_property(TEST pyunittest PROPERTY DEPENDS write)
+set_property(TEST pyunittest PROPERTY DEPENDS write write_frame_root)
+if (TARGET write_sio)
+  set_property(TEST pyunittest PROPERTY DEPENDS write_sio write_frame_sio)
+endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """podio-dump tool to dump contents of podio files"""
 
-from EventStore import EventStore
+from podio.EventStore import EventStore
 
 
 def dump_evt_overview(event, ievt):

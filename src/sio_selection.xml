@@ -1,0 +1,6 @@
+<lcgdict>
+  <selection>
+    <class name="podio::SIOFrameReader"/>
+    <class name="podio::SIOFrameWriter"/>
+  </selection>
+</lcgdict>

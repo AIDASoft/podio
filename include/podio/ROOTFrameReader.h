@@ -10,6 +10,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -70,9 +71,13 @@ public:
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
 
+  /// Get the build version of podio that has been used to write the current file
   podio::version::Version currentFileVersion() const {
     return m_fileVersion;
   }
+
+  /// Get the names of all the availalable Frame categories in the current file(s)
+  std::vector<std::string_view> getAvailableCategories() const;
 
 private:
   /**

@@ -73,6 +73,10 @@ std::unique_ptr<SIOFrameData> SIOFrameReader::readEntry(const std::string& name,
   return readNextEntry(name);
 }
 
+std::vector<std::string_view> SIOFrameReader::getAvailableCategories() const {
+  return m_tocRecord.getRecordNames();
+}
+
 unsigned SIOFrameReader::getEntries(const std::string& name) const {
   return m_tocRecord.getNRecords(name);
 }

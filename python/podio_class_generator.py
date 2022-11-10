@@ -15,8 +15,8 @@ from itertools import zip_longest
 
 import jinja2
 
-from podio_config_reader import PodioConfigReader
-from generator_utils import DataType, DefinitionError
+from podio.podio_config_reader import PodioConfigReader
+from podio.generator_utils import DataType, DefinitionError
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')

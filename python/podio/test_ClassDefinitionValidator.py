@@ -8,8 +8,8 @@ from __future__ import print_function, absolute_import, unicode_literals
 import unittest
 from copy import deepcopy
 
-from podio_config_reader import ClassDefinitionValidator, MemberVariable, DefinitionError
-from generator_utils import DataModel
+from podio.podio_config_reader import ClassDefinitionValidator, MemberVariable, DefinitionError
+from podio.generator_utils import DataModel
 
 
 def make_dm(components, datatypes, options=None):
