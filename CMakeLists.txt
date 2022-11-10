@@ -148,8 +148,7 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio )
 
 #--- add license files ---------------------------------------------------------
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
-              ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
         DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 #--- project specific subdirectories -------------------------------------------
