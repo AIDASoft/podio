@@ -63,8 +63,8 @@ public:
    * Read the next data entry from which a Frame can be constructed. In case
    * there are no more entries left, this returns a nullptr.
    *
-   * NOTE: the category name is completely ignored in this case, as legacy only
-   * had events.
+   * NOTE: the category name has to be "events" in this case, as only that
+   * category is available for legacy files.
    */
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string&);
 
@@ -72,12 +72,12 @@ public:
    * Read the specified data entry from which a Frame can be constructed In case
    * the entry does not exist, this returns a nullptr.
    *
-   * NOTE: the category name is completely ignored in this case, as legacy only
-   * had events.
+   * NOTE: the category name has to be "events" in this case, as only that
+   * category is available for legacy files.
    */
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string&, const unsigned entry);
 
-  /// Returns number of events
+  /// Returns number of entries for a given category
   unsigned getEntries(const std::string&) const;
 
   /// Get the build version of podio that has been used to write the current file
