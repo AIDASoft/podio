@@ -59,8 +59,12 @@ def print_frame(frame, cat_name, ientry, detailed):
     print(f'{"Name":<30} {"Type":<12} {"Elements":<10}')
     print('-' * 54)
     for name in frame.parameters:
-      par_type, n_pars = frame.get_param_info(name)
-      print(f'{name:<30} {par_type:<12} {n_pars:<10}')
+      par_infos = frame.get_param_info(name)
+      for par_type, n_pars in par_infos.items():
+        print(f'{name:<30} {par_type:<12} {n_pars:<10}')
+
+  # Additional new line before the next entry
+  print('\n', flush=True)
 
 
 def main(args):
