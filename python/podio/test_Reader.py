@@ -68,3 +68,36 @@ class ReaderTestCaseMixin:
     for _ in non_existant:
       i += 1
     self.assertEqual(i, 0)
+
+
+class LegacyReaderTestCaseMixin:
+  """Common test cases for the legacy readers python bindings.
+
+  These tests assume that input files are produced with the write_test.h header
+  and that inheriting test cases inherit from unittes.TestCase as well.
+  Additionally they have to have an initialized reader as a member.
+
+  NOTE: Since the legacy readers also use the BaseReaderMixin, many of the
+  invalid access test cases are already covered by the ReaderTestCaseMixin and
+  here we simply focus on the slightly different happy paths
+  """
+  def test_categories(self):
+    """Make sure the legacy reader returns only one category"""
+    cats = self.reader.categories
+    self.assertEqual(("events",), cats)
+
+  def test_frame_iterator(self):
+    """Make sure the FrameIterator works."""
+    frames = self.reader.get('events')
+    self.assertEqual(len(frames), 2000)
+
+    for i, frame in enumerate(frames):
+      # Rudimentary check here only to see whether we got the right frame
+      self.assertEqual(frame.get_parameter('UserEventName'), f' event_number_{i}')
+      # Only check a few Frames here
+      if i > 10:
+        break
+
+    # Index based access
+    frame = frames[123]
+    self.assertEqual(frame.get_parameter('UserEventName'), ' event_number_123')

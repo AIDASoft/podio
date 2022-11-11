@@ -20,6 +20,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     check_benchmark_outputs
     read-multiple
     read-legacy-files
+    read_frame_legacy_root
 
     write_frame_root
     read_frame
@@ -32,6 +33,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     check_benchmark_outputs_sio
     write_frame_sio
     read_frame_sio
+    read_frame_legacy_sio
 
     write_ascii
 

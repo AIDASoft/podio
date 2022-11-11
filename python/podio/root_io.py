@@ -26,3 +26,25 @@ class Reader(BaseReaderMixin):
     self._reader.openFiles(filenames)
 
     super().__init__()
+
+
+class LegacyReader(BaseReaderMixin):
+  """Reader class for reading legacy podio root files.
+
+  This reader can be used to read files that have not yet been written using
+  Frame based I/O into Frames for a more seamless transition.
+  """
+
+  def __init__(self, filenames):
+    """Create a reader that reads from the passed file(s).
+
+    Args:
+        filenames (str or list[str]): file(s) to open and read data from
+    """
+    if isinstance(filenames, str):
+      filenames = (filenames,)
+
+    self._reader = podio.ROOTLegacyReader()
+    self._reader.openFiles(filenames)
+
+    super().__init__()

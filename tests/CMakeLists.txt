@@ -45,7 +45,8 @@ set(root_dependent_tests
   write_timed.cpp
   read_timed.cpp
   read_frame.cpp
-  write_frame_root.cpp)
+  write_frame_root.cpp
+  read_frame_legacy_root.cpp)
 set(root_libs TestDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
@@ -128,7 +129,8 @@ if (TARGET TestDataModelSioBlocks)
     write_timed_sio.cpp
     read_timed_sio.cpp
     read_frame_sio.cpp
-    write_frame_sio.cpp)
+    write_frame_sio.cpp
+    read_frame_legacy_sio.cpp)
   set(sio_libs podio::podioSioIO)
   foreach( sourcefile ${sio_dependent_tests} )
     CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
@@ -145,6 +147,7 @@ endif()
 set_property(TEST read PROPERTY DEPENDS write)
 set_property(TEST read-multiple PROPERTY DEPENDS write)
 set_property(TEST read_and_write PROPERTY DEPENDS write)
+set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
 set_property(TEST read_frame PROPERTY DEPENDS write_frame_root)
 
@@ -159,6 +162,7 @@ if (TARGET read_sio)
   set_property(TEST read_and_write_sio PROPERTY DEPENDS write_sio)
   set_property(TEST read_timed_sio PROPERTY DEPENDS write_timed_sio)
   set_property(TEST read_frame_sio PROPERTY DEPENDS write_frame_sio)
+  set_property(TEST read_frame_legacy_sio PROPERTY DEPENDS write_sio)
 
   add_test(NAME check_benchmark_outputs_sio COMMAND check_benchmark_outputs write_benchmark_sio.root read_benchmark_sio.root)
   set_property(TEST check_benchmark_outputs_sio PROPERTY DEPENDS read_timed_sio write_timed_sio)

@@ -3,8 +3,8 @@
 
 import unittest
 
-from podio.sio_io import Reader
-from podio.test_Reader import ReaderTestCaseMixin
+from podio.sio_io import Reader, LegacyReader
+from podio.test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
 from podio.test_utils import SKIP_SIO_TESTS
 
 
@@ -14,3 +14,11 @@ class SioReaderTestCase(ReaderTestCaseMixin, unittest.TestCase):
   def setUp(self):
     """Setup the corresponding reader"""
     self.reader = Reader('example_frame.sio')
+
+
+@unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")
+class SIOLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
+  """Test cases for the legacy root input files and reader."""
+  def setUp(self):
+    """Setup a reader, reading from the example files"""
+    self.reader = LegacyReader('example.sio')

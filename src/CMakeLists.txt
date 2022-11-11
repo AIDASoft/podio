@@ -72,10 +72,12 @@ SET(root_sources
   ROOTReader.cc
   ROOTFrameWriter.cc
   ROOTFrameReader.cc
+  ROOTLegacyReader.cc
 )
 
 SET(root_headers
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameReader.h
+  ${CMAKE_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
 
@@ -106,10 +108,13 @@ if(ENABLE_SIO)
     SIOFrameWriter.cc
     SIOFrameReader.cc
     SIOFrameData.cc
+    sioUtils.h
+    SIOLegacyReader.cc
     )
 
   SET(sio_headers
     ${CMAKE_SOURCE_DIR}/include/podio/SIOFrameReader.h
+    ${CMAKE_SOURCE_DIR}/include/podio/SIOLegacyReader.h
     ${CMAKE_SOURCE_DIR}/include/podio/SIOFrameWriter.h
     )
 
