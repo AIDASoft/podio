@@ -16,7 +16,8 @@ def print_general_info(reader, filename):
       reader (root_io.Reader, sio_io.Reader): An initialized reader
   """
   print(f'input file: {filename}\n')
-  print('Frame categories in this file:')
+  legacy_text = ' (this is a legacy file!)' if reader.is_legacy else ''
+  print(f'Frame categories in this file{legacy_text}:')
   print(f'{"Name":<20} {"Entries":<10}')
   print('-' * 31)
   for category in reader.categories:

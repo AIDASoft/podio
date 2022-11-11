@@ -46,5 +46,6 @@ class LegacyReader(BaseReaderMixin):
 
     self._reader = podio.ROOTLegacyReader()
     self._reader.openFiles(filenames)
+    self._is_legacy = True
 
     super().__init__()
