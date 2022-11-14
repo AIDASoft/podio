@@ -43,16 +43,20 @@ SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types('c++')
 SUPPORTED_PARAMETER_PY_TYPES = _determine_supported_parameter_types('py')
 
 
+# Map that is necessary for easier disambiguation of parameters that are
+# available with more than one type under the same name. Maps a python type to
+# a c++ vector of the corresponding type or a c++ type to the vector
+_PY_TO_CPP_TYPE_MAP = {
+    pytype: f'std::vector<{cpptype}>' for (pytype, cpptype) in zip(SUPPORTED_PARAMETER_PY_TYPES,
+                                                                     SUPPORTED_PARAMETER_TYPES)
+    }
+_PY_TO_CPP_TYPE_MAP.update({
+    f'{cpptype}': f'std::vector<{cpptype}>' for cpptype in SUPPORTED_PARAMETER_TYPES
+    })
+
+
 class Frame:
   """Frame class that serves as a container of collection and meta data."""
-
-  # Map that is necessary for easier disambiguation of parameters that are
-  # available with more than one type under the same name. Maps a python type to
-  # a c++ vector of the corresponding type
-  _py_to_cpp_type_map = {
-      pytype: f'std::vector<{cpptype}>' for (pytype, cpptype) in zip(SUPPORTED_PARAMETER_PY_TYPES,
-                                                                     SUPPORTED_PARAMETER_TYPES)
-      }
 
   def __init__(self, data=None):
     """Create a Frame.
@@ -139,7 +143,7 @@ class Frame:
       raise ValueError(f'{name} parameter has {len(par_type)} different types available, '
                        'but no as_type argument to disambiguate')
 
-    req_type = self._py_to_cpp_type_map.get(as_type, None)
+    req_type = _PY_TO_CPP_TYPE_MAP.get(as_type, None)
     if req_type is None:
       raise ValueError(f'as_type value {as_type} cannot be mapped to a valid parameter type')
 
@@ -147,6 +151,43 @@ class Frame:
       raise ValueError(f'{name} parameter is not available as type {as_type}')
 
     return _get_param_value(req_type, name)
+
+  def get_parameters(self):
+    """Get the complete podio::GenericParameters object stored in this Frame.
+
+    NOTE: This is mainly intended for dumping things, for actually obtaining
+    parameters please use get_parameter
+
+    Returns:
+        podio.GenericParameters: The stored generic parameters
+    """
+    # Going via the not entirely inteded way here
+    return self._frame.getGenericParametersForWrite()
+
+  def get_param_info(self, name):
+    """Get the parameter type information stored under the given name.
+
+    Args:
+        name (str): The parameter name
+
+    Returns:
+        dict (str: int): The c++-type(s) of the stored parameter and the number of
+            parameters
+
+    Raise:
+        KeyError: If no parameter is stored under the given name
+    """
+    # This raises the KeyError if the name is not present
+    par_types = [t.replace('std::vector<', '').replace('>', '') for t in self._param_key_types[name]]
+    # Assume that we have one parameter and update the dictionary below in case
+    # there are more
+    par_infos = {t: 1 for t in par_types}
+    for par_type in par_types:
+      par_value = self.get_parameter(name, as_type=par_type)
+      if isinstance(par_value, list):
+        par_infos[par_type] = len(par_value)
+
+    return par_infos
 
   def _init_param_keys(self):
     """Initialize the param keys dict for easier lookup of the available parameters.

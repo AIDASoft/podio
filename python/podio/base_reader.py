@@ -21,6 +21,10 @@ class BaseReaderMixin:
     setup.
     """
     self._categories = tuple(s.data() for s in self._reader.getAvailableCategories())
+    if hasattr(self, '_is_legacy'):
+      self._is_legacy = getattr(self, '_is_legacy')
+    else:
+      self._is_legacy = False  # by default assume we are not legacy
 
   @property
   def categories(self):
@@ -42,3 +46,12 @@ class BaseReaderMixin:
             desired category
     """
     return FrameCategoryIterator(self._reader, category)
+
+  @property
+  def is_legacy(self):
+    """Whether this is a legacy file reader or not.
+
+    Returns:
+        bool: True if this is a legacy file reader
+    """
+    return self._is_legacy

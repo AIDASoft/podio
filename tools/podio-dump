@@ -1,78 +1,106 @@
 #!/usr/bin/env python3
 """podio-dump tool to dump contents of podio files"""
 
-from podio.EventStore import EventStore
+import sys
+
+from podio.reading import get_reader
 
 
-def dump_evt_overview(event, ievt):
-  """Print an overview table of the event contents of the given event"""
-  print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
-  print(f'{"Name":<30} {"Type":<40} {"Size":<10}')
-  print('-' * 82)
-  for name in event.collections():
-    coll = event.get(name)
-    print(f'{name:<30} {coll.getValueTypeName():<40} {len(coll):<10}')
+def print_general_info(reader, filename):
+  """Print an overview of the file contents at the very beginning.
 
+  This prints things like the available categories (and how many entries they
+  have) as well as the filename, etc.
 
-def dump_overview(store, events):
-  """Print an overview for all the desired events"""
-  for ievt in events:
-    event = store[ievt]
-    dump_evt_overview(event, ievt)
-
-
-def dump_evt_detailed(event, ievt):
-  """Dump this event in all its glory"""
-  print()
-  print('{:#^82}'.format(f' Event {ievt} '))  # pylint: disable=consider-using-f-string
+  Args:
+      reader (root_io.Reader, sio_io.Reader): An initialized reader
+  """
+  print(f'input file: {filename}\n')
+  legacy_text = ' (this is a legacy file!)' if reader.is_legacy else ''
+  print(f'Frame categories in this file{legacy_text}:')
+  print(f'{"Name":<20} {"Entries":<10}')
+  print('-' * 31)
+  for category in reader.categories:
+    print(f'{category:<20} {len(reader.get(category)):<10}')
   print()
 
-  print('Parameters', flush=True)
-  event.metadata().print()
-  print(flush=True)
 
-  for name in event.collections():
-    print(name, flush=True)
-    event.get(name).print()
+def print_frame(frame, cat_name, ientry, detailed):
+  """Print a Frame overview.
+
+  Args:
+      frame (podio.Frame): The frame to print
+      cat_name (str): The category name
+      ientry (int): The entry number of this Frame
+      detailed (bool): Print just an overview or dump the whole contents
+  """
+  print('{:#^82}'.format(f' {cat_name} {ientry} '))  # pylint: disable=consider-using-f-string
+  print('Collections:')
+
+  if not detailed:
+    print(f'{"Name":<30} {"Type":<40} {"Size":<10}')
+    print('-' * 82)
+
+  # Print collections
+  for name in frame.collections:
+    coll = frame.get(name)
+    if detailed:
+      print(name, flush=True)
+      coll.print()
+      print(flush=True)
+    else:
+      print(f'{name:<30} {coll.getValueTypeName():<40} {len(coll):<10}')
+
+  # And then parameters
+  print('\nParameters:', flush=True)
+  if detailed:
+    frame.get_parameters().print()
     print(flush=True)
+  else:
+    print(f'{"Name":<30} {"Type":<12} {"Elements":<10}')
+    print('-' * 54)
+    for name in frame.parameters:
+      par_infos = frame.get_param_info(name)
+      for par_type, n_pars in par_infos.items():
+        print(f'{name:<30} {par_type:<12} {n_pars:<10}')
 
-
-def dump_detailed(store, events):
-  """Dump the complete event contents for all desired events"""
-  for ievt in events:
-    event = store[ievt]
-    dump_evt_detailed(event, ievt)
-    print()
+  # Additional new line before the next entry
+  print('\n', flush=True)
 
 
 def main(args):
   """Main"""
-  store = EventStore([args.inputfile])
-  if args.detailed:
-    dump_detailed(store, args.event)
-  else:
-    dump_overview(store, args.event)
+  reader = get_reader(args.inputfile)
+
+  print_general_info(reader, args.inputfile)
+  if args.category not in reader.categories:
+    print(f'ERROR: Cannot print category \'{args.category}\' (not present in file)')
+    sys.exit(1)
+
+  frames = reader.get(args.category)
+  for ient in args.entries:
+    print_frame(frames[ient], args.category, ient, args.detailed)
 
 
-def parse_evt_range(evt_string):
-  """Parse which events to print"""
+def parse_entry_range(ent_string):
+  """Parse which entries to print"""
   try:
-    return [int(evt_string)]
+    return [int(ent_string)]
   except ValueError:
     pass
 
   try:
-    return [int(i) for i in evt_string.split(',')]
+    return [int(i) for i in ent_string.split(',')]
   except ValueError:
     pass
 
   try:
-    first, last = [int(i) for i in evt_string.split(':')]
+    first, last = [int(i) for i in ent_string.split(':')]
     return list(range(first, last + 1))
   except ValueError:
     pass
 
-  raise argparse.ArgumentTypeError(f'\'{evt_string}\' cannot be parsed into a list of events')
+  raise argparse.ArgumentTypeError(f'\'{ent_string}\' cannot be parsed into a list of entries')
 
 
 if __name__ == '__main__':
@@ -80,11 +108,13 @@ if __name__ == '__main__':
   # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
   parser = argparse.ArgumentParser(description='Dump contents of a podio file to stdout')
   parser.add_argument('inputfile', help='Name of the file to dump content from')
-  parser.add_argument('-e', '--event',
-                      help='Which event(s) to print. A single number, comma separated list of numbers'
-                      ' or "first:last" for an inclusive range of events. Defaults to the first event.',
-                      type=parse_evt_range, default=[0])
-  parser.add_argument('-d', '--detailed', help='Dump the full event contents not just the collection info',
+  parser.add_argument('-c', '--category', help='Which Frame category to dump',
+                      default='events', type=str)
+  parser.add_argument('-e', '--entries',
+                      help='Which entries to print. A single number, comma separated list of numbers'
+                      ' or "first:last" for an inclusive range of entries. Defaults to the first entry.',
+                      type=parse_entry_range, default=[0])
+  parser.add_argument('-d', '--detailed', help='Dump the full contents not just the collection info',
                       action='store_true', default=False)
 
   clargs = parser.parse_args()
