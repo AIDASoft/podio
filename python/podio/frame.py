@@ -2,7 +2,7 @@
 """Module for the python bindings of the podio::Frame"""
 
 # pylint: disable-next=import-error # gbl is a dynamic module from cppyy
-from cppyy.gbl import std
+import cppyy
 
 import ROOT
 # NOTE: It is necessary that this can be found on the ROOT_INCLUDE_PATH
@@ -22,10 +22,10 @@ def _determine_supported_parameter_types(lang):
           classes that are supported
   """
   types_tuple = podio.SupportedGenericDataTypes()
-  n_types = std.tuple_size[podio.SupportedGenericDataTypes].value
+  n_types = cppyy.gbl.std.tuple_size[podio.SupportedGenericDataTypes].value
 
   # Get the python types with the help of cppyy and the STL
-  py_types = (type(std.get[i](types_tuple)).__name__ for i in range(n_types))
+  py_types = (type(cppyy.gbl.std.get[i](types_tuple)).__name__ for i in range(n_types))
   if lang == 'py':
     return tuple(py_types)
   if lang == 'c++':
@@ -57,6 +57,11 @@ _PY_TO_CPP_TYPE_MAP.update({
 
 class Frame:
   """Frame class that serves as a container of collection and meta data."""
+
+  # cppyy implicitly converts empty collections to False in boolean contexts. To
+  # distinguish between empty and non-existant collection create a nullptr here
+  # with the correct type that we can compare against
+  _coll_nullptr = cppyy.bind_object(cppyy.nullptr, 'podio::CollectionBase')
 
   def __init__(self, data=None):
     """Create a Frame.
@@ -95,8 +100,8 @@ class Frame:
         KeyError: If the collection with the name is not available
     """
     collection = self._frame.get(name)
-    if not collection:
-      raise KeyError
+    if collection == self._coll_nullptr:
+      raise KeyError(f"Collection '{name}' is not available")
     return collection
 
   @property

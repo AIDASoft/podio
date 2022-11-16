@@ -37,7 +37,9 @@ static const std::vector<std::string> collsToWrite = {"mcparticles",
                                                       "userDoubles",
                                                       "WithNamespaceMember",
                                                       "WithNamespaceRelation",
-                                                      "WithNamespaceRelationCopy"};
+                                                      "WithNamespaceRelationCopy",
+                                                      "emptyCollection",
+                                                      "emptySubsetColl"};
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
@@ -367,6 +369,13 @@ podio::Frame makeFrame(int iFrame) {
   frame.putParameter("UserEventName", " event_number_" + std::to_string(iFrame));
   frame.putParameter("SomeVectorData", {1, 2, 3, 4});
   frame.putParameter("SomeVectorData", {"just", "some", "strings"});
+
+  // An empty collection
+  frame.put(ExampleClusterCollection(), "emptyCollection");
+  // An empty subset collection
+  auto emptySubsetColl = ExampleHitCollection();
+  emptySubsetColl.setSubsetCollection();
+  frame.put(std::move(emptySubsetColl), "emptySubsetColl");
 
   return frame;
 }
