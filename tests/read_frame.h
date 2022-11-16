@@ -35,6 +35,15 @@ int read_frames(const std::string& filename) {
   // sure that the writing/reading order does not impose any usage requirements
   for (size_t i = 0; i < reader.getEntries("events"); ++i) {
     auto frame = podio::Frame(reader.readNextEntry("events"));
+    if (frame.get("emptySubsetColl") == nullptr) {
+      std::cerr << "Could not retrieve an empty subset collection" << std::endl;
+      return 1;
+    }
+    if (frame.get("emptyCollection") == nullptr) {
+      std::cerr << "Could not retrieve an empty collection" << std::endl;
+      return 1;
+    }
+
     processEvent(frame, i, reader.currentFileVersion());
 
     auto otherFrame = podio::Frame(reader.readNextEntry("other_events"));
