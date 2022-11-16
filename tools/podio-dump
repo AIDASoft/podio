@@ -70,7 +70,11 @@ def print_frame(frame, cat_name, ientry, detailed):
 
 def main(args):
   """Main"""
-  reader = get_reader(args.inputfile)
+  try:
+    reader = get_reader(args.inputfile)
+  except ValueError as err:
+    print(f'ERROR: Cannot open file \'{args.inputfile}\': {err}')
+    sys.exit(1)
 
   print_general_info(reader, args.inputfile)
   if args.category not in reader.categories:

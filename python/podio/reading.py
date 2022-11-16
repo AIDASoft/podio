@@ -4,16 +4,21 @@
 from ROOT import TFile
 
 from podio import root_io
-from podio import sio_io
+try:
+  from podio import sio_io
 
+  def _is_frame_sio_file(filename):
+    """Peek into the sio file to determine whether this is a legacy file or not."""
+    with open(filename, 'rb') as sio_file:
+      first_line = str(sio_file.readline())
+      # The SIO Frame writer writes a podio_header_info at the beginning of the
+      # file
+      return first_line.find('podio_header_info') > 0
 
-def _is_frame_sio_file(filename):
-  """Peek into the sio file to determine whether this is a legacy file or not."""
-  with open(filename, 'rb') as sio_file:
-    first_line = str(sio_file.readline())
-    # The SIO Frame writer writes a podio_header_info at the beginning of the
-    # file
-    return first_line.find('podio_header_info') > 0
+except ImportError:
+  def _is_frame_sio_file(filename):
+    """Stub raising a ValueError"""
+    raise ValueError('podio has not been built with SIO support, which is necessary to read this file')
 
 
 def _is_frame_root_file(filename):
@@ -30,8 +35,12 @@ def get_reader(filename):
       filename (str): The input file
 
   Returns:
-      root_io.[Legacy]Reader, sio_io.[Legacy]Reader: an initialized reader
-          that is able to process the input file
+      root_io.[Legacy]Reader, sio_io.[Legacy]Reader: an initialized reader that
+          is able to process the input file.
+
+  Raises:
+      ValueError: If the file cannot be recognized, or if podio has not been
+          built with the necessary backend I/O support
   """
   if filename.endswith('.sio'):
     if _is_frame_sio_file(filename):
