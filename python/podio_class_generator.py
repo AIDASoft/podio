@@ -18,6 +18,7 @@ import jinja2
 
 from podio.podio_config_reader import PodioConfigReader
 from podio.generator_utils import DataType, DefinitionError
+from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
@@ -77,13 +78,19 @@ class IncludeFrom(IntEnum):
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
-  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun, upstream_edm):
+  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun,
+               upstream_edm, old_description):
     self.install_dir = install_dir
     self.package_name = package_name
     self.io_handlers = io_handlers
     self.verbose = verbose
     self.dryrun = dryrun
     self.yamlfile = yamlfile
+    # schema evolution specific code
+    self.old_yamlfile = old_description
+    self.old_datamodel = None
+    self.old_datamodels_components = {}
+    self.old_datamodels_datatypes = {}
 
     try:
       self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
@@ -119,6 +126,16 @@ class ClassGenerator:
     self.print_report()
 
     self._write_cmake_lists_file()
+    self.process_schema_evolution()
+
+  def process_schema_evolution(self):
+    # have to make all necessary comparisons
+    # which are the ones that changed?
+    # have to extend the selection xml file
+    if self.old_yamlfile:
+      comparator = DataModelComparator(self.yamlfile,self.old_yamlfile)
+      comparator.read()
+      comparator.compare()
 
   def print_report(self):
     """Print a summary report about the generated code"""
@@ -434,7 +451,9 @@ class ClassGenerator:
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
     data = {'components': [DataType(c) for c in self.datamodel.components],
-            'datatypes': [DataType(d) for d in self.datamodel.datatypes]}
+            'datatypes': [DataType(d) for d in self.datamodel.datatypes],
+            'old_schema_components': [DataType(d) for d in
+                                      self.old_datamodels_datatypes | self.old_datamodels_components]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, member):
@@ -513,6 +532,9 @@ if __name__ == "__main__":
                       ' EDM. Format is \'<upstream-name>:<upstream.yaml>\'. '
                       'Note that only the code for the current EDM will be generated',
                       default=None, type=read_upstream_edm)
+  parser.add_argument('--old-description',
+                      help='Provide schema evolution relative to the old yaml file.',
+                      default=None, action='store')
 
   args = parser.parse_args()
 
@@ -525,7 +547,8 @@ if __name__ == "__main__":
       os.makedirs(directory)
 
   gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers,
-                       verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm)
+                       verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm,
+                       old_description=args.old_description)
   if args.clangformat:
     gen.clang_format = get_clang_format()
   gen.process()

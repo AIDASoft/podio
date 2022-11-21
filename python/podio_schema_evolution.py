@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-from podio_config_reader import PodioConfigReader
+from podio.podio_config_reader import PodioConfigReader
+
+import yaml
 
 # @TODO: not really a good class model here
 # this is a remnant from previous more-sophisticated setups
@@ -25,25 +27,27 @@ class AddedComponent(SchemaChange):
         return f"'{self.component.name}' has been added"
 
     def __repr__(self) -> str:
-        return "'%s' has been added" % self.component.name
+        return f"'{self.component.name}' has been added"
 
 
 class DroppedComponent(SchemaChange):
     def __init__(self, component, name):
         self.component = component
         self.name = name
+        self.klassname = name
 
     def __str__(self) -> str:
-        return "'%s' has been dropped" % self.name
+        return f"'{self.name}' has been dropped"
 
     def __repr__(self) -> str:
-        return "'%s' has been dropped" % self.name
+        return f"{self.name} has been dropped"
 
 
 class AddedDatatype(SchemaChange):
     def __init__(self, datatype, name):
         self.datatype = datatype
         self.name = name
+        self.klassname = name
 
     def __str__(self) -> str:
         return "'%s' has been added" % self.name
@@ -56,6 +60,7 @@ class DroppedDatatype(SchemaChange):
     def __init__(self, datatype, name):
         self.datatype = datatype
         self.name = name
+        self.klassname = name
 
     def __str__(self) -> str:
         return "'%s' has been dropped" % self.name
@@ -68,6 +73,7 @@ class AddedMember(SchemaChange):
     def __init__(self, member, definition_name):
         self.member = member
         self.definition_name = definition_name
+        self.klassname = definition_name
 
     def __str__(self) -> str:
         return "'%s' has an addded member '%s'" % (self.definition_name,
@@ -84,6 +90,7 @@ class ChangedMember(SchemaChange):
         self.member_name = member_name
         self.old_member = old_member
         self.new_member = new_member
+        self.klassname = name
 
     def __str__(self) -> str:
         return "'%s.%s' changed type from %s to %s" % (self.name, self.member_name,
@@ -98,6 +105,7 @@ class DroppedMember(SchemaChange):
     def __init__(self, member, definition_name):
         self.member = member
         self.definition_name = definition_name
+        self.klassname = definition_name
 
     def __str__(self) -> str:
         return "'%s' has a dropped member '%s'" % (self.definition_name,
@@ -108,12 +116,55 @@ class DroppedMember(SchemaChange):
                                                    self.member.name)
 
 
+class RenamedMember(SchemaChange):
+    def __init__(self, name, member_name_old, member_name_new):
+        self.name = name
+        self.member_name_old = member_name_old
+        self.member_name_new = member_name_new
+        self.klassname = name
+
+    def __str__(self) -> str:
+        return f"'{self.name}': member '{self.member_name_old}' renamed to '{self.member_name_new}'."
+
+    def __repr__(self) -> str:
+        return f"'{self.name}': member '{self.member_name_old}' renamed to '{self.member_name_new}'."
+
+
+def SIOFilter(schema_changes):
+    """
+    Checks what is required/supported for the SIO backend
+
+    At this point in time all schema changes have to be handled on PODIO side
+
+    """
+    return schema_changes
+
+
+def ROOTFilter(schema_changes):
+    """
+    Checks what is required/supported for the ROOT backend
+
+    At this point in time we are only interested in renames.
+    Everything else will be done by ROOT automatically
+    """
+    relevant_schema_changes = []
+    for schema_change in schema_changes:
+        if type(schema_change) == RenamedMember:
+            relevant_schema_changes.append(schema_change)
+    return relevant_schema_changes
+
+
 class DataModelComparator:
-    def __init__(self, yamlfile_new, yamlfile_old) -> None:
+    def __init__(self, yamlfile_new, yamlfile_old, evolution_file=None) -> None:
         self.yamlfile_new = yamlfile_new
         self.yamlfile_old = yamlfile_old
+        self.evolution_file = evolution_file
         self.reader = PodioConfigReader()
+
+        self.detected_schema_changes = []
+        self.read_schema_changes = []
         self.schema_changes = []
+
         self.warnings = []
         self.errors = []
 
@@ -127,8 +178,10 @@ class DataModelComparator:
         added_components, dropped_components, kept_components = self._compare_keys(self.components1.keys(),
                                                                                    self.components2.keys())
         # Make findings known globally
-        self.schema_changes.extend([AddedComponent(self.components1[name], name) for name in added_components])
-        self.schema_changes.extend([DroppedComponent(self.components2[name], name) for name in dropped_components])
+        self.detected_schema_changes.extend([AddedComponent(self.components1[name], name)
+                                            for name in added_components])
+        self.detected_schema_changes.extend([DroppedComponent(self.components2[name], name)
+                                            for name in dropped_components])
 
         self._compare_definitions(kept_components, self.components1, self.components2, "Members")
 
@@ -137,8 +190,8 @@ class DataModelComparator:
         added_types, dropped_types, kept_types = self._compare_keys(self.datatypes1.keys(),
                                                                     self.datatypes2.keys())
         # Make findings known globally
-        self.schema_changes.extend([AddedDatatype(self.datatypes1[name], name) for name in added_types])
-        self.schema_changes.extend([DroppedDatatype(self.datatypes2[name], name) for name in dropped_types])
+        self.detected_schema_changes.extend([AddedDatatype(self.datatypes1[name], name) for name in added_types])
+        self.detected_schema_changes.extend([DroppedDatatype(self.datatypes2[name], name) for name in dropped_types])
 
         self._compare_definitions(kept_types, self.datatypes1, self.datatypes2, "Members")
 
@@ -150,15 +203,15 @@ class DataModelComparator:
             added_members, dropped_members, kept_members = self._compare_keys(members1.keys(),
                                                                               members2.keys())
             # Make findings known globally
-            self.schema_changes.extend([AddedMember(members1[member], name) for member in added_members])
-            self.schema_changes.extend([DroppedMember(members2[member], name) for member in dropped_members])
+            self.detected_schema_changes.extend([AddedMember(members1[member], name) for member in added_members])
+            self.detected_schema_changes.extend([DroppedMember(members2[member], name) for member in dropped_members])
 
             # now let's compare old and new for the kept members
             for member_name in kept_members:
                 new = members1[member_name]
                 old = members2[member_name]
                 if (old.full_type != new.full_type):
-                    self.schema_changes.append(
+                    self.detected_schema_changes.append(
                         ChangedMember(name, member_name, old, new))
 
     def _compare_keys(self, keys1, keys2):
@@ -167,9 +220,21 @@ class DataModelComparator:
         kept = set(keys1).intersection(keys2)
         return added, dropped, kept
 
+    def get_changed_schemata(self, filter=None):
+        if filter:
+            schema_changes = filter(self.schema_changes)
+        else:
+            schema_changes = self.schema_changes
+        changed_klasses = {}
+        for schema_change in schema_changes:
+            changed_klass = changed_klasses.setdefault(schema_change.klassname, [])
+            changed_klass.append(schema_change)
+        return changed_klasses
+
     def heuristics(self):
         # let's analyse the changes in more detail
-        schema_changes = self.schema_changes
+        # make a copy that can be altered along the way
+        schema_changes = self.detected_schema_changes.copy()
 
         # are there dropped/added member pairs that could be interpreted as rename?
         dropped_members = [change for change in schema_changes if type(change) == DroppedMember]
@@ -180,9 +245,18 @@ class DataModelComparator:
 
             for added_member in added_members_in_same_definition:
                 if added_member.member.full_type == dropped_member.member.full_type:
-                    self.warnings.append("Definition '%s' has a potential member rename '%s' -> '%s' of type '%s'." %
-                                         (dropped_member.definition_name, dropped_member.member.name,
-                                          added_member.member.name, dropped_member.member.full_type))
+                    # this is a rename candidate. So let's see whether it has been explicitly declared by the user
+                    for schema_change in self.read_schema_changes:
+                        if type(schema_change) == RenamedMember and schema_change.name == dropped_member.definition_name:
+                            if (schema_change.member_name_old == dropped_member.member.name) and (schema_change.member_name_new == added_member.member.name):
+                               # remove the dropping/adding from the schema changes and replace it by the rename
+                               schema_changes.remove(dropped_member)
+                               schema_changes.remove(added_member)
+                               schema_changes.append(schema_change)
+                        else:
+                            self.warnings.append("Definition '%s' has a potential member rename '%s' -> '%s' of type '%s'." %
+                                                 (dropped_member.definition_name, dropped_member.member.name,
+                                               added_member.member.name, dropped_member.member.full_type))
 
         # are the member changes actually supported/supportable?
         changed_members = [change for change in schema_changes if type(change) == ChangedMember]
@@ -217,14 +291,20 @@ class DataModelComparator:
                 if set(dropped_members.keys()) == set(added_members.keys()):
                     self.warnings.append("Potential rename of '%s' into '%s'." % (dropped.name, added.name))
 
+        # make the results of the heuristics known to the instance
+        self.schema_changes = schema_changes
+
+
     def print(self):
         print("Comparing datamodel versions %s and %s"
               % (self.datamodel_new.schema_version,
                  self.datamodel_old.schema_version)
               )
-        print("Found %i schema changes:" % len(self.schema_changes))
+
+        print("Detected %i schema changes:" % len(self.schema_changes))
         for change in self.schema_changes:
             print(" - %s" % change)
+
 
         if len(self.warnings) > 0:
             print("Warnings:")
@@ -243,6 +323,28 @@ class DataModelComparator:
         self.components2 = self.datamodel_old.components
         self.datatypes1 = self.datamodel_new.datatypes
         self.datatypes2 = self.datamodel_old.datatypes
+        if self.evolution_file:
+            self.read_evolution_file()
+
+    def read_evolution_file(self) -> None:
+        supported_operations = ("rename")
+        with open(self.evolution_file, "r", encoding='utf-8') as stream:
+            content = yaml.load(stream, yaml.SafeLoader)
+            from_schemaversion = content["from_schemaversion"]
+            to_schemaversion = content["to_schemaversion"]
+
+            if (from_schemaversion != self.datamodel_old.schema_version) or (to_schemaversion != self.datamodel_new.schema_version):  # nopep8
+                raise BaseException("Versions in schema evolution file do not match versions in data model descriptions.")  # nopep8
+
+            if "evolutions" in content:
+                for klassname, value in content["evolutions"].items():
+                    # now let's go through the various supported evolutions
+                    for operation, details in value.items():
+                        if operation not in supported_operations:
+                            raise BaseException(f'Schema evolution operation {operation} in {klassname} unknown or not supported')  # nopep8
+                        elif operation == 'rename':
+                            schema_change = RenamedMember(klassname,details[0],details[1])
+                            self.read_schema_changes.append(schema_change)
 
 
 ##########################
@@ -253,9 +355,11 @@ if __name__ == "__main__":
 
   parser.add_argument('new', help='yaml file describing the new datamodel')
   parser.add_argument('old', help='yaml file describing the old datamodel')
+  parser.add_argument('-e', '--evo', help='yaml file clarifying schema evolutions', action='store')
   args = parser.parse_args()
 
-  comparator = DataModelComparator(args.new, args.old)
+  comparator = DataModelComparator(args.new, args.old, evolution_file=args.evo)
   comparator.read()
   comparator.compare()
   comparator.print()
+  # print(comparator.get_changed_schemata(filter=ROOTFilter))

@@ -1,0 +1,10 @@
+---
+from_schemaversion : 0
+to_schemaversion : 1
+
+evolutions:
+
+  ex2::NamespaceStruct:
+    rename:
+      - y_old
+      - y

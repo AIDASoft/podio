@@ -117,6 +117,10 @@ public:
             }};
   }
 
+  podio::CollectionReadBuffers createSchemaEvolvableBuffers(__attribute__((unused)) int readSchemaVersion, __attribute__((unused)) podio::Backend backend) /*const*/ final {
+    return createBuffers();
+  }
+
   /// check for validity of the container after read
   bool isValid() const override {
     return true;

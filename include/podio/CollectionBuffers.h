@@ -2,6 +2,7 @@
 #define PODIO_COLLECTIONBUFFERS_H
 
 #include "podio/ObjectID.h"
+#include "podio/SchemaEvolution.h"
 
 #include <functional>
 #include <memory>
@@ -41,7 +42,9 @@ struct CollectionWriteBuffers {
 };
 
 struct CollectionReadBuffers {
+  bool needsSchemaEvolution{false};
   void* data{nullptr};
+  void* data_oldschema{nullptr};
   CollRefCollection* references{nullptr};
   VectorMembersInfo* vectorMembers{nullptr};
 
