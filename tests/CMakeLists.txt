@@ -6,7 +6,8 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
 endforeach()
 
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
-  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS})
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+  OLD_DESCRIPTION datalayout_old.yaml )
 
 # Use the cmake building blocks to add the different parts (conditionally)
 PODIO_ADD_DATAMODEL_CORE_LIB(TestDataModel "${headers}" "${sources}")

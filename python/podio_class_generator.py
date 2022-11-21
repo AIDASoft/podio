@@ -79,7 +79,7 @@ class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
   def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun,
-               upstream_edm, old_description):
+               upstream_edm, old_description, evolution_file):
     self.install_dir = install_dir
     self.package_name = package_name
     self.io_handlers = io_handlers
@@ -88,6 +88,7 @@ class ClassGenerator:
     self.yamlfile = yamlfile
     # schema evolution specific code
     self.old_yamlfile = old_description
+    self.evolution_file = evolution_file
     self.old_datamodel = None
     self.old_datamodels_components = {}
     self.old_datamodels_datatypes = {}
@@ -133,9 +134,11 @@ class ClassGenerator:
     # which are the ones that changed?
     # have to extend the selection xml file
     if self.old_yamlfile:
-      comparator = DataModelComparator(self.yamlfile,self.old_yamlfile)
+      comparator = DataModelComparator(self.yamlfile, self.old_yamlfile,
+                                       evolution_file=self.evolution_file)
       comparator.read()
       comparator.compare()
+      # some sanity checks
 
   def print_report(self):
     """Print a summary report about the generated code"""
@@ -535,6 +538,8 @@ if __name__ == "__main__":
   parser.add_argument('--old-description',
                       help='Provide schema evolution relative to the old yaml file.',
                       default=None, action='store')
+  parser.add_argument('-e', '--evolution_file', help='yaml file clarifying schema evolutions',
+                      default=None, action='store')
 
   args = parser.parse_args()
 
@@ -548,7 +553,7 @@ if __name__ == "__main__":
 
   gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers,
                        verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm,
-                       old_description=args.old_description)
+                       old_description=args.old_description, evolution_file=args.evolution_file)
   if args.clangformat:
     gen.clang_format = get_clang_format()
   gen.process()
