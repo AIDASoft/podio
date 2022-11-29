@@ -235,7 +235,6 @@ class DataModelComparator:
         # let's analyse the changes in more detail
         # make a copy that can be altered along the way
         schema_changes = self.detected_schema_changes.copy()
-
         # are there dropped/added member pairs that could be interpreted as rename?
         dropped_members = [change for change in schema_changes if type(change) == DroppedMember]
         added_members = [change for change in schema_changes if type(change) == AddedMember]
@@ -246,6 +245,7 @@ class DataModelComparator:
             for added_member in added_members_in_same_definition:
                 if added_member.member.full_type == dropped_member.member.full_type:
                     # this is a rename candidate. So let's see whether it has been explicitly declared by the user
+                    is_rename = False
                     for schema_change in self.read_schema_changes:
                         if type(schema_change) == RenamedMember and schema_change.name == dropped_member.definition_name:
                             if (schema_change.member_name_old == dropped_member.member.name) and (schema_change.member_name_new == added_member.member.name):
@@ -253,7 +253,8 @@ class DataModelComparator:
                                schema_changes.remove(dropped_member)
                                schema_changes.remove(added_member)
                                schema_changes.append(schema_change)
-                        else:
+                               is_rename = True
+                    if not is_rename:
                             self.warnings.append("Definition '%s' has a potential member rename '%s' -> '%s' of type '%s'." %
                                                  (dropped_member.definition_name, dropped_member.member.name,
                                                added_member.member.name, dropped_member.member.full_type))
@@ -362,4 +363,4 @@ if __name__ == "__main__":
   comparator.read()
   comparator.compare()
   comparator.print()
-  # print(comparator.get_changed_schemata(filter=ROOTFilter))
+  print(comparator.get_changed_schemata(filter=ROOTFilter))

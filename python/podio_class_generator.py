@@ -124,10 +124,11 @@ class ClassGenerator:
 
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
-    self.print_report()
 
     self._write_cmake_lists_file()
     self.process_schema_evolution()
+
+    self.print_report()
 
   def process_schema_evolution(self):
     # have to make all necessary comparisons
@@ -139,6 +140,16 @@ class ClassGenerator:
       comparator.read()
       comparator.compare()
       # some sanity checks
+      if len(comparator.errors)>0:
+        print(f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' have unresolvable schema evolution incompatibilities:")
+        for error in comparator.errors:
+          print(error)
+        #sys.exit(-1)
+      if len(comparator.warnings)>0:
+        print(f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' have resolvable schema evolution incompatibilities:")
+        for warning in comparator.warnings:
+          print(warning)
+        sys.exit(-1)
 
   def print_report(self):
     """Print a summary report about the generated code"""
