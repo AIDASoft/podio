@@ -13,6 +13,7 @@
 #include "TTreeCache.h"
 
 #include <unordered_map>
+#include <filesystem>
 
 namespace podio {
 
@@ -197,6 +198,19 @@ void ROOTFrameReader::openFile(const std::string& filename) {
 }
 
 void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
+  bool any_file_exists = false;
+  for (const auto& fn : filenames) {
+    if (!std::filesystem::exists(fn)) {
+      std::cout << "Warning: file " << fn << " does not exist " << std::endl;
+    }
+    else {
+      any_file_exists = true;
+    }
+  }
+  if (!any_file_exists) {
+    std::cout << "No files could be found..." << std::endl;
+    return;
+  }
   m_metaChain = std::make_unique<TChain>(root_utils::metaTreeName);
   // NOTE: We simply assume that the meta data doesn't change throughout the
   // chain! This essentially boils down to the assumption that all files that

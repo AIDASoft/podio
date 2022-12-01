@@ -7,6 +7,7 @@
 #include <sio/definitions.h>
 
 #include <utility>
+#include <filesystem>
 
 namespace podio {
 
@@ -15,6 +16,11 @@ SIOFrameReader::SIOFrameReader() {
 }
 
 void SIOFrameReader::openFile(const std::string& filename) {
+  if (!std::filesystem::exists(filename)) {
+    std::cout << "Warning: file " << filename << " does not exist " << std::endl;
+    return;
+  }
+
   m_stream.open(filename, std::ios::binary);
   if (!m_stream.is_open()) {
     SIO_THROW(sio::error_code::not_open, "Cannot open input file '" + filename + "' for reading");

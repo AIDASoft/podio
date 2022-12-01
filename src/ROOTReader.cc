@@ -13,6 +13,7 @@
 #include "TTree.h"
 #include "TTreeCache.h"
 #include <memory>
+#include <filesystem>
 
 namespace podio {
 // todo: see https://github.com/AIDASoft/podio/issues/290
@@ -143,7 +144,17 @@ void ROOTReader::openFile(const std::string& filename) {
 void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   m_chain = new TChain("events");
   for (const auto& filename : filenames) {
-    m_chain->Add(filename.c_str());
+    if (std::filesystem::exists(filename)) {
+      m_chain->Add(filename.c_str());
+    }
+    else {
+      std::cout << "Warning: file " << filename << " does not exist." << std::endl;
+    }
+  }
+  // Empty chain
+  if (!m_chain->GetListOfFiles()->GetEntries()) {
+    std::cout << "No files could be found..." << std::endl;
+    return;
   }
 
   // read the meta data and build the collectionBranches cache
