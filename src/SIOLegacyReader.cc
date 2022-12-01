@@ -7,6 +7,8 @@
 #include <sio/compression/zlib.h>
 #include <sio/definitions.h>
 
+#include <filesystem>
+
 namespace podio {
 
 SIOLegacyReader::SIOLegacyReader() {
