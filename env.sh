@@ -9,7 +9,7 @@ fi
 
 unamestr=`uname`
 if [[ "$unamestr" = 'Linux' ]]; then
-  if [ "$(echo $LD_LIBRARY_PATH | grep -o $PODIO/lib)" = "" ]; then
+  if ! echo $LD_LIBRARY_PATH | grep $PODIO/lib > /dev/null 2>&1; then
     # RedHat based put the libraries into lib64
     if [ -d $PODIO/lib64 ]; then
       export LD_LIBRARY_PATH=$PODIO/lib64:$LD_LIBRARY_PATH
