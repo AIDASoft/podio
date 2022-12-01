@@ -29,6 +29,6 @@ if ! echo $PYTHONPATH | grep -o $PODIO/python > /dev/null 2>&1; then
   export PYTHONPATH=$PODIO/python:$PYTHONPATH
 fi
 
-if [ "$(echo $ROOT_INCLUDE_PATH | grep -o $PODIO/include)" = "" ]; then
+if ! echo $ROOT_INCLUDE_PATH | grep -o $PODIO/include > /dev/null 2>&1; then
   export ROOT_INCLUDE_PATH=$PODIO/include:$ROOT_INCLUDE_PATH
 fi
