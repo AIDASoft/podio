@@ -135,7 +135,17 @@ void ROOTLegacyReader::openFile(const std::string& filename) {
 void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
   m_chain = std::make_unique<TChain>("events");
   for (const auto& filename : filenames) {
-    m_chain->Add(filename.c_str());
+    if (std::filesystem::exists(filename)) {
+      m_chain->Add(filename.c_str());
+    }
+    else {
+      std::cout << "Warning: file " << filename << " does not exist." << std::endl;
+    }
+  }
+  // Empty chain
+  if (!m_chain->GetListOfFiles()->GetEntries()) {
+    std::cout << "No files could be found..." << std::endl;
+    return;
   }
 
   // read the meta data and build the collectionBranches cache
