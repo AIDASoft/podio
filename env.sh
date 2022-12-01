@@ -20,7 +20,7 @@ if [[ "$unamestr" = 'Linux' ]]; then
 elif [[ "$unamestr" = 'Darwin' ]]; then
   # This currenty does not work on OS X as DYLD_LIBRARY_PATH is ignored
   # in recent OS X versions
-  if [ "$(echo $DYLD_LIBRARY_PATH | grep -o $PODIO/lib)" = "" ]; then
+  if ! echo $DYLD_LIBRARY_PATH | grep -o $PODIO/lib > /dev/null 2>&1; then
       export DYLD_LIBRARY_PATH=$PODIO/lib:$DYLD_LIBRARY_PATH
     fi
 fi
