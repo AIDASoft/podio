@@ -25,7 +25,7 @@ elif [[ "$unamestr" = 'Darwin' ]]; then
     fi
 fi
 
-if [ "$(echo $PYTHONPATH | grep -o $PODIO/python)" = "" ]; then
+if ! echo $PYTHONPATH | grep -o $PODIO/python > /dev/null 2>&1; then
   export PYTHONPATH=$PODIO/python:$PYTHONPATH
 fi
 
