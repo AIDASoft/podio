@@ -66,6 +66,9 @@ using MutableAssociation = AssociationT<detail::GetDefT<FromT>, detail::GetDefT<
 template <typename FromT, typename ToT>
 class AssociationCollection;
 
+template <typename FromT, typename ToT>
+class AssociationCollectionData;
+
 template <typename FromT, typename ToT, bool Mutable>
 class AssociationCollectionIteratorT;
 
