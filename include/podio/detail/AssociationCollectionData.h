@@ -1,8 +1,9 @@
 #ifndef PODIO_ASSOCIATIONCOLLECTIONDATA_H
 #define PODIO_ASSOCIATIONCOLLECTIONDATA_H
 
-#include "podio/AssociationFwd.h"
-#include "podio/AssociationObj.h"
+#include "podio/detail/AssociationFwd.h"
+#include "podio/detail/AssociationObj.h"
+
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/ICollectionProvider.h"
