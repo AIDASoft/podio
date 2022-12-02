@@ -8,25 +8,27 @@ if [ -z "$PODIO" ]; then
 fi
 
 unamestr=`uname`
-if [[ "$unamestr" == 'Linux' ]]; then
-	echo $LD_LIBRARY_PATH | grep $PODIO/lib >& /dev/null
-	if [ $? == "1" ]; then
+if [[ "$unamestr" = 'Linux' ]]; then
+  if ! echo $LD_LIBRARY_PATH | grep $PODIO/lib > /dev/null 2>&1; then
     # RedHat based put the libraries into lib64
     if [ -d $PODIO/lib64 ]; then
       export LD_LIBRARY_PATH=$PODIO/lib64:$LD_LIBRARY_PATH
     else
       export LD_LIBRARY_PATH=$PODIO/lib:$LD_LIBRARY_PATH
     fi
-	fi
-elif [[ "$unamestr" == 'Darwin' ]]; then
+  fi
+elif [[ "$unamestr" = 'Darwin' ]]; then
   # This currenty does not work on OS X as DYLD_LIBRARY_PATH is ignored
   # in recent OS X versions
-	echo $DYLD_LIBRARY_PATH | grep $PODIO/lib >& /dev/null
-	if [ $? == "1" ]; then
-    	export DYLD_LIBRARY_PATH=$PODIO/lib:$DYLD_LIBRARY_PATH
+  if ! echo $DYLD_LIBRARY_PATH | grep -o $PODIO/lib > /dev/null 2>&1; then
+      export DYLD_LIBRARY_PATH=$PODIO/lib:$DYLD_LIBRARY_PATH
     fi
 fi
-echo $PYTHONPATH | grep $PODIO/python >& /dev/null
-if [ $? == "1" ]; then
-	export PYTHONPATH=$PODIO/python:$PYTHONPATH
+
+if ! echo $PYTHONPATH | grep -o $PODIO/python > /dev/null 2>&1; then
+  export PYTHONPATH=$PODIO/python:$PYTHONPATH
+fi
+
+if ! echo $ROOT_INCLUDE_PATH | grep -o $PODIO/include > /dev/null 2>&1; then
+  export ROOT_INCLUDE_PATH=$PODIO/include:$ROOT_INCLUDE_PATH
 fi
