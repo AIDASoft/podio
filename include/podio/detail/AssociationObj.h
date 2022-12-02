@@ -1,7 +1,8 @@
 #ifndef PODIO_ASSOCIATIONOBJ_H
 #define PODIO_ASSOCIATIONOBJ_H
 
-#include "podio/AssociationFwd.h"
+#include "podio/detail/AssociationFwd.h"
+
 #include "podio/ObjBase.h"
 #include "podio/ObjectID.h"
 

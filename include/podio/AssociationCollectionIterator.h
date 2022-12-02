@@ -1,8 +1,8 @@
 #ifndef PODIO_ASSOCIATIONCOLLECTIONITERATOR_H
 #define PODIO_ASSOCIATIONCOLLECTIONITERATOR_H
 
-#include "podio/AssociationCollectionData.h"
-#include "podio/AssociationFwd.h"
+#include "podio/detail/AssociationCollectionData.h"
+#include "podio/detail/AssociationFwd.h"
 
 namespace podio {
 template <typename FromT, typename ToT, bool Mutable>

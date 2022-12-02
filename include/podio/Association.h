@@ -1,8 +1,8 @@
 #ifndef PODIO_ASSOCIATION_H
 #define PODIO_ASSOCIATION_H
 
-#include "podio/AssociationFwd.h"
-#include "podio/AssociationObj.h"
+#include "podio/detail/AssociationFwd.h"
+#include "podio/detail/AssociationObj.h"
 
 #include <ostream>
 #include <utility> // std::swap

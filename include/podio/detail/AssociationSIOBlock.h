@@ -1,7 +1,8 @@
 #ifndef PODIO_ASSOCIATIONSIOBLOCK_H
 #define PODIO_ASSOCIATIONSIOBLOCK_H
 
-#include "podio/AssociationFwd.h"
+#include "podio/detail/AssociationFwd.h"
+
 #include "podio/SIOBlock.h"
 
 #include <sio/api.h>
