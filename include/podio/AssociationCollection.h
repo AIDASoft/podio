@@ -11,7 +11,12 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/ICollectionProvider.h"
 
+#include <iomanip>
+#include <memory>
+#include <mutex>
+#include <ostream>
 #include <string>
+#include <type_traits>
 
 namespace podio {
 
@@ -26,11 +31,18 @@ class AssociationCollection : public podio::CollectionBase {
   using AssocT = Association<FromT, ToT>;
   using MutableAssocT = MutableAssociation<FromT, ToT>;
 
+  using CollectionT = podio::AssociationCollection<FromT, ToT>;
+  using CollectionDataT = podio::AssociationCollectionData<FromT, ToT>;
+
 public:
   using const_iterator = AssociationCollectionIterator<FromT, ToT>;
   using iterator = AssociationMutableCollectionIterator<FromT, ToT>;
 
   AssociationCollection() = default;
+
+  AssociationCollection(CollectionDataT&& data, bool isSubsetColl) :
+      m_isSubsetColl(isSubsetColl), m_collectionID(0), m_storage(std::move(data)) {
+  }
 
   // Move-only type
   AssociationCollection(const AssociationCollection&) = delete;
@@ -107,6 +119,13 @@ public:
     m_isPrepared = false;
   }
 
+  void print(std::ostream& os = std::cout, bool flush = true) const override {
+    os << *this;
+    if (flush) {
+      os.flush();
+    }
+  }
+
   // support for the iterator protocol
   const_iterator begin() const {
     return const_iterator(0, &m_storage.entries);
@@ -125,8 +144,28 @@ public:
     return m_isValid;
   }
 
-  podio::CollectionBuffers getBuffers() override {
+  podio::CollectionWriteBuffers getBuffers() override {
     return m_storage.getCollectionBuffers(m_isSubsetColl);
+  }
+
+  podio::CollectionReadBuffers createBuffers() override /*const*/ {
+    // Very cumbersome way at the moment. We get the actual buffers to have the
+    // references and vector members sized appropriately (we will use this
+    // information to create new buffers outside)
+    auto collBuffers = m_storage.getCollectionBuffers(m_isSubsetColl);
+    auto readBuffers = podio::CollectionReadBuffers{};
+    readBuffers.references = collBuffers.references;
+    readBuffers.vectorMembers = collBuffers.vectorMembers;
+    readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+      CollectionDataT data(buffers, isSubsetColl);
+      return std::make_unique<CollectionT>(std::move(data), isSubsetColl);
+    };
+    readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
+      if (buffers.data) {
+        buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
+      }
+    };
+    return readBuffers;
   }
 
   std::string getTypeName() const override {
@@ -164,8 +203,20 @@ public:
     return m_collectionID;
   }
 
-  void prepareForWrite() override {
-    // If the collection has been prepared already there is nothing to do
+  void prepareForWrite() const override {
+    // TODO: Replace this double locking pattern with an atomic and only one
+    // lock. Problem: std::atomic is not default movable
+    {
+      std::lock_guard lock{*m_storageMtx};
+      // If the collection has been prepared already there is nothing to do
+      if (m_isPrepared) {
+        return;
+      }
+    }
+
+    std::lock_guard lock{*m_storageMtx};
+    // by the time we acquire the lock another thread might have already
+    // succeeded, so we need to check again now
     if (m_isPrepared) {
       return;
     }
@@ -196,14 +247,33 @@ private:
   // For setReferences, we need to give our own CollectionData access to our
   // private entries. Otherwise we would need to expose a public member function
   // that gives access to the Obj* which is definitely not what we want
-  friend class AssociationCollectionData<FromT, ToT>;
+  friend CollectionDataT;
 
   bool m_isValid{false};
-  bool m_isPrepared{false};
+  mutable bool m_isPrepared{false};
   bool m_isSubsetColl{false};
   int m_collectionID{0};
-  AssociationCollectionData<FromT, ToT> m_storage{};
+  mutable std::unique_ptr<std::mutex> m_storageMtx{std::make_unique<std::mutex>()};
+  mutable CollectionDataT m_storage{};
 };
+
+template <typename FromT, typename ToT>
+std::ostream& operator<<(std::ostream& o, const AssociationCollection<FromT, ToT>& v) {
+  const auto old_flags = o.flags();
+  o << "          id:      weight:" << '\n';
+  for (const auto&& el : v) {
+    o << std::scientific << std::showpos << std::setw(12) << el.id() << " " << std::setw(12) << " " << el.getWeight()
+      << '\n';
+
+    o << "     from : ";
+    o << el.getFrom().id() << std::endl;
+    o << "       to : ";
+    o << el.getTo().id() << std::endl;
+  }
+
+  o.flags(old_flags);
+  return o;
+}
 
 } // namespace podio
 

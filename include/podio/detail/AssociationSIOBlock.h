@@ -3,6 +3,8 @@
 
 #include "podio/detail/AssociationFwd.h"
 
+#include "podio/CollectionBuffers.h"
+
 #include "podio/SIOBlock.h"
 
 #include <sio/api.h>
@@ -26,17 +28,21 @@ public:
   }
 
   void read(sio::read_device& device, sio::version_type) override {
-    auto buffers = _col->getBuffers();
-    if (!_col->isSubsetCollection()) {
-      auto* dataVec = buffers.dataAsVector<float>();
+    m_buffers.references->emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
+    if (!m_subsetColl) {
+      m_buffers.references->emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
+    }
+
+    if (!m_subsetColl) {
       unsigned size{0};
       device.data(size);
-      dataVec->resize(size);
+      m_buffers.data = new std::vector<float>(size);
+      auto* dataVec = m_buffers.dataAsVector<float>();
       podio::handlePODDataSIO(device, dataVec->data(), size);
     }
 
-    // ---- references
-    auto* refColls = buffers.references;
+    // ---- read ref collections
+    auto* refColls = m_buffers.references;
     for (auto& refC : *refColls) {
       unsigned size{0};
       device.data(size);
@@ -46,17 +52,15 @@ public:
   }
 
   void write(sio::write_device& device) override {
-    _col->prepareForWrite();
-    auto buffers = _col->getBuffers();
-    if (!_col->isSubsetCollection()) {
-      auto* dataVec = buffers.dataAsVector<float>();
+    if (!m_subsetColl) {
+      auto* dataVec = podio::CollectionWriteBuffers::asVector<float>(m_buffers.data);
       unsigned size = dataVec->size();
       device.data(size);
       podio::handlePODDataSIO(device, dataVec->data(), size);
     }
 
-    // ---- references
-    auto* refColls = buffers.references;
+    // ---- wirte ref collections ------
+    auto* refColls = m_buffers.references;
     for (auto& refC : *refColls) {
       unsigned size = refC->size();
       device.data(size);
@@ -64,9 +68,19 @@ public:
     }
   }
 
-  void createCollection(const bool subsetCollection = false) override {
-    setCollection(new AssociationCollection<FromT, ToT>());
-    _col->setSubsetCollection(subsetCollection);
+  void createBuffers(const bool subsetCollection = false) override {
+    m_subsetColl = subsetCollection;
+
+    m_buffers.references = new podio::CollRefCollection();
+    m_buffers.vectorMembers = new podio::VectorMembersInfo();
+
+    m_buffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+      AssociationCollectionData<FromT, ToT> data(buffers, isSubsetColl);
+      return std::make_unique<AssociationCollection<FromT, ToT>>(std::move(data), isSubsetColl);
+    };
+
+    // setCollection(new AssociationCollection<FromT, ToT>());
+    // _col->setSubsetCollection(subsetCollection);
   }
 
   SIOBlock* create(const std::string& name) const override {

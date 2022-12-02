@@ -21,17 +21,28 @@ public:
 
   AssociationCollectionData() :
       m_rel_from(new std::vector<FromT>()), m_rel_to(new std::vector<ToT>()), m_data(new AssociationDataContainer()) {
+    m_refCollections.reserve(2);
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
   }
+
+  AssociationCollectionData(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
+      m_rel_from(new std::vector<FromT>()),
+      m_rel_to(new std::vector<ToT>()),
+      m_refCollections(std::move(*buffers.references)) {
+    if (!isSubsetColl) {
+      m_data.reset(buffers.dataAsVector<float>());
+    }
+  }
+
   AssociationCollectionData(const AssociationCollectionData&) = delete;
   AssociationCollectionData& operator=(const AssociationCollectionData&) = delete;
   AssociationCollectionData(AssociationCollectionData&&) = default;
   AssociationCollectionData& operator=(AssociationCollectionData&&) = default;
   ~AssociationCollectionData() = default;
 
-  podio::CollectionBuffers getCollectionBuffers(bool isSubsetColl) {
-    return {isSubsetColl ? nullptr : (void*)&m_data, &m_refCollections, nullptr};
+  podio::CollectionWriteBuffers getCollectionBuffers(bool isSubsetColl) {
+    return {isSubsetColl ? nullptr : (void*)&m_data, &m_refCollections, &m_vecInfo};
   }
 
   void clear(bool isSubsetColl) {
@@ -177,11 +188,12 @@ public:
 
 private:
   // members to handle relations
-  podio::UVecPtr<FromT> m_rel_from{};
-  podio::UVecPtr<ToT> m_rel_to{};
+  podio::UVecPtr<FromT> m_rel_from{nullptr};
+  podio::UVecPtr<ToT> m_rel_to{nullptr};
 
   // I/O related buffers (as far as necessary)
   podio::CollRefCollection m_refCollections{};
+  podio::VectorMembersInfo m_vecInfo{};
   std::unique_ptr<AssociationDataContainer> m_data{nullptr};
 };
 
