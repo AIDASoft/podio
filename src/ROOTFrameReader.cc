@@ -13,7 +13,6 @@
 #include "TTreeCache.h"
 
 #include <unordered_map>
-#include <filesystem>
 
 namespace podio {
 
@@ -193,29 +192,26 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
   return brNames;
 }
 
-void ROOTFrameReader::openFile(const std::string& filename) {
-  openFiles({filename});
+bool ROOTFrameReader::openFile(const std::string& filename) {
+  return openFiles({filename});
 }
 
-void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
-  bool any_file_exists = false;
-  for (const auto& fn : filenames) {
-    if (!std::filesystem::exists(fn)) {
-      std::cout << "Warning: file " << fn << " does not exist " << std::endl;
-    }
-    else {
-      any_file_exists = true;
-    }
-  }
-  if (!any_file_exists) {
-    std::cout << "No files could be found..." << std::endl;
-    return;
-  }
+bool ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   m_metaChain = std::make_unique<TChain>(root_utils::metaTreeName);
   // NOTE: We simply assume that the meta data doesn't change throughout the
   // chain! This essentially boils down to the assumption that all files that
   // are read this way were written with the same settings.
-  m_metaChain->Add(filenames[0].c_str());
+  uint i = 0;
+  while (i < filenames.size()) {
+    if(!m_metaChain->Add(filenames[i].c_str(), -1)) {
+      break;
+    }
+    i++;
+  }
+  // If no file is valid
+  if (!m_metaChain->GetListOfFiles()->GetEntries()) {
+    return false;
+  }
 
   podio::version::Version* versionPtr{nullptr};
   if (auto* versionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::versionBranchName)) {
@@ -235,6 +231,7 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
       it->second.chain->Add(fn.c_str());
     }
   }
+  return true;
 }
 
 unsigned ROOTFrameReader::getEntries(const std::string& name) const {

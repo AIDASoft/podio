@@ -7,7 +7,6 @@
 #include <sio/definitions.h>
 
 #include <utility>
-#include <filesystem>
 
 namespace podio {
 
@@ -15,20 +14,17 @@ SIOFrameReader::SIOFrameReader() {
   auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
 }
 
-void SIOFrameReader::openFile(const std::string& filename) {
-  if (!std::filesystem::exists(filename)) {
-    std::cout << "Warning: file " << filename << " does not exist " << std::endl;
-    return;
-  }
-
+bool SIOFrameReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
   if (!m_stream.is_open()) {
-    SIO_THROW(sio::error_code::not_open, "Cannot open input file '" + filename + "' for reading");
+    // SIO_THROW(sio::error_code::not_open, "Cannot open input file '" + filename + "' for reading");
+    return false;
   }
 
   // NOTE: reading TOC record first because that jumps back to the start of the file!
   readFileTOCRecord();
   readPodioHeader();
+  return true;
 }
 
 std::unique_ptr<SIOFrameData> SIOFrameReader::readNextEntry(const std::string& name) {

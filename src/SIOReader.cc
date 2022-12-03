@@ -8,7 +8,6 @@
 #include "sio/definitions.h"
 
 #include <memory>
-#include <filesystem>
 #include <sio/compression/zlib.h>
 
 namespace podio {
@@ -60,17 +59,17 @@ podio::GenericParameters* SIOReader::readEventMetaData() {
   return m_eventMetaData->metadata;
 }
 
-void SIOReader::openFile(const std::string& filename) {
-  if (!std::filesystem::exists(filename)) {
-    std::cout << "Warning: file " << filename << " does not exist " << std::endl;
-    return;
-  }
+bool SIOReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
+  if (!this->isValid()) {
+    return false;
+  }
   readCollectionIDTable();
 
   if (!readFileTOCRecord()) {
     reconstructFileTOCRecord();
   }
+  return true;
 }
 
 void SIOReader::closeFile() {

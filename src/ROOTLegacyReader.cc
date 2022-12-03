@@ -129,24 +129,20 @@ podio::GenericParameters ROOTLegacyReader::readEventMetaData() {
   return params;
 }
 
-void ROOTLegacyReader::openFile(const std::string& filename) {
-  openFiles({filename});
+bool ROOTLegacyReader::openFile(const std::string& filename) {
+  return openFiles({filename});
 }
 
-void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
+bool ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
   m_chain = std::make_unique<TChain>("events");
   for (const auto& filename : filenames) {
-    if (std::filesystem::exists(filename)) {
-      m_chain->Add(filename.c_str());
-    }
-    else {
-      std::cout << "Warning: file " << filename << " does not exist." << std::endl;
-    }
+    m_chain->Add(filename.c_str(), -1); //-1 forces the headers to be read so that
+                                        // the validity of the files can be checked
   }
   // Empty chain
   if (!m_chain->GetListOfFiles()->GetEntries()) {
     std::cout << "No files could be found..." << std::endl;
-    return;
+    return false;
   }
 
   // read the meta data and build the collectionBranches cache
@@ -180,6 +176,7 @@ void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
 
   m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
   delete versionPtr;
+  return true;
 }
 
 unsigned ROOTLegacyReader::getEntries(const std::string& name) const {

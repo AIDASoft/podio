@@ -56,7 +56,7 @@ public:
   /// Returns the number of
   unsigned getEntries(const std::string& name) const;
 
-  void openFile(const std::string& filename);
+  bool openFile(const std::string& filename);
 
   /// Get the build version of podio that has been used to write the current file
   podio::version::Version currentFileVersion() const {

@@ -50,9 +50,9 @@ public:
   ROOTFrameReader(const ROOTFrameReader&) = delete;
   ROOTFrameReader& operator=(const ROOTFrameReader&) = delete;
 
-  void openFile(const std::string& filename);
+  bool openFile(const std::string& filename);
 
-  void openFiles(const std::vector<std::string>& filenames);
+  bool openFiles(const std::vector<std::string>& filenames);
 
   /**
    * Read the next data entry from which a Frame can be constructed for the

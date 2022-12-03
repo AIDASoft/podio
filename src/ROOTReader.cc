@@ -13,7 +13,6 @@
 #include "TTree.h"
 #include "TTreeCache.h"
 #include <memory>
-#include <filesystem>
 
 namespace podio {
 // todo: see https://github.com/AIDASoft/podio/issues/290
@@ -137,24 +136,20 @@ CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranc
   return collection;
 }
 
-void ROOTReader::openFile(const std::string& filename) {
-  openFiles({filename});
+bool ROOTReader::openFile(const std::string& filename) {
+  return openFiles({filename});
 }
 
-void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
+bool ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   m_chain = new TChain("events");
   for (const auto& filename : filenames) {
-    if (std::filesystem::exists(filename)) {
-      m_chain->Add(filename.c_str());
-    }
-    else {
-      std::cout << "Warning: file " << filename << " does not exist." << std::endl;
-    }
+    m_chain->Add(filename.c_str(), -1); //-1 forces the headers to be read so that
+                                        // the validity of the files can be checked
   }
   // Empty chain
   if (!m_chain->GetListOfFiles()->GetEntries()) {
     std::cout << "No files could be found..." << std::endl;
-    return;
+    return false;
   }
 
   // read the meta data and build the collectionBranches cache
@@ -188,6 +183,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
 
   m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
   delete versionPtr;
+  return true;
 }
 
 void ROOTReader::closeFile() {

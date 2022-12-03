@@ -42,8 +42,8 @@ public:
   ROOTReader(const ROOTReader&) = delete;
   ROOTReader& operator=(const ROOTReader&) = delete;
 
-  void openFile(const std::string& filename) override;
-  void openFiles(const std::vector<std::string>& filenames);
+  bool openFile(const std::string& filename) override;
+  bool openFiles(const std::vector<std::string>& filenames);
   void closeFile() override;
   void closeFiles();
 

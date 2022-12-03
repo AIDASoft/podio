@@ -7,22 +7,17 @@
 #include <sio/compression/zlib.h>
 #include <sio/definitions.h>
 
-#include <filesystem>
-
 namespace podio {
 
 SIOLegacyReader::SIOLegacyReader() {
   auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
 }
 
-void SIOLegacyReader::openFile(const std::string& filename) {
-  if (!std::filesystem::exists(filename)) {
-    std::cout << "Warning: file " << filename << " does not exist " << std::endl;
-    return;
-  }
+bool SIOLegacyReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
   if (!m_stream.is_open()) {
-    SIO_THROW(sio::error_code::not_open, "Cannot open input file '" + filename + "' for reading");
+    // SIO_THROW(sio::error_code::not_open, "Cannot open input file '" + filename + "' for reading");
+    return false;
   }
 
   // NOTE: reading TOC record first because that jumps back to the start of the file!

@@ -38,7 +38,7 @@ public:
   SIOReader(const SIOReader&) = delete;
   SIOReader& operator=(const SIOReader&) = delete;
 
-  void openFile(const std::string& filename) override;
+  bool openFile(const std::string& filename) override;
   void closeFile() override;
 
   /// Read all collections requested
