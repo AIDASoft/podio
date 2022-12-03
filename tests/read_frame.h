@@ -10,7 +10,12 @@
 template <typename ReaderT>
 int read_frames(const std::string& filename) {
   auto reader = ReaderT();
-  reader.openFile(filename);
+  bool res = reader.openFile(filename);
+  if (!res) {
+    std::cout << "File could not be opened, aborting." << std::endl;
+    return 1;
+  }
+
 
   if (reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "

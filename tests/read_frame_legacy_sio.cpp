@@ -7,7 +7,11 @@
 
 int main() {
   auto reader = podio::SIOLegacyReader();
-  reader.openFile("example.sio");
+  bool res = reader.openFile("example.sio");
+  if (!res) {
+    std::cout << "File could not be opened, aborting." << std::endl;
+    return 1;
+  }
 
   if (reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "

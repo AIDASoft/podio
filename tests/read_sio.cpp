@@ -4,7 +4,11 @@
 int main() {
   //  auto reader = podio::SIOReader();
   podio::SIOReader reader; // SIOReader has no copy c'tor ...
-  reader.openFile("example.sio");
+  bool res = reader.openFile("example.sio");
+  if (!res) {
+    std::cout << "File could not be opened, aborting." << std::endl;
+    return 1;
+  }
   if (reader.currentFileVersion() != podio::version::build_version) {
     return 1;
   }

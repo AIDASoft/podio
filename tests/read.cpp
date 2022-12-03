@@ -3,7 +3,11 @@
 
 int main() {
   auto reader = podio::ROOTReader();
-  reader.openFile("example.root");
+  bool res = reader.openFile("example.root");
+  if (!res) {
+    std::cout << "File could not be opened, aborting." << std::endl;
+    return 1;
+  }
   if (reader.currentFileVersion() != podio::version::build_version) {
     return 1;
   }
