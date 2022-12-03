@@ -16,7 +16,6 @@
 #include "TTreeCache.h"
 
 #include <unordered_map>
-#include <filesystem>
 
 namespace podio {
 
