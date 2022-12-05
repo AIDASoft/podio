@@ -1,5 +1,5 @@
-#ifndef PODIO_ASSOCIATIONFWD_H
-#define PODIO_ASSOCIATIONFWD_H
+#ifndef PODIO_DETAIL_ASSOCIATIONFWD_H
+#define PODIO_DETAIL_ASSOCIATIONFWD_H
 
 #include <algorithm>
 #include <deque>
@@ -80,4 +80,4 @@ using AssociationMutableCollectionIterator = AssociationCollectionIteratorT<From
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATIONFWD_H
+#endif // PODIO_DETAIL_ASSOCIATIONFWD_H

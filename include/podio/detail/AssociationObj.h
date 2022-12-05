@@ -1,5 +1,5 @@
-#ifndef PODIO_ASSOCIATIONOBJ_H
-#define PODIO_ASSOCIATIONOBJ_H
+#ifndef PODIO_DETAIL_ASSOCIATIONOBJ_H
+#define PODIO_DETAIL_ASSOCIATIONOBJ_H
 
 #include "podio/detail/AssociationFwd.h"
 
@@ -58,4 +58,4 @@ public:
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATIONOBJ_H
+#endif // PODIO_DETAIL_ASSOCIATIONOBJ_H
