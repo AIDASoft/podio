@@ -1,5 +1,6 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 #include "podio/AssociationCollection.h"
+#include "podio/detail/AssociationSIOBlock.h"
 
 // Datamodel includes
 {% for include in includes %}
@@ -7,5 +8,5 @@
 {% endfor %}
 
 {% for (from_t, to_t) in combinations %}
-static podio::AssociationCollection<{{from_t.full_type}}, {{to_t.full_type}}> podio__association_dummy__{{ package_name }}__{{ loop.index0 }}{};
+static podio::AssociationSIOBlock<{{from_t.full_type}}, {{to_t.full_type}}> podio__association_dummy__{{ package_name }}__sio_block__{{ loop.index0 }}{};
 {% endfor %}
