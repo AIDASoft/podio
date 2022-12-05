@@ -19,11 +19,15 @@
 #include "extension_model/ExternalComponentTypeCollection.h"
 #include "extension_model/ExternalRelationTypeCollection.h"
 
+#include "podio/AssociationCollection.h"
 #include "podio/Frame.h"
 #include "podio/UserDataCollection.h"
 
 #include <string>
 #include <tuple>
+
+// Define an association that is used for the I/O tests
+using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
@@ -361,6 +365,23 @@ auto createExtensionExternalRelationCollection(int i, const ExampleHitCollection
   return coll;
 }
 
+auto createAssociationCollection(const ExampleMCCollection& mcps,
+                                 const ex42::ExampleWithARelationCollection& namesprels) {
+  TestAssocCollection associations;
+  const auto nNameSpc = namesprels.size();
+  for (size_t iA = 0; iA < nNameSpc; ++iA) {
+    auto assoc = associations.create();
+    assoc.setWeight(0.5 * iA);
+
+    // Fill in opposite "order" to at least make sure that we uncover issues
+    // that would otherwise be masked by parallel running of indices
+    assoc.setFrom(mcps[iA]);
+    assoc.setTo(namesprels[nNameSpc - 1 - iA]);
+  }
+
+  return associations;
+}
+
 podio::Frame makeFrame(int iFrame) {
   podio::Frame frame{};
 
@@ -396,7 +417,7 @@ podio::Frame makeFrame(int iFrame) {
 
   auto [namesps, namespsrels, cpytest] = createNamespaceRelationCollection(iFrame);
   frame.put(std::move(namesps), "WithNamespaceMember");
-  frame.put(std::move(namespsrels), "WithNamespaceRelation");
+  const auto& namespaceRels = frame.put(std::move(namespsrels), "WithNamespaceRelation");
   frame.put(std::move(cpytest), "WithNamespaceRelationCopy");
 
   // Parameters
@@ -419,6 +440,8 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createExtensionContainedCollection(iFrame), "extension_Contained");
   frame.put(createExtensionExternalComponentCollection(iFrame), "extension_ExternalComponent");
   frame.put(createExtensionExternalRelationCollection(iFrame, hits, clusters), "extension_ExternalRelation");
+
+  frame.put(createAssociationCollection(mcps, namespaceRels), "associations");
 
   return frame;
 }
