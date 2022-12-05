@@ -1,5 +1,5 @@
-#ifndef PODIO_ASSOCIATIONCOLLECTIONDATA_H
-#define PODIO_ASSOCIATIONCOLLECTIONDATA_H
+#ifndef PODIO_DETAIL_ASSOCIATIONCOLLECTIONDATA_H
+#define PODIO_DETAIL_ASSOCIATIONCOLLECTIONDATA_H
 
 #include "podio/detail/AssociationFwd.h"
 #include "podio/detail/AssociationObj.h"
@@ -199,4 +199,4 @@ private:
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATIONCOLLECTIONDATA_H
+#endif // PODIO_DETAIL_ASSOCIATIONCOLLECTIONDATA_H
