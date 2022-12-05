@@ -32,3 +32,7 @@ fi
 if ! echo $ROOT_INCLUDE_PATH | grep -o $PODIO/include > /dev/null 2>&1; then
   export ROOT_INCLUDE_PATH=$PODIO/include:$ROOT_INCLUDE_PATH
 fi
+
+if ! echo $PATH | grep $PODIO/bin > /dev/null 2>&1; then
+  export PATH=$PODIO/bin:$PATH
+fi
