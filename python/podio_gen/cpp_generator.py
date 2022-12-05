@@ -596,17 +596,22 @@ have resolvable schema evolution incompatibilities:"
 
             combinations += tuple(product(ext_datatypes, datatypes))
 
+        assoc_data = {
+            "package_name": self.package_name,
+            "includes": includes,
+            "combinations": combinations,
+        }
+
         self._write_file(
-            "Associations.h",
-            self._eval_template(
-                "Associations.h.jinja2",
-                {
-                    "package_name": self.package_name,
-                    "includes": includes,
-                    "combinations": combinations,
-                },
-            ),
+            "AssociationsRootDict.h",
+            self._eval_template("AssociationsRootDict.h.jinja2", assoc_data),
         )
+
+        if "SIO" in self.io_handlers:
+            self._write_file(
+                "AssociationsSIOBlock.cc",
+                self._eval_template("AssociationsSIOBlock.cc.jinja2", assoc_data),
+            )
 
         return combinations
 

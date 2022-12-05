@@ -19,6 +19,8 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/DatamodelDefinition.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Associations.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/AssociationsRootDict.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/AssociationsSIOBlock.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/collections.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/declarations.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/implementations.jinja2
