@@ -4,6 +4,10 @@
 #include "podio/detail/AssociationFwd.h"
 #include "podio/detail/AssociationObj.h"
 
+#ifdef PODIO_JSON_OUTPUT
+  #include "nlohmann/json.hpp"
+#endif
+
 #include <ostream>
 #include <utility> // std::swap
 
@@ -170,6 +174,19 @@ std::ostream& operator<<(std::ostream& os, const Association<FromT, ToT>& assoc)
             << " from: " << assoc.getFrom().id() << '\n'
             << " to: " << assoc.getTo().id() << '\n';
 }
+
+#ifdef PODIO_JSON_OUTPUT
+template <typename FromT, typename ToT>
+void to_json(nlohmann::json& j, const Association<FromT, ToT>& assoc) {
+  j = nlohmann::json{{"weight", assoc.getWeight()}};
+
+  j["from"] = nlohmann::json{{"collectionID", assoc.getFrom().getObjectID().collectionID},
+                             {"index", assoc.getFrom().getObjectID().index}};
+
+  j["to"] = nlohmann::json{{"collectionID", assoc.getTo().getObjectID().collectionID},
+                           {"index", assoc.getTo().getObjectID().index}};
+}
+#endif
 
 } // namespace podio
 
