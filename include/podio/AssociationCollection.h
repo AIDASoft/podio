@@ -11,6 +11,10 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/ICollectionProvider.h"
 
+#ifdef PODIO_JSON_OUTPUT
+  #include "nlohmann/json.hpp"
+#endif
+
 #include <iomanip>
 #include <memory>
 #include <mutex>
@@ -274,6 +278,16 @@ std::ostream& operator<<(std::ostream& o, const AssociationCollection<FromT, ToT
   o.flags(old_flags);
   return o;
 }
+
+#ifdef PODIO_JSON_OUTPUT
+template <typename FromT, typename ToT>
+void to_json(nlohmann::json& j, const AssociationCollection<FromT, ToT>& collection) {
+  j = nlohmann::json::array();
+  for (auto&& elem : collection) {
+    j.emplace_back(elem);
+  }
+}
+#endif
 
 } // namespace podio
 
