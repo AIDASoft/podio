@@ -1,0 +1,11 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+#include "podio/AssociationCollection.h"
+
+// Datamodel includes
+{% for include in includes %}
+{{ include }}
+{% endfor %}
+
+{% for (from_t, to_t) in combinations %}
+static podio::AssociationCollection<{{from_t.full_type}}, {{to_t.full_type}}> podio__association_dummy__{{ package_name }}__{{ loop.index0 }}{};
+{% endfor %}

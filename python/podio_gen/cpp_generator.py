@@ -7,6 +7,7 @@ from copy import deepcopy
 from enum import IntEnum
 from collections import defaultdict
 from collections.abc import Mapping
+from itertools import combinations_with_replacement, product
 
 from podio_schema_evolution import DataModelComparator
 from podio_schema_evolution import RenamedMember, root_filter, RootIoRule
@@ -94,9 +95,14 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
     def post_process(self, _):
         """Do the cpp specific post processing"""
         self._write_edm_def_file()
+
+        # all possible associations
+        assocs = self._instantiate_associations()
+
         if "ROOT" in self.io_handlers:
             self._prepare_iorules()
-            self._create_selection_xml()
+            self._create_selection_xml(assocs)
+
         self._write_all_collections_header()
         self._write_cmake_lists_file()
 
@@ -535,7 +541,7 @@ have resolvable schema evolution incompatibilities:"
             self._eval_template("DatamodelDefinition.h.jinja2", data),
         )
 
-    def _create_selection_xml(self):
+    def _create_selection_xml(self, assoc_combinations):
         """Create the selection xml that is necessary for ROOT I/O"""
         data = {
             "version": self.datamodel.schema_version,
@@ -546,6 +552,7 @@ have resolvable schema evolution incompatibilities:"
                 for d in self.root_schema_datatype_names | self.root_schema_component_names
             ],  # noqa
             "iorules": self.root_schema_iorules,
+            "associations": assoc_combinations,
         }
 
         self._write_file("selection.xml", self._eval_template("selection.xml.jinja2", data))
@@ -564,6 +571,44 @@ have resolvable schema evolution incompatibilities:"
             includes.add(self._build_include(member))
 
         return self._sort_includes(includes)
+
+    def _instantiate_associations(self):
+        """Instantiate all the associations in a dedicated .cc file and return
+        the combination of all instantiated things
+        """
+        datatypes = [DataType(d) for d in self.datamodel.datatypes]
+        includes = [
+            self._build_include_for_class(f"{d.bare_type}Collection", IncludeFrom.INTERNAL)
+            for d in datatypes
+        ]
+
+        # We want all combinations of our datamodel
+        combinations = tuple(combinations_with_replacement(datatypes, 2))
+
+        if self.upstream_edm:
+            ext_datatypes = [DataType(d) for d in self.upstream_edm.datatypes]
+            includes.extend(
+                [
+                    self._build_include_for_class(f"{d.bare_type}Collection", IncludeFrom.EXTERNAL)
+                    for d in ext_datatypes
+                ]
+            )
+
+            combinations += tuple(product(ext_datatypes, datatypes))
+
+        self._write_file(
+            "Associations.h",
+            self._eval_template(
+                "Associations.h.jinja2",
+                {
+                    "package_name": self.package_name,
+                    "includes": includes,
+                    "combinations": combinations,
+                },
+            ),
+        )
+
+        return combinations
 
     def _needs_include(self, classname) -> IncludeFrom:
         """Check whether the member needs an include from within the datamodel"""

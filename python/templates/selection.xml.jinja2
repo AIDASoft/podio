@@ -13,6 +13,10 @@
 	     {{ iorule.code }}
         ]]>
         </ioread>
+
+{% macro assoc_selection(from_t, to_t) %}
+        <class name="podio::Association<{{ from_t.full_type }}, {{ to_t.full_type }}>"/>
+        <class name="podio::AssociationCollection<{{ from_t.full_type }}, {{ to_t.full_type }}>"/>
 {% endmacro %}
 
 <lcgdict>
@@ -38,6 +42,11 @@
         <!-- previous schema components and pods -->
 {% for class in old_schema_components %}
 {{ class_selection(class) }}
+{% endfor %}
+
+        <!-- associations -->
+{% for (from_t, to_t) in associations %}
+{{ assoc_selection(from_t, to_t) }}
 {% endfor %}
 
     </selection>
