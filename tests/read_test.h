@@ -412,18 +412,20 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   // ======================= Associations ==========================
-  auto& associations = store.template get<TestAssocCollection>("associations");
-  if (associations.size() != nmspaces.size()) {
-    throw std::runtime_error("AssociationsCollection does not have the expected size");
-  }
-  const auto nNameSpc = nmspaces.size();
-  int assocIndex = 0;
-  for (auto assoc : associations) {
-    if (!((assoc.getWeight() == 0.5 * assocIndex) && (assoc.getFrom() == mcps[assocIndex]) &&
-          (assoc.getTo() == nmspaces[nNameSpc - 1 - assocIndex]))) {
-      throw std::runtime_error("Association does not have expected content");
+  if (fileVersion >= podio::version::Version{0, 16, 1}) {
+    auto& associations = store.template get<TestAssocCollection>("associations");
+    if (associations.size() != nmspaces.size()) {
+      throw std::runtime_error("AssociationsCollection does not have the expected size");
     }
-    assocIndex++;
+    const auto nNameSpc = nmspaces.size();
+    int assocIndex = 0;
+    for (auto assoc : associations) {
+      if (!((assoc.getWeight() == 0.5 * assocIndex) && (assoc.getFrom() == mcps[assocIndex]) &&
+            (assoc.getTo() == nmspaces[nNameSpc - 1 - assocIndex]))) {
+        throw std::runtime_error("Association does not have expected content");
+      }
+      assocIndex++;
+    }
   }
 }
 
