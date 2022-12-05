@@ -467,6 +467,7 @@ class ClassGenerator:
 
     return package_includes + upstream_includes + podio_includes + stl_includes
 
+
 def read_upstream_edm(name_path):
   """Read an upstream EDM yaml definition file to make the types that are defined
   in that available to the current EDM"""
