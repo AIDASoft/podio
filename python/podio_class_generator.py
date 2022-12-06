@@ -10,6 +10,7 @@ from copy import deepcopy
 from enum import IntEnum
 
 from collections.abc import Mapping
+from collections import defaultdict
 
 from itertools import zip_longest
 
@@ -231,13 +232,11 @@ class ClassGenerator:
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
-    fwd_declarations = {}
+    fwd_declarations = defaultdict(list)
     includes, includes_cc = set(), set()
 
     for relation in datatype['OneToOneRelations']:
       if relation.full_type != datatype['class'].full_type:
-        if relation.namespace not in fwd_declarations:
-          fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
         includes_cc.add(self._build_include(relation))
 
