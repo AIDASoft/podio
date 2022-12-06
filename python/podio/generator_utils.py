@@ -70,7 +70,7 @@ def _is_fixed_width_type(type_name):
 class DataType:
   """Simple class to hold information about a datatype or component that is
   defined in the datamodel."""
-  def __init__(self, klass, schema_version = None):
+  def __init__(self, klass, schema_version=None):
     self.full_type = klass
     self.namespace, self.bare_type = _get_namespace_class(self.full_type)
     self.schema_version = schema_version
@@ -187,7 +187,7 @@ class MemberVariable:
 
 class DataModel:  # pylint: disable=too-few-public-methods
   """A class for holding a complete datamodel read from a configuration file"""
-  def __init__(self, datatypes=None, components=None, options=None, schema_version = None):
+  def __init__(self, datatypes=None, components=None, options=None, schema_version=None):
     self.datatypes = datatypes or {}
     self.components = components or {}
     self.options = options or {

@@ -32,7 +32,7 @@ components :
 
   ex2::NamespaceStruct:
     Members:
-      - std::array<int,2> x
+      - int x
       - int y_old
 
   ex2::NamespaceInNamespaceStruct:

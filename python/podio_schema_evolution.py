@@ -69,6 +69,18 @@ class DroppedDatatype(SchemaChange):
         return "'%s' has been dropped" % self.name
 
 
+class RenamedDataType(SchemaChange):
+    def __init__(self, name_old, name_new):
+        self.name_old = name_old
+        self.name_new = name_new
+
+    def __str__(self) -> str:
+        return f"'{self.name_new}': datatype '{self.name_old}' renamed to '{self.name_new}'."
+
+    def __repr__(self) -> str:
+        return f"'{self.name_new}': datatype '{self.name_old}' renamed to '{self.name_new}'."
+
+
 class AddedMember(SchemaChange):
     def __init__(self, member, definition_name):
         self.member = member
@@ -247,17 +259,19 @@ class DataModelComparator:
                     # this is a rename candidate. So let's see whether it has been explicitly declared by the user
                     is_rename = False
                     for schema_change in self.read_schema_changes:
-                        if type(schema_change) == RenamedMember and schema_change.name == dropped_member.definition_name:
-                            if (schema_change.member_name_old == dropped_member.member.name) and (schema_change.member_name_new == added_member.member.name):
+                        if type(schema_change) == RenamedMember and
+                        schema_change.name == dropped_member.definition_name:
+                            if (schema_change.member_name_old == dropped_member.member.name) and
+                            (schema_change.member_name_new == added_member.member.name):
                                # remove the dropping/adding from the schema changes and replace it by the rename
                                schema_changes.remove(dropped_member)
                                schema_changes.remove(added_member)
                                schema_changes.append(schema_change)
                                is_rename = True
                     if not is_rename:
-                            self.warnings.append("Definition '%s' has a potential member rename '%s' -> '%s' of type '%s'." %
-                                                 (dropped_member.definition_name, dropped_member.member.name,
-                                               added_member.member.name, dropped_member.member.full_type))
+                        self.warnings.append("Definition '%s' has a potential rename '%s' -> '%s' of type '%s'." %
+                                             (dropped_member.definition_name, dropped_member.member.name,
+                                              added_member.member.name, dropped_member.member.full_type))
 
         # are the member changes actually supported/supportable?
         changed_members = [change for change in schema_changes if type(change) == ChangedMember]
@@ -276,10 +290,19 @@ class DataModelComparator:
 
         for dropped in dropped_datatypes:
             dropped_members = {member.name: member for member in dropped.datatype["Members"]}
+            is_known_evolution = False
             for added in added_datatypes:
                 added_members = {member.name: member for member in added.datatype["Members"]}
                 if set(dropped_members.keys()) == set(added_members.keys()):
-                    self.warnings.append("Potential rename of '%s' into '%s'." % (dropped.name, added.name))
+                    for schema_change in self.read_schema_changes:
+                        if type(schema_change) == RenamedDataType:
+                            if schema_change.name_old == dropped.name and schema_change.name_new == added.name:
+                               schema_changes.remove(dropped)
+                               schema_changes.remove(added)
+                               schema_changes.append(schema_change)
+                               is_known_evolution = True
+                    if not is_known_evolution:
+                        self.warnings.append("Potential rename of '%s' into '%s'." % (dropped.name, added.name))
 
         # are there dropped/added component pairs that could be interpreted as rename?
         dropped_components = [change for change in schema_changes if type(change) == DroppedComponent]
@@ -295,7 +318,6 @@ class DataModelComparator:
         # make the results of the heuristics known to the instance
         self.schema_changes = schema_changes
 
-
     def print(self):
         print("Comparing datamodel versions %s and %s"
               % (self.datamodel_new.schema_version,
@@ -305,7 +327,6 @@ class DataModelComparator:
         print("Detected %i schema changes:" % len(self.schema_changes))
         for change in self.schema_changes:
             print(" - %s" % change)
-
 
         if len(self.warnings) > 0:
             print("Warnings:")
@@ -328,7 +349,7 @@ class DataModelComparator:
             self.read_evolution_file()
 
     def read_evolution_file(self) -> None:
-        supported_operations = ("rename")
+        supported_operations = ('member_rename', 'class_renamed_to')
         with open(self.evolution_file, "r", encoding='utf-8') as stream:
             content = yaml.load(stream, yaml.SafeLoader)
             from_schemaversion = content["from_schemaversion"]
@@ -343,8 +364,11 @@ class DataModelComparator:
                     for operation, details in value.items():
                         if operation not in supported_operations:
                             raise BaseException(f'Schema evolution operation {operation} in {klassname} unknown or not supported')  # nopep8
-                        elif operation == 'rename':
-                            schema_change = RenamedMember(klassname,details[0],details[1])
+                        elif operation == 'member_rename':
+                            schema_change = RenamedMember(klassname, details[0], details[1])
+                            self.read_schema_changes.append(schema_change)
+                        elif operation == 'class_renamed_to':
+                            schema_change = RenamedDataType(klassname, details)
                             self.read_schema_changes.append(schema_change)
 
 
