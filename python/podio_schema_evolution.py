@@ -259,9 +259,9 @@ class DataModelComparator:
                     # this is a rename candidate. So let's see whether it has been explicitly declared by the user
                     is_rename = False
                     for schema_change in self.read_schema_changes:
-                        if type(schema_change) == RenamedMember and
+                        if type(schema_change) == RenamedMember and \
                         schema_change.name == dropped_member.definition_name:
-                            if (schema_change.member_name_old == dropped_member.member.name) and
+                            if (schema_change.member_name_old == dropped_member.member.name) and \
                             (schema_change.member_name_new == added_member.member.name):
                                # remove the dropping/adding from the schema changes and replace it by the rename
                                schema_changes.remove(dropped_member)
