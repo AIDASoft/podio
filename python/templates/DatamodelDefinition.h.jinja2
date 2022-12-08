@@ -1,0 +1,16 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "podio/EDMDefinitionRegistry.h"
+
+namespace {{ package_name }}::meta {
+/**
+ * The complete definition of the datamodel at generation time in JSON format.
+ */
+static constexpr auto {{ package_name }}__JSONDefinition = R"EDMDEFINITION({{ edm_definition }})EDMDEFINITION";
+
+/**
+ * The index of the definition in the registry
+ */
+static const auto definitionRegistryIndex =  podio::EDMDefinitionRegistry::instance().registerEDM("{{ package_edm_edm_name }}", {{ package_name }}__JSONDefinition);
+
+} // namespace {{ package_name }}::meta
