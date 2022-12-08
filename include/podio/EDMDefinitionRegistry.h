@@ -16,6 +16,11 @@ public:
   EDMDefinitionRegistry(EDMDefinitionRegistry&&) = delete;
   EDMDefinitionRegistry& operator=(const EDMDefinitionRegistry&&) = delete;
 
+  /// Dedicated index value for collections that don't need a definition (e.g. UserDataCollection)
+  static constexpr size_t NoDefinitionNecessary = -1;
+  /// Dedicated index value for error checking, used to default init the generated RegistryIndex
+  static constexpr size_t NoDefinitionAvailable = -2;
+
   /**
    * Get the definition (in JSON format) of the EDM with the given edm_name. If
    * no EDM under the given name can be found, an empty model definition is
@@ -38,7 +43,7 @@ public:
 
 private:
   EDMDefinitionRegistry() = default;
-
+  /// The stored definitions
   std::vector<std::pair<std::string, std::string_view>> m_definitions{};
 };
 } // namespace podio

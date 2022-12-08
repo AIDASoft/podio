@@ -4,6 +4,7 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
+#include "{{ incfolder }}DatamodelDefinition.h"
 
 {% for include in includes_coll_cc %}
 {{ include }}
@@ -177,6 +178,10 @@ podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
 {% for member in Members %}
 {{ macros.vectorized_access(class, member) }}
 {% endfor %}
+
+size_t {{ collection_type }}::getDefinitionRegistryIndex() const {
+  return {{ package_name }}::meta::RegistryIndex::value();
+}
 
 #ifdef PODIO_JSON_OUTPUT
 void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {

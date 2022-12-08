@@ -76,6 +76,8 @@ public:
 
   /// print this collection to the passed stream
   virtual void print(std::ostream& os = std::cout, bool flush = true) const = 0;
+
+  virtual size_t getDefinitionRegistryIndex() const = 0;
 };
 
 } // namespace podio

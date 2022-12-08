@@ -130,6 +130,8 @@ public:
     return m_isValid;
   }
 
+  size_t getDefinitionRegistryIndex() const final;
+
   // support for the iterator protocol
   iterator begin() {
     return iterator(0, &m_storage.entries);
