@@ -206,9 +206,6 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
     if(!m_metaChain->Add(filename.c_str(), -1)) {
       throw std::runtime_error("File " + filename + " couldn't be found");
     }
-    else {
-      break;
-    }
   }
 
   podio::version::Version* versionPtr{nullptr};
