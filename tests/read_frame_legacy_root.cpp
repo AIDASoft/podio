@@ -7,8 +7,10 @@
 
 int main() {
   auto reader = podio::ROOTLegacyReader();
-  bool res = reader.openFile("example.root");
-  if (!res) {
+  try {
+    reader.openFile("example.root");
+  }
+  catch (const std::runtime_error& e) {
     std::cout << "File could not be opened, aborting." << std::endl;
     return 1;
   }

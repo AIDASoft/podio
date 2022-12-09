@@ -43,7 +43,7 @@ public:
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
 
-  bool openFile(const std::string& filename);
+  void openFile(const std::string& filename);
 
   /// Get the build version of podio that has been used to write the current file
   podio::version::Version currentFileVersion() const {

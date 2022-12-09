@@ -83,7 +83,7 @@ public:
     return m_reader.isValid();
   }
 
-  bool openFile(const std::string& filename) override {
+  void openFile(const std::string& filename) override {
     runVoidTimed(false, "open_file", &IReader::openFile, filename);
   }
 

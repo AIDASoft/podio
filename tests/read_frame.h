@@ -10,8 +10,10 @@
 template <typename ReaderT>
 int read_frames(const std::string& filename) {
   auto reader = ReaderT();
-  bool res = reader.openFile(filename);
-  if (!res) {
+  try {
+    reader.openFile(filename);
+  }
+  catch (const std::runtime_error& e) {
     std::cout << "File could not be opened, aborting." << std::endl;
     return 1;
   }
