@@ -1,3 +1,67 @@
+# v00-16-01
+
+* 2022-12-06 jmcarcell ([PR#356](https://github.com/AIDASoft/podio/pull/356))
+  - Fix path in the README
+  - Use the functionality in argparse to choose between options
+
+* 2022-12-06 Benedikt Hegner ([PR#346](https://github.com/AIDASoft/podio/pull/346))
+  - Switched tp Apache 2.0 license to facilitate integration in experiment stacks.
+
+* 2022-12-05 Thomas Madlener ([PR#357](https://github.com/AIDASoft/podio/pull/357))
+  - Put `<prefix>/bin` onto `PATH` in order to make `podio-dump` available from environments created with `env.sh`
+
+* 2022-12-02 jmcarcell ([PR#354](https://github.com/AIDASoft/podio/pull/354))
+  - Make `env.sh` setup script POSIX compliant to run in shells other than bash
+    - Change `==` to `=`
+    - Change tabs to spaces (two) to avoid mix of spaces and tabs for indenting
+    - Add `<prefix>/include` to `ROOT_INCLUDE_PATH` (as it is required since #343)
+
+* 2022-11-16 Thomas Madlener ([PR#351](https://github.com/AIDASoft/podio/pull/351))
+  -  Fix bug in Frame python bindings where empty collections were considered as non-existing. Replacing the original check relying on some implicit boolean conversions (which also caught empty collections) to an explicit check against `nullptr`.
+  - Make `podio-dump` more robust in installations without SIO support, by guarding the corresponding import.
+
+* 2022-11-14 Thomas Madlener ([PR#344](https://github.com/AIDASoft/podio/pull/344))
+  - Make `podio-dump` work with new Frame based I/O (fixes #339)
+  - Keep existing functionality intact by using the legacy readers introduced in #345.
+
+* 2022-11-11 Thomas Madlener ([PR#345](https://github.com/AIDASoft/podio/pull/345))
+  - Add a `ROOTLegacyReader` and a `SIOLegacyReader` that read files that have been written prior to #287 into `podio::Frame`s and offers the same interface as the frame readers
+    - Also including python bindings for it
+
+* 2022-11-10 Thomas Madlener ([PR#349](https://github.com/AIDASoft/podio/pull/349))
+  - Fix bug in setting relations in nested get calls in `podio::Frame`. Fixes #348 
+  - Adapt the read test to actually check this. Previously this went unnoticed, because the necessary relations were already set in a previous call.
+
+* 2022-11-10 Thomas Madlener ([PR#343](https://github.com/AIDASoft/podio/pull/343))
+  - Add python bindings for `Frame` based I/O
+    - Available from `podio.root_io` and `podio.sio_io`, where a `Reader` and a `Writer` is implemented for each.
+    - Wrapper around `podio::Frame`. **Requires that the `podio/Frame.h` header is available somewhere on the `ROOT_INCLUDE_PATH`**.
+  - Add necessary functionality for python bindings to C++ API
+    - untyped `Frame::get` method for getting collections
+    - New constructor from `FrameDataT&&`
+    - functionality to inspect file and `Frame` contents more easily
+  - Reorganize python code into structure that follows the usual python packaging conventions a bit more closely
+    - Introduce the `podio` module. Make CMake generate the `__init__.py` with the correct version
+    - Move everything except the generator script into `module`. Additionally also keep an `EventStore` wrapper to not break existing code. 
+  - Refactor the `CMakeLists.txt` that is responsible for building the core and all required I/O libraries
+    - Build more dictionaries for more python bindings.
+
+* 2022-11-02 Thomas Madlener ([PR#342](https://github.com/AIDASoft/podio/pull/342))
+  - Migrate to `actions/checkout@v3` as advised by [github](https://github.blog/changelog/2022-09-22-github-actions-all-actions-will-begin-running-on-node16-instead-of-node12/)
+  - Use the checkout action to clone the dependencies in the edm4hep workflow instead of doing an explicit clone in the body of the action
+
+* 2022-11-02 Dmitry Kalinkin ([PR#327](https://github.com/AIDASoft/podio/pull/327))
+  - fix typo in documentation
+
+* 2022-10-24 Juraj Smiesko ([PR#340](https://github.com/AIDASoft/podio/pull/340))
+  - Adding reading of specific entry from frame
+
+* 2022-10-21 Thomas Madlener ([PR#335](https://github.com/AIDASoft/podio/pull/335))
+  - Update the `github-action-cvmfs` and `run-lcg-view` actions to their latest available version to pick up the latest improvements (caching of dependencies, log groups)
+  - Introduce log groups in github actions for easier to interpret outputs
+  - Switch to LCG_102 for lcg based build environments
+  - Add a workflow that builds and tests EDM4hep after building podio
+
 # v00-16
 
 * 2022-10-04 Thomas Madlener ([PR#337](https://github.com/AIDASoft/podio/pull/337))
