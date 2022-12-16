@@ -36,3 +36,7 @@ fi
 if ! echo $PATH | grep $PODIO/bin > /dev/null 2>&1; then
   export PATH=$PODIO/bin:$PATH
 fi
+
+if ! echo $CMAKE_PREFIX_PATH | grep $PODIO > /dev/null 2>&1; then
+  export CMAKE_PREFIX_PATH=$PODIO:$CMAKE_PREFIX_PATH
+fi

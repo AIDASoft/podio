@@ -27,6 +27,10 @@ macro(podio_set_rpath)
     if("${isSystemDir}" STREQUAL "-1")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIBDIR}")
     endif("${isSystemDir}" STREQUAL "-1")
+    # Make sure to actualy set RPATH and not RUNPATH by disabling the new dtags
+    # explicitly. Set executable and shared library linker flags for this
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--disable-new-dtags")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
   else()
     set(CMAKE_SKIP_INSTALL_RPATH TRUE)           # skip the full RPATH for the install tree
   endif()

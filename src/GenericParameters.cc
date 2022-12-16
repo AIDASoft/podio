@@ -5,6 +5,12 @@
 
 namespace podio {
 
+GenericParameters::GenericParameters() :
+    m_intMtx(std::make_unique<std::mutex>()),
+    m_floatMtx(std::make_unique<std::mutex>()),
+    m_stringMtx(std::make_unique<std::mutex>()) {
+}
+
 GenericParameters::GenericParameters(const GenericParameters& other) :
     m_intMtx(std::make_unique<std::mutex>()),
     m_floatMtx(std::make_unique<std::mutex>()),

@@ -5,6 +5,17 @@
 
 namespace podio {
 
+CollectionIDTable::CollectionIDTable() : m_mutex(std::make_unique<std::mutex>()) {
+}
+
+CollectionIDTable::CollectionIDTable(std::vector<int>&& ids, std::vector<std::string>&& names) :
+    m_collectionIDs(std::move(ids)), m_names(std::move(names)), m_mutex(std::make_unique<std::mutex>()) {
+}
+
+CollectionIDTable::CollectionIDTable(const std::vector<int>& ids, const std::vector<std::string>& names) :
+    m_collectionIDs(ids), m_names(names), m_mutex(std::make_unique<std::mutex>()) {
+}
+
 const std::string CollectionIDTable::name(int ID) const {
   std::lock_guard<std::mutex> lock(*m_mutex);
   const auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
