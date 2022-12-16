@@ -7,6 +7,7 @@
 #include "TFile.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -78,8 +79,17 @@ private:
                             const std::vector<ROOTFrameWriter::StoreCollection>& collections,
                             /*const*/ podio::GenericParameters* parameters);
 
+  /// Register the EDM definition of this collection to be written to file
+  void registerEDMDef(const podio::CollectionBase* coll, const std::string& name);
+
   std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
+
+  /**
+   * The indices in the EDM definition registry for all datamodels of which at
+   * least one collection was written.
+   */
+  std::set<size_t> m_edmDefRegistryIdcs{};
 };
 
 } // namespace podio

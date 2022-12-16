@@ -53,6 +53,10 @@ public:
   /// Get the names of all the availalable Frame categories in the current file(s)
   std::vector<std::string_view> getAvailableCategories() const;
 
+  std::string_view getEDMDefinition(const std::string&) const {
+    return "{}";
+  }
+
 private:
   void readPodioHeader();
 

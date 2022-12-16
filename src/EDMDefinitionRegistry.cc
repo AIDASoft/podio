@@ -42,4 +42,12 @@ const std::string_view EDMDefinitionRegistry::getDefinition(size_t index) const 
   return m_definitions[index].second;
 }
 
+const std::string& EDMDefinitionRegistry::getEDMName(size_t index) const {
+  if (index >= m_definitions.size()) {
+    static const std::string emptyName = "";
+    return emptyName;
+  }
+  return m_definitions[index].first;
+}
+
 } // namespace podio

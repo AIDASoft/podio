@@ -179,6 +179,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
   auto* branches = metaChain->GetListOfBranches();
   std::vector<std::string> brNames;
   brNames.reserve(branches->GetEntries());
+
   for (int i = 0; i < branches->GetEntries(); ++i) {
     const std::string name = branches->At(i)->GetName();
     const auto fUnder = name.find("___");
@@ -189,7 +190,6 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
 
   std::sort(brNames.begin(), brNames.end());
   brNames.erase(std::unique(brNames.begin(), brNames.end()), brNames.end());
-
   return brNames;
 }
 
@@ -217,6 +217,12 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
   delete versionPtr;
 
+  auto* edmDefs = &m_availEDMDefs;
+  if (auto* edmDefBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmDefBranchName)) {
+    edmDefBranch->SetAddress(&edmDefs);
+    edmDefBranch->GetEntry(0);
+  }
+
   // Do some work up front for setting up categories and setup all the chains
   // and record the available categories. The rest of the setup follows on
   // demand when the category is first read
@@ -227,6 +233,17 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
       it->second.chain->Add(fn.c_str());
     }
   }
+}
+
+const std::string_view ROOTFrameReader::getEDMDefinition(const std::string& edmName) const {
+  const auto it = std::find_if(m_availEDMDefs.cbegin(), m_availEDMDefs.cend(),
+                               [&edmName](const auto& entry) { return std::get<0>(entry) == edmName; });
+
+  if (it != m_availEDMDefs.cend()) {
+    return std::get<1>(*it);
+  }
+
+  return "{}";
 }
 
 unsigned ROOTFrameReader::getEntries(const std::string& name) const {

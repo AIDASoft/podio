@@ -35,6 +35,12 @@ public:
   const std::string_view getDefinition(size_t index) const;
 
   /**
+   * Get the name of the EDM that is stored under the given index. If no EDM is
+   * found under the given index, an empty string is returned
+   */
+  const std::string& getEDMName(size_t index) const;
+
+  /**
    * Register a definition and return the index in the registry. If a definition
    * already exists under the given name, then the index of the existing
    * definition is returned
