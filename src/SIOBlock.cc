@@ -140,33 +140,42 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBa
 }
 
 SIOBlockLibraryLoader::SIOBlockLibraryLoader() {
-  for (const auto& lib : getLibNames()) {
-    loadLib(lib);
+  for (const auto& [lib, dir] : getLibNames()) {
+    const auto status = loadLib(lib);
+    switch (status) {
+    case LoadStatus::Success:
+      std::cout << "Loaded SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
+      break;
+    case LoadStatus::AlreadyLoaded:
+      std::cerr << "SIOBlocks library \'" << lib << "\' already loaded. Not loading again from " << dir << std::endl;
+      break;
+    case LoadStatus::Error:
+      std::cerr << "ERROR while loading SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
+      break;
+    }
   }
 }
 
-void SIOBlockLibraryLoader::loadLib(const std::string& libname) {
+SIOBlockLibraryLoader::LoadStatus SIOBlockLibraryLoader::loadLib(const std::string& libname) {
   if (_loadedLibs.find(libname) != _loadedLibs.end()) {
-    std::cerr << "SIOBlocks library \'" << libname << "\' already loaded. Not loading it again" << std::endl;
-    return;
+    return LoadStatus::AlreadyLoaded;
   }
-
   void* libhandle = dlopen(libname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
   if (libhandle) {
-    std::cout << "Loading SIOBlocks library \'" << libname << "\'" << std::endl;
     _loadedLibs.insert({libname, libhandle});
-  } else {
-    std::cerr << "ERROR while loading SIOBlocks library \'" << libname << "\'" << std::endl;
+    return LoadStatus::Success;
   }
+
+  return LoadStatus::Error;
 }
 
-std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
+std::vector<std::tuple<std::string, std::string>> SIOBlockLibraryLoader::getLibNames() {
 #ifdef USE_BOOST_FILESYSTEM
   namespace fs = boost::filesystem;
 #else
   namespace fs = std::filesystem;
 #endif
-  std::vector<std::string> libs;
+  std::vector<std::tuple<std::string, std::string>> libs;
 
   std::string dir;
   const auto ldLibPath = std::getenv("LD_LIBRARY_PATH");
@@ -182,7 +191,7 @@ std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
     for (auto& lib : fs::directory_iterator(dir)) {
       const auto filename = lib.path().filename().string();
       if (filename.find("SioBlocks") != std::string::npos) {
-        libs.emplace_back(std::move(filename));
+        libs.emplace_back(std::move(filename), dir);
       }
     }
   }
