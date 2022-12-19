@@ -1,3 +1,14 @@
+# v00-16-02
+
+* 2022-12-19 Thomas Madlener ([PR#360](https://github.com/AIDASoft/podio/pull/360))
+  - Make the log output of loading the SIOBlock libraries more informative by also providing the absolute paths to the loaded (and rejected) shared libraries.
+
+* 2022-12-16 Thomas Madlener ([PR#333](https://github.com/AIDASoft/podio/pull/333))
+  - Initialize the `unique_ptr<mutex>` in the constructor initializer list instead of in the member variable declaration. This is more likely a bug in nvcc (or maybe a c++17 feature not yet supported by nvcc). Fixes key4hep/k4Clue#34
+  - Pass `--disable-new-dtags` to the linker when using `PODIO_SET_RPATH`, to set `RPATH` and not `RUNPATH` in the binaries.
+  - Pin the ubuntu version for runners that build on ubuntu to not accidentally go out of sync with the underlying LCG releases.
+  - Disable the podio tests in the edm4hep workflows (see #359).
+
 # v00-16-01
 
 * 2022-12-06 jmcarcell ([PR#356](https://github.com/AIDASoft/podio/pull/356))
