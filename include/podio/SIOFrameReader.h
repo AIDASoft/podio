@@ -53,15 +53,15 @@ public:
   /// Get the names of all the availalable Frame categories in the current file(s)
   std::vector<std::string_view> getAvailableCategories() const;
 
-  std::string_view getEDMDefinition(const std::string&) const {
-    return "{}";
-  }
+  const std::string_view getEDMDefinition(const std::string& edmName) const;
 
 private:
   void readPodioHeader();
 
   /// read the TOC record
   bool readFileTOCRecord();
+
+  void readEDMDefinitions();
 
   sio::ifstream m_stream{}; ///< The stream from which we read
 
@@ -72,6 +72,9 @@ private:
   SIOFileTOCRecord m_tocRecord{};
   /// The podio version that has been used to write the file
   podio::version::Version m_fileVersion{0};
+
+  /// The available edm definitions in this file
+  std::vector<std::tuple<std::string, std::string>> m_availEDMDefs{};
 };
 
 } // namespace podio

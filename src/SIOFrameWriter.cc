@@ -1,6 +1,7 @@
 #include "podio/SIOFrameWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
+#include "podio/EDMDefinitionRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/SIOBlock.h"
@@ -8,6 +9,7 @@
 #include "sioUtils.h"
 
 #include <memory>
+#include <string>
 
 namespace podio {
 
@@ -29,12 +31,24 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
+void SIOFrameWriter::registerEDMDef(const podio::CollectionBase* coll, const std::string& name) {
+  const auto edmIndex = coll->getDefinitionRegistryIndex();
+  if (edmIndex == EDMDefinitionRegistry::NoDefinitionAvailable) {
+    std::cerr << "No EDM definition available for collection " << name << std::endl;
+  } else {
+    if (edmIndex != EDMDefinitionRegistry::NoDefinitionNecessary) {
+      m_edmDefRegistryIdcs.insert(edmIndex);
+    }
+  }
+}
+
 void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category,
                                 const std::vector<std::string>& collsToWrite) {
   std::vector<sio_utils::StoreCollection> collections;
   collections.reserve(collsToWrite.size());
   for (const auto& name : collsToWrite) {
     collections.emplace_back(name, frame.getCollectionForWrite(name));
+    registerEDMDef(collections.back().second, name);
   }
 
   // Write necessary metadata and the actual data into two different records.
@@ -49,7 +63,17 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
 }
 
 void SIOFrameWriter::finish() {
+  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>();
+  const auto& edmRegistry = podio::EDMDefinitionRegistry::instance();
+  for (const auto& index : m_edmDefRegistryIdcs) {
+    edmDefMap->mapData.emplace_back(edmRegistry.getEDMName(index), edmRegistry.getDefinition(index));
+  }
+
   sio::block_list blocks;
+  blocks.push_back(edmDefMap);
+  m_tocRecord.addRecord(sio_helpers::SIOEDMDefinitionName, sio_utils::writeRecord(blocks, "EDMDefinitions", m_stream));
+
+  blocks.clear();
   blocks.emplace_back(std::make_shared<SIOFileTOCRecordBlock>(&m_tocRecord));
 
   auto tocStartPos = sio_utils::writeRecord(blocks, sio_helpers::SIOTocRecordName, m_stream);

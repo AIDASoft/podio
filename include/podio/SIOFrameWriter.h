@@ -5,6 +5,7 @@
 
 #include <sio/definitions.h>
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,8 +34,16 @@ public:
   void finish();
 
 private:
+  void registerEDMDef(const podio::CollectionBase* coll, const std::string& name);
+
   sio::ofstream m_stream{};       ///< The output file stream
   SIOFileTOCRecord m_tocRecord{}; ///< The "table of contents" of the written file
+
+  /**
+   * The indices in the EDM definition registry for all datamodels of which at
+   * least one collection was written.
+   */
+  std::set<size_t> m_edmDefRegistryIdcs{};
 };
 } // namespace podio
 
