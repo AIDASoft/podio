@@ -5,81 +5,11 @@
 #include "podio/GenericParameters.h"
 #include "podio/SIOBlock.h"
 
-#include <sio/api.h>
-#include <sio/block.h>
-#include <sio/compression/zlib.h>
-#include <sio/exception.h>
+#include "sioUtils.h"
 
 #include <memory>
 
 namespace podio {
-
-namespace sio_utils {
-  using StoreCollection = std::pair<const std::string&, const podio::CollectionBase*>;
-
-  std::shared_ptr<SIOCollectionIDTableBlock> createCollIDBlock(const std::vector<StoreCollection>& collections,
-                                                               const podio::CollectionIDTable& collIdTable) {
-    // Need to make sure that the type names and subset collection bits are in
-    // the same order here!
-    std::vector<std::string> types;
-    types.reserve(collections.size());
-    std::vector<short> subsetColl;
-    subsetColl.reserve(collections.size());
-    std::vector<std::string> names;
-    names.reserve(collections.size());
-    std::vector<int> ids;
-    ids.reserve(collections.size());
-
-    for (const auto& [name, coll] : collections) {
-      names.emplace_back(name);
-      ids.emplace_back(collIdTable.collectionID(name));
-      types.emplace_back(coll->getValueTypeName());
-      subsetColl.emplace_back(coll->isSubsetCollection());
-    }
-
-    return std::make_shared<SIOCollectionIDTableBlock>(std::move(names), std::move(ids), std::move(types),
-                                                       std::move(subsetColl));
-  }
-
-  sio::block_list createBlocks(const std::vector<StoreCollection>& collections,
-                               const podio::GenericParameters& parameters) {
-    sio::block_list blocks;
-    blocks.reserve(collections.size() + 1); // parameters + collections
-
-    auto paramBlock = std::make_shared<SIOEventMetaDataBlock>();
-    // TODO: get rid of const_cast
-    paramBlock->metadata = const_cast<podio::GenericParameters*>(&parameters);
-    blocks.emplace_back(std::move(paramBlock));
-
-    for (const auto& [name, col] : collections) {
-      blocks.emplace_back(podio::SIOBlockFactory::instance().createBlock(col, name));
-    }
-
-    return blocks;
-  }
-
-  // Write the passed record and return where it starts in the file
-  sio::ifstream::pos_type writeRecord(const sio::block_list& blocks, const std::string& recordName,
-                                      sio::ofstream& stream, std::size_t initBufferSize = sio::mbyte,
-                                      bool compress = true) {
-    auto buffer = sio::buffer{initBufferSize};
-    auto recInfo = sio::api::write_record(recordName, buffer, blocks, 0);
-
-    if (compress) {
-      // use zlib to compress the record into another buffer
-      sio::zlib_compression compressor;
-      compressor.set_level(6); // Z_DEFAULT_COMPRESSION==6
-      auto comBuffer = sio::buffer{initBufferSize};
-      sio::api::compress_record(recInfo, buffer, comBuffer, compressor);
-
-      sio::api::write_record(stream, buffer.span(0, recInfo._header_length), comBuffer.span(), recInfo);
-    } else {
-      sio::api::write_record(stream, buffer.span(), recInfo);
-    }
-
-    return recInfo._file_start;
-  }
-} // namespace sio_utils
 
 SIOFrameWriter::SIOFrameWriter(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
