@@ -55,3 +55,28 @@ class BaseReaderMixin:
         bool: True if this is a legacy file reader
     """
     return self._is_legacy
+
+  @property
+  def edm_definitions(self):
+    """Get the available EDM definitions from this reader.
+
+    Returns:
+        tuple(str): The names of the available EDM definitions
+    """
+    if self._is_legacy:
+      return ()
+    return tuple(n.c_str() for n in self._reader.getAvailableEDMDefinitions())
+
+  def get_edm_definition(self, edm_name):
+    """Get the EDM definition of the passed EDM as JSON string.
+
+    Args:
+        str: The name of the EDM
+
+    Returns:
+        str: The complete model definition in JSON format. Use, e.g. json.loads
+            to convert it into a python dictionary.
+    """
+    if self._is_legacy:
+      return ""
+    return self._reader.getEDMDefinition(edm_name).data()

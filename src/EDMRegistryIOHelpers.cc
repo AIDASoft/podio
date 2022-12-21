@@ -1,4 +1,5 @@
 #include "podio/utilities/EDMRegistryIOHelpers.h"
+#include <iterator>
 
 namespace podio {
 
@@ -33,6 +34,15 @@ const std::string_view EDMDefinitionHolder::getEDMDefinition(const std::string& 
   }
 
   return "{}";
+}
+
+std::vector<std::string> EDMDefinitionHolder::getAvailableEDMDefinitions() const {
+  std::vector<std::string> defs{};
+  defs.reserve(m_availEDMDefs.size());
+  std::transform(m_availEDMDefs.cbegin(), m_availEDMDefs.cend(), std::back_inserter(defs),
+                 [](const auto& elem) { return std::get<0>(elem); });
+
+  return defs;
 }
 
 } // namespace podio

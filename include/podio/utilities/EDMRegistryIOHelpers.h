@@ -39,6 +39,8 @@ public:
    */
   const std::string_view getEDMDefinition(const std::string& edmName) const;
 
+  std::vector<std::string> getAvailableEDMDefinitions() const;
+
 protected:
   std::vector<std::tuple<std::string, std::string>> m_availEDMDefs{};
 };
