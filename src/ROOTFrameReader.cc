@@ -235,17 +235,6 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   }
 }
 
-const std::string_view ROOTFrameReader::getEDMDefinition(const std::string& edmName) const {
-  const auto it = std::find_if(m_availEDMDefs.cbegin(), m_availEDMDefs.cend(),
-                               [&edmName](const auto& entry) { return std::get<0>(entry) == edmName; });
-
-  if (it != m_availEDMDefs.cend()) {
-    return std::get<1>(*it);
-  }
-
-  return "{}";
-}
-
 unsigned ROOTFrameReader::getEntries(const std::string& name) const {
   if (auto it = m_categories.find(name); it != m_categories.end()) {
     return it->second.chain->GetEntries();

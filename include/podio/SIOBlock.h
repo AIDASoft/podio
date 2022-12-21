@@ -180,6 +180,9 @@ template <typename KeyT, typename ValueT>
 struct SIOMapBlock : public sio::block {
   SIOMapBlock() : sio::block("SIOMapBlock", sio::version::encode_version(0, 1)) {
   }
+  SIOMapBlock(std::vector<std::tuple<KeyT, ValueT>>&& data) :
+      sio::block("SIOMapBlock", sio::version::encode_version(0, 1)), mapData(std::move(data)) {
+  }
 
   SIOMapBlock(const SIOMapBlock&) = delete;
   SIOMapBlock& operator=(const SIOMapBlock&) = delete;

@@ -4,6 +4,7 @@
 #include "podio/CollectionBranches.h"
 #include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/EDMRegistryIOHelpers.h"
 
 #include "TChain.h"
 
@@ -40,7 +41,7 @@ struct CollectionReadBuffers;
  * This class has the function to read available data from disk
  * and to prepare collections and buffers.
  **/
-class ROOTFrameReader {
+class ROOTFrameReader : public EDMDefinitionHolder {
 
 public:
   ROOTFrameReader() = default;
@@ -78,8 +79,6 @@ public:
 
   /// Get the names of all the availalable Frame categories in the current file(s)
   std::vector<std::string_view> getAvailableCategories() const;
-
-  const std::string_view getEDMDefinition(const std::string& edmName) const;
 
 private:
   /**
@@ -132,8 +131,6 @@ private:
   std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
   std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
-
-  std::vector<std::tuple<std::string, std::string>> m_availEDMDefs{};
 
   podio::version::Version m_fileVersion{0, 0, 0};
 };

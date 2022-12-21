@@ -31,17 +31,6 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-void SIOFrameWriter::registerEDMDef(const podio::CollectionBase* coll, const std::string& name) {
-  const auto edmIndex = coll->getDefinitionRegistryIndex();
-  if (edmIndex == EDMDefinitionRegistry::NoDefinitionAvailable) {
-    std::cerr << "No EDM definition available for collection " << name << std::endl;
-  } else {
-    if (edmIndex != EDMDefinitionRegistry::NoDefinitionNecessary) {
-      m_edmDefRegistryIdcs.insert(edmIndex);
-    }
-  }
-}
-
 void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category,
                                 const std::vector<std::string>& collsToWrite) {
   std::vector<sio_utils::StoreCollection> collections;
@@ -63,11 +52,7 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
 }
 
 void SIOFrameWriter::finish() {
-  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>();
-  const auto& edmRegistry = podio::EDMDefinitionRegistry::instance();
-  for (const auto& index : m_edmDefRegistryIdcs) {
-    edmDefMap->mapData.emplace_back(edmRegistry.getEDMName(index), edmRegistry.getDefinition(index));
-  }
+  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(getEDMDefinitionsToWrite());
 
   sio::block_list blocks;
   blocks.push_back(edmDefMap);

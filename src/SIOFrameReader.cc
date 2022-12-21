@@ -69,16 +69,6 @@ unsigned SIOFrameReader::getEntries(const std::string& name) const {
   return m_tocRecord.getNRecords(name);
 }
 
-const std::string_view SIOFrameReader::getEDMDefinition(const std::string& edmName) const {
-  const auto it = std::find_if(m_availEDMDefs.cbegin(), m_availEDMDefs.cend(),
-                               [&edmName](const auto& entry) { return std::get<0>(entry) == edmName; });
-  if (it != m_availEDMDefs.cend()) {
-    return std::get<1>(*it);
-  }
-
-  return "{}";
-}
-
 bool SIOFrameReader::readFileTOCRecord() {
   // Check if there is a dedicated marker at the end of the file that tells us
   // where the TOC actually starts

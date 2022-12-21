@@ -1,6 +1,5 @@
 #include "podio/ROOTFrameWriter.h"
 #include "podio/CollectionBase.h"
-#include "podio/EDMDefinitionRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
@@ -59,17 +58,6 @@ ROOTFrameWriter::CategoryInfo& ROOTFrameWriter::getCategoryInfo(const std::strin
 
   auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
   return it->second;
-}
-
-void ROOTFrameWriter::registerEDMDef(const podio::CollectionBase* coll, const std::string& name) {
-  const auto edmIndex = coll->getDefinitionRegistryIndex();
-  if (edmIndex == EDMDefinitionRegistry::NoDefinitionAvailable) {
-    std::cerr << "No EDM definition available for collection " << name << std::endl;
-  } else {
-    if (edmIndex != EDMDefinitionRegistry::NoDefinitionNecessary) {
-      m_edmDefRegistryIdcs.insert(edmIndex);
-    }
-  }
 }
 
 void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
@@ -143,12 +131,7 @@ void ROOTFrameWriter::finish() {
   auto podioVersion = podio::version::build_version;
   metaTree->Branch(root_utils::versionBranchName, &podioVersion);
 
-  std::vector<std::tuple<std::string, std::string>> edmDefinitions;
-  edmDefinitions.reserve(m_edmDefRegistryIdcs.size());
-  for (const auto& index : m_edmDefRegistryIdcs) {
-    const auto& edmRegistry = podio::EDMDefinitionRegistry::instance();
-    edmDefinitions.emplace_back(edmRegistry.getEDMName(index), edmRegistry.getDefinition(index));
-  }
+  auto edmDefinitions = getEDMDefinitionsToWrite();
   metaTree->Branch(root_utils::edmDefBranchName, &edmDefinitions);
 
   metaTree->Fill();

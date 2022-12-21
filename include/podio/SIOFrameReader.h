@@ -4,6 +4,7 @@
 #include "podio/SIOBlock.h"
 #include "podio/SIOFrameData.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/EDMRegistryIOHelpers.h"
 
 #include <sio/definitions.h>
 
@@ -16,7 +17,7 @@ namespace podio {
 
 class CollectionIDTable;
 
-class SIOFrameReader {
+class SIOFrameReader : public EDMDefinitionHolder {
 
 public:
   SIOFrameReader();
@@ -53,8 +54,6 @@ public:
   /// Get the names of all the availalable Frame categories in the current file(s)
   std::vector<std::string_view> getAvailableCategories() const;
 
-  const std::string_view getEDMDefinition(const std::string& edmName) const;
-
 private:
   void readPodioHeader();
 
@@ -72,9 +71,6 @@ private:
   SIOFileTOCRecord m_tocRecord{};
   /// The podio version that has been used to write the file
   podio::version::Version m_fileVersion{0};
-
-  /// The available edm definitions in this file
-  std::vector<std::tuple<std::string, std::string>> m_availEDMDefs{};
 };
 
 } // namespace podio
