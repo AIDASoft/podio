@@ -26,7 +26,7 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
   add_executable( ${name} ${sourcefile} )
   add_test(NAME ${name} COMMAND ${name})
 
-  target_link_libraries(${name} TestDataModel ${additional_libs})
+  target_link_libraries(${name} TestDataModel ExtensionDataModel ${additional_libs})
   set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
@@ -47,7 +47,7 @@ set(root_dependent_tests
   read_frame.cpp
   write_frame_root.cpp
   read_frame_legacy_root.cpp)
-set(root_libs TestDataModelDict podio::podioRootIO)
+set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
