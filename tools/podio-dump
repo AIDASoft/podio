@@ -79,7 +79,7 @@ def dump_model(reader, model_name):
     return False
 
   model_def = json.loads(reader.get_edm_definition(model_name))
-  print(yaml.dump(model_def))
+  print(yaml.dump(model_def, sort_keys=False, default_flow_style=False))
 
   return True
 
@@ -145,7 +145,6 @@ if __name__ == '__main__':
   parser.add_argument('--dump-edm',
                       help='Dump the specified EDM definition from the file in yaml format',
                       type=str, default=None)
-
 
   clargs = parser.parse_args()
   main(clargs)

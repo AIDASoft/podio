@@ -195,9 +195,8 @@ class MemberVariable:
 
 class DataModel:  # pylint: disable=too-few-public-methods
   """A class for holding a complete datamodel read from a configuration file"""
+
   def __init__(self, datatypes=None, components=None, options=None):
-    self.datatypes = datatypes or {}
-    self.components = components or {}
     self.options = options or {
         # should getters / setters be prefixed with get / set?
         "getSyntax": False,
@@ -206,6 +205,8 @@ class DataModel:  # pylint: disable=too-few-public-methods
         # use subfolder when including package header files
         "includeSubfolder": False,
         }
+    self.components = components or {}
+    self.datatypes = datatypes or {}
 
   def _to_json(self):
     """Return the dictionary, so that we can easily hook this into the pythons

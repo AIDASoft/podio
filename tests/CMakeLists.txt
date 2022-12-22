@@ -73,7 +73,7 @@ endforeach()
 if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
   message("Getting test input files")
   execute_process(
-    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/get_test_inputs.sh
+    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/scripts/get_test_inputs.sh
     OUTPUT_VARIABLE podio_test_input_data_dir
     RESULT_VARIABLE test_inputs_available
     )
