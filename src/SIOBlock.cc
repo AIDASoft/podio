@@ -126,7 +126,7 @@ SIOBlockLibraryLoader::SIOBlockLibraryLoader() {
     const auto status = loadLib(lib);
     switch (status) {
     case LoadStatus::Success:
-      std::cout << "Loaded SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
+      std::cerr << "Loaded SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
       break;
     case LoadStatus::AlreadyLoaded:
       std::cerr << "SIOBlocks library \'" << lib << "\' already loaded. Not loading again from " << dir << std::endl;
