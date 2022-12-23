@@ -53,34 +53,34 @@ class MemberParser:
     """Parse the string using the passed regexps and corresponding callbacks that
     take the match and return a MemberVariable from it"""
     for rgx, callback in regexps_callbacks:
-      match = rgx.match(string)
-      if match is not None:
-        return callback(match)
+      result = rgx.match(string)
+      if result:
+        return callback(result)
 
     raise DefinitionError(f"'{string}' is not a valid member definition")
 
   @staticmethod
-  def _full_array_conv(match):
+  def _full_array_conv(result):
     """MemberVariable construction for array members with a docstring"""
-    typ, size, name, def_val, comment = match.groups()
+    typ, size, name, def_val, comment = result.groups()
     return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip(), default_val=def_val)
 
   @staticmethod
-  def _full_member_conv(match):
+  def _full_member_conv(result):
     """MemberVariable construction for members with a docstring"""
-    klass, name, def_val, comment = match.groups()
+    klass, name, def_val, comment = result.groups()
     return MemberVariable(name=name, type=klass, description=comment.strip(), default_val=def_val)
 
   @staticmethod
-  def _bare_array_conv(match):
+  def _bare_array_conv(result):
     """MemberVariable construction for array members without docstring"""
-    typ, size, name, def_val = match.groups()
+    typ, size, name, def_val = result.groups()
     return MemberVariable(name=name, array_type=typ, array_size=size, default_val=def_val)
 
   @staticmethod
-  def _bare_member_conv(match):
+  def _bare_member_conv(result):
     """MemberVarible construction for members without docstring"""
-    klass, name, def_val = match.groups()
+    klass, name, def_val = result.groups()
     return MemberVariable(name=name, type=klass, default_val=def_val)
 
   def parse(self, string, require_description=True):
