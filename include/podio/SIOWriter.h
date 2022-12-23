@@ -6,9 +6,7 @@
 #include "podio/SIOBlock.h"
 
 // SIO specific includes
-#include <sio/api.h>
 #include <sio/definitions.h>
-#include <sio/exception.h>
 
 #include <iostream>
 #include <string>
@@ -41,8 +39,6 @@ private:
 
   std::shared_ptr<SIOEventMetaDataBlock> m_eventMetaData;
   sio::ofstream m_stream{};
-  sio::buffer m_buffer{sio::mbyte};
-  sio::buffer m_com_buffer{sio::mbyte};
   bool m_firstEvent{true};
 
   std::shared_ptr<SIONumberedMetaDataBlock> m_runMetaData;
