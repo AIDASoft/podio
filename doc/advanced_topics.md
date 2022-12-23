@@ -110,3 +110,118 @@ To implement your own transient event store, the only requirement is to set the 
  - Run pre-commit manually
 
     `$ pre-commit run --all-files`
+
+## Retrieving the EDM definition from a data file
+It is possible to get the EDM definition(s) that was used to generate the
+datatypes that are stored in a data file. This makes it possible to re-generate
+the necessary code and build all libraries again in case they are not easily
+available otherwise. To see which EDM definitions are available in a data file
+use the `podio-dump` utility
+
+```bash
+podio-dump <data-file>
+```
+which will give an (exemplary) output like this
+```
+input file: <data-file>
+
+EDM model definitions stored in this file: edm4hep
+
+[...]
+```
+
+To actually dump the model definition to stdout use the `--dump-edm` option
+and the name of the datamodel you want to dump:
+
+```bash
+podio-dump --dump-edm edm4hep <data-file> > dumped_edm4hep.yaml
+```
+
+Here we directly redirected the output to a yaml file that can then again be
+used by the `podio_class_generator.py` to generate the corresponding c++ code
+(or be passed to the cmake macros).
+
+**Note that the dumped EDM definition is equivalent but not necessarily exactly
+the same as the original EDM definition.** E.g. all the datatypes will have all
+their fields (`Members`, `OneToOneRelations`, `OneToManyRelations`,
+`VectorMembers`) defined, and defaulted to empty lists in case they were not
+present in the original EDM definition. The reason for this is that the embedded
+EDM definition is the pre-processed and validated one [as described
+below](#technical-details-on-edm-definition-embedding)
+
+### Accessing the EDM definition programmatically
+The EDM definition can also be accessed programmatically via the
+`[ROOT|SIO]FrameReader::getEDMDefinition` method. It takes an EDM name as its
+single argument and returns the EDM definition as a JSON string. Most likely
+this has to be decoded into an actual JSON structure in order to be usable (e.g.
+via `json.loads` in python to get a `dict`).
+
+### Technical details on EDM definition embedding
+The EDM definition is embedded into the core EDM library as a raw string literal
+in JSON format. This string is generated into the `DatamodelDefinition.h` file as
+
+```cpp
+namespace <package_name>::meta {
+static constexpr auto <package_name>__JSONDefinition = R"EDMDEFINITION(<json encoded definition>)EDMDEFINITION";
+}
+```
+
+where `<package_name>` is the name of the EDM as passed to the
+`podio_class_generator.py` (or the cmake macro). The `<json encoded definition>`
+is obtained from the pre-processed EDM definition that is read from the yaml
+file. During this pre-processing the EDM definition is validated, and optional
+fields are filled with empty defaults. Additionally, the `includeSubfolder`
+option will be populated with the actual include subfolder, in case it has been
+set to `True` in the yaml file. Since the json encoded definition is generated
+right before the pre-processed model is passed to the class generator, this
+definition is equivalent, but not necessarily equal to the original definition.
+
+#### The `EDMDefinitionRegistry`
+To make access to the embedded datamodel definitions a bit easier the
+`EDMDefinitionRegistry` (singleton) keeps a map of all loaded EDMs and makes
+access to this string slightly easier, providing two access methods:
+
+```cpp
+const std::string_view getEDMDefinition(const std::string& edmName) const;
+
+const std::string_view getEDMDefinition(size_t index) const;
+```
+
+where `index` can be obtained from each collection via
+`getDefinitionRegistryIndex`. That in turn simply calls
+`<package_name>::meta::RegistryIndex::value()`, another singleton like object
+that takes care of registering an EDM definition to the `EDMDefinitionRegistry`
+during its static initialization. It is also defined in the
+`DatamodelDefinition.h` header.
+
+Since the EDM definition is embedded as a raw string literal into the core
+datamodel shared library, it is in principle also relatively straight forward to
+retrieve it from this library by inspecting the binary, e.g. via
+```bash
+readelf -p .rodata libedm4hep.so | grep options
+```
+
+which will result in something like
+
+```
+  [   300]  {"options": {"getSyntax": true, "exposePODMembers": false, "includeSubfolder": "edm4hep/"}, "components": {<...>}, "datatypes": {<...>}}
+```
+
+#### I/O helpers for EDM definition storing
+The `podio/utilities/EDMRegistryIOHelpers.h` header defines two utility (mixin)
+classes, that help with instrumenting readers and writers with functionality to
+read and write all the necessary EDM definitions.
+
+- The `EDMDefinitionCollector` is intended to be inherited from by writer. It
+  essentially collects the EDM definitions of all the collections it encounters.
+  The `registerEDMDef` method it provides should be called with every collection
+  that is written. The `getEDMDefinitionsToWrite` method returns a vector of all
+  EDM names and their definition that were encountered during writing. **It is
+  then the writers responsibility to actually store this information into the
+  file**.
+-  The `EDMDefinitionHolder` is intended to be inherited from by readers (needs
+  to be `public` inheritance if the functionality should be directly exposed to
+  users of the reader). It provides the `getEDMDefinition` and
+  `getAvailableEDMDefinitions` methods. In order for it to work properly **its
+  `m_availEDMDefs` member has to be populated by the reader** before a possible
+  call to either of these two methods.
