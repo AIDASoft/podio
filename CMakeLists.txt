@@ -67,6 +67,9 @@ ADD_CLANG_TIDY()
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
 option(ENABLE_SIO "Build SIO I/O support" OFF)
+if (ENABLE_SIO)
+  add_compile_definitions(PODIO_WITH_SIO)
+endif()
 
 
 #--- Declare ROOT dependency ---------------------------------------------------
