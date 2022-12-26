@@ -186,7 +186,10 @@ configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
 find_package(Threads REQUIRED)
 add_executable(unittest unittest.cpp frame.cpp)
-target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads)
+target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
+if (ENABLE_SIO)
+  target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO SIO::sio podio::podioSioIO)
+endif()
 
 # The unittests are a bit better and they are labelled so we can put together a
 # list of labels that we want to ignore

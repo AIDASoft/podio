@@ -202,6 +202,7 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   // NOTE: We simply assume that the meta data doesn't change throughout the
   // chain! This essentially boils down to the assumption that all files that
   // are read this way were written with the same settings.
+  // Reading all files is done to check that all file exists
   for (const auto& filename : filenames) {
     if(!m_metaChain->Add(filename.c_str(), -1)) {
       throw std::runtime_error("File " + filename + " couldn't be found");
