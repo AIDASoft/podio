@@ -12,12 +12,10 @@ int read_frames(const std::string& filename) {
   auto reader = ReaderT();
   try {
     reader.openFile(filename);
-  }
-  catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error& e) {
     std::cout << "File could not be opened, aborting." << std::endl;
     return 1;
   }
-
 
   if (reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "

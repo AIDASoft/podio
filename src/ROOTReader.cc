@@ -146,7 +146,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   for (const auto& filename : filenames) {
     //-1 forces the headers to be read so that
     // the validity of the files can be checked
-    if (!m_chain->Add(filename.c_str(), -1)) { 
+    if (!m_chain->Add(filename.c_str(), -1)) {
       delete m_chain;
       throw std::runtime_error("File " + filename + " couldn't be found");
     }

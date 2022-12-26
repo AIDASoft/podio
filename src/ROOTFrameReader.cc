@@ -12,8 +12,8 @@
 #include "TTree.h"
 #include "TTreeCache.h"
 
-#include <unordered_map>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace podio {
 
@@ -204,7 +204,7 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   // are read this way were written with the same settings.
   // Reading all files is done to check that all file exists
   for (const auto& filename : filenames) {
-    if(!m_metaChain->Add(filename.c_str(), -1)) {
+    if (!m_metaChain->Add(filename.c_str(), -1)) {
       throw std::runtime_error("File " + filename + " couldn't be found");
     }
   }

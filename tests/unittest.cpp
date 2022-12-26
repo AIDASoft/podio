@@ -11,14 +11,14 @@
 // podio specific includes
 #include "podio/EventStore.h"
 #include "podio/GenericParameters.h"
-#include "podio/podioVersion.h"
-#include "podio/ROOTReader.h"
-#include "podio/ROOTLegacyReader.h"
 #include "podio/ROOTFrameReader.h"
+#include "podio/ROOTLegacyReader.h"
+#include "podio/ROOTReader.h"
+#include "podio/podioVersion.h"
 #ifdef PODIO_WITH_SIO
-#include "podio/SIOReader.h"
-#include "podio/SIOLegacyReader.h"
-#include "podio/SIOFrameReader.h"
+  #include "podio/SIOFrameReader.h"
+  #include "podio/SIOLegacyReader.h"
+  #include "podio/SIOReader.h"
 #endif
 
 // Test data types
@@ -992,8 +992,7 @@ TEST_CASE("Missing files (ROOT readers)", "[basics]") {
   auto root_reader = podio::ROOTReader();
   try {
     root_reader.openFile("NonExistentFile.root");
-  }
-  catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error& e) {
     exc = true;
   }
   REQUIRE(exc);
@@ -1002,8 +1001,7 @@ TEST_CASE("Missing files (ROOT readers)", "[basics]") {
   auto root_legacy_reader = podio::ROOTLegacyReader();
   try {
     root_legacy_reader.openFile("NonExistentFile.root");
-  }
-  catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error& e) {
     exc = true;
   }
   REQUIRE(exc);
@@ -1012,13 +1010,10 @@ TEST_CASE("Missing files (ROOT readers)", "[basics]") {
   auto root_frame_reader = podio::ROOTFrameReader();
   try {
     root_frame_reader.openFile("NonExistentFile.root");
-  }
-  catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error& e) {
     exc = true;
   }
   REQUIRE(exc);
-
-
 }
 
 #ifdef PODIO_WITH_SIO
@@ -1027,8 +1022,7 @@ TEST_CASE("Missing files (SIO readers)", "[basics]") {
   auto sio_reader = podio::SIOReader();
   try {
     sio_reader.openFile("NonExistentFile.sio");
-  }
-  catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error& e) {
     exc = true;
   }
   REQUIRE(exc);
@@ -1037,8 +1031,7 @@ TEST_CASE("Missing files (SIO readers)", "[basics]") {
   auto sio_legacy_reader = podio::SIOLegacyReader();
   try {
     sio_legacy_reader.openFile("NonExistentFile.sio");
-  }
-  catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error& e) {
     exc = true;
   }
   REQUIRE(exc);
@@ -1047,8 +1040,7 @@ TEST_CASE("Missing files (SIO readers)", "[basics]") {
   auto sio_frame_reader = podio::SIOFrameReader();
   try {
     sio_frame_reader.openFile("NonExistentFile.root");
-  }
-  catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error& e) {
     exc = true;
   }
   REQUIRE(exc);
