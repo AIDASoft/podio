@@ -15,7 +15,7 @@ EXPECTED_COLL_NAMES = {
     'WithNamespaceRelation', 'WithNamespaceRelationCopy',
     'emptyCollection', 'emptySubsetColl'
     }
-# The expected collections from the extensin (only present in the other_events category)
+# The expected collections from the extension (only present in the other_events category)
 EXPECTED_EXTENSION_COLL_NAMES = {"extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation"}
 
 # The expected parameter names in each frame
