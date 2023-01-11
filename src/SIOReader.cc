@@ -61,6 +61,9 @@ podio::GenericParameters* SIOReader::readEventMetaData() {
 
 void SIOReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
+  if (!this->isValid()) {
+    throw std::runtime_error("File " + filename + " couldn't be found");
+  }
   readCollectionIDTable();
 
   if (!readFileTOCRecord()) {

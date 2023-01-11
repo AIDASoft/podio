@@ -135,7 +135,11 @@ void ROOTLegacyReader::openFile(const std::string& filename) {
 void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
   m_chain = std::make_unique<TChain>("events");
   for (const auto& filename : filenames) {
-    m_chain->Add(filename.c_str());
+    //-1 forces the headers to be read so that
+    // the validity of the files can be checked
+    if (!m_chain->Add(filename.c_str(), -1)) {
+      throw std::runtime_error("File " + filename + " couldn't be found");
+    }
   }
 
   // read the meta data and build the collectionBranches cache

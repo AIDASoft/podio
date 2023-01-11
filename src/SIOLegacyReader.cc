@@ -16,7 +16,7 @@ SIOLegacyReader::SIOLegacyReader() {
 void SIOLegacyReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
   if (!m_stream.is_open()) {
-    SIO_THROW(sio::error_code::not_open, "Cannot open input file '" + filename + "' for reading");
+    throw std::runtime_error("File " + filename + " couldn't be opened");
   }
 
   // NOTE: reading TOC record first because that jumps back to the start of the file!
