@@ -189,6 +189,7 @@ add_executable(unittest unittest.cpp frame.cpp)
 target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 if (ENABLE_SIO)
   target_link_libraries(unittest PRIVATE podio::podioSioIO)
+  target_compile_definitions(unittest PRIVATE PODIO_WITH_SIO)
 endif()
 
 # The unittests are a bit better and they are labelled so we can put together a
