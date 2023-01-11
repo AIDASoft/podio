@@ -1008,7 +1008,6 @@ TEST_CASE("Missing files (SIO readers)", "[basics]") {
 
   auto sio_frame_reader = podio::SIOFrameReader();
   REQUIRE_THROWS_AS(sio_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
-
 }
 #endif
 
