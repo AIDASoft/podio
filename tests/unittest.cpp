@@ -988,62 +988,27 @@ TEST_CASE("GenericParameters return types", "[generic-parameters][static-checks]
 }
 
 TEST_CASE("Missing files (ROOT readers)", "[basics]") {
-  bool exc = false;
   auto root_reader = podio::ROOTReader();
-  try {
-    root_reader.openFile("NonExistentFile.root");
-  } catch (const std::runtime_error& e) {
-    exc = true;
-  }
-  REQUIRE(exc);
+  REQUIRE_THROWS_AS(root_reader.openFile("NonExistentFile.root"), std::runtime_error);
 
-  exc = false;
   auto root_legacy_reader = podio::ROOTLegacyReader();
-  try {
-    root_legacy_reader.openFile("NonExistentFile.root");
-  } catch (const std::runtime_error& e) {
-    exc = true;
-  }
-  REQUIRE(exc);
+  REQUIRE_THROWS_AS(root_legacy_reader.openFile("NonExistentFile.root"), std::runtime_error);
 
-  exc = false;
   auto root_frame_reader = podio::ROOTFrameReader();
-  try {
-    root_frame_reader.openFile("NonExistentFile.root");
-  } catch (const std::runtime_error& e) {
-    exc = true;
-  }
-  REQUIRE(exc);
+  REQUIRE_THROWS_AS(root_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
 }
 
 #ifdef PODIO_WITH_SIO
 TEST_CASE("Missing files (SIO readers)", "[basics]") {
-  bool exc = false;
   auto sio_reader = podio::SIOReader();
-  try {
-    sio_reader.openFile("NonExistentFile.sio");
-  } catch (const std::runtime_error& e) {
-    exc = true;
-  }
-  REQUIRE(exc);
+  REQUIRE_THROWS_AS(sio_reader.openFile("NonExistentFile.sio"), std::runtime_error);
 
-  exc = false;
   auto sio_legacy_reader = podio::SIOLegacyReader();
-  try {
-    sio_legacy_reader.openFile("NonExistentFile.sio");
-  } catch (const std::runtime_error& e) {
-    exc = true;
-  }
-  REQUIRE(exc);
+  REQUIRE_THROWS_AS(sio_legacy_reader.openFile("NonExistentFile.sio"), std::runtime_error);
 
-  exc = false;
   auto sio_frame_reader = podio::SIOFrameReader();
-  try {
-    sio_frame_reader.openFile("NonExistentFile.root");
-  } catch (const std::runtime_error& e) {
-    exc = true;
-  }
-  REQUIRE(exc);
+  REQUIRE_THROWS_AS(sio_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
+
 }
 #endif
 
