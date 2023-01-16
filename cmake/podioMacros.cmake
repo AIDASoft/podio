@@ -182,8 +182,8 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     ${YAML_FILE}
     ${PODIO_TEMPLATES}
     ${podio_PYTHON_DIR}/podio_class_generator.py
-    ${podio_PYTHON_DIR}/generator_utils.py
-    ${podio_PYTHON_DIR}/podio_config_reader.py
+    ${podio_PYTHON_DIR}/podio/generator_utils.py
+    ${podio_PYTHON_DIR}/podio/podio_config_reader.py
   )
 
   message(STATUS "Creating '${datamodel}' datamodel")
