@@ -20,13 +20,28 @@ endif()
 PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
 PODIO_ADD_SIO_IO_BLOCKS(TestDataModel "${headers}" "${sources}")
 
+# Build the extension data model and link it against the upstream model
+PODIO_GENERATE_DATAMODEL(extension_model datalayout_extension.yaml ext_headers ext_sources
+  UPSTREAM_EDM datamodel:datalayout.yaml
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
+
+PODIO_ADD_DATAMODEL_CORE_LIB(ExtensionDataModel "${ext_headers}" "${ext_sources}"
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
+target_link_libraries(ExtensionDataModel PUBLIC TestDataModel)
+
+PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/src/selection.xml
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
+
+PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
+
 #--- small utility helper function to allow for a more terse definition of tests below
 function(CREATE_PODIO_TEST sourcefile additional_libs)
   string( REPLACE ".cpp" "" name ${sourcefile} )
   add_executable( ${name} ${sourcefile} )
   add_test(NAME ${name} COMMAND ${name})
 
-  target_link_libraries(${name} TestDataModel ${additional_libs})
+  target_link_libraries(${name} TestDataModel ExtensionDataModel ${additional_libs})
   set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
@@ -47,7 +62,7 @@ set(root_dependent_tests
   read_frame.cpp
   write_frame_root.cpp
   read_frame_legacy_root.cpp)
-set(root_libs TestDataModelDict podio::podioRootIO)
+set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
@@ -230,18 +245,3 @@ else()
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
   )
 endif()
-
-# Build the extension data model and link it against the upstream model
-PODIO_GENERATE_DATAMODEL(extension_model datalayout_extension.yaml ext_headers ext_sources
-  UPSTREAM_EDM datamodel:datalayout.yaml
-  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
-
-PODIO_ADD_DATAMODEL_CORE_LIB(ExtensionDataModel "${ext_headers}" "${ext_sources}"
-  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
-target_link_libraries(ExtensionDataModel PUBLIC TestDataModel)
-
-PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/src/selection.xml
-  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
-
-PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")

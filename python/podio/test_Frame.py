@@ -15,6 +15,9 @@ EXPECTED_COLL_NAMES = {
     'WithNamespaceRelation', 'WithNamespaceRelationCopy',
     'emptyCollection', 'emptySubsetColl'
     }
+# The expected collections from the extension (only present in the other_events category)
+EXPECTED_EXTENSION_COLL_NAMES = {"extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation"}
+
 # The expected parameter names in each frame
 EXPECTED_PARAM_NAMES = {'anInt', 'UserEventWeight', 'UserEventName', 'SomeVectorData'}
 
@@ -50,7 +53,7 @@ class FrameReadTest(unittest.TestCase):
   def test_frame_collections(self):
     """Check that all expected collections are available."""
     self.assertEqual(set(self.event.collections), EXPECTED_COLL_NAMES)
-    self.assertEqual(set(self.other_event.collections), EXPECTED_COLL_NAMES)
+    self.assertEqual(set(self.other_event.collections), EXPECTED_COLL_NAMES.union(EXPECTED_EXTENSION_COLL_NAMES))
 
     # Not going over all collections here, as that should all be covered by the
     # c++ test cases; Simply picking a few and doing some basic tests

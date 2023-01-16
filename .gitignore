@@ -4,6 +4,7 @@ build
 install
 tests/src
 tests/datamodel
+tests/extension_model
 
 # Python
 *pyc
