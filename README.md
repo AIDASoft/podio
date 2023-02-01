@@ -164,6 +164,13 @@ After compilation you can run rudimentary tests with
 
     make test
 
+## Running workflows
+To run workflows manually (for example, when working on your own fork) go to
+`Actions` then click on the workflow that you want to run (for example
+`edm4hep`). Then if the workflow has the `workflow_dispatch` trigger you will be
+able to run it by clicking `Run workflow` and selecting on which branch it will
+run.
+
 ## Advanced build topics
 
 It is possible to instrument the complete podio build with sanitizers using the
