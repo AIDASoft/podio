@@ -91,8 +91,8 @@ class ClassGenerator:
     self.old_yamlfile = old_description
     self.evolution_file = evolution_file
     self.old_datamodel = None
-    self.old_datamodels_components = {}
-    self.old_datamodels_datatypes = {}
+    self.old_datamodels_components = set()
+    self.old_datamodels_datatypes = set()
 
     try:
       self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
