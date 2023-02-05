@@ -205,7 +205,7 @@ public:
   /** Add a string value to the parameters of the Frame by copying it. Dedicated
    * overload for enabling the on-the-fly conversion on the string literals.
    */
-  void putParameter(const std::string& key, std::string value) {
+  inline void putParameter(const std::string& key, std::string value) {
     putParameter<std::string>(key, std::move(value));
   }
 
@@ -213,7 +213,7 @@ public:
    * Dedicated overload for enabling on-the-fly conversions of initializer_list
    * of string literals.
    */
-  void putParameter(const std::string& key, std::vector<std::string> values) {
+  inline void putParameter(const std::string& key, std::vector<std::string> values) {
     putParameter<std::vector<std::string>>(key, std::move(values));
   }
 
@@ -269,7 +269,7 @@ public:
 
 // implementations below
 
-Frame::Frame() : Frame(std::make_unique<detail::EmptyFrameData>()) {
+inline Frame::Frame() : Frame(std::make_unique<detail::EmptyFrameData>()) {
 }
 
 template <typename FrameDataT>
@@ -291,11 +291,11 @@ const CollT& Frame::get(const std::string& name) const {
   return emptyColl;
 }
 
-const podio::CollectionBase* Frame::get(const std::string& name) const {
+inline const podio::CollectionBase* Frame::get(const std::string& name) const {
   return m_self->get(name);
 }
 
-void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {
+inline void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {
   const auto* retColl = m_self->put(std::move(coll), name);
   if (!retColl) {
     // TODO: Handle collisions
