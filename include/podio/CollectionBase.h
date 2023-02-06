@@ -53,6 +53,9 @@ public:
   /// number of elements in the collection
   virtual size_t size() const = 0;
 
+  /// Get the names of the relations and vector members
+  virtual RelationNames getRelationNames() const = 0;
+
   /// fully qualified type name
   virtual std::string getTypeName() const = 0;
   /// fully qualified type name of elements - with namespace

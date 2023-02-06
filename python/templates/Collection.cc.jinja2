@@ -50,6 +50,25 @@ std::size_t {{ collection_type }}::size() const {
   return m_storage.entries.size();
 }
 
+podio::RelationNames {{ collection_type }}::getRelationNames() const {
+{% set comma = joiner(", ") %}
+  static const std::vector<std::string_view> relationNames = {
+{%- for relation in OneToManyRelations + OneToOneRelations -%}
+  {{ comma() }}"{{ relation.name }}"
+  {%- endfor -%}
+};
+
+{% set comma = joiner(", ") %}
+  static const std::vector<std::string_view> vectorNames = {
+{%- for member in VectorMembers -%}
+  {{ comma() }}"{{ member.name }}"
+{%- endfor -%}
+};
+
+  return podio::RelationNames{relationNames, vectorNames};
+}
+
+
 void {{ collection_type }}::setSubsetCollection(bool setSubset) {
   if (m_isSubsetColl != setSubset && !m_storage.entries.empty()) {
     throw std::logic_error("Cannot change the character of a collection that already contains elements");

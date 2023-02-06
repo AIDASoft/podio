@@ -132,6 +132,12 @@ public:
     return _vec.size();
   }
 
+  /// Get the names of the relations and vector members
+  podio::RelationNames getRelationNames() const override {
+    const static std::vector<std::string_view> emptyVec{};
+    return RelationNames{emptyVec, emptyVec};
+  }
+
   /// fully qualified type name
   std::string getTypeName() const override {
     return userDataCollTypeName<BasicType>();

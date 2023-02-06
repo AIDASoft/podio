@@ -7,10 +7,25 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 namespace podio {
+
+/**
+ * Information on the names of the OneTo[One|Many]Relations as well as the
+ * VectorMembers of a datatype
+ *
+ * The contents are populated by the code generation, where we simply generate
+ * static vectors that we make available as const& here.
+ */
+struct RelationNames {
+  /// The names of the relations (OneToMany before OneToOne)
+  const std::vector<std::string_view>& relations;
+  /// The names of the vector members
+  const std::vector<std::string_view>& vectorMembers;
+};
 
 class CollectionBase;
 

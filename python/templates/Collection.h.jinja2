@@ -32,6 +32,10 @@
 #include <memory>
 #include <cstddef>
 
+namespace podio {
+  struct RelationNames;
+}
+
 {{ utils.namespace_open(class.namespace) }}
 
 
@@ -76,6 +80,9 @@ public:
 
   /// number of elements in the collection
   std::size_t size() const final;
+
+  /// Get the names of the relations and vector members
+  podio::RelationNames getRelationNames() const final;
 
   /// fully qualified type name
   std::string getTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Collection" }}"); }
