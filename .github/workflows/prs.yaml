@@ -1,0 +1,47 @@
+name: linux
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cvmfs_base: ['sft.cern.ch/lcg/views']
+        ENVIRONMENT: ['dev3/latest/x86_64-centos7-gcc11-opt']
+        include:
+        - cvmfs_base: 'sw.hsf.org'
+          ENVIRONMENT: 'key4hep'
+        - cvmfs_base: 'sw-nightlies.hsf.org'
+          ENVIRONMENT: 'key4hep'
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - name: Start container
+      run: |
+        docker run -it --name CI_container -v ${GITHUB_WORKSPACE}:/Package -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
+    - name: Fetch packages
+      run: |
+        docker exec CI_container /bin/bash -c 'cd Package;\
+        git clone https://github.com/key4hep/EDM4hep --depth 1'
+    - name: CMake Configure
+      run: |
+         docker exec CI_container /bin/bash -c 'cd Package;\
+         mkdir -p build install;\
+         source /cvmfs/${{ matrix.cvmfs_base }}/${{ matrix.ENVIRONMENT }}/setup.sh;\
+         cd build;\
+         cmake -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " -G Ninja ..;\
+         ninja -k0 install'
+    # - name: Test
+    #   run: |
+    #     docker exec CI_container /bin/bash -c 'cd ./Package;\
+    #     source /cvmfs/${{ matrix.cvmfs_base }}/${{ matrix.ENVIRONMENT }}/setup.sh;\
+    #     cd build;\
+    #     ninja -k0 && ctest --output-on-failure;'
+    # - name: Install
+    #   run: |
+    #     docker exec CI_container /bin/bash -c 'cd ./Package;\
+    #     source /cvmfs/${{ matrix.cvmfs_base }}/${{ matrix.ENVIRONMENT }}/setup.sh;\
+    #     cd build;\
+    #     ninja -k0 install;'
