@@ -76,8 +76,21 @@ inline std::string refBranch(const std::string& name, size_t index) {
   return name + "#" + std::to_string(index);
 }
 
+inline std::string refBranch(const std::string& name, std::string_view relName) {
+  return name + "_" + std::string(relName);
+}
+
 inline std::string vecBranch(const std::string& name, size_t index) {
   return name + "_" + std::to_string(index);
+}
+
+inline std::string vecBranch(const std::string& name, std::string_view vecName) {
+  return name + "_" + std::string(vecName);
+}
+
+/// The name for subset branches
+inline std::string subsetBranch(const std::string& name) {
+  return name + "_objIdx";
 }
 
 template <typename BufferT>

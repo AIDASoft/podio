@@ -1,5 +1,6 @@
 #include "podio/ROOTFrameWriter.h"
 #include "podio/CollectionBase.h"
+#include "podio/DatamodelRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
@@ -68,29 +69,32 @@ void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<Stor
   for (auto& [name, coll] : collections) {
     root_utils::CollectionBranches branches;
     const auto buffers = coll->getBuffers();
-
-    // data buffer branch, only for non-subset collections
-    if (buffers.data) {
+    // For subset collections we only fill one references branch
+    if (coll->isSubsetCollection()) {
+      auto& refColl = (*buffers.references)[0];
+      const auto brName = root_utils::subsetBranch(name);
+      branches.refs.push_back(catInfo.tree->Branch(brName.c_str(), refColl.get()));
+    } else {
+      // For "proper" collections we populate all branches, starting with the data
       auto bufferDataType = "vector<" + coll->getDataTypeName() + ">";
       branches.data = catInfo.tree->Branch(name.c_str(), bufferDataType.c_str(), buffers.data);
-    }
 
-    // reference collections
-    if (auto refColls = buffers.references) {
-      int i = 0;
-      for (auto& c : (*refColls)) {
-        const auto brName = root_utils::refBranch(name, i++);
-        branches.refs.push_back(catInfo.tree->Branch(brName.c_str(), c.get()));
+      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
+      if (auto refColls = buffers.references) {
+        int i = 0;
+        for (auto& c : (*refColls)) {
+          const auto brName = root_utils::refBranch(name, relVecNames.relations[i++]);
+          branches.refs.push_back(catInfo.tree->Branch(brName.c_str(), c.get()));
+        }
       }
-    }
 
-    // vector members
-    if (auto vmInfo = buffers.vectorMembers) {
-      int i = 0;
-      for (auto& [type, vec] : (*vmInfo)) {
-        const auto typeName = "vector<" + type + ">";
-        const auto brName = root_utils::vecBranch(name, i++);
-        branches.vecs.push_back(catInfo.tree->Branch(brName.c_str(), typeName.c_str(), vec));
+      if (auto vmInfo = buffers.vectorMembers) {
+        int i = 0;
+        for (auto& [type, vec] : (*vmInfo)) {
+          const auto typeName = "vector<" + type + ">";
+          const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i++]);
+          branches.vecs.push_back(catInfo.tree->Branch(brName.c_str(), typeName.c_str(), vec));
+        }
       }
     }
 

@@ -410,7 +410,13 @@ have resolvable schema evolution incompatibilities:")
         'edm_definition': model_encoder.encode(self.datamodel),
         'incfolder': self.incfolder,
         'schema_version': self.datamodel.schema_version,
+        'datatypes': self.datamodel.datatypes,
         }
+
+    def quoted_sv(string):
+      return f"\"{string}\"sv"
+
+    self.env.filters["quoted_sv"] = quoted_sv
 
     self._write_file('DatamodelDefinition.h',
                      self._eval_template('DatamodelDefinition.h.jinja2', data))

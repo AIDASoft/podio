@@ -9,6 +9,21 @@ namespace {{ package_name }}::meta {
  */
 static constexpr auto {{ package_name }}__JSONDefinition = R"DATAMODELDEF({{ edm_definition }})DATAMODELDEF";
 
+using namespace std::string_view_literals;
+
+/**
+ * The names of all relations and vector members for all datatypes
+ */
+const static podio::RelationNameMapping {{ package_name }}__relationNames = {
+{% for typeName, type in datatypes.items() %}
+  {"{{ typeName }}",
+   { {{ (type.OneToManyRelations + type.OneToOneRelations) | map(attribute="name") | map("quoted_sv") | join(", ") }} },
+   { {{ type.VectorMembers | map(attribute="name") | map("quoted_sv") | join(", ")}} },
+  },
+{% endfor %}
+};
+
+
 /**
  * The helper class that takes care of registering the datamodel definition to
  * the DatamodelRegistry and to provide the index in that registry.
@@ -19,7 +34,7 @@ static constexpr auto {{ package_name }}__JSONDefinition = R"DATAMODELDEF({{ edm
 class DatamodelRegistryIndex {
 public:
   static size_t value() {
-    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition));
+    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition, {{ package_name }}__relationNames));
     return index.m_value;
   }
 
