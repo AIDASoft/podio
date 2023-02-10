@@ -49,7 +49,7 @@ def print_frame(frame, cat_name, ientry, detailed):
       coll.print()
       print(flush=True)
     else:
-        print(f'{name:<38} {coll.getID():<4} {coll.getValueTypeName():<32} {len(coll):<10}')
+      print(f'{name:<38} {coll.getID():<4} {coll.getValueTypeName():<32} {len(coll):<10}')
 
   # And then parameters
   print('\nParameters:', flush=True)
