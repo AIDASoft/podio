@@ -138,6 +138,8 @@ void GenericParameters::print(std::ostream& os, bool flush) {
   printMap(getMap<int>(), os);
   os << "\nfloat parameters\n";
   printMap(getMap<float>(), os);
+  os << "\ndouble parameters\n";
+  printMap(getMap<double>(), os);
   os << "\nstd::string parameters\n";
   printMap(getMap<std::string>(), os);
 
