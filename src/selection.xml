@@ -3,6 +3,7 @@
     <class name="podio::GenericParameters">
         <field name="m_intMtx" transient="true"/>
         <field name="m_floatMtx" transient="true"/>
+        <field name="m_doubleMtx" transient="true"/>
         <field name="m_stringMtx" transient="true"/>
     </class>
     <class name="podio::IntVec"/>
@@ -10,6 +11,7 @@
     <class name="podio::StringVec"/>
     <class name="podio::GenericParameters::MapType<int>"/>
     <class name="podio::GenericParameters::MapType<float>"/>
+    <class name="podio::GenericParameters::MapType<double>"/>
     <class name="podio::GenericParameters::MapType<std::string>"/>
     <class name="std::map<int,podio::GenericParameters>"/>
     <class name="std::vector<std::tuple<int, std::string, bool>>"/>

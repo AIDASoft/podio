@@ -936,6 +936,22 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   gp.setValue("aString", "const char initialized");
   REQUIRE(gp.getValue<std::string>("aString") == "const char initialized");
 
+  gp.setValue("aStringVec", {"init", "from", "const", "chars"});
+  const auto& stringVec = gp.getValue<std::vector<std::string>>("aStringVec");
+  REQUIRE(stringVec.size() == 4);
+  REQUIRE(stringVec[0] == "init");
+  REQUIRE(stringVec[3] == "chars");
+
+  // Check that storing double values works
+  gp.setValue("double", 1.234);
+  gp.setValue("manyDoubles", {1.23, 4.56, 7.89});
+  REQUIRE(gp.getValue<double>("double") == 1.234);
+  const auto& storedDoubles = gp.getValue<std::vector<double>>("manyDoubles");
+  REQUIRE(storedDoubles.size() == 3);
+  REQUIRE(storedDoubles[0] == 1.23);
+  REQUIRE(storedDoubles[1] == 4.56);
+  REQUIRE(storedDoubles[2] == 7.89);
+
   // Check that passing an initializer_list creates the vector on the fly
   gp.setValue("manyInts", {1, 2, 3, 4});
   const auto& ints = gp.getValue<std::vector<int>>("manyInts");
@@ -973,7 +989,49 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   REQUIRE(gp.getValue<std::vector<std::string>>("MissingValue").empty());
 }
 
-// Helper alias template "macro" to get the return type of calling
+TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
+  // Tests for making sure that generic parameters can be moved / copied correctly
+  auto originalParams = podio::GenericParameters{};
+  originalParams.setValue("int", 42);
+  originalParams.setValue("ints", {1, 2});
+  originalParams.setValue("float", 3.14f);
+  originalParams.setValue("double", 2 * 3.14);
+  originalParams.setValue("strings", {"one", "two", "three"});
+
+  SECTION("Copy constructor") {
+    auto copiedParams = originalParams;
+    REQUIRE(copiedParams.getValue<int>("int") == 42);
+    REQUIRE(copiedParams.getValue<std::vector<int>>("ints")[1] == 2);
+    REQUIRE(copiedParams.getValue<float>("float") == 3.14f);
+    REQUIRE(copiedParams.getValue<double>("double") == 2 * 3.14);
+    REQUIRE(copiedParams.getValue<std::vector<std::string>>("strings")[0] == "one");
+
+    // Make sure these are truly independent copies now
+    copiedParams.setValue("anotherDouble", 1.2345);
+    REQUIRE(originalParams.getValue<double>("anotherDouble") == double{});
+  }
+
+  SECTION("Move constructor") {
+    auto copiedParams = std::move(originalParams);
+    REQUIRE(copiedParams.getValue<int>("int") == 42);
+    REQUIRE(copiedParams.getValue<std::vector<int>>("ints")[1] == 2);
+    REQUIRE(copiedParams.getValue<float>("float") == 3.14f);
+    REQUIRE(copiedParams.getValue<double>("double") == 2 * 3.14);
+    REQUIRE(copiedParams.getValue<std::vector<std::string>>("strings")[0] == "one");
+  }
+
+  SECTION("Move assignment") {
+    auto copiedParams = podio::GenericParameters{};
+    copiedParams = std::move(originalParams);
+    REQUIRE(copiedParams.getValue<int>("int") == 42);
+    REQUIRE(copiedParams.getValue<std::vector<int>>("ints")[1] == 2);
+    REQUIRE(copiedParams.getValue<float>("float") == 3.14f);
+    REQUIRE(copiedParams.getValue<double>("double") == 2 * 3.14);
+    REQUIRE(copiedParams.getValue<std::vector<std::string>>("strings")[0] == "one");
+  }
+}
+
+// helper alias template "macro" to get the return type of calling
 // GenericParameters::getValue with the desired template type
 template <typename T>
 using GPGetValue = decltype(std::declval<podio::GenericParameters>().getValue<T>(std::declval<std::string>()));
