@@ -1031,7 +1031,7 @@ TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
   }
 }
 
-// helper alias template "macro" to get the return type of calling
+// Helper alias template "macro" to get the return type of calling
 // GenericParameters::getValue with the desired template type
 template <typename T>
 using GPGetValue = decltype(std::declval<podio::GenericParameters>().getValue<T>(std::declval<std::string>()));
