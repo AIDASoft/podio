@@ -38,7 +38,7 @@ def print_frame(frame, cat_name, ientry, detailed):
   print('Collections:')
 
   if not detailed:
-    print(f'{"Name":<30} {"Type":<40} {"Size":<10}')
+    print(f'{"Name":<38} {"ID":<4} {"Type":<32} {"Size":<10}')
     print('-' * 82)
 
   # Print collections
@@ -49,7 +49,7 @@ def print_frame(frame, cat_name, ientry, detailed):
       coll.print()
       print(flush=True)
     else:
-      print(f'{name:<30} {coll.getValueTypeName():<40} {len(coll):<10}')
+      print(f'{name:<38} {coll.getID():<4} {coll.getValueTypeName():<32} {len(coll):<10}')
 
   # And then parameters
   print('\nParameters:', flush=True)
