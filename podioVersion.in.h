@@ -13,7 +13,7 @@
 
 /// Define a version to be used in podio.
 #define PODIO_VERSION(major, minor, patch)                                                                             \
-  (((unsigned long)(major) << 32) | ((unsigned long)(minor) << 16) | ((unsigned long)(patch)))
+  ((UINT64_C(major) << 32) | (UINT64_C(minor) << 16) | UINT64_C(patch))
 /// Get the major version from a preprocessor defined version
 #define PODIO_MAJOR_VERSION(v) (((v) & (-1UL >> 16)) >> 32)
 /// Get the minor version from a preprocessor defined version
@@ -22,10 +22,10 @@
 #define PODIO_PATCH_VERSION(v) ((v) & (-1UL >> 48))
 
 // Some helper constants that are populated by the cmake configure step
-#define podio_VERSION @podio_VERSION@
 #define podio_VERSION_MAJOR @podio_VERSION_MAJOR@
 #define podio_VERSION_MINOR @podio_VERSION_MINOR@
 #define podio_VERSION_PATCH @podio_VERSION_PATCH@
+#define podio_VERSION PODIO_VERSION(podio_VERSION_MAJOR, podio_VERSION_MINOR, podio_VERSION_PATCH)
 
 /// The encoded version with which podio has been built
 #define PODIO_BUILD_VERSION PODIO_VERSION(podio_VERSION_MAJOR, podio_VERSION_MINOR, podio_VERSION_PATCH)

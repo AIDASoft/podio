@@ -883,8 +883,13 @@ TEST_CASE("Version tests", "[versioning]") {
 TEST_CASE("Preprocessor version tests", "[versioning]") {
   SECTION("Basic functionality") {
     using namespace podio::version;
-    // Check that preprocessor comparisons work
-    STATIC_REQUIRE(PODIO_BUILD_VERSION == PODIO_VERSION(build_version.major, build_version.minor, build_version.patch));
+    // Check that preprocessor comparisons work by actually invoking the
+    // preprocessor
+#if PODIO_BUILD_VERSION == PODIO_VERSION(podio_VERSION_MAJOR, podio_VERSION_MINOR, podio_VERSION_PATCH)
+    STATIC_REQUIRE(true);
+#else
+    STATIC_REQUIRE(false);
+#endif
 
     // Make sure that we can actually decode 64 bit versions
     STATIC_REQUIRE(decode_version(PODIO_BUILD_VERSION) == build_version);
