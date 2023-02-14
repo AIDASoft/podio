@@ -15,15 +15,15 @@ static constexpr auto {{ package_name }}__JSONDefinition = R"EDMDEFINITION({{ ed
  * Implemented as a singleton mainly to ensure only a single registration of
  * each EDM, during the constructor
  */
-class RegistryIndex {
+class DefinitionRegistryIndex {
 public:
   static size_t value() {
-    static auto index = RegistryIndex(podio::EDMDefinitionRegistry::instance().registerEDM("{{ package_name }}", {{ package_name }}__JSONDefinition));
+    static auto index = DefinitionRegistryIndex(podio::EDMDefinitionRegistry::mutInstance().registerEDM("{{ package_name }}", {{ package_name }}__JSONDefinition));
     return index.m_value;
   }
 
 private:
-  RegistryIndex(size_t v) : m_value(v) {}
+  DefinitionRegistryIndex(size_t v) : m_value(v) {}
   size_t m_value{podio::EDMDefinitionRegistry::NoDefinitionAvailable};
 };
 

@@ -6,9 +6,13 @@
 #include <string_view>
 
 namespace podio {
-EDMDefinitionRegistry& EDMDefinitionRegistry::instance() {
+const EDMDefinitionRegistry& EDMDefinitionRegistry::instance() {
   static EDMDefinitionRegistry registryInstance;
   return registryInstance;
+}
+
+EDMDefinitionRegistry& EDMDefinitionRegistry::mutInstance() {
+  return const_cast<EDMDefinitionRegistry&>(instance());
 }
 
 size_t EDMDefinitionRegistry::registerEDM(std::string name, std::string_view definition) {
@@ -25,16 +29,21 @@ size_t EDMDefinitionRegistry::registerEDM(std::string name, std::string_view def
   return std::distance(m_definitions.cbegin(), it);
 }
 
-const std::string_view EDMDefinitionRegistry::getDefinition(std::string_view edm_name) const {
+const std::string_view EDMDefinitionRegistry::getDefinition(std::string_view edmName) const {
   const auto it = std::find_if(m_definitions.cbegin(), m_definitions.cend(),
-                               [&edm_name](const auto& kvPair) { return kvPair.first == edm_name; });
+                               [&edmName](const auto& kvPair) { return kvPair.first == edmName; });
+  if (it == m_definitions.cend()) {
+    std::cerr << "PODIO WARNING: Cannot find the definition for the EDM with the name " << edmName << std::endl;
+    static constexpr std::string_view emptyDef = "{}"; // valid empty JSON
+    return emptyDef;
+  }
 
-  // TODO: Output when not found
-  return getDefinition(std::distance(m_definitions.cbegin(), it));
+  return it->second;
 }
 
 const std::string_view EDMDefinitionRegistry::getDefinition(size_t index) const {
   if (index >= m_definitions.size()) {
+    std::cerr << "PODIO WARNING: Cannot find the definition for the EDM with the index " << index << std::endl;
     static constexpr std::string_view emptyDef = "{}"; // valid empty JSON
     return emptyDef;
   }
@@ -44,6 +53,7 @@ const std::string_view EDMDefinitionRegistry::getDefinition(size_t index) const 
 
 const std::string& EDMDefinitionRegistry::getEDMName(size_t index) const {
   if (index >= m_definitions.size()) {
+    std::cout << "PODIO WARNING: Cannot find the name of the EDM with the index " << index << std::endl;
     static const std::string emptyName = "";
     return emptyName;
   }

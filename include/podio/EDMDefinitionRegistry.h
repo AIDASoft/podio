@@ -9,7 +9,12 @@
 namespace podio {
 class EDMDefinitionRegistry {
 public:
-  static EDMDefinitionRegistry& instance();
+  /// Get the registry
+  static const EDMDefinitionRegistry& instance();
+
+  // mutable instance only used for the initial registration!
+  static EDMDefinitionRegistry& mutInstance();
+
   ~EDMDefinitionRegistry() = default;
   EDMDefinitionRegistry(const EDMDefinitionRegistry&) = delete;
   EDMDefinitionRegistry& operator=(const EDMDefinitionRegistry&) = delete;
@@ -22,11 +27,11 @@ public:
   static constexpr size_t NoDefinitionAvailable = -2;
 
   /**
-   * Get the definition (in JSON format) of the EDM with the given edm_name. If
+   * Get the definition (in JSON format) of the EDM with the given edmName. If
    * no EDM under the given name can be found, an empty model definition is
    * returned
    */
-  const std::string_view getDefinition(std::string_view edm_name) const;
+  const std::string_view getDefinition(std::string_view edmName) const;
 
   /**
    * Get the defintion (in JSON format) of the EDM wth the given index. If no

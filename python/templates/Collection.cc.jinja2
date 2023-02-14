@@ -180,7 +180,7 @@ podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
 {% endfor %}
 
 size_t {{ collection_type }}::getDefinitionRegistryIndex() const {
-  return {{ package_name }}::meta::RegistryIndex::value();
+  return {{ package_name }}::meta::DefinitionRegistryIndex::value();
 }
 
 #ifdef PODIO_JSON_OUTPUT
