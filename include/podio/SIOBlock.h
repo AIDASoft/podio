@@ -129,7 +129,7 @@ struct SIOVersionBlock : public sio::block {
  */
 class SIOEventMetaDataBlock : public sio::block {
 public:
-  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 1)) {
+  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 2)) {
   }
 
   SIOEventMetaDataBlock(const SIOEventMetaDataBlock&) = delete;
@@ -146,7 +146,7 @@ public:
  */
 class SIONumberedMetaDataBlock : public sio::block {
 public:
-  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 1)) {
+  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 2)) {
   }
 
   SIONumberedMetaDataBlock(const SIONumberedMetaDataBlock&) = delete;
