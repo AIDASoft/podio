@@ -212,7 +212,7 @@ The `podio/utilities/EDMRegistryIOHelpers.h` header defines two utility (mixin)
 classes, that help with instrumenting readers and writers with functionality to
 read and write all the necessary EDM definitions.
 
-- The `EDMDefinitionCollector` is intended to be inherited from by writer. It
+- The `EDMDefinitionCollector` is intended to be inherited from by writers. It
   essentially collects the EDM definitions of all the collections it encounters.
   The `registerEDMDef` method it provides should be called with every collection
   that is written. The `getEDMDefinitionsToWrite` method returns a vector of all
