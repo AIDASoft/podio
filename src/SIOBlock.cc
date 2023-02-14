@@ -75,12 +75,14 @@ void writeGenericParameters(sio::write_device& device, const GenericParameters& 
   writeParamMap(device, params.getIntMap());
   writeParamMap(device, params.getFloatMap());
   writeParamMap(device, params.getStringMap());
+  writeParamMap(device, params.getDoubleMap());
 }
 
 void readGenericParameters(sio::read_device& device, GenericParameters& params) {
   readParamMap(device, params.getIntMap());
   readParamMap(device, params.getFloatMap());
   readParamMap(device, params.getStringMap());
+  readParamMap(device, params.getDoubleMap());
 }
 
 void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type) {

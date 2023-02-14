@@ -87,6 +87,7 @@ void write(podio::EventStore& store, WriterT& writer) {
     ss << " event_number_" << i;
     evtMD.setValue("UserEventName", ss.str());
     evtMD.setValue("SomeVectorData", {1, 2, 3, 4});
+    evtMD.setValue("SomeVectorData", {i * 1.1, i * 2.2});
 
     auto& colMD = store.getCollectionMetaData(hits.getID());
     colMD.setValue("CellIDEncodingString", "system:8,barrel:3,layer:6,slice:5,x:-16,y:-16");
