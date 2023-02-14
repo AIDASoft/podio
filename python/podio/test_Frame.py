@@ -97,5 +97,7 @@ class FrameReadTest(unittest.TestCase):
 
     self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='int'), [1, 2, 3, 4])
     self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='str'), ["just", "some", "strings"])
+    # as_type='float' will also retrieve double values (if the name is unambiguous)
+    self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='float'), [0.0, 0.0])
     # Avoid float comparison here and only check the size
     self.assertEqual(len(self.event.get_parameter('SomeVectorData', as_type='float')), 2)
