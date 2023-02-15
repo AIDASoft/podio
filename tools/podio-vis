@@ -1,45 +1,50 @@
 #!/usr/bin/env python3
+import argparse
 import os
 from podio.podio_config_reader import PodioConfigReader
 from graphviz import Digraph
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-
-class Podio2Graphviz(object):
+class ModelToGraphviz(object):
   """Class to transform a data model description into a graphical representation"""
 
-  def __init__(self, yamlfile, target, dot):
+  def __init__(self, yamlfile, target, dot, format, filename):
     self.yamlfile = yamlfile
     self.target = target
     self.use_dot = dot
     self.datamodel = PodioConfigReader.read(yamlfile, 'podio')
-    self.graph = Digraph()
-    self.graph.format = "png"
+    self.graph = Digraph(node_attr={'shape': 'box'})
+    self.graph.attr(rankdir='LR', size='8,5')
+    self.format = format
+    self.filename = filename
 
-  def process(self):
-      # first create all nodes upfront
+  def make_viz(self):
       for name, datatype in self.datamodel.datatypes.items():
-        compatible_name = name.replace("::","_")  # graphviz gets confused with C++ '::' and formatting strings
-        self.graph.node(compatible_name, shape="box", label=name)
-      # then go through the relations
-      for name, datatype in self.datamodel.datatypes.items():
+        compatible_name = name.replace('::', '_')  # graphviz gets confused with C++ '::' and formatting strings
+        self.graph.node(compatible_name, label=name)
+        self.graph.attr('edge', color='red')
         for rel in datatype["OneToOneRelations"]:
-          compatible_name = name.replace("::","_")
-          compatible_type = rel.full_type.replace("::","_")
-          self.graph.edge(compatible_name,compatible_type, label=rel.name)
+          compatible_type = rel.full_type.replace('::', '_')
+          self.graph.edge(compatible_name, compatible_type)
+        self.graph.attr('edge', color='blue')
         for rel in datatype["OneToManyRelations"]:
-          compatible_name = name.replace("::","_")
-          compatible_type = rel.full_type.replace("::","_")
-          label = "%s (N)" %rel.name
-          self.graph.edge(compatible_name,compatible_type, label=label)
+          compatible_type = rel.full_type.replace('::', '_')
+          self.graph.edge(compatible_name, compatible_type)
+
+      with self.graph.subgraph(name='cluster0') as c:
+         c.attr('node', shape='plaintext')
+         c.node('l1', '')
+         c.node('l2', '')
+         c.node('r1', 'One to One Relation')
+         c.node('r2', 'One to Many Relation')
+         c.edge('l1', 'r1', color='red')
+         c.edge('l2', 'r2', color='blue')
 
       if self.use_dot:
         self.graph.save()
       else: 
-        self.graph.render(self.target)
+        self.graph.render(filename=self.filename, format='pdf')
 
 if __name__ == "__main__":
-  import argparse
   parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
                                    'a visualization in the target directory')
 
@@ -47,8 +52,11 @@ if __name__ == "__main__":
   parser.add_argument('target', help='name of the file to be created')
   parser.add_argument('-d', '--dot', action='store_true', default=False,
                       help='just write the dot file')
+  parser.add_argument('--format', default='pdf', help='Which format to use for saving the file')
+  parser.add_argument('--filename', default=None, help='Which filename to use for the output')
 
   args = parser.parse_args()
 
-  vis = Podio2Graphviz(args.description, args.target, args.dot)
-  vis.process()
+  vis = ModelToGraphviz(args.description, args.target, args.dot, format=args.format,
+                        filename='gv.' + args.format if not args.filename else args.filename)
+  vis.make_viz()
