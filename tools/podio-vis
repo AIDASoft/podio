@@ -53,10 +53,10 @@ if __name__ == "__main__":
   parser.add_argument('-d', '--dot', action='store_true', default=False,
                       help='just write the dot file')
   parser.add_argument('--format', default='pdf', help='Which format to use for saving the file')
-  parser.add_argument('--filename', default=None, help='Which filename to use for the output')
+  parser.add_argument('--filename', default='gv', help='Which filename to use for the output')
 
   args = parser.parse_args()
 
   vis = ModelToGraphviz(args.description, args.target, args.dot, format=args.format,
-                        filename='gv.' + args.format if not args.filename else args.filename)
+                        filename=args.filename)
   vis.make_viz()
