@@ -21,11 +21,11 @@ class ModelToGraphviz(object):
       for name, datatype in self.datamodel.datatypes.items():
         compatible_name = name.replace('::', '_')  # graphviz gets confused with C++ '::' and formatting strings
         self.graph.node(compatible_name, label=name)
-        self.graph.attr('edge', color='red')
+        self.graph.attr('edge', color='blue')
         for rel in datatype["OneToOneRelations"]:
           compatible_type = rel.full_type.replace('::', '_')
           self.graph.edge(compatible_name, compatible_type)
-        self.graph.attr('edge', color='blue')
+        self.graph.attr('edge', color='red')
         for rel in datatype["OneToManyRelations"]:
           compatible_type = rel.full_type.replace('::', '_')
           self.graph.edge(compatible_name, compatible_type)
@@ -36,8 +36,8 @@ class ModelToGraphviz(object):
          c.node('l2', '')
          c.node('r1', 'One to One Relation')
          c.node('r2', 'One to Many Relation')
-         c.edge('l1', 'r1', color='red')
-         c.edge('l2', 'r2', color='blue')
+         c.edge('l1', 'r1', color='blue')
+         c.edge('l2', 'r2', color='red')
 
       if self.use_dot:
         self.graph.save()
