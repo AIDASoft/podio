@@ -18,7 +18,7 @@ try:
 except ImportError:
   def _is_frame_sio_file(filename):
     """Stub raising a ValueError"""
-    raise ValueError('podio has not been built with SIO support, which is necessary to read this file')
+    raise ValueError('podio has not been built with SIO support, which is necessary to read this file, or there is a version mismatch')
 
 
 def _is_frame_root_file(filename):

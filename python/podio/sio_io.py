@@ -4,7 +4,12 @@
 from podio.base_reader import BaseReaderMixin
 
 from ROOT import gSystem
-gSystem.Load('libpodioSioIO')  # noqa: 402
+ret = gSystem.Load('libpodioSioIO')  # noqa: 402
+# Return values: -1 when it doesn't exist and -2 when there is a version mismatch
+if ret == -1:
+  raise ImportError('Unable to find libpodioSioIO')
+elif ret == -2:
+  raise ImportError('Version mismatch for libpodioSioIO')
 from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
 
 Writer = podio.SIOFrameWriter

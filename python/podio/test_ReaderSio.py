@@ -3,7 +3,10 @@
 
 import unittest
 
-from podio.sio_io import Reader, LegacyReader
+try:
+  from podio.sio_io import Reader, LegacyReader
+except ImportError:
+  print('Unable to load SIO for this unit test, aborting the test...')
 from podio.test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
 from podio.test_utils import SKIP_SIO_TESTS
 
