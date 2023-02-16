@@ -5,6 +5,7 @@ import argparse
 from podio.podio_config_reader import PodioConfigReader
 from graphviz import Digraph
 
+
 class ModelToGraphviz:
   """Class to transform a data model description into a graphical representation"""
 
@@ -33,18 +34,20 @@ class ModelToGraphviz:
         self.graph.edge(compatible_name, compatible_type)
 
     with self.graph.subgraph(name='cluster0') as subg:
-       subg.attr('node', shape='plaintext')
-       subg.node('l1', '')
-       subg.node('l2', '')
-       subg.node('r1', 'One to One Relation')
-       subg.node('r2', 'One to Many Relation')
-       subg.edge('l1', 'r1', color='blue')
-       subg.edge('l2', 'r2', color='red')
+      subg.attr('node', shape='plaintext')
+      subg.node('l1', '')
+      subg.node('l2', '')
+      subg.node('r1', 'One to One Relation')
+      subg.node('r2', 'One to Many Relation')
+      subg.edge('l1', 'r1', color='blue')
+      subg.edge('l2', 'r2', color='red')
 
     if self.use_dot:
       self.graph.save()
     else:
-      self.graph.render(filename=self.filename, fmt='pdf')
+      print(f'Saving file {self.filename} and {self.filename}.{self.fmt}')
+      self.graph.render(filename=self.filename, format=self.fmt)
+
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
@@ -54,7 +57,7 @@ if __name__ == "__main__":
   parser.add_argument('target', help='name of the file to be created')
   parser.add_argument('-d', '--dot', action='store_true', default=False,
                       help='just write the dot file')
-  parser.add_argument('--format', default='pdf', help='Which format to use for saving the file')
+  parser.add_argument('--fmt', default='pdf', help='Which format to use for saving the file')
   parser.add_argument('--filename', default='gv', help='Which filename to use for the output')
 
   args = parser.parse_args()
