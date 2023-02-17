@@ -2,6 +2,7 @@
 #define PODIO_ASCIIWRITER_H
 
 #include "podio/EventStore.h"
+#include "podio/utilities/Deprecated.h"
 
 #include <fstream>
 #include <functional>
@@ -30,7 +31,7 @@ struct ColWriter : public ColWriterBase {
 
 typedef std::map<std::string, ColWriterBase*> FunMap;
 
-class ASCIIWriter {
+class DEPR_EVTSTORE ASCIIWriter {
 
 public:
   ASCIIWriter(const std::string& filename, EventStore* store);
