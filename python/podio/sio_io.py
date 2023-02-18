@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
 """Python module for reading sio files containing podio Frames"""
 
-from podio.base_reader import BaseReaderMixin
 
 from ROOT import gSystem
 ret = gSystem.Load('libpodioSioIO')  # noqa: 402
 # Return values: -1 when it doesn't exist and -2 when there is a version mismatch
-if ret == -1:
-  raise ImportError('Unable to find libpodioSioIO')
-if ret == -2:
-  raise ImportError('Version mismatch for libpodioSioIO')
+if ret < 0:
+  raise ImportError('Error when importing libpodioSioIO')
 from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
-
-Writer = podio.SIOFrameWriter
+from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
 
 
 class Reader(BaseReaderMixin):

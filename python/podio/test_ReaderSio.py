@@ -3,10 +3,6 @@
 
 import unittest
 
-try:
-  from podio.sio_io import Reader, LegacyReader
-except ImportError:
-  print('Unable to load SIO for this unit test, aborting the test...')
 from podio.test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
 from podio.test_utils import SKIP_SIO_TESTS
 
@@ -16,6 +12,7 @@ class SioReaderTestCase(ReaderTestCaseMixin, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
     """Setup the corresponding reader"""
+    from podio.sio_io import Reader  # pylint: disable=import-outside-toplevel
     self.reader = Reader('example_frame.sio')
 
 
@@ -24,4 +21,5 @@ class SIOLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
   """Test cases for the legacy root input files and reader."""
   def setUp(self):
     """Setup a reader, reading from the example files"""
+    from podio.sio_io import LegacyReader  # pylint: disable=import-outside-toplevel
     self.reader = LegacyReader('example.sio')
