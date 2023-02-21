@@ -9,9 +9,8 @@ from graphviz import Digraph
 class ModelToGraphviz:
   """Class to transform a data model description into a graphical representation"""
 
-  def __init__(self, yamlfile, target, dot, fmt, filename, extra_input):
+  def __init__(self, yamlfile, dot, fmt, filename, extra_input):
     self.yamlfile = yamlfile
-    self.target = target
     self.use_dot = dot
     self.datamodel = PodioConfigReader.read(yamlfile, 'podio')
     self.graph = Digraph(node_attr={'shape': 'box'})
@@ -45,8 +44,6 @@ class ModelToGraphviz:
         continue
       if 'Association' in name:
         with_association = True
-        print(name)
-        # print(datatype['OneToOneRelations'][0].full_type)
         self.graph.edge(datatype['OneToOneRelations'][0].full_type.replace('::', '_'), 
                datatype['OneToOneRelations'][1].full_type.replace('::', '_'),
                         label=name.replace('edm4hep::', ''), color='black', dir='both')
@@ -94,7 +91,6 @@ if __name__ == "__main__":
                                    'a visualization in the target directory')
 
   parser.add_argument('description', help='yaml file describing the datamodel')
-  parser.add_argument('target', help='name of the file to be created')
   parser.add_argument('-d', '--dot', action='store_true', default=False,
                       help='just write the dot file')
   parser.add_argument('--fmt', default='svg', help='Which format to use for saving the file')
@@ -103,6 +99,6 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
 
-  vis = ModelToGraphviz(args.description, args.target, args.dot, fmt=args.fmt,
+  vis = ModelToGraphviz(args.description, args.dot, fmt=args.fmt,
                         filename=args.filename, extra_input=args.extra_input)
   vis.make_viz()

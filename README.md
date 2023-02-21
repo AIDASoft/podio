@@ -183,3 +183,27 @@ smoother development experience with sanitizers enabled, these failing tests are
 labelled (e.g. `[ASAN-FAIL]` or `[THREAD-FAIL]`) and will not be run by default
 if the corresponding sanitizer is enabled. It is possible to force all tests to
 be run via the `FORCE_RUN_ALL_TESTS` cmake option.
+
+## Model visualization
+
+There is a tool to generate a diagram of the relationships between the elements
+in a model. To generate a diagram run `python python/tools/podio-vis model.yaml`
+and use `--help` for checking the possible options. In particular there is the
+option `--extra-input` that can be used to pass a configuration file defining
+groups that will be clustered together in the diagram, like it is shown in. The
+syntax is
+```
+group label:
+  - datatype1
+  - datatype2
+another group label:
+  - datatype3
+  - datatype4
+```
+
+Additionally, it is possible to remove from the diagram any
+data type (let's call it `removed_datatype`) by adding to this configuration file:
+```
+Filter:
+  - removed_datatype
+```
