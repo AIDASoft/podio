@@ -6,10 +6,11 @@ import yaml
 from podio.podio_config_reader import PodioConfigReader
 from graphviz import Digraph
 
+
 class ModelToGraphviz:
   """Class to transform a data model description into a graphical representation"""
 
-  def __init__(self, yamlfile, dot, fmt, filename, extra_input):
+  def __init__(self, yamlfile, dot, fmt, filename, graph_conf):
     self.yamlfile = yamlfile
     self.use_dot = dot
     self.datamodel = PodioConfigReader.read(yamlfile, 'podio')
@@ -17,12 +18,13 @@ class ModelToGraphviz:
     self.graph.attr(rankdir='RL', size='8,5')
     self.fmt = fmt
     self.filename = filename
-    self.extra_input = {}
+    self.graph_conf = {}
     self.remove = set()
-    if extra_input:
-      self.extra_input = yaml.safe_load(open(extra_input))
-    if 'Filter' in self.extra_input:
-      self.remove = set(self.extra_input['Filter'])
+    if graph_conf:
+      with open(graph_conf, encoding='utf8') as inp:
+        self.graph_conf = yaml.safe_load(inp)
+    if 'Filter' in self.graph_conf:
+      self.remove = set(self.graph_conf['Filter'])
 
   def make_viz(self):
     '''Make the graph and render it in the chosen format'''
@@ -30,13 +32,13 @@ class ModelToGraphviz:
     # Make the grouped nodes first
     # It doesn't matter if they are remade latter so we don't need
     # to check for that
-    for i, (label, group) in enumerate(self.extra_input.items()):
-      with self.graph.subgraph(name=f'cluster{i+1}') as c:
-        c.attr(label=label)
+    for i, (label, group) in enumerate(self.graph_conf.items()):
+      with self.graph.subgraph(name=f'cluster{i+1}') as subgraph:
+        subgraph.attr(label=label)
         for name in group:
           if name in self.remove:
             continue
-          c.node(name.replace('::', '_'), label=name)
+          subgraph.node(name.replace('::', '_'), label=name)
 
     with_association = False
     for name, datatype in self.datamodel.datatypes.items():
@@ -44,8 +46,8 @@ class ModelToGraphviz:
         continue
       if 'Association' in name:
         with_association = True
-        self.graph.edge(datatype['OneToOneRelations'][0].full_type.replace('::', '_'), 
-               datatype['OneToOneRelations'][1].full_type.replace('::', '_'),
+        self.graph.edge(datatype['OneToOneRelations'][0].full_type.replace('::', '_'),
+                        datatype['OneToOneRelations'][1].full_type.replace('::', '_'),
                         label=name.replace('edm4hep::', ''), color='black', dir='both')
         continue
 
@@ -95,10 +97,10 @@ if __name__ == "__main__":
                       help='just write the dot file')
   parser.add_argument('--fmt', default='svg', help='Which format to use for saving the file')
   parser.add_argument('--filename', default='gv', help='Which filename to use for the output')
-  parser.add_argument('--extra-input', help='Extra input file for defining groups')
+  parser.add_argument('--graph-conf', help='Configuration file for defining groups')
 
   args = parser.parse_args()
 
   vis = ModelToGraphviz(args.description, args.dot, fmt=args.fmt,
-                        filename=args.filename, extra_input=args.extra_input)
+                        filename=args.filename, graph_conf=args.graph_conf)
   vis.make_viz()
