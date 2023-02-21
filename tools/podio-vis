@@ -83,7 +83,7 @@ class ModelToGraphviz:
       self.graph.save()
     else:
       print(f'Saving file {self.filename} and {self.filename}.{self.fmt}')
-      self.graph.render(filename=self.filename, format=self.fmt, renderer='cairo')
+      self.graph.render(filename=self.filename, format=self.fmt)
 
 
 if __name__ == "__main__":
