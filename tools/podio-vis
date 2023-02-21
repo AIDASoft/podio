@@ -67,17 +67,15 @@ class ModelToGraphviz:
         self.graph.edge(compatible_name, compatible_type)
 
     with self.graph.subgraph(name='cluster0') as subg:
-      labels = ['One to One Relation', 'One to Many Relation', 'Association']
-      max_length = max(map(len, labels))
       subg.attr('node', shape='plaintext')
       subg.node('l1', '')
-      subg.node('r1', f'{labels[0]:{max_length}}')
+      subg.node('r1', 'One to One Relation')
       subg.edge('l1', 'r1', color='blue')
       subg.node('l2', '')
-      subg.node('r2', f'{labels[1]:{max_length}}')
+      subg.node('r2', 'One to Many Relation')
       subg.edge('l2', 'r2', color='red')
       if with_association:
-        subg.node('r3', f'{labels[2]:{max_length}}')
+        subg.node('r3', 'Association')
         subg.node('l3', '')
         subg.edge('l3', 'r3', color='black', dir='both')
 
