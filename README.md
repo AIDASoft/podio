@@ -189,7 +189,7 @@ be run via the `FORCE_RUN_ALL_TESTS` cmake option.
 There is a tool to generate a diagram of the relationships between the elements
 in a model. To generate a diagram run `python python/tools/podio-vis model.yaml`
 and use `--help` for checking the possible options. In particular there is the
-option `--extra-input` that can be used to pass a configuration file defining
+option `--graph-conf` that can be used to pass a configuration file defining
 groups that will be clustered together in the diagram, like it is shown in. The
 syntax is
 ```
