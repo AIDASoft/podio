@@ -8,6 +8,7 @@ try:
   from graphviz import Digraph
 except ImportError:
   print('graphviz is not installed. please run pip install graphviz')
+  exit(1)
 
 
 class ModelToGraphviz:
