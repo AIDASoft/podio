@@ -4,7 +4,10 @@
 import argparse
 import yaml
 from podio.podio_config_reader import PodioConfigReader
-from graphviz import Digraph
+try:
+  from graphviz import Digraph
+except ImportError:
+  print('graphviz is not installed. please run pip install graphviz')
 
 
 class ModelToGraphviz:
