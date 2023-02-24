@@ -40,6 +40,12 @@ TEST_CASE("Frame parameters", "[frame][basics]") {
   REQUIRE(strings[0] == "one");
   REQUIRE(strings[1] == "two");
   REQUIRE(strings[2] == "three");
+
+  const auto stringKeys = event.getParameterKeys<std::string>();
+  REQUIRE(stringKeys.size() == 2);
+  // Can't rely on an insertion order here
+  REQUIRE(std::find(stringKeys.begin(), stringKeys.end(), "aString") != stringKeys.end());
+  REQUIRE(std::find(stringKeys.begin(), stringKeys.end(), "someStrings") != stringKeys.end());
 }
 
 // NOTE: Due to the extremly small tasks that are done in these tests, they will

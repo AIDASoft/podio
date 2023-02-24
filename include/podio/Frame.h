@@ -233,6 +233,19 @@ public:
     return m_self->parameters().getValue<T>(key);
   }
 
+  /** Get all parameters that are stored in this Frame
+   */
+  const podio::GenericParameters& getParameters() const {
+    return m_self->parameters();
+  }
+
+  /** Get the keys of all stored parameters for a given type
+   */
+  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  std::vector<std::string> getParameterKeys() const {
+    return m_self->parameters().getKeys<T>();
+  }
+
   /** Get all **currently** available collections (including potentially
    * unpacked ones from raw data)
    */
