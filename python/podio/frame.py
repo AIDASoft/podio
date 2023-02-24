@@ -167,7 +167,7 @@ class Frame:
         podio.GenericParameters: The stored generic parameters
     """
     # Going via the not entirely inteded way here
-    return self._frame.getGenericParametersForWrite()
+    return self._frame.getParameters()
 
   def get_param_info(self, name):
     """Get the parameter type information stored under the given name.
@@ -197,13 +197,10 @@ class Frame:
   def _init_param_keys(self):
     """Initialize the param keys dict for easier lookup of the available parameters.
 
-    NOTE: This depends on a "side channel" that is usually reserved for the
-    writers but is currently still in the public interface of the Frame
-
     Returns:
         dict: A dictionary mapping each key to the corresponding c++ type
     """
-    params = self._frame.getGenericParametersForWrite()  # this is the iffy bit
+    params = self._frame.getParameters()
     keys_dict = {}
     for par_type in SUPPORTED_PARAMETER_TYPES:
       keys = params.getKeys[par_type]()

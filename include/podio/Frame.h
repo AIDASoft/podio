@@ -259,7 +259,7 @@ public:
   /**
    * Get the GenericParameters for writing
    */
-  const podio::GenericParameters& getGenericParametersForWrite() const {
+  [[deprecated("use getParameters instead")]] const podio::GenericParameters& getGenericParametersForWrite() const {
     return m_self->parameters();
   }
 

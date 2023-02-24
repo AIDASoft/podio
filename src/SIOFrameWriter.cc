@@ -44,7 +44,7 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   tableBlocks.emplace_back(sio_utils::createCollIDBlock(collections, frame.getCollectionIDTableForWrite()));
   m_tocRecord.addRecord(category, sio_utils::writeRecord(tableBlocks, category + "_HEADER", m_stream));
 
-  const auto blocks = sio_utils::createBlocks(collections, frame.getGenericParametersForWrite());
+  const auto blocks = sio_utils::createBlocks(collections, frame.getParameters());
   sio_utils::writeRecord(blocks, category, m_stream);
 }
 
