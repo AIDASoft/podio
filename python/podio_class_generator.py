@@ -157,7 +157,6 @@ have resolvable schema evolution incompatibilities:")
 
       self.ROOT_schema_evolution = comparator.get_changed_schemata(filter=ROOTFilter)
 
-
   def print_report(self):
     """Print a summary report about the generated code"""
     if not self.verbose:

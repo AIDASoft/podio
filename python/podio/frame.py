@@ -48,7 +48,7 @@ SUPPORTED_PARAMETER_PY_TYPES = _determine_supported_parameter_types('py')
 # a c++ vector of the corresponding type or a c++ type to the vector
 _PY_TO_CPP_TYPE_MAP = {
     pytype: f'std::vector<{cpptype}>' for (pytype, cpptype) in zip(SUPPORTED_PARAMETER_PY_TYPES,
-                                                                     SUPPORTED_PARAMETER_TYPES)
+                                                                   SUPPORTED_PARAMETER_TYPES)
     }
 _PY_TO_CPP_TYPE_MAP.update({
     f'{cpptype}': f'std::vector<{cpptype}>' for cpptype in SUPPORTED_PARAMETER_TYPES

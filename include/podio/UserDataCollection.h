@@ -161,7 +161,7 @@ public:
   }
 
   /// The schema version is fixed manually
-  unsigned int getSchemaVersion() const final {
+  SchemaVersionT getSchemaVersion() const final {
     return 1;
   }
 

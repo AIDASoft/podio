@@ -90,7 +90,8 @@ class ChangedMember(SchemaChange):
     self.old_member = old_member
     self.new_member = new_member
     self.klassname = name
-    super().__init__(f"'{self.name}.{self.member_name}' changed type from {self.old_member.full_type} to {self.new_member.full_type}")
+    super().__init__(f"'{self.name}.{self.member_name}' changed type from '+\
+                    '{self.old_member.full_type} to {self.new_member.full_type}")
 
 
 class RenamedMember(SchemaChange):
@@ -149,19 +150,19 @@ class DataModelComparator:
   def _compare_components(self) -> None:
     # first check for dropped, added and kept components
     added_components, dropped_components, kept_components = self._compare_keys(self.components1.keys(),
-                                           self.components2.keys())
+                                                                               self.components2.keys())
     # Make findings known globally
     self.detected_schema_changes.extend([AddedComponent(self.components1[name], name)
-                      for name in added_components])
+                                        for name in added_components])
     self.detected_schema_changes.extend([DroppedComponent(self.components2[name], name)
-                      for name in dropped_components])
+                                        for name in dropped_components])
 
     self._compare_definitions(kept_components, self.components1, self.components2, "Members")
 
   def _compare_datatypes(self) -> None:
     # first check for dropped, added and kept components
     added_types, dropped_types, kept_types = self._compare_keys(self.datatypes1.keys(),
-                                  self.datatypes2.keys())
+                                                                self.datatypes2.keys())
     # Make findings known globally
     self.detected_schema_changes.extend([AddedDatatype(self.datatypes1[name], name) for name in added_types])
     self.detected_schema_changes.extend([DroppedDatatype(self.datatypes2[name], name) for name in dropped_types])
@@ -174,7 +175,7 @@ class DataModelComparator:
       members1 = {member.name: member for member in first[name][category]}
       members2 = {member.name: member for member in second[name][category]}
       added_members, dropped_members, kept_members = self._compare_keys(members1.keys(),
-                                        members2.keys())
+                                                                        members2.keys())
       # Make findings known globally
       self.detected_schema_changes.extend([AddedMember(members1[member], name) for member in added_members])
       self.detected_schema_changes.extend([DroppedMember(members2[member], name) for member in dropped_members])
@@ -184,8 +185,7 @@ class DataModelComparator:
         new = members1[member_name]
         old = members2[member_name]
         if old.full_type != new.full_type:
-          self.detected_schema_changes.append(
-            ChangedMember(name, member_name, old, new))
+          self.detected_schema_changes.append(ChangedMember(name, member_name, old, new))
 
   def _compare_keys(self, keys1, keys2):
     added = set(keys1).difference(keys2)
@@ -213,7 +213,7 @@ class DataModelComparator:
     added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
     for dropped_member in dropped_members:
       added_members_in_same_definition = [member for member in added_members if
-                        dropped_member.definition_name == member.definition_name]
+                                          dropped_member.definition_name == member.definition_name]
 
       for added_member in added_members_in_same_definition:
         if added_member.member.full_type == dropped_member.member.full_type:
@@ -221,9 +221,9 @@ class DataModelComparator:
           is_rename = False
           for schema_change in self.read_schema_changes:
             if isinstance(schema_change, RenamedMember) and \
-            schema_change.name == dropped_member.definition_name:
+               schema_change.name == dropped_member.definition_name:
               if (schema_change.member_name_old == dropped_member.member.name) and \
-              (schema_change.member_name_new == added_member.member.name):
+                 (schema_change.member_name_new == added_member.member.name):
                  # remove the dropping/adding from the schema changes and replace it by the rename
                 schema_changes.remove(dropped_member)
                 schema_changes.remove(added_member)
