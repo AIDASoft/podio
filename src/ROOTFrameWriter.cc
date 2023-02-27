@@ -40,11 +40,10 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   // We will at least have a parameters branch, even if there are no
   // collections
   if (catInfo.branches.empty()) {
-    initBranches(catInfo, collections, const_cast<podio::GenericParameters&>(frame.getGenericParametersForWrite()));
+    initBranches(catInfo, collections, const_cast<podio::GenericParameters&>(frame.getParameters()));
 
   } else {
-    resetBranches(catInfo.branches, collections,
-                  &const_cast<podio::GenericParameters&>(frame.getGenericParametersForWrite()));
+    resetBranches(catInfo.branches, collections, &const_cast<podio::GenericParameters&>(frame.getParameters()));
   }
 
   catInfo.tree->Fill();
