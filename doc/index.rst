@@ -19,3 +19,4 @@ Welcome to PODIO's documentation!
    templates.md
    ReleaseNotes.md
    api_docs
+   py_api/modules

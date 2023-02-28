@@ -71,6 +71,9 @@ spack*
 /python/podio_version.py
 /doc/conf.py
 
+# Populated by doc generation
+/doc/py_api
+
 # CLion artifacts
 .idea/
 cmake-build*/
