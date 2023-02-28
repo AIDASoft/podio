@@ -22,7 +22,8 @@ copyright = '2023, Key4hep authors'
 author = 'Key4hep authors'
 
 # The full version, including alpha/beta/rc tags
-release = '0.16.2'
+version = '@podio_VERSION@'
+release = version
 
 
 # -- General configuration ---------------------------------------------------

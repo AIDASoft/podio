@@ -69,6 +69,7 @@ spack*
 /include/podio/podioVersion.h
 /python/podio/__version__.py
 /python/podio_version.py
+/doc/conf.py
 
 # CLion artifacts
 .idea/

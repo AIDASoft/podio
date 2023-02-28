@@ -21,6 +21,10 @@ if(DOXYGEN_FOUND AND SPHINX_FOUND)
                     COMMENT "Generating API documentation with Doxygen" VERBATIM)
 
   set(SPHINX_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/sphinx_build)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in
+                 ${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py)
+
+
   add_custom_target(Sphinx ALL
                     COMMAND
                     ${SPHINX_EXE} -b html
