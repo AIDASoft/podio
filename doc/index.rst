@@ -18,11 +18,4 @@ Welcome to PODIO's documentation!
    advanced_topics.md
    templates.md
    ReleaseNotes.md
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   api_docs
