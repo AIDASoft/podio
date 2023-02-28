@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @PROJECT_BINARY_DIR@/doxygen
+OUTPUT_DIRECTORY       = @DOXYGEN_OUTPUT_DIRECTORY@
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -823,7 +823,6 @@ WARN_LOGFILE           = @PROJECT_BINARY_DIR@/doxygen-warnings.log
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = @PROJECT_SOURCE_DIR@ \
-                         @PROJECT_BINARY_DIR@/include \
                          @CMAKE_CURRENT_BINARY_DIR@
 
 # This tag can be used to specify the character encoding of the source files
@@ -1151,7 +1150,7 @@ IGNORE_PREFIX          =
 # If the GENERATE_HTML tag is set to YES, doxygen will generate HTML output
 # The default value is: YES.
 
-GENERATE_HTML          = YES
+GENERATE_HTML          = NO
 
 # The HTML_OUTPUT tag is used to specify where the HTML docs will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
@@ -2014,7 +2013,7 @@ MAN_LINKS              = NO
 # captures the structure of the code including all documentation.
 # The default value is: NO.
 
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 
 # The XML_OUTPUT tag is used to specify where the XML pages will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
