@@ -41,7 +41,7 @@ if(DOXYGEN_FOUND AND SPHINX_FOUND)
                     COMMENT "Building sphinx documentation" VERBATIM
                     )
 
-  install(DIRECTORY ${SPHINX_OUTPUT_DIRECTORY}
+  install(DIRECTORY ${SPHINX_OUTPUT_DIRECTORY}/
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
     OPTIONAL)
 
