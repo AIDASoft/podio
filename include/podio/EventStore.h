@@ -13,6 +13,7 @@
 #include "podio/GenericParameters.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/IMetaDataProvider.h"
+#include "podio/utilities/Deprecated.h"
 
 /**
 This is an *example* event store
@@ -33,7 +34,7 @@ class IReader;
 typedef std::map<int, GenericParameters> RunMDMap;
 typedef std::map<int, GenericParameters> ColMDMap;
 
-class EventStore : public ICollectionProvider, public IMetaDataProvider {
+class DEPR_EVTSTORE EventStore : public ICollectionProvider, public IMetaDataProvider {
 public:
   /// Make non-copyable
   EventStore(const EventStore&) = delete;

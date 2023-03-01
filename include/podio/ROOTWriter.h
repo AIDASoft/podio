@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBranches.h"
 #include "podio/EventStore.h"
+#include "podio/utilities/Deprecated.h"
 
 #include "TBranch.h"
 
@@ -18,7 +19,7 @@ class TFile;
 class TTree;
 
 namespace podio {
-class ROOTWriter {
+class DEPR_EVTSTORE ROOTWriter {
 
 public:
   ROOTWriter(const std::string& filename, EventStore* store);

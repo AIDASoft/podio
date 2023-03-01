@@ -2,6 +2,7 @@
 #define PODIO_IREADER_H
 
 #include "podio/podioVersion.h"
+#include "podio/utilities/Deprecated.h"
 
 #include <algorithm>
 #include <map>
@@ -22,7 +23,7 @@ class CollectionBase;
 class CollectionIDTable;
 class GenericParameters;
 
-class IReader {
+class DEPR_EVTSTORE IReader {
 public:
   virtual ~IReader() = default;
   /// Read Collection of given name
