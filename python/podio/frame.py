@@ -10,49 +10,52 @@ ROOT.gInterpreter.LoadFile('podio/Frame.h')  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 
-def _determine_supported_parameter_types(lang):
+def _determine_supported_parameter_types():
   """Determine the supported types for the parameters.
 
-  Args:
-      lang (str): Language for which the type names should be returned. Either
-          'c++' or 'py'.
-
   Returns:
-      tuple (str): the tuple with the string representation of all **c++**
-          classes that are supported
+      tuple(tuple(str, str)): the tuple with the string representation of all
+          c++ and their corresponding python types that are supported
   """
   types_tuple = podio.SupportedGenericDataTypes()
   n_types = cppyy.gbl.std.tuple_size[podio.SupportedGenericDataTypes].value
 
   # Get the python types with the help of cppyy and the STL
-  py_types = (type(cppyy.gbl.std.get[i](types_tuple)).__name__ for i in range(n_types))
-  if lang == 'py':
-    return tuple(py_types)
-  if lang == 'c++':
-    # Map of types that need special care when going from python to c++
-    py_to_cpp_type_map = {
-        'str': 'std::string'
-        }
-    # Convert them to the corresponding c++ types
-    return tuple(py_to_cpp_type_map.get(t, t) for t in py_types)
+  py_types = [type(cppyy.gbl.std.get[i](types_tuple)).__name__ for i in range(n_types)]
 
-  raise ValueError(f"lang needs to be 'py' or 'c++' (got {lang})")
+  def _determine_cpp_type(idx_and_type):
+    """Determine the actual c++ type from the python type name.
+
+    Mainly maps 'str' to 'std::string', and also determines whether a python
+    'float' is actually a 'double' or a 'float' in c++. The latter is necessary
+    since python only has float (corresponding to double in c++) and we
+    need the exact c++ type
+    """
+    idx, typename = idx_and_type
+    if typename == 'float':
+      cpp_type = cppyy.gbl.std.tuple_element[idx, podio.SupportedGenericDataTypes].type
+      if cppyy.typeid(cpp_type).name() == 'd':
+        return 'double'
+      return 'float'
+    if typename == 'str':
+      return 'std::string'
+    return typename
+
+  cpp_types = list(map(_determine_cpp_type, enumerate(py_types)))
+  return tuple(zip(cpp_types, py_types))
 
 
-SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types('c++')
-SUPPORTED_PARAMETER_PY_TYPES = _determine_supported_parameter_types('py')
+SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
 
 
-# Map that is necessary for easier disambiguation of parameters that are
-# available with more than one type under the same name. Maps a python type to
-# a c++ vector of the corresponding type or a c++ type to the vector
-_PY_TO_CPP_TYPE_MAP = {
-    pytype: f'std::vector<{cpptype}>' for (pytype, cpptype) in zip(SUPPORTED_PARAMETER_PY_TYPES,
-                                                                     SUPPORTED_PARAMETER_TYPES)
-    }
-_PY_TO_CPP_TYPE_MAP.update({
-    f'{cpptype}': f'std::vector<{cpptype}>' for cpptype in SUPPORTED_PARAMETER_TYPES
-    })
+def _get_cpp_vector_types(type_str):
+  """Get the possible std::vector<cpp_type> from the passed py_type string."""
+  # Gather a list of all types that match the type_str (c++ or python)
+  types = list(filter(lambda t: type_str in t, SUPPORTED_PARAMETER_TYPES))
+  if not types:
+    raise ValueError(f'{type_str} cannot be mapped to a valid parameter type')
+
+  return [f'std::vector<{t}>' for t in map(lambda x: x[0], types)]
 
 
 class Frame:
@@ -130,7 +133,6 @@ class Frame:
         ValueError: If there are multiple parameters with the same name, but
             multiple types and no type specifier to disambiguate between them
             has been passed.
-
     """
     def _get_param_value(par_type, name):
       par_value = self._frame.getParameter[par_type](name)
@@ -148,14 +150,18 @@ class Frame:
       raise ValueError(f'{name} parameter has {len(par_type)} different types available, '
                        'but no as_type argument to disambiguate')
 
-    req_type = _PY_TO_CPP_TYPE_MAP.get(as_type, None)
-    if req_type is None:
-      raise ValueError(f'as_type value {as_type} cannot be mapped to a valid parameter type')
-
-    if req_type not in par_type:
+    # Get all possible c++ vector types and see if we can unambiguously map them
+    # to the available types for this parameter
+    vec_types = _get_cpp_vector_types(as_type)
+    vec_types = [t for t in vec_types if t in par_type]
+    if len(vec_types) == 0:
       raise ValueError(f'{name} parameter is not available as type {as_type}')
 
-    return _get_param_value(req_type, name)
+    if len(vec_types) > 1:
+      raise ValueError(f'{name} parameter cannot be unambiguously mapped to a c++ type with '
+                       f'{as_type=}. Consider passing in the c++ type instead of the python type')
+
+    return _get_param_value(vec_types[0], name)
 
   def get_parameters(self):
     """Get the complete podio::GenericParameters object stored in this Frame.
@@ -202,7 +208,7 @@ class Frame:
     """
     params = self._frame.getParameters()
     keys_dict = {}
-    for par_type in SUPPORTED_PARAMETER_TYPES:
+    for par_type, _ in SUPPORTED_PARAMETER_TYPES:
       keys = params.getKeys[par_type]()
       for key in keys:
         # Make sure to convert to a python string here to not have a dangling

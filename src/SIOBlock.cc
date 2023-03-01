@@ -75,30 +75,34 @@ void writeGenericParameters(sio::write_device& device, const GenericParameters& 
   writeParamMap(device, params.getIntMap());
   writeParamMap(device, params.getFloatMap());
   writeParamMap(device, params.getStringMap());
+  writeParamMap(device, params.getDoubleMap());
 }
 
-void readGenericParameters(sio::read_device& device, GenericParameters& params) {
+void readGenericParameters(sio::read_device& device, GenericParameters& params, sio::version_type version) {
   readParamMap(device, params.getIntMap());
   readParamMap(device, params.getFloatMap());
   readParamMap(device, params.getStringMap());
+  if (version >= sio::version::encode_version(0, 2)) {
+    readParamMap(device, params.getDoubleMap());
+  }
 }
 
-void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type) {
-  readGenericParameters(device, *metadata);
+void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type version) {
+  readGenericParameters(device, *metadata, version);
 }
 
 void SIOEventMetaDataBlock::write(sio::write_device& device) {
   writeGenericParameters(device, *metadata);
 }
 
-void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type) {
+void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type version) {
   int size;
   device.data(size);
   while (size--) {
     int id;
     device.data(id);
     GenericParameters params;
-    readGenericParameters(device, params);
+    readGenericParameters(device, params, version);
 
     data->emplace(id, std::move(params));
   }

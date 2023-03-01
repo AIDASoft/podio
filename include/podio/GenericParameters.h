@@ -17,7 +17,7 @@
 namespace podio {
 
 /// The types which are supported in the GenericParameters
-using SupportedGenericDataTypes = std::tuple<int, float, std::string>;
+using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
 
 /// Static bool for determining if a type T is a supported GenericParamter type
 template <typename T>
@@ -79,6 +79,7 @@ public:
 private:
   using IntMap = MapType<int>;
   using FloatMap = MapType<float>;
+  using DoubleMap = MapType<double>;
   using StringMap = MapType<std::string>;
   // need mutex pointers for having the possibility to copy/move GenericParameters
   using MutexPtr = std::unique_ptr<std::mutex>;
@@ -110,6 +111,11 @@ public:
   /// Overload for catching const char* setting for string values
   void setValue(const std::string& key, std::string value) {
     setValue<std::string>(key, std::move(value));
+  }
+
+  /// Overlaod for catching initializer list setting of string vector values
+  void setValue(const std::string& key, std::vector<std::string> values) {
+    setValue<std::vector<std::string>>(key, std::move(values));
   }
 
   /// Overload for catching initializer list setting for vector values
@@ -224,6 +230,16 @@ public:
   }
 
   /**
+   * Get the internal double map (necessary for serialization with SIO)
+   */
+  const DoubleMap& getDoubleMap() const {
+    return getMap<double>();
+  }
+  DoubleMap& getDoubleMap() {
+    return getMap<double>();
+  }
+
+  /**
    * Get the internal string map (necessary for serialization with SIO)
    */
   const StringMap& getStringMap() const {
@@ -241,6 +257,8 @@ private:
       return _intMap;
     } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
       return _floatMap;
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
+      return _doubleMap;
     } else {
       return _stringMap;
     }
@@ -253,6 +271,8 @@ private:
       return _intMap;
     } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
       return _floatMap;
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
+      return _doubleMap;
     } else {
       return _stringMap;
     }
@@ -265,6 +285,8 @@ private:
       return *(m_intMtx.get());
     } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
       return *(m_floatMtx.get());
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
+      return *(m_doubleMtx.get());
     } else {
       return *(m_stringMtx.get());
     }
@@ -275,8 +297,10 @@ private:
   mutable MutexPtr m_intMtx{nullptr};    ///< The mutex guarding the integer map
   FloatMap _floatMap{};                  ///< The map storing the float values
   mutable MutexPtr m_floatMtx{nullptr};  ///< The mutex guarding the float map
-  StringMap _stringMap{};                ///< The map storing the double values
-  mutable MutexPtr m_stringMtx{nullptr}; ///< The mutex guarding the float map
+  StringMap _stringMap{};                ///< The map storing the string values
+  mutable MutexPtr m_stringMtx{nullptr}; ///< The mutex guarding the string map
+  DoubleMap _doubleMap{};                ///< The map storing the double values
+  mutable MutexPtr m_doubleMtx{nullptr}; ///< The mutex guarding the double map
 };
 
 template <typename T, typename>
