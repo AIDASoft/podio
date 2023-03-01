@@ -28,7 +28,7 @@ def _determine_supported_parameter_types():
 
     Mainly maps 'str' to 'std::string', and also determines whether a python
     'float' is actually a 'double' or a 'float' in c++. The latter is necessary
-    since python doesn't only has float (corresponding to double in c++) and we
+    since python only has float (corresponding to double in c++) and we
     need the exact c++ type
     """
     idx, typename = idx_and_type
@@ -148,7 +148,7 @@ class Frame:
 
     if as_type is None:
       raise ValueError(f'{name} parameter has {len(par_type)} different types available, '
-                       f'but no as_type argument to disambiguate')
+                       'but no as_type argument to disambiguate')
 
     # Get all possible c++ vector types and see if we can unambiguously map them
     # to the available types for this parameter
