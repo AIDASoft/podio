@@ -17,7 +17,7 @@ namespace podio {
 
 class CollectionIDTable;
 
-class SIOFrameReader : public DatamodelDefinitionHolder {
+class SIOFrameReader {
 
 public:
   SIOFrameReader();
@@ -54,6 +54,16 @@ public:
   /// Get the names of all the availalable Frame categories in the current file(s)
   std::vector<std::string_view> getAvailableCategories() const;
 
+  /// Get the datamodel definition for the given name
+  const std::string_view getDatamodelDefinition(const std::string& name) const {
+    return m_datamodelHolder.getDatamodelDefinition(name);
+  }
+
+  /// Get all names of the datamodels that ara available from this reader
+  std::vector<std::string> getAvailableDatamodels() const {
+    return m_datamodelHolder.getAvailableDatamodels();
+  }
+
 private:
   void readPodioHeader();
 
@@ -71,6 +81,8 @@ private:
   SIOFileTOCRecord m_tocRecord{};
   /// The podio version that has been used to write the file
   podio::version::Version m_fileVersion{0};
+
+  DatamodelDefinitionHolder m_datamodelHolder{};
 };
 
 } // namespace podio

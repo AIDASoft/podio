@@ -1,6 +1,7 @@
 #include "podio/SIOFrameReader.h"
 #include "podio/SIOBlock.h"
 
+#include "podio/utilities/EDMRegistryIOHelpers.h"
 #include "sioUtils.h"
 
 #include <sio/api.h>
@@ -123,8 +124,8 @@ void SIOFrameReader::readEDMDefinitions() {
   blocks.emplace_back(std::make_shared<podio::SIOMapBlock<std::string, std::string>>());
   sio::api::read_blocks(buffer.span(), blocks);
 
-  auto edmDefs = static_cast<SIOMapBlock<std::string, std::string>*>(blocks[0].get());
-  m_availEDMDefs = std::move(edmDefs->mapData);
+  auto datamodelDefs = static_cast<SIOMapBlock<std::string, std::string>*>(blocks[0].get());
+  m_datamodelHolder = DatamodelDefinitionHolder(std::move(datamodelDefs->mapData));
 }
 
 } // namespace podio

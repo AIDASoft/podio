@@ -12,7 +12,7 @@
 namespace podio {
 
 /**
- * Helper class (mixin) to collect the datamodel (JSON) definitions that should be
+ * Helper class to collect the datamodel (JSON) definitions that should be
  * written.
  */
 class DatamodelDefinitionCollector {
@@ -34,11 +34,24 @@ private:
 };
 
 /**
- * Helper class (mixin) to hold and provide the datamodel (JSON) definitions for
- * reader classes.
+ * Helper class to hold and provide the datamodel (JSON) definitions for reader
+ * classes.
  */
 class DatamodelDefinitionHolder {
 public:
+  /// The "map" type that is used internally
+  using MapType = std::vector<std::tuple<std::string, std::string>>;
+  /// Constructor from an existing collection of names and datamodel definitions
+  DatamodelDefinitionHolder(MapType&& definitions) : m_availEDMDefs(std::move(definitions)) {
+  }
+
+  DatamodelDefinitionHolder() = default;
+  ~DatamodelDefinitionHolder() = default;
+  DatamodelDefinitionHolder(const DatamodelDefinitionHolder&) = delete;
+  DatamodelDefinitionHolder& operator=(const DatamodelDefinitionHolder&) = delete;
+  DatamodelDefinitionHolder(DatamodelDefinitionHolder&&) = default;
+  DatamodelDefinitionHolder& operator=(DatamodelDefinitionHolder&&) = default;
+
   /**
    * Get the datamodel definition for the given datamodel name.
    *
@@ -55,7 +68,7 @@ public:
   std::vector<std::string> getAvailableDatamodels() const;
 
 protected:
-  std::vector<std::tuple<std::string, std::string>> m_availEDMDefs{};
+  MapType m_availEDMDefs{};
 };
 
 } // namespace podio

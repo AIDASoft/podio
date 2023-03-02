@@ -3,6 +3,7 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
+#include "podio/utilities/EDMRegistryIOHelpers.h"
 #include "rootUtils.h"
 
 // ROOT specific includes
@@ -217,10 +218,12 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
   delete versionPtr;
 
-  auto* edmDefs = &m_availEDMDefs;
   if (auto* edmDefBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmDefBranchName)) {
-    edmDefBranch->SetAddress(&edmDefs);
+    auto* datamodelDefs = new DatamodelDefinitionHolder::MapType{};
+    edmDefBranch->SetAddress(&datamodelDefs);
     edmDefBranch->GetEntry(0);
+    m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
+    delete datamodelDefs;
   }
 
   // Do some work up front for setting up categories and setup all the chains

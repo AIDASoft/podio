@@ -14,7 +14,7 @@ namespace podio {
 
 class Frame;
 
-class SIOFrameWriter : DatamodelDefinitionCollector {
+class SIOFrameWriter {
 public:
   SIOFrameWriter(const std::string& filename);
   ~SIOFrameWriter() = default;
@@ -36,6 +36,7 @@ public:
 private:
   sio::ofstream m_stream{};       ///< The output file stream
   SIOFileTOCRecord m_tocRecord{}; ///< The "table of contents" of the written file
+  DatamodelDefinitionCollector m_datamodelCollector{};
 };
 } // namespace podio
 

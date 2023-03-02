@@ -37,7 +37,7 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   collections.reserve(collsToWrite.size());
   for (const auto& name : collsToWrite) {
     collections.emplace_back(name, frame.getCollectionForWrite(name));
-    registerDatamodelDefinition(collections.back().second, name);
+    m_datamodelCollector.registerDatamodelDefinition(collections.back().second, name);
   }
 
   // Write necessary metadata and the actual data into two different records.
@@ -52,7 +52,8 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
 }
 
 void SIOFrameWriter::finish() {
-  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(getDatamodelDefinitionsToWrite());
+  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(
+      m_datamodelCollector.getDatamodelDefinitionsToWrite());
 
   sio::block_list blocks;
   blocks.push_back(edmDefMap);

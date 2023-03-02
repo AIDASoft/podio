@@ -21,7 +21,7 @@ class Frame;
 class CollectionBase;
 class GenericParameters;
 
-class ROOTFrameWriter : DatamodelDefinitionCollector {
+class ROOTFrameWriter {
 public:
   ROOTFrameWriter(const std::string& filename);
   ~ROOTFrameWriter() = default;
@@ -81,6 +81,8 @@ private:
 
   std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
+
+  DatamodelDefinitionCollector m_datamodelCollector{};
 };
 
 } // namespace podio
