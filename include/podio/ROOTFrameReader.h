@@ -41,7 +41,7 @@ struct CollectionReadBuffers;
  * This class has the function to read available data from disk
  * and to prepare collections and buffers.
  **/
-class ROOTFrameReader : public EDMDefinitionHolder {
+class ROOTFrameReader : public DatamodelDefinitionHolder {
 
 public:
   ROOTFrameReader() = default;

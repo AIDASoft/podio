@@ -14,7 +14,7 @@ namespace podio {
 
 class Frame;
 
-class SIOFrameWriter : EDMDefinitionCollector {
+class SIOFrameWriter : DatamodelDefinitionCollector {
 public:
   SIOFrameWriter(const std::string& filename);
   ~SIOFrameWriter() = default;

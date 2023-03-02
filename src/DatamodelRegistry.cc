@@ -1,4 +1,4 @@
-#include "podio/EDMDefinitionRegistry.h"
+#include "podio/DatamodelRegistry.h"
 
 #include <algorithm>
 #include <iostream>
@@ -6,16 +6,16 @@
 #include <string_view>
 
 namespace podio {
-const EDMDefinitionRegistry& EDMDefinitionRegistry::instance() {
-  static EDMDefinitionRegistry registryInstance;
+const DatamodelRegistry& DatamodelRegistry::instance() {
+  return mutInstance();
+}
+
+DatamodelRegistry& DatamodelRegistry::mutInstance() {
+  static DatamodelRegistry registryInstance;
   return registryInstance;
 }
 
-EDMDefinitionRegistry& EDMDefinitionRegistry::mutInstance() {
-  return const_cast<EDMDefinitionRegistry&>(instance());
-}
-
-size_t EDMDefinitionRegistry::registerEDM(std::string name, std::string_view definition) {
+size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition) {
   const auto it = std::find_if(m_definitions.cbegin(), m_definitions.cend(),
                                [&name](const auto& kvPair) { return kvPair.first == name; });
 
@@ -29,11 +29,11 @@ size_t EDMDefinitionRegistry::registerEDM(std::string name, std::string_view def
   return std::distance(m_definitions.cbegin(), it);
 }
 
-const std::string_view EDMDefinitionRegistry::getDefinition(std::string_view edmName) const {
+const std::string_view DatamodelRegistry::getDatamodelDefinition(std::string_view name) const {
   const auto it = std::find_if(m_definitions.cbegin(), m_definitions.cend(),
-                               [&edmName](const auto& kvPair) { return kvPair.first == edmName; });
+                               [&name](const auto& kvPair) { return kvPair.first == name; });
   if (it == m_definitions.cend()) {
-    std::cerr << "PODIO WARNING: Cannot find the definition for the EDM with the name " << edmName << std::endl;
+    std::cerr << "PODIO WARNING: Cannot find the definition for the EDM with the name " << name << std::endl;
     static constexpr std::string_view emptyDef = "{}"; // valid empty JSON
     return emptyDef;
   }
@@ -41,7 +41,7 @@ const std::string_view EDMDefinitionRegistry::getDefinition(std::string_view edm
   return it->second;
 }
 
-const std::string_view EDMDefinitionRegistry::getDefinition(size_t index) const {
+const std::string_view DatamodelRegistry::getDatamodelDefinition(size_t index) const {
   if (index >= m_definitions.size()) {
     std::cerr << "PODIO WARNING: Cannot find the definition for the EDM with the index " << index << std::endl;
     static constexpr std::string_view emptyDef = "{}"; // valid empty JSON
@@ -51,7 +51,7 @@ const std::string_view EDMDefinitionRegistry::getDefinition(size_t index) const 
   return m_definitions[index].second;
 }
 
-const std::string& EDMDefinitionRegistry::getEDMName(size_t index) const {
+const std::string& DatamodelRegistry::getDatamodelName(size_t index) const {
   if (index >= m_definitions.size()) {
     std::cout << "PODIO WARNING: Cannot find the name of the EDM with the index " << index << std::endl;
     static const std::string emptyName = "";

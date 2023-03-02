@@ -3,7 +3,7 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
-#include "podio/EDMDefinitionRegistry.h"
+#include "podio/DatamodelRegistry.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
@@ -173,8 +173,8 @@ public:
     }
   }
 
-  size_t getDefinitionRegistryIndex() const override {
-    return EDMDefinitionRegistry::NoDefinitionNecessary;
+  size_t getDatamodelRegistryIndex() const override {
+    return DatamodelRegistry::NoDefinitionNecessary;
   }
 
   // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)

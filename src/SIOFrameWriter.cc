@@ -1,7 +1,7 @@
 #include "podio/SIOFrameWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
-#include "podio/EDMDefinitionRegistry.h"
+// #include "podio/DatatypeRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/SIOBlock.h"
@@ -37,7 +37,7 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   collections.reserve(collsToWrite.size());
   for (const auto& name : collsToWrite) {
     collections.emplace_back(name, frame.getCollectionForWrite(name));
-    registerEDMDef(collections.back().second, name);
+    registerDatamodelDefinition(collections.back().second, name);
   }
 
   // Write necessary metadata and the actual data into two different records.
@@ -52,7 +52,7 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
 }
 
 void SIOFrameWriter::finish() {
-  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(getEDMDefinitionsToWrite());
+  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(getDatamodelDefinitionsToWrite());
 
   sio::block_list blocks;
   blocks.push_back(edmDefMap);

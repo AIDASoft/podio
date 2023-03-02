@@ -2,7 +2,7 @@
 #define PODIO_UTILITIES_EDMREGISTRYIOHELPERS_H
 
 #include "podio/CollectionBase.h"
-#include "podio/EDMDefinitionRegistry.h"
+#include "podio/DatamodelRegistry.h"
 
 #include <set>
 #include <string>
@@ -12,34 +12,47 @@
 namespace podio {
 
 /**
- * Helper class (mixin) to collect the EDM (JSON) definitions that should be
+ * Helper class (mixin) to collect the datamodel (JSON) definitions that should be
  * written.
  */
-class EDMDefinitionCollector {
+class DatamodelDefinitionCollector {
 public:
-  /// Register the EDM where this collection is from to be written
-  void registerEDMDef(const podio::CollectionBase* coll, const std::string& name);
+  /**
+   * Register the datamodel definition of the EDM this collection is from to be
+   * written.
+   *
+   * @param coll A collection of an EDM
+   * @param name The name under which this collection is stored on file
+   */
+  void registerDatamodelDefinition(const podio::CollectionBase* coll, const std::string& name);
 
   /// Get all the names and JSON definitions that need to be written
-  std::vector<std::tuple<std::string, std::string>> getEDMDefinitionsToWrite() const;
+  std::vector<std::tuple<std::string, std::string>> getDatamodelDefinitionsToWrite() const;
 
 private:
   std::set<size_t> m_edmDefRegistryIdcs{}; ///< The indices in the EDM definition registry that need to be written
 };
 
 /**
- * Helper class (mixin) to hold and provide the EDM (JSON) definitions for
+ * Helper class (mixin) to hold and provide the datamodel (JSON) definitions for
  * reader classes.
  */
-class EDMDefinitionHolder {
+class DatamodelDefinitionHolder {
 public:
   /**
-   * Get the EDM definition for the given EDM name. Returns an empty model
-   * definition if no model is stored under the given name.
+   * Get the datamodel definition for the given datamodel name.
+   *
+   * Returns an empty model definition if no model is stored under the given
+   * name.
+   *
+   * @param name The name of the datamodel
    */
-  const std::string_view getEDMDefinition(const std::string& edmName) const;
+  const std::string_view getDatamodelDefinition(const std::string& name) const;
 
-  std::vector<std::string> getAvailableEDMDefinitions() const;
+  /**
+   * Get all names of the datamodels that have been read from file
+   */
+  std::vector<std::string> getAvailableDatamodels() const;
 
 protected:
   std::vector<std::tuple<std::string, std::string>> m_availEDMDefs{};

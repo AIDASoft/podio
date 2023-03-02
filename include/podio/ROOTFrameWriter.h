@@ -21,7 +21,7 @@ class Frame;
 class CollectionBase;
 class GenericParameters;
 
-class ROOTFrameWriter : EDMDefinitionCollector {
+class ROOTFrameWriter : DatamodelDefinitionCollector {
 public:
   ROOTFrameWriter(const std::string& filename);
   ~ROOTFrameWriter() = default;

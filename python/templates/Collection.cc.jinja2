@@ -179,8 +179,8 @@ podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
 {{ macros.vectorized_access(class, member) }}
 {% endfor %}
 
-size_t {{ collection_type }}::getDefinitionRegistryIndex() const {
-  return {{ package_name }}::meta::DefinitionRegistryIndex::value();
+size_t {{ collection_type }}::getDatamodelRegistryIndex() const {
+  return {{ package_name }}::meta::DatamodelRegistryIndex::value();
 }
 
 #ifdef PODIO_JSON_OUTPUT

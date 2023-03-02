@@ -17,7 +17,7 @@ namespace podio {
 
 class CollectionIDTable;
 
-class SIOFrameReader : public EDMDefinitionHolder {
+class SIOFrameReader : public DatamodelDefinitionHolder {
 
 public:
   SIOFrameReader();

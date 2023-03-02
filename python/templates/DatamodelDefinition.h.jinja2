@@ -1,30 +1,30 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
-#include "podio/EDMDefinitionRegistry.h"
+#include "podio/DatamodelRegistry.h"
 
 namespace {{ package_name }}::meta {
 /**
  * The complete definition of the datamodel at generation time in JSON format.
  */
-static constexpr auto {{ package_name }}__JSONDefinition = R"EDMDEFINITION({{ edm_definition }})EDMDEFINITION";
+static constexpr auto {{ package_name }}__JSONDefinition = R"DATAMODELDEF({{ edm_definition }})DATAMODELDEF";
 
 /**
- * The helper class that takes care of registering the EDM definition to the
- * EDMDefinitionRegistry and to provide the index in that registry.
+ * The helper class that takes care of registering the datamodel definition to
+ * the DatamodelRegistry and to provide the index in that registry.
  *
  * Implemented as a singleton mainly to ensure only a single registration of
- * each EDM, during the constructor
+ * each datamodel, during the constructor
  */
-class DefinitionRegistryIndex {
+class DatamodelRegistryIndex {
 public:
   static size_t value() {
-    static auto index = DefinitionRegistryIndex(podio::EDMDefinitionRegistry::mutInstance().registerEDM("{{ package_name }}", {{ package_name }}__JSONDefinition));
+    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition));
     return index.m_value;
   }
 
 private:
-  DefinitionRegistryIndex(size_t v) : m_value(v) {}
-  size_t m_value{podio::EDMDefinitionRegistry::NoDefinitionAvailable};
+  DatamodelRegistryIndex(size_t v) : m_value(v) {}
+  size_t m_value{podio::DatamodelRegistry::NoDefinitionAvailable};
 };
 
 } // namespace {{ package_name }}::meta
