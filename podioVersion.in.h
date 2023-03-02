@@ -2,6 +2,7 @@
 #define PODIO_PODIOVERSION_H
 
 #include <cstdint>
+#include <sstream>
 #include <ostream>
 #include <tuple>
 #if __cplusplus >= 202002L
@@ -60,6 +61,12 @@ struct Version {
 
   #undef DEFINE_COMP_OPERATOR
 #endif
+
+  operator std::string() const {
+    std::stringstream ss;
+    ss << *this;
+    return ss.str();
+  };
 
   friend std::ostream& operator<<(std::ostream&, const Version& v);
 };
