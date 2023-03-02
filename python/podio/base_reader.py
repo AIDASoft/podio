@@ -57,21 +57,21 @@ class BaseReaderMixin:
     return self._is_legacy
 
   @property
-  def edm_definitions(self):
-    """Get the available EDM definitions from this reader.
+  def datamodel_definitions(self):
+    """Get the available datamodel definitions from this reader.
 
     Returns:
-        tuple(str): The names of the available EDM definitions
+        tuple(str): The names of the available datamodel definitions
     """
     if self._is_legacy:
       return ()
-    return tuple(n.c_str() for n in self._reader.getAvailableEDMDefinitions())
+    return tuple(n.c_str() for n in self._reader.getAvailableDatamodels())
 
-  def get_edm_definition(self, edm_name):
-    """Get the EDM definition of the passed EDM as JSON string.
+  def get_datamodel_definition(self, edm_name):
+    """Get the datamodel definition as JSON string.
 
     Args:
-        str: The name of the EDM
+        str: The name of the datamodel
 
     Returns:
         str: The complete model definition in JSON format. Use, e.g. json.loads
@@ -79,4 +79,4 @@ class BaseReaderMixin:
     """
     if self._is_legacy:
       return ""
-    return self._reader.getEDMDefinition(edm_name).data()
+    return self._reader.getDatamodelDefinition(edm_name).data()

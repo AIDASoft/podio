@@ -19,7 +19,7 @@ def print_general_info(reader, filename):
   """
   legacy_text = ' (this is a legacy file!)' if reader.is_legacy else ''
   print(f'input file: {filename}{legacy_text}\n')
-  print(f'EDM model definitions stored in this file: {", ".join(reader.edm_definitions)}')
+  print(f'datamodel model definitions stored in this file: {", ".join(reader.datamodel_definitions)}')
   print()
   print('Frame categories in this file:')
   print(f'{"Name":<20} {"Entries":<10}')
@@ -74,11 +74,11 @@ def print_frame(frame, cat_name, ientry, detailed):
 
 def dump_model(reader, model_name):
   """Dump the model in yaml format"""
-  if model_name not in reader.edm_definitions:
+  if model_name not in reader.datamodel_definitions:
     print(f'ERROR: Cannot dump model \'{model_name}\' (not present in file)')
     return False
 
-  model_def = json.loads(reader.get_edm_definition(model_name))
+  model_def = json.loads(reader.get_datamodel_definition(model_name))
   print(yaml.dump(model_def, sort_keys=False, default_flow_style=False))
 
   return True
