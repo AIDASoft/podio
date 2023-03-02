@@ -4,7 +4,7 @@
 #include "podio/SIOBlock.h"
 #include "podio/SIOFrameData.h"
 #include "podio/podioVersion.h"
-#include "podio/utilities/EDMRegistryIOHelpers.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <sio/definitions.h>
 

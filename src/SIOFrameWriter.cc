@@ -1,7 +1,6 @@
 #include "podio/SIOFrameWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
-// #include "podio/DatatypeRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/SIOBlock.h"

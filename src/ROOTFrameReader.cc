@@ -3,7 +3,6 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
-#include "podio/utilities/EDMRegistryIOHelpers.h"
 #include "rootUtils.h"
 
 // ROOT specific includes

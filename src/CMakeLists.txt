@@ -50,7 +50,7 @@ SET(core_sources
   ASCIIWriter.cc
   EventStore.cc
   DatamodelRegistry.cc
-  EDMRegistryIOHelpers.cc
+  DatamodelRegistryIOHelpers.cc
   )
 
 SET(core_headers
@@ -63,7 +63,7 @@ SET(core_headers
   ${CMAKE_SOURCE_DIR}/include/podio/UserDataCollection.h
   ${CMAKE_SOURCE_DIR}/include/podio/podioVersion.h
   ${CMAKE_SOURCE_DIR}/include/podio/DatamodelRegistry.h
-  ${CMAKE_SOURCE_DIR}/include/podio/utilities/EDMRegistryIOHelpers.h
+  ${CMAKE_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)

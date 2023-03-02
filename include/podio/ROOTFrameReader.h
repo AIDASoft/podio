@@ -4,7 +4,7 @@
 #include "podio/CollectionBranches.h"
 #include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
-#include "podio/utilities/EDMRegistryIOHelpers.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include "TChain.h"
 

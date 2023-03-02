@@ -1,7 +1,6 @@
 #include "podio/SIOFrameReader.h"
 #include "podio/SIOBlock.h"
 
-#include "podio/utilities/EDMRegistryIOHelpers.h"
 #include "sioUtils.h"
 
 #include <sio/api.h>

@@ -1,4 +1,4 @@
-#include "podio/utilities/EDMRegistryIOHelpers.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include <iterator>
 
 namespace podio {

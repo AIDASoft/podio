@@ -2,7 +2,7 @@
 #define PODIO_SIOFRAMEWRITER_H
 
 #include "podio/SIOBlock.h"
-#include "podio/utilities/EDMRegistryIOHelpers.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <sio/definitions.h>
 

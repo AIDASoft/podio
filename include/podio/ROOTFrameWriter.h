@@ -3,7 +3,7 @@
 
 #include "podio/CollectionBranches.h"
 #include "podio/CollectionIDTable.h"
-#include "podio/utilities/EDMRegistryIOHelpers.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include "TFile.h"
 
