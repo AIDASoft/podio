@@ -176,26 +176,34 @@ set to `True` in the yaml file. Since the json encoded definition is generated
 right before the pre-processed model is passed to the class generator, this
 definition is equivalent, but not necessarily equal to the original definition.
 
-#### The `EDMDefinitionRegistry`
-To make access to the embedded datamodel definitions a bit easier the
-`EDMDefinitionRegistry` (singleton) keeps a map of all loaded EDMs and makes
-access to this string slightly easier, providing two access methods:
+#### The `DatamodelRegistry`
+To make access to information about currently loaded and available datamodels a
+bit easier the `DatamodelRegistry` (singleton) keeps a map of all loaded
+datamodels and provides access to this information possible. In this context we
+refer to an *EDM* as the shared library (and the corresponding public headers)
+that have been compiled from code that has been generated from a *datamodel
+definition* in the original YAML file. In general whenever we refer to a
+*datamodel* in this context we mean the enitity as a whole, i.e. its definition
+in a YAML file, the concrete implementation as an EDM, as well as other related
+information that is related to it.
 
+Currently the `DatamodelRegistry` provides mainly access to the original
+definition of available datamodels via two methods:
 ```cpp
-const std::string_view getEDMDefinition(const std::string& edmName) const;
+const std::string_view getDatamodelDefinition(const std::string& edmName) const;
 
-const std::string_view getEDMDefinition(size_t index) const;
+const std::string_view getDatamodelDefinition(size_t index) const;
 ```
 
 where `index` can be obtained from each collection via
-`getDefinitionRegistryIndex`. That in turn simply calls
-`<package_name>::meta::RegistryIndex::value()`, another singleton like object
-that takes care of registering an EDM definition to the `EDMDefinitionRegistry`
+`getDatamodelRegistryIndex`. That in turn simply calls
+`<package_name>::meta::DatamodelRegistryIndex::value()`, another singleton like object
+that takes care of registering an EDM definition to the `DatamodelRegistry`
 during its static initialization. It is also defined in the
 `DatamodelDefinition.h` header.
 
-Since the EDM definition is embedded as a raw string literal into the core
-datamodel shared library, it is in principle also relatively straight forward to
+Since the datamodel definition is embedded as a raw string literal into the core
+EDM shared library, it is in principle also relatively straight forward to
 retrieve it from this library by inspecting the binary, e.g. via
 ```bash
 readelf -p .rodata libedm4hep.so | grep options
@@ -208,20 +216,20 @@ which will result in something like
 ```
 
 #### I/O helpers for EDM definition storing
-The `podio/utilities/EDMRegistryIOHelpers.h` header defines two utility (mixin)
+The `podio/utilities/DatamodelRegistryIOHelpers.h` header defines two utility
 classes, that help with instrumenting readers and writers with functionality to
 read and write all the necessary EDM definitions.
 
-- The `EDMDefinitionCollector` is intended to be inherited from by writers. It
-  essentially collects the EDM definitions of all the collections it encounters.
-  The `registerEDMDef` method it provides should be called with every collection
-  that is written. The `getEDMDefinitionsToWrite` method returns a vector of all
-  EDM names and their definition that were encountered during writing. **It is
+- The `DatamodelDefinitionCollector` is intended for usage in writers. It
+  essentially collects the datamodel definitions of all the collections it encounters.
+  The `registerDatamodelDefinition` method it provides should be called with every collection
+  that is written. The `getDatamodelDefinitionsToWrite` method returns a vector of all
+  datamodel names and their definition that were encountered during writing. **It is
   then the writers responsibility to actually store this information into the
   file**.
--  The `EDMDefinitionHolder` is intended to be inherited from by readers (needs
-  to be `public` inheritance if the functionality should be directly exposed to
-  users of the reader). It provides the `getEDMDefinition` and
-  `getAvailableEDMDefinitions` methods. In order for it to work properly **its
-  `m_availEDMDefs` member has to be populated by the reader** before a possible
-  call to either of these two methods.
+-  The `DatamodelDefinitionHolder` is intended to be used by readers. It
+  provides the `getDatamodelDefinition` and `getAvailableDatamodels` methods.
+  **It is again the readers property to correctly populate it with the data it
+  has read from file.** Currently the `SIOFrameReader` and the `ROOTFrameReader`
+  use it and also offer the same functionality as public methods with the help
+  of it.
