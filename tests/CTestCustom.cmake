@@ -53,10 +53,10 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     podio-dump-detailed-sio
     podio-dump-detailed-sio-legacy
 
-    edm_def_store_roundtrip_root
-    edm_def_store_roundtrip_root_extension
-    edm_def_store_roundtrip_sio
-    edm_def_store_roundtrip_sio_extension
+    datamodel_def_store_roundtrip_root
+    datamodel_def_store_roundtrip_root_extension
+    datamodel_def_store_roundtrip_sio
+    datamodel_def_store_roundtrip_sio_extension
   )
 
   # ostream_operator is working with Memory sanitizer (at least locally)
