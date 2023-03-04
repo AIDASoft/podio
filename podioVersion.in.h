@@ -62,7 +62,7 @@ struct Version {
   #undef DEFINE_COMP_OPERATOR
 #endif
 
-  operator std::string() const {
+  explicit operator std::string() const {
     std::stringstream ss;
     ss << *this;
     return ss.str();
