@@ -6,6 +6,7 @@
 #include <sio/api.h>
 #include <sio/definitions.h>
 
+#include <algorithm>
 #include <utility>
 
 namespace podio {
@@ -23,6 +24,7 @@ void SIOFrameReader::openFile(const std::string& filename) {
   // NOTE: reading TOC record first because that jumps back to the start of the file!
   readFileTOCRecord();
   readPodioHeader();
+  readEDMDefinitions(); // Potentially could do this lazily
 }
 
 std::unique_ptr<SIOFrameData> SIOFrameReader::readNextEntry(const std::string& name) {
@@ -54,7 +56,13 @@ std::unique_ptr<SIOFrameData> SIOFrameReader::readEntry(const std::string& name,
 }
 
 std::vector<std::string_view> SIOFrameReader::getAvailableCategories() const {
-  return m_tocRecord.getRecordNames();
+  // Filter the availalbe records from the TOC to remove records that are
+  // stored, but use reserved record names for podio meta data
+  auto recordNames = m_tocRecord.getRecordNames();
+  recordNames.erase(std::remove_if(recordNames.begin(), recordNames.end(),
+                                   [](const auto& elem) { return elem == sio_helpers::SIOEDMDefinitionName; }),
+                    recordNames.end());
+  return recordNames;
 }
 
 unsigned SIOFrameReader::getEntries(const std::string& name) const {
@@ -99,6 +107,24 @@ void SIOFrameReader::readPodioHeader() {
   sio::api::read_blocks(buffer.span(), blocks);
 
   m_fileVersion = static_cast<SIOVersionBlock*>(blocks[0].get())->version;
+}
+
+void SIOFrameReader::readEDMDefinitions() {
+  const auto recordPos = m_tocRecord.getPosition(sio_helpers::SIOEDMDefinitionName);
+  if (recordPos == 0) {
+    // No EDM definitions found
+    return;
+  }
+  m_stream.seekg(recordPos);
+
+  const auto& [buffer, _] = sio_utils::readRecord(m_stream);
+
+  sio::block_list blocks;
+  blocks.emplace_back(std::make_shared<podio::SIOMapBlock<std::string, std::string>>());
+  sio::api::read_blocks(buffer.span(), blocks);
+
+  auto datamodelDefs = static_cast<SIOMapBlock<std::string, std::string>*>(blocks[0].get());
+  m_datamodelHolder = DatamodelDefinitionHolder(std::move(datamodelDefs->mapData));
 }
 
 } // namespace podio

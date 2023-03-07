@@ -48,7 +48,10 @@ SET(core_sources
   CollectionIDTable.cc
   GenericParameters.cc
   ASCIIWriter.cc
-  EventStore.cc)
+  EventStore.cc
+  DatamodelRegistry.cc
+  DatamodelRegistryIOHelpers.cc
+  )
 
 SET(core_headers
   ${CMAKE_SOURCE_DIR}/include/podio/CollectionBase.h
@@ -59,6 +62,8 @@ SET(core_headers
   ${CMAKE_SOURCE_DIR}/include/podio/ObjectID.h
   ${CMAKE_SOURCE_DIR}/include/podio/UserDataCollection.h
   ${CMAKE_SOURCE_DIR}/include/podio/podioVersion.h
+  ${CMAKE_SOURCE_DIR}/include/podio/DatamodelRegistry.h
+  ${CMAKE_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)

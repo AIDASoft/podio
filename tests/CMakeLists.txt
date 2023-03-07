@@ -73,7 +73,7 @@ endforeach()
 if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
   message("Getting test input files")
   execute_process(
-    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/get_test_inputs.sh
+    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/scripts/get_test_inputs.sh
     OUTPUT_VARIABLE podio_test_input_data_dir
     RESULT_VARIABLE test_inputs_available
     )
@@ -245,3 +245,47 @@ else()
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
   )
 endif()
+
+# Add tests for storing and retrieving the EDM definitions into the produced
+# files
+add_test(datamodel_def_store_roundtrip_root ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root datamodel)
+add_test(datamodel_def_store_roundtrip_root_extension ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root datamodel extension_datamodel)
+
+
+# Need the input files that are produced by other tests
+set_tests_properties(
+    datamodel_def_store_roundtrip_root
+    datamodel_def_store_roundtrip_root_extension
+  PROPERTIES
+    DEPENDS write_frame_root
+  )
+
+set(sio_roundtrip_tests "")
+if (TARGET read_sio)
+  add_test(datamodel_def_store_roundtrip_sio ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel)
+  add_test(datamodel_def_store_roundtrip_sio_extension ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel extension_datamodel)
+
+  set(sio_roundtrip_tests
+    datamodel_def_store_roundtrip_sio
+    datamodel_def_store_roundtrip_sio_extension
+    )
+
+  set_tests_properties(
+      ${sio_roundtrip_tests}
+    PROPERTIES
+      DEPENDS write_frame_sio
+    )
+endif()
+
+# We need to convert this into a list of arguments that can be used as environment variable
+list(JOIN PODIO_IO_HANDLERS " " IO_HANDLERS)
+
+set_tests_properties(
+    datamodel_def_store_roundtrip_root
+    datamodel_def_store_roundtrip_root_extension
+    ${sio_roundtrip_tests}
+  PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    ENVIRONMENT
+  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}"
+  )

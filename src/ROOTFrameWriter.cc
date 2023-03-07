@@ -35,6 +35,8 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   for (const auto& name : catInfo.collsToWrite) {
     auto* coll = frame.getCollectionForWrite(name);
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
+
+    m_datamodelCollector.registerDatamodelDefinition(coll, name);
   }
 
   // We will at least have a parameters branch, even if there are no
@@ -128,6 +130,9 @@ void ROOTFrameWriter::finish() {
   // Store the current podio build version into the meta data tree
   auto podioVersion = podio::version::build_version;
   metaTree->Branch(root_utils::versionBranchName, &podioVersion);
+
+  auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
+  metaTree->Branch(root_utils::edmDefBranchName, &edmDefinitions);
 
   metaTree->Fill();
 

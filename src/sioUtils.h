@@ -9,6 +9,7 @@
 #include <sio/compression/zlib.h>
 #include <sio/definitions.h>
 
+#include <string_view>
 #include <utility>
 
 namespace podio {

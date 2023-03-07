@@ -15,6 +15,7 @@
     <class name="podio::GenericParameters::MapType<std::string>"/>
     <class name="std::map<int,podio::GenericParameters>"/>
     <class name="std::vector<std::tuple<int, std::string, bool>>"/>
+    <class name="std::vector<std::tuple<std::string, std::string>>"/>
     <class name="podio::CollectionBase"/>
     <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>

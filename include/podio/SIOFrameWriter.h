@@ -2,6 +2,7 @@
 #define PODIO_SIOFRAMEWRITER_H
 
 #include "podio/SIOBlock.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <sio/definitions.h>
 
@@ -35,6 +36,7 @@ public:
 private:
   sio::ofstream m_stream{};       ///< The output file stream
   SIOFileTOCRecord m_tocRecord{}; ///< The "table of contents" of the written file
+  DatamodelDefinitionCollector m_datamodelCollector{};
 };
 } // namespace podio
 

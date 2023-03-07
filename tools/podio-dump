@@ -2,6 +2,8 @@
 """podio-dump tool to dump contents of podio files"""
 
 import sys
+import json
+import yaml
 
 from podio.reading import get_reader
 
@@ -15,9 +17,11 @@ def print_general_info(reader, filename):
   Args:
       reader (root_io.Reader, sio_io.Reader): An initialized reader
   """
-  print(f'input file: {filename}\n')
   legacy_text = ' (this is a legacy file!)' if reader.is_legacy else ''
-  print(f'Frame categories in this file{legacy_text}:')
+  print(f'input file: {filename}{legacy_text}\n')
+  print(f'datamodel model definitions stored in this file: {", ".join(reader.datamodel_definitions)}')
+  print()
+  print('Frame categories in this file:')
   print(f'{"Name":<20} {"Entries":<10}')
   print('-' * 31)
   for category in reader.categories:
@@ -68,6 +72,18 @@ def print_frame(frame, cat_name, ientry, detailed):
   print('\n', flush=True)
 
 
+def dump_model(reader, model_name):
+  """Dump the model in yaml format"""
+  if model_name not in reader.datamodel_definitions:
+    print(f'ERROR: Cannot dump model \'{model_name}\' (not present in file)')
+    return False
+
+  model_def = json.loads(reader.get_datamodel_definition(model_name))
+  print(yaml.dump(model_def, sort_keys=False, default_flow_style=False))
+
+  return True
+
+
 def main(args):
   """Main"""
   try:
@@ -75,6 +91,12 @@ def main(args):
   except ValueError as err:
     print(f'ERROR: Cannot open file \'{args.inputfile}\': {err}')
     sys.exit(1)
+
+  if args.dump_edm is not None:
+    if dump_model(reader, args.dump_edm):
+      sys.exit(0)
+    else:
+      sys.exit(1)
 
   print_general_info(reader, args.inputfile)
   if args.category not in reader.categories:
@@ -120,6 +142,9 @@ if __name__ == '__main__':
                       type=parse_entry_range, default=[0])
   parser.add_argument('-d', '--detailed', help='Dump the full contents not just the collection info',
                       action='store_true', default=False)
+  parser.add_argument('--dump-edm',
+                      help='Dump the specified EDM definition from the file in yaml format',
+                      type=str, default=None)
 
   clargs = parser.parse_args()
   main(clargs)

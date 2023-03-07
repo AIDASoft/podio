@@ -3,6 +3,7 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
+#include "podio/DatamodelRegistry.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
@@ -170,6 +171,10 @@ public:
     if (flush) {
       os.flush(); // Necessary for python
     }
+  }
+
+  size_t getDatamodelRegistryIndex() const override {
+    return DatamodelRegistry::NoDefinitionNecessary;
   }
 
   // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)

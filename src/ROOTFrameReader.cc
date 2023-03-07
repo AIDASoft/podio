@@ -179,6 +179,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
   auto* branches = metaChain->GetListOfBranches();
   std::vector<std::string> brNames;
   brNames.reserve(branches->GetEntries());
+
   for (int i = 0; i < branches->GetEntries(); ++i) {
     const std::string name = branches->At(i)->GetName();
     const auto fUnder = name.find("___");
@@ -189,7 +190,6 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
 
   std::sort(brNames.begin(), brNames.end());
   brNames.erase(std::unique(brNames.begin(), brNames.end()), brNames.end());
-
   return brNames;
 }
 
@@ -216,6 +216,14 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   }
   m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
   delete versionPtr;
+
+  if (auto* edmDefBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmDefBranchName)) {
+    auto* datamodelDefs = new DatamodelDefinitionHolder::MapType{};
+    edmDefBranch->SetAddress(&datamodelDefs);
+    edmDefBranch->GetEntry(0);
+    m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
+    delete datamodelDefs;
+  }
 
   // Do some work up front for setting up categories and setup all the chains
   // and record the available categories. The rest of the setup follows on

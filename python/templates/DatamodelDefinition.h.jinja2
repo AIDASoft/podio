@@ -1,0 +1,30 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "podio/DatamodelRegistry.h"
+
+namespace {{ package_name }}::meta {
+/**
+ * The complete definition of the datamodel at generation time in JSON format.
+ */
+static constexpr auto {{ package_name }}__JSONDefinition = R"DATAMODELDEF({{ edm_definition }})DATAMODELDEF";
+
+/**
+ * The helper class that takes care of registering the datamodel definition to
+ * the DatamodelRegistry and to provide the index in that registry.
+ *
+ * Implemented as a singleton mainly to ensure only a single registration of
+ * each datamodel, during the constructor
+ */
+class DatamodelRegistryIndex {
+public:
+  static size_t value() {
+    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition));
+    return index.m_value;
+  }
+
+private:
+  DatamodelRegistryIndex(size_t v) : m_value(v) {}
+  size_t m_value{podio::DatamodelRegistry::NoDefinitionAvailable};
+};
+
+} // namespace {{ package_name }}::meta

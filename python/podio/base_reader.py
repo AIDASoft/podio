@@ -55,3 +55,28 @@ class BaseReaderMixin:
         bool: True if this is a legacy file reader
     """
     return self._is_legacy
+
+  @property
+  def datamodel_definitions(self):
+    """Get the available datamodel definitions from this reader.
+
+    Returns:
+        tuple(str): The names of the available datamodel definitions
+    """
+    if self._is_legacy:
+      return ()
+    return tuple(n.c_str() for n in self._reader.getAvailableDatamodels())
+
+  def get_datamodel_definition(self, edm_name):
+    """Get the datamodel definition as JSON string.
+
+    Args:
+        str: The name of the datamodel
+
+    Returns:
+        str: The complete model definition in JSON format. Use, e.g. json.loads
+            to convert it into a python dictionary.
+    """
+    if self._is_legacy:
+      return ""
+    return self._reader.getDatamodelDefinition(edm_name).data()
