@@ -198,7 +198,7 @@ public:
    * Copy the value into the internal store
    */
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
-  void putParameter(const std::string& key, T value) {
+  inline void putParameter(const std::string& key, T value) {
     m_self->parameters().setValue(key, value);
   }
 
@@ -221,7 +221,7 @@ public:
    * catching on-the-fly conversions of initializer_lists of values.
    */
   template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
-  void putParameter(const std::string& key, std::initializer_list<T>&& values) {
+  inline void putParameter(const std::string& key, std::initializer_list<T>&& values) {
     putParameter<std::vector<T>>(key, std::move(values));
   }
 
@@ -229,8 +229,21 @@ public:
    * either by a const reference or a value depending on the desired type.
    */
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
-  podio::GenericDataReturnType<T> getParameter(const std::string& key) const {
+  inline podio::GenericDataReturnType<T> getParameter(const std::string& key) const {
     return m_self->parameters().getValue<T>(key);
+  }
+
+  /** Get all parameters that are stored in this Frame
+   */
+  inline const podio::GenericParameters& getParameters() const {
+    return m_self->parameters();
+  }
+
+  /** Get the keys of all stored parameters for a given type
+   */
+  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  inline std::vector<std::string> getParameterKeys() const {
+    return m_self->parameters().getKeys<T>();
   }
 
   /** Get all **currently** available collections (including potentially
@@ -246,7 +259,7 @@ public:
   /**
    * Get the GenericParameters for writing
    */
-  const podio::GenericParameters& getGenericParametersForWrite() const {
+  [[deprecated("use getParameters instead")]] const podio::GenericParameters& getGenericParametersForWrite() const {
     return m_self->parameters();
   }
 

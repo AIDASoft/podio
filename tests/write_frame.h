@@ -420,6 +420,9 @@ podio::Frame makeFrame(int iFrame) {
   frame.putParameter("UserEventName", " event_number_" + std::to_string(iFrame));
   frame.putParameter("SomeVectorData", {1, 2, 3, 4});
   frame.putParameter("SomeVectorData", {"just", "some", "strings"});
+  frame.putParameter("SomeVectorData", {iFrame * 1.1, iFrame * 2.2});
+  frame.putParameter("SomeValue", "string value");
+  frame.putParameter("SomeValue", 42);
 
   // An empty collection
   frame.put(ExampleClusterCollection(), "emptyCollection");

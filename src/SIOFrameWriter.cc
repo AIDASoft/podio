@@ -8,6 +8,7 @@
 #include "sioUtils.h"
 
 #include <memory>
+#include <string>
 
 namespace podio {
 
@@ -35,6 +36,7 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   collections.reserve(collsToWrite.size());
   for (const auto& name : collsToWrite) {
     collections.emplace_back(name, frame.getCollectionForWrite(name));
+    m_datamodelCollector.registerDatamodelDefinition(collections.back().second, name);
   }
 
   // Write necessary metadata and the actual data into two different records.
@@ -44,12 +46,19 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   tableBlocks.emplace_back(sio_utils::createCollIDBlock(collections, frame.getCollectionIDTableForWrite()));
   m_tocRecord.addRecord(category, sio_utils::writeRecord(tableBlocks, category + "_HEADER", m_stream));
 
-  const auto blocks = sio_utils::createBlocks(collections, frame.getGenericParametersForWrite());
+  const auto blocks = sio_utils::createBlocks(collections, frame.getParameters());
   sio_utils::writeRecord(blocks, category, m_stream);
 }
 
 void SIOFrameWriter::finish() {
+  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(
+      m_datamodelCollector.getDatamodelDefinitionsToWrite());
+
   sio::block_list blocks;
+  blocks.push_back(edmDefMap);
+  m_tocRecord.addRecord(sio_helpers::SIOEDMDefinitionName, sio_utils::writeRecord(blocks, "EDMDefinitions", m_stream));
+
+  blocks.clear();
   blocks.emplace_back(std::make_shared<SIOFileTOCRecordBlock>(&m_tocRecord));
 
   auto tocStartPos = sio_utils::writeRecord(blocks, sio_helpers::SIOTocRecordName, m_stream);

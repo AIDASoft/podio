@@ -4,12 +4,13 @@
 #include "podio/EventStore.h"
 #include "podio/GenericParameters.h"
 #include "podio/IReader.h"
+#include "podio/utilities/Deprecated.h"
 
 #include <memory>
 
 namespace podio {
 
-class PythonEventStore {
+class DEPR_EVTSTORE PythonEventStore {
 public:
   /// constructor from filename
   PythonEventStore(const char* filename);

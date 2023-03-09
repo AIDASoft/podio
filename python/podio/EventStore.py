@@ -1,7 +1,10 @@
 """Python EventStore for reading files with podio generated datamodels"""
 
+import warnings
+warnings.warn("The EventStore based I/O model is deprecated and will be removed. Switch to the Frame based model.",
+              FutureWarning)
 
-from ROOT import gSystem
+from ROOT import gSystem  # pylint: disable=wrong-import-position
 gSystem.Load("libpodioPythonStore")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 

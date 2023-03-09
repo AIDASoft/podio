@@ -406,11 +406,8 @@ class PodioConfigReader:
 
     return datatype
 
-  @classmethod
-  def read(cls, yamlfile, package_name, upstream_edm=None):
-    """Read the datamodel definition from the yamlfile."""
-    with open(yamlfile, "r", encoding='utf-8') as stream:
-      content = yaml.load(stream, yaml.SafeLoader)
+  def parse_model(cls, model_dict, package_name, upstream_edm=None):
+    """Parse a model from the dictionary, e.g. read from a yaml file."""
 
     if "schemaversion" in content:
       schema_version = content["schemaversion"]
@@ -420,18 +417,18 @@ class PodioConfigReader:
       schema_version = 0
 
     components = {}
-    if "components" in content:
-      for klassname, value in content["components"].items():
+    if "components" in model_dict:
+      for klassname, value in model_dict["components"].items():
         components[klassname] = cls._read_component(value)
 
     datatypes = {}
-    if "datatypes" in content:
-      for klassname, value in content["datatypes"].items():
+    if "datatypes" in model_dict:
+      for klassname, value in model_dict["datatypes"].items():
         datatypes[klassname] = cls._read_datatype(value)
 
     options = copy.deepcopy(cls.options)
-    if "options" in content:
-      for option, value in content["options"].items():
+    if "options" in model_dict:
+      for option, value in model_dict["options"].items():
         options[option] = value
 
     # Normalize the includeSubfoler internally already here
@@ -445,3 +442,11 @@ class PodioConfigReader:
     datamodel = DataModel(datatypes, components, options, schema_version)
     validator.validate(datamodel, upstream_edm)
     return datamodel
+
+  @classmethod
+  def read(cls, yamlfile, package_name, upstream_edm=None):
+    """Read the datamodel definition from the yamlfile."""
+    with open(yamlfile, "r", encoding='utf-8') as stream:
+      content = yaml.load(stream, yaml.SafeLoader)
+
+    return cls.parse_model(content, package_name, upstream_edm)

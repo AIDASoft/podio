@@ -3,6 +3,7 @@
 
 #include "podio/CollectionBranches.h"
 #include "podio/CollectionIDTable.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include "TFile.h"
 
@@ -80,6 +81,8 @@ private:
 
   std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
+
+  DatamodelDefinitionCollector m_datamodelCollector{};
 };
 
 } // namespace podio

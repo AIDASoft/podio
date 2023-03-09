@@ -7,6 +7,7 @@
 #include "podio/CollectionIDTable.h"
 
 #include "TBranch.h"
+#include "TChain.h"
 #include "TClass.h"
 #include "TTree.h"
 
@@ -34,6 +35,12 @@ constexpr static auto paramBranchName = "PARAMETERS";
  * time of writing the file
  */
 constexpr static auto versionBranchName = "PodioBuildVersion";
+
+/**
+ * The name of the branch in which all the EDM names and their definitions are
+ * stored in the meta data tree.
+ */
+constexpr static auto edmDefBranchName = "EDMDefinitions";
 
 /**
  * Name of the branch for storing the idTable for a given category in the meta

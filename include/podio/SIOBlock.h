@@ -6,6 +6,7 @@
 #include <podio/EventStore.h>
 #include <podio/GenericParameters.h>
 #include <podio/podioVersion.h>
+#include <podio/utilities/TypeHelpers.h>
 
 #include <sio/block.h>
 #include <sio/io_device.h>
@@ -16,6 +17,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <vector>
 
 namespace podio {
 
@@ -24,6 +26,34 @@ void handlePODDataSIO(devT& device, PODData* data, size_t size) {
   unsigned count = size * sizeof(PODData);
   char* dataPtr = reinterpret_cast<char*>(data);
   device.data(dataPtr, count);
+}
+
+/// Write anything that iterates like an std::map
+template <typename MapLikeT>
+void writeMapLike(sio::write_device& device, const MapLikeT& map) {
+  device.data((int)map.size());
+  for (const auto& [key, value] : map) {
+    device.data(key);
+    device.data(value);
+  }
+}
+
+/// Read anything that iterates like an std::map
+template <typename MapLikeT>
+void readMapLike(sio::read_device& device, MapLikeT& map) {
+  int size;
+  device.data(size);
+  while (size--) {
+    detail::GetKeyType<MapLikeT> key;
+    device.data(key);
+    detail::GetMappedType<MapLikeT> value;
+    device.data(value);
+    if constexpr (podio::detail::isVector<MapLikeT>) {
+      map.emplace_back(std::move(key), std::move(value));
+    } else {
+      map.emplace(std::move(key), std::move(value));
+    }
+  }
 }
 
 /// Base class for sio::block handlers used with PODIO
@@ -129,7 +159,7 @@ struct SIOVersionBlock : public sio::block {
  */
 class SIOEventMetaDataBlock : public sio::block {
 public:
-  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 1)) {
+  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 2)) {
   }
 
   SIOEventMetaDataBlock(const SIOEventMetaDataBlock&) = delete;
@@ -142,11 +172,37 @@ public:
 };
 
 /**
+ * A block to serialize anything that behaves similar in iterating as a
+ * map<KeyT, ValueT>, e.g. vector<tuple<KeyT, ValueT>>, which is what is used
+ * internally to represent the data to be written.
+ */
+template <typename KeyT, typename ValueT>
+struct SIOMapBlock : public sio::block {
+  SIOMapBlock() : sio::block("SIOMapBlock", sio::version::encode_version(0, 1)) {
+  }
+  SIOMapBlock(std::vector<std::tuple<KeyT, ValueT>>&& data) :
+      sio::block("SIOMapBlock", sio::version::encode_version(0, 1)), mapData(std::move(data)) {
+  }
+
+  SIOMapBlock(const SIOMapBlock&) = delete;
+  SIOMapBlock& operator=(const SIOMapBlock&) = delete;
+
+  void read(sio::read_device& device, sio::version_type) override {
+    readMapLike(device, mapData);
+  }
+  void write(sio::write_device& device) override {
+    writeMapLike(device, mapData);
+  }
+
+  std::vector<std::tuple<KeyT, ValueT>> mapData{};
+};
+
+/**
  * A block for handling the run and collection meta data
  */
 class SIONumberedMetaDataBlock : public sio::block {
 public:
-  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 1)) {
+  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 2)) {
   }
 
   SIONumberedMetaDataBlock(const SIONumberedMetaDataBlock&) = delete;
@@ -218,6 +274,9 @@ namespace sio_helpers {
   static constexpr int SIOTocInfoSize = sizeof(uint64_t); // i.e. usually 8
   /// The name of the TOCRecord
   static constexpr const char* SIOTocRecordName = "podio_SIO_TOC_Record";
+
+  /// The name of the record containing the EDM definitions in json format
+  static constexpr const char* SIOEDMDefinitionName = "podio_SIO_EDMDefinitions";
 
   // should hopefully be enough for all practical purposes
   using position_type = uint32_t;

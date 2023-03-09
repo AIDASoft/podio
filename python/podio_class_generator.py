@@ -17,7 +17,7 @@ from itertools import zip_longest
 import jinja2
 
 from podio.podio_config_reader import PodioConfigReader
-from podio.generator_utils import DataType, DefinitionError
+from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
 from podio_schema_evolution import ROOTFilter
 
@@ -122,6 +122,8 @@ class ClassGenerator:
 
     for name, datatype in self.datamodel.datatypes.items():
       self._process_datatype(name, datatype)
+
+    self._write_edm_def_file()
 
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
@@ -241,6 +243,9 @@ have resolvable schema evolution incompatibilities:")
 
   def _process_component(self, name, component):
     """Process one component"""
+    # Make a copy here and add the preprocessing steps to that such that the
+    # original definition can be left untouched
+    component = deepcopy(component)
     includes = set()
     includes.update(*(m.includes for m in component['Members']))
 
@@ -405,6 +410,18 @@ have resolvable schema evolution incompatibilities:")
     self._preprocess_for_collection(data)
 
     return data
+
+  def _write_edm_def_file(self):
+    """Write the edm definition to a compile time string"""
+    model_encoder = DataModelJSONEncoder()
+    data = {
+        'package_name': self.package_name,
+        'edm_definition': model_encoder.encode(self.datamodel),
+        'incfolder': self.incfolder,
+        }
+
+    self._write_file('DatamodelDefinition.h',
+                     self._eval_template('DatamodelDefinition.h.jinja2', data))
 
   def _get_member_includes(self, members):
     """Process all members and gather the necessary includes"""

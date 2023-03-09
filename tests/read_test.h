@@ -90,6 +90,15 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     }
   }
 
+  if constexpr (!isEventStore<StoreT>) {
+    if (fileVersion > podio::version::Version{0, 16, 2}) {
+      const auto doubleParams = store.template getParameter<std::vector<double>>("SomeVectorData");
+      if (doubleParams.size() != 2 || doubleParams[0] != eventNum * 1.1 || doubleParams[1] != eventNum * 2.2) {
+        throw std::runtime_error("Could not read event parameter: 'SomeDoubleValues' correctly");
+      }
+    }
+  }
+
   try {
     // not assigning to a variable, because it will remain unused, we just want
     // the exception here

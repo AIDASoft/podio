@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/EventStore.h"
 #include "podio/SIOBlock.h"
+#include "podio/utilities/Deprecated.h"
 
 // SIO specific includes
 #include <sio/definitions.h>
@@ -15,7 +16,7 @@
 // forward declarations
 
 namespace podio {
-class SIOWriter {
+class DEPR_EVTSTORE SIOWriter {
 
 public:
   SIOWriter(const std::string& filename, EventStore* store);

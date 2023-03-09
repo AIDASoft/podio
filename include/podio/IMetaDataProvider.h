@@ -2,6 +2,7 @@
 #define PODIO_IMETADATAPROVIDER_H
 
 #include "podio/GenericParameters.h"
+#include "podio/utilities/Deprecated.h"
 
 namespace podio {
 
@@ -9,7 +10,7 @@ namespace podio {
  * @author F. Gaede, DESY
  * @date Apr 2020
  */
-class IMetaDataProvider {
+class DEPR_EVTSTORE IMetaDataProvider {
 
 public:
   /// destructor

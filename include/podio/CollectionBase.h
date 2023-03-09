@@ -83,6 +83,9 @@ public:
 
   /// print this collection to the passed stream
   virtual void print(std::ostream& os = std::cout, bool flush = true) const = 0;
+
+  /// Get the index in the DatatypeRegistry of the EDM this collection belongs to
+  virtual size_t getDatamodelRegistryIndex() const = 0;
 };
 
 } // namespace podio

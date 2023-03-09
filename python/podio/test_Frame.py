@@ -19,7 +19,7 @@ EXPECTED_COLL_NAMES = {
 EXPECTED_EXTENSION_COLL_NAMES = {"extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation"}
 
 # The expected parameter names in each frame
-EXPECTED_PARAM_NAMES = {'anInt', 'UserEventWeight', 'UserEventName', 'SomeVectorData'}
+EXPECTED_PARAM_NAMES = {'anInt', 'UserEventWeight', 'UserEventName', 'SomeVectorData', 'SomeValue'}
 
 
 class FrameTest(unittest.TestCase):
@@ -93,7 +93,9 @@ class FrameReadTest(unittest.TestCase):
 
     with self.assertRaises(ValueError):
       # Parameter not available as float (only int and string)
-      _ = self.event.get_parameter('SomeVectorData', as_type='float')
+      _ = self.event.get_parameter('SomeValue', as_type='float')
 
     self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='int'), [1, 2, 3, 4])
     self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='str'), ["just", "some", "strings"])
+    # as_type='float' will also retrieve double values (if the name is unambiguous)
+    self.assertEqual(self.event.get_parameter('SomeVectorData', as_type='float'), [0.0, 0.0])

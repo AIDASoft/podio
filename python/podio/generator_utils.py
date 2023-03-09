@@ -4,6 +4,7 @@ Module holding some generator utility functions
 """
 
 import re
+import json
 
 
 def _get_namespace_class(full_type):
@@ -184,12 +185,18 @@ class MemberVariable:
       return self.name
     return _prefix_name(self.name, 'set')
 
+  def _to_json(self):
+    """Return a string representation that can be parsed again."""
+    # The __str__ method is geared towards c++ too much, so we have to build
+    # things again here from available information
+    def_val = f'{{{self.default_val}}}' if self.default_val else ''
+    description = f' // {self.description}' if self.description else ''
+    return f'{self.full_type} {self.name}{def_val}{description}'
+
 
 class DataModel:  # pylint: disable=too-few-public-methods
   """A class for holding a complete datamodel read from a configuration file"""
   def __init__(self, datatypes=None, components=None, options=None, schema_version=None):
-    self.datatypes = datatypes or {}
-    self.components = components or {}
     self.options = options or {
         # should getters / setters be prefixed with get / set?
         "getSyntax": False,
@@ -199,3 +206,23 @@ class DataModel:  # pylint: disable=too-few-public-methods
         "includeSubfolder": False,
         }
     self.schema_version = schema_version
+    self.components = components or {}
+    self.datatypes = datatypes or {}
+
+  def _to_json(self):
+    """Return the dictionary, so that we can easily hook this into the pythons
+    JSON ecosystem"""
+    return self.__dict__
+
+
+class DataModelJSONEncoder(json.JSONEncoder):
+  """A JSON encoder for DataModels, resp. anything hat has a _to_json method."""
+
+  def default(self, o):
+    """The override for the default, first trying to call _to_json, otherwise
+    handing off to the default JSONEncoder"""
+    try:
+      return o._to_json()  # pylint: disable=protected-access
+    except AttributeError:
+      return super().default(o)
+      
