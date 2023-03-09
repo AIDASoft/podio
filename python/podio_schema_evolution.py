@@ -149,25 +149,25 @@ class DataModelComparator:
 
   def _compare_components(self) -> None:
     # first check for dropped, added and kept components
-    added_components, dropped_components, kept_components = self._compare_keys(self.components1.keys(),
-                                                                               self.components2.keys())
+    added_components, dropped_components, kept_components = self._compare_keys(self.datamodel_new.components.keys(),
+                                                                               self.datamodel_old.components.keys())
     # Make findings known globally
-    self.detected_schema_changes.extend([AddedComponent(self.components1[name], name)
+    self.detected_schema_changes.extend([AddedComponent(self.datamodel_new.components[name], name)
                                         for name in added_components])
-    self.detected_schema_changes.extend([DroppedComponent(self.components2[name], name)
+    self.detected_schema_changes.extend([DroppedComponent(self.datamodel_old.components[name], name)
                                         for name in dropped_components])
 
-    self._compare_definitions(kept_components, self.components1, self.components2, "Members")
+    self._compare_definitions(kept_components, self.datamodel_new.components, self.datamodel_old.components, "Members")
 
   def _compare_datatypes(self) -> None:
     # first check for dropped, added and kept components
-    added_types, dropped_types, kept_types = self._compare_keys(self.datatypes1.keys(),
-                                                                self.datatypes2.keys())
+    added_types, dropped_types, kept_types = self._compare_keys(self.datamodel_new.datatypes.keys(),
+                                                                self.datamodel_old.datatypes.keys())
     # Make findings known globally
-    self.detected_schema_changes.extend([AddedDatatype(self.datatypes1[name], name) for name in added_types])
-    self.detected_schema_changes.extend([DroppedDatatype(self.datatypes2[name], name) for name in dropped_types])
+    self.detected_schema_changes.extend([AddedDatatype(self.datamodel_new.datatypes[name], name) for name in added_types])
+    self.detected_schema_changes.extend([DroppedDatatype(self.datamodel_old.datatypes[name], name) for name in dropped_types])
 
-    self._compare_definitions(kept_types, self.datatypes1, self.datatypes2, "Members")
+    self._compare_definitions(kept_types, self.datamodel_new.datatypes, self.datamodel_old.datatypes, "Members")
 
   def _compare_definitions(self, definitions, first, second, category) -> None:
     for name in definitions:
@@ -298,10 +298,6 @@ class DataModelComparator:
   def read(self) -> None:
     self.datamodel_new = self.reader.read(self.yamlfile_new, package_name="new")
     self.datamodel_old = self.reader.read(self.yamlfile_old, package_name="old")
-    self.components1 = self.datamodel_new.components
-    self.components2 = self.datamodel_old.components
-    self.datatypes1 = self.datamodel_new.datatypes
-    self.datatypes2 = self.datamodel_old.datatypes
     if self.evolution_file:
       self.read_evolution_file()
 
