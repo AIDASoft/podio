@@ -406,11 +406,12 @@ class PodioConfigReader:
 
     return datatype
 
+  @classmethod
   def parse_model(cls, model_dict, package_name, upstream_edm=None):
     """Parse a model from the dictionary, e.g. read from a yaml file."""
 
-    if "schemaversion" in content:
-      schema_version = content["schemaversion"]
+    if "schemaversion" in model_dict:
+      schema_version = model_dict["schemaversion"]
     else:
       warnings.warn("Please provide a schemaversion entry. It will become mandatory. Setting it to 0 as default",
                     FutureWarning, stacklevel=3)
