@@ -164,8 +164,10 @@ class DataModelComparator:
     added_types, dropped_types, kept_types = self._compare_keys(self.datamodel_new.datatypes.keys(),
                                                                 self.datamodel_old.datatypes.keys())
     # Make findings known globally
-    self.detected_schema_changes.extend([AddedDatatype(self.datamodel_new.datatypes[name], name) for name in added_types])
-    self.detected_schema_changes.extend([DroppedDatatype(self.datamodel_old.datatypes[name], name) for name in dropped_types])
+    self.detected_schema_changes.extend([AddedDatatype(self.datamodel_new.datatypes[name], name)
+                                        for name in added_types])
+    self.detected_schema_changes.extend([DroppedDatatype(self.datamodel_old.datatypes[name], name)
+                                        for name in dropped_types])
 
     self._compare_definitions(kept_types, self.datamodel_new.datatypes, self.datamodel_old.datatypes, "Members")
 
@@ -308,15 +310,15 @@ class DataModelComparator:
       from_schemaversion = content["from_schemaversion"]
       to_schemaversion = content["to_schemaversion"]
 
-      if (from_schemaversion != self.datamodel_old.schema_version) or (to_schemaversion != self.datamodel_new.schema_version):  # nopep8
-        raise BaseException("Versions in schema evolution file do not match versions in data model descriptions.")  # nopep8
+      if (from_schemaversion != self.datamodel_old.schema_version) or (to_schemaversion != self.datamodel_new.schema_version):  # nopep8 # noqa
+        raise BaseException("Versions in schema evolution file do not match versions in data model descriptions.")  # nopep8 # noqa
 
       if "evolutions" in content:
         for klassname, value in content["evolutions"].items():
           # now let's go through the various supported evolutions
           for operation, details in value.items():
             if operation not in supported_operations:
-              raise BaseException(f'Schema evolution operation {operation} in {klassname} unknown or not supported')  # nopep8
+              raise BaseException(f'Schema evolution operation {operation} in {klassname} unknown or not supported')  # nopep8 # noqa
             elif operation == 'member_rename':
               schema_change = RenamedMember(klassname, details[0], details[1])
               self.read_schema_changes.append(schema_change)

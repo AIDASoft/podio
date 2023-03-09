@@ -225,4 +225,3 @@ class DataModelJSONEncoder(json.JSONEncoder):
       return o._to_json()  # pylint: disable=protected-access
     except AttributeError:
       return super().default(o)
-      
