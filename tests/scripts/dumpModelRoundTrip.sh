@@ -5,16 +5,13 @@
 
 set -e
 
-ENABLE_SIO=${1}  # SIO enabled or not
+EXCLUDE_SIO=${1}  # SIO excluded or not
 INPUT_FILE=${2}  # the datafile
 EDM_NAME=${3}  # the name of the EDM
 COMP_BASE_FOLDER=""  # where the source to compare against is
 if [ -$# -gt 3 ]; then
     COMP_BASE_FOLDER=${4}
 fi
-
-echo ${ENABLE_SIO}
-
 
 # Create a few temporary but unique files and directories to store output
 DUMPED_MODEL=${INPUT_FILE}.dumped_${EDM_NAME}.yaml
@@ -35,7 +32,7 @@ ${PODIO_BASE}/python/podio_class_generator.py \
 # Compare to the originally generated code, that has been used to write the data
 # file. Need to diff subfolders explitly here because $PODIO_BASE/tests contains
 # more stuff
-if [ ${ENABLE_SIO} = "false" ]; then
+if [ ${EXCLUDE_SIO} = "true" ]; then
 diff -ru ${OUTPUT_FOLDER}/${EDM_NAME} ${PODIO_BASE}/tests/${COMP_BASE_FOLDER}/${EDM_NAME} --exclude='*SIO*'
 diff -ru ${OUTPUT_FOLDER}/src ${PODIO_BASE}/tests/${COMP_BASE_FOLDER}/src --exclude='*SIO*'
 else
