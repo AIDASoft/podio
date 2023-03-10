@@ -270,8 +270,8 @@ set_tests_properties(
 
 set(sio_roundtrip_tests "")
 if (TARGET read_sio)
-  add_test(datamodel_def_store_roundtrip_sio ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh false ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel)
-  add_test(datamodel_def_store_roundtrip_sio_extension ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh false ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel extension_datamodel)
+  add_test(datamodel_def_store_roundtrip_sio ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh true ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel)
+  add_test(datamodel_def_store_roundtrip_sio_extension ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh true ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel extension_datamodel)
 
   set(sio_roundtrip_tests
     datamodel_def_store_roundtrip_sio
