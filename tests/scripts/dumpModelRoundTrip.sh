@@ -22,6 +22,7 @@ ${PODIO_BASE}/tools/podio-dump --dump-edm ${EDM_NAME} ${INPUT_FILE} > ${DUMPED_M
 
 # Regenerate the code via the class generator and the freshly dumped modl
 ${PODIO_BASE}/python/podio_class_generator.py \
+    --clangformat \
     ${DUMPED_MODEL} \
     ${OUTPUT_FOLDER} \
     ${EDM_NAME} \

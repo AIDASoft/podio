@@ -1,5 +1,5 @@
 ---
-schemaversion : 0
+schema_version : 0
 
 options :
   # should getters / setters be prefixed with get / set?

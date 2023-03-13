@@ -307,10 +307,9 @@ class DataModelComparator:
     supported_operations = ('member_rename', 'class_renamed_to')
     with open(self.evolution_file, "r", encoding='utf-8') as stream:
       content = yaml.load(stream, yaml.SafeLoader)
-      from_schemaversion = content["from_schemaversion"]
-      to_schemaversion = content["to_schemaversion"]
-
-      if (from_schemaversion != self.datamodel_old.schema_version) or (to_schemaversion != self.datamodel_new.schema_version):  # nopep8 # noqa
+      from_schema_version = content["from_schema_version"]
+      to_schema_version = content["to_schema_version"]
+      if (from_schema_version != self.datamodel_old.schema_version) or (to_schema_version != self.datamodel_new.schema_version):  # nopep8 # noqa
         raise BaseException("Versions in schema evolution file do not match versions in data model descriptions.")  # nopep8 # noqa
 
       if "evolutions" in content:
