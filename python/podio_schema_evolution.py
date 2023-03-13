@@ -107,7 +107,7 @@ class RenamedMember(SchemaChange):
     super().__init__(f"'{self.name}': member '{self.member_name_old}' renamed to '{self.member_name_new}'.")
 
 
-def SioFilter(schema_changes):
+def sio_filter(schema_changes):
   """
   Checks what is required/supported for the SIO backend
 
@@ -117,7 +117,7 @@ def SioFilter(schema_changes):
   return schema_changes
 
 
-def RootFilter(schema_changes):
+def root_filter(schema_changes):
   """
   Checks what is required/supported for the ROOT backend
 
@@ -226,8 +226,7 @@ class DataModelComparator:
       - check which can be auto-resolved
       - check which need extra information from the user
       - check which one are plain forbidden/impossible
-      
-      """
+    """
     # let's analyse the changes in more detail
     # make a copy that can be altered along the way
     schema_changes = self.detected_schema_changes.copy()
@@ -244,14 +243,14 @@ class DataModelComparator:
           is_rename = False
           for schema_change in self.read_schema_changes:
             if isinstance(schema_change, RenamedMember) and \
-               schema_change.name == dropped_member.definition_name:
-              if (schema_change.member_name_old == dropped_member.member.name) and \
-                 (schema_change.member_name_new == added_member.member.name):
-                 # remove the dropping/adding from the schema changes and replace it by the rename
-                schema_changes.remove(dropped_member)
-                schema_changes.remove(added_member)
-                schema_changes.append(schema_change)
-                is_rename = True
+               (schema_change.name == dropped_member.definition_name) and \
+               (schema_change.member_name_old == dropped_member.member.name) and \
+               (schema_change.member_name_new == added_member.member.name):
+              # remove the dropping/adding from the schema changes and replace it by the rename
+              schema_changes.remove(dropped_member)
+              schema_changes.remove(added_member)
+              schema_changes.append(schema_change)
+              is_rename = True
           if not is_rename:
             self.warnings.append(f"Definition '{dropped_member.definition_name}' has a potential rename "
                                  f"'{dropped_member.member.name}' -> '{added_member.member.name}' of type "
@@ -278,12 +277,12 @@ class DataModelComparator:
         added_members = {member.name: member for member in added.datatype["Members"]}
         if set(dropped_members.keys()) == set(added_members.keys()):
           for schema_change in self.read_schema_changes:
-            if isinstance(schema_change, RenamedDataType):
-              if schema_change.name_old == dropped.name and schema_change.name_new == added.name:
-                schema_changes.remove(dropped)
-                schema_changes.remove(added)
-                schema_changes.append(schema_change)
-                is_known_evolution = True
+            if isinstance(schema_change, RenamedDataType) and \
+              (schema_change.name_old == dropped.name and schema_change.name_new == added.name):
+              schema_changes.remove(dropped)
+              schema_changes.remove(added)
+              schema_changes.append(schema_change)
+              is_known_evolution = True
           if not is_known_evolution:
             self.warnings.append(f"Potential rename of '{dropped.name}' into '{added.name}'.")
 
@@ -365,4 +364,4 @@ if __name__ == "__main__":
   comparator.read()
   comparator.compare()
   comparator.print_comparison()
-  print(comparator.get_changed_schemata(filter=RootFilter))
+  print(comparator.get_changed_schemata(schema_filter=root_filter))

@@ -19,7 +19,7 @@ import jinja2
 from podio.podio_config_reader import PodioConfigReader
 from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
-from podio_schema_evolution import RootFilter
+from podio_schema_evolution import root_filter
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
@@ -156,8 +156,6 @@ have resolvable schema evolution incompatibilities:")
         for warning in comparator.warnings:
           print(warning)
         sys.exit(-1)
-
-      self.ROOT_schema_evolution = comparator.get_changed_schemata(schema_filter=RootFilter)
 
   def print_report(self):
     """Print a summary report about the generated code"""
