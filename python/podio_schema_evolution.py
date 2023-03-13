@@ -195,9 +195,9 @@ class DataModelComparator:
     kept = set(keys1).intersection(keys2)
     return added, dropped, kept
 
-  def get_changed_schemata(self, filter=None):
-    if filter:
-      schema_changes = filter(self.schema_changes)
+  def get_changed_schemata(self, schema_filter=None):
+    if schema_filter:
+      schema_changes = schema_filter(self.schema_changes)
     else:
       schema_changes = self.schema_changes
     changed_klasses = {}
@@ -280,7 +280,7 @@ class DataModelComparator:
     # make the results of the heuristics known to the instance
     self.schema_changes = schema_changes
 
-  def print(self):
+  def print_comparison(self):
     print(f"Comparing datamodel versions {self.datamodel_new.schema_version} and {self.datamodel_old.schema_version}")
 
     print(f"Detected {len(self.schema_changes)} schema changes:")
@@ -340,5 +340,5 @@ if __name__ == "__main__":
   comparator = DataModelComparator(args.new, args.old, evolution_file=args.evo)
   comparator.read()
   comparator.compare()
-  comparator.print()
+  comparator.print_comparison()
   print(comparator.get_changed_schemata(filter=ROOTFilter))
