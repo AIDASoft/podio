@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+Provides infrastructure for analyzing schema definitions for schema evolution
+"""
 
 import yaml
 
@@ -104,7 +107,7 @@ class RenamedMember(SchemaChange):
     super().__init__(f"'{self.name}': member '{self.member_name_old}' renamed to '{self.member_name_new}'.")
 
 
-def SIOFilter(schema_changes):
+def SioFilter(schema_changes):
   """
   Checks what is required/supported for the SIO backend
 
@@ -114,7 +117,7 @@ def SIOFilter(schema_changes):
   return schema_changes
 
 
-def ROOTFilter(schema_changes):
+def RootFilter(schema_changes):
   """
   Checks what is required/supported for the ROOT backend
 
@@ -129,12 +132,17 @@ def ROOTFilter(schema_changes):
 
 
 class DataModelComparator:
+  """
+  Compares two datamodels and extracts required schema evolution
+  """
   def __init__(self, yamlfile_new, yamlfile_old, evolution_file=None) -> None:
     self.yamlfile_new = yamlfile_new
     self.yamlfile_old = yamlfile_old
     self.evolution_file = evolution_file
     self.reader = PodioConfigReader()
 
+    self.datamodel_new = None
+    self.datamodel_old = None
     self.detected_schema_changes = []
     self.read_schema_changes = []
     self.schema_changes = []
@@ -143,11 +151,13 @@ class DataModelComparator:
     self.errors = []
 
   def compare(self) -> None:
+    """execute the comparison on-preloaded datamodel definitions"""
     self._compare_components()
     self._compare_datatypes()
     self.heuristics()
 
   def _compare_components(self) -> None:
+    """compare component definitions of old and new datamodel"""
     # first check for dropped, added and kept components
     added_components, dropped_components, kept_components = self._compare_keys(self.datamodel_new.components.keys(),
                                                                                self.datamodel_old.components.keys())
@@ -160,6 +170,7 @@ class DataModelComparator:
     self._compare_definitions(kept_components, self.datamodel_new.components, self.datamodel_old.components, "Members")
 
   def _compare_datatypes(self) -> None:
+    """compare datatype definitions of old and new datamodel"""
     # first check for dropped, added and kept components
     added_types, dropped_types, kept_types = self._compare_keys(self.datamodel_new.datatypes.keys(),
                                                                 self.datamodel_old.datatypes.keys())
@@ -172,6 +183,7 @@ class DataModelComparator:
     self._compare_definitions(kept_types, self.datamodel_new.datatypes, self.datamodel_old.datatypes, "Members")
 
   def _compare_definitions(self, definitions, first, second, category) -> None:
+    """compare member definitions in old and new datamodel"""
     for name in definitions:
       # we are only interested in members not the extracode
       members1 = {member.name: member for member in first[name][category]}
@@ -189,13 +201,16 @@ class DataModelComparator:
         if old.full_type != new.full_type:
           self.detected_schema_changes.append(ChangedMember(name, member_name, old, new))
 
-  def _compare_keys(self, keys1, keys2):
+  @staticmethod
+  def _compare_keys(keys1, keys2):
+    """compare keys of two given dicts. return added, dropped and overlapping keys"""
     added = set(keys1).difference(keys2)
     dropped = set(keys2).difference(keys1)
     kept = set(keys1).intersection(keys2)
     return added, dropped, kept
 
   def get_changed_schemata(self, schema_filter=None):
+    """return the schemata which actually changed"""
     if schema_filter:
       schema_changes = schema_filter(self.schema_changes)
     else:
@@ -207,6 +222,12 @@ class DataModelComparator:
     return changed_klasses
 
   def heuristics(self):
+    """make an analysis of the data model changes:
+      - check which can be auto-resolved
+      - check which need extra information from the user
+      - check which one are plain forbidden/impossible
+      
+      """
     # let's analyse the changes in more detail
     # make a copy that can be altered along the way
     schema_changes = self.detected_schema_changes.copy()
@@ -214,10 +235,10 @@ class DataModelComparator:
     dropped_members = [change for change in schema_changes if isinstance(change, DroppedMember)]
     added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
     for dropped_member in dropped_members:
-      added_members_in_same_definition = [member for member in added_members if
+      added_members_in_definition = [member for member in added_members if
                                           dropped_member.definition_name == member.definition_name]
 
-      for added_member in added_members_in_same_definition:
+      for added_member in added_members_in_definition:
         if added_member.member.full_type == dropped_member.member.full_type:
           # this is a rename candidate. So let's see whether it has been explicitly declared by the user
           is_rename = False
@@ -281,6 +302,7 @@ class DataModelComparator:
     self.schema_changes = schema_changes
 
   def print_comparison(self):
+    """print the result of the datamodel comparison"""
     print(f"Comparing datamodel versions {self.datamodel_new.schema_version} and {self.datamodel_old.schema_version}")
 
     print(f"Detected {len(self.schema_changes)} schema changes:")
@@ -298,12 +320,14 @@ class DataModelComparator:
         print(f" - {error}")
 
   def read(self) -> None:
+    """read datamodels from yaml files"""
     self.datamodel_new = self.reader.read(self.yamlfile_new, package_name="new")
     self.datamodel_old = self.reader.read(self.yamlfile_old, package_name="old")
     if self.evolution_file:
       self.read_evolution_file()
 
   def read_evolution_file(self) -> None:
+    """read and parse evolution file"""
     supported_operations = ('member_rename', 'class_renamed_to')
     with open(self.evolution_file, "r", encoding='utf-8') as stream:
       content = yaml.load(stream, yaml.SafeLoader)
@@ -318,7 +342,7 @@ class DataModelComparator:
           for operation, details in value.items():
             if operation not in supported_operations:
               raise BaseException(f'Schema evolution operation {operation} in {klassname} unknown or not supported')  # nopep8 # noqa
-            elif operation == 'member_rename':
+            if operation == 'member_rename':
               schema_change = RenamedMember(klassname, details[0], details[1])
               self.read_schema_changes.append(schema_change)
             elif operation == 'class_renamed_to':
@@ -341,4 +365,4 @@ if __name__ == "__main__":
   comparator.read()
   comparator.compare()
   comparator.print_comparison()
-  print(comparator.get_changed_schemata(filter=ROOTFilter))
+  print(comparator.get_changed_schemata(filter=RootFilter))
