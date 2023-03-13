@@ -157,7 +157,7 @@ have resolvable schema evolution incompatibilities:")
           print(warning)
         sys.exit(-1)
 
-      self.ROOT_schema_evolution = comparator.get_changed_schemata(filter=ROOTFilter)
+      self.ROOT_schema_evolution = comparator.get_changed_schemata(schema_filter=ROOTFilter)
 
   def print_report(self):
     """Print a summary report about the generated code"""
