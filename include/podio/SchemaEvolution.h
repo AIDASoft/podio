@@ -5,9 +5,9 @@
 
 namespace podio {
 
-    enum class Backend { ROOT, SIO };
+enum class Backend { ROOT, SIO };
 
-    using SchemaVersionT = uint32_t;
+using SchemaVersionT = uint32_t;
 
 } // namespace podio
 

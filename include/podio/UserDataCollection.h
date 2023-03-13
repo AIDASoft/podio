@@ -118,7 +118,9 @@ public:
             }};
   }
 
-  podio::CollectionReadBuffers createSchemaEvolvableBuffers(__attribute__((unused)) int readSchemaVersion, __attribute__((unused)) podio::Backend backend) /*const*/ final {
+  podio::CollectionReadBuffers createSchemaEvolvableBuffers(__attribute__((unused)) int readSchemaVersion,
+                                                            __attribute__((unused))
+                                                            podio::Backend backend) /*const*/ final {
     return createBuffers();
   }
 

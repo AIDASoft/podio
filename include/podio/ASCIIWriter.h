@@ -5,7 +5,6 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/Deprecated.h"
 
-
 #include <fstream>
 #include <functional>
 #include <iostream>

@@ -169,7 +169,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
 
   // Read the collection type info
   // For versions <0.13.1 it does not exist and has to be rebuilt from scratch
-  if (m_fileVersion < podio::version::Version{0, 13, 1}){
+  if (m_fileVersion < podio::version::Version{0, 13, 1}) {
 
     std::cout << "PODIO: Reconstructing CollectionTypeInfo branch from other sources in file: \'"
               << m_chain->GetFile()->GetName() << "\'" << std::endl;
@@ -177,18 +177,15 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     const auto collectionInfo = root_utils::reconstructCollectionInfo(m_chain, *m_table);
     createCollectionBranches(collectionInfo);
 
-  } else if (m_fileVersion < podio::version::Version{0, 17, 0}){
+  } else if (m_fileVersion < podio::version::Version{0, 17, 0}) {
 
     auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo");
     auto collectionInfoWithoutSchema = new std::vector<root_utils::CollectionInfoTWithoutSchema>;
     auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
     collInfoBranch->SetAddress(&collectionInfoWithoutSchema);
     metadatatree->GetEntry(0);
-    for (const auto& [collID, collType, isSubsetColl] : *collectionInfoWithoutSchema){
-        collectionInfo->emplace_back(collID,
-                                     collType,
-                                     isSubsetColl,
-                                     0);
+    for (const auto& [collID, collType, isSubsetColl] : *collectionInfoWithoutSchema) {
+      collectionInfo->emplace_back(collID, collType, isSubsetColl, 0);
     }
     createCollectionBranches(*collectionInfo);
     delete collectionInfoWithoutSchema;
