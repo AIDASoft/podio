@@ -57,6 +57,7 @@ spack*
 /.clangd/
 /compile_commands.json
 .vscode
+/.cache/
 
 # Generated files
 *podio_generated_files.cmake
