@@ -221,22 +221,11 @@ class DataModelComparator:
       changed_klass.append(schema_change)
     return changed_klasses
 
-  def heuristics(self):
-    """make an analysis of the data model changes:
-      - check which can be auto-resolved
-      - check which need extra information from the user
-      - check which one are plain forbidden/impossible
-    """
-    # let's analyse the changes in more detail
-    # make a copy that can be altered along the way
-    schema_changes = self.detected_schema_changes.copy()
-    # are there dropped/added member pairs that could be interpreted as rename?
-    dropped_members = [change for change in schema_changes if isinstance(change, DroppedMember)]
-    added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
+  def heuristics_members(self, added_members, dropped_members, schema_changes):
+    """make analysis of member changes in a given data type """
     for dropped_member in dropped_members:
       added_members_in_definition = [member for member in added_members if
                                           dropped_member.definition_name == member.definition_name]
-
       for added_member in added_members_in_definition:
         if added_member.member.full_type == dropped_member.member.full_type:
           # this is a rename candidate. So let's see whether it has been explicitly declared by the user
@@ -255,6 +244,20 @@ class DataModelComparator:
             self.warnings.append(f"Definition '{dropped_member.definition_name}' has a potential rename "
                                  f"'{dropped_member.member.name}' -> '{added_member.member.name}' of type "
                                  f"'{dropped_member.member.full_type}'.")
+
+  def heuristics(self):
+    """make an analysis of the data model changes:
+      - check which can be auto-resolved
+      - check which need extra information from the user
+      - check which one are plain forbidden/impossible
+    """
+    # let's analyse the changes in more detail
+    # make a copy that can be altered along the way
+    schema_changes = self.detected_schema_changes.copy()
+    # are there dropped/added member pairs that could be interpreted as rename?
+    dropped_members = [change for change in schema_changes if isinstance(change, DroppedMember)]
+    added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
+    self.heuristics_members(added_members, dropped_members, schema_changes)
 
     # are the member changes actually supported/supportable?
     changed_members = [change for change in schema_changes if isinstance(change, ChangedMember)]
