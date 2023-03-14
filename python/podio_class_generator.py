@@ -19,7 +19,6 @@ import jinja2
 from podio.podio_config_reader import PodioConfigReader
 from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
-from podio_schema_evolution import root_filter
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
@@ -134,6 +133,7 @@ class ClassGenerator:
     self.print_report()
 
   def process_schema_evolution(self):
+    """Process the schema evolution"""
     # have to make all necessary comparisons
     # which are the ones that changed?
     # have to extend the selection xml file

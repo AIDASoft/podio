@@ -278,7 +278,7 @@ class DataModelComparator:
         if set(dropped_members.keys()) == set(added_members.keys()):
           for schema_change in self.read_schema_changes:
             if isinstance(schema_change, RenamedDataType) and \
-              (schema_change.name_old == dropped.name and schema_change.name_new == added.name):
+               (schema_change.name_old == dropped.name and schema_change.name_new == added.name):
               schema_changes.remove(dropped)
               schema_changes.remove(added)
               schema_changes.append(schema_change)
