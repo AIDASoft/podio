@@ -254,7 +254,7 @@ have resolvable schema evolution incompatibilities:")
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
-    component['class'] = DataType(name)
+    component['class'] = DataType(name, self.schema_version)
 
     self._fill_templates('Component', component)
 
@@ -401,7 +401,7 @@ have resolvable schema evolution incompatibilities:")
     # Make a copy here and add the preprocessing steps to that such that the
     # original definition can be left untouched
     data = deepcopy(definition)
-    data['class'] = DataType(name, schema_version=self.schema_version)
+    data['class'] = DataType(name, self.schema_version)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
@@ -485,8 +485,8 @@ have resolvable schema evolution incompatibilities:")
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c) for c in self.datamodel.components],
-            'datatypes': [DataType(d) for d in self.datamodel.datatypes],
+    data = {'components': [DataType(c, self.schema_version) for c in self.datamodel.components],
+            'datatypes': [DataType(d, self.schema_version) for d in self.datamodel.datatypes],
             'old_schema_components': [DataType(d) for d in
                                       self.old_datamodels_datatypes | self.old_datamodels_components]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
