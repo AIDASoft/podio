@@ -41,12 +41,10 @@ def get_clang_format():
   """Check if clang format is available and if so get the list of arguments to
   invoke it via subprocess.Popen"""
   try:
+    # This one can raise if -fallback-style is not found
     out = subprocess.check_output(["clang-format", "-style=file", "-fallback-style=llvm", "--help"],
                                   stderr=subprocess.STDOUT)
-    if b'Unknown' in out:
-      print('ERROR: At least one argument was not recognized by clang-format')
-      print('       Most likely the version you are using is old')
-      return []
+    # This one doesn't raise
     out = subprocess.check_output('echo | clang-format -style=file ', stderr=subprocess.STDOUT, shell=True)
     if b'.clang-format' in out:
       return []
@@ -54,6 +52,10 @@ def get_clang_format():
   except FileNotFoundError:
     print("ERROR: Cannot find clang-format executable")
     print("       Please make sure it is in the PATH.")
+    return []
+  except subprocess.CalledProcessError:
+    print('ERROR: At least one argument was not recognized by clang-format')
+    print('       Most likely the version you are using is old')
     return []
 
 
