@@ -46,6 +46,9 @@ def get_clang_format():
       print('ERROR: At least one argument was not recognized by clang-format')
       print('       Most likely the version you are using is old')
       return []
+    out = subprocess.check_output('echo | clang-format -style=file ', stderr=subprocess.STDOUT, shell=True)
+    if b'.clang-format' in out:
+      return []
     return ["clang-format", "-style=file", "-fallback-style=llvm"]
   except FileNotFoundError:
     print("ERROR: Cannot find clang-format executable")
