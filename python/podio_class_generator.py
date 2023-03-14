@@ -487,7 +487,7 @@ have resolvable schema evolution incompatibilities:")
     """Create the selection xml that is necessary for ROOT I/O"""
     data = {'components': [DataType(c, self.schema_version) for c in self.datamodel.components],
             'datatypes': [DataType(d, self.schema_version) for d in self.datamodel.datatypes],
-            'old_schema_components': [DataType(d) for d in
+            'old_schema_components': [DataType(d, self.schema_version) for d in
                                       self.old_datamodels_datatypes | self.old_datamodels_components]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
