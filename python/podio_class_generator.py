@@ -40,8 +40,9 @@ REPORT_TEXT = """
 def get_clang_format():
   """Check if clang format is available and if so get the list of arguments to
   invoke it via subprocess.Popen"""
-  try :
-    out = subprocess.check_output(["clang-format", "-style=file", "-fallback-style=llvm", "--help"], stderr=subprocess.STDOUT)
+  try:
+    out = subprocess.check_output(["clang-format", "-style=file", "-fallback-style=llvm", "--help"],
+                                  stderr=subprocess.STDOUT)
     if b'Unknown' in out:
       print('ERROR: At least one argument was not recognized by clang-format')
       print('       Most likely the version you are using is old')
