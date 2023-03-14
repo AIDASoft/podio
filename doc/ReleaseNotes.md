@@ -1,3 +1,80 @@
+# v00-16-03
+
+* 2023-03-14 jmcarcell ([PR#391](https://github.com/AIDASoft/podio/pull/391))
+  - Catch an exception when a `clang-format` flag is not found
+
+* 2023-03-14 jmcarcell ([PR#390](https://github.com/AIDASoft/podio/pull/390))
+  - Modify the initial `clang-format` check to try to run with all the arguments that will be used later
+
+* 2023-03-13 jmcarcell ([PR#389](https://github.com/AIDASoft/podio/pull/389))
+  - Add .cache to the gitignore
+
+* 2023-03-07 Thomas Madlener ([PR#358](https://github.com/AIDASoft/podio/pull/358))
+  - Embed the EDM definition in JSON format into the shared core datamodel libraries
+    - Generate an additional `DatamodelDefinition.h` header file containing the string literal json encoded definition
+    - Statically register this to the newly introduced `DatamodelRegistry` and make collections aware of which datamodel they belong to
+  - Collect all EDM definitions from all collections that are written with a writer and write all these definitions to the resulting file
+    - Currently only done for the `FrameWriter`s
+  - Give `podio-dump` the necessary functionality to retrieve the stored models and dump them in YAML format again
+    - Add roundtrip tests that compare the generated code from the original model and the one that has been dumped from a data file to ensure that all components work as intended.
+  - See the [advanced topics documentation](https://github.com/tmadlener/podio/blob/store-model-def/doc/advanced_topics.md#retrieving-the-edm-definition-from-a-data-file) for more details.
+
+* 2023-03-06 Dmitry Kalinkin ([PR#384](https://github.com/AIDASoft/podio/pull/384))
+  - Added an operator for conversion to std::string for podio::version::Version
+
+* 2023-03-01 Thomas Madlener ([PR#378](https://github.com/AIDASoft/podio/pull/378))
+  - Introduce deprecation warnings for the **EventStore based I/O model** as it **will be removed in favor of the `Frame` based one**
+
+* 2023-03-01 Thomas Madlener ([PR#372](https://github.com/AIDASoft/podio/pull/372))
+  - Make `double` a supported type of `GenericParameters`. A similar thing has been added to LCIO in [iLCSoft/LCIO#143](https://github.com/iLCSoft/LCIO/pull/143) to support storing event weights that need double precision.
+  - Add more unittests to the `GenericParameters` covering also the available constructors.
+
+* 2023-02-27 Thomas Madlener ([PR#380](https://github.com/AIDASoft/podio/pull/380))
+  - Add `getParameters` method to the `Frame` and deprecate `getGenericParametersForWrite` which offered the exact same functionality.
+    - Make it easily possible to get all parameters that are currently stored in a Frame via an "official" channel
+    - Replace all internal usages.
+  - Add a `getParameterKeys` templated method to get the keys for different parameter types that are currently stored in the Frame.
+
+* 2023-02-22 jmcarcell ([PR#377](https://github.com/AIDASoft/podio/pull/377))
+  - Add a visualization tool that converts a YAML description to a graph
+
+* 2023-02-21 jmcarcell ([PR#376](https://github.com/AIDASoft/podio/pull/376))
+  - Fix tests without SIO
+
+* 2023-02-14 Thomas Madlener ([PR#375](https://github.com/AIDASoft/podio/pull/375))
+  - Fix the `PODIO_VERSION` preprocessor macro to be actually usable in a preprocessor context. Fixes [#374](https://github.com/AIDASoft/podio/issues/374)
+  - Make `podio_VERSION` preprocessor constant something that can be used in a preprocessor context (now the same as `PODIO_BUILD_VERSION`
+  - Add test that ensures that the macro and the constant are actually used in a preprocessor context.
+
+* 2023-02-13 Juraj Smiesko ([PR#373](https://github.com/AIDASoft/podio/pull/373))
+  - Adding ID to the short podio-dump output
+
+* 2023-02-06 Nathan Brei ([PR#369](https://github.com/AIDASoft/podio/pull/369))
+  - Mark non-templated definitions of `Frame::Frame`, `Frame::get`, `Frame::put` and `Frame::putParameters` as `inline` to fix linker errors.
+
+* 2023-02-02 jmcarcell ([PR#364](https://github.com/AIDASoft/podio/pull/364))
+  - Make workflows not trigger twice on pushes to PRs
+
+* 2023-01-26 jmcarcell ([PR#368](https://github.com/AIDASoft/podio/pull/368))
+  - CMAKE: Add option PODIO_RELAX_PYVER to allow relaxing the required match of python version with the one that ROOT has been built with to only check major and minor versions
+
+* 2023-01-16 Thomas Madlener ([PR#363](https://github.com/AIDASoft/podio/pull/363))
+  - Move sio utility functionality defined in `SIOFrameWriter.cc` to private `sioUtils.h` header and use it also in the legacy `SIOWriter`.
+  - Fix cmake configure dependencies (missed in #343) for datamodel generation macro.
+  - Use `defaultdict` instead of hand rolling one in class generator.
+
+* 2023-01-16 Thomas Madlener ([PR#361](https://github.com/AIDASoft/podio/pull/361))
+  - Add basic I/O tests for datatypes defined in the extension datamodel. Fixes #319
+
+* 2023-01-11 jmcarcell ([PR#355](https://github.com/AIDASoft/podio/pull/355))
+  - Change the readers so that when the file is missing they won't crash
+
+* 2023-01-10 jmcarcell ([PR#365](https://github.com/AIDASoft/podio/pull/365))
+  - Fix the pre-commit workflow
+
+* 2022-12-23 jmcarcell ([PR#362](https://github.com/AIDASoft/podio/pull/362))
+  - Rename the variable `match` to avoid collisions with a python keyword from Python 3.10 onwards
+
 # v00-16-02
 
 * 2022-12-19 Thomas Madlener ([PR#360](https://github.com/AIDASoft/podio/pull/360))
