@@ -3,6 +3,7 @@
 
 #include "podio/CollectionBuffers.h"
 #include "podio/ObjectID.h"
+#include "podio/SchemaEvolution.h"
 
 #include <iostream>
 #include <string>
@@ -49,6 +50,12 @@ public:
   /// Create (empty) collection buffers from which a collection can be constructed
   virtual podio::CollectionReadBuffers createBuffers() /*const*/ = 0;
 
+  /// Create (empty) collection buffers from which a collection can be constructed
+  /// Versioned to support schema evolution
+  virtual podio::CollectionReadBuffers createSchemaEvolvableBuffers(int readSchemaVersion,
+                                                                    podio::Backend backend) /*const*/
+      = 0;
+
   /// check for validity of the container after read
   virtual bool isValid() const = 0;
 
@@ -61,6 +68,8 @@ public:
   virtual std::string getValueTypeName() const = 0;
   /// fully qualified type name of stored POD elements - with namespace
   virtual std::string getDataTypeName() const = 0;
+  /// schema version of the collection
+  virtual SchemaVersionT getSchemaVersion() const = 0;
 
   /// destructor
   virtual ~CollectionBase() = default;

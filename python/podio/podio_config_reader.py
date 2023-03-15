@@ -409,6 +409,14 @@ class PodioConfigReader:
   @classmethod
   def parse_model(cls, model_dict, package_name, upstream_edm=None):
     """Parse a model from the dictionary, e.g. read from a yaml file."""
+
+    if "schema_version" in model_dict:
+      schema_version = model_dict["schema_version"]
+    else:
+      warnings.warn("Please provide a schema_version entry. It will become mandatory. Setting it to 0 as default",
+                    FutureWarning, stacklevel=3)
+      schema_version = 0
+
     components = {}
     if "components" in model_dict:
       for klassname, value in model_dict["components"].items():
@@ -432,7 +440,7 @@ class PodioConfigReader:
 
     # If this doesn't raise an exception everything should in principle work out
     validator = ClassDefinitionValidator()
-    datamodel = DataModel(datatypes, components, options)
+    datamodel = DataModel(datatypes, components, options, schema_version)
     validator.validate(datamodel, upstream_edm)
     return datamodel
 

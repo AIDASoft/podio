@@ -82,6 +82,8 @@ public:
   std::string getValueTypeName() const final { return std::string("{{ (class | string ).strip(':') }}"); }
   /// fully qualified type name of stored POD elements - with namespace
   std::string getDataTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Data" }}"); }
+  /// schema version
+  unsigned int getSchemaVersion() const final { return {{ class.schema_version }}; };
 
   bool isSubsetCollection() const final {
     return m_isSubsetColl;
@@ -111,6 +113,11 @@ public:
 
   /// Create (empty) collection buffers from which a collection can be constructed
   podio::CollectionReadBuffers createBuffers() /*const*/ final;
+
+  /// Create (empty) collection buffers from which a collection can be constructed
+  /// Versioned to support schema evolution
+  podio::CollectionReadBuffers createSchemaEvolvableBuffers(int readSchemaVersion, podio::Backend backend) /*const*/ final;
+
 
   void setID(unsigned ID) final {
     m_collectionID = ID;

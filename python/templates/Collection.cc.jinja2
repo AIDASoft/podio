@@ -175,6 +175,16 @@ podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
   return readBuffers;
 }
 
+podio::CollectionReadBuffers {{ collection_type }}::createSchemaEvolvableBuffers(int readSchemaVersion, podio::Backend /*backend*/) /*const*/ {
+  // no version difference -> no-op
+  if (readSchemaVersion == {{ class.schema_version }}) {
+    return createBuffers();
+  }
+  // default is no-op as well
+  return createBuffers();
+}
+
+
 {% for member in Members %}
 {{ macros.vectorized_access(class, member) }}
 {% endfor %}

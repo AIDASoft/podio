@@ -119,6 +119,7 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 #      RETURN_HEADERS       variable that will be filled with the list of created headers files: ${datamodel}/*.h
 #      RETURN_SOURCES       variable that will be filled with the list of created source files : src/*.cc
 #   Parameters:
+#      OLD_DESCRIPTION      OPTIONAL: The path to the yaml file describing a previous datamodel version
 #      OUTPUT_FOLDER        OPTIONAL: The folder in which the output files should be placed
 #                           Default is ${CMAKE_CURRENT_SOURCE_DIR}
 #      UPSTREAM_EDM         OPTIONAL: The upstream edm and its package name that are passed to the
@@ -126,13 +127,14 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 #      IO_BACKEND_HANDLERS  OPTIONAL: The I/O backend handlers that should be generated. The list is
 #                           passed directly to podio_class_generator.py and validated there
 #                           Default is ROOT
+#      SCHEMA_EVOLUTION     OPTIONAL: The path to the yaml file declaring the necessary schema evolution
 #  )
 #
 # Note that the create_${datamodel} target will always be called, but if the YAML_FILE has not changed
 # this is essentially a no-op, and should not cause re-compilation.
 #---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER;UPSTREAM_EDM" "IO_BACKEND_HANDLERS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OLD_DESCRIPTION;OUTPUT_FOLDER;UPSTREAM_EDM;SCHEMA_EVOLUTION" "IO_BACKEND_HANDLERS" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
@@ -141,9 +143,19 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     SET(UPSTREAM_EDM_ARG "--upstream-edm=${ARG_UPSTREAM_EDM}")
   ENDIF()
 
+  SET(OLD_DESCRIPTION_ARG "")
+  IF (ARG_OLD_DESCRIPTION)
+    SET(OLD_DESCRIPTION_ARG "--old-description=${ARG_OLD_DESCRIPTION}")
+  ENDIF()
+
   IF(NOT ARG_IO_BACKEND_HANDLERS)
     # At least build the ROOT selection.xml by default for now
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
+  ENDIF()
+
+  SET(SCHEMA_EVOLUTION_ARG "")
+  IF (ARG_SCHEMA_EVOLUTION)
+    SET(SCHEMA_EVOLUTION_ARG "--evolution_file=${ARG_SCHEMA_EVOLUTION}")
   ENDIF()
 
   set(CLANG_FORMAT_ARG "")
@@ -189,7 +201,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   message(STATUS "Creating '${datamodel}' datamodel")
   # we need to boostrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
+    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${OLD_DESCRIPTION_ARG} ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE podio_generate_command_retval
     )

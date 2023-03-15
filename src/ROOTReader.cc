@@ -163,25 +163,45 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   podio::version::Version* versionPtr{nullptr};
   if (auto* versionBranch = root_utils::getBranch(metadatatree, "PodioVersion")) {
     versionBranch->SetAddress(&versionPtr);
-  }
-
-  // Check if the CollectionTypeInfo branch is there and assume that the file
-  // has been written with with podio pre #197 (<0.13.1) if that is not the case
-  if (auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo")) {
-    auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
-    collInfoBranch->SetAddress(&collectionInfo);
     metadatatree->GetEntry(0);
-    createCollectionBranches(*collectionInfo);
-    delete collectionInfo;
-  } else {
+  }
+  m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
+
+  // Read the collection type info
+  // For versions <0.13.1 it does not exist and has to be rebuilt from scratch
+  if (m_fileVersion < podio::version::Version{0, 13, 1}) {
+
     std::cout << "PODIO: Reconstructing CollectionTypeInfo branch from other sources in file: \'"
               << m_chain->GetFile()->GetName() << "\'" << std::endl;
     metadatatree->GetEntry(0);
     const auto collectionInfo = root_utils::reconstructCollectionInfo(m_chain, *m_table);
     createCollectionBranches(collectionInfo);
+
+  } else if (m_fileVersion < podio::version::Version{0, 17, 0}) {
+
+    auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo");
+    auto collectionInfoWithoutSchema = new std::vector<root_utils::CollectionInfoTWithoutSchema>;
+    auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
+    collInfoBranch->SetAddress(&collectionInfoWithoutSchema);
+    metadatatree->GetEntry(0);
+    for (const auto& [collID, collType, isSubsetColl] : *collectionInfoWithoutSchema) {
+      collectionInfo->emplace_back(collID, collType, isSubsetColl, 0);
+    }
+    createCollectionBranches(*collectionInfo);
+    delete collectionInfoWithoutSchema;
+    delete collectionInfo;
+
+  } else {
+
+    auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo");
+
+    auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
+    collInfoBranch->SetAddress(&collectionInfo);
+    metadatatree->GetEntry(0);
+    createCollectionBranches(*collectionInfo);
+    delete collectionInfo;
   }
 
-  m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
   delete versionPtr;
 }
 
@@ -226,7 +246,7 @@ void ROOTReader::goToEvent(unsigned eventNumber) {
 void ROOTReader::createCollectionBranches(const std::vector<root_utils::CollectionInfoT>& collInfo) {
   size_t collectionIndex{0};
 
-  for (const auto& [collID, collType, isSubsetColl] : collInfo) {
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
     const auto name = m_table->name(collID);

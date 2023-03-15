@@ -2,6 +2,7 @@
 #define PODIO_ASCIIWRITER_H
 
 #include "podio/EventStore.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/utilities/Deprecated.h"
 
 #include <fstream>

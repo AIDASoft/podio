@@ -118,6 +118,12 @@ public:
             }};
   }
 
+  podio::CollectionReadBuffers createSchemaEvolvableBuffers(__attribute__((unused)) int readSchemaVersion,
+                                                            __attribute__((unused))
+                                                            podio::Backend backend) /*const*/ final {
+    return createBuffers();
+  }
+
   /// check for validity of the container after read
   bool isValid() const override {
     return true;
@@ -155,6 +161,11 @@ public:
 
   /// declare this collection to be a subset collectionv - no effect
   void setSubsetCollection(bool) override {
+  }
+
+  /// The schema version is fixed manually
+  SchemaVersionT getSchemaVersion() const final {
+    return 1;
   }
 
   /// Print this collection to the passed stream
