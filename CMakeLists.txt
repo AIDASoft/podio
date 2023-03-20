@@ -68,12 +68,17 @@ ADD_CLANG_TIDY()
 option(CREATE_DOC        "Whether or not to create doxygen doc target." OFF)
 option(ENABLE_SIO        "Build SIO I/O support" OFF)
 option(PODIO_RELAX_PYVER "Do not require exact python version match with ROOT" OFF)
+option(ENABLE_RNTUPLE    "Build with support for the new ROOT NTtuple format" OFF)
 
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+if(NOT ENABLE_RNTUPLE)
+  find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+else()
+  find_package(ROOT REQUIRED COMPONENTS RIO Tree ROOTNTuple)
+endif()
 
 # Check that root is compiled with a modern enough c++ standard
 get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
