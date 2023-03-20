@@ -20,10 +20,14 @@ namespace podio {
 
 ROOTNTupleWriter::ROOTNTupleWriter(const std::string& filename) :
     m_metadata(nullptr),
-    m_file(new TFile(filename.c_str(),"RECREATE","data file"))
+    m_writers(),
+    m_file(new TFile(filename.c_str(),"RECREATE","data file")),
+    m_categories(),
+    m_collectionId(),
+    m_collectionType(),
+    m_isSubsetCollection()
   {
     m_metadata = rnt::RNTupleModel::Create();
-
   }
 
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -40,7 +44,9 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
+  bool new_category = false;
   if (m_writers.find(category) == m_writers.end()) {
+    new_category = true;
     auto model = createModels(collections);
     m_writers[category] = rnt::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
   }
@@ -106,8 +112,19 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     //     }
     //   }
     // }
+
+    // Not supported
+    // m_entry->CaptureValueUnsafe(root_utils::paramBranchName, &const_cast<podio::GenericParameters&>(frame.getParameters()));
+
+    if (new_category) {
+      m_collectionId[category].emplace_back(coll->getID());
+      m_collectionName[category].emplace_back(name);
+      m_collectionType[category].emplace_back(coll->getTypeName());
+      m_isSubsetCollection[category].emplace_back(coll->isSubsetCollection());
+    }
   }
   m_writers[category]->Fill();
+  m_categories.insert(category);
 }
 
 std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
@@ -118,6 +135,7 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
     if (collBuffers.data) {
       auto collClassName = "std::vector<" + coll->getDataTypeName() +">";
       std::cout << name << " " << collClassName << std::endl;
+      std::cout << "Making field with name = " << name << " and collClassName = " << collClassName << std::endl;
       auto field = rnt::Detail::RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
@@ -127,6 +145,7 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
       for (auto& c : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i);
         auto collClassName = "vector<podio::ObjectID>";
+        std::cout << "Making reference field with name = " << brName << " and collClassName = " << collClassName << std::endl;
         auto field = rnt::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
         model->AddField(std::move(field));
         ++i;
@@ -144,6 +163,9 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
     //   }
     // }
   }
+  // auto field = rnt::Detail::RFieldBase::Create(root_utils::paramBranchName, ").Unwrap();
+  // Not supported
+  // auto field = model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
   model->Freeze();
   return model;
 }
@@ -158,17 +180,28 @@ void ROOTNTupleWriter::finish() {
   auto edm_field = m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   *edm_field = edmDefinitions;
 
-  m_metadata->Freeze();
-  m_metadata_writer = rnt::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file.get(), {});
+  for (auto& category : m_categories) {
+    auto idField = m_metadata->MakeField<std::vector<int>>(root_utils::idTableName(category));
+    *idField = m_collectionId[category];
+    auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>(category + "_name");
+    *collectionNameField = m_collectionName[category];
+    auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collInfoName(category));
+    *collectionTypeField = m_collectionType[category];
+    auto subsetCollectionField = m_metadata->MakeField<std::vector<bool>>(category + "_test");
+    *subsetCollectionField = m_isSubsetCollection[category];
+  }
 
-  m_metadata_writer->Fill();
+  m_metadata->Freeze();
+  m_metadataWriter = rnt::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file.get(), {});
+
+  m_metadataWriter->Fill();
 
   m_file->Write();
 
   // All the tuple writers have to be deleted before the file so that they flush
   // unwritten output
   m_writers.clear();
-  m_metadata_writer.reset();
+  m_metadataWriter.reset();
 }
 
 } //namespace podio
