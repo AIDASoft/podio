@@ -12,6 +12,13 @@ set(root_dependent_tests
   read_frame_legacy_root.cpp
   read_frame_root_multiple.cpp
   )
+if(ENABLE_RNTUPLE)
+  set(root_dependent_tests
+      ${root_dependent_tests}
+      write_rntuple.cpp
+      read_rntuple.cpp
+     )
+endif()
 set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
@@ -27,6 +34,9 @@ set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
 set_property(TEST read_frame_root PROPERTY DEPENDS write_frame_root)
 set_property(TEST read_frame_root_multiple PROPERTY DEPENDS write_frame_root)
+if(ENABLE_RNTUPLE)
+  set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
+endif()
 
 add_test(NAME check_benchmark_outputs COMMAND check_benchmark_outputs write_benchmark_root.root read_benchmark_root.root)
 set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_timed)
