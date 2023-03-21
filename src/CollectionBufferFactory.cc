@@ -25,17 +25,14 @@ CollectionBufferFactory::createBuffers(const std::string& collType, SchemaVersio
 
 void CollectionBufferFactory::registerCreationFunc(const std::string& collType, SchemaVersionT version,
                                                    const CreationFuncT& creationFunc) {
-  // Try to create an entry for this collection type with a vector that is sized
-  // to hold all creation functions for all versions up to the passed schema
-  // version
-  auto [typeIt, inserted] = m_funcMap.try_emplace(collType, version);
-  auto& versionMap = typeIt->second;
-
-  // If we already have something for this type, make sure to handle all
-  // versions correctly, assuming that all present creation functions are
-  // unchanged and that all non-present creation functions behave the same as
-  // this (assumed latest) version
-  if (!inserted) {
+  // Check if we have an entry already to which we can add information
+  auto typeIt = m_funcMap.find(collType);
+  if (typeIt != m_funcMap.end()) {
+    auto& versionMap = typeIt->second;
+    // If we already have something for this type, make sure to handle all
+    // versions correctly, assuming that all present creation functions are
+    // unchanged and that all non-present creation functions behave the same as
+    // this (assumed latest) version
     const auto prevSize = versionMap.size();
     if (prevSize < version) {
       versionMap.resize(version);
@@ -49,10 +46,13 @@ void CollectionBufferFactory::registerCreationFunc(const std::string& collType, 
   } else {
     // If we have a completely new map, than we simply populate all versions
     // with this creation function
+    VersionMapT versionMap;
     versionMap.reserve(version);
     for (size_t i = 0; i < version; ++i) {
       versionMap.emplace_back(creationFunc);
     }
+
+    m_funcMap.emplace(collType, std::move(versionMap));
   }
 }
 

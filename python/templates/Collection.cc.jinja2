@@ -3,6 +3,8 @@
 {% from "macros/iterator.jinja2" import iterator_definitions %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
+#include "podio/CollectionBufferFactory.h"
+
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 #include "{{ incfolder }}DatamodelDefinition.h"
 
@@ -196,6 +198,56 @@ size_t {{ collection_type }}::getDatamodelRegistryIndex() const {
 podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
   return {{ package_name }}::meta::schemaVersion;
 }
+
+namespace {
+podio::CollectionReadBuffers createBuffers(bool isSubset) {
+  auto readBuffers = podio::CollectionReadBuffers{};
+  readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer;
+
+  // The number of ObjectID vectors is either 1 or the sum of OneToMany and
+  // OneToOne relations
+  const auto nRefs = isSubset ? 1 : {{ OneToManyRelations | length }} + {{ OneToOneRelations | length }};
+  readBuffers.references = new podio::CollRefCollection(nRefs);
+
+  readBuffers.vectorMembers = new podio::VectorMembersInfo();
+  if (!isSubset) {
+    readBuffers.vectorMembers->reserve({{ VectorMembers | length }});
+{% for member in VectorMembers %}
+    readBuffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>);
+{% endfor %}
+  }
+
+  readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+    {{ collection_type }}Data data(buffers, isSubsetColl);
+    return std::make_unique<{{ collection_type }}>(std::move(data), isSubsetColl);
+  };
+
+  readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
+    if (buffers.data) {
+      buffers.data = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}Data>(buffers.data);
+    }
+{% if VectorMembers %}
+{% for member in VectorMembers %}
+    (*buffers.vectorMembers)[{{ loop.index0 }}].second = podio::CollectionWriteBuffers::asVector<{{ member.full_type }}>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
+{% endfor %}
+{% endif %}
+  };
+
+  return readBuffers;
+}
+
+bool registerCollection() {
+  const static auto reg = []() {
+    auto& factory = podio::CollectionBufferFactory::mutInstance();
+    factory.registerCreationFunc("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion, createBuffers);
+    return true;
+  }();
+  return reg;
+}
+
+const auto registeredCollection = registerCollection();
+} // namespace
+
 
 #ifdef PODIO_JSON_OUTPUT
 void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
