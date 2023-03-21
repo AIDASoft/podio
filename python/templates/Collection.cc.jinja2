@@ -175,14 +175,14 @@ podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
   return readBuffers;
 }
 
-podio::CollectionReadBuffers {{ collection_type }}::createSchemaEvolvableBuffers(int readSchemaVersion, podio::Backend /*backend*/) /*const*/ {
-  // no version difference -> no-op
-  if (readSchemaVersion == {{ package_name }}::meta::schemaVersion) {
-    return createBuffers();
-  }
-  // default is no-op as well
-  return createBuffers();
-}
+// podio::CollectionReadBuffers {{ collection_type }}::createSchemaEvolvableBuffers(int readSchemaVersion, podio::Backend /*backend*/) /*const*/ {
+//   // no version difference -> no-op
+//   if (readSchemaVersion == {{ package_name }}::meta::schemaVersion) {
+//     return createBuffers();
+//   }
+//   // default is no-op as well
+//   return createBuffers();
+// }
 
 
 {% for member in Members %}

@@ -124,9 +124,9 @@ public:
     return CollectionBufferFactory::instance().createBuffers(type, 1, false).value();
   }
 
-  podio::CollectionReadBuffers createSchemaEvolvableBuffers(int, podio::Backend) /*const*/ final {
-    return createBuffers();
-  }
+  // podio::CollectionReadBuffers createSchemaEvolvableBuffers(int, podio::Backend) /*const*/ final {
+  //   return createBuffers();
+  // }
 
   /// check for validity of the container after read
   bool isValid() const override {

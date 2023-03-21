@@ -52,9 +52,9 @@ public:
 
   /// Create (empty) collection buffers from which a collection can be constructed
   /// Versioned to support schema evolution
-  virtual podio::CollectionReadBuffers createSchemaEvolvableBuffers(int readSchemaVersion,
-                                                                    podio::Backend backend) /*const*/
-      = 0;
+  // virtual podio::CollectionReadBuffers createSchemaEvolvableBuffers(int readSchemaVersion,
+  //                                                                   podio::Backend backend) /*const*/
+  //     = 0;
 
   /// check for validity of the container after read
   virtual bool isValid() const = 0;
