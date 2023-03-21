@@ -173,6 +173,10 @@ podio::CollectionReadBuffers createBuffers(bool isSubset) {
   // OneToOne relations
   const auto nRefs = isSubset ? 1 : {{ OneToManyRelations | length }} + {{ OneToOneRelations | length }};
   readBuffers.references = new podio::CollRefCollection(nRefs);
+  for (auto& ref : *readBuffers.references) {
+    // Make sure to place usable buffer pointers here
+    ref = std::make_unique<std::vector<podio::ObjectID>>();
+  }
 
   readBuffers.vectorMembers = new podio::VectorMembersInfo();
   if (!isSubset) {

@@ -40,9 +40,6 @@ public:
   void createBuffers(bool isSubsetColl) override;
 
   SIOBlock* create(const std::string& name) const override { return new {{ block_class }}(name); }
-
-private:
-  podio::CollectionReadBuffers createBuffers() const;
 };
 
 static {{ block_class }} _dummy{{ block_class }};

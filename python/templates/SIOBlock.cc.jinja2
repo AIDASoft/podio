@@ -6,6 +6,7 @@
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 
 #include "podio/CollectionBuffers.h"
+#include "podio/CollectionBufferFactory.h"
 
 #include <sio/block.h>
 #include <sio/io_device.h>
@@ -15,21 +16,12 @@
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
 void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
-  if (m_subsetColl) {
-    m_buffers.references->emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
-  } else {
-{% for relation in OneToManyRelations + OneToOneRelations %}
-    m_buffers.references->emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
-{% endfor %}
-  }
-
   if (not m_subsetColl) {
     unsigned size(0);
     device.data( size );
     m_buffers.data = new std::vector<{{ class.full_type }}Data>(size);
     auto* dataVec = m_buffers.dataAsVector<{{ class.full_type }}Data>();
     podio::handlePODDataSIO(device, dataVec->data(), size);
-    // m_buffers.data = dataVec;
   }
 
   //---- read ref collections -----
@@ -87,15 +79,21 @@ void {{ block_class }}::write(sio::write_device& device) {
 void {{ block_class }}::createBuffers(bool subsetColl) {
   m_subsetColl = subsetColl;
 
+  const auto& bufferFactory = podio::CollectionBufferFactory::instance();
+  // TODO:
+  // - Actually handle schema versions, instead of going for a hardcoded one
+  // - Error handling of empty optional
+  auto maybeBuffers = bufferFactory.createBuffers("{{ class.full_type }}Collection", 1, subsetColl);
+  m_buffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
+}
 
-  m_buffers.references = new podio::CollRefCollection();
-  m_buffers.vectorMembers = new podio::VectorMembersInfo();
-
-  m_buffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
-    {{ class.bare_type }}CollectionData data(buffers, isSubsetColl);
-    return std::make_unique<{{ class.bare_type }}Collection>(std::move(data), isSubsetColl);
-  };
+namespace {
+  // Create one instance of the type in order to ensure that the SioBlock
+  // library actually needs linking to the core library. Otherwise it is
+  // possible that the registry is not populated when the SioBlock library is
+  // loaded, e.g. when using the python bindings.
+  const auto elem = {{ class.full_type }}{};
 }
 
 {% endwith %}
