@@ -412,10 +412,12 @@ class PodioConfigReader:
 
     if "schema_version" in model_dict:
       schema_version = model_dict["schema_version"]
+      if int(schema_version) <= 0:
+        raise DefinitionError(f"schema_version has to be larger than 0 (is {schema_version})")
     else:
-      warnings.warn("Please provide a schema_version entry. It will become mandatory. Setting it to 0 as default",
+      warnings.warn("Please provide a schema_version entry. It will become mandatory. Setting it to 1 as default",
                     FutureWarning, stacklevel=3)
-      schema_version = 0
+      schema_version = 1
 
     components = {}
     if "components" in model_dict:
