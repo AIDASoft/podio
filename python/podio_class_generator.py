@@ -426,6 +426,7 @@ have resolvable schema evolution incompatibilities:")
         'package_name': self.package_name,
         'edm_definition': model_encoder.encode(self.datamodel),
         'incfolder': self.incfolder,
+        'schema_version': self.datamodel.schema_version,
         }
 
     self._write_file('DatamodelDefinition.h',
