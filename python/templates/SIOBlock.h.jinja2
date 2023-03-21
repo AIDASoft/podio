@@ -37,8 +37,6 @@ public:
   // Write the collection data to the device
   void write(sio::write_device& device) override;
 
-  void createBuffers(bool isSubsetColl) override;
-
   SIOBlock* create(const std::string& name) const override { return new {{ block_class }}(name); }
 };
 

@@ -38,6 +38,9 @@ public:
   }
 
   void read(sio::read_device& device, sio::version_type /*version*/) override {
+    const auto& bufferFactory = podio::CollectionBufferFactory::instance();
+    m_buffers = bufferFactory.createBuffers(podio::userDataCollTypeName<BasicType>(), 1, false).value();
+
     auto* dataVec = new std::vector<BasicType>();
     unsigned size(0);
     device.data(size);
@@ -51,17 +54,6 @@ public:
     unsigned size = dataVec->size();
     device.data(size);
     podio::handlePODDataSIO(device, &(*dataVec)[0], size);
-  }
-
-  void createBuffers(bool) override {
-
-    m_buffers.references = new podio::CollRefCollection();
-    m_buffers.vectorMembers = new podio::VectorMembersInfo();
-
-    // Nothing to do here since UserDataCollections cannot be subset collections
-    m_buffers.createCollection = [](podio::CollectionReadBuffers buffers, bool) {
-      return std::make_unique<UserDataCollection<BasicType>>(std::move(*buffers.dataAsVector<BasicType>()));
-    };
   }
 
   SIOBlock* create(const std::string& name) const override {

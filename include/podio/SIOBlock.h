@@ -78,15 +78,16 @@ public:
     return sio::block::name();
   }
 
+  void setSubsetCollection(bool subsetColl) {
+    m_subsetColl = subsetColl;
+  }
+
   void setCollection(podio::CollectionBase* col) {
     m_subsetColl = col->isSubsetCollection();
     m_buffers = col->getBuffers();
   }
 
   virtual SIOBlock* create(const std::string& name) const = 0;
-
-  // create a new collection for this block
-  virtual void createBuffers(const bool subsetCollection = false) = 0;
 
 protected:
   bool m_subsetColl{false};

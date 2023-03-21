@@ -16,6 +16,13 @@
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
 void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
+  const auto& bufferFactory = podio::CollectionBufferFactory::instance();
+  // TODO:
+  // - Actually handle schema versions, instead of going for a hardcoded one
+  // - Error handling of empty optional
+  auto maybeBuffers = bufferFactory.createBuffers("{{ class.full_type }}Collection", 1, m_subsetColl);
+  m_buffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
+
   if (not m_subsetColl) {
     unsigned size(0);
     device.data( size );
@@ -74,18 +81,6 @@ void {{ block_class }}::write(sio::write_device& device) {
 {{ macros.vector_member_write(member, loop.index0) }}
 {% endfor %}
 {% endif %}
-}
-
-void {{ block_class }}::createBuffers(bool subsetColl) {
-  m_subsetColl = subsetColl;
-
-  const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-  // TODO:
-  // - Actually handle schema versions, instead of going for a hardcoded one
-  // - Error handling of empty optional
-  auto maybeBuffers = bufferFactory.createBuffers("{{ class.full_type }}Collection", 1, subsetColl);
-  m_buffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
-
 }
 
 namespace {
