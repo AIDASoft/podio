@@ -71,10 +71,9 @@ def _is_fixed_width_type(type_name):
 class DataType:
   """Simple class to hold information about a datatype or component that is
   defined in the datamodel."""
-  def __init__(self, klass, schema_version):
+  def __init__(self, klass):
     self.full_type = klass
     self.namespace, self.bare_type = _get_namespace_class(self.full_type)
-    self.schema_version = schema_version
 
   def __str__(self):
     if self.namespace:

@@ -177,7 +177,7 @@ podio::CollectionReadBuffers {{ collection_type }}::createBuffers() /*const*/ {
 
 podio::CollectionReadBuffers {{ collection_type }}::createSchemaEvolvableBuffers(int readSchemaVersion, podio::Backend /*backend*/) /*const*/ {
   // no version difference -> no-op
-  if (readSchemaVersion == {{ class.schema_version }}) {
+  if (readSchemaVersion == {{ package_name }}::meta::schemaVersion) {
     return createBuffers();
   }
   // default is no-op as well
@@ -191,6 +191,10 @@ podio::CollectionReadBuffers {{ collection_type }}::createSchemaEvolvableBuffers
 
 size_t {{ collection_type }}::getDatamodelRegistryIndex() const {
   return {{ package_name }}::meta::DatamodelRegistryIndex::value();
+}
+
+podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
+  return {{ package_name }}::meta::schemaVersion;
 }
 
 #ifdef PODIO_JSON_OUTPUT

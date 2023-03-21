@@ -118,7 +118,6 @@ class ClassGenerator:
     self.incfolder = self.datamodel.options['includeSubfolder']
     self.expose_pod_members = self.datamodel.options["exposePODMembers"]
     self.upstream_edm = upstream_edm
-    self.schema_version = self.datamodel.schema_version
 
     self.clang_format = []
     self.generated_files = []
@@ -264,7 +263,7 @@ have resolvable schema evolution incompatibilities:")
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
-    component['class'] = DataType(name, self.schema_version)
+    component['class'] = DataType(name)
 
     self._fill_templates('Component', component)
 
@@ -411,7 +410,7 @@ have resolvable schema evolution incompatibilities:")
     # Make a copy here and add the preprocessing steps to that such that the
     # original definition can be left untouched
     data = deepcopy(definition)
-    data['class'] = DataType(name, self.schema_version)
+    data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
@@ -495,9 +494,9 @@ have resolvable schema evolution incompatibilities:")
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c, self.schema_version) for c in self.datamodel.components],
-            'datatypes': [DataType(d, self.schema_version) for d in self.datamodel.datatypes],
-            'old_schema_components': [DataType(d, self.schema_version) for d in
+    data = {'components': [DataType(c) for c in self.datamodel.components],
+            'datatypes': [DataType(d) for d in self.datamodel.datatypes],
+            'old_schema_components': [DataType(d) for d in
                                       self.old_datamodels_datatypes | self.old_datamodels_components]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
