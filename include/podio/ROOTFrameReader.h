@@ -25,9 +25,10 @@ class TTree;
 namespace podio {
 
 namespace detail {
-  // Information about the data vector as wall as the collection class type
-  // and the index in the collection branches cache vector
-  using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
+  // Information about the collection class type, whether it is a subset, the
+  // schema version on file and the index in the collection branches cache
+  // vector
+  using CollectionInfo = std::tuple<std::string, bool, SchemaVersionT, size_t>;
 
 } // namespace detail
 

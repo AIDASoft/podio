@@ -112,14 +112,6 @@ public:
   /// Get the collection buffers for this collection
   podio::CollectionWriteBuffers getBuffers() final;
 
-  /// Create (empty) collection buffers from which a collection can be constructed
-  podio::CollectionReadBuffers createBuffers() /*const*/ final;
-
-  /// Create (empty) collection buffers from which a collection can be constructed
-  /// Versioned to support schema evolution
-  // podio::CollectionReadBuffers createSchemaEvolvableBuffers(int readSchemaVersion, podio::Backend backend) /*const*/ final;
-
-
   void setID(unsigned ID) final {
     m_collectionID = ID;
     if (!m_isSubsetColl) {

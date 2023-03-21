@@ -119,15 +119,6 @@ public:
     return {&_vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
-  podio::CollectionReadBuffers createBuffers() /*const*/ final {
-    const auto type = std::string("podio::UserDataCollection<") + userDataTypeName<BasicType>() + ">";
-    return CollectionBufferFactory::instance().createBuffers(type, 1, false).value();
-  }
-
-  // podio::CollectionReadBuffers createSchemaEvolvableBuffers(int, podio::Backend) /*const*/ final {
-  //   return createBuffers();
-  // }
-
   /// check for validity of the container after read
   bool isValid() const override {
     return true;
