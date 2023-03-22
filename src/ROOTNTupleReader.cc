@@ -5,13 +5,9 @@
 #include "podio/GenericParameters.h"
 #include "rootUtils.h"
 
-// ROOT specific includes
 #include "TClass.h"
 #include <ROOT/RError.hxx>
 #include <memory>
-
-#include "datamodel/ExampleMCData.h"
-#include "datamodel/ExampleHitData.h"
 
 namespace podio {
 
@@ -47,13 +43,6 @@ namespace podio {
   auto valuesString = stringValueView(entNum);
   for (size_t i = 0; i < keys.size(); ++i) {
     params.getStringMap()[keys[i]] = valuesString[i];
-  }
-  std::cout << "Size of Float map is " << params.getFloatMap().size() << std::endl;
-  for (auto& [k, v] : params.getFloatMap()) {
-    std::cout << k << std::endl;
-    for (auto& x : v)
-      std::cout << x << " ";
-    std::cout << std::endl;
   }
 
   return params;
@@ -112,18 +101,6 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>("available_categories");
   m_availableCategories = availableCategoriesField(0);
 
-  // m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
-
-  // Do some work up front for setting up categories and setup all the chains
-  // and record the available categories. The rest of the setup follows on
-  // demand when the category is first read
-  // m_availCategories = ::podio::getAvailableCategories2(m_metaChain.get());
-  // for (const auto& cat : m_availCategories) {
-  //   auto [it, _] = m_categories.try_emplace(cat, std::make_unique<TChain>(cat.c_str()));
-  //   for (const auto& fn : filenames) {
-  //     it->second.chain->Add(fn.c_str());
-  //   }
-  // }
 }
 
 unsigned ROOTNTupleReader::getEntries(const std::string& name) {
@@ -167,7 +144,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
   std::map<std::pair<std::string, int>, std::vector<podio::ObjectID>*> tmp;
 
-  for (int i = 0; i < m_collectionId[category].size(); ++i) {
+  for (size_t i = 0; i < m_collectionId[category].size(); ++i) {
     std::cout << "i = " << i << " " << m_collectionId[category][i] << " " << m_collectionType[category][i] << " " << m_collectionName[category][i] << std::endl;
 
     const auto collectionClass = TClass::GetClass(m_collectionType[category][i].c_str());
@@ -237,7 +214,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
   m_readers[category][0]->LoadEntry(entNum);
 
-  for (int i = 0; i < m_collectionId[category].size(); ++i) {
+  for (size_t i = 0; i < m_collectionId[category].size(); ++i) {
     auto collBuffers = buffers[m_collectionName[category][i]];
     if (auto* refCollections = collBuffers.references) {
       for (size_t j = 0; j < refCollections->size(); ++j) {
@@ -248,39 +225,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
   }
 
-  // auto buf = buffers["mcparticles"];
-  // auto ptr = (std::vector<ExampleMCData>*)(buf.data);
-  // std::cout << "Size of MCData is " << ptr->size() << std::endl;
-  // for (auto& x : *ptr) {
-  //   std::cout << x.energy << " " << x.PDG << std::endl;
-  // }
-
-  // auto buf = buffers["hits"];
-  // auto ptr = (std::vector<ExampleHitData>*)(buf.data);
-  // std::cout << "Size of HitData is " << ptr->size() << std::endl;
-  // for (auto& x : *ptr) {
-  //   std::cout << x.cellID << " " << x.energy << " " << " " << x.x << " " << x.y << " " << x.z << std::endl;
-  // }
-
-  auto buf = buffers["hitRefs"];
-  auto refCollections = buf.references;
-  for (size_t j = 0; j < refCollections->size(); ++j) {
-    std::cout << "Size of ObjectID is " << refCollections->at(j)->size() << std::endl;
-    auto ptr = (std::vector<podio::ObjectID>*)refCollections->at(j).get();
-    for (auto& x : *ptr) {
-      std::cout << x.index << " " << x.collectionID << std::endl;
-    }
-  }
-
-  // auto nbuf = buffers["hitRefs"];
-  // auto nptr = (std::vector<std::unique_ptr<podio::ObjectID>>*)(buf.references);
-  // std::cout << "Size of ObjectID is " << nptr->size() << std::endl;
-  // for (auto& x : *nptr) {
-  //   auto nnptr = ;
-  //   std::cout << x->index << " " << x->collectionID << std::endl;
-  // }
-
-
   auto parameters = readEventMetaData(category, entNum);
   auto table = std::make_shared<CollectionIDTable>();
 
@@ -288,8 +232,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   auto ids = m_collectionId[category];
 
   std::vector<std::pair<int, std::string>> v;
-  for (int i = 0; i < names.size(); ++i) {
-    std::cout << ids[i] << " " << names[i] << std::endl;
+  for (size_t i = 0; i < names.size(); ++i) {
     v.emplace_back(std::make_pair<int, std::string>(int(ids[i]),std::string(names[i])));
   }
   std::sort(v.begin(), v.end());

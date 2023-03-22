@@ -18,13 +18,8 @@
 #include <ROOT/RNTupleModel.hxx>
 
 
-namespace rnt = ROOT::Experimental;
-// forward declarations
-class TClass;
-
 namespace podio {
 
-class EventStore;
 class CollectionBase;
 class Registry;
 class CollectionIDTable;
@@ -34,13 +29,11 @@ This class has the function to read available data from disk
 and to prepare collections and buffers.
 **/
 class ROOTNTupleReader{
-  friend EventStore;
 
 public:
   ROOTNTupleReader() = default;
   ~ROOTNTupleReader() = default;
 
-  // non-copyable
   ROOTNTupleReader(const ROOTNTupleReader&) = delete;
   ROOTNTupleReader& operator=(const ROOTNTupleReader&) = delete;
 
@@ -76,7 +69,6 @@ private:
   std::unique_ptr<ROOT::Experimental::RNTupleReader> m_file;
   std::unique_ptr<ROOT::Experimental::RNTupleReader> m_metadata;
 
-  
 private:
 
   /**
@@ -101,7 +93,7 @@ private:
   std::map<std::string, std::vector<std::string>> m_collectionType;
   std::map<std::string, std::vector<bool>> m_isSubsetCollection;
 
-  std::map<std::string, int> m_totalEntries;
+  std::map<std::string, unsigned> m_totalEntries;
   std::vector<std::string> m_availableCategories;
 
 };

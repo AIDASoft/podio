@@ -52,7 +52,6 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
 
   for (const auto& [name, coll] : collections) {
-    // coll->prepareForWrite();
     auto collBuffers = coll->getBuffers();
     if (collBuffers.vecPtr) {
       std::cout << "Capturing unsafe " << name << std::endl;
