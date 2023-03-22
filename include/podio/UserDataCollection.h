@@ -2,9 +2,9 @@
 #define PODIO_USERDATACOLLECTION_H
 
 #include "podio/CollectionBase.h"
-#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
@@ -90,6 +90,9 @@ public:
   UserDataCollection& operator=(UserDataCollection&&) = default;
   ~UserDataCollection() = default;
 
+  /// The schema version of UserDataCollections
+  static constexpr SchemaVersionT schemaVersion = 1;
+
   /// prepare buffers for serialization
   void prepareForWrite() const override {
   }
@@ -160,7 +163,7 @@ public:
 
   /// The schema version is fixed manually
   SchemaVersionT getSchemaVersion() const final {
-    return 1;
+    return schemaVersion;
   }
 
   /// Print this collection to the passed stream

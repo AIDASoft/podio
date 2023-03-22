@@ -1,6 +1,7 @@
 #ifndef PODIO_SIOBLOCKUSERDATA_H
 #define PODIO_SIOBLOCKUSERDATA_H
 
+#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/SIOBlock.h"
 #include "podio/UserDataCollection.h"
@@ -29,17 +30,22 @@ namespace podio {
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 class SIOBlockUserData : public podio::SIOBlock {
 public:
-  SIOBlockUserData() : SIOBlock(::sio_name<BasicType>(), sio::version::encode_version(0, 1)) {
+  SIOBlockUserData() :
+      SIOBlock(::sio_name<BasicType>(), sio::version::encode_version(UserDataCollection<BasicType>::schemaVersion, 0)) {
 
     podio::SIOBlockFactory::instance().registerBlockForCollection(podio::userDataTypeName<BasicType>(), this);
   }
 
-  SIOBlockUserData(const std::string& name) : SIOBlock(name, sio::version::encode_version(0, 1)) {
+  SIOBlockUserData(const std::string& name) :
+      SIOBlock(name, sio::version::encode_version(UserDataCollection<BasicType>::schemaVersion, 0)) {
   }
 
-  void read(sio::read_device& device, sio::version_type /*version*/) override {
+  void read(sio::read_device& device, sio::version_type version) override {
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    m_buffers = bufferFactory.createBuffers(podio::userDataCollTypeName<BasicType>(), 1, false).value();
+    m_buffers =
+        bufferFactory
+            .createBuffers(podio::userDataCollTypeName<BasicType>(), sio::version::major_version(version), false)
+            .value();
 
     auto* dataVec = new std::vector<BasicType>();
     unsigned size(0);
