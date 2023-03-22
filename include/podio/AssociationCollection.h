@@ -1,6 +1,7 @@
 #ifndef PODIO_ASSOCIATIONCOLLECTION_H
 #define PODIO_ASSOCIATIONCOLLECTION_H
 
+#include "podio/CollectionBufferFactory.h"
 #include "podio/detail/AssociationCollectionData.h"
 #include "podio/detail/AssociationFwd.h"
 #include "podio/detail/AssociationObj.h"
@@ -8,10 +9,12 @@
 #include "podio/Association.h"
 #include "podio/AssociationCollectionIterator.h"
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/SchemaEvolution.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -25,6 +28,13 @@
 #include <type_traits>
 
 namespace podio {
+
+template <typename FromT, typename ToT>
+std::string associationCollTypeName() {
+  const static std::string typeName =
+      std::string("podio::AssociationCollection<") + FromT::TypeName + "," + ToT::TypeName + ">";
+  return typeName;
+}
 
 template <typename FromT, typename ToT>
 class AssociationCollection : public podio::CollectionBase {
@@ -300,6 +310,48 @@ void to_json(nlohmann::json& j, const AssociationCollection<FromT, ToT>& collect
   }
 }
 #endif
+
+template <typename FromT, typename ToT>
+bool registerAssociationCollection(const std::string& assocTypeName) {
+  const static auto reg = [&assocTypeName]() {
+    auto& factory = CollectionBufferFactory::mutInstance();
+    factory.registerCreationFunc(assocTypeName, AssociationCollection<FromT, ToT>::schemaVersion, [](bool subsetColl) {
+      auto readBuffers = podio::CollectionReadBuffers{};
+      readBuffers.data = subsetColl ? nullptr : new AssociationDataContainer();
+
+      // Either it is a subset collection or we have two relations
+      const auto nRefs = subsetColl ? 1 : 2;
+      readBuffers.references = new podio::CollRefCollection(nRefs);
+      for (auto& ref : *readBuffers.references) {
+        // Make sure to place usable buffer pointers here
+        ref = std::make_unique<std::vector<podio::ObjectID>>();
+      }
+
+      readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+        AssociationCollectionData<FromT, ToT> data(buffers, isSubsetColl);
+        return std::make_unique<AssociationCollection<FromT, ToT>>(std::move(data), isSubsetColl);
+      };
+
+      readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
+        if (buffers.data) {
+          buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
+        }
+      };
+
+      return readBuffers;
+    });
+
+    return true;
+  }();
+  return reg;
+}
+
+#define PODIO_DECLARE_ASSOCIATION(TypeName, FromT, ToT)                                                                \
+  namespace {                                                                                                          \
+    using TypeName = podio::AssociationCollection<FromT, ToT>;                                                         \
+    const auto registerAssociation =                                                                                   \
+        podio::registerAssociationCollection<FromT, ToT>(podio::associationCollTypeName<FromT, ToT>());                \
+  } // namespace podio
 
 } // namespace podio
 
