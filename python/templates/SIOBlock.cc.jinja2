@@ -15,12 +15,11 @@
 {{ utils.namespace_open(class.namespace) }}
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
-void {{ block_class }}::read(sio::read_device& device, sio::version_type) {
+void {{ block_class }}::read(sio::read_device& device, sio::version_type version) {
   const auto& bufferFactory = podio::CollectionBufferFactory::instance();
   // TODO:
-  // - Actually handle schema versions, instead of going for a hardcoded one
   // - Error handling of empty optional
-  auto maybeBuffers = bufferFactory.createBuffers("{{ class.full_type }}Collection", 1, m_subsetColl);
+  auto maybeBuffers = bufferFactory.createBuffers("{{ class.full_type }}Collection", sio::version::major_version(version), m_subsetColl);
   m_buffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
   if (not m_subsetColl) {
