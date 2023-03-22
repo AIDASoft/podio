@@ -9,7 +9,9 @@
 #include "podio/AssociationCollectionIterator.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
+#include "podio/DatamodelRegistry.h"
 #include "podio/ICollectionProvider.h"
+#include "podio/SchemaEvolution.h"
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -152,25 +154,25 @@ public:
     return m_storage.getCollectionBuffers(m_isSubsetColl);
   }
 
-  podio::CollectionReadBuffers createBuffers() override /*const*/ {
-    // Very cumbersome way at the moment. We get the actual buffers to have the
-    // references and vector members sized appropriately (we will use this
-    // information to create new buffers outside)
-    auto collBuffers = m_storage.getCollectionBuffers(m_isSubsetColl);
-    auto readBuffers = podio::CollectionReadBuffers{};
-    readBuffers.references = collBuffers.references;
-    readBuffers.vectorMembers = collBuffers.vectorMembers;
-    readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
-      CollectionDataT data(buffers, isSubsetColl);
-      return std::make_unique<CollectionT>(std::move(data), isSubsetColl);
-    };
-    readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
-      if (buffers.data) {
-        buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
-      }
-    };
-    return readBuffers;
-  }
+  // podio::CollectionReadBuffers createBuffers() override /*const*/ {
+  //   // Very cumbersome way at the moment. We get the actual buffers to have the
+  //   // references and vector members sized appropriately (we will use this
+  //   // information to create new buffers outside)
+  //   auto collBuffers = m_storage.getCollectionBuffers(m_isSubsetColl);
+  //   auto readBuffers = podio::CollectionReadBuffers{};
+  //   readBuffers.references = collBuffers.references;
+  //   readBuffers.vectorMembers = collBuffers.vectorMembers;
+  //   readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+  //     CollectionDataT data(buffers, isSubsetColl);
+  //     return std::make_unique<CollectionT>(std::move(data), isSubsetColl);
+  //   };
+  //   readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
+  //     if (buffers.data) {
+  //       buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
+  //     }
+  //   };
+  //   return readBuffers;
+  // }
 
   std::string getTypeName() const override {
     return std::string("podio::AssociationCollection<") + FromT::TypeName + "," + ToT::TypeName + ">";
@@ -245,6 +247,16 @@ public:
 
   bool setReferences(const ICollectionProvider* collectionProvider) override {
     return m_storage.setReferences(collectionProvider, m_isSubsetColl);
+  }
+
+  static constexpr SchemaVersionT schemaVersion = 1;
+
+  SchemaVersionT getSchemaVersion() const override {
+    return schemaVersion;
+  }
+
+  size_t getDatamodelRegistryIndex() const override {
+    return podio::DatamodelRegistry::NoDefinitionNecessary;
   }
 
 private:
