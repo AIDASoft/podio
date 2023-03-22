@@ -30,13 +30,6 @@
 namespace podio {
 
 template <typename FromT, typename ToT>
-std::string associationCollTypeName() {
-  const static std::string typeName =
-      std::string("podio::AssociationCollection<") + FromT::TypeName + "," + ToT::TypeName + ">";
-  return typeName;
-}
-
-template <typename FromT, typename ToT>
 class AssociationCollection : public podio::CollectionBase {
   static_assert(std::is_same_v<FromT, detail::GetDefT<FromT>>,
                 "Associations need to be instantiated with the default types!");
@@ -164,28 +157,8 @@ public:
     return m_storage.getCollectionBuffers(m_isSubsetColl);
   }
 
-  // podio::CollectionReadBuffers createBuffers() override /*const*/ {
-  //   // Very cumbersome way at the moment. We get the actual buffers to have the
-  //   // references and vector members sized appropriately (we will use this
-  //   // information to create new buffers outside)
-  //   auto collBuffers = m_storage.getCollectionBuffers(m_isSubsetColl);
-  //   auto readBuffers = podio::CollectionReadBuffers{};
-  //   readBuffers.references = collBuffers.references;
-  //   readBuffers.vectorMembers = collBuffers.vectorMembers;
-  //   readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
-  //     CollectionDataT data(buffers, isSubsetColl);
-  //     return std::make_unique<CollectionT>(std::move(data), isSubsetColl);
-  //   };
-  //   readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
-  //     if (buffers.data) {
-  //       buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
-  //     }
-  //   };
-  //   return readBuffers;
-  // }
-
   std::string getTypeName() const override {
-    return std::string("podio::AssociationCollection<") + FromT::TypeName + "," + ToT::TypeName + ">";
+    return podio::detail::associationCollTypeName<FromT, ToT>();
   }
 
   std::string getValueTypeName() const override {
@@ -311,48 +284,62 @@ void to_json(nlohmann::json& j, const AssociationCollection<FromT, ToT>& collect
 }
 #endif
 
-template <typename FromT, typename ToT>
-bool registerAssociationCollection(const std::string& assocTypeName) {
-  const static auto reg = [&assocTypeName]() {
-    auto& factory = CollectionBufferFactory::mutInstance();
-    factory.registerCreationFunc(assocTypeName, AssociationCollection<FromT, ToT>::schemaVersion, [](bool subsetColl) {
-      auto readBuffers = podio::CollectionReadBuffers{};
-      readBuffers.data = subsetColl ? nullptr : new AssociationDataContainer();
+namespace detail {
+  template <typename FromT, typename ToT>
+  bool registerAssociationCollection(const std::string& assocTypeName) {
+    const static auto reg = [&assocTypeName]() {
+      auto& factory = CollectionBufferFactory::mutInstance();
+      factory.registerCreationFunc(
+          assocTypeName, AssociationCollection<FromT, ToT>::schemaVersion, [](bool subsetColl) {
+            auto readBuffers = podio::CollectionReadBuffers{};
+            readBuffers.data = subsetColl ? nullptr : new AssociationDataContainer();
 
-      // Either it is a subset collection or we have two relations
-      const auto nRefs = subsetColl ? 1 : 2;
-      readBuffers.references = new podio::CollRefCollection(nRefs);
-      for (auto& ref : *readBuffers.references) {
-        // Make sure to place usable buffer pointers here
-        ref = std::make_unique<std::vector<podio::ObjectID>>();
-      }
+            // Either it is a subset collection or we have two relations
+            const auto nRefs = subsetColl ? 1 : 2;
+            readBuffers.references = new podio::CollRefCollection(nRefs);
+            for (auto& ref : *readBuffers.references) {
+              // Make sure to place usable buffer pointers here
+              ref = std::make_unique<std::vector<podio::ObjectID>>();
+            }
 
-      readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
-        AssociationCollectionData<FromT, ToT> data(buffers, isSubsetColl);
-        return std::make_unique<AssociationCollection<FromT, ToT>>(std::move(data), isSubsetColl);
-      };
+            readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+              AssociationCollectionData<FromT, ToT> data(buffers, isSubsetColl);
+              return std::make_unique<AssociationCollection<FromT, ToT>>(std::move(data), isSubsetColl);
+            };
 
-      readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
-        if (buffers.data) {
-          buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
-        }
-      };
+            readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
+              if (buffers.data) {
+                buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
+              }
+            };
 
-      return readBuffers;
-    });
+            return readBuffers;
+          });
 
-    return true;
-  }();
-  return reg;
-}
-
-#define PODIO_DECLARE_ASSOCIATION(TypeName, FromT, ToT)                                                                \
-  namespace {                                                                                                          \
-    using TypeName = podio::AssociationCollection<FromT, ToT>;                                                         \
-    const auto registerAssociation =                                                                                   \
-        podio::registerAssociationCollection<FromT, ToT>(podio::associationCollTypeName<FromT, ToT>());                \
-  } // namespace podio
+      return true;
+    }();
+    return reg;
+  }
+} // namespace detail
 
 } // namespace podio
+
+/**
+ * Main macro for declaring associations. Takes care of the following things: -
+ * - A type alias with the name TypeName: using TypeAlias =
+ *   AssociationCollection<FromT, ToT>
+ * - Registering the necessary buffer creation functionality with the
+ *   CollectionBufferFactory.
+ *
+ * NOTE: The passed TypeName cannot have a namespace qualifier. If you want the
+ * type alias to appear in a namespace place the macro call into that namespace.
+ *
+ * TODO: Split off the SIOBlock dependency cleanly (i.e. not needing a dedicated
+ * include, and only present when building with SIO)
+ */
+#define PODIO_DECLARE_ASSOCIATION(TypeName, FromT, ToT)                                                                \
+  using TypeName = podio::AssociationCollection<FromT, ToT>;                                                           \
+  const static auto REGISTERED_ASSOCIATION_##TypeName =                                                                \
+      podio::detail::registerAssociationCollection<FromT, ToT>(podio::detail::associationCollTypeName<FromT, ToT>());
 
 #endif // PODIO_ASSOCIATIONCOLLECTION_H

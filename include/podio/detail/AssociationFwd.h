@@ -37,8 +37,15 @@ namespace detail {
   using GetCollT = typename GetCollType<T>::type;
 
   template <typename FromT, typename ToT>
+  std::string associationCollTypeName() {
+    const static std::string typeName =
+        std::string("podio::AssociationCollection<") + FromT::TypeName + "," + ToT::TypeName + ">";
+    return typeName;
+  }
+
+  template <typename FromT, typename ToT>
   inline std::string associationSIOName() {
-    auto n = std::string("Association_FROM_") + FromT::TypeName + "_TO_" + FromT::TypeName;
+    auto n = std::string("ASSOCIATION_FROM_") + FromT::TypeName + "_TO_" + ToT::TypeName;
     std::replace(n.begin(), n.end(), ':', '_');
     return n;
   }
