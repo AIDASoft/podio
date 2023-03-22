@@ -93,11 +93,10 @@ private:
    * collection infos and all necessary meta data to be able to read entries
    * with this name
    */
-  void initCategory(const std::string& category);
+  bool initCategory(const std::string& category);
 
   GenericParameters readEventMetaData(const std::string& name);
 
-  std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
   
   podio::version::Version m_fileVersion{0, 0, 0};
   DatamodelDefinitionHolder m_datamodelHolder{};
@@ -112,6 +111,8 @@ private:
   std::map<std::string, std::vector<std::string>> m_collectionType;
   std::map<std::string, std::vector<bool>> m_isSubsetCollection;
 
+  std::map<std::string, int> m_totalEntries;
+  std::vector<std::string> m_availableCategories;
 
 };
 
