@@ -28,6 +28,9 @@
 #include <type_traits>
 #include <vector>
 
+// using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
+PODIO_DECLARE_ASSOCIATION(TestAssocCollection, ExampleMC, ex42::ExampleWithARelation)
+
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
   if (actual != expected) {
