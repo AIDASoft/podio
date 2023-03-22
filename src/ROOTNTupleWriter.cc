@@ -60,7 +60,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   for (const auto& [name, coll] : collections) {
     // coll->prepareForWrite();
     auto collBuffers = coll->getBuffers();
-    if (collBuffers.data) {
+    if (collBuffers.vecPtr) {
       std::cout << "Capturing unsafe " << name << std::endl;
 
       // auto v = (std::vector<ExampleMCData>*)collBuffers.data;
@@ -71,7 +71,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
       //   std::cout << x.energy << std::endl;
       // }
 
-      m_entry->CaptureValueUnsafe(name, (void*)collBuffers.data);
+      m_entry->CaptureValueUnsafe(name, (void*)collBuffers.vecPtr);
 
       // std::cout << "After capturing " << std::endl;
       // v = (std::vector<ExampleMCData>*)collBuffers.data;
@@ -183,7 +183,7 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
   for (auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
 
-    if (collBuffers.data) {
+    if (collBuffers.vecPtr) {
       auto collClassName = "std::vector<" + coll->getDataTypeName() +">";
       std::cout << name << " " << collClassName << std::endl;
       std::cout << "Making field with name = " << name << " and collClassName = " << collClassName << std::endl;
