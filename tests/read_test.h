@@ -16,6 +16,7 @@
 // podio specific includes
 #include "podio/Frame.h"
 #include "podio/UserDataCollection.h"
+#include "podio/detail/AssociationSIOBlock.h"
 #include "podio/podioVersion.h"
 
 // STL
@@ -28,6 +29,13 @@
 
 // using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
 PODIO_DECLARE_ASSOCIATION(TestAssocCollection, ExampleMC, ex42::ExampleWithARelation)
+PODIO_DECLARE_ASSOCIATION(TestAssocCollection2, ExampleMC, ExampleHit)
+
+namespace ex42 {
+PODIO_DECLARE_ASSOCIATION(AssocInNamespace, ExampleWithARelation, ExampleMC)
+}
+
+using A = ex42::AssocInNamespace;
 
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
