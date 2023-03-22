@@ -2,6 +2,7 @@
 #include <ROOT/RNTupleModel.hxx>
 #include <algorithm>
 
+#include "podio/GenericParameters.h"
 #include "rootUtils.h"
 
 #include "podio/CollectionBase.h"
@@ -47,7 +48,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   bool new_category = false;
   if (m_writers.find(category) == m_writers.end()) {
     new_category = true;
-    auto model = createModels(collections);
+    auto model = createModels(collections, frame.getParameters());
     m_writers[category] = rnt::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
   }
 
@@ -116,6 +117,8 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     // Not supported
     // m_entry->CaptureValueUnsafe(root_utils::paramBranchName, &const_cast<podio::GenericParameters&>(frame.getParameters()));
 
+
+
     if (new_category) {
       m_collectionId[category].emplace_back(coll->getID());
       m_collectionName[category].emplace_back(name);
@@ -123,11 +126,59 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
       m_isSubsetCollection[category].emplace_back(coll->isSubsetCollection());
     }
   }
+
+  auto params = frame.getParameters();
+  auto intMap = params.getIntMap();
+  auto floatMap = params.getFloatMap();
+  auto doubleMap = params.getDoubleMap();
+  auto stringMap = params.getStringMap();
+
+  auto gpintKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_int_keys");
+  auto gpfloatKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_float_keys");
+  auto gpdoubleKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_double_keys");
+  auto gpstringKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_string_keys");
+
+  auto gpintValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<int>>>("GP_int_values");
+  auto gpfloatValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<float>>>("GP_float_values");
+  auto gpdoubleValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<double>>>("GP_double_values");
+  auto gpstringValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<std::string>>>("GP_string_values");
+
+  gpintKeys->clear();
+  gpintValues->clear();
+  for (auto& [k, v] : intMap) {
+    gpintKeys->emplace_back(k);
+    gpintValues->emplace_back(v);
+  }
+  std::cout << "Size of gpfloatKeys before filling " << gpfloatKeys->size() << " " << gpfloatValues->size() << std::endl;
+
+  gpfloatKeys->clear();
+  gpfloatValues->clear();
+  for (auto& [k, v] : floatMap) {
+    gpfloatKeys->emplace_back(k);
+    gpfloatValues->emplace_back(v);
+    for (auto& x : v) {
+      std::cout << "floatMap: " << x << std::endl;
+    }
+  }
+  gpdoubleKeys->clear();
+  gpdoubleValues->clear();
+  for (auto& [k, v] : doubleMap) {
+    gpdoubleKeys->emplace_back(k);
+    gpdoubleValues->emplace_back(v);
+  }
+  gpstringKeys->clear();
+  gpstringValues->clear();
+  for (auto& [k, v] : stringMap) {
+    gpstringKeys->emplace_back(k);
+    gpstringValues->emplace_back(v);
+  }
+
   m_writers[category]->Fill();
   m_categories.insert(category);
 }
 
-std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
+std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections,
+                                                                  const podio::GenericParameters& params) {
   auto model = rnt::RNTupleModel::Create();
   for (auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
@@ -163,9 +214,46 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
     //   }
     // }
   }
-  // auto field = rnt::Detail::RFieldBase::Create(root_utils::paramBranchName, ").Unwrap();
-  // Not supported
-  // auto field = model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
+  
+  // gp = Generic Parameters
+  auto gpintKeys = model->MakeField<std::vector<std::string>>("GP_int_keys");
+  auto gpfloatKeys = model->MakeField<std::vector<std::string>>("GP_float_keys");
+  auto gpdoubleKeys = model->MakeField<std::vector<std::string>>("GP_double_keys");
+  auto gpstringKeys = model->MakeField<std::vector<std::string>>("GP_string_keys");
+
+  auto gpintValues = model->MakeField<std::vector<std::vector<int>>>("GP_int_values");
+  auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>("GP_float_values");
+  auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>("GP_double_values");
+  auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>("GP_string_values");
+
+  // auto intMap = params.getIntMap();
+  // auto floatMap = params.getFloatMap();
+  // auto doubleMap = params.getDoubleMap();
+  // auto stringMap = params.getStringMap();
+
+  // for (auto& [k, v] : intMap) {
+  //   gpintKeys->emplace_back(k);
+  //   gpintValues->emplace_back(v);
+  // }
+  // for (auto& [k, v] : floatMap) {
+  //   gpfloatKeys->emplace_back(k);
+  //   gpfloatValues->emplace_back(v);
+  //   for (auto& x : v) {
+  //     std::cout << "floatMap: " << x << std::endl;
+  //   }
+  // }
+  // for (auto& [k, v] : doubleMap) {
+  //   gpdoubleKeys->emplace_back(k);
+  //   gpdoubleValues->emplace_back(v);
+  // }
+  // for (auto& [k, v] : stringMap) {
+  //   gpstringKeys->emplace_back(k);
+  //   gpstringValues->emplace_back(v);
+  // }
+
+  // Not supported by ROOT
+  // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
+
   model->Freeze();
   return model;
 }
@@ -195,6 +283,8 @@ void ROOTNTupleWriter::finish() {
     auto subsetCollectionField = m_metadata->MakeField<std::vector<bool>>(category + "_test");
     *subsetCollectionField = m_isSubsetCollection[category];
   }
+
+
 
   m_metadata->Freeze();
   m_metadataWriter = rnt::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file.get(), {});

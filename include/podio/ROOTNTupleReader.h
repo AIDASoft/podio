@@ -11,7 +11,6 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,16 +21,8 @@
 namespace rnt = ROOT::Experimental;
 // forward declarations
 class TClass;
-class TFile;
 
 namespace podio {
-
-namespace detail {
-  // Information about the data vector as wall as the collection class type
-  // and the index in the collection branches cache vector
-  using CollectionInfo = std::tuple<const TClass*, const TClass*, size_t>;
-
-} // namespace detail
 
 class EventStore;
 class CollectionBase;
@@ -95,9 +86,8 @@ private:
    */
   bool initCategory(const std::string& category);
 
-  GenericParameters readEventMetaData(const std::string& name);
+  GenericParameters readEventMetaData(const std::string& name, unsigned entNum);
 
-  
   podio::version::Version m_fileVersion{0, 0, 0};
   DatamodelDefinitionHolder m_datamodelHolder{};
 

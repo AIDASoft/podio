@@ -2,6 +2,7 @@
 #define PODIO_ROOTNTUPLEWRITER_H
 
 #include "podio/CollectionBase.h"
+#include "podio/GenericParameters.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include "TFile.h"
@@ -37,7 +38,8 @@ public:
 private:
 
   using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
-  std::unique_ptr<rnt::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
+  std::unique_ptr<rnt::RNTupleModel> createModels(const std::vector<StoreCollection>& collections,
+                                                  const podio::GenericParameters& params);
 
   std::unique_ptr<rnt::RNTupleModel> m_metadata {nullptr};
   rnt::REntry* m_entry;
