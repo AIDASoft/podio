@@ -180,6 +180,11 @@ void ROOTNTupleWriter::finish() {
   auto edm_field = m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   *edm_field = edmDefinitions;
 
+  auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>("available_categories");
+  for (auto& [c, _] : m_collectionId ) {
+    availableCategoriesField->push_back(c);
+  }
+
   for (auto& category : m_categories) {
     auto idField = m_metadata->MakeField<std::vector<int>>(root_utils::idTableName(category));
     *idField = m_collectionId[category];

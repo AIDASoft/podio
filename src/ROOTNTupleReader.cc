@@ -8,9 +8,11 @@
 // ROOT specific includes
 #include "TClass.h"
 #include "TFile.h"
+#include <ROOT/RError.hxx>
 #include <memory>
 
 #include "datamodel/ExampleMCData.h"
+#include "datamodel/ExampleHitData.h"
 
 namespace podio {
 
@@ -26,7 +28,10 @@ GenericParameters ROOTNTupleReader::readEventMetaData(const std::string& name) {
   return params;
 }
 
-void ROOTNTupleReader::initCategory(const std::string& category) {
+bool ROOTNTupleReader::initCategory(const std::string& category) {
+  if (std::find(m_availableCategories.begin(), m_availableCategories.end(), category) == m_availableCategories.end()) {
+    return false;
+  }
   std::cout << "initCategory(" << category << ")" << std::endl;
   std::cout << "Getting id" << std::endl;
   // Assume that the metadata is the same in all files
@@ -45,6 +50,7 @@ void ROOTNTupleReader::initCategory(const std::string& category) {
   std::cout << "Getting subsetCollection" << std::endl;
   auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<bool>>(category + "_test");
   m_isSubsetCollection[category] = subsetCollection(0);
+  return true;
 }
 
 void ROOTNTupleReader::openFile(const std::string& filename) {
@@ -71,6 +77,9 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   auto edm_view = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   auto edm = edm_view(0);
 
+  auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>("available_categories");
+  m_availableCategories = availableCategoriesField(0);
+
   // m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
 
   // Do some work up front for setting up categories and setup all the chains
@@ -88,28 +97,42 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 unsigned ROOTNTupleReader::getEntries(const std::string& name) {
   if (m_readers.find(name) == m_readers.end()) {
     for (auto& filename : m_filenames) {
-      m_readers[name].emplace_back(ROOT::Experimental::RNTupleReader::Open(name, filename));
+      try {
+        m_readers[name].emplace_back(ROOT::Experimental::RNTupleReader::Open(name, filename));
+      }
+      catch (const ROOT::Experimental::RException& e) {
+        std::cout << "Category " << name << " not found in file " << filename << std::endl;
+      }
     }
   }
-  return std::accumulate(m_readers[name].begin(), m_readers[name].end(), 0, [](int total, auto& reader) {return total + reader->GetNEntries();});
+  m_totalEntries[name] = std::accumulate(m_readers[name].begin(), m_readers[name].end(), 0, [](int total, auto& reader) {return total + reader->GetNEntries();});
+  return m_totalEntries[name];
 }
 
 std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readNextEntry(const std::string& name) {
-  // auto& catInfo = getCategoryInfo(name);
-  int current_entry = m_entries[name];
-
-  return readEntry(name, current_entry);
+  return readEntry(name, m_entries[name]++);
 }
 
 std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& category, const unsigned entNum) {
-  std::cout << "Calling readEntry " << std::endl;
+  if (m_totalEntries.find(category) == m_totalEntries.end()) {
+    getEntries(category);
+  }
+  if (entNum >= m_totalEntries[category]) {
+    return nullptr;
+  }
 
   if (m_collectionId.find(category) == m_collectionId.end()) {
-    initCategory(category);
+    if (!initCategory(category)) {
+      return nullptr;
+    }
   }
+
+  m_entries[category] = entNum + 1;
 
   ROOTFrameData::BufferMap buffers;
   auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
+
+  std::map<std::pair<std::string, int>, std::vector<podio::ObjectID>*> tmp;
 
   for (int i = 0; i < m_collectionId[category].size(); ++i) {
     std::cout << "i = " << i << " " << m_collectionId[category][i] << " " << m_collectionType[category][i] << " " << m_collectionName[category][i] << std::endl;
@@ -128,6 +151,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     if (!isSubsetColl) {
       collBuffers.data = bufferClass->New();
     }
+    std::cout << "Setting colluction " << m_collectionName[category][i] << " is subset?: " << m_isSubsetCollection[category][i] << std::endl;
     collection->setSubsetCollection(isSubsetColl);
 
     auto tmpBuffers = collection->createBuffers();
@@ -153,12 +177,18 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     if (auto* refCollections = collBuffers.references) {
       std::cout << "The number of references is " << refCollections->size() << std::endl;
       for (size_t j = 0; j < refCollections->size(); ++j) {
-        // The unique_ptrs are nullptrs at the beginning, we first initialize
-        // them and then fill the values with the read data since
-        refCollections->at(j) = std::make_unique<std::vector<podio::ObjectID>>();
+        // // The unique_ptrs are nullptrs at the beginning, we first initialize
+        // // them and then fill the values with the read data since
+        // refCollections->at(j) = std::make_unique<std::vector<podio::ObjectID>>();
+        // const auto brName = root_utils::refBranch(m_collectionName[category][i], j);
+        // std::cout << "brName = " << brName << " " << (refCollections->at(j) == nullptr) << std::endl;
+        // dentry->CaptureValueUnsafe(brName, (*refCollections)[j].get());
+
+        auto vec = new std::vector<podio::ObjectID>;
         const auto brName = root_utils::refBranch(m_collectionName[category][i], j);
         std::cout << "brName = " << brName << " " << (refCollections->at(j) == nullptr) << std::endl;
-        dentry->CaptureValueUnsafe(brName, (*refCollections)[j].get());
+        dentry->CaptureValueUnsafe(brName, vec);
+        tmp[{brName, j}] = vec;
       }
     }
     std::cout << "CaptureValueUnsafe done" << std::endl;
@@ -166,9 +196,48 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   }
   m_readers[category][0]->LoadEntry(entNum);
 
-  auto buf = buffers["mcparticles"];
-  auto ptr = (std::vector<ExampleMCData>*)(buf.data);
-  std::cout << "Size of MCData is " << ptr->size();
+  for (int i = 0; i < m_collectionId[category].size(); ++i) {
+    auto collBuffers = buffers[m_collectionName[category][i]];
+    if (auto* refCollections = collBuffers.references) {
+      for (size_t j = 0; j < refCollections->size(); ++j) {
+        const auto brName = root_utils::refBranch(m_collectionName[category][i], j);
+        refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
+      }
+    }
+
+  }
+
+  // auto buf = buffers["mcparticles"];
+  // auto ptr = (std::vector<ExampleMCData>*)(buf.data);
+  // std::cout << "Size of MCData is " << ptr->size() << std::endl;
+  // for (auto& x : *ptr) {
+  //   std::cout << x.energy << " " << x.PDG << std::endl;
+  // }
+
+  // auto buf = buffers["hits"];
+  // auto ptr = (std::vector<ExampleHitData>*)(buf.data);
+  // std::cout << "Size of HitData is " << ptr->size() << std::endl;
+  // for (auto& x : *ptr) {
+  //   std::cout << x.cellID << " " << x.energy << " " << " " << x.x << " " << x.y << " " << x.z << std::endl;
+  // }
+
+  auto buf = buffers["hitRefs"];
+  auto refCollections = buf.references;
+  for (size_t j = 0; j < refCollections->size(); ++j) {
+    std::cout << "Size of ObjectID is " << refCollections->at(j)->size() << std::endl;
+    auto ptr = (std::vector<podio::ObjectID>*)refCollections->at(j).get();
+    for (auto& x : *ptr) {
+      std::cout << x.index << " " << x.collectionID << std::endl;
+    }
+  }
+
+  // auto nbuf = buffers["hitRefs"];
+  // auto nptr = (std::vector<std::unique_ptr<podio::ObjectID>>*)(buf.references);
+  // std::cout << "Size of ObjectID is " << nptr->size() << std::endl;
+  // for (auto& x : *nptr) {
+  //   auto nnptr = ;
+  //   std::cout << x->index << " " << x->collectionID << std::endl;
+  // }
 
 
   auto parameters = readEventMetaData(category);
@@ -179,12 +248,13 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
   std::vector<std::pair<int, std::string>> v;
   for (int i = 0; i < names.size(); ++i) {
+    std::cout << ids[i] << " " << names[i] << std::endl;
     v.emplace_back(std::make_pair<int, std::string>(int(ids[i]),std::string(names[i])));
   }
   std::sort(v.begin(), v.end());
 
-  for (auto& [name, id] : v) {
-    table->add(std::to_string(name));
+  for (auto& [id, name] : v) {
+    table->add(name);
   }
 
   return std::make_unique<ROOTFrameData>(std::move(buffers), table, std::move(parameters));
