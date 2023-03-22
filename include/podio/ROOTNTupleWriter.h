@@ -4,9 +4,9 @@
 #include "podio/CollectionBase.h"
 #include "podio/GenericParameters.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/Frame.h"
 
 #include "TFile.h"
-#include "podio/Frame.h"
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
@@ -14,12 +14,6 @@
 #include <vector>
 #include <iostream>
 #include <string_view>
-#include <utility>
-#include <cstdint>
-
-namespace rnt = ROOT::Experimental;
-
-class TFile;
 
 namespace podio {
 
@@ -38,13 +32,11 @@ public:
 private:
 
   using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
-  std::unique_ptr<rnt::RNTupleModel> createModels(const std::vector<StoreCollection>& collections,
-                                                  const podio::GenericParameters& params);
+  std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
 
-  std::unique_ptr<rnt::RNTupleModel> m_metadata {nullptr};
-  rnt::REntry* m_entry;
-  std::map<std::string, std::unique_ptr<rnt::RNTupleWriter>> m_writers;
-  std::unique_ptr<rnt::RNTupleWriter> m_metadataWriter {nullptr};
+  std::unique_ptr<ROOT::Experimental::RNTupleModel> m_metadata {nullptr};
+  std::map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleWriter>> m_writers;
+  std::unique_ptr<ROOT::Experimental::RNTupleWriter> m_metadataWriter {nullptr};
 
   std::unique_ptr<TFile> m_file {nullptr};
 

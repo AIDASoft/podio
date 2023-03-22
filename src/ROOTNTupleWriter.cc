@@ -1,21 +1,14 @@
-#include <ROOT/RNTuple.hxx>
-#include <ROOT/RNTupleModel.hxx>
-#include <algorithm>
-
+#include "podio/ROOTNTupleWriter.h"
 #include "podio/GenericParameters.h"
 #include "rootUtils.h"
-
 #include "podio/CollectionBase.h"
-#include "podio/EventStore.h"
-#include "podio/ROOTWriter.h"
 #include "podio/podioVersion.h"
 
-// ROOT specifc includes
 #include "TFile.h"
+#include <ROOT/RNTuple.hxx>
+#include <ROOT/RNTupleModel.hxx>
 
-#include "podio/ROOTNTupleWriter.h"
-
-#include "datamodel/ExampleMCData.h"
+#include <algorithm>
 
 namespace podio {
 
@@ -25,10 +18,11 @@ ROOTNTupleWriter::ROOTNTupleWriter(const std::string& filename) :
     m_file(new TFile(filename.c_str(),"RECREATE","data file")),
     m_categories(),
     m_collectionId(),
+    m_collectionName(),
     m_collectionType(),
     m_isSubsetCollection()
   {
-    m_metadata = rnt::RNTupleModel::Create();
+    m_metadata = ROOT::Experimental::RNTupleModel::Create();
   }
 
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -48,13 +42,13 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   bool new_category = false;
   if (m_writers.find(category) == m_writers.end()) {
     new_category = true;
-    auto model = createModels(collections, frame.getParameters());
-    m_writers[category] = rnt::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+    auto model = createModels(collections);
+    m_writers[category] = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
   }
 
-  m_entry = m_writers[category]->GetModel()->GetDefaultEntry();
+  auto entry = m_writers[category]->GetModel()->GetDefaultEntry();
 
-  rnt::RNTupleWriteOptions options;
+  ROOT::Experimental::RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
 
   for (const auto& [name, coll] : collections) {
@@ -63,39 +57,14 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     if (collBuffers.vecPtr) {
       std::cout << "Capturing unsafe " << name << std::endl;
 
-      // auto v = (std::vector<ExampleMCData>*)collBuffers.data;
-      // std::cout << "Size is " << v->size() << std::endl;
-      // std::cout << (*v)[0].energy << std::endl;
-      // for (auto& x : *v) {
-      //   std::cout << "Inside loop " << std::endl;
-      //   std::cout << x.energy << std::endl;
-      // }
-
-      m_entry->CaptureValueUnsafe(name, (void*)collBuffers.vecPtr);
-
-      // std::cout << "After capturing " << std::endl;
-      // v = (std::vector<ExampleMCData>*)collBuffers.data;
-      // std::cout << "Size is " << v->size() << std::endl;
-      // std::cout << (*v)[0].energy << std::endl;
-      // for (auto& x : *v) {
-      //   std::cout << "Inside loop " << std::endl;
-      //   std::cout << x.energy << std::endl;
-      // }
-
-      // auto ptr = (std::vector<ExampleMCData>*)collBuffers.data;
-      // auto start = (char*)ptr->data();
-      // for (int i = 0; i < 13; ++i) {
-      //     printf("%x ", start[i]);
-      // }
-      // std::cout << std::endl;
-
+      entry->CaptureValueUnsafe(name, (void*)collBuffers.vecPtr);
     }
 
     if (auto refColls = collBuffers.references) {
       int i = 0;
       for (auto& c : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i++);
-        m_entry->CaptureValueUnsafe(brName, c.get());
+        entry->CaptureValueUnsafe(brName, c.get());
       }
     }
 
@@ -107,18 +76,12 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
         std::cout << typeName << " " << brName << std::endl;
         auto ptr = *(std::vector<int>**)vec;
         std::cout << "Vector: Size is " << ptr->size();
-        m_entry->CaptureValueUnsafe(brName, ptr);
-        // if (m_first) {
-        //   // m_entry->CaptureValueUnsafe(brName, (void*) vec);
-        //   m_first = false;
-        // }
+        entry->CaptureValueUnsafe(brName, ptr);
       }
     }
 
     // Not supported
-    // m_entry->CaptureValueUnsafe(root_utils::paramBranchName, &const_cast<podio::GenericParameters&>(frame.getParameters()));
-
-
+    // entry->CaptureValueUnsafe(root_utils::paramBranchName, &const_cast<podio::GenericParameters&>(frame.getParameters()));
 
     if (new_category) {
       m_collectionId[category].emplace_back(coll->getID());
@@ -177,9 +140,8 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   m_categories.insert(category);
 }
 
-std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections,
-                                                                  const podio::GenericParameters& params) {
-  auto model = rnt::RNTupleModel::Create();
+std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
+  auto model = ROOT::Experimental::RNTupleModel::Create();
   for (auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
 
@@ -187,17 +149,17 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
       auto collClassName = "std::vector<" + coll->getDataTypeName() +">";
       std::cout << name << " " << collClassName << std::endl;
       std::cout << "Making field with name = " << name << " and collClassName = " << collClassName << std::endl;
-      auto field = rnt::Detail::RFieldBase::Create(name, collClassName).Unwrap();
+      auto field = ROOT::Experimental::Detail::RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
 
     if (auto refColls = collBuffers.references) {
       int i = 0;
-      for (auto& c : (*refColls)) {
+      for (auto& c [[maybe_unused]] : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i);
         auto collClassName = "vector<podio::ObjectID>";
         std::cout << "Making reference field with name = " << brName << " and collClassName = " << collClassName << std::endl;
-        auto field = rnt::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
+        auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
         model->AddField(std::move(field));
         ++i;
       }
@@ -208,13 +170,17 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
       for (auto& [type, vec] : (*vminfo)) {
         const auto typeName = "vector<" + type + ">";
         const auto brName = root_utils::vecBranch(name, i);
-        auto field = rnt::Detail::RFieldBase::Create(brName, typeName).Unwrap();
+        auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, typeName).Unwrap();
         model->AddField(std::move(field));
         ++i;
       }
     }
   }
   
+  // Not supported by ROOT because podio::GenericParameters has map types
+  // so we have to split them manually
+  // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
+
   // gp = Generic Parameters
   auto gpintKeys = model->MakeField<std::vector<std::string>>("GP_int_keys");
   auto gpfloatKeys = model->MakeField<std::vector<std::string>>("GP_float_keys");
@@ -225,9 +191,6 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
   auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>("GP_float_values");
   auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>("GP_double_values");
   auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>("GP_string_values");
-
-  // Not supported by ROOT
-  // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
 
   model->Freeze();
   return model;
@@ -259,10 +222,8 @@ void ROOTNTupleWriter::finish() {
     *subsetCollectionField = m_isSubsetCollection[category];
   }
 
-
-
   m_metadata->Freeze();
-  m_metadataWriter = rnt::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file.get(), {});
+  m_metadataWriter = ROOT::Experimental::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file.get(), {});
 
   m_metadataWriter->Fill();
 
