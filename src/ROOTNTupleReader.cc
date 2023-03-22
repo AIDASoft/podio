@@ -207,7 +207,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
       dentry->CaptureValueUnsafe(m_collectionName[category][i], collBuffers.data);
     }
     if (auto* refCollections = collBuffers.references) {
-      std::cout << "The number of references is " << refCollections->size() << std::endl;
       for (size_t j = 0; j < refCollections->size(); ++j) {
         // // The unique_ptrs are nullptrs at the beginning, we first initialize
         // // them and then fill the values with the read data since
@@ -218,11 +217,19 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
         auto vec = new std::vector<podio::ObjectID>;
         const auto brName = root_utils::refBranch(m_collectionName[category][i], j);
-        std::cout << "brName = " << brName << " " << (refCollections->at(j) == nullptr) << std::endl;
         dentry->CaptureValueUnsafe(brName, vec);
         tmp[{brName, j}] = vec;
       }
     }
+
+    if (auto* vecMembers = collBuffers.vectorMembers) {
+      for (size_t j = 0; j < vecMembers->size(); ++j) {
+        const auto typeName = "vector<" + vecMembers->at(j).first + ">";
+        const auto brName = root_utils::vecBranch(m_collectionName[category][i], j);
+        dentry->CaptureValueUnsafe(brName, vecMembers->at(j).second);
+      }
+    }
+
     std::cout << "CaptureValueUnsafe done" << std::endl;
     buffers.emplace(m_collectionName[category][i], std::move(collBuffers));
   }

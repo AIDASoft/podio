@@ -99,20 +99,21 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
       }
     }
 
-    // if (auto vmInfo = collBuffers.vectorMembers) {
-    //   int i = 0;
-    //   for (auto& [type, vec] : (*vmInfo)) {
-    //     const auto typeName = "vector<" + type + ">";
-    //     const auto brName = root_utils::vecBranch(name, i++);
-    //     std::cout << typeName << " " << brName << std::endl;
-    //     auto ptr = (std::vector<int>*)vec;
-    //     std::cout << "Size is " << ptr->size();
-    //     if (m_first) {
-    //       // m_entry->CaptureValueUnsafe(brName, (void*) vec);
-    //       m_first = false;
-    //     }
-    //   }
-    // }
+    if (auto vmInfo = collBuffers.vectorMembers) {
+      int i = 0;
+      for (auto& [type, vec] : (*vmInfo)) {
+        const auto typeName = "vector<" + type + ">";
+        const auto brName = root_utils::vecBranch(name, i++);
+        std::cout << typeName << " " << brName << std::endl;
+        auto ptr = *(std::vector<int>**)vec;
+        std::cout << "Vector: Size is " << ptr->size();
+        m_entry->CaptureValueUnsafe(brName, ptr);
+        // if (m_first) {
+        //   // m_entry->CaptureValueUnsafe(brName, (void*) vec);
+        //   m_first = false;
+        // }
+      }
+    }
 
     // Not supported
     // m_entry->CaptureValueUnsafe(root_utils::paramBranchName, &const_cast<podio::GenericParameters&>(frame.getParameters()));
@@ -149,7 +150,6 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     gpintKeys->emplace_back(k);
     gpintValues->emplace_back(v);
   }
-  std::cout << "Size of gpfloatKeys before filling " << gpfloatKeys->size() << " " << gpfloatValues->size() << std::endl;
 
   gpfloatKeys->clear();
   gpfloatValues->clear();
@@ -203,16 +203,16 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
       }
     }
 
-    // if (auto vminfo = collBuffers.vectorMembers) {
-    //   int i = 0;
-    //   for (auto& [type, vec] : (*vminfo)) {
-    //     const auto typeName = "vector<" + type + ">";
-    //     const auto brName = root_utils::vecBranch(name, i);
-    //     auto field = rnt::Detail::RFieldBase::Create(brName, typeName).Unwrap();
-    //     model->AddField(std::move(field));
-    //     ++i;
-    //   }
-    // }
+    if (auto vminfo = collBuffers.vectorMembers) {
+      int i = 0;
+      for (auto& [type, vec] : (*vminfo)) {
+        const auto typeName = "vector<" + type + ">";
+        const auto brName = root_utils::vecBranch(name, i);
+        auto field = rnt::Detail::RFieldBase::Create(brName, typeName).Unwrap();
+        model->AddField(std::move(field));
+        ++i;
+      }
+    }
   }
   
   // gp = Generic Parameters
@@ -225,31 +225,6 @@ std::unique_ptr<rnt::RNTupleModel> ROOTNTupleWriter::createModels(const std::vec
   auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>("GP_float_values");
   auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>("GP_double_values");
   auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>("GP_string_values");
-
-  // auto intMap = params.getIntMap();
-  // auto floatMap = params.getFloatMap();
-  // auto doubleMap = params.getDoubleMap();
-  // auto stringMap = params.getStringMap();
-
-  // for (auto& [k, v] : intMap) {
-  //   gpintKeys->emplace_back(k);
-  //   gpintValues->emplace_back(v);
-  // }
-  // for (auto& [k, v] : floatMap) {
-  //   gpfloatKeys->emplace_back(k);
-  //   gpfloatValues->emplace_back(v);
-  //   for (auto& x : v) {
-  //     std::cout << "floatMap: " << x << std::endl;
-  //   }
-  // }
-  // for (auto& [k, v] : doubleMap) {
-  //   gpdoubleKeys->emplace_back(k);
-  //   gpdoubleValues->emplace_back(v);
-  // }
-  // for (auto& [k, v] : stringMap) {
-  //   gpstringKeys->emplace_back(k);
-  //   gpstringValues->emplace_back(v);
-  // }
 
   // Not supported by ROOT
   // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
