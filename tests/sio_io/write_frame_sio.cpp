@@ -3,7 +3,7 @@
 
 #include "podio/SIOWriter.h"
 
-#include "podio/detail/AssociationSIOBlock.h"
+#include "podio/AssociationSIOBlock.h"
 
 const static auto foo = podio::AssociationSIOBlock<ExampleMC, ex42::ExampleWithARelation>{};
 

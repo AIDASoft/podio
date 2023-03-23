@@ -2,7 +2,7 @@
 
 #include "podio/Frame.h"
 #include "podio/SIOLegacyReader.h"
-#include "podio/detail/AssociationSIOBlock.h"
+#include "podio/AssociationSIOBlock.h"
 
 #include <iostream>
 

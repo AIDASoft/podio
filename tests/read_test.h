@@ -16,7 +16,6 @@
 // podio specific includes
 #include "podio/Frame.h"
 #include "podio/UserDataCollection.h"
-#include "podio/detail/AssociationSIOBlock.h"
 #include "podio/podioVersion.h"
 
 // STL
