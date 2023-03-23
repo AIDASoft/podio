@@ -44,7 +44,7 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
   add_executable( ${name} ${sourcefile} )
   add_test(NAME ${name} COMMAND ${name})
 
-  target_link_libraries(${name} TestDataModel ExtensionDataModel ${additional_libs})
+  target_link_libraries(${name} PRIVATE TestDataModel ExtensionDataModel ${additional_libs})
   set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
@@ -96,7 +96,7 @@ endif()
 if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
   message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
   add_executable(read-legacy-files read-legacy-files.cpp)
-  target_link_libraries(read-legacy-files TestDataModel TestDataModelDict podio::podioRootIO)
+  target_link_libraries(read-legacy-files PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
   add_test(NAME read-legacy-files COMMAND read-legacy-files ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
 
   set_property(TEST read-legacy-files PROPERTY ENVIRONMENT
@@ -157,8 +157,8 @@ if (TARGET TestDataModelSioBlocks)
   # These need to be linked against TTree explicitly, since it is not done
   # through another library and the TimedReader/Writer decorators are
   # header-only wrappers
-  target_link_libraries(write_timed_sio ROOT::Tree)
-  target_link_libraries(read_timed_sio ROOT::Tree)
+  target_link_libraries(write_timed_sio PRIVATE ROOT::Tree)
+  target_link_libraries(read_timed_sio PRIVATE ROOT::Tree)
 endif()
 
 #--- set some dependencies between the different tests to ensure input generating ones are run first
@@ -170,7 +170,7 @@ set_property(TEST read_timed PROPERTY DEPENDS write_timed)
 set_property(TEST read_frame PROPERTY DEPENDS write_frame_root)
 
 add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
-target_link_libraries(check_benchmark_outputs ROOT::Tree)
+target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)
 
 add_test(NAME check_benchmark_outputs COMMAND check_benchmark_outputs write_benchmark_root.root read_benchmark_root.root)
 set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_timed)
@@ -207,7 +207,6 @@ add_executable(unittest unittest.cpp frame.cpp)
 target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 if (ENABLE_SIO)
   target_link_libraries(unittest PRIVATE podio::podioSioIO)
-  target_compile_definitions(unittest PRIVATE PODIO_WITH_SIO)
 endif()
 
 # The unittests are a bit better and they are labelled so we can put together a
