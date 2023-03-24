@@ -54,6 +54,7 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   }
   // Assume that the metadata is the same in all files
   auto filename = m_filenames[0];
+
   auto id = m_metadata_readers[filename]->GetView<std::vector<int>>(root_utils::idTableName(category));
   m_collectionId[category] = id(0);
 
@@ -229,8 +230,9 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   // Sort the ids and collection names to recreate the collection ID table with
   // the names following the order of the IDs
   std::vector<std::pair<int, std::string>> v;
+  v.reserve(names.size());
   for (size_t i = 0; i < names.size(); ++i) {
-    v.emplace_back(std::make_pair<int, std::string>(int(ids[i]),std::string(names[i])));
+    v.emplace_back(std::make_pair<int, std::string>(int(ids[i]), std::string(names[i])));
   }
   std::sort(v.begin(), v.end());
   for (auto& [id, name] : v) {
