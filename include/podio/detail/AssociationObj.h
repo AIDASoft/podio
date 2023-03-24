@@ -51,7 +51,7 @@ public:
   }
 
 public:
-  float weight{};
+  float weight{1.0f};
   FromT* m_from{nullptr};
   ToT* m_to{nullptr};
 };
