@@ -33,6 +33,10 @@ class AssociationT {
   friend AssociationCollectionIteratorT<FromT, ToT, Mutable>;
 
 public:
+  using MutT = podio::MutableAssociation<FromT, ToT>;
+  using DefT = podio::Association<FromT, ToT>;
+  using CollT = podio::AssociationCollection<FromT, ToT>;
+
   /// Constructor
   AssociationT() : m_obj(new AssociationObjT()) {
     m_obj->acquire();
