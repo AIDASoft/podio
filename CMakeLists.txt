@@ -77,8 +77,8 @@ find_package(ROOT REQUIRED COMPONENTS RIO Tree)
 
 # Check that root is compiled with a modern enough c++ standard
 get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
-if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES)
-  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17")
+if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES AND NOT "cxx_std_20" IN_LIST ROOT_COMPILE_FEATURES)
+  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
 endif()
 #Check if Python version detected matches the version used to build ROOT
 SET(Python_FIND_FRAMEWORK LAST)
