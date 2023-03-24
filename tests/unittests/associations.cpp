@@ -131,6 +131,38 @@ TEST_CASE("Association basics", "[associations]") {
   }
 }
 
+TEST_CASE("Associations templated accessors", "[associations]") {
+  ExampleHit hit;
+  ExampleCluster cluster;
+
+  TestMutA assoc;
+  assoc.set(hit);
+  assoc.set(cluster);
+  assoc.setWeight(1.0);
+
+  SECTION("Mutable Association") {
+    REQUIRE(hit == assoc.get<ExampleHit>());
+    REQUIRE(cluster == assoc.get<ExampleCluster>());
+
+    const auto [h, c, w] = assoc;
+    REQUIRE(h == hit);
+    REQUIRE(c == cluster);
+    REQUIRE(w == 1.0);
+  }
+
+  SECTION("Immutable association") {
+    TestA a{assoc};
+
+    REQUIRE(hit == a.get<ExampleHit>());
+    REQUIRE(cluster == a.get<ExampleCluster>());
+
+    const auto [h, c, w] = a;
+    REQUIRE(h == hit);
+    REQUIRE(c == cluster);
+    REQUIRE(w == 1.0);
+  }
+}
+
 TEST_CASE("AssociationCollection basics", "[associations]") {
   auto coll = TestAColl();
 
