@@ -28,9 +28,9 @@
 #include <tuple>
 
 // Define an association that is used for the I/O tests
-// using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
-
-PODIO_DECLARE_ASSOCIATION(TestAssocCollection, ExampleMC, ex42::ExampleWithARelation)
+using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
+// Make sure the I/O parts are dynamically registered
+PODIO_DECLARE_ASSOCIATION(ExampleMC, ex42::ExampleWithARelation)
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
