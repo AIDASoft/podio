@@ -69,8 +69,8 @@ public:
   }
 
   /// Implicit conversion of mutable to immutable associations
-  template <typename FromU, typename ToU, bool Mut = Mutable,
-            typename = std::enable_if_t<Mut && std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  template <typename FromU, typename ToU,
+            typename = std::enable_if_t<Mutable && std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
   operator AssociationT<FromU, ToU, false>() const {
     return AssociationT<FromU, ToU, false>(m_obj);
   }
@@ -95,7 +95,7 @@ public:
   }
 
   /// Set the weight of the association
-  template <bool Mut = Mutable, typename = std::enable_if_t<Mut>>
+  template <bool Mut = Mutable, typename = std::enable_if_t<Mut && Mutable>>
   void setWeight(float value) {
     m_obj->weight = value;
   }
@@ -109,8 +109,7 @@ public:
   }
 
   /// Set the related-from object
-  template <typename FromU, bool Mut = Mutable,
-            typename = std::enable_if_t<Mut && std::is_same_v<detail::GetDefT<FromU>, FromT>>>
+  template <typename FromU, typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefT<FromU>, FromT>>>
   void setFrom(FromU value) {
     delete m_obj->m_from;
     m_obj->m_from = new detail::GetDefT<FromU>(value);
@@ -125,8 +124,7 @@ public:
   }
 
   /// Set the related-to object
-  template <typename ToU, bool Mut = Mutable,
-            typename = std::enable_if_t<Mut && std::is_same_v<detail::GetDefT<ToU>, ToT>>>
+  template <typename ToU, typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefT<ToU>, ToT>>>
   void setTo(ToU value) {
     delete m_obj->m_to;
     m_obj->m_to = new detail::GetDefT<ToU>(value);
@@ -183,8 +181,8 @@ public:
    * @param value the element to set for this association.
    */
   template <
-      typename T, bool Mut = Mutable,
-      typename = std::enable_if_t<Mut && !std::is_same_v<ToT, FromT> && detail::isMutableFromOrToT<T, FromT, ToT>>>
+      typename T,
+      typename = std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> && detail::isMutableFromOrToT<T, FromT, ToT>>>
   void set(T value) {
     if constexpr (std::is_same_v<T, FromT>) {
       setFrom(std::move(value));
@@ -229,7 +227,7 @@ public:
   }
 
 private:
-  AssociationObj<FromT, ToT>* m_obj{nullptr};
+  AssociationObjT* m_obj{nullptr};
 }; // namespace podio
 
 template <typename FromT, typename ToT>
