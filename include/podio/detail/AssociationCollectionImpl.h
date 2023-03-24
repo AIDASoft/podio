@@ -1,13 +1,12 @@
-#ifndef PODIO_ASSOCIATIONCOLLECTIONIMPL_H
-#define PODIO_ASSOCIATIONCOLLECTIONIMPL_H
+#ifndef PODIO_DETAIL_ASSOCIATIONCOLLECTIONIMPL_H
+#define PODIO_DETAIL_ASSOCIATIONCOLLECTIONIMPL_H
 
-#include "podio/CollectionBufferFactory.h"
+#include "podio/detail/Association.h"
 #include "podio/detail/AssociationCollectionData.h"
+#include "podio/detail/AssociationCollectionIterator.h"
 #include "podio/detail/AssociationFwd.h"
 #include "podio/detail/AssociationObj.h"
 
-#include "podio/Association.h"
-#include "podio/AssociationCollectionIterator.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
@@ -326,4 +325,4 @@ namespace detail {
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATIONCOLLECTIONIMPL_H
+#endif // PODIO_DETAIL_ASSOCIATIONCOLLECTIONIMPL_H

@@ -1,9 +1,9 @@
-#ifndef PODIO_ASSOCIATIONSIOBLOCK_H
-#define PODIO_ASSOCIATIONSIOBLOCK_H
+#ifndef PODIO_DETAIL_ASSOCIATIONSIOBLOCK_H
+#define PODIO_DETAIL_ASSOCIATIONSIOBLOCK_H
 
-#include "podio/AssociationCollection.h"
+#include "podio/detail/AssociationCollectionImpl.h"
+
 #include "podio/CollectionBufferFactory.h"
-
 #include "podio/CollectionBuffers.h"
 #include "podio/SIOBlock.h"
 
@@ -78,4 +78,4 @@ public:
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATIONSIOBLOCK_H
+#endif // PODIO_DETAIL_ASSOCIATIONSIOBLOCK_H
