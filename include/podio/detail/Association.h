@@ -1,5 +1,5 @@
-#ifndef PODIO_ASSOCIATION_H
-#define PODIO_ASSOCIATION_H
+#ifndef PODIO_DETAIL_ASSOCIATION_H
+#define PODIO_DETAIL_ASSOCIATION_H
 
 #include "podio/detail/AssociationFwd.h"
 #include "podio/detail/AssociationObj.h"
@@ -255,4 +255,4 @@ void to_json(nlohmann::json& j, const Association<FromT, ToT>& assoc) {
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATION_H
+#endif // PODIO_DETAIL_ASSOCIATION_H

@@ -1,6 +1,6 @@
 #ifndef PODIO_ASSOCIATIONCOLLECTION_H
 #define PODIO_ASSOCIATIONCOLLECTION_H
-#include "podio/AssociationCollectionImpl.h"
+#include "podio/detail/AssociationCollectionImpl.h"
 
 // Preprocessor helper macros for concatenating tokens at preprocessing times
 // Necessary because we use __COUNTER__ below for unique names of static
@@ -12,8 +12,8 @@
   #define PODIO_ENABLE_SIO 0
 #endif
 
-#if PODIO_ENABLE_SIO && __has_include("podio/AssociationSIOBlock.h")
-  #include "podio/AssociationSIOBlock.h"
+#if PODIO_ENABLE_SIO && __has_include("podio/detail/AssociationSIOBlock.h")
+  #include "podio/detail/AssociationSIOBlock.h"
   /**
    * Main macro for declaring associations. Takes care of the following things:
    * - Registering the necessary buffer creation functionality with the
