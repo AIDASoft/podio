@@ -7,11 +7,9 @@
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
-#include <algorithm>
 #include <iostream>
 #include <map>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <ROOT/RNTuple.hxx>
@@ -20,10 +18,6 @@
 
 namespace podio {
 
-class CollectionBase;
-class Registry;
-class CollectionIDTable;
-class GenericParameters;
 /**
 This class has the function to read available data from disk
 and to prepare collections and buffers.
@@ -65,36 +59,34 @@ public:
   void closeFile();
 
 private:
-  std::vector<std::unique_ptr<ROOTNTupleReader>> m_files;
-  std::unique_ptr<ROOT::Experimental::RNTupleReader> m_file;
-  std::unique_ptr<ROOT::Experimental::RNTupleReader> m_metadata;
-
-private:
-
   /**
-   * Initialze the passed CategoryInfo by setting up the necessary branches,
-   * collection infos and all necessary meta data to be able to read entries
-   * with this name
+   * Initialize the given category by filling the maps with metadata information
+   * that will be used later
    */
   bool initCategory(const std::string& category);
 
+  /**
+   * Read and reconstruct the generic parameters of the Frame
+   */
   GenericParameters readEventMetaData(const std::string& name, unsigned entNum);
 
-  podio::version::Version m_fileVersion{0, 0, 0};
+  std::unique_ptr<ROOT::Experimental::RNTupleReader> m_metadata{};
+
+  podio::version::Version m_fileVersion{};
   DatamodelDefinitionHolder m_datamodelHolder{};
 
-  std::map<std::string, std::vector<std::unique_ptr<ROOT::Experimental::RNTupleReader>>> m_readers;
-  std::map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleReader>> m_metadata_readers;
-  std::vector<std::string> m_filenames;
-  std::map<std::string, int> m_entries;
+  std::map<std::string, std::vector<std::unique_ptr<ROOT::Experimental::RNTupleReader>>> m_readers{};
+  std::map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleReader>> m_metadata_readers{};
+  std::vector<std::string> m_filenames{};
 
-  std::map<std::string, std::vector<int>> m_collectionId;
-  std::map<std::string, std::vector<std::string>> m_collectionName;
-  std::map<std::string, std::vector<std::string>> m_collectionType;
-  std::map<std::string, std::vector<bool>> m_isSubsetCollection;
+  std::map<std::string, int> m_entries{};
+  std::map<std::string, unsigned> m_totalEntries{};
 
-  std::map<std::string, unsigned> m_totalEntries;
-  std::vector<std::string> m_availableCategories;
+  std::map<std::string, std::vector<int>> m_collectionId{};
+  std::map<std::string, std::vector<std::string>> m_collectionName{};
+  std::map<std::string, std::vector<std::string>> m_collectionType{};
+  std::map<std::string, std::vector<bool>> m_isSubsetCollection{};
+  std::vector<std::string> m_availableCategories{};
 
 };
 
