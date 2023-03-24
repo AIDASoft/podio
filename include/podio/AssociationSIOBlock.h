@@ -11,7 +11,6 @@
 #include <sio/io_device.h>
 #include <sio/version.h>
 
-#include <algorithm>
 #include <string>
 
 namespace podio {
