@@ -19,7 +19,8 @@ std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(c
     // collection indices start at 1!
     const auto index = std::distance(std::begin(names), nameIt) + 1;
 
-    m_availableBlocks[index] = 1;
+    // Mark this block as consumed
+    m_availableBlocks[index] = 0;
     return {dynamic_cast<podio::SIOBlock*>(m_blocks[index].get())->getBuffers()};
   }
 
@@ -35,9 +36,13 @@ std::unique_ptr<podio::GenericParameters> SIOFrameData::getParameters() {
 std::vector<std::string> SIOFrameData::getAvailableCollections() {
   unpackBuffers();
   std::vector<std::string> collections;
-  for (size_t i = 0; i < m_blocks.size(); ++i) {
+  for (size_t i = 1; i < m_blocks.size(); ++i) {
     if (m_availableBlocks[i]) {
-      collections.push_back(m_idTable.name(i));
+      // We have to get the collID of this collection in the idTable as there is
+      // no guarantee that it coincides with the index in the blocks.
+      // Additionally, collection indices start at 1
+      const auto collID = m_idTable.ids()[i - 1];
+      collections.push_back(m_idTable.name(collID));
     }
   }
 
