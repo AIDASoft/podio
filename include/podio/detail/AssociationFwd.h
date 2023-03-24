@@ -1,6 +1,8 @@
 #ifndef PODIO_DETAIL_ASSOCIATIONFWD_H
 #define PODIO_DETAIL_ASSOCIATIONFWD_H
 
+#include "podio/utilities/TypeHelpers.h"
+
 #include <algorithm>
 #include <deque>
 #include <string>
@@ -35,6 +37,20 @@ namespace detail {
 
   template <typename T>
   using GetCollT = typename GetCollType<T>::type;
+
+  /**
+   * Variable template to for determining whether T is either FromT or ToT.
+   * Mainly defined for convenience
+   */
+  template <typename T, typename FromT, typename ToT>
+  static constexpr bool isFromOrToT = detail::isInTuple<T, std::tuple<FromT, ToT>>;
+
+  /**
+   * Variable template to for determining whether T is either FromT or ToT or
+   * any of their mutable versions.
+   */
+  template <typename T, typename FromT, typename ToT>
+  static constexpr bool isMutableFromOrToT = detail::isInTuple<T, std::tuple<FromT, ToT, GetMutT<FromT>, GetMutT<ToT>>>;
 
   /**
    * Get the collection type name for an AssociationCollection
@@ -103,5 +119,15 @@ template <typename FromT, typename ToT>
 using AssociationMutableCollectionIterator = AssociationCollectionIteratorT<FromT, ToT, true>;
 
 } // namespace podio
+
+namespace std {
+/// Specialization for enabling structure bindings for Associations
+template <typename F, typename T, bool M>
+struct tuple_size<podio::AssociationT<F, T, M>> : std::integral_constant<size_t, 3> {};
+
+/// Specialization for enabling structure bindings for Associations
+template <size_t Index, typename F, typename T, bool M>
+struct tuple_element<Index, podio::AssociationT<F, T, M>> : tuple_element<Index, std::tuple<F, T, float>> {};
+} // namespace std
 
 #endif // PODIO_DETAIL_ASSOCIATIONFWD_H

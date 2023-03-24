@@ -128,6 +128,67 @@ public:
     m_obj->m_to = new detail::GetDefT<ToU>(value);
   }
 
+  /**
+   * Templated version for getting an element of the association by type. Only
+   * available for Associations where FromT and ToT are **not the same type**,
+   * and if the requested type is actually part of the Association. It is only
+   * possible to get the immutable types from this. Will result in a compilation
+   * error if any of these conditions is not met.
+   *
+   * @tparam T the desired type
+   * @returns T the element of the Association
+   * */
+  template <typename T, typename = std::enable_if_t<!std::is_same_v<ToT, FromT> && detail::isFromOrToT<T, FromT, ToT>>>
+  T get() const {
+    if constexpr (std::is_same_v<T, FromT>) {
+      return getFrom();
+    } else {
+      return getTo();
+    }
+  }
+
+  /**
+   * Tuple like index based access to the elements of the Association. Returns
+   * only immutable types of the associations. This method enables structured
+   * bindings for Associations.
+   *
+   * @tparam Index an index (smaller than 3) to access an element of the Association
+   * @returns Depending on the value of Index:
+   *   - 0: The From element of the Association
+   *   - 1: The To element of the Association
+   *   - 2: The weight of the Association
+   */
+  template <size_t Index, typename = std::enable_if_t<(Index < 3)>>
+  auto get() const {
+    if constexpr (Index == 0) {
+      return getFrom();
+    } else if constexpr (Index == 1) {
+      return getTo();
+    } else {
+      return getWeight();
+    }
+  }
+
+  /**
+   * Templated version for setting an element of the association by type. Only
+   * available for Associations where FromT and ToT are **not the same type**,
+   * and if the requested type is actually part of the Association. Will result
+   * in a compilation error if any of these conditions is not met.
+   *
+   * @tparam T type of value (**infered!**)
+   * @param value the element to set for this association.
+   */
+  template <
+      typename T, bool Mut = Mutable,
+      typename = std::enable_if_t<Mut && !std::is_same_v<ToT, FromT> && detail::isMutableFromOrToT<T, FromT, ToT>>>
+  void set(T value) {
+    if constexpr (std::is_same_v<T, FromT>) {
+      setFrom(std::move(value));
+    } else {
+      setTo(std::move(value));
+    }
+  }
+
   /// check whether the object is actually available
   bool isAvailable() const {
     return m_obj;
