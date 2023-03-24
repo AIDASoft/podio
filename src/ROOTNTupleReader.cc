@@ -11,18 +11,18 @@
 
 namespace podio {
 
-  GenericParameters ROOTNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
+GenericParameters ROOTNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
   GenericParameters params;
 
-  auto intKeyView    = m_readers[name][0]->GetView<std::vector<std::string>>("GP_int_keys");
-  auto floatKeyView  = m_readers[name][0]->GetView<std::vector<std::string>>("GP_float_keys");
-  auto doubleKeyView = m_readers[name][0]->GetView<std::vector<std::string>>("GP_double_keys");
-  auto stringKeyView = m_readers[name][0]->GetView<std::vector<std::string>>("GP_string_keys");
+  auto intKeyView    = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::intKey);
+  auto floatKeyView  = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::floatKey);
+  auto doubleKeyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::doubleKey);
+  auto stringKeyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::stringKey);
 
-  auto intValueView    = m_readers[name][0]->GetView<std::vector<std::vector<int>>>("GP_int_values");
-  auto floatValueView  = m_readers[name][0]->GetView<std::vector<std::vector<float>>>("GP_float_values");
-  auto doubleValueView = m_readers[name][0]->GetView<std::vector<std::vector<double>>>("GP_double_values");
-  auto stringValueView = m_readers[name][0]->GetView<std::vector<std::vector<std::string>>>("GP_string_values");
+  auto intValueView    = m_readers[name][0]->GetView<std::vector<std::vector<int>>>(root_utils::intValue);
+  auto floatValueView  = m_readers[name][0]->GetView<std::vector<std::vector<float>>>(root_utils::floatValue);
+  auto doubleValueView = m_readers[name][0]->GetView<std::vector<std::vector<double>>>(root_utils::doubleValue);
+  auto stringValueView = m_readers[name][0]->GetView<std::vector<std::vector<std::string>>>(root_utils::stringValue);
 
   auto keys = intKeyView(entNum);
   auto valuesInt = intValueView(entNum);
@@ -52,15 +52,13 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   if (std::find(m_availableCategories.begin(), m_availableCategories.end(), category) == m_availableCategories.end()) {
     return false;
   }
-  std::cout << "initCategory(" << category << ")" << std::endl;
-  std::cout << "Getting id" << std::endl;
   // Assume that the metadata is the same in all files
   auto filename = m_filenames[0];
   auto id = m_metadata_readers[filename]->GetView<std::vector<int>>(root_utils::idTableName(category));
   m_collectionId[category] = id(0);
 
   std::cout << "Getting collectionName" << std::endl;
-  auto collectionName = m_metadata_readers[filename]->GetView<std::vector<std::string>>(category + "_name");
+  auto collectionName = m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collectionName(category));
   m_collectionName[category] = collectionName(0);
 
   std::cout << "Getting collectionType" << std::endl;
@@ -68,7 +66,7 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   m_collectionType[category] = collectionType(0);
    
   std::cout << "Getting subsetCollection" << std::endl;
-  auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<bool>>(category + "_test");
+  auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<bool>>(root_utils::subsetCollection(category));
   m_isSubsetCollection[category] = subsetCollection(0);
 
   return true;
@@ -87,18 +85,17 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
     }
   }
 
-  m_metadata = ROOT::Experimental::RNTupleReader::Open(root_utils::metaTreeName, "example_rntuple.root");
+  m_metadata = ROOT::Experimental::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
 
-  auto version_view = m_metadata->GetView<std::vector<int>>(root_utils::versionBranchName);
-  auto version = version_view(0);
+  auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
+  auto version = versionView(0);
 
   m_fileVersion = podio::version::Version{version[0], version[1], version[2]};
-  std::cout << "Version is " << m_fileVersion.major << " " << m_fileVersion.minor << " " << m_fileVersion.patch << std::endl;
 
-  auto edm_view = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
-  auto edm = edm_view(0);
+  auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  auto edm = edmView(0);
 
-  auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>("available_categories");
+  auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);
 
 }
@@ -156,7 +153,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     const auto bufferClass = m_isSubsetCollection[category][i] ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
     auto collBuffers = podio::CollectionReadBuffers();
-    // const bool isSubsetColl = bufferClass == nullptr;
     const bool isSubsetColl = bufferClass == nullptr;
     if (!isSubsetColl) {
       collBuffers.data = bufferClass->New();
@@ -211,7 +207,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     buffers.emplace(m_collectionName[category][i], std::move(collBuffers));
   }
 
-
   m_readers[category][0]->LoadEntry(entNum);
 
   for (size_t i = 0; i < m_collectionId[category].size(); ++i) {
@@ -231,12 +226,13 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   auto names = m_collectionName[category];
   auto ids = m_collectionId[category];
 
+  // Sort the ids and collection names to recreate the collection ID table with
+  // the names following the order of the IDs
   std::vector<std::pair<int, std::string>> v;
   for (size_t i = 0; i < names.size(); ++i) {
     v.emplace_back(std::make_pair<int, std::string>(int(ids[i]),std::string(names[i])));
   }
   std::sort(v.begin(), v.end());
-
   for (auto& [id, name] : v) {
     table->add(name);
   }

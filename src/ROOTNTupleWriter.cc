@@ -13,17 +13,16 @@
 namespace podio {
 
 ROOTNTupleWriter::ROOTNTupleWriter(const std::string& filename) :
-    m_metadata(nullptr),
-    m_writers(),
-    m_file(new TFile(filename.c_str(),"RECREATE","data file")),
-    m_categories(),
-    m_collectionId(),
-    m_collectionName(),
-    m_collectionType(),
-    m_isSubsetCollection()
+  m_metadata(ROOT::Experimental::RNTupleModel::Create()),
+  m_file(new TFile(filename.c_str(), "RECREATE", "data file"))
   {
-    m_metadata = ROOT::Experimental::RNTupleModel::Create();
   }
+
+ROOTNTupleWriter::~ROOTNTupleWriter() {
+  if (!m_finished) {
+    finish();
+  }
+}
 
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
@@ -54,8 +53,6 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   for (const auto& [name, coll] : collections) {
     auto collBuffers = coll->getBuffers();
     if (collBuffers.vecPtr) {
-      std::cout << "Capturing unsafe " << name << std::endl;
-
       entry->CaptureValueUnsafe(name, (void*)collBuffers.vecPtr);
     }
 
@@ -96,15 +93,15 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   auto doubleMap = params.getDoubleMap();
   auto stringMap = params.getStringMap();
 
-  auto gpintKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_int_keys");
-  auto gpfloatKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_float_keys");
-  auto gpdoubleKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_double_keys");
-  auto gpstringKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>("GP_string_keys");
+  auto gpintKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::intKey);
+  auto gpfloatKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::floatKey);
+  auto gpdoubleKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::doubleKey);
+  auto gpstringKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::stringKey);
 
-  auto gpintValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<int>>>("GP_int_values");
-  auto gpfloatValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<float>>>("GP_float_values");
-  auto gpdoubleValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<double>>>("GP_double_values");
-  auto gpstringValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<std::string>>>("GP_string_values");
+  auto gpintValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<int>>>(root_utils::intValue);
+  auto gpfloatValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<float>>>(root_utils::floatValue);
+  auto gpdoubleValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<double>>>(root_utils::doubleValue);
+  auto gpstringValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<std::string>>>(root_utils::stringValue);
 
   gpintKeys->clear();
   gpintValues->clear();
@@ -118,9 +115,6 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   for (auto& [k, v] : floatMap) {
     gpfloatKeys->emplace_back(k);
     gpfloatValues->emplace_back(v);
-    for (auto& x : v) {
-      std::cout << "floatMap: " << x << std::endl;
-    }
   }
   gpdoubleKeys->clear();
   gpdoubleValues->clear();
@@ -181,15 +175,15 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels
   // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
 
   // gp = Generic Parameters
-  auto gpintKeys = model->MakeField<std::vector<std::string>>("GP_int_keys");
-  auto gpfloatKeys = model->MakeField<std::vector<std::string>>("GP_float_keys");
-  auto gpdoubleKeys = model->MakeField<std::vector<std::string>>("GP_double_keys");
-  auto gpstringKeys = model->MakeField<std::vector<std::string>>("GP_string_keys");
+  auto gpintKeys = model->MakeField<std::vector<std::string>>(root_utils::intKey);
+  auto gpfloatKeys = model->MakeField<std::vector<std::string>>(root_utils::floatKey);
+  auto gpdoubleKeys = model->MakeField<std::vector<std::string>>(root_utils::doubleKey);
+  auto gpstringKeys = model->MakeField<std::vector<std::string>>(root_utils::stringKey);
 
-  auto gpintValues = model->MakeField<std::vector<std::vector<int>>>("GP_int_values");
-  auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>("GP_float_values");
-  auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>("GP_double_values");
-  auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>("GP_string_values");
+  auto gpintValues = model->MakeField<std::vector<std::vector<int>>>(root_utils::intValue);
+  auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>(root_utils::floatValue);
+  auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>(root_utils::doubleValue);
+  auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>(root_utils::stringValue);
 
   model->Freeze();
   return model;
@@ -198,31 +192,31 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels
 void ROOTNTupleWriter::finish() {
 
   auto podioVersion = podio::version::build_version;
-  auto version_field = m_metadata->MakeField<std::vector<int>>(root_utils::versionBranchName);
-  *version_field = {podioVersion.major, podioVersion.minor, podioVersion.patch};
+  auto versionField = m_metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
+  *versionField = {podioVersion.major, podioVersion.minor, podioVersion.patch};
 
   auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
-  auto edm_field = m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
-  *edm_field = edmDefinitions;
+  auto edmField = m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  *edmField = edmDefinitions;
 
-  auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>("available_categories");
-  for (auto& [c, _] : m_collectionId ) {
+  auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
+  for (auto& [c, _] : m_collectionId) {
     availableCategoriesField->push_back(c);
   }
 
   for (auto& category : m_categories) {
     auto idField = m_metadata->MakeField<std::vector<int>>(root_utils::idTableName(category));
     *idField = m_collectionId[category];
-    auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>(category + "_name");
+    auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collectionName(category));
     *collectionNameField = m_collectionName[category];
     auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collInfoName(category));
     *collectionTypeField = m_collectionType[category];
-    auto subsetCollectionField = m_metadata->MakeField<std::vector<bool>>(category + "_test");
+    auto subsetCollectionField = m_metadata->MakeField<std::vector<bool>>(root_utils::subsetCollection(category));
     *subsetCollectionField = m_isSubsetCollection[category];
   }
 
   m_metadata->Freeze();
-  m_metadataWriter = ROOT::Experimental::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file.get(), {});
+  m_metadataWriter = ROOT::Experimental::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file, {});
 
   m_metadataWriter->Fill();
 
@@ -232,6 +226,8 @@ void ROOTNTupleWriter::finish() {
   // unwritten output
   m_writers.clear();
   m_metadataWriter.reset();
+
+  m_finished = true;
 }
 
 } //namespace podio

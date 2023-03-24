@@ -33,6 +33,41 @@ constexpr static auto metaTreeName = "podio_metadata";
 constexpr static auto paramBranchName = "PARAMETERS";
 
 /**
+ * Names of the fields with the keys and values of the generic parameters for
+ * the RNTuples until map types are supported
+ */
+constexpr static auto intKey = "GPIntKeys";
+constexpr static auto floatKey = "GPFloatKeys";
+constexpr static auto doubleKey = "GPDoubleKeys";
+constexpr static auto stringKey = "GPStringKeys";
+
+constexpr static auto intValue = "GPIntValues";
+constexpr static auto floatValue = "GPFloatValues";
+constexpr static auto doubleValue = "GPDoubleValues";
+constexpr static auto stringValue = "GPStringValues";
+
+/**
+ * Name of the field with the list of categories for RNTuples
+ */
+constexpr static auto availableCategories = "availableCategories";
+
+/**
+ * Name of the field with the names of the collections for RNTuples
+ */
+inline std::string collectionName(const std::string& category) {
+  return category + "_collectionNames";
+}
+
+/**
+ * Name of the field with the flag for subset collections for RNTuples
+ */
+inline std::string subsetCollection(const std::string& category) {
+  return category + "_isSubsetCollections";
+}
+
+
+
+/**
  * The name of the branch into which we store the build version of podio at the
  * time of writing the file
  */
