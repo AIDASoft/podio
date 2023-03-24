@@ -144,7 +144,7 @@ TEST_CASE("Associations templated accessors", "[associations]") {
     REQUIRE(hit == assoc.get<ExampleHit>());
     REQUIRE(cluster == assoc.get<ExampleCluster>());
 
-    const auto [h, c, w] = assoc;
+    const auto& [h, c, w] = assoc;
     REQUIRE(h == hit);
     REQUIRE(c == cluster);
     REQUIRE(w == 1.0);
@@ -156,7 +156,7 @@ TEST_CASE("Associations templated accessors", "[associations]") {
     REQUIRE(hit == a.get<ExampleHit>());
     REQUIRE(cluster == a.get<ExampleCluster>());
 
-    const auto [h, c, w] = a;
+    const auto& [h, c, w] = a;
     REQUIRE(h == hit);
     REQUIRE(c == cluster);
     REQUIRE(w == 1.0);
