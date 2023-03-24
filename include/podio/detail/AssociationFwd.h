@@ -36,16 +36,33 @@ namespace detail {
   template <typename T>
   using GetCollT = typename GetCollType<T>::type;
 
+  /**
+   * Get the collection type name for an AssociationCollection
+   *
+   * @tparam FromT the From type of the association
+   * @tparam ToT the To type of the association
+   * @returns a type string that is a valid c++ template instantiation
+   */
   template <typename FromT, typename ToT>
-  std::string associationCollTypeName() {
+  inline const std::string& associationCollTypeName() {
     const static std::string typeName =
         std::string("podio::AssociationCollection<") + FromT::TypeName + "," + ToT::TypeName + ">";
     return typeName;
   }
 
+  /**
+   * Get an SIO friendly type name for an AssociationCollection (necessary for
+   * registration in the SIOBlockFactory)
+   *
+   * @tparam FromT the From type of the association
+   * @tparam ToT the To type of
+   * the association
+   * @returns a string that uniquely identifies this combination
+   * of From and To types
+   */
   template <typename FromT, typename ToT>
-  inline std::string associationSIOName() {
-    auto n = std::string("ASSOCIATION_FROM_") + FromT::TypeName + "_TO_" + ToT::TypeName;
+  inline const std::string& associationSIOName() {
+    static auto n = std::string("ASSOCIATION_FROM_") + FromT::TypeName + "_TO_" + ToT::TypeName;
     std::replace(n.begin(), n.end(), ':', '_');
     return n;
   }
