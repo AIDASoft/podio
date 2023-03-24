@@ -26,15 +26,10 @@
 #include <stdexcept>
 #include <vector>
 
-// using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
-PODIO_DECLARE_ASSOCIATION(TestAssocCollection, ExampleMC, ex42::ExampleWithARelation)
-PODIO_DECLARE_ASSOCIATION(TestAssocCollection2, ExampleMC, ExampleHit)
-
-namespace ex42 {
-PODIO_DECLARE_ASSOCIATION(AssocInNamespace, ExampleWithARelation, ExampleMC)
-}
-
-using A = ex42::AssocInNamespace;
+// Define an association that is used for the I/O tests
+using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
+// Make sure the I/O parts are dynamically registered
+PODIO_DECLARE_ASSOCIATION(ExampleMC, ex42::ExampleWithARelation)
 
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {

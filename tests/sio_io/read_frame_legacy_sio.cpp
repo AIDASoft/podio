@@ -2,11 +2,8 @@
 
 #include "podio/Frame.h"
 #include "podio/SIOLegacyReader.h"
-#include "podio/AssociationSIOBlock.h"
 
 #include <iostream>
-
-const static auto foo = podio::AssociationSIOBlock<ExampleMC, ex42::ExampleWithARelation>{};
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
