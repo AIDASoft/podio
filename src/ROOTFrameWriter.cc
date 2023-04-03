@@ -76,7 +76,7 @@ void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<Stor
       branches.refs.push_back(catInfo.tree->Branch(brName.c_str(), refColl.get()));
     } else {
       // For "proper" collections we populate all branches, starting with the data
-      auto bufferDataType = "vector<" + coll->getDataTypeName() + ">";
+      const auto bufferDataType = "vector<" + std::string(coll->getDataTypeName()) + ">";
       branches.data = catInfo.tree->Branch(name.c_str(), bufferDataType.c_str(), buffers.data);
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());

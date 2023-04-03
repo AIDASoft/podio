@@ -6,7 +6,7 @@
 #include "podio/SchemaEvolution.h"
 
 #include <iostream>
-#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -56,11 +56,11 @@ public:
   virtual size_t size() const = 0;
 
   /// fully qualified type name
-  virtual std::string getTypeName() const = 0;
+  virtual const std::string_view getTypeName() const = 0;
   /// fully qualified type name of elements - with namespace
-  virtual std::string getValueTypeName() const = 0;
+  virtual const std::string_view getValueTypeName() const = 0;
   /// fully qualified type name of stored POD elements - with namespace
-  virtual std::string getDataTypeName() const = 0;
+  virtual const std::string_view getDataTypeName() const = 0;
   /// schema version of the collection
   virtual SchemaVersionT getSchemaVersion() const = 0;
 

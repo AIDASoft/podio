@@ -220,7 +220,7 @@ class SIOBlockFactory {
 private:
   SIOBlockFactory() = default;
 
-  typedef std::map<std::string, SIOBlock*> BlockMap;
+  typedef std::unordered_map<std::string, SIOBlock*> BlockMap;
   BlockMap _map{};
 
 public:

@@ -58,7 +58,7 @@ class FrameReadTest(unittest.TestCase):
     # Not going over all collections here, as that should all be covered by the
     # c++ test cases; Simply picking a few and doing some basic tests
     mc_particles = self.event.get('mcparticles')
-    self.assertEqual(mc_particles.getValueTypeName(), 'ExampleMC')
+    self.assertEqual(mc_particles.getValueTypeName().data(), 'ExampleMC')
     self.assertEqual(len(mc_particles), 10)
     self.assertEqual(len(mc_particles[0].daughters()), 4)
 

@@ -93,6 +93,10 @@ public:
   /// The schema version of UserDataCollections
   static constexpr SchemaVersionT schemaVersion = 1;
 
+  constexpr static auto typeName = userDataCollTypeName<BasicType>();
+  constexpr static auto valueTypeName = userDataTypeName<BasicType>();
+  constexpr static auto dataTypeName = userDataTypeName<BasicType>();
+
   /// prepare buffers for serialization
   void prepareForWrite() const override {
   }
@@ -133,18 +137,18 @@ public:
   }
 
   /// fully qualified type name
-  std::string getTypeName() const override {
-    return userDataCollTypeName<BasicType>();
+  const std::string_view getTypeName() const override {
+    return typeName;
   }
 
   /// fully qualified type name of elements - with namespace
-  std::string getValueTypeName() const override {
-    return userDataTypeName<BasicType>();
+  const std::string_view getValueTypeName() const override {
+    return valueTypeName;
   }
 
   /// fully qualified type name of stored POD elements - with namespace
-  std::string getDataTypeName() const override {
-    return userDataTypeName<BasicType>();
+  const std::string_view getDataTypeName() const override {
+    return dataTypeName;
   }
 
   /// clear the collection and all internal states

@@ -56,7 +56,7 @@ void ROOTWriter::createBranches(const std::vector<StoreCollection>& collections)
     if (collBuffers.data) {
       // only create the data buffer branch if necessary
 
-      auto collClassName = "vector<" + coll->getDataTypeName() + ">";
+      const auto collClassName = "vector<" + std::string(coll->getDataTypeName()) + ">";
 
       branches.data = m_datatree->Branch(name.c_str(), collClassName.c_str(), collBuffers.data);
     }
