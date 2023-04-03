@@ -43,9 +43,7 @@ struct CollectionWriteBuffers {
 };
 
 struct CollectionReadBuffers {
-  bool needsSchemaEvolution{false};
   void* data{nullptr};
-  void* data_oldschema{nullptr};
   CollRefCollection* references{nullptr};
   VectorMembersInfo* vectorMembers{nullptr};
 
