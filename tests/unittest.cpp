@@ -15,7 +15,11 @@
 #include "podio/ROOTLegacyReader.h"
 #include "podio/ROOTReader.h"
 #include "podio/podioVersion.h"
-#ifdef PODIO_ENABLE_SIO
+
+#ifndef PODIO_ENABLE_SIO
+  #define PODIO_ENABLE_SIO 0
+#endif
+#if PODIO_ENABLE_SIO
   #include "podio/SIOFrameReader.h"
   #include "podio/SIOLegacyReader.h"
   #include "podio/SIOReader.h"
@@ -1061,7 +1065,7 @@ TEST_CASE("Missing files (ROOT readers)", "[basics]") {
   REQUIRE_THROWS_AS(root_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
 }
 
-#ifdef PODIO_ENABLE_SIO
+#if PODIO_ENABLE_SIO
 TEST_CASE("Missing files (SIO readers)", "[basics]") {
   auto sio_reader = podio::SIOReader();
   REQUIRE_THROWS_AS(sio_reader.openFile("NonExistentFile.sio"), std::runtime_error);
