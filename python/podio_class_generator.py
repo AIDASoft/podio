@@ -464,7 +464,6 @@ have resolvable schema evolution incompatibilities:")
         list_cont.append(f'  {os.path.join(target_folder, fname)}')
 
       list_cont.append(')')
-      list_cont.append(f'SET_PROPERTY(SOURCE ${{{name}}} PROPERTY GENERATED TRUE)\n')
 
       return '\n'.join(list_cont)
 
