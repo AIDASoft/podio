@@ -86,8 +86,7 @@ SET(root_sources
   ROOTLegacyReader.cc
 )
 if(ENABLE_RNTUPLE)
-  set(root_sources
-      ${root_sources}
+  list(APPEND root_sources
       ROOTNTupleReader.cc
       ROOTNTupleWriter.cc
      )
@@ -99,8 +98,7 @@ SET(root_headers
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
 if(ENABLE_RNTUPLE)
-  set(root_headers
-      ${root_headers}
+  list(APPEND root_headers
       ${CMAKE_SOURCE_DIR}/include/podio/ROOTNTupleReader.h
       ${CMAKE_SOURCE_DIR}/include/podio/ROOTNTupleWriter.h
      )

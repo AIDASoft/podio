@@ -211,7 +211,7 @@ void ROOTNTupleWriter::finish() {
     *collectionNameField = m_collectionName[category];
     auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collInfoName(category));
     *collectionTypeField = m_collectionType[category];
-    auto subsetCollectionField = m_metadata->MakeField<std::vector<bool>>(root_utils::subsetCollection(category));
+    auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>(root_utils::subsetCollection(category));
     *subsetCollectionField = m_isSubsetCollection[category];
   }
 

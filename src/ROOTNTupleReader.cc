@@ -67,7 +67,7 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   m_collectionType[category] = collectionType(0);
    
   std::cout << "Getting subsetCollection" << std::endl;
-  auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<bool>>(root_utils::subsetCollection(category));
+  auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<short>>(root_utils::subsetCollection(category));
   m_isSubsetCollection[category] = subsetCollection(0);
 
   return true;

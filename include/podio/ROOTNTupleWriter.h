@@ -12,8 +12,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
-#include <string_view>
+#include <unordered_map>
 
 namespace podio {
 
@@ -35,17 +34,17 @@ private:
   std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
 
   std::unique_ptr<ROOT::Experimental::RNTupleModel> m_metadata{};
-  std::map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleWriter>> m_writers{};
+  std::unordered_map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleWriter>> m_writers{};
   std::unique_ptr<ROOT::Experimental::RNTupleWriter> m_metadataWriter{};
 
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 
-  std::map<std::string, std::vector<int>> m_collectionId{};
-  std::map<std::string, std::vector<std::string>> m_collectionName{};
-  std::map<std::string, std::vector<std::string>> m_collectionType{};
-  std::map<std::string, std::vector<bool>> m_isSubsetCollection{};
+  std::unordered_map<std::string, std::vector<int>> m_collectionId{};
+  std::unordered_map<std::string, std::vector<std::string>> m_collectionName{};
+  std::unordered_map<std::string, std::vector<std::string>> m_collectionType{};
+  std::unordered_map<std::string, std::vector<short>> m_isSubsetCollection{};
   std::set<std::string> m_categories{};
 
   bool m_finished{false};

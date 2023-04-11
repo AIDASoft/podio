@@ -7,8 +7,7 @@
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
-#include <iostream>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -75,17 +74,17 @@ private:
   podio::version::Version m_fileVersion{};
   DatamodelDefinitionHolder m_datamodelHolder{};
 
-  std::map<std::string, std::vector<std::unique_ptr<ROOT::Experimental::RNTupleReader>>> m_readers{};
-  std::map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleReader>> m_metadata_readers{};
+  std::unordered_map<std::string, std::vector<std::unique_ptr<ROOT::Experimental::RNTupleReader>>> m_readers{};
+  std::unordered_map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
-  std::map<std::string, int> m_entries{};
-  std::map<std::string, unsigned> m_totalEntries{};
+  std::unordered_map<std::string, int> m_entries{};
+  std::unordered_map<std::string, unsigned> m_totalEntries{};
 
-  std::map<std::string, std::vector<int>> m_collectionId{};
-  std::map<std::string, std::vector<std::string>> m_collectionName{};
-  std::map<std::string, std::vector<std::string>> m_collectionType{};
-  std::map<std::string, std::vector<bool>> m_isSubsetCollection{};
+  std::unordered_map<std::string, std::vector<int>> m_collectionId{};
+  std::unordered_map<std::string, std::vector<std::string>> m_collectionName{};
+  std::unordered_map<std::string, std::vector<std::string>> m_collectionType{};
+  std::unordered_map<std::string, std::vector<short>> m_isSubsetCollection{};
   std::vector<std::string> m_availableCategories{};
 
 };
