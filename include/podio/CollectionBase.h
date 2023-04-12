@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#define DEPR_SIGNATURE [[deprecated("The return type of this function will become string_view soon")]]
+
 namespace podio {
 // forward declarations
 class ICollectionProvider;
@@ -63,11 +65,11 @@ public:
   virtual size_t size() const = 0;
 
   /// fully qualified type name
-  virtual std::string getTypeName() const = 0;
+  DEPR_SIGNATURE virtual std::string getTypeName() const = 0;
   /// fully qualified type name of elements - with namespace
-  virtual std::string getValueTypeName() const = 0;
+  DEPR_SIGNATURE virtual std::string getValueTypeName() const = 0;
   /// fully qualified type name of stored POD elements - with namespace
-  virtual std::string getDataTypeName() const = 0;
+  DEPR_SIGNATURE virtual std::string getDataTypeName() const = 0;
   /// schema version of the collection
   virtual SchemaVersionT getSchemaVersion() const = 0;
 
