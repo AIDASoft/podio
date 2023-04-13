@@ -9,19 +9,21 @@ namespace {{ package_name }}::meta {
  */
 static constexpr auto {{ package_name }}__JSONDefinition = R"DATAMODELDEF({{ edm_definition }})DATAMODELDEF";
 
-using namespace std::string_view_literals;
 
 /**
  * The names of all relations and vector members for all datatypes
  */
-const static podio::RelationNameMapping {{ package_name }}__relationNames = {
+inline podio::RelationNameMapping {{ package_name }}__getRelationNames() {
+  using namespace std::string_view_literals;
+  return {
 {% for typeName, type in datatypes.items() %}
-  {"{{ typeName }}",
-   { {{ (type.OneToManyRelations + type.OneToOneRelations) | map(attribute="name") | map("quoted_sv") | join(", ") }} },
-   { {{ type.VectorMembers | map(attribute="name") | map("quoted_sv") | join(", ")}} },
-  },
+    {"{{ typeName }}"sv,
+      { {{ (type.OneToManyRelations + type.OneToOneRelations) | map(attribute="name") | map("quoted_sv") | join(", ") }} },
+      { {{ type.VectorMembers | map(attribute="name") | map("quoted_sv") | join(", ")}} },
+    },
 {% endfor %}
-};
+  };
+}
 
 /**
  * The schema version at generation time
@@ -38,10 +40,10 @@ static constexpr podio::SchemaVersionT schemaVersion = {{ schema_version }};
 class DatamodelRegistryIndex {
 public:
   static size_t value() {
-    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition, {{ package_name }}__relationNames));
+    static const auto relationNames = {{ package_name }}__getRelationNames();
+    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition, relationNames));
     return index.m_value;
   }
-
 private:
   DatamodelRegistryIndex(size_t v) : m_value(v) {}
   size_t m_value{podio::DatamodelRegistry::NoDefinitionAvailable};
