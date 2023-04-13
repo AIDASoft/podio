@@ -164,6 +164,9 @@ podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
   return {{ package_name }}::meta::schemaVersion;
 }
 
+// anonymous namespace for registration with the CollectionBufferFactory. This
+// ensures that we don't have to make up arbitrary namespace names here, since
+// none of this is publicly visible
 namespace {
 podio::CollectionReadBuffers createBuffers(bool isSubset) {
   auto readBuffers = podio::CollectionReadBuffers{};
@@ -205,6 +208,8 @@ podio::CollectionReadBuffers createBuffers(bool isSubset) {
   return readBuffers;
 }
 
+// The usual trick with an IIFE and a static variable inside a funtion and then
+// making sure to call that function during shared library loading
 bool registerCollection() {
   const static auto reg = []() {
     auto& factory = podio::CollectionBufferFactory::mutInstance();
