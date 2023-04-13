@@ -72,6 +72,11 @@ RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) con
     return {emptyVec, emptyVec};
   }
 
+  // Strip Collection if necessary
+  if (typeName.size() > 10 && typeName.substr(typeName.size() - 10) == "Collection") {
+    typeName = typeName.substr(0, typeName.size() - 10);
+  }
+
   if (const auto it = m_relations.find(typeName); it != m_relations.end()) {
     return it->second;
   }
