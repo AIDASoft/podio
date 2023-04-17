@@ -24,6 +24,18 @@ ROOTNTupleWriter::~ROOTNTupleWriter() {
   }
 }
 
+template<typename T>
+void ROOTNTupleWriter::fillParams(const std::string& category, GenericParameters& params) {
+  auto gpKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::getGPKey<T>());
+  auto gpValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<T>>>(root_utils::getGPValue<T>());
+  gpKeys->clear();
+  gpValues->clear();
+  for (auto& [k, v] : params.getMap<T>()) {
+    gpKeys->emplace_back(k);
+    gpValues->emplace_back(v);
+  }
+}
+
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
@@ -88,46 +100,10 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   }
 
   auto params = frame.getParameters();
-  auto intMap = params.getIntMap();
-  auto floatMap = params.getFloatMap();
-  auto doubleMap = params.getDoubleMap();
-  auto stringMap = params.getStringMap();
-
-  auto gpintKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::intKey);
-  auto gpfloatKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::floatKey);
-  auto gpdoubleKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::doubleKey);
-  auto gpstringKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::stringKey);
-
-  auto gpintValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<int>>>(root_utils::intValue);
-  auto gpfloatValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<float>>>(root_utils::floatValue);
-  auto gpdoubleValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<double>>>(root_utils::doubleValue);
-  auto gpstringValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<std::string>>>(root_utils::stringValue);
-
-  gpintKeys->clear();
-  gpintValues->clear();
-  for (auto& [k, v] : intMap) {
-    gpintKeys->emplace_back(k);
-    gpintValues->emplace_back(v);
-  }
-
-  gpfloatKeys->clear();
-  gpfloatValues->clear();
-  for (auto& [k, v] : floatMap) {
-    gpfloatKeys->emplace_back(k);
-    gpfloatValues->emplace_back(v);
-  }
-  gpdoubleKeys->clear();
-  gpdoubleValues->clear();
-  for (auto& [k, v] : doubleMap) {
-    gpdoubleKeys->emplace_back(k);
-    gpdoubleValues->emplace_back(v);
-  }
-  gpstringKeys->clear();
-  gpstringValues->clear();
-  for (auto& [k, v] : stringMap) {
-    gpstringKeys->emplace_back(k);
-    gpstringValues->emplace_back(v);
-  }
+  fillParams<int>(category, params);
+  fillParams<float>(category, params);
+  fillParams<double>(category, params);
+  fillParams<std::string>(category, params);
 
   m_writers[category]->Fill();
   m_categories.insert(category);

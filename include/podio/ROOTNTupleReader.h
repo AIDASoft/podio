@@ -69,6 +69,9 @@ private:
    */
   GenericParameters readEventMetaData(const std::string& name, unsigned entNum);
 
+  template<typename T>
+  void readParams(const std::string& name, unsigned entNum, GenericParameters& params);
+
   std::unique_ptr<ROOT::Experimental::RNTupleReader> m_metadata{};
 
   podio::version::Version m_fileVersion{};

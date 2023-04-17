@@ -47,6 +47,43 @@ constexpr static auto doubleValue = "GPDoubleValues";
 constexpr static auto stringValue = "GPStringValues";
 
 /**
+ * Get the name of the key depending on the type
+ */
+template <typename T>
+constexpr auto getGPKey() {
+  if constexpr (std::is_same<T, int>::value) {
+    return intKey;
+  } else if constexpr (std::is_same<T, float>::value) {
+    return floatKey;
+  } else if constexpr (std::is_same<T, double>::value) {
+    return doubleKey;
+  } else if constexpr (std::is_same<T, std::string>::value) {
+    return stringKey;
+  } else {
+    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
+  }
+}
+
+/**
+ * Get the name of the value depending on the type
+ */
+template <typename T>
+constexpr auto getGPValue() {
+  if constexpr (std::is_same<T, int>::value) {
+    return intValue;
+  } else if constexpr (std::is_same<T, float>::value) {
+    return floatValue;
+  } else if constexpr (std::is_same<T, double>::value) {
+    return doubleValue;
+  } else if constexpr (std::is_same<T, std::string>::value) {
+    return stringValue;
+  } else {
+    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
+  }
+}
+
+
+/**
  * Name of the field with the list of categories for RNTuples
  */
 constexpr static auto availableCategories = "availableCategories";

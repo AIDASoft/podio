@@ -187,6 +187,7 @@ private:
     }
   }
 
+private:
   /// Get the mutex that guards the map for the given type
   template <typename T>
   std::mutex& getMutex() const {

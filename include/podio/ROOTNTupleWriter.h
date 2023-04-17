@@ -24,6 +24,9 @@ public:
   ROOTNTupleWriter(const ROOTNTupleWriter&) = delete;
   ROOTNTupleWriter& operator=(const ROOTNTupleWriter&) = delete;
 
+  template<typename T>
+  void fillParams(const std::string& category, GenericParameters& params);
+
   void writeFrame(const podio::Frame& frame, const std::string& category);
   void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
   void finish();

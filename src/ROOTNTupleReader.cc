@@ -11,39 +11,26 @@
 
 namespace podio {
 
+template<typename T>
+void ROOTNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
+  auto keyView   = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKey<T>());
+  auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValue<T>());
+
+  auto keys = keyView(entNum);
+  auto values = valueView(entNum);
+
+  for (size_t i = 0; i < keys.size(); ++i) {
+    params.getMap<T>()[keys[i]] = values[i];
+  }
+}
+
 GenericParameters ROOTNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
   GenericParameters params;
 
-  auto intKeyView    = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::intKey);
-  auto floatKeyView  = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::floatKey);
-  auto doubleKeyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::doubleKey);
-  auto stringKeyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::stringKey);
-
-  auto intValueView    = m_readers[name][0]->GetView<std::vector<std::vector<int>>>(root_utils::intValue);
-  auto floatValueView  = m_readers[name][0]->GetView<std::vector<std::vector<float>>>(root_utils::floatValue);
-  auto doubleValueView = m_readers[name][0]->GetView<std::vector<std::vector<double>>>(root_utils::doubleValue);
-  auto stringValueView = m_readers[name][0]->GetView<std::vector<std::vector<std::string>>>(root_utils::stringValue);
-
-  auto keys = intKeyView(entNum);
-  auto valuesInt = intValueView(entNum);
-  for (size_t i = 0; i < keys.size(); ++i) {
-    params.getIntMap()[keys[i]] = valuesInt[i];
-  }
-  keys = floatKeyView(entNum);
-  auto valuesFloat = floatValueView(entNum);
-  for (size_t i = 0; i < keys.size(); ++i) {
-    params.getFloatMap()[keys[i]] = valuesFloat[i];
-  }
-  keys = doubleKeyView(entNum);
-  auto valuesDouble = doubleValueView(entNum);
-  for (size_t i = 0; i < keys.size(); ++i) {
-    params.getDoubleMap()[keys[i]] = valuesDouble[i];
-  }
-  keys = stringKeyView(entNum);
-  auto valuesString = stringValueView(entNum);
-  for (size_t i = 0; i < keys.size(); ++i) {
-    params.getStringMap()[keys[i]] = valuesString[i];
-  }
+  readParams<int>(name, entNum, params);
+  readParams<float>(name, entNum, params);
+  readParams<double>(name, entNum, params);
+  readParams<std::string>(name, entNum, params);
 
   return params;
 }
@@ -58,15 +45,12 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   auto id = m_metadata_readers[filename]->GetView<std::vector<int>>(root_utils::idTableName(category));
   m_collectionId[category] = id(0);
 
-  std::cout << "Getting collectionName" << std::endl;
   auto collectionName = m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collectionName(category));
   m_collectionName[category] = collectionName(0);
 
-  std::cout << "Getting collectionType" << std::endl;
   auto collectionType = m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collInfoName(category));
   m_collectionType[category] = collectionType(0);
    
-  std::cout << "Getting subsetCollection" << std::endl;
   auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<short>>(root_utils::subsetCollection(category));
   m_isSubsetCollection[category] = subsetCollection(0);
 
@@ -134,7 +118,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     }
   }
 
-  std::cout << "Reading entry with category " << category << " and number " << entNum << std::endl;
   m_entries[category] = entNum+1;
 
   ROOTFrameData::BufferMap buffers;
@@ -143,8 +126,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   std::map<std::pair<std::string, int>, std::vector<podio::ObjectID>*> tmp;
 
   for (size_t i = 0; i < m_collectionId[category].size(); ++i) {
-    std::cout << "i = " << i << " " << m_collectionId[category][i] << " " << m_collectionType[category][i] << " " << m_collectionName[category][i] << std::endl;
-
     const auto collectionClass = TClass::GetClass(m_collectionType[category][i].c_str());
 
     auto collection =
@@ -204,7 +185,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
       }
     }
 
-    std::cout << "CaptureValueUnsafe done" << std::endl;
     buffers.emplace(m_collectionName[category][i], std::move(collBuffers));
   }
 
@@ -222,22 +202,10 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   }
 
   auto parameters = readEventMetaData(category, entNum);
-  auto table = std::make_shared<CollectionIDTable>();
 
   auto names = m_collectionName[category];
   auto ids = m_collectionId[category];
-
-  // Sort the ids and collection names to recreate the collection ID table with
-  // the names following the order of the IDs
-  std::vector<std::pair<int, std::string>> v;
-  v.reserve(names.size());
-  for (size_t i = 0; i < names.size(); ++i) {
-    v.emplace_back(std::make_pair<int, std::string>(int(ids[i]), std::string(names[i])));
-  }
-  std::sort(v.begin(), v.end());
-  for (auto& [id, name] : v) {
-    table->add(name);
-  }
+  auto table = std::make_shared<CollectionIDTable>(ids, names);
 
   return std::make_unique<ROOTFrameData>(std::move(buffers), table, std::move(parameters));
 }
