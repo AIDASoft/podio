@@ -123,6 +123,8 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   ROOTFrameData::BufferMap buffers;
   auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
 
+  // This map is needed to keep the pointers to the vectors that
+  // will be written later alive
   std::map<std::pair<std::string, int>, std::vector<podio::ObjectID>*> tmp;
 
   for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
@@ -163,13 +165,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     }
     if (auto* refCollections = collBuffers.references) {
       for (size_t j = 0; j < refCollections->size(); ++j) {
-        // // The unique_ptrs are nullptrs at the beginning, we first initialize
-        // // them and then fill the values with the read data since
-        // refCollections->at(j) = std::make_unique<std::vector<podio::ObjectID>>();
-        // const auto brName = root_utils::refBranch(m_collectionName[category][i], j);
-        // std::cout << "brName = " << brName << " " << (refCollections->at(j) == nullptr) << std::endl;
-        // dentry->CaptureValueUnsafe(brName, (*refCollections)[j].get());
-
         auto vec = new std::vector<podio::ObjectID>;
         const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], j);
         dentry->CaptureValueUnsafe(brName, vec);
