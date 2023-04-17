@@ -151,15 +151,15 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels
   // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
 
   // gp = Generic Parameters
-  auto gpintKeys = model->MakeField<std::vector<std::string>>(root_utils::intKey);
-  auto gpfloatKeys = model->MakeField<std::vector<std::string>>(root_utils::floatKey);
-  auto gpdoubleKeys = model->MakeField<std::vector<std::string>>(root_utils::doubleKey);
-  auto gpstringKeys = model->MakeField<std::vector<std::string>>(root_utils::stringKey);
+  auto gpintKeys = model->MakeField<std::vector<std::string>>(root_utils::intKeyName);
+  auto gpfloatKeys = model->MakeField<std::vector<std::string>>(root_utils::floatKeyName);
+  auto gpdoubleKeys = model->MakeField<std::vector<std::string>>(root_utils::doubleKeyName);
+  auto gpstringKeys = model->MakeField<std::vector<std::string>>(root_utils::stringKeyName);
 
-  auto gpintValues = model->MakeField<std::vector<std::vector<int>>>(root_utils::intValue);
-  auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>(root_utils::floatValue);
-  auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>(root_utils::doubleValue);
-  auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>(root_utils::stringValue);
+  auto gpintValues = model->MakeField<std::vector<std::vector<int>>>(root_utils::intValueName);
+  auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>(root_utils::floatValueName);
+  auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>(root_utils::doubleValueName);
+  auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>(root_utils::stringValueName);
 
   model->Freeze();
   return model;
