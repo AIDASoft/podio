@@ -83,9 +83,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
       for (auto& [type, vec] : (*vmInfo)) {
         const auto typeName = "vector<" + type + ">";
         const auto brName = root_utils::vecBranch(name, i++);
-        std::cout << typeName << " " << brName << std::endl;
         auto ptr = *(std::vector<int>**)vec;
-        std::cout << "Vector: Size is " << ptr->size();
         entry->CaptureValueUnsafe(brName, ptr);
       }
     }
@@ -118,8 +116,6 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels
 
     if (collBuffers.vecPtr) {
       auto collClassName = "std::vector<" + coll->getDataTypeName() +">";
-      std::cout << name << " " << collClassName << std::endl;
-      std::cout << "Making field with name = " << name << " and collClassName = " << collClassName << std::endl;
       auto field = ROOT::Experimental::Detail::RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
@@ -129,7 +125,6 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels
       for (auto& c [[maybe_unused]] : (*refColls)) {
         const auto brName = root_utils::refBranch(name, i);
         auto collClassName = "vector<podio::ObjectID>";
-        std::cout << "Making reference field with name = " << brName << " and collClassName = " << collClassName << std::endl;
         auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
         model->AddField(std::move(field));
         ++i;
