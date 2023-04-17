@@ -44,10 +44,15 @@ private:
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 
-  std::unordered_map<std::string, std::vector<int>> m_collectionId{};
-  std::unordered_map<std::string, std::vector<std::string>> m_collectionName{};
-  std::unordered_map<std::string, std::vector<std::string>> m_collectionType{};
-  std::unordered_map<std::string, std::vector<short>> m_isSubsetCollection{};
+  struct CollectionInfo {
+    std::vector<int> id{};
+    std::vector<std::string> name{};
+    std::vector<std::string> type{};
+    std::vector<short> isSubsetCollection{};
+  };
+
+  std::unordered_map<std::string, CollectionInfo> m_collectionInfo{};
+
   std::set<std::string> m_categories{};
 
   bool m_finished{false};

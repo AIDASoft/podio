@@ -43,16 +43,16 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   auto filename = m_filenames[0];
 
   auto id = m_metadata_readers[filename]->GetView<std::vector<int>>(root_utils::idTableName(category));
-  m_collectionId[category] = id(0);
+  m_collectionInfo[category].id = id(0);
 
   auto collectionName = m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collectionName(category));
-  m_collectionName[category] = collectionName(0);
+  m_collectionInfo[category].name = collectionName(0);
 
   auto collectionType = m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collInfoName(category));
-  m_collectionType[category] = collectionType(0);
+  m_collectionInfo[category].type = collectionType(0);
    
   auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<short>>(root_utils::subsetCollection(category));
-  m_isSubsetCollection[category] = subsetCollection(0);
+  m_collectionInfo[category].isSubsetCollection = subsetCollection(0);
 
   return true;
 }
@@ -112,7 +112,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     return nullptr;
   }
 
-  if (m_collectionId.find(category) == m_collectionId.end()) {
+  if (m_collectionInfo.find(category) == m_collectionInfo.end()) {
     if (!initCategory(category)) {
       return nullptr;
     }
@@ -125,14 +125,14 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
   std::map<std::pair<std::string, int>, std::vector<podio::ObjectID>*> tmp;
 
-  for (size_t i = 0; i < m_collectionId[category].size(); ++i) {
-    const auto collectionClass = TClass::GetClass(m_collectionType[category][i].c_str());
+  for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
+    const auto collectionClass = TClass::GetClass(m_collectionInfo[category].type[i].c_str());
 
     auto collection =
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
 
     const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
-    const auto bufferClass = m_isSubsetCollection[category][i] ? nullptr : TClass::GetClass(bufferClassName.c_str());
+    const auto bufferClass = m_collectionInfo[category].isSubsetCollection[i] ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
     auto collBuffers = podio::CollectionReadBuffers();
     const bool isSubsetColl = bufferClass == nullptr;
@@ -159,7 +159,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     }
 
     if (!isSubsetColl) {
-      dentry->CaptureValueUnsafe(m_collectionName[category][i], collBuffers.data);
+      dentry->CaptureValueUnsafe(m_collectionInfo[category].name[i], collBuffers.data);
     }
     if (auto* refCollections = collBuffers.references) {
       for (size_t j = 0; j < refCollections->size(); ++j) {
@@ -171,7 +171,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
         // dentry->CaptureValueUnsafe(brName, (*refCollections)[j].get());
 
         auto vec = new std::vector<podio::ObjectID>;
-        const auto brName = root_utils::refBranch(m_collectionName[category][i], j);
+        const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], j);
         dentry->CaptureValueUnsafe(brName, vec);
         tmp[{brName, j}] = vec;
       }
@@ -180,21 +180,21 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     if (auto* vecMembers = collBuffers.vectorMembers) {
       for (size_t j = 0; j < vecMembers->size(); ++j) {
         const auto typeName = "vector<" + vecMembers->at(j).first + ">";
-        const auto brName = root_utils::vecBranch(m_collectionName[category][i], j);
+        const auto brName = root_utils::vecBranch(m_collectionInfo[category].name[i], j);
         dentry->CaptureValueUnsafe(brName, vecMembers->at(j).second);
       }
     }
 
-    buffers.emplace(m_collectionName[category][i], std::move(collBuffers));
+    buffers.emplace(m_collectionInfo[category].name[i], std::move(collBuffers));
   }
 
   m_readers[category][0]->LoadEntry(entNum);
 
-  for (size_t i = 0; i < m_collectionId[category].size(); ++i) {
-    auto collBuffers = buffers[m_collectionName[category][i]];
+  for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
+    auto collBuffers = buffers[m_collectionInfo[category].name[i]];
     if (auto* refCollections = collBuffers.references) {
       for (size_t j = 0; j < refCollections->size(); ++j) {
-        const auto brName = root_utils::refBranch(m_collectionName[category][i], j);
+        const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], j);
         refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
       }
     }
@@ -203,9 +203,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
   auto parameters = readEventMetaData(category, entNum);
   if (!m_table) {
-    auto names = m_collectionName[category];
-    auto ids = m_collectionId[category];
-    m_table = std::make_shared<CollectionIDTable>(ids, names);
+    m_table = std::make_shared<CollectionIDTable>(m_collectionInfo[category].id, m_collectionInfo[category].name);
   }
 
   return std::make_unique<ROOTFrameData>(std::move(buffers), m_table, std::move(parameters));

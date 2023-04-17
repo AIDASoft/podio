@@ -92,10 +92,10 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     // entry->CaptureValueUnsafe(root_utils::paramBranchName, &const_cast<podio::GenericParameters&>(frame.getParameters()));
 
     if (new_category) {
-      m_collectionId[category].emplace_back(coll->getID());
-      m_collectionName[category].emplace_back(name);
-      m_collectionType[category].emplace_back(coll->getTypeName());
-      m_isSubsetCollection[category].emplace_back(coll->isSubsetCollection());
+      m_collectionInfo[category].id.emplace_back(coll->getID());
+      m_collectionInfo[category].name.emplace_back(name);
+      m_collectionInfo[category].type.emplace_back(coll->getTypeName());
+      m_collectionInfo[category].isSubsetCollection.emplace_back(coll->isSubsetCollection());
     }
   }
 
@@ -176,19 +176,19 @@ void ROOTNTupleWriter::finish() {
   *edmField = edmDefinitions;
 
   auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
-  for (auto& [c, _] : m_collectionId) {
+  for (auto& [c, _] : m_collectionInfo) {
     availableCategoriesField->push_back(c);
   }
 
   for (auto& category : m_categories) {
     auto idField = m_metadata->MakeField<std::vector<int>>(root_utils::idTableName(category));
-    *idField = m_collectionId[category];
+    *idField = m_collectionInfo[category].id;
     auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collectionName(category));
-    *collectionNameField = m_collectionName[category];
+    *collectionNameField = m_collectionInfo[category].name;
     auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collInfoName(category));
-    *collectionTypeField = m_collectionType[category];
+    *collectionTypeField = m_collectionInfo[category].type;
     auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>(root_utils::subsetCollection(category));
-    *subsetCollectionField = m_isSubsetCollection[category];
+    *subsetCollectionField = m_collectionInfo[category].isSubsetCollection;
   }
 
   m_metadata->Freeze();
@@ -198,7 +198,7 @@ void ROOTNTupleWriter::finish() {
 
   m_file->Write();
 
-  // All the tuple writers have to be deleted before the file so that they flush
+  // All the tuple writers must be deleted before the file so that they flush
   // unwritten output
   m_writers.clear();
   m_metadataWriter.reset();

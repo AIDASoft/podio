@@ -84,10 +84,15 @@ private:
   std::unordered_map<std::string, int> m_entries{};
   std::unordered_map<std::string, unsigned> m_totalEntries{};
 
-  std::unordered_map<std::string, std::vector<int>> m_collectionId{};
-  std::unordered_map<std::string, std::vector<std::string>> m_collectionName{};
-  std::unordered_map<std::string, std::vector<std::string>> m_collectionType{};
-  std::unordered_map<std::string, std::vector<short>> m_isSubsetCollection{};
+  struct CollectionInfo {
+    std::vector<int> id{};
+    std::vector<std::string> name{};
+    std::vector<std::string> type{};
+    std::vector<short> isSubsetCollection{};
+  };
+
+  std::unordered_map<std::string, CollectionInfo> m_collectionInfo{};
+
   std::vector<std::string> m_availableCategories{};
 
   std::shared_ptr<podio::CollectionIDTable> m_table{};
