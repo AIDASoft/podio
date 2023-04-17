@@ -20,7 +20,7 @@ void ROOTNTupleReader::readParams(const std::string& name, unsigned entNum, Gene
   auto values = valueView(entNum);
 
   for (size_t i = 0; i < keys.size(); ++i) {
-    params.getMap<T>()[keys[i]] = values[i];
+    params.getMap<T>()[keys[i]] = std::move(values[i]);
   }
 }
 
