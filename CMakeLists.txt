@@ -80,6 +80,7 @@ else()
   find_package(ROOT REQUIRED COMPONENTS RIO Tree ROOTNTuple)
   if(${ROOT_VERSION} VERSION_LESS 6.28.02)
     message(FATAL_ERROR "You are trying to build podio with support for the new ROOT NTuple format, but your ROOT version is too old. Please update ROOT to at least version 6.28.02")
+  endif()
 endif()
 
 # Check that root is compiled with a modern enough c++ standard
