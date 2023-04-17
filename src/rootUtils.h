@@ -36,29 +36,29 @@ constexpr static auto paramBranchName = "PARAMETERS";
  * Names of the fields with the keys and values of the generic parameters for
  * the RNTuples until map types are supported
  */
-constexpr static auto intKey = "GPIntKeys";
-constexpr static auto floatKey = "GPFloatKeys";
-constexpr static auto doubleKey = "GPDoubleKeys";
-constexpr static auto stringKey = "GPStringKeys";
+constexpr static auto intKeyName = "GPIntKeys";
+constexpr static auto floatKeyName = "GPFloatKeys";
+constexpr static auto doubleKeyName = "GPDoubleKeys";
+constexpr static auto stringKeyName = "GPStringKeys";
 
-constexpr static auto intValue = "GPIntValues";
-constexpr static auto floatValue = "GPFloatValues";
-constexpr static auto doubleValue = "GPDoubleValues";
-constexpr static auto stringValue = "GPStringValues";
+constexpr static auto intValueName = "GPIntValues";
+constexpr static auto floatValueName = "GPFloatValues";
+constexpr static auto doubleValueName = "GPDoubleValues";
+constexpr static auto stringValueName = "GPStringValues";
 
 /**
  * Get the name of the key depending on the type
  */
 template <typename T>
-constexpr auto getGPKey() {
+constexpr auto getGPKeyName() {
   if constexpr (std::is_same<T, int>::value) {
-    return intKey;
+    return intKeyName;
   } else if constexpr (std::is_same<T, float>::value) {
-    return floatKey;
+    return floatKeyName;
   } else if constexpr (std::is_same<T, double>::value) {
-    return doubleKey;
+    return doubleKeyName;
   } else if constexpr (std::is_same<T, std::string>::value) {
-    return stringKey;
+    return stringKeyName;
   } else {
     static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
   }
@@ -68,15 +68,15 @@ constexpr auto getGPKey() {
  * Get the name of the value depending on the type
  */
 template <typename T>
-constexpr auto getGPValue() {
+constexpr auto getGPValueName() {
   if constexpr (std::is_same<T, int>::value) {
-    return intValue;
+    return intValueName;
   } else if constexpr (std::is_same<T, float>::value) {
-    return floatValue;
+    return floatValueName;
   } else if constexpr (std::is_same<T, double>::value) {
-    return doubleValue;
+    return doubleValueName;
   } else if constexpr (std::is_same<T, std::string>::value) {
-    return stringValue;
+    return stringValueName;
   } else {
     static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
   }

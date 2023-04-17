@@ -13,8 +13,8 @@ namespace podio {
 
 template<typename T>
 void ROOTNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
-  auto keyView   = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKey<T>());
-  auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValue<T>());
+  auto keyView   = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
+  auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
   auto keys = keyView(entNum);
   auto values = valueView(entNum);

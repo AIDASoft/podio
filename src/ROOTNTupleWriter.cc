@@ -26,8 +26,8 @@ ROOTNTupleWriter::~ROOTNTupleWriter() {
 
 template<typename T>
 void ROOTNTupleWriter::fillParams(const std::string& category, GenericParameters& params) {
-  auto gpKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::getGPKey<T>());
-  auto gpValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<T>>>(root_utils::getGPValue<T>());
+  auto gpKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::getGPKeyName<T>());
+  auto gpValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
   gpKeys->clear();
   gpValues->clear();
   for (auto& [k, v] : params.getMap<T>()) {
