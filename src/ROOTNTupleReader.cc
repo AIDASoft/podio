@@ -95,8 +95,8 @@ unsigned ROOTNTupleReader::getEntries(const std::string& name) {
         std::cout << "Category " << name << " not found in file " << filename << std::endl;
       }
     }
+    m_totalEntries[name] = std::accumulate(m_readers[name].begin(), m_readers[name].end(), 0, [](int total, auto& reader) {return total + reader->GetNEntries();});
   }
-  m_totalEntries[name] = std::accumulate(m_readers[name].begin(), m_readers[name].end(), 0, [](int total, auto& reader) {return total + reader->GetNEntries();});
   return m_totalEntries[name];
 }
 

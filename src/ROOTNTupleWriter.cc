@@ -29,7 +29,9 @@ void ROOTNTupleWriter::fillParams(const std::string& category, GenericParameters
   auto gpKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto gpValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
   gpKeys->clear();
+  gpKeys->reserve(params.getMap<T>().size());
   gpValues->clear();
+  gpValues->reserve(params.getMap<T>().size());
   for (auto& [k, v] : params.getMap<T>()) {
     gpKeys->emplace_back(k);
     gpValues->emplace_back(v);
