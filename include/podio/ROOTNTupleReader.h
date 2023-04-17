@@ -90,6 +90,8 @@ private:
   std::unordered_map<std::string, std::vector<short>> m_isSubsetCollection{};
   std::vector<std::string> m_availableCategories{};
 
+  std::shared_ptr<podio::CollectionIDTable> m_table{};
+
 };
 
 } // namespace podio

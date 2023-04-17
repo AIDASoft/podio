@@ -202,12 +202,13 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   }
 
   auto parameters = readEventMetaData(category, entNum);
+  if (!m_table) {
+    auto names = m_collectionName[category];
+    auto ids = m_collectionId[category];
+    m_table = std::make_shared<CollectionIDTable>(ids, names);
+  }
 
-  auto names = m_collectionName[category];
-  auto ids = m_collectionId[category];
-  auto table = std::make_shared<CollectionIDTable>(ids, names);
-
-  return std::make_unique<ROOTFrameData>(std::move(buffers), table, std::move(parameters));
+  return std::make_unique<ROOTFrameData>(std::move(buffers), m_table, std::move(parameters));
 }
 
 } // namespace podio
