@@ -16,11 +16,8 @@ void ROOTNTupleReader::readParams(const std::string& name, unsigned entNum, Gene
   auto keyView   = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
-  auto keys = keyView(entNum);
-  auto values = valueView(entNum);
-
-  for (size_t i = 0; i < keys.size(); ++i) {
-    params.getMap<T>()[keys[i]] = std::move(values[i]);
+  for (size_t i = 0; i < keyView(entNum).size(); ++i) {
+    params.getMap<T>().emplace(std::move(keyView(entNum)[i]), std::move(valueView(entNum)[i]));
   }
 }
 
