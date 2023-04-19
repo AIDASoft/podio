@@ -11,9 +11,9 @@
 
 namespace podio {
 
-template<typename T>
+template <typename T>
 void ROOTNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
-  auto keyView   = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
+  auto keyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
   for (size_t i = 0; i < keyView(entNum).size(); ++i) {
@@ -42,13 +42,16 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   auto id = m_metadata_readers[filename]->GetView<std::vector<int>>(root_utils::idTableName(category));
   m_collectionInfo[category].id = id(0);
 
-  auto collectionName = m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collectionName(category));
+  auto collectionName =
+      m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collectionName(category));
   m_collectionInfo[category].name = collectionName(0);
 
-  auto collectionType = m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collInfoName(category));
+  auto collectionType =
+      m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collInfoName(category));
   m_collectionInfo[category].type = collectionType(0);
-   
-  auto subsetCollection = m_metadata_readers[filename]->GetView<std::vector<short>>(root_utils::subsetCollection(category));
+
+  auto subsetCollection =
+      m_metadata_readers[filename]->GetView<std::vector<short>>(root_utils::subsetCollection(category));
   m_collectionInfo[category].isSubsetCollection = subsetCollection(0);
 
   return true;
@@ -79,7 +82,6 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);
-
 }
 
 unsigned ROOTNTupleReader::getEntries(const std::string& name) {
@@ -87,12 +89,12 @@ unsigned ROOTNTupleReader::getEntries(const std::string& name) {
     for (auto& filename : m_filenames) {
       try {
         m_readers[name].emplace_back(ROOT::Experimental::RNTupleReader::Open(name, filename));
-      }
-      catch (const ROOT::Experimental::RException& e) {
+      } catch (const ROOT::Experimental::RException& e) {
         std::cout << "Category " << name << " not found in file " << filename << std::endl;
       }
     }
-    m_totalEntries[name] = std::accumulate(m_readers[name].begin(), m_readers[name].end(), 0, [](int total, auto& reader) {return total + reader->GetNEntries();});
+    m_totalEntries[name] = std::accumulate(m_readers[name].begin(), m_readers[name].end(), 0,
+                                           [](int total, auto& reader) { return total + reader->GetNEntries(); });
   }
   return m_totalEntries[name];
 }
@@ -115,7 +117,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     }
   }
 
-  m_entries[category] = entNum+1;
+  m_entries[category] = entNum + 1;
 
   ROOTFrameData::BufferMap buffers;
   auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
@@ -131,7 +133,8 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
 
     const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
-    const auto bufferClass = m_collectionInfo[category].isSubsetCollection[i] ? nullptr : TClass::GetClass(bufferClassName.c_str());
+    const auto bufferClass =
+        m_collectionInfo[category].isSubsetCollection[i] ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
     auto collBuffers = podio::CollectionReadBuffers();
     const bool isSubsetColl = bufferClass == nullptr;
@@ -190,7 +193,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
         refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
       }
     }
-
   }
 
   auto parameters = readEventMetaData(category, entNum);

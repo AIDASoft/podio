@@ -82,7 +82,6 @@ constexpr auto getGPValueName() {
   }
 }
 
-
 /**
  * Name of the field with the list of categories for RNTuples
  */
@@ -101,8 +100,6 @@ inline std::string collectionName(const std::string& category) {
 inline std::string subsetCollection(const std::string& category) {
   return category + "_isSubsetCollections";
 }
-
-
 
 /**
  * The name of the branch into which we store the build version of podio at the

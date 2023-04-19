@@ -2,17 +2,17 @@
 #define PODIO_ROOTNTUPLEWRITER_H
 
 #include "podio/CollectionBase.h"
+#include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
-#include "podio/Frame.h"
 
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 namespace podio {
 
@@ -24,7 +24,7 @@ public:
   ROOTNTupleWriter(const ROOTNTupleWriter&) = delete;
   ROOTNTupleWriter& operator=(const ROOTNTupleWriter&) = delete;
 
-  template<typename T>
+  template <typename T>
   void fillParams(const std::string& category, GenericParameters& params);
 
   void writeFrame(const podio::Frame& frame, const std::string& category);
@@ -32,7 +32,6 @@ public:
   void finish();
 
 private:
-
   using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
   std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
 
@@ -56,9 +55,8 @@ private:
   std::set<std::string> m_categories{};
 
   bool m_finished{false};
-
 };
 
-} //namespace podio
+} // namespace podio
 
-#endif //PODIO_ROOTNTUPLEWRITER_H
+#endif // PODIO_ROOTNTUPLEWRITER_H

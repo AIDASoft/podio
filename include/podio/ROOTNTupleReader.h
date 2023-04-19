@@ -1,19 +1,18 @@
 #ifndef PODIO_ROOTNTUPLEREADER_H
 #define PODIO_ROOTNTUPLEREADER_H
 
-#include "podio/ROOTFrameData.h"
 #include "podio/CollectionBranches.h"
 #include "podio/ICollectionProvider.h"
+#include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
-
 
 namespace podio {
 
@@ -21,7 +20,7 @@ namespace podio {
 This class has the function to read available data from disk
 and to prepare collections and buffers.
 **/
-class ROOTNTupleReader{
+class ROOTNTupleReader {
 
 public:
   ROOTNTupleReader() = default;
@@ -69,7 +68,7 @@ private:
    */
   GenericParameters readEventMetaData(const std::string& name, unsigned entNum);
 
-  template<typename T>
+  template <typename T>
   void readParams(const std::string& name, unsigned entNum, GenericParameters& params);
 
   std::unique_ptr<ROOT::Experimental::RNTupleReader> m_metadata{};
@@ -96,7 +95,6 @@ private:
   std::vector<std::string> m_availableCategories{};
 
   std::shared_ptr<podio::CollectionIDTable> m_table{};
-
 };
 
 } // namespace podio

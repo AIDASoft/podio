@@ -1,8 +1,8 @@
 #include "podio/ROOTNTupleWriter.h"
-#include "podio/GenericParameters.h"
-#include "rootUtils.h"
 #include "podio/CollectionBase.h"
+#include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
+#include "rootUtils.h"
 
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
@@ -13,10 +13,9 @@
 namespace podio {
 
 ROOTNTupleWriter::ROOTNTupleWriter(const std::string& filename) :
-  m_metadata(ROOT::Experimental::RNTupleModel::Create()),
-  m_file(new TFile(filename.c_str(), "RECREATE", "data file"))
-  {
-  }
+    m_metadata(ROOT::Experimental::RNTupleModel::Create()),
+    m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
+}
 
 ROOTNTupleWriter::~ROOTNTupleWriter() {
   if (!m_finished) {
@@ -24,7 +23,7 @@ ROOTNTupleWriter::~ROOTNTupleWriter() {
   }
 }
 
-template<typename T>
+template <typename T>
 void ROOTNTupleWriter::fillParams(const std::string& category, GenericParameters& params) {
   auto gpKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto gpValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
@@ -89,7 +88,8 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     }
 
     // Not supported
-    // entry->CaptureValueUnsafe(root_utils::paramBranchName, &const_cast<podio::GenericParameters&>(frame.getParameters()));
+    // entry->CaptureValueUnsafe(root_utils::paramBranchName,
+    // &const_cast<podio::GenericParameters&>(frame.getParameters()));
 
     if (new_category) {
       m_collectionInfo[category].id.emplace_back(coll->getID());
@@ -109,13 +109,14 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   m_categories.insert(category);
 }
 
-std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
+std::unique_ptr<ROOT::Experimental::RNTupleModel>
+ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
   auto model = ROOT::Experimental::RNTupleModel::Create();
   for (auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
 
     if (collBuffers.vecPtr) {
-      auto collClassName = "std::vector<" + coll->getDataTypeName() +">";
+      auto collClassName = "std::vector<" + coll->getDataTypeName() + ">";
       auto field = ROOT::Experimental::Detail::RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
@@ -142,7 +143,7 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel> ROOTNTupleWriter::createModels
       }
     }
   }
-  
+
   // Not supported by ROOT because podio::GenericParameters has map types
   // so we have to split them manually
   // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
@@ -169,7 +170,8 @@ void ROOTNTupleWriter::finish() {
   *versionField = {podioVersion.major, podioVersion.minor, podioVersion.patch};
 
   auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
-  auto edmField = m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  auto edmField =
+      m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   *edmField = edmDefinitions;
 
   auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
@@ -189,7 +191,8 @@ void ROOTNTupleWriter::finish() {
   }
 
   m_metadata->Freeze();
-  m_metadataWriter = ROOT::Experimental::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file, {});
+  m_metadataWriter =
+      ROOT::Experimental::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file, {});
 
   m_metadataWriter->Fill();
 
@@ -203,4 +206,4 @@ void ROOTNTupleWriter::finish() {
   m_finished = true;
 }
 
-} //namespace podio
+} // namespace podio
