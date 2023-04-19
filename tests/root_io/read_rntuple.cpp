@@ -2,5 +2,5 @@
 #include "read_frame.h"
 
 int main() {
-   return read_frames<podio::ROOTNTupleReader>("example_rntuple.root");
+  return read_frames<podio::ROOTNTupleReader>("example_rntuple.root");
 }
