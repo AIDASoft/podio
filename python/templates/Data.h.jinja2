@@ -19,8 +19,8 @@ public:
 {% endfor %}
 
 {% for member in VectorMembers + OneToManyRelations %}
-  unsigned int {{ member.name }}_begin{};
-  unsigned int {{ member.name }}_end{};
+  size_t {{ member.name }}_begin{};
+  size_t {{ member.name }}_end{};
 {% endfor %}
 };
 
