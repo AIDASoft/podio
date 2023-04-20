@@ -92,13 +92,13 @@ public:
   void setSubsetCollection(bool setSubset=true) final;
 
   /// Returns the const object of given index
-  {{ class.bare_type }} operator[](unsigned int index) const;
+  {{ class.bare_type }} operator[](size_t index) const;
   /// Returns the object of a given index
-  Mutable{{ class.bare_type }} operator[](unsigned int index);
+  Mutable{{ class.bare_type }} operator[](size_t index);
   /// Returns the const object of given index
-  {{ class.bare_type }} at(unsigned int index) const;
+  {{ class.bare_type }} at(size_t index) const;
   /// Returns the object of given index
-  Mutable{{ class.bare_type }} at(unsigned int index);
+  Mutable{{ class.bare_type }} at(size_t index);
 
 
   /// Append object to the collection
