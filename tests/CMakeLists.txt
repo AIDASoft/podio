@@ -255,6 +255,7 @@ add_test(datamodel_def_store_roundtrip_root ${CMAKE_CURRENT_LIST_DIR}/scripts/du
   ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
   datamodel
   ${CMAKE_CURRENT_LIST_DIR}
+  ${PODIO_USE_CLANG_FORMAT}
   )
 # The extension model needs to know about the upstream model for generation
 add_test(datamodel_def_store_roundtrip_root_extension
@@ -262,6 +263,7 @@ add_test(datamodel_def_store_roundtrip_root_extension
   ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
   extension_model
   ${CMAKE_CURRENT_LIST_DIR}/extension_model
+  ${PODIO_USE_CLANG_FORMAT}
   --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
   )
 
@@ -312,5 +314,5 @@ set_tests_properties(
   PROPERTIES
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     ENVIRONMENT
-  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};ENABLE_SIO=${ENABLE_SIO};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}"
+  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};ENABLE_SIO=${ENABLE_SIO};PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}"
   )

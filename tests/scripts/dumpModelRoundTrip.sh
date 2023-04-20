@@ -8,8 +8,13 @@ set -eux
 INPUT_FILE=${1}  # the datafile
 EDM_NAME=${2}  # the name of the EDM
 COMP_BASE_FOLDER=${3}  # where the source to compare against is
-shift 3
+CLANG_FORMAT=${4}  # whether to use clang-format
+shift 4
 EXTRA_GEN_ARGS=${@}
+
+if [ ${CLANG_FORMAT} = "ON" ]; then
+    EXTRA_GEN_ARGS="${EXTRA_GEN_ARGS} --clangformat"
+fi
 
 # Create a few temporary but unique files and directories to store output
 DUMPED_MODEL=${INPUT_FILE}.dumped_${EDM_NAME}.yaml
@@ -21,7 +26,6 @@ ${PODIO_BASE}/tools/podio-dump --dump-edm ${EDM_NAME} ${INPUT_FILE} > ${DUMPED_M
 
 # Regenerate the code via the class generator and the freshly dumped model
 ${PODIO_BASE}/python/podio_class_generator.py \
-    --clangformat \
     ${EXTRA_GEN_ARGS} \
     ${DUMPED_MODEL} \
     ${OUTPUT_FOLDER} \
