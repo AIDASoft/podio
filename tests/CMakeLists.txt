@@ -250,9 +250,19 @@ endif()
 
 # Add tests for storing and retrieving the EDM definitions into the produced
 # files
-add_test(datamodel_def_store_roundtrip_root ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root datamodel)
-add_test(datamodel_def_store_roundtrip_root_extension ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root datamodel extension_datamodel)
-
+add_test(datamodel_def_store_roundtrip_root ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
+  ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
+  datamodel
+  ${CMAKE_CURRENT_LIST_DIR}
+  )
+# The extension model needs to know about the upstream model for generation
+add_test(datamodel_def_store_roundtrip_root_extension
+  ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
+  ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
+  extension_model
+  ${CMAKE_CURRENT_LIST_DIR}/extension_model
+  --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
+  )
 
 # Need the input files that are produced by other tests
 set_tests_properties(
@@ -263,9 +273,21 @@ set_tests_properties(
   )
 
 set(sio_roundtrip_tests "")
-if (TARGET read_sio)
-  add_test(datamodel_def_store_roundtrip_sio ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel)
-  add_test(datamodel_def_store_roundtrip_sio_extension ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio datamodel extension_datamodel)
+if (ENABLE_SIO)
+  add_test(datamodel_def_store_roundtrip_sio
+    ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
+    ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio
+    datamodel
+    ${CMAKE_CURRENT_LIST_DIR}
+    )
+  # The extension model needs to know about the upstream model for generation
+  add_test(datamodel_def_store_roundtrip_sio_extension
+    ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
+    ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio
+    extension_model
+    ${CMAKE_CURRENT_LIST_DIR}/extension_model
+    --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
+    )
 
   set(sio_roundtrip_tests
     datamodel_def_store_roundtrip_sio
@@ -289,5 +311,5 @@ set_tests_properties(
   PROPERTIES
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     ENVIRONMENT
-  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}"
+  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};ENABLE_SIO=${ENABLE_SIO};PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}"
   )
