@@ -12,7 +12,9 @@ CLANG_FORMAT=${4}  # whether to use clang-format
 shift 4
 EXTRA_GEN_ARGS=${@}
 
-if [ ${CLANG_FORMAT} = "ON" ]; then
+
+
+if [ ${CLANG_FORMAT} = "ON"] || [ ${CLANG_FORMAT} = "AUTO" ]; then
     EXTRA_GEN_ARGS="${EXTRA_GEN_ARGS} --clangformat"
 fi
 
