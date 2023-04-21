@@ -255,7 +255,6 @@ add_test(datamodel_def_store_roundtrip_root ${CMAKE_CURRENT_LIST_DIR}/scripts/du
   ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
   datamodel
   ${CMAKE_CURRENT_LIST_DIR}
-  ${PODIO_USE_CLANG_FORMAT}
   )
 # The extension model needs to know about the upstream model for generation
 add_test(datamodel_def_store_roundtrip_root_extension
@@ -263,7 +262,6 @@ add_test(datamodel_def_store_roundtrip_root_extension
   ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
   extension_model
   ${CMAKE_CURRENT_LIST_DIR}/extension_model
-  ${PODIO_USE_CLANG_FORMAT}
   --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
   )
 

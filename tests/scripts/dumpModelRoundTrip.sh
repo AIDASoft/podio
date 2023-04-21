@@ -8,11 +8,10 @@ set -eux
 INPUT_FILE=${1}  # the datafile
 EDM_NAME=${2}  # the name of the EDM
 COMP_BASE_FOLDER=${3}  # where the source to compare against is
-CLANG_FORMAT=${4}  # whether to use clang-format
-shift 4
+shift 3
 EXTRA_GEN_ARGS=${@}
 
-if [ ${CLANG_FORMAT} = "ON"] || [ ${CLANG_FORMAT} = "AUTO" ]; then
+if [ ${PODIO_USE_CLANG_FORMAT} = "ON" ] || [ ${PODIO_USE_CLANG_FORMAT} = "AUTO" ]; then
     EXTRA_GEN_ARGS="${EXTRA_GEN_ARGS} --clangformat"
 fi
 
