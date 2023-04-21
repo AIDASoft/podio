@@ -30,6 +30,7 @@
 #include <ostream>
 #include <mutex>
 #include <memory>
+#include <cstddef>
 
 {{ utils.namespace_open(class.namespace) }}
 
@@ -74,7 +75,7 @@ public:
   Mutable{{ class.bare_type }} create(Args&&... args);
 
   /// number of elements in the collection
-  size_t size() const final;
+  std::size_t size() const final;
 
   /// fully qualified type name
   std::string getTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Collection" }}"); }
@@ -92,13 +93,13 @@ public:
   void setSubsetCollection(bool setSubset=true) final;
 
   /// Returns the const object of given index
-  {{ class.bare_type }} operator[](size_t index) const;
+  {{ class.bare_type }} operator[](std::size_t index) const;
   /// Returns the object of a given index
-  Mutable{{ class.bare_type }} operator[](size_t index);
+  Mutable{{ class.bare_type }} operator[](std::size_t index);
   /// Returns the const object of given index
-  {{ class.bare_type }} at(size_t index) const;
+  {{ class.bare_type }} at(std::size_t index) const;
   /// Returns the object of given index
-  Mutable{{ class.bare_type }} at(size_t index);
+  Mutable{{ class.bare_type }} at(std::size_t index);
 
 
   /// Append object to the collection

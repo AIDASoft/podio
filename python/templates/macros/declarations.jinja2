@@ -125,8 +125,8 @@
 {% if with_adder %}
   void {{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.full_type }});
 {% endif %}
-  size_t {{ relation.name }}_size() const;
-  {{ relation.full_type }} {{ relation.getter_name(get_syntax) }}(size_t) const;
+  std::size_t {{ relation.name }}_size() const;
+  {{ relation.full_type }} {{ relation.getter_name(get_syntax) }}(std::size_t) const;
   std::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_begin() const;
   std::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_end() const;
   podio::RelationRange<{{ relation.full_type }}> {{ relation.getter_name(get_syntax) }}() const;
