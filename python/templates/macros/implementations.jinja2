@@ -128,11 +128,11 @@ std::vector<{{ relation.full_type }}>::const_iterator {{ class_type }}::{{ relat
   return ret_value;
 }
 
-unsigned int {{ class_type }}::{{ relation.name }}_size() const {
+std::size_t {{ class_type }}::{{ relation.name }}_size() const {
   return m_obj->data.{{ relation.name }}_end - m_obj->data.{{ relation.name }}_begin;
 }
 
-{{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}(unsigned int index) const {
+{{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}(std::size_t index) const {
   if ({{ relation.name }}_size() > index) {
     return m_obj->m_{{ relation.name }}->at(m_obj->data.{{ relation.name }}_begin + index);
   }

@@ -28,23 +28,23 @@
   m_storage.clear(m_isSubsetColl);
 }
 
-{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) const {
+{{ class.bare_type }} {{ collection_type }}::operator[](std::size_t index) const {
   return {{ class.bare_type }}(m_storage.entries[index]);
 }
 
-{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) const {
+{{ class.bare_type }} {{ collection_type }}::at(std::size_t index) const {
   return {{ class.bare_type }}(m_storage.entries.at(index));
 }
 
-Mutable{{ class.bare_type }} {{ collection_type }}::operator[](unsigned int index) {
+Mutable{{ class.bare_type }} {{ collection_type }}::operator[](std::size_t index) {
   return Mutable{{ class.bare_type }}(m_storage.entries[index]);
 }
 
-Mutable{{ class.bare_type }} {{ collection_type }}::at(unsigned int index) {
+Mutable{{ class.bare_type }} {{ collection_type }}::at(std::size_t index) {
   return Mutable{{ class.bare_type }}(m_storage.entries.at(index));
 }
 
-size_t {{ collection_type }}::size() const {
+std::size_t {{ collection_type }}::size() const {
   return m_storage.entries.size();
 }
 
