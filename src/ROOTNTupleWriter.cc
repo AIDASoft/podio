@@ -180,13 +180,13 @@ void ROOTNTupleWriter::finish() {
   }
 
   for (auto& category : m_categories) {
-    auto idField = m_metadata->MakeField<std::vector<int>>(root_utils::idTableName(category));
+    auto idField = m_metadata->MakeField<std::vector<int>>({root_utils::idTableName(category)});
     *idField = m_collectionInfo[category].id;
-    auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collectionName(category));
+    auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
     *collectionNameField = m_collectionInfo[category].name;
-    auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>(root_utils::collInfoName(category));
+    auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collInfoName(category)});
     *collectionTypeField = m_collectionInfo[category].type;
-    auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>(root_utils::subsetCollection(category));
+    auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
     *subsetCollectionField = m_collectionInfo[category].isSubsetCollection;
   }
 
