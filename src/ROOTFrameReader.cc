@@ -23,6 +23,10 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<st
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionInfoT>& collInfo);
 
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
+createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
+                                   const std::vector<root_utils::CollectionInfoT>& collInfo);
+
 GenericParameters ROOTFrameReader::readEntryParameters(ROOTFrameReader::CategoryInfo& catInfo, bool reloadBranches,
                                                        unsigned int localEntry) {
   // Parameter branch is always the last one
@@ -95,23 +99,7 @@ podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameRead
   auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
   if (reloadBranches) {
-    branches.data = root_utils::getBranch(catInfo.chain.get(), name.c_str());
-
-    // reference collections
-    if (auto* refCollections = collBuffers.references) {
-      for (size_t i = 0; i < refCollections->size(); ++i) {
-        const auto brName = root_utils::refBranch(name, i);
-        branches.refs[i] = root_utils::getBranch(catInfo.chain.get(), branches.refs[i]->GetName());
-      }
-    }
-
-    // vector members
-    if (auto* vecMembers = collBuffers.vectorMembers) {
-      for (size_t i = 0; i < vecMembers->size(); ++i) {
-        const auto brName = root_utils::vecBranch(name, i);
-        branches.vecs[i] = root_utils::getBranch(catInfo.chain.get(), branches.vecs[i]->GetName());
-      }
-    }
+    root_utils::resetBranches(catInfo.chain.get(), branches, name);
   }
 
   // set the addresses and read the data
@@ -165,8 +153,15 @@ void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& cat
     collInfoBranch->GetEntry(0);
   }
 
-  std::tie(catInfo.branches, catInfo.storedClasses) =
-      createCollectionBranches(catInfo.chain.get(), *catInfo.table, *collInfo);
+  // For backwards compatibility make it possible to read the index based files
+  // from older versions
+  if (m_fileVersion <= podio::version::Version{0, 16, 4}) {
+    std::tie(catInfo.branches, catInfo.storedClasses) =
+        createCollectionBranchesIndexBased(catInfo.chain.get(), *catInfo.table, *collInfo);
+  } else {
+    std::tie(catInfo.branches, catInfo.storedClasses) =
+        createCollectionBranches(catInfo.chain.get(), *catInfo.table, *collInfo);
+  }
 
   delete collInfo;
 
@@ -256,6 +251,53 @@ std::vector<std::string_view> ROOTFrameReader::getAvailableCategories() const {
 }
 
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
+createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
+                                   const std::vector<root_utils::CollectionInfoT>& collInfo) {
+
+  size_t collectionIndex{0};
+  std::vector<root_utils::CollectionBranches> collBranches;
+  collBranches.reserve(collInfo.size() + 1);
+  std::vector<std::pair<std::string, detail::CollectionInfo>> storedClasses;
+  storedClasses.reserve(collInfo.size());
+
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
+    // We only write collections that are in the collectionIDTable, so no need
+    // to check here
+    const auto name = idTable.name(collID);
+
+    const auto collectionClass = TClass::GetClass(collType.c_str());
+    // Need the collection here to setup all the branches. Have to manage the
+    // temporary collection ourselves
+    auto collection =
+        std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
+    root_utils::CollectionBranches branches{};
+    if (!isSubsetColl) {
+      // This branch is guaranteed to exist since only collections that are
+      // also written to file are in the info metadata that we work with here
+      branches.data = root_utils::getBranch(chain, name.c_str());
+    }
+
+    const auto buffers = collection->getBuffers();
+    for (size_t i = 0; i < buffers.references->size(); ++i) {
+      auto brName = root_utils::refBranch(name, i);
+      branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+      branches.refNames.emplace_back(std::move(brName));
+    }
+
+    for (size_t i = 0; i < buffers.vectorMembers->size(); ++i) {
+      auto brName = root_utils::vecBranch(name, i);
+      branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
+      branches.vecNames.emplace_back(std::move(brName));
+    }
+
+    storedClasses.emplace_back(name, std::make_tuple(collType, isSubsetColl, collSchemaVersion, collectionIndex++));
+    collBranches.emplace_back(std::move(branches));
+  }
+
+  return {collBranches, storedClasses};
+}
+
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionInfoT>& collInfo) {
 
@@ -273,8 +315,9 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
     root_utils::CollectionBranches branches{};
     if (isSubsetColl) {
       // Only one branch will exist and we can trivially get its name
-      const auto brName = root_utils::subsetBranch(name);
+      auto brName = root_utils::subsetBranch(name);
       branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+      branches.refNames.emplace_back(std::move(brName));
     } else {
       // This branch is guaranteed to exist since only collections that are
       // also written to file are in the info metadata that we work with here
@@ -282,12 +325,14 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
       for (const auto& relName : relVecNames.relations) {
-        const auto brName = root_utils::refBranch(name, relName);
+        auto brName = root_utils::refBranch(name, relName);
         branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.refNames.emplace_back(std::move(brName));
       }
       for (const auto& vecName : relVecNames.vectorMembers) {
-        const auto brName = root_utils::refBranch(name, vecName);
+        auto brName = root_utils::refBranch(name, vecName);
         branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.vecNames.emplace_back(std::move(brName));
       }
     }
 

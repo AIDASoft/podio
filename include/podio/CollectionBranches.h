@@ -3,6 +3,7 @@
 
 #include "TBranch.h"
 
+#include <string>
 #include <vector>
 
 namespace podio::root_utils {
@@ -15,6 +16,8 @@ struct CollectionBranches {
   TBranch* data{nullptr};
   std::vector<TBranch*> refs{};
   std::vector<TBranch*> vecs{};
+  std::vector<std::string> refNames{}; ///< The names of the relation branches
+  std::vector<std::string> vecNames{}; ///< The names of the vector member branches
 };
 
 } // namespace podio::root_utils

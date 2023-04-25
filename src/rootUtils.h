@@ -93,6 +93,23 @@ inline std::string subsetBranch(const std::string& name) {
   return name + "_objIdx";
 }
 
+/**
+ * Reset all the branches that by getting them from the TTree again
+ */
+inline void resetBranches(TTree* chain, CollectionBranches& branches, const std::string& name) {
+  if (branches.data) {
+    branches.data = getBranch(chain, name);
+  }
+
+  for (size_t i = 0; i < branches.refs.size(); ++i) {
+    branches.refs[i] = getBranch(chain, branches.refNames[i]);
+  }
+
+  for (size_t i = 0; i < branches.vecs.size(); ++i) {
+    branches.vecs[i] = getBranch(chain, branches.vecNames[i]);
+  }
+}
+
 template <typename BufferT>
 inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionBranches& branches) {
 
