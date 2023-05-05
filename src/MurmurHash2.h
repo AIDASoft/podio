@@ -16,24 +16,23 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef unsigned __int64 uint64_t;
 
-// Other compilers
+  // Other compilers
 
-#else	// defined(_MSC_VER)
+#else // defined(_MSC_VER)
 
-#include <stdint.h>
+  #include <stdint.h>
 
 #endif // !defined(_MSC_VER)
 
 //-----------------------------------------------------------------------------
 
-uint32_t MurmurHash2        ( const void * key, int len, uint32_t seed );
-uint64_t MurmurHash64A      ( const void * key, int len, uint64_t seed );
-uint64_t MurmurHash64B      ( const void * key, int len, uint64_t seed );
-uint32_t MurmurHash2A       ( const void * key, int len, uint32_t seed );
-uint32_t MurmurHashNeutral2 ( const void * key, int len, uint32_t seed );
-uint32_t MurmurHashAligned2 ( const void * key, int len, uint32_t seed );
+uint32_t MurmurHash2(const void* key, int len, uint32_t seed);
+uint64_t MurmurHash64A(const void* key, int len, uint64_t seed);
+uint64_t MurmurHash64B(const void* key, int len, uint64_t seed);
+uint32_t MurmurHash2A(const void* key, int len, uint32_t seed);
+uint32_t MurmurHashNeutral2(const void* key, int len, uint32_t seed);
+uint32_t MurmurHashAligned2(const void* key, int len, uint32_t seed);
 
 //-----------------------------------------------------------------------------
 
 #endif // _MURMURHASH2_H_
-
