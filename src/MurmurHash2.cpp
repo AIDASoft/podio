@@ -69,8 +69,8 @@ uint32_t MurmurHash2 ( const void * key, int len, uint32_t seed )
 
   switch(len)
   {
-  case 3: h ^= data[2] << 16; break;
-  case 2: h ^= data[1] << 8;  break;
+  case 3: h ^= data[2] << 16; [[fallthrough]];
+  case 2: h ^= data[1] << 8;  [[fallthrough]];
   case 1: h ^= data[0];
       h *= m;
   };
@@ -119,12 +119,12 @@ uint64_t MurmurHash64A ( const void * key, int len, uint64_t seed )
 
   switch(len & 7)
   {
-  case 7: h ^= uint64_t(data2[6]) << 48; break;
-  case 6: h ^= uint64_t(data2[5]) << 40; break;
-  case 5: h ^= uint64_t(data2[4]) << 32; break;
-  case 4: h ^= uint64_t(data2[3]) << 24; break;
-  case 3: h ^= uint64_t(data2[2]) << 16; break;
-  case 2: h ^= uint64_t(data2[1]) << 8;  break;
+  case 7: h ^= uint64_t(data2[6]) << 48; [[fallthrough]];
+  case 6: h ^= uint64_t(data2[5]) << 40; [[fallthrough]];
+  case 5: h ^= uint64_t(data2[4]) << 32; [[fallthrough]];
+  case 4: h ^= uint64_t(data2[3]) << 24; [[fallthrough]];
+  case 3: h ^= uint64_t(data2[2]) << 16; [[fallthrough]];
+  case 2: h ^= uint64_t(data2[1]) << 8;  [[fallthrough]];
   case 1: h ^= uint64_t(data2[0]);
           h *= m;
   };
@@ -172,9 +172,9 @@ uint64_t MurmurHash64B ( const void * key, int len, uint64_t seed )
 
   switch(len)
   {
-  case 3: h2 ^= ((unsigned char*)data)[2] << 16; break;
-  case 2: h2 ^= ((unsigned char*)data)[1] << 8;  break;
-  case 1: h2 ^= ((unsigned char*)data)[0];       break;
+  case 3: h2 ^= ((unsigned char*)data)[2] << 16; [[fallthrough]];
+  case 2: h2 ^= ((unsigned char*)data)[1] << 8;  [[fallthrough]];
+  case 1: h2 ^= ((unsigned char*)data)[0];
       h2 *= m;
   };
 
@@ -227,8 +227,8 @@ uint32_t MurmurHash2A ( const void * key, int len, uint32_t seed )
 
   switch(len)
   {
-  case 3: t ^= data[2] << 16; break;
-  case 2: t ^= data[1] << 8;  break;
+  case 3: t ^= data[2] << 16; [[fallthrough]];
+  case 2: t ^= data[1] << 8;  [[fallthrough]];
   case 1: t ^= data[0];
   };
 
@@ -448,8 +448,8 @@ uint32_t MurmurHashAligned2 ( const void * key, int len, uint32_t seed )
     {
       switch(align)
       {
-      case 3: d |= data[2] << 16; break;
-      case 2: d |= data[1] << 8;  break;
+      case 3: d |= data[2] << 16; [[fallthrough]];
+      case 2: d |= data[1] << 8;  [[fallthrough]];
       case 1: d |= data[0];
       }
 
@@ -464,8 +464,8 @@ uint32_t MurmurHashAligned2 ( const void * key, int len, uint32_t seed )
 
       switch(len)
       {
-      case 3: h ^= data[2] << 16; break;
-      case 2: h ^= data[1] << 8;  break;
+      case 3: h ^= data[2] << 16; [[fallthrough]];
+      case 2: h ^= data[1] << 8;  [[fallthrough]];
       case 1: h ^= data[0];
           h *= m;
       };
@@ -474,9 +474,9 @@ uint32_t MurmurHashAligned2 ( const void * key, int len, uint32_t seed )
     {
       switch(len)
       {
-      case 3: d |= data[2] << 16; break;
-      case 2: d |= data[1] << 8;  break;
-      case 1: d |= data[0];       break;
+      case 3: d |= data[2] << 16; [[fallthrough]];
+      case 2: d |= data[1] << 8;  [[fallthrough]];
+      case 1: d |= data[0];       [[fallthrough]];
       case 0: h ^= (t >> sr) | (d << sl);
           h *= m;
       }
@@ -505,8 +505,8 @@ uint32_t MurmurHashAligned2 ( const void * key, int len, uint32_t seed )
 
     switch(len)
     {
-    case 3: h ^= data[2] << 16; break;
-    case 2: h ^= data[1] << 8;  break;
+    case 3: h ^= data[2] << 16; [[fallthrough]];
+    case 2: h ^= data[1] << 8;  [[fallthrough]];
     case 1: h ^= data[0];
         h *= m;
     };
