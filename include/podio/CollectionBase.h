@@ -41,10 +41,10 @@ public:
   virtual bool setReferences(const ICollectionProvider* collectionProvider) = 0;
 
   /// set collection ID
-  virtual void setID(unsigned id) = 0;
+  virtual void setID(uint64_t id) = 0;
 
   /// get collection ID
-  virtual unsigned getID() const = 0;
+  virtual uint64_t getID() const = 0;
 
   /// Get the collection buffers for this collection
   virtual podio::CollectionWriteBuffers getBuffers() = 0;

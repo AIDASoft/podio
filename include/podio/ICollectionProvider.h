@@ -10,7 +10,7 @@ public:
   /// destructor
   virtual ~ICollectionProvider() = default;
   /// access a collection by ID. returns true if successful
-  virtual bool get(int collectionID, CollectionBase*& collection) const = 0;
+  virtual bool get(uint64_t collectionID, CollectionBase*& collection) const = 0;
 };
 
 } // namespace podio

@@ -1,6 +1,8 @@
 #ifndef PODIO_OBJECTID_H
 #define PODIO_OBJECTID_H
 
+#include <cstdint>
+
 namespace podio {
 
 class ObjectID {
@@ -9,7 +11,7 @@ public:
   /// index of object in collection
   int index;
   /// ID of the collection
-  int collectionID;
+  uint64_t collectionID;
 
   /// not part of a collection
   static const int untracked = -1;

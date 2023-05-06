@@ -85,7 +85,7 @@ private:
   std::map<int, GenericParameters>* readRunMetaData() override;
 
 private:
-  void createCollectionBranches(const std::vector<std::tuple<int, std::string, bool, unsigned int>>& collInfo);
+  void createCollectionBranches(const std::vector<std::tuple<uint64_t, std::string, bool, unsigned int>>& collInfo);
 
   std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
   // Information about the data vector as wall as the collection class type

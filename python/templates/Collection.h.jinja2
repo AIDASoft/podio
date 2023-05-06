@@ -59,7 +59,7 @@ public:
   {{ class.bare_type }}Collection({{ class.bare_type }}Collection&&) = default;
   {{ class.bare_type }}Collection& operator=({{ class.bare_type }}Collection&&) = default;
 
-//  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, int collectionID);
+//  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, uint64_t collectionID);
   ~{{ class.bare_type }}Collection();
 
   void clear() final;
@@ -116,17 +116,17 @@ public:
   /// Get the collection buffers for this collection
   podio::CollectionWriteBuffers getBuffers() final;
 
-  void setID(unsigned ID) final {
+  void setID(uint64_t ID) final {
     m_collectionID = ID;
     if (!m_isSubsetColl) {
       std::for_each(m_storage.entries.begin(), m_storage.entries.end(),
-                  [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<int>(ID)}; }
+                  [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<uint64_t>(ID)}; }
       );
     }
     m_isValid = true;
   };
 
-  unsigned getID() const final {
+  uint64_t getID() const final {
     return m_collectionID;
   }
 
@@ -163,7 +163,7 @@ private:
   bool m_isValid{false};
   mutable bool m_isPrepared{false};
   bool m_isSubsetColl{false};
-  int m_collectionID{0};
+  uint64_t m_collectionID{0};
   mutable std::unique_ptr<std::mutex> m_storageMtx{nullptr};
   mutable {{ class.bare_type }}CollectionData m_storage{};
 };
