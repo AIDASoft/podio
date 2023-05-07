@@ -1,6 +1,7 @@
 // STL
 #include <cstdint>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include <thread>
 #include <type_traits>
@@ -329,6 +330,18 @@ TEST_CASE("thread-safe prepareForWrite", "[basics][multithread]") {
 
     i++;
   }
+}
+
+TEST_CASE("UserDataCollection print", "[basics]") {
+  auto coll = podio::UserDataCollection<int32_t>();
+  coll.push_back(1);
+  coll.push_back(2);
+  coll.push_back(3);
+
+  std::stringstream sstr;
+  coll.print(sstr);
+
+  REQUIRE(sstr.str() == "[1, 2, 3]");
 }
 
 /*
@@ -1115,4 +1128,5 @@ TEST_CASE("JSON", "[json]") {
     REQUIRE(json["userData"][j] == 3.14f * j);
   }
 }
+
 #endif
