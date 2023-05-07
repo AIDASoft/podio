@@ -173,7 +173,7 @@ public:
     os << "[";
     if (!_vec.empty()) {
       os << _vec[0];
-      for (size_t i = 0; i < _vec.size(); ++i) {
+      for (size_t i = 1; i < _vec.size(); ++i) {
         os << ", " << _vec[i];
       }
     }
