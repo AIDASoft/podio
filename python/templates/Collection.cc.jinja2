@@ -170,6 +170,7 @@ podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
 namespace {
 podio::CollectionReadBuffers createBuffers(bool isSubset) {
   auto readBuffers = podio::CollectionReadBuffers{};
+  readBuffers.type = "{{ class.full_type }}Collection";
   readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer;
 
   // The number of ObjectID vectors is either 1 or the sum of OneToMany and

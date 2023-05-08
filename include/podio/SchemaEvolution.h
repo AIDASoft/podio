@@ -37,6 +37,7 @@ public:
   static SchemaEvolution& mutInstance();
   static SchemaEvolution const& instance();
 
+  // TODO: Make this take a string_view
   podio::CollectionReadBuffers evolveBuffers(podio::CollectionReadBuffers oldBuffers, SchemaVersionT fromVersion,
                                              const std::string& collType) const;
 

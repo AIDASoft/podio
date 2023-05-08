@@ -374,7 +374,7 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
         coll = buffers->createCollection(buffers.value(), true);
       } else {
         auto evolvedBuffers = podio::SchemaEvolution::instance().evolveBuffers(buffers.value(), buffers->schemaVersion,
-                                                                               /*todo*/ "collType");
+                                                                               std::string(buffers->type));
         coll = evolvedBuffers.createCollection(evolvedBuffers, false);
       }
 
