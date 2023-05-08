@@ -1,6 +1,7 @@
 #include "podio/UserDataCollection.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
+#include "podio/SchemaEvolution.h"
 
 #include <tuple>
 #include <vector>
@@ -32,6 +33,9 @@ namespace {
                                                 buffers.data = podio::CollectionWriteBuffers::asVector<T>(buffers.data);
                                               }};
         });
+
+    podio::SchemaEvolution::mutInstance().registerEvolutionFunc(podio::userDataCollTypeName<T>(),
+                                                                podio::SchemaEvolution::NoSchemaEvolutionNecessary);
 
     return 1;
   }

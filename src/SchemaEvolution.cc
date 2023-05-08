@@ -17,19 +17,31 @@ SchemaEvolution const& SchemaEvolution::instance() {
 podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(podio::CollectionReadBuffers oldBuffers,
                                                             SchemaVersionT fromVersion,
                                                             const std::string& collType) const {
-  // TODO: where do we get the current version from?
-  // if (fromVersion == currentVersion) {
-  //   return oldBuffers;
-  // }
 
   if (const auto typeIt = m_evolutionFuncs.find(collType); typeIt != m_evolutionFuncs.end()) {
     const auto& versionMap = typeIt->second;
-    if (versionMap.size() >= fromVersion) {
+    // The current schema version is defined by the number of evolution functions we have
+    const auto currentVersion = versionMap.size();
+    std::cerr << "PODIO WARNING: evolveBuffers " << collType << " current " << currentVersion << " buffer version "
+              << fromVersion << std::endl;
+
+    if (currentVersion == fromVersion) {
+      return oldBuffers; // Nothing to do here
+    }
+
+    if (fromVersion < currentVersion) {
       return versionMap[fromVersion - 1](oldBuffers, fromVersion);
     }
+
+    std::cerr
+        << "PODIO WARNING: evolveBuffers called with fromVersion that is greater than the current schema version for "
+        << collType << std::endl;
+    // TODO: exception?
+    return oldBuffers;
   }
 
-  // TODO: Warning for this
+  std::cerr << "PODIO WARNING: evolveBuffers has no knowledge of how to evolve buffers for " << collType << std::endl;
+  // TODO: exception
   return oldBuffers;
 }
 
@@ -64,6 +76,17 @@ void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaV
 
     m_evolutionFuncs.emplace(collType, std::move(versionMap));
   }
+}
+
+void SchemaEvolution::registerEvolutionFunc(const std::string& collType, NoSchemaEvolutionNecessaryT) {
+  auto typeIt = m_evolutionFuncs.find(collType);
+  if (typeIt != m_evolutionFuncs.end()) {
+    std::runtime_error(
+        "Cannot mark a type for not needing schema evolution, if it already has schema evolution functions defined");
+  }
+
+  // TODO: How to guard this agains accidental overwriting later?
+  m_evolutionFuncs.emplace(collType, VersionMapT{});
 }
 
 } // namespace podio
