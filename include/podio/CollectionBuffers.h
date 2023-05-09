@@ -52,11 +52,12 @@ struct CollectionReadBuffers {
   using CreateFuncT = std::function<std::unique_ptr<podio::CollectionBase>(podio::CollectionReadBuffers, bool)>;
   using RecastFuncT = std::function<void(CollectionReadBuffers&)>;
 
-  CollectionReadBuffers(void* d, CollRefCollection* ref, VectorMembersInfo* vec, std::string_view typ,
-                        CreateFuncT&& createFunc, RecastFuncT&& recastFunc) :
+  CollectionReadBuffers(void* d, CollRefCollection* ref, VectorMembersInfo* vec, SchemaVersionT version,
+                        std::string_view typ, CreateFuncT&& createFunc, RecastFuncT&& recastFunc) :
       data(d),
       references(ref),
       vectorMembers(vec),
+      schemaVersion(version),
       type(typ),
       createCollection(std::move(createFunc)),
       recast(std::move(recastFunc)) {

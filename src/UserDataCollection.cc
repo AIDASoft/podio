@@ -22,6 +22,7 @@ namespace {
           return podio::CollectionReadBuffers{new std::vector<T>(),
                                               nullptr,
                                               nullptr,
+                                              podio::UserDataCollection<T>::schemaVersion,
                                               podio::userDataCollTypeName<T>(),
                                               [](podio::CollectionReadBuffers buffers, bool) {
                                                 return std::make_unique<UserDataCollection<T>>(
