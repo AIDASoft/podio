@@ -34,8 +34,8 @@ namespace {
                                               }};
         });
 
-    podio::SchemaEvolution::mutInstance().registerEvolutionFunc(podio::userDataCollTypeName<T>(),
-                                                                podio::SchemaEvolution::NoSchemaEvolutionNecessary);
+    podio::SchemaEvolution::mutInstance().registerCurrentVersion(podio::userDataCollTypeName<T>(),
+                                                                 UserDataCollection<T>::schemaVersion);
 
     return 1;
   }

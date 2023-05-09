@@ -17,8 +17,21 @@ struct CollectionReadBuffers;
 
 class SchemaEvolution {
   using EvolutionFuncT = std::function<podio::CollectionReadBuffers(podio::CollectionReadBuffers, SchemaVersionT)>;
-  using VersionMapT = std::vector<EvolutionFuncT>;
-  using EvolutionMapT = std::unordered_map<std::string, VersionMapT>;
+  using EvolFuncVersionMapT = std::vector<EvolutionFuncT>;
+
+  // Helper struct combining the current schema version of each type and an
+  // index into the schema evolution "map" below
+  struct MapIndex {
+    SchemaVersionT currentVersion;
+    size_t index;
+    constexpr static size_t NoEvolutionAvailable = -1u;
+  };
+
+  // The map that holds the current version for each type that is known to the
+  // registry
+  using VersionMapT = std::unordered_map<std::string, MapIndex>;
+  // The "map" that holds all evolution functions
+  using EvolutionMapT = std::vector<EvolFuncVersionMapT>;
 
   // Tag struct for marking collection types that do not need schema evolution.
   // Necessary due to the fact that we determine the current version from the
@@ -55,18 +68,19 @@ public:
    *
    * NOTE: Currently necessary to fill the auto generated ones in the correct
    * order of fromVersion (becoming larger).
-   *
-   * NOTE: The number of available evolution functions for a given type defines
-   * the current version! Make sure to populate this properly
    */
   void registerEvolutionFunc(const std::string& collType, SchemaVersionT fromVersion,
                              const EvolutionFuncT& evolutionFunc, Priority priority = Priority::UserDefined);
 
   void registerEvolutionFunc(const std::string& collType, NoSchemaEvolutionNecessaryT);
 
+  // Register the current version
+  void registerCurrentVersion(const std::string& collType, SchemaVersionT currentVersion);
+
 private:
   SchemaEvolution() = default;
 
+  VersionMapT m_versionMapIndices{};
   EvolutionMapT m_evolutionFuncs{};
 };
 

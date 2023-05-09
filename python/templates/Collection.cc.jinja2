@@ -4,6 +4,7 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "podio/CollectionBufferFactory.h"
+#include "podio/SchemaEvolution.h"
 
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 #include "{{ incfolder }}DatamodelDefinition.h"
@@ -216,6 +217,10 @@ bool registerCollection() {
   const static auto reg = []() {
     auto& factory = podio::CollectionBufferFactory::mutInstance();
     factory.registerCreationFunc("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion, createBuffers);
+
+    auto& schemaEvolution = podio::SchemaEvolution::mutInstance();
+    schemaEvolution.registerCurrentVersion("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion);
+
     return true;
   }();
   return reg;
