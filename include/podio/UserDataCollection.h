@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
@@ -16,6 +17,10 @@
   template <>                                                                                                          \
   constexpr const char* userDataTypeName<type>() {                                                                     \
     return #type;                                                                                                      \
+  }                                                                                                                    \
+  template <>                                                                                                          \
+  constexpr const char* userDataCollTypeName<type>() {                                                                 \
+    return "podio::UserDataCollection<" #type ">";                                                                     \
   }
 
 namespace podio {
@@ -36,6 +41,12 @@ using EnableIfSupportedUserType = std::enable_if_t<detail::isInTuple<T, Supporte
  */
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 constexpr const char* userDataTypeName();
+
+/** Helper template to provide the fully qualified name of a UserDataCollection.
+ * Implementations are populated by the PODIO_ADD_USER_TYPE macro.
+ */
+template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
+constexpr const char* userDataCollTypeName();
 
 PODIO_ADD_USER_TYPE(float)
 PODIO_ADD_USER_TYPE(double)
@@ -79,6 +90,9 @@ public:
   UserDataCollection& operator=(UserDataCollection&&) = default;
   ~UserDataCollection() = default;
 
+  /// The schema version of UserDataCollections
+  static constexpr SchemaVersionT schemaVersion = 1;
+
   /// prepare buffers for serialization
   void prepareForWrite() const override {
   }
@@ -108,22 +122,6 @@ public:
     return {&_vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
-  podio::CollectionReadBuffers createBuffers() /*const*/ final {
-    return {nullptr, nullptr, nullptr,
-            [](podio::CollectionReadBuffers buffers, bool) {
-              return std::make_unique<UserDataCollection<BasicType>>(std::move(*buffers.dataAsVector<BasicType>()));
-            },
-            [](podio::CollectionReadBuffers& buffers) {
-              buffers.data = podio::CollectionWriteBuffers::asVector<BasicType>(buffers.data);
-            }};
-  }
-
-  podio::CollectionReadBuffers createSchemaEvolvableBuffers(__attribute__((unused)) int readSchemaVersion,
-                                                            __attribute__((unused))
-                                                            podio::Backend backend) /*const*/ final {
-    return createBuffers();
-  }
-
   /// check for validity of the container after read
   bool isValid() const override {
     return true;
@@ -136,7 +134,7 @@ public:
 
   /// fully qualified type name
   std::string getTypeName() const override {
-    return std::string("podio::UserDataCollection<") + userDataTypeName<BasicType>() + ">";
+    return userDataCollTypeName<BasicType>();
   }
 
   /// fully qualified type name of elements - with namespace
@@ -165,7 +163,7 @@ public:
 
   /// The schema version is fixed manually
   SchemaVersionT getSchemaVersion() const final {
-    return 1;
+    return schemaVersion;
   }
 
   /// Print this collection to the passed stream

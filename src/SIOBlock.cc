@@ -100,7 +100,7 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeSt
 
   if (it != _map.end()) {
     auto blk = std::shared_ptr<SIOBlock>(it->second->create(name));
-    blk->createBuffers(isSubsetColl);
+    blk->setSubsetCollection(isSubsetColl);
     return blk;
   } else {
     return nullptr;

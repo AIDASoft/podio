@@ -1,6 +1,7 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "podio/DatamodelRegistry.h"
+#include "podio/SchemaEvolution.h"
 
 namespace {{ package_name }}::meta {
 /**
@@ -26,5 +27,10 @@ private:
   DatamodelRegistryIndex(size_t v) : m_value(v) {}
   size_t m_value{podio::DatamodelRegistry::NoDefinitionAvailable};
 };
+
+/**
+ * The schema version at generation time
+ */
+static constexpr podio::SchemaVersionT schemaVersion = {{ schema_version }};
 
 } // namespace {{ package_name }}::meta

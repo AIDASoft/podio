@@ -1,3 +1,4 @@
+#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/ROOTFrameData.h"
 #include "rootUtils.h"
@@ -49,40 +50,14 @@ std::unique_ptr<podio::ROOTFrameData> ROOTLegacyReader::readEntry() {
 podio::CollectionReadBuffers
 ROOTLegacyReader::getCollectionBuffers(const std::pair<std::string, detail::CollectionInfo>& collInfo) {
   const auto& name = collInfo.first;
-  const auto& [theClass, collectionClass, index] = collInfo.second;
+  const auto& [collType, isSubsetColl, schemaVersion, index] = collInfo.second;
   auto& branches = m_collectionBranches[index];
 
-  // Create empty collection buffers, and connect them to the right branches
-  auto collBuffers = podio::CollectionReadBuffers();
-  // If we have a valid data buffer class we know that have to read data,
-  // otherwise we are handling a subset collection
-  const bool isSubsetColl = theClass == nullptr;
-  if (!isSubsetColl) {
-    collBuffers.data = theClass->New();
-  }
+  const auto& bufferFactory = podio::CollectionBufferFactory::instance();
+  auto maybeBuffers = bufferFactory.createBuffers(collType, schemaVersion, isSubsetColl);
 
-  {
-    auto collection =
-        std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
-    collection->setSubsetCollection(isSubsetColl);
-
-    auto tmpBuffers = collection->createBuffers();
-    collBuffers.createCollection = std::move(tmpBuffers.createCollection);
-    collBuffers.recast = std::move(tmpBuffers.recast);
-
-    if (auto* refs = tmpBuffers.references) {
-      collBuffers.references = new podio::CollRefCollection(refs->size());
-    }
-    if (auto* vminfo = tmpBuffers.vectorMembers) {
-      collBuffers.vectorMembers = new podio::VectorMembersInfo();
-      collBuffers.vectorMembers->reserve(vminfo->size());
-
-      for (const auto& [type, _] : (*vminfo)) {
-        const auto* vecClass = TClass::GetClass(("vector<" + type + ">").c_str());
-        collBuffers.vectorMembers->emplace_back(type, vecClass->New());
-      }
-    }
-  }
+  // TODO: Error handling of empty optional
+  auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
   const auto localEntry = m_chain->LoadTree(m_eventNumber);
   // After switching trees in the chain, branch pointers get invalidated so
@@ -216,10 +191,8 @@ void ROOTLegacyReader::createCollectionBranches(const std::vector<root_utils::Co
       branches.vecs.push_back(root_utils::getBranch(m_chain.get(), brName.c_str()));
     }
 
-    const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
-    const auto bufferClass = isSubsetColl ? nullptr : TClass::GetClass(bufferClassName.c_str());
+    m_storedClasses.emplace_back(name, std::make_tuple(collType, isSubsetColl, collSchemaVersion, collectionIndex++));
 
-    m_storedClasses.emplace_back(name, std::make_tuple(bufferClass, collectionClass, collectionIndex++));
     m_collectionBranches.push_back(branches);
   }
 }

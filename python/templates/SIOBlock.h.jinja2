@@ -4,6 +4,8 @@
 #ifndef {{ package_name.upper() }}_{{ class.bare_type }}SIOBlock_H
 #define {{ package_name.upper() }}_{{ class.bare_type }}SIOBlock_H
 
+#include "{{ incfolder }}DatamodelDefinition.h"
+
 #include "podio/SIOBlock.h"
 
 #include <sio/api.h>
@@ -23,13 +25,12 @@ namespace podio {
 class {{ block_class }}: public podio::SIOBlock {
 public:
   {{ block_class }}() :
-  SIOBlock("{{ class.bare_type }}", sio::version::encode_version(0, 1)) {
+  SIOBlock("{{ class.bare_type }}", sio::version::encode_version({{ package_name }}::meta::schemaVersion, 0)) {
     podio::SIOBlockFactory::instance().registerBlockForCollection("{{class.full_type}}", this);
   }
 
   {{ block_class }}(const std::string& name) :
-  // SIOBlock(name + "__{{ class.bare_type }}", sio::version::encode_version(0, 1)) {}
-  SIOBlock(name, sio::version::encode_version(0, 1)) {}
+  SIOBlock(name, sio::version::encode_version({{ package_name }}::meta::schemaVersion, 0)) {}
 
   // Read the collection data from the device
   void read(sio::read_device& device, sio::version_type version) override;
@@ -37,12 +38,7 @@ public:
   // Write the collection data to the device
   void write(sio::write_device& device) override;
 
-  void createBuffers(bool isSubsetColl) override;
-
   SIOBlock* create(const std::string& name) const override { return new {{ block_class }}(name); }
-
-private:
-  podio::CollectionReadBuffers createBuffers() const;
 };
 
 static {{ block_class }} _dummy{{ block_class }};
