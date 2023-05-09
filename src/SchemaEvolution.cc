@@ -17,27 +17,18 @@ SchemaEvolution const& SchemaEvolution::instance() {
 podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(podio::CollectionReadBuffers oldBuffers,
                                                             SchemaVersionT fromVersion,
                                                             const std::string& collType) const {
-
-  if (const auto typeIt = m_evolutionFuncs.find(collType); typeIt != m_evolutionFuncs.end()) {
-    const auto& versionMap = typeIt->second;
-    // The current schema version is defined by the number of evolution functions we have
-    const auto currentVersion = versionMap.size();
-    std::cerr << "PODIO WARNING: evolveBuffers " << collType << " current " << currentVersion << " buffer version "
-              << fromVersion << std::endl;
-
-    if (currentVersion == fromVersion) {
+  if (const auto typeIt = m_versionMapIndices.find(collType); typeIt != m_versionMapIndices.end()) {
+    const auto [currentVersion, mapIndex] = typeIt->second;
+    if (fromVersion == currentVersion) {
       return oldBuffers; // Nothing to do here
     }
 
-    if (fromVersion < currentVersion) {
-      return versionMap[fromVersion - 1](oldBuffers, fromVersion);
+    const auto& typeEvolFuncs = m_evolutionFuncs[mapIndex];
+    if (fromVersion < typeEvolFuncs.size() - 1) {
+      // Do we need this check? In principle we could ensure at registration
+      // time that this is always guaranteed
+      return typeEvolFuncs[fromVersion - 1](oldBuffers, fromVersion);
     }
-
-    std::cerr
-        << "PODIO WARNING: evolveBuffers called with fromVersion that is greater than the current schema version for "
-        << collType << std::endl;
-    // TODO: exception?
-    return oldBuffers;
   }
 
   std::cerr << "PODIO WARNING: evolveBuffers has no knowledge of how to evolve buffers for " << collType << std::endl;
@@ -47,46 +38,45 @@ podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(podio::CollectionRea
 
 void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaVersionT fromVersion,
                                             const EvolutionFuncT& evolutionFunc, Priority priority) {
-  auto typeIt = m_evolutionFuncs.find(collType);
-  if (typeIt != m_evolutionFuncs.end()) {
-    auto& versionMap = typeIt->second;
+  auto typeIt = m_versionMapIndices.find(collType);
+  if (typeIt == m_versionMapIndices.end()) {
+    std::cerr << "PODIO ERROR: trying to register a schema evolution function for " << collType
+              << " which is not a type known to the schema evolution registry" << std::endl;
+    return;
+  }
 
-    const auto prevSize = versionMap.size();
-    if (prevSize < fromVersion) {
-      versionMap.resize(fromVersion);
-      for (auto i = prevSize; i < fromVersion; ++i) {
-        versionMap[i] = evolutionFunc;
-      }
-    } else {
-      if (priority == Priority::UserDefined) {
-        versionMap[fromVersion] = evolutionFunc;
-      } else {
-        std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
-      }
+  auto& [currentVersion, mapIndex] = typeIt->second;
+
+  // If we do not have any evolution funcs yet, create the necessary mapping
+  // structure and update the index
+  if (typeIt->second.index == MapIndex::NoEvolutionAvailable) {
+    mapIndex = m_evolutionFuncs.size();
+    m_evolutionFuncs.emplace_back(EvolFuncVersionMapT{});
+  }
+
+  auto& versionMap = m_evolutionFuncs[mapIndex];
+  const auto prevSize = versionMap.size();
+  if (prevSize < fromVersion) {
+    versionMap.resize(fromVersion);
+    for (auto i = prevSize; i < fromVersion; ++i) {
+      versionMap[i] = evolutionFunc;
     }
-
   } else {
-    // We do not know about this type yet, so we create an entirely new map
-    // and populate all versions with this evolution function
-    VersionMapT versionMap;
-    versionMap.reserve(fromVersion);
-    for (size_t i = 0; i < fromVersion; ++i) {
-      versionMap.emplace_back(evolutionFunc);
+    if (priority == Priority::UserDefined) {
+      versionMap[fromVersion] = evolutionFunc;
+    } else {
+      std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
     }
-
-    m_evolutionFuncs.emplace(collType, std::move(versionMap));
   }
 }
 
-void SchemaEvolution::registerEvolutionFunc(const std::string& collType, NoSchemaEvolutionNecessaryT) {
-  auto typeIt = m_evolutionFuncs.find(collType);
-  if (typeIt != m_evolutionFuncs.end()) {
-    std::runtime_error(
-        "Cannot mark a type for not needing schema evolution, if it already has schema evolution functions defined");
+void SchemaEvolution::registerCurrentVersion(const std::string& collType, SchemaVersionT currentVersion) {
+  if (auto typeIt = m_versionMapIndices.find(collType); typeIt != m_versionMapIndices.end()) {
+    // TODO: warn about this? In principle all of this should only be called once
+    typeIt->second.currentVersion = currentVersion;
   }
 
-  // TODO: How to guard this agains accidental overwriting later?
-  m_evolutionFuncs.emplace(collType, VersionMapT{});
+  m_versionMapIndices.emplace(collType, MapIndex{currentVersion, MapIndex::NoEvolutionAvailable});
 }
 
 } // namespace podio
