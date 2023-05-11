@@ -37,46 +37,42 @@ podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(podio::CollectionRea
 }
 
 void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaVersionT fromVersion,
-                                            const EvolutionFuncT& evolutionFunc, Priority priority) {
+                                            SchemaVersionT currentVersion, const EvolutionFuncT& evolutionFunc,
+                                            Priority priority) {
   auto typeIt = m_versionMapIndices.find(collType);
   if (typeIt == m_versionMapIndices.end()) {
-    std::cerr << "PODIO ERROR: trying to register a schema evolution function for " << collType
-              << " which is not a type known to the schema evolution registry" << std::endl;
-    return;
+    // Create an entry for this type
+    std::tie(typeIt, std::ignore) =
+        m_versionMapIndices.emplace(collType, MapIndex{currentVersion, MapIndex::NoEvolutionAvailable});
   }
-
-  auto& [currentVersion, mapIndex] = typeIt->second;
 
   // If we do not have any evolution funcs yet, create the necessary mapping
   // structure and update the index
   if (typeIt->second.index == MapIndex::NoEvolutionAvailable) {
-    mapIndex = m_evolutionFuncs.size();
+    typeIt->second.index = m_evolutionFuncs.size();
     m_evolutionFuncs.emplace_back(EvolFuncVersionMapT{});
   }
+
+  // From here on out we don't need the mutabale any longer
+  const auto& [_, mapIndex] = typeIt->second;
 
   auto& versionMap = m_evolutionFuncs[mapIndex];
   const auto prevSize = versionMap.size();
   if (prevSize < fromVersion) {
     versionMap.resize(fromVersion);
-    for (auto i = prevSize; i < fromVersion; ++i) {
-      versionMap[i] = evolutionFunc;
-    }
+    versionMap[fromVersion - 1] = evolutionFunc;
   } else {
     if (priority == Priority::UserDefined) {
-      versionMap[fromVersion] = evolutionFunc;
+      versionMap[fromVersion - 1] = evolutionFunc;
     } else {
       std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
     }
   }
 }
 
-void SchemaEvolution::registerCurrentVersion(const std::string& collType, SchemaVersionT currentVersion) {
-  if (auto typeIt = m_versionMapIndices.find(collType); typeIt != m_versionMapIndices.end()) {
-    // TODO: warn about this? In principle all of this should only be called once
-    typeIt->second.currentVersion = currentVersion;
-  }
-
-  m_versionMapIndices.emplace(collType, MapIndex{currentVersion, MapIndex::NoEvolutionAvailable});
+podio::CollectionReadBuffers SchemaEvolution::noOpSchemaEvolution(podio::CollectionReadBuffers buffers,
+                                                                  SchemaVersionT) {
+  return buffers;
 }
 
 } // namespace podio

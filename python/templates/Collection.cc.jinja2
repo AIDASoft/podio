@@ -218,9 +218,6 @@ bool registerCollection() {
     auto& factory = podio::CollectionBufferFactory::mutInstance();
     factory.registerCreationFunc("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion, createBuffers);
 
-    auto& schemaEvolution = podio::SchemaEvolution::mutInstance();
-    schemaEvolution.registerCurrentVersion("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion);
-
     return true;
   }();
   return reg;
