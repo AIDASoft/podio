@@ -1,5 +1,6 @@
 #include "podio/ROOTNTupleReader.h"
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
@@ -53,6 +54,9 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   auto subsetCollection =
       m_metadata_readers[filename]->GetView<std::vector<short>>(root_utils::subsetCollection(category));
   m_collectionInfo[category].isSubsetCollection = subsetCollection(0);
+
+  auto schemaVersion = m_metadata_readers[filename]->GetView<std::vector<SchemaVersionT>>("schemaVersion_" + category);
+  m_collectionInfo[category].schemaVersion = schemaVersion(0);
 
   return true;
 }
@@ -136,28 +140,17 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     const auto bufferClass =
         m_collectionInfo[category].isSubsetCollection[i] ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
-    auto collBuffers = podio::CollectionReadBuffers();
     const bool isSubsetColl = bufferClass == nullptr;
-    if (!isSubsetColl) {
-      collBuffers.data = bufferClass->New();
-    }
-    collection->setSubsetCollection(isSubsetColl);
 
-    auto tmpBuffers = collection->createBuffers();
-    collBuffers.createCollection = std::move(tmpBuffers.createCollection);
-    collBuffers.recast = std::move(tmpBuffers.recast);
+    const auto& bufferFactory = podio::CollectionBufferFactory::instance();
+    auto maybeBuffers = bufferFactory.createBuffers(m_collectionInfo[category].type[i], m_collectionInfo[category].schemaVersion[i], isSubsetColl);
+    auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
-    if (auto* refs = tmpBuffers.references) {
-      collBuffers.references = new podio::CollRefCollection(refs->size());
-    }
-    if (auto* vminfo = tmpBuffers.vectorMembers) {
-      collBuffers.vectorMembers = new podio::VectorMembersInfo();
-      collBuffers.vectorMembers->reserve(vminfo->size());
-
-      for (const auto& [type, _] : (*vminfo)) {
-        const auto* vecClass = TClass::GetClass(("vector<" + type + ">").c_str());
-        collBuffers.vectorMembers->emplace_back(type, vecClass->New());
-      }
+    if (!maybeBuffers) {
+      std::cout << "WARNING: Buffers couldn't be created for collection " << m_collectionInfo[category].name[i] 
+                << " of type " << m_collectionInfo[category].type[i] << " and schema version " << m_collectionInfo[category].schemaVersion[i]
+                << std::endl;
+      return nullptr;
     }
 
     if (!isSubsetColl) {

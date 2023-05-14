@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include "TFile.h"
@@ -48,6 +49,7 @@ private:
     std::vector<std::string> name{};
     std::vector<std::string> type{};
     std::vector<short> isSubsetCollection{};
+    std::vector<SchemaVersionT> schemaVersion{};
   };
 
   std::unordered_map<std::string, CollectionInfo> m_collectionInfo{};

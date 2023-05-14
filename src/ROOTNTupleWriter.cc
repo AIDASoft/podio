@@ -1,6 +1,7 @@
 #include "podio/ROOTNTupleWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/GenericParameters.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "rootUtils.h"
 
@@ -96,6 +97,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
       m_collectionInfo[category].name.emplace_back(name);
       m_collectionInfo[category].type.emplace_back(coll->getTypeName());
       m_collectionInfo[category].isSubsetCollection.emplace_back(coll->isSubsetCollection());
+      m_collectionInfo[category].schemaVersion.emplace_back(coll->getSchemaVersion());
     }
   }
 
@@ -188,6 +190,8 @@ void ROOTNTupleWriter::finish() {
     *collectionTypeField = m_collectionInfo[category].type;
     auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
     *subsetCollectionField = m_collectionInfo[category].isSubsetCollection;
+    auto schemaVersionField = m_metadata->MakeField<std::vector<SchemaVersionT>>({"schemaVersion_" + category});
+    *schemaVersionField = m_collectionInfo[category].schemaVersion;
   }
 
   m_metadata->Freeze();
