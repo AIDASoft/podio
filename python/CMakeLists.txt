@@ -5,7 +5,6 @@ SET(podio_PYTHON_DIR ${CMAKE_CURRENT_LIST_DIR} PARENT_SCOPE)
 set(to_install
   podio_class_generator.py
   podio_schema_evolution.py
-  figure.txt
   EventStore.py)
 
 install(FILES ${to_install} DESTINATION ${podio_PYTHON_INSTALLDIR})

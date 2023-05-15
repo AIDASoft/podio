@@ -5,14 +5,11 @@
 import os
 import sys
 import subprocess
-import pickle
 from copy import deepcopy
 from enum import IntEnum
 
 from collections.abc import Mapping
 from collections import defaultdict
-
-from itertools import zip_longest
 
 import jinja2
 
@@ -26,15 +23,8 @@ TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 REPORT_TEXT = """
   PODIO Data Model
   ================
-  Used
-    {yamlfile}
-  to create
-    {nclasses} classes
-  in
-    {installdir}/
-  Read instructions in
-  the README.md to run
-  your first example!
+  Used {yamlfile} to create {nclasses} classes in {installdir}/
+  Read instructions in the README.md to run your first example!
 """
 
 
@@ -171,19 +161,13 @@ have resolvable schema evolution incompatibilities:")
     if not self.verbose:
       return
 
-    with open(os.path.join(THIS_DIR, "figure.txt"), 'rb') as pkl:
-      figure = pickle.load(pkl)
-
     nclasses = 5 * len(self.datamodel.datatypes) + len(self.datamodel.components)
     text = REPORT_TEXT.format(yamlfile=self.yamlfile,
                               nclasses=nclasses,
                               installdir=self.install_dir)
 
-    print()
-    for figline, summaryline in zip_longest(figure, text.splitlines(), fillvalue=''):
-      print(figline + summaryline)
-    print("     'Homage to the Square' - Josef Albers")
-    print()
+    for summaryline in text.splitlines():
+      print(summaryline)
     print()
 
   def _eval_template(self, template, data):
