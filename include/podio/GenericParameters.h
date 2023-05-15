@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-#define DEPRECATED_ACCESS [[deprecated("Use templated access functionality")]]
-
 namespace podio {
 
 /// The types which are supported in the GenericParameters
@@ -131,69 +129,6 @@ public:
   /// Get all available keys for a given type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   std::vector<std::string> getKeys() const;
-
-  /** Returns the first integer value for the given key.
-   */
-  DEPRECATED_ACCESS int getIntVal(const std::string& key) const;
-
-  /** Returns the first float value for the given key.
-   */
-  DEPRECATED_ACCESS float getFloatVal(const std::string& key) const;
-
-  /** Returns the first string value for the given key.
-   */
-  DEPRECATED_ACCESS const std::string& getStringVal(const std::string& key) const;
-
-  /** Adds all integer values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS IntVec& getIntVals(const std::string& key, IntVec& values) const;
-
-  /** Adds all float values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS FloatVec& getFloatVals(const std::string& key, FloatVec& values) const;
-
-  /** Adds all float values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS StringVec& getStringVals(const std::string& key, StringVec& values) const;
-
-  /** Returns a list of all keys of integer parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getIntKeys(StringVec& keys) const;
-
-  /** Returns a list of all keys of float parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getFloatKeys(StringVec& keys) const;
-
-  /** Returns a list of all keys of string parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getStringKeys(StringVec& keys) const;
-
-  /** The number of integer values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNInt(const std::string& key) const;
-
-  /** The number of float values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNFloat(const std::string& key) const;
-
-  /** The number of string values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNString(const std::string& key) const;
-
-  /** Set integer values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const IntVec& values);
-
-  /** Set float values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const FloatVec& values);
-
-  /** Set string values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const StringVec& values);
 
   /// erase all elements
   void clear() {
