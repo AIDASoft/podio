@@ -13,10 +13,10 @@
 #include <vector>
 
 namespace sio {
-  class read_device;
-  class write_device;
-  using version_type = uint32_t; // from sio/definitions
-}
+class read_device;
+class write_device;
+using version_type = uint32_t; // from sio/definitions
+} // namespace sio
 
 namespace podio {
 
