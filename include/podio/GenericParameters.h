@@ -12,6 +12,12 @@
 #include <string>
 #include <vector>
 
+namespace sio {
+  class read_device;
+  class write_device;
+  using version_type = uint32_t; // from sio/definitions
+}
+
 namespace podio {
 
 /// The types which are supported in the GenericParameters
@@ -138,45 +144,8 @@ public:
     return _intMap.empty() && _floatMap.empty() && _stringMap.empty();
   }
 
-  /**
-   * Get the internal int map (necessary for serialization with SIO)
-   */
-  const IntMap& getIntMap() const {
-    return getMap<int>();
-  }
-  IntMap& getIntMap() {
-    return getMap<int>();
-  }
-
-  /**
-   * Get the internal float map (necessary for serialization with SIO)
-   */
-  const FloatMap& getFloatMap() const {
-    return getMap<float>();
-  }
-  FloatMap& getFloatMap() {
-    return getMap<float>();
-  }
-
-  /**
-   * Get the internal double map (necessary for serialization with SIO)
-   */
-  const DoubleMap& getDoubleMap() const {
-    return getMap<double>();
-  }
-  DoubleMap& getDoubleMap() {
-    return getMap<double>();
-  }
-
-  /**
-   * Get the internal string map (necessary for serialization with SIO)
-   */
-  const StringMap& getStringMap() const {
-    return getMap<std::string>();
-  }
-  StringMap& getStringMap() {
-    return getMap<std::string>();
-  }
+  friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
+  friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
 
 private:
   /// Get a reference to the internal map for a given type (necessary for SIO)
