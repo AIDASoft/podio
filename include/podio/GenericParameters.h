@@ -53,12 +53,6 @@ namespace detail {
 template <typename T>
 using GenericDataReturnType = typename detail::GenericDataReturnTypeHelper<T>::type;
 
-// These should be trivial to remove once the deprecated non-templated access
-// functionality is actually removed
-typedef std::vector<int> IntVec;
-typedef std::vector<float> FloatVec;
-typedef std::vector<std::string> StringVec;
-
 /** GenericParameters objects allow to store generic named parameters of type
  *  int, float and string or vectors of these types.
  *  They can be used  to store (user) meta data that is
