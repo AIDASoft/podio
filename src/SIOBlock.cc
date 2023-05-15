@@ -50,18 +50,18 @@ void SIOCollectionIDTableBlock::write(sio::write_device& device) {
 }
 
 void writeGenericParameters(sio::write_device& device, const GenericParameters& params) {
-  writeMapLike(device, params.getIntMap());
-  writeMapLike(device, params.getFloatMap());
-  writeMapLike(device, params.getStringMap());
-  writeMapLike(device, params.getDoubleMap());
+  writeMapLike(device, params.getMap<int>());
+  writeMapLike(device, params.getMap<float>());
+  writeMapLike(device, params.getMap<std::string>());
+  writeMapLike(device, params.getMap<double>());
 }
 
 void readGenericParameters(sio::read_device& device, GenericParameters& params, sio::version_type version) {
-  readMapLike(device, params.getIntMap());
-  readMapLike(device, params.getFloatMap());
-  readMapLike(device, params.getStringMap());
+  readMapLike(device, params.getMap<int>());
+  readMapLike(device, params.getMap<float>());
+  readMapLike(device, params.getMap<std::string>());
   if (version >= sio::version::encode_version(0, 2)) {
-    readMapLike(device, params.getDoubleMap());
+    readMapLike(device, params.getMap<double>());
   }
 }
 

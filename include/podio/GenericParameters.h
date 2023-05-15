@@ -12,7 +12,11 @@
 #include <string>
 #include <vector>
 
-#define DEPRECATED_ACCESS [[deprecated("Use templated access functionality")]]
+namespace sio {
+class read_device;
+class write_device;
+using version_type = uint32_t; // from sio/definitions
+} // namespace sio
 
 namespace podio {
 
@@ -54,12 +58,6 @@ namespace detail {
 /// type
 template <typename T>
 using GenericDataReturnType = typename detail::GenericDataReturnTypeHelper<T>::type;
-
-// These should be trivial to remove once the deprecated non-templated access
-// functionality is actually removed
-typedef std::vector<int> IntVec;
-typedef std::vector<float> FloatVec;
-typedef std::vector<std::string> StringVec;
 
 /** GenericParameters objects allow to store generic named parameters of type
  *  int, float and string or vectors of these types.
@@ -132,69 +130,6 @@ public:
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   std::vector<std::string> getKeys() const;
 
-  /** Returns the first integer value for the given key.
-   */
-  DEPRECATED_ACCESS int getIntVal(const std::string& key) const;
-
-  /** Returns the first float value for the given key.
-   */
-  DEPRECATED_ACCESS float getFloatVal(const std::string& key) const;
-
-  /** Returns the first string value for the given key.
-   */
-  DEPRECATED_ACCESS const std::string& getStringVal(const std::string& key) const;
-
-  /** Adds all integer values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS IntVec& getIntVals(const std::string& key, IntVec& values) const;
-
-  /** Adds all float values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS FloatVec& getFloatVals(const std::string& key, FloatVec& values) const;
-
-  /** Adds all float values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS StringVec& getStringVals(const std::string& key, StringVec& values) const;
-
-  /** Returns a list of all keys of integer parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getIntKeys(StringVec& keys) const;
-
-  /** Returns a list of all keys of float parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getFloatKeys(StringVec& keys) const;
-
-  /** Returns a list of all keys of string parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getStringKeys(StringVec& keys) const;
-
-  /** The number of integer values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNInt(const std::string& key) const;
-
-  /** The number of float values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNFloat(const std::string& key) const;
-
-  /** The number of string values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNString(const std::string& key) const;
-
-  /** Set integer values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const IntVec& values);
-
-  /** Set float values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const FloatVec& values);
-
-  /** Set string values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const StringVec& values);
-
   /// erase all elements
   void clear() {
     _intMap.clear();
@@ -209,45 +144,8 @@ public:
     return _intMap.empty() && _floatMap.empty() && _stringMap.empty();
   }
 
-  /**
-   * Get the internal int map (necessary for serialization with SIO)
-   */
-  const IntMap& getIntMap() const {
-    return getMap<int>();
-  }
-  IntMap& getIntMap() {
-    return getMap<int>();
-  }
-
-  /**
-   * Get the internal float map (necessary for serialization with SIO)
-   */
-  const FloatMap& getFloatMap() const {
-    return getMap<float>();
-  }
-  FloatMap& getFloatMap() {
-    return getMap<float>();
-  }
-
-  /**
-   * Get the internal double map (necessary for serialization with SIO)
-   */
-  const DoubleMap& getDoubleMap() const {
-    return getMap<double>();
-  }
-  DoubleMap& getDoubleMap() {
-    return getMap<double>();
-  }
-
-  /**
-   * Get the internal string map (necessary for serialization with SIO)
-   */
-  const StringMap& getStringMap() const {
-    return getMap<std::string>();
-  }
-  StringMap& getStringMap() {
-    return getMap<std::string>();
-  }
+  friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
+  friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
 
 private:
   /// Get a reference to the internal map for a given type (necessary for SIO)
