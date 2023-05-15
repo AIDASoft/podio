@@ -143,13 +143,14 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     const bool isSubsetColl = bufferClass == nullptr;
 
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    auto maybeBuffers = bufferFactory.createBuffers(m_collectionInfo[category].type[i], m_collectionInfo[category].schemaVersion[i], isSubsetColl);
+    auto maybeBuffers = bufferFactory.createBuffers(m_collectionInfo[category].type[i],
+                                                    m_collectionInfo[category].schemaVersion[i], isSubsetColl);
     auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
     if (!maybeBuffers) {
-      std::cout << "WARNING: Buffers couldn't be created for collection " << m_collectionInfo[category].name[i] 
-                << " of type " << m_collectionInfo[category].type[i] << " and schema version " << m_collectionInfo[category].schemaVersion[i]
-                << std::endl;
+      std::cout << "WARNING: Buffers couldn't be created for collection " << m_collectionInfo[category].name[i]
+                << " of type " << m_collectionInfo[category].type[i] << " and schema version "
+                << m_collectionInfo[category].schemaVersion[i] << std::endl;
       return nullptr;
     }
 
