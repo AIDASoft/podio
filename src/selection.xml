@@ -6,9 +6,6 @@
         <field name="m_doubleMtx" transient="true"/>
         <field name="m_stringMtx" transient="true"/>
     </class>
-    <class name="podio::IntVec"/>
-    <class name="podio::FloatVec"/>
-    <class name="podio::StringVec"/>
     <class name="podio::GenericParameters::MapType<int>"/>
     <class name="podio::GenericParameters::MapType<float>"/>
     <class name="podio::GenericParameters::MapType<double>"/>
