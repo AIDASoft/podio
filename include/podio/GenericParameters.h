@@ -78,10 +78,6 @@ public:
   using MapType = std::map<std::string, std::vector<T>>;
 
 private:
-  using IntMap = MapType<int>;
-  using FloatMap = MapType<float>;
-  using DoubleMap = MapType<double>;
-  using StringMap = MapType<std::string>;
   // need mutex pointers for having the possibility to copy/move GenericParameters
   using MutexPtr = std::unique_ptr<std::mutex>;
 
@@ -206,13 +202,13 @@ private:
   }
 
 private:
-  IntMap _intMap{};                      ///< The map storing the integer values
+  MapType<int> _intMap{};                ///< The map storing the integer values
   mutable MutexPtr m_intMtx{nullptr};    ///< The mutex guarding the integer map
-  FloatMap _floatMap{};                  ///< The map storing the float values
+  MapType<float> _floatMap{};            ///< The map storing the float values
   mutable MutexPtr m_floatMtx{nullptr};  ///< The mutex guarding the float map
-  StringMap _stringMap{};                ///< The map storing the string values
+  MapType<std::string> _stringMap{};     ///< The map storing the string values
   mutable MutexPtr m_stringMtx{nullptr}; ///< The mutex guarding the string map
-  DoubleMap _doubleMap{};                ///< The map storing the double values
+  MapType<double> _doubleMap{};          ///< The map storing the double values
   mutable MutexPtr m_doubleMtx{nullptr}; ///< The mutex guarding the double map
 };
 
