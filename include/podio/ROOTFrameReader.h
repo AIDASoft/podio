@@ -144,7 +144,10 @@ private:
    */
   CategoryInfo& getCategoryInfo(const std::string& name);
 
-  GenericParameters readEventMetaData(CategoryInfo& catInfo);
+  /**
+   * Read the parameters for the entry specified in the passed CategoryInfo
+   */
+  GenericParameters readEntryParameters(CategoryInfo& catInfo);
 
   /**
    * Read the data entry specified in the passed CategoryInfo, and increase the

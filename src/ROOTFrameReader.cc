@@ -22,7 +22,7 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<st
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionInfoT>& collInfo);
 
-GenericParameters ROOTFrameReader::readEventMetaData(ROOTFrameReader::CategoryInfo& catInfo) {
+GenericParameters ROOTFrameReader::readEntryParameters(ROOTFrameReader::CategoryInfo& catInfo) {
   // Parameter branch is always the last one
   auto& paramBranches = catInfo.branches.back();
   const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
@@ -64,7 +64,7 @@ std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(ROOTFrameReader::Categ
     buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i));
   }
 
-  auto parameters = readEventMetaData(catInfo);
+  auto parameters = readEntryParameters(catInfo);
 
   catInfo.entry++;
   return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
