@@ -25,6 +25,12 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
 GenericParameters ROOTFrameReader::readEventMetaData(ROOTFrameReader::CategoryInfo& catInfo) {
   // Parameter branch is always the last one
   auto& paramBranches = catInfo.branches.back();
+  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
+
+  // Make sure to have a valid branch pointer after switching trees in the chain
+  if (localEntry == 0) {
+    paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
+  }
   auto* branch = paramBranches.data;
 
   GenericParameters params;
