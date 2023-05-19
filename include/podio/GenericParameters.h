@@ -18,6 +18,9 @@ class write_device;
 using version_type = uint32_t; // from sio/definitions
 } // namespace sio
 
+#define DEPR_NON_TEMPLATE                                                                                              \
+  [[deprecated("Non-templated access will be removed. Switch to templated access functionality")]]
+
 namespace podio {
 
 /// The types which are supported in the GenericParameters
@@ -147,8 +150,7 @@ public:
   friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
   friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
 
-private:
-  /// Get a reference to the internal map for a given type (necessary for SIO)
+  /// Get a reference to the internal map for a given type
   template <typename T>
   const MapType<detail::GetVectorType<T>>& getMap() const {
     if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
@@ -162,6 +164,19 @@ private:
     }
   }
 
+  DEPR_NON_TEMPLATE const auto& getStringMap() const {
+    return getMap<std::string>();
+  }
+
+  DEPR_NON_TEMPLATE const auto& getFloatMap() const {
+    return getMap<float>();
+  }
+
+  DEPR_NON_TEMPLATE const auto& getIntMap() const {
+    return getMap<int>();
+  }
+
+private:
   /// Get a reference to the internal map for a given type (necessary for SIO)
   template <typename T>
   MapType<detail::GetVectorType<T>>& getMap() {
