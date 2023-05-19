@@ -22,13 +22,14 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<st
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionInfoT>& collInfo);
 
-GenericParameters ROOTFrameReader::readEntryParameters(ROOTFrameReader::CategoryInfo& catInfo) {
+GenericParameters ROOTFrameReader::readEntryParameters(ROOTFrameReader::CategoryInfo& catInfo, bool reloadBranches,
+                                                       unsigned int localEntry) {
   // Parameter branch is always the last one
   auto& paramBranches = catInfo.branches.back();
-  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
 
   // Make sure to have a valid branch pointer after switching trees in the chain
-  if (localEntry == 0) {
+  // as well as on the first event
+  if (reloadBranches) {
     paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
   }
   auto* branch = paramBranches.data;
@@ -36,7 +37,7 @@ GenericParameters ROOTFrameReader::readEntryParameters(ROOTFrameReader::Category
   GenericParameters params;
   auto* emd = &params;
   branch->SetAddress(&emd);
-  branch->GetEntry(catInfo.entry);
+  branch->GetEntry(localEntry);
   return params;
 }
 
@@ -59,19 +60,29 @@ std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(ROOTFrameReader::Categ
     return nullptr;
   }
 
+  // After switching trees in the chain, branch pointers get invalidated so
+  // they need to be reassigned.
+  // NOTE: root 6.22/06 requires that we get completely new branches here,
+  // with 6.20/04 we could just re-set them
+  const auto preTreeNo = catInfo.chain->GetTreeNumber();
+  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
+  const auto treeChange = catInfo.chain->GetTreeNumber() != preTreeNo;
+  // Also need to make sure to handle the first event
+  const auto reloadBranches = treeChange || localEntry == 0;
+
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
-    buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i));
+    buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i, reloadBranches, localEntry));
   }
 
-  auto parameters = readEntryParameters(catInfo);
+  auto parameters = readEntryParameters(catInfo, reloadBranches, localEntry);
 
   catInfo.entry++;
   return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
-podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameReader::CategoryInfo& catInfo,
-                                                                   size_t iColl) {
+podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameReader::CategoryInfo& catInfo, size_t iColl,
+                                                                   bool reloadBranches, unsigned int localEntry) {
   const auto& name = catInfo.storedClasses[iColl].first;
   const auto& [collType, isSubsetColl, schemaVersion, index] = catInfo.storedClasses[iColl].second;
   auto& branches = catInfo.branches[index];
@@ -82,12 +93,7 @@ podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameRead
   // TODO: Error handling of empty optional
   auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
-  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
-  // After switching trees in the chain, branch pointers get invalidated so
-  // they need to be reassigned.
-  // NOTE: root 6.22/06 requires that we get completely new branches here,
-  // with 6.20/04 we could just re-set them
-  if (localEntry == 0) {
+  if (reloadBranches) {
     branches.data = root_utils::getBranch(catInfo.chain.get(), name.c_str());
 
     // reference collections

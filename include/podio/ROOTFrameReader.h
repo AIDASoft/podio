@@ -147,7 +147,7 @@ private:
   /**
    * Read the parameters for the entry specified in the passed CategoryInfo
    */
-  GenericParameters readEntryParameters(CategoryInfo& catInfo);
+  GenericParameters readEntryParameters(CategoryInfo& catInfo, bool reloadBranches, unsigned int localEntry);
 
   /**
    * Read the data entry specified in the passed CategoryInfo, and increase the
@@ -159,7 +159,8 @@ private:
   /**
    * Get / read the buffers at index iColl in the passed category information
    */
-  podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl);
+  podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl, bool reloadBranches,
+                                                    unsigned int localEntry);
 
   std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
