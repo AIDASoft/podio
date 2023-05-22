@@ -18,6 +18,9 @@ class write_device;
 using version_type = uint32_t; // from sio/definitions
 } // namespace sio
 
+#define DEPR_NON_TEMPLATE                                                                                              \
+  [[deprecated("Non-templated access will be removed. Switch to templated access functionality")]]
+
 namespace podio {
 
 /// The types which are supported in the GenericParameters
@@ -75,10 +78,6 @@ public:
   using MapType = std::map<std::string, std::vector<T>>;
 
 private:
-  using IntMap = MapType<int>;
-  using FloatMap = MapType<float>;
-  using DoubleMap = MapType<double>;
-  using StringMap = MapType<std::string>;
   // need mutex pointers for having the possibility to copy/move GenericParameters
   using MutexPtr = std::unique_ptr<std::mutex>;
 
@@ -147,8 +146,7 @@ public:
   friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
   friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
 
-private:
-  /// Get a reference to the internal map for a given type (necessary for SIO)
+  /// Get a reference to the internal map for a given type
   template <typename T>
   const MapType<detail::GetVectorType<T>>& getMap() const {
     if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
@@ -162,6 +160,19 @@ private:
     }
   }
 
+  DEPR_NON_TEMPLATE const auto& getStringMap() const {
+    return getMap<std::string>();
+  }
+
+  DEPR_NON_TEMPLATE const auto& getFloatMap() const {
+    return getMap<float>();
+  }
+
+  DEPR_NON_TEMPLATE const auto& getIntMap() const {
+    return getMap<int>();
+  }
+
+private:
   /// Get a reference to the internal map for a given type (necessary for SIO)
   template <typename T>
   MapType<detail::GetVectorType<T>>& getMap() {
@@ -191,13 +202,13 @@ private:
   }
 
 private:
-  IntMap _intMap{};                      ///< The map storing the integer values
+  MapType<int> _intMap{};                ///< The map storing the integer values
   mutable MutexPtr m_intMtx{nullptr};    ///< The mutex guarding the integer map
-  FloatMap _floatMap{};                  ///< The map storing the float values
+  MapType<float> _floatMap{};            ///< The map storing the float values
   mutable MutexPtr m_floatMtx{nullptr};  ///< The mutex guarding the float map
-  StringMap _stringMap{};                ///< The map storing the string values
+  MapType<std::string> _stringMap{};     ///< The map storing the string values
   mutable MutexPtr m_stringMtx{nullptr}; ///< The mutex guarding the string map
-  DoubleMap _doubleMap{};                ///< The map storing the double values
+  MapType<double> _doubleMap{};          ///< The map storing the double values
   mutable MutexPtr m_doubleMtx{nullptr}; ///< The mutex guarding the double map
 };
 
