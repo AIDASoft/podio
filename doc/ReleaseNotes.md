@@ -1,3 +1,62 @@
+# v00-16-04
+
+* 2023-05-23 tmadlener ([PR#417](https://github.com/AIDASoft/podio/pull/417))
+  - Fix an issue with reading multiple files via the `ROOTFrameReader` ([#411](https://github.com/AIDASoft/podio/issues/411))
+    - Add documentation for API of opening file(s)
+    - Add tests for reading multiple files
+
+* 2023-05-22 tmadlener ([PR#418](https://github.com/AIDASoft/podio/pull/418))
+  - Bring back the public templated `getMap` functionality for `podio::GenericParameters` as they are already used in DD4hep (see [AIDASoft/DD4hep#1112](https://github.com/AIDASoft/DD4hep/pull/1112)). 
+    - Mark the existing `getXYZMap` as deprecated but keep them for a brief transition period.
+    - These have been removed in [#415](https://github.com/AIDASoft/podio/pull/415).
+
+* 2023-05-19 jmcarcell ([PR#416](https://github.com/AIDASoft/podio/pull/416))
+  - Remove selection rules for classes that don't exist anymore
+
+* 2023-05-15 jmcarcell ([PR#415](https://github.com/AIDASoft/podio/pull/415))
+  - Remove the deprecated getters and setters from the generic parameters
+
+* 2023-05-15 jmcarcell ([PR#410](https://github.com/AIDASoft/podio/pull/410))
+  - Remove the square that is run when cmake runs
+
+* 2023-05-09 tmadlener ([PR#414](https://github.com/AIDASoft/podio/pull/414))
+  - Fix off-by-one error in `UserDataCollection::print` that caused the first element to be printed twice.
+
+* 2023-05-09 Thomas Madlener ([PR#394](https://github.com/AIDASoft/podio/pull/394))
+  - Introduce a `CollectionBufferFactory` that can create the necessary buffers from a collection type, a schema version and a subset collection flag.
+    - Use this factory throughout all existing Readers
+    - Remove `createBuffers` and `createSchemaEvolvableBuffers` from `podio::CollectionBase` interface
+  - Make the minimum allowed `schema_version` 1 in the yaml definition files. Default to 1 if no `schema_version` is provided
+  - Add a `schemaVersion` to the `DatamodelDefinition.h` header that is generated and that can be accessed via `{{ package_name }}::meta::schemaVersion`. Use this to propagate schema information to the necessary places.
+  - Make `SIOBlocks` write the current schema version, such that on reading they can generate the appropriate buffers for the version on file.
+
+* 2023-04-22 Christopher Dilks ([PR#408](https://github.com/AIDASoft/podio/pull/408))
+  - fix type inconsistency between `Collection::size()` and index for const object accessors
+
+* 2023-04-21 jmcarcell ([PR#387](https://github.com/AIDASoft/podio/pull/387))
+  - Make sure that the dump model round trip tests work without `ENABLE_SIO`
+  - Actually test the extension model dumping
+
+* 2023-04-12 Thomas Madlener ([PR#400](https://github.com/AIDASoft/podio/pull/400))
+  - Fix a bug in `SIOFrameData::getAvailableCollections` to also work with Frames where some of the collections have not been written and that could lead to a seg fault.
+  - Add a test for this in c++ (previously only covered in python unittests of Frame).
+
+* 2023-04-05 Thomas Madlener ([PR#399](https://github.com/AIDASoft/podio/pull/399))
+  - Add `PODIO_ENABLE_SIO=1` to the public `target_compile_definitions` for `podioSioIO` so that all dependent targets automatically get it as well. This should make it easier to use SIO dependent features in dependencies. 
+  - Consistently use a scope for `target_link_libraries` in tests.
+
+* 2023-04-03 Paul Gessinger-Befurt ([PR#398](https://github.com/AIDASoft/podio/pull/398))
+  - Do not reject building if ROOT was built with C++20 (instead of C++17).
+
+* 2023-04-03 Thomas Madlener ([PR#397](https://github.com/AIDASoft/podio/pull/397))
+  - Remove the `GENERATED` property from generated files in CMake to avoid inconsistent removal of headers and source files with the `clean` target. Fixes [#396](https://github.com/AIDASoft/podio/issues/396)
+
+* 2023-03-15 Benedikt Hegner ([PR#341](https://github.com/AIDASoft/podio/pull/341))
+  - Adding infrastructure for schema evolution
+  - Added explicit version tracking to the metadata
+  - Data model comparison tool w/ simple heuristics to identify potential omissions / mistakes (e.g. checking for the limits of the ROOT backend)
+  - Changed handling of backwards compatibility for the collection info metadata
+
 # v00-16-03
 
 * 2023-03-14 jmcarcell ([PR#391](https://github.com/AIDASoft/podio/pull/391))
