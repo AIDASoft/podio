@@ -77,7 +77,7 @@ inline std::string refBranch(const std::string& name, size_t index) {
 }
 
 inline std::string refBranch(const std::string& name, std::string_view relName) {
-  return name + "_" + std::string(relName);
+  return "_" + name + "_" + std::string(relName);
 }
 
 inline std::string vecBranch(const std::string& name, size_t index) {
@@ -85,7 +85,7 @@ inline std::string vecBranch(const std::string& name, size_t index) {
 }
 
 inline std::string vecBranch(const std::string& name, std::string_view vecName) {
-  return name + "_" + std::string(vecName);
+  return "_" + name + "_" + std::string(vecName);
 }
 
 /// The name for subset branches
