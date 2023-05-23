@@ -21,6 +21,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read-multiple
     read-legacy-files
     read_frame_legacy_root
+    read_frame_root_multiple
 
     write_frame_root
     read_frame

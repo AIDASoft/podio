@@ -52,8 +52,27 @@ public:
   ROOTFrameReader(const ROOTFrameReader&) = delete;
   ROOTFrameReader& operator=(const ROOTFrameReader&) = delete;
 
+  /**
+   * Open a single file for reading.
+   *
+   * @param filename The name of the input file
+   */
   void openFile(const std::string& filename);
 
+  /**
+   * Open multiple files for reading and then treat them as if they are one file
+   *
+   * NOTE: All of the files are assumed to have the same structure. Specifically
+   * this means:
+   * - The same categories are available from all files
+   * - The collections that are contained in the individual categories are the
+   *   same across all files
+   *
+   * This usually boils down to "the files have been written with the same
+   * settings", e.g. they are outputs of a batched process.
+   *
+   * @param filenames The filenames of all input files that should be read
+   */
   void openFiles(const std::vector<std::string>& filenames);
 
   /**
@@ -125,7 +144,10 @@ private:
    */
   CategoryInfo& getCategoryInfo(const std::string& name);
 
-  GenericParameters readEventMetaData(CategoryInfo& catInfo);
+  /**
+   * Read the parameters for the entry specified in the passed CategoryInfo
+   */
+  GenericParameters readEntryParameters(CategoryInfo& catInfo, bool reloadBranches, unsigned int localEntry);
 
   /**
    * Read the data entry specified in the passed CategoryInfo, and increase the
@@ -137,7 +159,8 @@ private:
   /**
    * Get / read the buffers at index iColl in the passed category information
    */
-  podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl);
+  podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl, bool reloadBranches,
+                                                    unsigned int localEntry);
 
   std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
