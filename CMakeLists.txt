@@ -8,7 +8,7 @@ project(podio)
 #--- Version -------------------------------------------------------------------
 SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 SET( ${PROJECT_NAME}_VERSION_MINOR 16 )
-SET( ${PROJECT_NAME}_VERSION_PATCH 4 )
+SET( ${PROJECT_NAME}_VERSION_PATCH 5 )
 
 SET( ${PROJECT_NAME}_VERSION  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}" )
 
