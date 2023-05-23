@@ -177,7 +177,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     const auto collectionInfo = root_utils::reconstructCollectionInfo(m_chain, *m_table);
     createCollectionBranches(collectionInfo);
 
-  } else if (m_fileVersion < podio::version::Version{0, 17, 0}) {
+  } else if (m_fileVersion < podio::version::Version{0, 16, 4}) {
 
     auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo");
     auto collectionInfoWithoutSchema = new std::vector<root_utils::CollectionInfoTWithoutSchema>;
