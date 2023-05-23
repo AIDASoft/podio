@@ -1,3 +1,8 @@
+# v00-16-05
+
+* 2023-05-23 tmadlener ([PR#420](https://github.com/AIDASoft/podio/pull/420))
+  - Fix a version check inside the `ROOTReader` to avoid segmentation violations
+
 # v00-16-04
 
 * 2023-05-23 tmadlener ([PR#417](https://github.com/AIDASoft/podio/pull/417))
