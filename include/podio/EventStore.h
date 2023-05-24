@@ -59,7 +59,7 @@ public:
   bool get(const std::string& name, const T*& collection);
 
   /// access a collection by ID. returns true if successful
-  bool get(uint64_t id, CollectionBase*& coll) const final;
+  bool get(uint32_t id, CollectionBase*& coll) const final;
 
   /// access a collection by name
   /// returns a collection w/ setting isValid to true if successful
@@ -91,7 +91,7 @@ public:
   GenericParameters& getRunMetaData(int runID) override;
 
   /// return the collection meta data for the given colID
-  GenericParameters& getCollectionMetaData(uint64_t colID) override;
+  GenericParameters& getCollectionMetaData(uint32_t colID) override;
 
   RunMDMap* getRunMetaDataMap() {
     return &m_runMDMap;
@@ -113,7 +113,7 @@ private:
   }
 
   // members
-  mutable std::set<uint64_t> m_retrievedIDs{};
+  mutable std::set<uint32_t> m_retrievedIDs{};
   mutable CollContainer m_collections{};
   IReader* m_reader{nullptr};
   std::shared_ptr<CollectionIDTable> m_table;

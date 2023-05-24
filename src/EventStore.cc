@@ -15,7 +15,7 @@ EventStore::~EventStore() {
   }
 }
 
-bool EventStore::get(uint64_t id, CollectionBase*& collection) const {
+bool EventStore::get(uint32_t id, CollectionBase*& collection) const {
   auto val = m_retrievedIDs.insert(id);
   bool success = false;
   if (val.second == true) {
@@ -94,7 +94,7 @@ GenericParameters& EventStore::getRunMetaData(int runID) {
   return m_runMDMap[runID];
 }
 
-GenericParameters& EventStore::getCollectionMetaData(uint64_t colID) {
+GenericParameters& EventStore::getCollectionMetaData(uint32_t colID) {
 
   if (m_colMDMap.empty() && m_reader != nullptr) {
     ColMDMap* tmp = m_reader->readCollectionMetaData();

@@ -11,7 +11,7 @@ public:
   /// index of object in collection
   int index;
   /// ID of the collection
-  uint64_t collectionID;
+  uint32_t collectionID;
 
   /// not part of a collection
   static const int untracked = -1;

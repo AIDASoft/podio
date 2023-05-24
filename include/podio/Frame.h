@@ -120,7 +120,7 @@ class Frame {
       return *m_parameters;
     };
 
-    bool get(uint64_t collectionID, podio::CollectionBase*& collection) const override;
+    bool get(uint32_t collectionID, podio::CollectionBase*& collection) const override;
 
     podio::CollectionIDTable getIDTable() const override {
       // Make a copy
@@ -140,7 +140,7 @@ class Frame {
     mutable std::unique_ptr<std::mutex> m_dataMtx{nullptr}; ///< The mutex for guarding the raw data
     podio::CollectionIDTable m_idTable{};                   ///< The collection ID table
     std::unique_ptr<podio::GenericParameters> m_parameters{nullptr}; ///< The generic parameter store for this frame
-    mutable std::set<uint64_t> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet put
+    mutable std::set<uint32_t> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet put
                                             ///< into the map)
   };
 
@@ -386,7 +386,7 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
 }
 
 template <typename FrameDataT>
-bool Frame::FrameModel<FrameDataT>::get(uint64_t collectionID, CollectionBase*& collection) const {
+bool Frame::FrameModel<FrameDataT>::get(uint32_t collectionID, CollectionBase*& collection) const {
   const auto& name = m_idTable.name(collectionID);
   const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
 

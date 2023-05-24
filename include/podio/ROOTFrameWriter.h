@@ -54,7 +54,7 @@ private:
 
   // collectionID, collectionType, subsetCollection
   // NOTE: same as in rootUtils.h private header!
-  using CollectionInfoT = std::tuple<uint64_t, std::string, bool, unsigned int>;
+  using CollectionInfoT = std::tuple<uint32_t, std::string, bool, unsigned int>;
 
   /**
    * Helper struct to group together all necessary state to write / process a

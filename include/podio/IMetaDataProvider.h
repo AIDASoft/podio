@@ -23,7 +23,7 @@ public:
   virtual GenericParameters& getRunMetaData(int runID) = 0;
 
   /// return the collection meta data for the given colID
-  virtual GenericParameters& getCollectionMetaData(uint64_t colID) = 0;
+  virtual GenericParameters& getCollectionMetaData(uint32_t colID) = 0;
 };
 
 } // namespace podio

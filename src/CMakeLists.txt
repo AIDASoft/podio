@@ -53,7 +53,7 @@ SET(core_sources
   DatamodelRegistryIOHelpers.cc
   UserDataCollection.cc
   CollectionBufferFactory.cc
-  MurmurHash2.cpp
+  MurmurHash3.cpp
   )
 
 SET(core_headers

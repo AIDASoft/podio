@@ -135,7 +135,7 @@ inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionB
 // A collection of additional information that describes the collection: the
 // collectionID, the collection (data) type, whether it is a subset
 // collection, and its schema version
-using CollectionInfoT = std::tuple<uint64_t, std::string, bool, unsigned int>;
+using CollectionInfoT = std::tuple<uint32_t, std::string, bool, unsigned int>;
 // for backwards compatibility
 using CollectionInfoWithoutSchemaT = std::tuple<int, std::string, bool>;
 
