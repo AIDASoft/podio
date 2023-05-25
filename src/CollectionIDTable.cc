@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "MurmurHash2.h"
+
 namespace podio {
 
 CollectionIDTable::CollectionIDTable() : m_mutex(std::make_unique<std::mutex>()) {
@@ -47,10 +49,10 @@ bool CollectionIDTable::present(const std::string& name) const {
 int CollectionIDTable::add(const std::string& name) {
   std::lock_guard<std::mutex> lock(*m_mutex);
   const auto result = std::find(begin(m_names), end(m_names), name);
-  int ID = 0;
+  uint64_t ID = 0;
   if (result == m_names.end()) {
     m_names.emplace_back(name);
-    ID = m_names.size();
+    ID = MurmurHash64A(name.c_str(), name.size(), 0);
     m_collectionIDs.emplace_back(ID);
   } else {
     const auto index = std::distance(m_names.begin(), result);
