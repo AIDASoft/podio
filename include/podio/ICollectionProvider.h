@@ -1,6 +1,8 @@
 #ifndef PODIO_ICOLLECTIONPROVIDER_H
 #define PODIO_ICOLLECTIONPROVIDER_H
 
+#include <cstdint>
+
 namespace podio {
 
 class CollectionBase;
