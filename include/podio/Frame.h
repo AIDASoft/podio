@@ -140,8 +140,8 @@ class Frame {
     mutable std::unique_ptr<std::mutex> m_dataMtx{nullptr}; ///< The mutex for guarding the raw data
     podio::CollectionIDTable m_idTable{};                   ///< The collection ID table
     std::unique_ptr<podio::GenericParameters> m_parameters{nullptr}; ///< The generic parameter store for this frame
-    mutable std::set<uint32_t> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet put
-                                            ///< into the map)
+    mutable std::set<uint32_t> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet
+                                                 ///< put into the map)
   };
 
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done

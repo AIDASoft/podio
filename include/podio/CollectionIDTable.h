@@ -1,11 +1,11 @@
 #ifndef PODIO_COLLECTIONIDTABLE_H
 #define PODIO_COLLECTIONIDTABLE_H
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 namespace podio {
 
