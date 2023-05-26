@@ -46,7 +46,7 @@ namespace sio_utils {
     subsetColl.reserve(collections.size());
     std::vector<std::string> names;
     names.reserve(collections.size());
-    std::vector<int> ids;
+    std::vector<uint32_t> ids;
     ids.reserve(collections.size());
 
     for (const auto& [name, coll] : collections) {
