@@ -8,9 +8,12 @@
 
 int main(int argc, char* argv[]) {
   std::string inputFile = "example_frame.root";
+  bool assertBuildVersion = true;
   if (argc == 2) {
     inputFile = argv[1];
+    assertBuildVersion = false;
   }
 
-  return read_frames<podio::ROOTFrameReader>(inputFile) + test_frame_aux_info<podio::ROOTFrameReader>(inputFile);
+  return read_frames<podio::ROOTFrameReader>(inputFile, assertBuildVersion) +
+      test_frame_aux_info<podio::ROOTFrameReader>(inputFile);
 }

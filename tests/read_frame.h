@@ -61,7 +61,7 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
 }
 
 template <typename ReaderT>
-int read_frames(const std::string& filename) {
+int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   auto reader = ReaderT();
   try {
     reader.openFile(filename);
@@ -70,7 +70,7 @@ int read_frames(const std::string& filename) {
     return 1;
   }
 
-  if (reader.currentFileVersion() != podio::version::build_version) {
+  if (assertBuildVersion && reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "
               << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
               << std::endl;
