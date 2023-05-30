@@ -6,6 +6,7 @@
 #include "rootUtils.h"
 
 #include "TFile.h"
+#include <ROOT/RField.hxx>
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
@@ -25,17 +26,37 @@ ROOTNTupleWriter::~ROOTNTupleWriter() {
 }
 
 template <typename T>
-void ROOTNTupleWriter::fillParams(const std::string& category, GenericParameters& params) {
-  auto gpKeys = m_writers[category]->GetModel()->Get<std::vector<std::string>>(root_utils::getGPKeyName<T>());
-  auto gpValues = m_writers[category]->GetModel()->Get<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
-  gpKeys->clear();
-  gpKeys->reserve(params.getMap<T>().size());
-  gpValues->clear();
-  gpValues->reserve(params.getMap<T>().size());
-  for (auto& [k, v] : params.getMap<T>()) {
-    gpKeys->emplace_back(k);
-    gpValues->emplace_back(v);
+std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&>
+ROOTNTupleWriter::getKeyValueVectors() {
+  if constexpr (std::is_same_v<T, int>) {
+    return {m_intkeys, m_intvalues};
+  } else if constexpr (std::is_same_v<T, float>) {
+    return {m_floatkeys, m_floatvalues};
+  } else if constexpr (std::is_same_v<T, double>) {
+    return {m_doublekeys, m_doublevalues};
+  } else if constexpr (std::is_same_v<T, std::string>) {
+    return {m_stringkeys, m_stringvalues};
+  } else {
+    throw std::runtime_error("Unknown type");
   }
+}
+
+template <typename T>
+void ROOTNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry *entry) {
+  auto [key, value] = getKeyValueVectors<T>();
+  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &key);
+  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &value);
+
+  key.clear();
+  key.reserve(params.getMap<T>().size());
+  value.clear();
+  value.reserve(params.getMap<T>().size());
+
+  for (auto& [kk, vv] : params.getMap<T>()) {
+    key.emplace_back(kk);
+    value.emplace_back(vv);
+  }
+
 }
 
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -59,7 +80,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     m_writers[category] = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
   }
 
-  auto entry = m_writers[category]->GetModel()->GetDefaultEntry();
+  auto entry = m_writers[category]->GetModel()->CreateBareEntry();
 
   ROOT::Experimental::RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
@@ -102,18 +123,18 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   }
 
   auto params = frame.getParameters();
-  fillParams<int>(category, params);
-  fillParams<float>(category, params);
-  fillParams<double>(category, params);
-  fillParams<std::string>(category, params);
+  fillParams<int>(params, entry.get());
+  fillParams<float>(params, entry.get());
+  fillParams<double>(params, entry.get());
+  fillParams<std::string>(params, entry.get());
 
-  m_writers[category]->Fill();
+  m_writers[category]->Fill(*entry);
   m_categories.insert(category);
 }
 
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
 ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
-  auto model = ROOT::Experimental::RNTupleModel::Create();
+  auto model = ROOT::Experimental::RNTupleModel::CreateBare();
   for (auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
 
@@ -150,16 +171,15 @@ ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) 
   // so we have to split them manually
   // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
 
-  // gp = Generic Parameters
-  auto gpintKeys = model->MakeField<std::vector<std::string>>(root_utils::intKeyName);
-  auto gpfloatKeys = model->MakeField<std::vector<std::string>>(root_utils::floatKeyName);
-  auto gpdoubleKeys = model->MakeField<std::vector<std::string>>(root_utils::doubleKeyName);
-  auto gpstringKeys = model->MakeField<std::vector<std::string>>(root_utils::stringKeyName);
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringKeyName, "std::vector<std::string>>").Unwrap());
 
-  auto gpintValues = model->MakeField<std::vector<std::vector<int>>>(root_utils::intValueName);
-  auto gpfloatValues = model->MakeField<std::vector<std::vector<float>>>(root_utils::floatValueName);
-  auto gpdoubleValues = model->MakeField<std::vector<std::vector<double>>>(root_utils::doubleValueName);
-  auto gpstringValues = model->MakeField<std::vector<std::vector<std::string>>>(root_utils::stringValueName);
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intValueName, "std::vector<std::vector<int>>").Unwrap());
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatValueName, "std::vector<std::vector<float>>").Unwrap());
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleValueName, "std::vector<std::vector<double>>").Unwrap());
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringValueName, "std::vector<std::vector<std::string>>").Unwrap());
 
   model->Freeze();
   return model;
