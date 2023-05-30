@@ -9,9 +9,6 @@
 
 #include "TTree.h"
 
-#include <algorithm>
-#include <cctype>
-
 namespace podio {
 
 ROOTFrameWriter::ROOTFrameWriter(const std::string& filename) {
@@ -22,29 +19,6 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-/**
- * Sort the input vector of strings alphabetically, case insensitive.
- *
- * NOTE: This creates a copy of the input vector, so don't use this in tight
- * loops!
- */
-std::vector<std::string> sortAlphabeticaly(const std::vector<std::string>& input) {
-  auto output = input;
-  // Obviously there is no tolower(std::string) in c++, so this is slightly more
-  // involved and we make use of the fact that lexicographical_compare works on
-  // ranges and the fact that we can feed it a dedicated comparison function,
-  // where we convert the strings to lower case char-by-char. The alternative is
-  // to make string copies inside the first lambda, transform them to lowercase
-  // and then use operator< of std::string, which would be effectively
-  // hand-writing what is happening below.
-  std::sort(output.begin(), output.end(), [](const auto& lhs, const auto& rhs) {
-    return std::lexicographical_compare(
-        lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
-        [](const auto& cl, const auto& cr) { return std::tolower(cl) < std::tolower(cr); });
-  });
-  return output;
-}
-
 void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category,
                                  const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);
@@ -52,7 +26,7 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   // been initialized
   if (catInfo.tree == nullptr) {
     catInfo.idTable = frame.getCollectionIDTableForWrite();
-    catInfo.collsToWrite = sortAlphabeticaly(collsToWrite);
+    catInfo.collsToWrite = root_utils::sortAlphabeticaly(collsToWrite);
     catInfo.tree = new TTree(category.c_str(), (category + " data tree").c_str());
     catInfo.tree->SetDirectory(m_file.get());
   }
