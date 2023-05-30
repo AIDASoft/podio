@@ -155,7 +155,7 @@ void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& cat
 
   // For backwards compatibility make it possible to read the index based files
   // from older versions
-  if (m_fileVersion <= podio::version::Version{0, 16, 4}) {
+  if (m_fileVersion <= podio::version::Version{0, 16, 5}) {
     std::tie(catInfo.branches, catInfo.storedClasses) =
         createCollectionBranchesIndexBased(catInfo.chain.get(), *catInfo.table, *collInfo);
   } else {
@@ -271,23 +271,28 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
     auto collection =
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
     root_utils::CollectionBranches branches{};
-    if (!isSubsetColl) {
+    if (isSubsetColl) {
+      // Only one branch will exist and we can trivially get its name
+      auto brName = root_utils::refBranch(name, 0);
+      branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+      branches.refNames.emplace_back(std::move(brName));
+    } else {
       // This branch is guaranteed to exist since only collections that are
       // also written to file are in the info metadata that we work with here
       branches.data = root_utils::getBranch(chain, name.c_str());
-    }
 
-    const auto buffers = collection->getBuffers();
-    for (size_t i = 0; i < buffers.references->size(); ++i) {
-      auto brName = root_utils::refBranch(name, i);
-      branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
-      branches.refNames.emplace_back(std::move(brName));
-    }
+      const auto buffers = collection->getBuffers();
+      for (size_t i = 0; i < buffers.references->size(); ++i) {
+        auto brName = root_utils::refBranch(name, i);
+        branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.refNames.emplace_back(std::move(brName));
+      }
 
-    for (size_t i = 0; i < buffers.vectorMembers->size(); ++i) {
-      auto brName = root_utils::vecBranch(name, i);
-      branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
-      branches.vecNames.emplace_back(std::move(brName));
+      for (size_t i = 0; i < buffers.vectorMembers->size(); ++i) {
+        auto brName = root_utils::vecBranch(name, i);
+        branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.vecNames.emplace_back(std::move(brName));
+      }
     }
 
     storedClasses.emplace_back(name, std::make_tuple(collType, isSubsetColl, collSchemaVersion, collectionIndex++));
