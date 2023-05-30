@@ -19,12 +19,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_timed
     check_benchmark_outputs
     read-multiple
-    read-legacy-files
+    read-legacy-files-root_v00-13
     read_frame_legacy_root
     read_frame_root_multiple
 
     write_frame_root
-    read_frame
+    read_frame_root
 
     write_sio
     read_sio
