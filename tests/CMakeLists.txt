@@ -102,25 +102,23 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
 
   # Add a legacy test case based on a base executable and a version for which an
   # input file exists
-  macro(ADD_PODIO_LEGACY_TEST version base_test input_file test_case_list)
+  macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
     add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
-    list(APPEND test_case_list ${base_test}_${version})
+    set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+      # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
+      # with existing headers from other installations
+      ROOT_INCLUDE_PATH=
+    )
   endmacro()
-
-  set(legacy_test_cases "")
 
   ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root example.root legacy_test_cases)
 
   set(legacy_versions v00-16 v00-16-05)
   foreach(version IN LISTS legacy_versions)
     ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root example.root legacy_test_cases)
+    ADD_PODIO_LEGACY_TEST(${version} read_frame_root example_frame.root legacy_test_cases)
   endforeach()
-
-  set_tests_properties(${legacy_test_cases}
-    PROPERTIES
-    ENVIRONMENT
-      "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};ROOT_INCLUDE_PATH="
-  )
 
 endif()
 
