@@ -97,14 +97,24 @@ endif()
 # legacy file read test
 if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
   message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
-  add_executable(read-legacy-files read-legacy-files.cpp)
-  target_link_libraries(read-legacy-files PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
-  add_test(NAME read-legacy-files_v00-13 COMMAND read-legacy-files ${PODIO_TEST_INPUT_DATA_DIR}/v00-13/example.root)
+  add_executable(read-legacy-files-root read-legacy-files-root.cpp)
+  target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
+  add_test(NAME read-legacy-files-root_v00-13 COMMAND read-legacy-files-root ${PODIO_TEST_INPUT_DATA_DIR}/v00-13/example.root)
 
-  set_property(TEST read-legacy-files_v00-13 PROPERTY ENVIRONMENT
-    LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-    ROOT_INCLUDE_PATH=
+  set(legacy_test_cases "read-legacy-files-root_v00-13")
+
+  set(legacy_versions v00-16 v00-16-05)
+  foreach(version IN LISTS legacy_versions)
+    add_test(NAME read-legacy-files-root_${version} COMMAND read-legacy-files-root ${PODIO_TEST_INPUT_DATA_DIR}/${version}/example.root)
+    list(APPEND legacy_test_cases read-legacy-files-root_${version})
+  endforeach()
+
+  set_tests_properties(${legacy_test_cases}
+    PROPERTIES
+    ENVIRONMENT
+      "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};ROOT_INCLUDE_PATH="
   )
+
 endif()
 
 CREATE_PODIO_TEST(ostream_operator.cpp "")
