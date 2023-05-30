@@ -136,9 +136,9 @@ class Frame:
     """
     def _get_param_value(par_type, name):
       par_value = self._frame.getParameter[par_type](name)
-      if len(par_value) > 1:
-        return list(par_value)
-      return par_value[0]
+      if len(par_value) == 1:
+        return par_value[0]
+      return list(par_value)
 
     # This access already raises the KeyError if there is no such parameter
     par_type = self._param_key_types[name]
