@@ -165,3 +165,10 @@ if (ENABLE_SIO)
     DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     )
 endif()
+
+add_executable(podio_test_hashes test_hashes.cpp)
+target_link_libraries(podio_test_hashes PRIVATE podio::podio)
+install(TARGETS podio_test_hashes
+  EXPORT podioTargets
+  DESTINATION "${CMAKE_INSTALL_BINDIR}"
+)
