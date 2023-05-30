@@ -237,6 +237,8 @@ if (NOT FORCE_RUN_ALL_TESTS)
     set(filter_tests "~[LEAK-FAIL]")
   elseif(USE_SANITIZER MATCHES "Thread")
     set(filter_tests "~[THREAD-FAIL]")
+  elseif(USE_SANITIZER MATCHES "Undefined")
+    set(filter_tests "~[UBSAN-FAIL]")
   endif()
 endif()
 
