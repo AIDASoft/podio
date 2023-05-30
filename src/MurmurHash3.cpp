@@ -86,7 +86,7 @@ FORCE_INLINE uint64_t fmix64(uint64_t k) {
 //-----------------------------------------------------------------------------
 
 void MurmurHash3_x86_32(const void* key, int len, uint32_t seed, void* out) {
-  const uint8_t* data = (const uint8_t*)key;
+  const auto data = (const uint8_t*)key;
   const int nblocks = len / 4;
 
   uint32_t h1 = seed;
@@ -97,7 +97,7 @@ void MurmurHash3_x86_32(const void* key, int len, uint32_t seed, void* out) {
   //----------
   // body
 
-  const uint32_t* blocks = (const uint32_t*)(data + nblocks * 4);
+  const auto blocks = (const uint32_t*)(data + nblocks * 4);
 
   for (int i = -nblocks; i; i++) {
     uint32_t k1 = getblock32(blocks, i);
@@ -114,7 +114,7 @@ void MurmurHash3_x86_32(const void* key, int len, uint32_t seed, void* out) {
   //----------
   // tail
 
-  const uint8_t* tail = (const uint8_t*)(data + nblocks * 4);
+  const auto tail = (const uint8_t*)(data + nblocks * 4);
 
   uint32_t k1 = 0;
 
@@ -146,7 +146,7 @@ void MurmurHash3_x86_32(const void* key, int len, uint32_t seed, void* out) {
 //-----------------------------------------------------------------------------
 
 void MurmurHash3_x86_128(const void* key, const int len, uint32_t seed, void* out) {
-  const uint8_t* data = (const uint8_t*)key;
+  const auto data = (const uint8_t*)key;
   const int nblocks = len / 16;
 
   uint32_t h1 = seed;
@@ -162,7 +162,7 @@ void MurmurHash3_x86_128(const void* key, const int len, uint32_t seed, void* ou
   //----------
   // body
 
-  const uint32_t* blocks = (const uint32_t*)(data + nblocks * 16);
+  const auto blocks = (const uint32_t*)(data + nblocks * 16);
 
   for (int i = -nblocks; i; i++) {
     uint32_t k1 = getblock32(blocks, i * 4 + 0);
@@ -210,7 +210,7 @@ void MurmurHash3_x86_128(const void* key, const int len, uint32_t seed, void* ou
   //----------
   // tail
 
-  const uint8_t* tail = (const uint8_t*)(data + nblocks * 16);
+  const auto tail = (const uint8_t*)(data + nblocks * 16);
 
   uint32_t k1 = 0;
   uint32_t k2 = 0;
@@ -319,7 +319,7 @@ void MurmurHash3_x86_128(const void* key, const int len, uint32_t seed, void* ou
 //-----------------------------------------------------------------------------
 
 void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, void* out) {
-  const uint8_t* data = (const uint8_t*)key;
+  const auto data = (const uint8_t*)key;
   const int nblocks = len / 16;
 
   uint64_t h1 = seed;
@@ -331,7 +331,7 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
   //----------
   // body
 
-  const uint64_t* blocks = (const uint64_t*)(data);
+  const auto blocks = (const uint64_t*)(data);
 
   for (int i = 0; i < nblocks; i++) {
     uint64_t k1 = getblock64(blocks, i * 2 + 0);
@@ -359,7 +359,7 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
   //----------
   // tail
 
-  const uint8_t* tail = (const uint8_t*)(data + nblocks * 16);
+  const auto tail = (const uint8_t*)(data + nblocks * 16);
 
   uint64_t k1 = 0;
   uint64_t k2 = 0;
