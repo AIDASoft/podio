@@ -99,14 +99,21 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
   message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
   add_executable(read-legacy-files-root read-legacy-files-root.cpp)
   target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
-  add_test(NAME read-legacy-files-root_v00-13 COMMAND read-legacy-files-root ${PODIO_TEST_INPUT_DATA_DIR}/v00-13/example.root)
 
-  set(legacy_test_cases "read-legacy-files-root_v00-13")
+  # Add a legacy test case based on a base executable and a version for which an
+  # input file exists
+  macro(ADD_PODIO_LEGACY_TEST version base_test input_file test_case_list)
+    add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
+    list(APPEND test_case_list ${base_test}_${version})
+  endmacro()
+
+  set(legacy_test_cases "")
+
+  ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root example.root legacy_test_cases)
 
   set(legacy_versions v00-16 v00-16-05)
   foreach(version IN LISTS legacy_versions)
-    add_test(NAME read-legacy-files-root_${version} COMMAND read-legacy-files-root ${PODIO_TEST_INPUT_DATA_DIR}/${version}/example.root)
-    list(APPEND legacy_test_cases read-legacy-files-root_${version})
+    ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root example.root legacy_test_cases)
   endforeach()
 
   set_tests_properties(${legacy_test_cases}
