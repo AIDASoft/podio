@@ -218,7 +218,7 @@ if (TARGET write_sio)
 endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
-configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
+configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
 
 find_package(Threads REQUIRED)
 add_executable(unittest unittest.cpp frame.cpp)
