@@ -60,6 +60,11 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     datamodel_def_store_roundtrip_sio_extension
   )
 
+  foreach(version in @legacy_versions@)
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read-legacy-files-root_${version})
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
+  endforeach()
+
   # ostream_operator is working with Memory sanitizer (at least locally)
   if("@USE_SANITIZER@" MATCHES "Memory(WithOrigin)?")
     list(REMOVE_ITEM CTEST_CUSTOM_TESTS_IGNORE ostream_operator)
