@@ -105,7 +105,7 @@ inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionB
 // collection, and its schema version
 using CollectionInfoT = std::tuple<int, std::string, bool, unsigned int>;
 // for backwards compatibility
-using CollectionInfoTWithoutSchema = std::tuple<int, std::string, bool>;
+using CollectionInfoWithoutSchemaT = std::tuple<int, std::string, bool>;
 
 inline void readBranchesData(const CollectionBranches& branches, Long64_t entry) {
   // Read all data

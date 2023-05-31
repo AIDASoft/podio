@@ -147,9 +147,22 @@ void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& cat
   tableBranch->GetEntry(0);
 
   auto* collInfoBranch = root_utils::getBranch(m_metaChain.get(), root_utils::collInfoName(category));
+
   auto collInfo = new std::vector<root_utils::CollectionInfoT>();
-  collInfoBranch->SetAddress(&collInfo);
-  collInfoBranch->GetEntry(0);
+  if (m_fileVersion < podio::version::Version{0, 16, 4}) {
+    auto oldCollInfo = new std::vector<root_utils::CollectionInfoWithoutSchemaT>();
+    collInfoBranch->SetAddress(&oldCollInfo);
+    collInfoBranch->GetEntry(0);
+    collInfo->reserve(oldCollInfo->size());
+    for (auto&& [collID, collType, isSubsetColl] : *oldCollInfo) {
+      // Manually set the schema version to 1
+      collInfo->emplace_back(collID, std::move(collType), isSubsetColl, 1u);
+    }
+    delete oldCollInfo;
+  } else {
+    collInfoBranch->SetAddress(&collInfo);
+    collInfoBranch->GetEntry(0);
+  }
 
   std::tie(catInfo.branches, catInfo.storedClasses) =
       createCollectionBranches(catInfo.chain.get(), *catInfo.table, *collInfo);
