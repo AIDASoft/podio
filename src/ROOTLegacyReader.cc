@@ -141,7 +141,7 @@ void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
     auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
 
     if (m_fileVersion < podio::version::Version{0, 16, 4}) {
-      auto oldCollInfo = new std::vector<root_utils::CollectionInfoTWithoutSchema>();
+      auto oldCollInfo = new std::vector<root_utils::CollectionInfoWithoutSchemaT>();
       collInfoBranch->SetAddress(&oldCollInfo);
       collInfoBranch->GetEntry(0);
       collectionInfo->reserve(oldCollInfo->size());
