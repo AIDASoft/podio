@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory_resource>
 
 namespace podio {
 
@@ -30,14 +31,14 @@ struct CollectionWriteBuffers {
   VectorMembersInfo* vectorMembers{nullptr};
 
   template <typename DataT>
-  std::vector<DataT>* dataAsVector() {
+  std::pmr::vector<DataT>* dataAsVector() {
     return asVector<DataT>(data);
   }
 
   template <typename T>
-  static std::vector<T>* asVector(void* raw) {
+  static std::pmr::vector<T>* asVector(void* raw) {
     // Are we at a beach? I can almost smell the C...
-    return *static_cast<std::vector<T>**>(raw);
+    return *static_cast<std::pmr::vector<T>**>(raw);
   }
 };
 
@@ -69,14 +70,14 @@ struct CollectionReadBuffers {
   }
 
   template <typename DataT>
-  std::vector<DataT>* dataAsVector() {
+  std::pmr::vector<DataT>* dataAsVector() {
     return asVector<DataT>(data);
   }
 
   template <typename T>
-  static std::vector<T>* asVector(void* raw) {
+  static std::pmr::vector<T>* asVector(void* raw) {
     // Are we at a beach? I can almost smell the C...
-    return static_cast<std::vector<T>*>(raw);
+    return static_cast<std::pmr::vector<T>*>(raw);
   }
 
   CreateFuncT createCollection{};

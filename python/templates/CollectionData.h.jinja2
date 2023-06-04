@@ -17,12 +17,13 @@
 
 #include <deque>
 #include <memory>
+// include pmr
+#include <memory_resource>
 
 {{ utils.namespace_open(class.namespace) }}
 
 using {{ class.bare_type }}ObjPointerContainer = std::deque<{{ class.bare_type }}Obj*>;
-using {{ class.bare_type }}DataContainer = std::vector<{{ class.bare_type }}Data>;
-
+using {{ class.bare_type }}DataContainer = std::pmr::vector<{{ class.bare_type }}Data>;
 
 /**
  * Class encapsulating everything related to storage of data that is needed by a
