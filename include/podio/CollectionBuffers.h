@@ -16,10 +16,10 @@ namespace podio {
 class CollectionBase;
 
 template <typename T>
-using UVecPtr = std::unique_ptr<std::vector<T>>;
+using UVecPtr = std::unique_ptr<std::pmr::vector<T>>;
 
-using CollRefCollection = std::vector<UVecPtr<podio::ObjectID>>;
-using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
+using CollRefCollection = std::pmr::vector<UVecPtr<podio::ObjectID>>;
+using VectorMembersInfo = std::pmr::vector<std::pair<std::string, void*>>;
 
 /**
  * Simple helper struct that bundles all the potentially necessary buffers that

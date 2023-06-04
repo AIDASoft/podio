@@ -44,7 +44,7 @@ public:
   {{ relation.full_type }}* m_{{ relation.name }}{nullptr};
 {% endfor %}
 {% for relation in OneToManyRelations + VectorMembers %}
-  std::vector<{{ relation.full_type }}>* m_{{ relation.name }}{nullptr};
+  std::pmr::vector<{{ relation.full_type }}>* m_{{ relation.name }}{nullptr};
 {% endfor %}
 };
 {% endwith %}

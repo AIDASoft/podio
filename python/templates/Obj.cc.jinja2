@@ -19,7 +19,7 @@
 {% raw %}  ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0}{% endraw %},
   data(){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
-  m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>())
+  m_{{ relation.name }}(new std::pmr::vector<{{ relation.full_type }}>())
 {%- endfor %}
 
 {  }
@@ -32,7 +32,7 @@
 {% raw %}  ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0}{% endraw %},
   data(other.data){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
-  m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>(*(other.m_{{ relation.name }})))
+  m_{{ relation.name }}(new std::pmr::vector<{{ relation.full_type }}>(*(other.m_{{ relation.name }})))
 {%- endfor %}
 
 {

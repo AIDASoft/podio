@@ -178,14 +178,14 @@ podio::CollectionReadBuffers createBuffers(bool isSubset) {
   readBuffers.references = new podio::CollRefCollection(nRefs);
   for (auto& ref : *readBuffers.references) {
     // Make sure to place usable buffer pointers here
-    ref = std::make_unique<std::vector<podio::ObjectID>>();
+    ref = std::make_unique<std::pmr::vector<podio::ObjectID>>();
   }
 
   readBuffers.vectorMembers = new podio::VectorMembersInfo();
   if (!isSubset) {
     readBuffers.vectorMembers->reserve({{ VectorMembers | length }});
 {% for member in VectorMembers %}
-    readBuffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>);
+    readBuffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::pmr::vector<{{ member.full_type }}>);
 {% endfor %}
   }
 
