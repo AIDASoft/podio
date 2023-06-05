@@ -12,6 +12,7 @@
 #include <mutex>
 #include <optional>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <unordered_map>
@@ -420,6 +421,8 @@ const podio::CollectionBase* Frame::FrameModel<FrameDataT>::put(std::unique_ptr<
       //    collisions from collections that are potentially present from rawdata?
       it->second->setID(m_idTable.add(name));
       return it->second.get();
+    } else {
+      throw std::invalid_argument("An object with key " + name + " already exists in the frame");
     }
   }
 

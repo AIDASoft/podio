@@ -365,3 +365,15 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
     REQUIRE(frame.getParameter<std::string>(makeName("string", i)) == std::to_string(i));
   }
 }
+
+TEST_CASE("Frame double insert", "[frame][basics]") {
+  auto event = podio::Frame();
+  auto clusters = ExampleClusterCollection();
+  clusters.create(3.14f);
+  clusters.create(42.0f);
+  auto other_clusters = ExampleClusterCollection();
+  other_clusters.create(23.0f);
+
+  event.put(std::move(clusters), "clusters");
+  REQUIRE_THROWS_AS(event.put(std::move(other_clusters), "clusters"), std::invalid_argument);
+}
