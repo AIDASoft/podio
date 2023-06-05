@@ -4,6 +4,7 @@
 #include "write_frame.h"
 
 #include "podio/Frame.h"
+#include "podio/podioVersion.h"
 
 #include <iostream>
 #include <string>
@@ -59,7 +60,12 @@ int test_frame_aux_info(const std::string& fileName) {
   // written
   auto event = podio::Frame(reader.readEntry("events", 0));
 
-  return testGetAvailableCollections(event, collsToWrite);
+  auto collsToRead = collsToWrite;
+  if (reader.currentFileVersion() < podio::version::Version{0, 16, 3}) {
+    collsToRead.erase(collsToRead.end() - 2, collsToRead.end());
+  }
+
+  return testGetAvailableCollections(event, collsToRead);
 }
 
 #endif // PODIO_TESTS_READ_FRAME_AUXILIARY_H

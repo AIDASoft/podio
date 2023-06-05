@@ -62,7 +62,7 @@ set(root_dependent_tests
   read_and_write_associated.cpp
   write_timed.cpp
   read_timed.cpp
-  read_frame.cpp
+  read_frame_root.cpp
   write_frame_root.cpp
   read_frame_legacy_root.cpp
   read_frame_root_multiple.cpp
@@ -97,14 +97,29 @@ endif()
 # legacy file read test
 if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
   message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
-  add_executable(read-legacy-files read-legacy-files.cpp)
-  target_link_libraries(read-legacy-files PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
-  add_test(NAME read-legacy-files COMMAND read-legacy-files ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
+  add_executable(read-legacy-files-root read-legacy-files-root.cpp)
+  target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
 
-  set_property(TEST read-legacy-files PROPERTY ENVIRONMENT
-    LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-    ROOT_INCLUDE_PATH=
-  )
+  # Add a legacy test case based on a base executable and a version for which an
+  # input file exists
+  macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
+    add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
+    set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+      # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
+      # with existing headers from other installations
+      ROOT_INCLUDE_PATH=
+    )
+  endmacro()
+
+  ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root example.root legacy_test_cases)
+
+  set(legacy_versions v00-16 v00-16-05)
+  foreach(version IN LISTS legacy_versions)
+    ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root example.root legacy_test_cases)
+    ADD_PODIO_LEGACY_TEST(${version} read_frame_root example_frame.root legacy_test_cases)
+  endforeach()
+
 endif()
 
 CREATE_PODIO_TEST(ostream_operator.cpp "")
@@ -169,7 +184,7 @@ set_property(TEST read-multiple PROPERTY DEPENDS write)
 set_property(TEST read_and_write PROPERTY DEPENDS write)
 set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
-set_property(TEST read_frame PROPERTY DEPENDS write_frame_root)
+set_property(TEST read_frame_root PROPERTY DEPENDS write_frame_root)
 set_property(TEST read_frame_root_multiple PROPERTY DEPENDS write_frame_root)
 
 add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
@@ -203,7 +218,7 @@ if (TARGET write_sio)
 endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
-configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
+configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
 
 find_package(Threads REQUIRED)
 add_executable(unittest unittest.cpp frame.cpp)

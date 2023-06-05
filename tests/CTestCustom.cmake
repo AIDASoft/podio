@@ -19,12 +19,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_timed
     check_benchmark_outputs
     read-multiple
-    read-legacy-files
+    read-legacy-files-root_v00-13
     read_frame_legacy_root
     read_frame_root_multiple
 
     write_frame_root
-    read_frame
+    read_frame_root
 
     write_sio
     read_sio
@@ -59,6 +59,11 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     datamodel_def_store_roundtrip_sio
     datamodel_def_store_roundtrip_sio_extension
   )
+
+  foreach(version in @legacy_versions@)
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read-legacy-files-root_${version})
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
+  endforeach()
 
   # ostream_operator is working with Memory sanitizer (at least locally)
   if("@USE_SANITIZER@" MATCHES "Memory(WithOrigin)?")

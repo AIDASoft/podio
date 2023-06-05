@@ -61,7 +61,7 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
 }
 
 template <typename ReaderT>
-int read_frames(const std::string& filename) {
+int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   auto reader = ReaderT();
   try {
     reader.openFile(filename);
@@ -70,7 +70,7 @@ int read_frames(const std::string& filename) {
     return 1;
   }
 
-  if (reader.currentFileVersion() != podio::version::build_version) {
+  if (assertBuildVersion && reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "
               << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
               << std::endl;
@@ -93,13 +93,15 @@ int read_frames(const std::string& filename) {
   // sure that the writing/reading order does not impose any usage requirements
   for (size_t i = 0; i < reader.getEntries("events"); ++i) {
     auto frame = podio::Frame(reader.readNextEntry("events"));
-    if (frame.get("emptySubsetColl") == nullptr) {
-      std::cerr << "Could not retrieve an empty subset collection" << std::endl;
-      return 1;
-    }
-    if (frame.get("emptyCollection") == nullptr) {
-      std::cerr << "Could not retrieve an empty collection" << std::endl;
-      return 1;
+    if (reader.currentFileVersion() > podio::version::Version{0, 16, 2}) {
+      if (frame.get("emptySubsetColl") == nullptr) {
+        std::cerr << "Could not retrieve an empty subset collection" << std::endl;
+        return 1;
+      }
+      if (frame.get("emptyCollection") == nullptr) {
+        std::cerr << "Could not retrieve an empty collection" << std::endl;
+        return 1;
+      }
     }
 
     processEvent(frame, i, reader.currentFileVersion());
@@ -107,7 +109,9 @@ int read_frames(const std::string& filename) {
     auto otherFrame = podio::Frame(reader.readNextEntry("other_events"));
     processEvent(otherFrame, i + 100, reader.currentFileVersion());
     // The other_events category also holds external collections
-    processExtensions(otherFrame, i + 100, reader.currentFileVersion());
+    if (reader.currentFileVersion() > podio::version::Version{0, 16, 2}) {
+      processExtensions(otherFrame, i + 100, reader.currentFileVersion());
+    }
   }
 
   if (reader.readNextEntry("events")) {
@@ -131,12 +135,16 @@ int read_frames(const std::string& filename) {
 
     auto otherFrame = podio::Frame(reader.readEntry("other_events", 4));
     processEvent(otherFrame, 4 + 100, reader.currentFileVersion());
-    processExtensions(otherFrame, 4 + 100, reader.currentFileVersion());
+    if (reader.currentFileVersion() > podio::version::Version{0, 16, 2}) {
+      processExtensions(otherFrame, 4 + 100, reader.currentFileVersion());
+    }
 
     // Jumping back also works
     auto previousFrame = podio::Frame(reader.readEntry("other_events", 2));
     processEvent(previousFrame, 2 + 100, reader.currentFileVersion());
-    processExtensions(previousFrame, 2 + 100, reader.currentFileVersion());
+    if (reader.currentFileVersion() > podio::version::Version{0, 16, 2}) {
+      processExtensions(previousFrame, 2 + 100, reader.currentFileVersion());
+    }
 
     // Trying to read a Frame that is not present returns a nullptr
     if (reader.readEntry("events", 10)) {
