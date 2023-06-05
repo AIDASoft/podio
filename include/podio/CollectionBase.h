@@ -14,6 +14,8 @@ namespace podio {
 // forward declarations
 class ICollectionProvider;
 
+struct RelationNames;
+
 class CollectionBase {
 protected:
   /// default constructor

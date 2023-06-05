@@ -76,8 +76,38 @@ inline std::string refBranch(const std::string& name, size_t index) {
   return name + "#" + std::to_string(index);
 }
 
+inline std::string refBranch(const std::string& name, std::string_view relName) {
+  return "_" + name + "_" + std::string(relName);
+}
+
 inline std::string vecBranch(const std::string& name, size_t index) {
   return name + "_" + std::to_string(index);
+}
+
+inline std::string vecBranch(const std::string& name, std::string_view vecName) {
+  return "_" + name + "_" + std::string(vecName);
+}
+
+/// The name for subset branches
+inline std::string subsetBranch(const std::string& name) {
+  return name + "_objIdx";
+}
+
+/**
+ * Reset all the branches that by getting them from the TTree again
+ */
+inline void resetBranches(TTree* chain, CollectionBranches& branches, const std::string& name) {
+  if (branches.data) {
+    branches.data = getBranch(chain, name);
+  }
+
+  for (size_t i = 0; i < branches.refs.size(); ++i) {
+    branches.refs[i] = getBranch(chain, branches.refNames[i]);
+  }
+
+  for (size_t i = 0; i < branches.vecs.size(); ++i) {
+    branches.vecs[i] = getBranch(chain, branches.vecNames[i]);
+  }
 }
 
 template <typename BufferT>

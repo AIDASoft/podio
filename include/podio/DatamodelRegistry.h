@@ -3,10 +3,38 @@
 
 #include <string>
 #include <string_view>
+#include <tuple>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 namespace podio {
+
+/**
+ * Type alias for storing the names of all Relations and VectorMembers for all
+ * datatypes of an EDM. Populated for each EDM at code generation time.
+ * The structure is of each element in the outer vector is:
+ * - get<0>: The name of the datatype
+ * - get<1>: The names of all Relations, where OneToManyRelations comes before
+ *   OneToOneRelations (in the order as they appear in the YAML file)
+ * - get<2>: The names of all VectorMembers (in the order of the file YAML)
+ */
+using RelationNameMapping =
+    std::vector<std::tuple<std::string_view, std::vector<std::string_view>, std::vector<std::string_view>>>;
+
+/**
+ * Information on the names of the OneTo[One|Many]Relations as well as the
+ * VectorMembers of a datatype
+ *
+ * The contents are populated by the code generation, where we simply generate
+ * static vectors that we make available as const& here.
+ */
+struct RelationNames {
+  /// The names of the relations (OneToMany before OneToOne)
+  const std::vector<std::string_view>& relations;
+  /// The names of the vector members
+  const std::vector<std::string_view>& vectorMembers;
+};
 
 /**
  * Global registry holding information about datamodels and datatypes defined
@@ -85,14 +113,24 @@ public:
    * @param name The name of the EDM that should be registered
    * @param definition The datamodel definition from which this EDM has been
    * generated in JSON format
+   * @param relationNames the names of the relations and vector members for all
+   * datatypes that are defined for this EDM
    *
    */
-  size_t registerDatamodel(std::string name, std::string_view definition);
+  size_t registerDatamodel(std::string name, std::string_view definition,
+                           const podio::RelationNameMapping& relationNames);
+
+  /**
+   * Get the names of the relations and vector members of a datatype
+   */
+  RelationNames getRelationNames(std::string_view typeName) const;
 
 private:
   DatamodelRegistry() = default;
   /// The stored definitions
   std::vector<std::pair<std::string, std::string_view>> m_definitions{};
+
+  std::unordered_map<std::string_view, RelationNames> m_relations{};
 };
 } // namespace podio
 

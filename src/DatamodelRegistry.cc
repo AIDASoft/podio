@@ -15,13 +15,19 @@ DatamodelRegistry& DatamodelRegistry::mutInstance() {
   return registryInstance;
 }
 
-size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition) {
+size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition,
+                                            const podio::RelationNameMapping& relationNames) {
   const auto it = std::find_if(m_definitions.cbegin(), m_definitions.cend(),
                                [&name](const auto& kvPair) { return kvPair.first == name; });
 
   if (it == m_definitions.cend()) {
     int index = m_definitions.size();
     m_definitions.emplace_back(name, definition);
+
+    for (const auto& [typeName, relations, vectorMembers] : relationNames) {
+      m_relations.emplace(typeName, RelationNames{relations, vectorMembers});
+    }
+
     return index;
   }
 
@@ -58,6 +64,24 @@ const std::string& DatamodelRegistry::getDatamodelName(size_t index) const {
     return emptyName;
   }
   return m_definitions[index].first;
+}
+
+RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) const {
+  static std::vector<std::string_view> emptyVec{};
+  if (typeName.substr(0, 24) == "podio::UserDataCollection") {
+    return {emptyVec, emptyVec};
+  }
+
+  // Strip Collection if necessary
+  if (typeName.size() > 10 && typeName.substr(typeName.size() - 10) == "Collection") {
+    typeName = typeName.substr(0, typeName.size() - 10);
+  }
+
+  if (const auto it = m_relations.find(typeName); it != m_relations.end()) {
+    return it->second;
+  }
+
+  return {emptyVec, emptyVec};
 }
 
 } // namespace podio
