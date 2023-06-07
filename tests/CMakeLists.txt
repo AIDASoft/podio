@@ -251,7 +251,7 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?")
     add_test(NAME unittest COMMAND unittest ${filter_tests})
     set_property(TEST unittest
       PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
+        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       )
   endif()
 else()
@@ -262,7 +262,7 @@ else()
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
       PROPERTIES
         ENVIRONMENT
-        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
+        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
   )
 endif()
 
