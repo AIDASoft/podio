@@ -240,11 +240,13 @@ if (NOT FORCE_RUN_ALL_TESTS)
   endif()
 endif()
 
-if (USE_SANITIZER MATCHES "Memory(WithOrigin)?")
+option(SKIP_CATCH_DISCOVERY "Skip the Catch2 test discovery" OFF)
+
+if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
   # Automatic test discovery fails with Memory sanitizers due to some issues in
   # Catch2. So in that case we skip the discovery step and simply run the thing
   # directly in the tests.
-  if (FORCE_RUN_ALL_TESTS)
+  if (FORCE_RUN_ALL_TESTS OR SKIP_CATCH_DISCOVERY)
     # Unfortunately Memory sanitizer seems to be really unhappy with Catch2 and
     # it fails to succesfully launch the executable and execute any test. Here
     # we just include them in order to have them show up as failing
