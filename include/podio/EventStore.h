@@ -58,13 +58,8 @@ public:
   template <typename T>
   bool get(const std::string& name, const T*& collection);
 
-  /// fast access to cached collections
-  CollectionBase* getFast(int id) const {
-    return (m_cachedCollections.size() > (unsigned)id ? m_cachedCollections[id] : nullptr);
-  }
-
   /// access a collection by ID. returns true if successful
-  bool get(int id, CollectionBase*& coll) const final;
+  bool get(uint32_t id, CollectionBase*& coll) const final;
 
   /// access a collection by name
   /// returns a collection w/ setting isValid to true if successful
@@ -96,7 +91,7 @@ public:
   GenericParameters& getRunMetaData(int runID) override;
 
   /// return the collection meta data for the given colID
-  GenericParameters& getCollectionMetaData(int colID) override;
+  GenericParameters& getCollectionMetaData(uint32_t colID) override;
 
   RunMDMap* getRunMetaDataMap() {
     return &m_runMDMap;
@@ -118,9 +113,8 @@ private:
   }
 
   // members
-  mutable std::set<int> m_retrievedIDs{};
+  mutable std::set<uint32_t> m_retrievedIDs{};
   mutable CollContainer m_collections{};
-  mutable std::vector<CollectionBase*> m_cachedCollections{};
   IReader* m_reader{nullptr};
   std::shared_ptr<CollectionIDTable> m_table;
 

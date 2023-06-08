@@ -15,6 +15,9 @@
     <class name="std::vector<std::tuple<int, std::string, bool, unsigned>>"/>
     <class name="std::vector<std::tuple<int, std::string, bool>>"/>
     <class name="std::vector<std::tuple<std::string, std::string>>"/>
+    <class name="std::vector<std::tuple<uint32_t, std::string, bool, unsigned int>>"/>
+    <class name="std::vector<std::tuple<uint32_t, std::string, bool, unsigned>>"/>
+    <class name="std::vector<std::tuple<uint32_t, std::string, bool>>"/>
     <class name="podio::CollectionBase"/>
     <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>

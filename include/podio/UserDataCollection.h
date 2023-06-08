@@ -75,7 +75,7 @@ private:
   // simpler move-semantics this will be set and properly initialized on
   // demand during the call to getBuffers
   std::vector<BasicType>* _vecPtr{nullptr};
-  int m_collectionID{0};
+  uint32_t m_collectionID{0};
   CollRefCollection m_refCollections{};
   VectorMembersInfo m_vecmem_info{};
 
@@ -107,12 +107,12 @@ public:
   }
 
   /// set collection ID
-  void setID(unsigned id) override {
+  void setID(uint32_t id) override {
     m_collectionID = id;
   }
 
   /// get collection ID
-  unsigned getID() const override {
+  uint32_t getID() const override {
     return m_collectionID;
   }
 

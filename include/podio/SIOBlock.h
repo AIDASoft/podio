@@ -104,8 +104,8 @@ public:
 
   SIOCollectionIDTableBlock(podio::EventStore* store);
 
-  SIOCollectionIDTableBlock(std::vector<std::string>&& names, std::vector<int>&& ids, std::vector<std::string>&& types,
-                            std::vector<short>&& isSubsetColl) :
+  SIOCollectionIDTableBlock(std::vector<std::string>&& names, std::vector<uint32_t>&& ids,
+                            std::vector<std::string>&& types, std::vector<short>&& isSubsetColl) :
       sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
       _names(std::move(names)),
       _ids(std::move(ids)),
@@ -131,7 +131,7 @@ public:
 
 private:
   std::vector<std::string> _names{};
-  std::vector<int> _ids{};
+  std::vector<uint32_t> _ids{};
   std::vector<std::string> _types{};
   std::vector<short> _isSubsetColl{};
 };

@@ -12,6 +12,7 @@
 #include <mutex>
 #include <optional>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <unordered_map>
@@ -120,7 +121,7 @@ class Frame {
       return *m_parameters;
     };
 
-    bool get(int collectionID, podio::CollectionBase*& collection) const override;
+    bool get(uint32_t collectionID, podio::CollectionBase*& collection) const override;
 
     podio::CollectionIDTable getIDTable() const override {
       // Make a copy
@@ -140,8 +141,8 @@ class Frame {
     mutable std::unique_ptr<std::mutex> m_dataMtx{nullptr}; ///< The mutex for guarding the raw data
     podio::CollectionIDTable m_idTable{};                   ///< The collection ID table
     std::unique_ptr<podio::GenericParameters> m_parameters{nullptr}; ///< The generic parameter store for this frame
-    mutable std::set<int> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet put
-                                            ///< into the map)
+    mutable std::set<uint32_t> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet
+                                                 ///< put into the map)
   };
 
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
@@ -386,7 +387,7 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
 }
 
 template <typename FrameDataT>
-bool Frame::FrameModel<FrameDataT>::get(int collectionID, CollectionBase*& collection) const {
+bool Frame::FrameModel<FrameDataT>::get(uint32_t collectionID, CollectionBase*& collection) const {
   const auto& name = m_idTable.name(collectionID);
   const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
 
@@ -420,6 +421,8 @@ const podio::CollectionBase* Frame::FrameModel<FrameDataT>::put(std::unique_ptr<
       //    collisions from collections that are potentially present from rawdata?
       it->second->setID(m_idTable.add(name));
       return it->second.get();
+    } else {
+      throw std::invalid_argument("An object with key " + name + " already exists in the frame");
     }
   }
 

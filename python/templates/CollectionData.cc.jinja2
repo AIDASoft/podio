@@ -139,7 +139,7 @@ const auto {{ member.name }}_size = std::accumulate(entries.begin(), entries.end
 {% endfor %}
 }
 
-void {{ class_type }}::prepareAfterRead(int collectionID) {
+void {{ class_type }}::prepareAfterRead(uint32_t collectionID) {
   int index = 0;
   for (auto& data : *m_data) {
     auto obj = new {{ class.bare_type }}Obj({index, collectionID}, data);
