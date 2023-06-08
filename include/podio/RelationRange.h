@@ -12,7 +12,7 @@ namespace podio {
 template <typename ReferenceType>
 class RelationRange {
 public:
-  using ConstIteratorType = typename std::vector<ReferenceType>::const_iterator;
+  using ConstIteratorType = typename std::pmr::vector<ReferenceType>::const_iterator;
 
   RelationRange() = delete;
 

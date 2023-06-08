@@ -19,7 +19,7 @@ namespace {
     // Register with schema version 1 to allow for potential changes
     CollectionBufferFactory::mutInstance().registerCreationFunc(
         userDataCollTypeName<T>(), UserDataCollection<T>::schemaVersion, [](bool) {
-          return podio::CollectionReadBuffers{new std::vector<T>(), nullptr, nullptr,
+          return podio::CollectionReadBuffers{new std::pmr::vector<T>(), nullptr, nullptr,
                                               [](podio::CollectionReadBuffers buffers, bool) {
                                                 return std::make_unique<UserDataCollection<T>>(
                                                     std::move(*buffers.dataAsVector<T>()));

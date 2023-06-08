@@ -116,13 +116,13 @@ void {{ class_type }}::{{ relation.setter_name(get_syntax, is_relation=True) }}(
 }
 {% endif %}
 
-std::vector<{{ relation.full_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_begin() const {
+std::pmr::vector<{{ relation.full_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_begin() const {
   auto ret_value = m_obj->m_{{ relation.name }}->begin();
   std::advance(ret_value, m_obj->data.{{ relation.name }}_begin);
   return ret_value;
 }
 
-std::vector<{{ relation.full_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_end() const {
+std::pmr::vector<{{ relation.full_type }}>::const_iterator {{ class_type }}::{{ relation.name }}_end() const {
   auto ret_value = m_obj->m_{{ relation.name }}->begin();
   std::advance(ret_value, m_obj->data.{{ relation.name }}_end);
   return ret_value;

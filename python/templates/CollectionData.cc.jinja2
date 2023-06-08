@@ -14,14 +14,14 @@
 
 {{ class_type }}::{{ class_type }}() :
 {% for relation in OneToManyRelations + OneToOneRelations %}
-  m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
+  m_rel_{{ relation.name }}(new std::pmr::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
 {% endfor %}
 {%- for member in VectorMembers %}
-  m_vec_{{ member.name }}(new std::vector<{{ member.full_type }}>()),
+  m_vec_{{ member.name }}(new std::pmr::vector<{{ member.full_type }}>()),
 {% endfor %}
   m_data(new {{ class.bare_type }}DataContainer()) {
 {% for relation in OneToManyRelations + OneToOneRelations %}
-  m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
+  m_refCollections.emplace_back(std::make_unique<std::pmr::vector<podio::ObjectID>>());
 {% endfor %}
 {% for member in VectorMembers %}
   m_vecmem_info.emplace_back("{{ member.full_type }}", &m_vec_{{ member.name }});
@@ -30,7 +30,7 @@
 
 {{ class_type }}::{{ class_type }}(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
 {% for relation in OneToManyRelations + OneToOneRelations %}
-  m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
+  m_rel_{{ relation.name }}(new std::pmr::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
 {% endfor %}
   m_refCollections(std::move(*buffers.references)),
   m_vecmem_info(std::move(*buffers.vectorMembers)) {
@@ -208,7 +208,7 @@ void {{ class_type }}::makeSubsetCollection() {
 
   // Subset collections need one vector of ObjectIDs for I/O purposes.
   m_refCollections.resize(1);
-  m_refCollections[0] = std::make_unique<std::vector<podio::ObjectID>>();
+  m_refCollections[0] = std::make_unique<std::pmr::vector<podio::ObjectID>>();
 }
 
 {% endwith %}

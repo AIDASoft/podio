@@ -3,8 +3,8 @@
  *  {{ description }}
  *  @author: {{ author }}
  */
+#include <memory_resource>
 {%- endmacro %}
-
 
 {% macro member_getters(members, get_syntax) %}
 {%for member in members %}
@@ -127,8 +127,8 @@
 {% endif %}
   std::size_t {{ relation.name }}_size() const;
   {{ relation.full_type }} {{ relation.getter_name(get_syntax) }}(std::size_t) const;
-  std::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_begin() const;
-  std::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_end() const;
+  std::pmr::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_begin() const;
+  std::pmr::vector<{{ relation.full_type }}>::const_iterator {{ relation.name }}_end() const;
   podio::RelationRange<{{ relation.full_type }}> {{ relation.getter_name(get_syntax) }}() const;
 {% endfor %}
 {%- endmacro %}
