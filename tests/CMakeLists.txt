@@ -50,6 +50,8 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
       # with existing headers from other installations
       ROOT_INCLUDE_PATH=
+      # Only pick up this build for testing
+      PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
     )
 endfunction()
 
@@ -211,6 +213,8 @@ set_property(TEST pyunittest
                       PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
                       ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}
                       SKIP_SIO_TESTS=$<NOT:$<BOOL:${ENABLE_SIO}>>
+                      # Only pick up this build for testing
+                      PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
                       )
 set_property(TEST pyunittest PROPERTY DEPENDS write write_frame_root)
 if (TARGET write_sio)
@@ -256,6 +260,8 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
     set_property(TEST unittest
       PROPERTY ENVIRONMENT
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+        # Only pick up this build for testing
+        PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
       )
   endif()
 else()
@@ -267,6 +273,8 @@ else()
       PROPERTIES
         ENVIRONMENT
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+        # Only pick up this build for testing
+        PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
   )
 endif()
 
@@ -333,5 +341,5 @@ set_tests_properties(
   PROPERTIES
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     ENVIRONMENT
-  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};ENABLE_SIO=${ENABLE_SIO};PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}"
+  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};ENABLE_SIO=${ENABLE_SIO};PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH};PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}"
   )

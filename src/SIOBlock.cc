@@ -159,11 +159,19 @@ std::vector<std::tuple<std::string, std::string>> SIOBlockLibraryLoader::getLibN
 #endif
   std::vector<std::tuple<std::string, std::string>> libs;
 
-  std::string dir;
-  const auto ldLibPath = std::getenv("LD_LIBRARY_PATH");
+  const auto ldLibPath = []() {
+    // Check PODIO_SIOBLOCK_PATH first and fall back to LD_LIBRARY_PATH
+    auto pathVar = std::getenv("PODIO_SIOBLOCK_PATH");
+    if (!pathVar) {
+      pathVar = std::getenv("LD_LIBRARY_PATH");
+    }
+    return pathVar;
+  }();
   if (!ldLibPath) {
     return libs;
   }
+
+  std::string dir;
   std::istringstream stream(ldLibPath);
   while (std::getline(stream, dir, ':')) {
     if (not fs::exists(dir)) {
