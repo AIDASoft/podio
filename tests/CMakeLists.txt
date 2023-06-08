@@ -204,7 +204,7 @@ if (TARGET read_sio)
   set_property(TEST check_benchmark_outputs_sio PROPERTY DEPENDS read_timed_sio write_timed_sio)
 endif()
 
-add_test( NAME pyunittest COMMAND python -m unittest discover -s ${CMAKE_SOURCE_DIR}/python/podio)
+add_test( NAME pyunittest COMMAND python3 -m unittest discover -s ${CMAKE_SOURCE_DIR}/python/podio)
 set_property(TEST pyunittest
              PROPERTY ENVIRONMENT
                       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
@@ -240,18 +240,20 @@ if (NOT FORCE_RUN_ALL_TESTS)
   endif()
 endif()
 
-if (USE_SANITIZER MATCHES "Memory(WithOrigin)?")
+option(SKIP_CATCH_DISCOVERY "Skip the Catch2 test discovery" OFF)
+
+if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
   # Automatic test discovery fails with Memory sanitizers due to some issues in
   # Catch2. So in that case we skip the discovery step and simply run the thing
   # directly in the tests.
-  if (FORCE_RUN_ALL_TESTS)
+  if (FORCE_RUN_ALL_TESTS OR SKIP_CATCH_DISCOVERY)
     # Unfortunately Memory sanitizer seems to be really unhappy with Catch2 and
     # it fails to succesfully launch the executable and execute any test. Here
     # we just include them in order to have them show up as failing
     add_test(NAME unittest COMMAND unittest ${filter_tests})
     set_property(TEST unittest
       PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
+        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       )
   endif()
 else()
@@ -262,7 +264,7 @@ else()
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
       PROPERTIES
         ENVIRONMENT
-        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$ENV{LD_LIBRARY_PATH}
+        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
   )
 endif()
 
