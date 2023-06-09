@@ -128,8 +128,14 @@ CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
 
 if(USE_EXTERNAL_CATCH2)
-  find_package(Catch2 3.1 REQUIRED)
-else()
+  if (USE_EXTERNAL_CATCH2 STREQUAL AUTO)
+    find_package(Catch2 3.1)
+  else()
+    find_package(Catch2 3.1 REQUIRED)
+  endif()
+endif()
+
+if(NOT Catch2_FOUND)
   message(STATUS "Fetching local copy of Catch2 library for unit-tests...")
   # Build Catch2 with the default flags, to avoid generating warnings when we
   # build it
