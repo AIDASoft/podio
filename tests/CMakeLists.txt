@@ -128,8 +128,14 @@ CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
 
 if(USE_EXTERNAL_CATCH2)
-  find_package(Catch2 3 REQUIRED)
-else()
+  if (USE_EXTERNAL_CATCH2 STREQUAL AUTO)
+    find_package(Catch2 3.1)
+  else()
+    find_package(Catch2 3.1 REQUIRED)
+  endif()
+endif()
+
+if(NOT Catch2_FOUND)
   message(STATUS "Fetching local copy of Catch2 library for unit-tests...")
   # Build Catch2 with the default flags, to avoid generating warnings when we
   # build it
@@ -139,7 +145,7 @@ else()
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.0.1
+    GIT_TAG        v3.1.0
     )
   FetchContent_MakeAvailable(Catch2)
   set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras ${CMAKE_MODULE_PATH})
@@ -248,6 +254,14 @@ endif()
 
 option(SKIP_CATCH_DISCOVERY "Skip the Catch2 test discovery" OFF)
 
+# To work around https://github.com/catchorg/Catch2/issues/2424 we need the
+# DL_PATH argument for catch_discoer_tests which requires CMake 3.22 at least
+# The whole issue can be avoied if we skip the catch test discovery and set the
+# environment on our own
+if (CMAKE_VERSION VERSION_LESS 3.22)
+  set(SKIP_CATCH_DISCOVERY ON)
+endif()
+
 if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
   # Automatic test discovery fails with Memory sanitizers due to some issues in
   # Catch2. So in that case we skip the discovery step and simply run the thing
@@ -259,9 +273,7 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
     add_test(NAME unittest COMMAND unittest ${filter_tests})
     set_property(TEST unittest
       PROPERTY ENVIRONMENT
-        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-        # Only pick up this build for testing
-        PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
+        "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH};PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}"
       )
   endif()
 else()
@@ -270,10 +282,9 @@ else()
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
+      DL_PATHS ${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PROPERTIES
         ENVIRONMENT
-        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-        # Only pick up this build for testing
         PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
   )
 endif()

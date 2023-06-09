@@ -27,7 +27,7 @@ SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
           << id << ", name: " << table->name(id) << ")" << std::endl;
     }
 
-    _types.push_back(tmp->getValueTypeName());
+    _types.emplace_back(tmp->getValueTypeName());
     _isSubsetColl.push_back(tmp->isSubsetCollection());
   }
 }
@@ -109,7 +109,7 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeSt
 
 std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBase* col,
                                                        const std::string& name) const {
-  const std::string typeStr = col->getValueTypeName();
+  const auto typeStr = std::string(col->getValueTypeName()); // Need c++20 for transparent lookup
   const auto it = _map.find(typeStr);
 
   if (it != _map.end()) {

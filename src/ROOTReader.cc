@@ -284,7 +284,7 @@ void ROOTReader::createCollectionBranches(const std::vector<root_utils::Collecti
       branches.vecs.push_back(root_utils::getBranch(m_chain, brName.c_str()));
     }
 
-    const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
+    const auto bufferClassName = "std::vector<" + std::string(collection->getDataTypeName()) + ">";
     const auto bufferClass = isSubsetColl ? nullptr : TClass::GetClass(bufferClassName.c_str());
 
     m_storedClasses.emplace(name, std::make_tuple(bufferClass, collectionClass, collectionIndex++));

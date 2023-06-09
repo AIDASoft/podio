@@ -98,7 +98,7 @@ void SIOWriter::registerForWrite(const std::string& name) {
   }
   // Check if we can instantiate the blocks here so that we can skip the checks later
   if (auto blk = podio::SIOBlockFactory::instance().createBlock(colB, name); !blk) {
-    const auto typName = colB->getValueTypeName();
+    const auto typName = std::string(colB->getValueTypeName());
     throw std::runtime_error(std::string("could not create SIOBlock for type: ") + typName);
   }
 
