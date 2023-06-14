@@ -50,77 +50,11 @@ target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)
 add_subdirectory(root_io)
 add_subdirectory(sio_io)
 add_subdirectory(unittests)
+add_subdirectory(dumpmodel)
 
+# Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
-
-
-
-# Add tests for storing and retrieving the EDM definitions into the produced
-# files
-add_test(NAME datamodel_def_store_roundtrip_root COMMAND ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-  ${CMAKE_CURRENT_BINARY_DIR}/root_io/example_frame.root
-  datamodel
-  ${CMAKE_CURRENT_LIST_DIR}
-  )
-PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_root)
-
-# The extension model needs to know about the upstream model for generation
-add_test(NAME datamodel_def_store_roundtrip_root_extension COMMAND
-  ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-  ${CMAKE_CURRENT_BINARY_DIR}/root_io/example_frame.root
-  extension_model
-  ${CMAKE_CURRENT_LIST_DIR}/extension_model
-  --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
-  )
-PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_root_extension)
-
-# Need the input files that are produced by other tests
-set_tests_properties(
-    datamodel_def_store_roundtrip_root
-    datamodel_def_store_roundtrip_root_extension
-  PROPERTIES
-    DEPENDS write_frame_root
-  )
-
-set(sio_roundtrip_tests "")
-if (ENABLE_SIO)
-  add_test(NAME datamodel_def_store_roundtrip_sio COMMAND
-    ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-    ${CMAKE_CURRENT_BINARY_DIR}/sio_io/example_frame.sio
-    datamodel
-    ${CMAKE_CURRENT_LIST_DIR}
-    )
-  PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_sio)
-  # The extension model needs to know about the upstream model for generation
-  add_test(NAME datamodel_def_store_roundtrip_sio_extension COMMAND
-    ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-    ${CMAKE_CURRENT_BINARY_DIR}/sio_io/example_frame.sio
-    extension_model
-    ${CMAKE_CURRENT_LIST_DIR}/extension_model
-    --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
-    )
-  PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_sio_extension)
-
-  set(sio_roundtrip_tests
-    datamodel_def_store_roundtrip_sio
-    datamodel_def_store_roundtrip_sio_extension
-    )
-
-  set_tests_properties(
-      ${sio_roundtrip_tests}
-    PROPERTIES
-      DEPENDS write_frame_sio
-    )
-endif()
-
-set_tests_properties(
-    datamodel_def_store_roundtrip_root
-    datamodel_def_store_roundtrip_root_extension
-    ${sio_roundtrip_tests}
-  PROPERTIES
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
 
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
