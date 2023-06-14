@@ -92,7 +92,7 @@ public:
    * @returns CollectionReadBuffers that have been evolved to the current
    * version. NOTE that these could also be the input buffers.
    */
-  podio::CollectionReadBuffers evolveBuffers(podio::CollectionReadBuffers oldBuffers, SchemaVersionT fromVersion,
+  podio::CollectionReadBuffers evolveBuffers(const podio::CollectionReadBuffers& oldBuffers, SchemaVersionT fromVersion,
                                              const std::string& collType) const;
 
   /**
@@ -132,7 +132,7 @@ public:
    * do not require schema evolution, but need to register themselves with the
    * registry
    */
-  static podio::CollectionReadBuffers noOpSchemaEvolution(podio::CollectionReadBuffers buffers, SchemaVersionT);
+  static podio::CollectionReadBuffers noOpSchemaEvolution(podio::CollectionReadBuffers&& buffers, SchemaVersionT);
 
 private:
   SchemaEvolution() = default;

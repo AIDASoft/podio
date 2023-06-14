@@ -14,7 +14,7 @@ SchemaEvolution const& SchemaEvolution::instance() {
   return mutInstance();
 }
 
-podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(podio::CollectionReadBuffers oldBuffers,
+podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(const podio::CollectionReadBuffers& oldBuffers,
                                                             SchemaVersionT fromVersion,
                                                             const std::string& collType) const {
   if (const auto typeIt = m_versionMapIndices.find(collType); typeIt != m_versionMapIndices.end()) {
@@ -70,7 +70,7 @@ void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaV
   }
 }
 
-podio::CollectionReadBuffers SchemaEvolution::noOpSchemaEvolution(podio::CollectionReadBuffers buffers,
+podio::CollectionReadBuffers SchemaEvolution::noOpSchemaEvolution(podio::CollectionReadBuffers&& buffers,
                                                                   SchemaVersionT) {
   return buffers;
 }
