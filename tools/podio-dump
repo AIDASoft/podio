@@ -45,7 +45,7 @@ def print_frame(frame, cat_name, ientry, detailed):
     print('-' * 82)
 
   # Print collections
-  for name in frame.collections:
+  for name in sorted(frame.collections, key=str.casefold):
     coll = frame.get(name)
     if detailed:
       print(name, flush=True)
