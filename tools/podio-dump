@@ -5,8 +5,6 @@ import sys
 import json
 import yaml
 
-from podio.reading import get_reader
-
 
 def print_general_info(reader, filename):
   """Print an overview of the file contents at the very beginning.
@@ -86,6 +84,7 @@ def dump_model(reader, model_name):
 
 def main(args):
   """Main"""
+  from podio.reading import get_reader
   try:
     reader = get_reader(args.inputfile)
   except ValueError as err:
