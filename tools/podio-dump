@@ -5,8 +5,10 @@ import sys
 import json
 import yaml
 
-from podio import __version__
 from tabulate import tabulate
+
+from podio import __version__
+
 
 def print_general_info(reader, filename):
   """Print an overview of the file contents at the very beginning.
@@ -57,17 +59,15 @@ def print_frame_overview(frame):
   for name in sorted(frame.collections, key=str.casefold):
     coll = frame.get(name)
     rows.append(
-      (name, coll.getValueTypeName().data(), len(coll), f'{coll.getID():0>8x}')
-    )
+        (name, coll.getValueTypeName().data(), len(coll), f'{coll.getID():0>8x}')
+        )
   print('Collections:')
   print(tabulate(rows, headers=["Name", "ValueType", "Size", "ID"]))
 
   rows = []
   for name in sorted(frame.parameters, key=str.casefold):
     for par_type, n_pars in frame.get_param_info(name).items():
-      rows.append(
-        [name, par_type, n_pars]
-      )
+      rows.append([name, par_type, n_pars])
   print('\nParameters:')
   print(tabulate(rows, headers=["Name", "Type", "Elements"]))
 
@@ -106,7 +106,7 @@ def dump_model(reader, model_name):
 
 def main(args):
   """Main"""
-  from podio.reading import get_reader
+  from podio.reading import get_reader  # pylint: disable=import-outside-toplevel
   try:
     reader = get_reader(args.inputfile)
   except ValueError as err:
