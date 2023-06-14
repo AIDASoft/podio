@@ -77,7 +77,7 @@ endforeach()
 # Avoid fetching these everytime cmake is run by caching the directory the first
 # time the inputs are fetched or if the expected file does not exist in the
 # expected directory
-if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/example.root)
+if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-05/example_frame.root)
   message("Getting test input files")
   execute_process(
     COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/scripts/get_test_inputs.sh
