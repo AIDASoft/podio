@@ -5,6 +5,7 @@ import sys
 import json
 import yaml
 
+from podio import __version__
 
 def print_general_info(reader, filename):
   """Print an overview of the file contents at the very beginning.
@@ -144,6 +145,7 @@ if __name__ == '__main__':
   parser.add_argument('--dump-edm',
                       help='Dump the specified EDM definition from the file in yaml format',
                       type=str, default=None)
+  parser.add_argument('--version', action='version', version=f'podio {__version__}')
 
   clargs = parser.parse_args()
   main(clargs)
