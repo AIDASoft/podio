@@ -6,6 +6,7 @@ import json
 import yaml
 
 from podio import __version__
+from tabulate import tabulate
 
 def print_general_info(reader, filename):
   """Print an overview of the file contents at the very beginning.
@@ -28,8 +29,51 @@ def print_general_info(reader, filename):
   print()
 
 
+def print_frame_detailed(frame):
+  """Print the Frame in all its glory, dumping every collection via print
+
+  Args:
+      frame (podio.Frame): The frame to print
+  """
+  print('Collections:')
+  for name in sorted(frame.collections, key=str.casefold):
+    coll = frame.get(name)
+    print(name, flush=True)
+    coll.print()
+    print(flush=True)
+
+  print('\nParameters:', flush=True)
+  frame.get_parameters().print()
+  print(flush=True)
+
+
+def print_frame_overview(frame):
+  """Print a Frame overview, dumping just collection names, types and sizes
+
+  Args:
+      frame (podio.Frame): The frame to print
+  """
+  rows = []
+  for name in sorted(frame.collections, key=str.casefold):
+    coll = frame.get(name)
+    rows.append(
+      (name, coll.getValueTypeName().data(), len(coll), f'{coll.getID():0>8x}')
+    )
+  print('Collections:')
+  print(tabulate(rows, headers=["Name", "ValueType", "Size", "ID"]))
+
+  rows = []
+  for name in sorted(frame.parameters, key=str.casefold):
+    for par_type, n_pars in frame.get_param_info(name).items():
+      rows.append(
+        [name, par_type, n_pars]
+      )
+  print('\nParameters:')
+  print(tabulate(rows, headers=["Name", "Type", "Elements"]))
+
+
 def print_frame(frame, cat_name, ientry, detailed):
-  """Print a Frame overview.
+  """Print a Frame.
 
   Args:
       frame (podio.Frame): The frame to print
@@ -38,34 +82,11 @@ def print_frame(frame, cat_name, ientry, detailed):
       detailed (bool): Print just an overview or dump the whole contents
   """
   print('{:#^82}'.format(f' {cat_name} {ientry} '))  # pylint: disable=consider-using-f-string
-  print('Collections:')
 
-  if not detailed:
-    print(f'{"Name":<38} {"ID":<4} {"Type":<32} {"Size":<10}')
-    print('-' * 82)
-
-  # Print collections
-  for name in sorted(frame.collections, key=str.casefold):
-    coll = frame.get(name)
-    if detailed:
-      print(name, flush=True)
-      coll.print()
-      print(flush=True)
-    else:
-      print(f'{name:<38} {coll.getID():<4} {coll.getValueTypeName().data():<32} {len(coll):<10}')
-
-  # And then parameters
-  print('\nParameters:', flush=True)
   if detailed:
-    frame.get_parameters().print()
-    print(flush=True)
+    print_frame_detailed(frame)
   else:
-    print(f'{"Name":<30} {"Type":<12} {"Elements":<10}')
-    print('-' * 54)
-    for name in frame.parameters:
-      par_infos = frame.get_param_info(name)
-      for par_type, n_pars in par_infos.items():
-        print(f'{name:<30} {par_type:<12} {n_pars:<10}')
+    print_frame_overview(frame)
 
   # Additional new line before the next entry
   print('\n', flush=True)
