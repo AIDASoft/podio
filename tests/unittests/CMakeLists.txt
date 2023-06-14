@@ -75,10 +75,7 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
     # it fails to succesfully launch the executable and execute any test. Here
     # we just include them in order to have them show up as failing
     add_test(NAME unittest COMMAND unittest ${filter_tests})
-    set_property(TEST unittest
-      PROPERTY ENVIRONMENT
-        "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH};PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}"
-      )
+    PODIO_SET_TEST_ENV(unittest)
   endif()
 else()
   include(Catch)
