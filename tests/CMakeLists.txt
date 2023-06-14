@@ -46,171 +46,27 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
 
   target_link_libraries(${name} PRIVATE TestDataModel ExtensionDataModel ${additional_libs})
   set_property(TEST ${name} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+      LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/tests:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
       # with existing headers from other installations
       ROOT_INCLUDE_PATH=
       # Only pick up this build for testing
-      PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
+      PODIO_SIOBLOCK_PATH=${CMAKE_BINARY_DIR}/tests
     )
 endfunction()
 
-set(root_dependent_tests
-  write.cpp
-  read.cpp
-  read-multiple.cpp
-  relation_range.cpp
-  read_and_write.cpp
-  read_and_write_associated.cpp
-  write_timed.cpp
-  read_timed.cpp
-  read_frame_root.cpp
-  write_frame_root.cpp
-  read_frame_legacy_root.cpp
-  read_frame_root_multiple.cpp
-  )
-set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO)
-foreach( sourcefile ${root_dependent_tests} )
-  CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
-endforeach()
-
-# Avoid fetching these everytime cmake is run by caching the directory the first
-# time the inputs are fetched or if the expected file does not exist in the
-# expected directory
-if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-05/example_frame.root)
-  message("Getting test input files")
-  execute_process(
-    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/scripts/get_test_inputs.sh
-    OUTPUT_VARIABLE podio_test_input_data_dir
-    RESULT_VARIABLE test_inputs_available
-    )
-  if (NOT "${test_inputs_available}" STREQUAL "0")
-    message(WARNING "Could not get test input files. Will skip some tests that depend on these")
-    # Catch cases where the variable is cached but the file no longer exists
-    unset(PODIO_TEST_INPUT_DATA_DIR CACHE)
-  else()
-    message(STATUS "Test inputs stored in: " ${podio_test_input_data_dir})
-    set(PODIO_TEST_INPUT_DATA_DIR ${podio_test_input_data_dir} CACHE INTERNAL "input dir for test inputs fetched from remote sources")
-    mark_as_advanced(PODIO_TEST_INPUT_DATA_DIR)
-  endif()
-endif()
-
-# If the variable is cached and defined now, we have inputs and can add the
-# legacy file read test
-if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
-  message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
-  add_executable(read-legacy-files-root read-legacy-files-root.cpp)
-  target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
-
-  # Add a legacy test case based on a base executable and a version for which an
-  # input file exists
-  macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
-    add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
-    set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-      # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
-      # with existing headers from other installations
-      ROOT_INCLUDE_PATH=
-    )
-  endmacro()
-
-  ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root example.root legacy_test_cases)
-
-  set(legacy_versions v00-16 v00-16-05)
-  foreach(version IN LISTS legacy_versions)
-    ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root example.root legacy_test_cases)
-    ADD_PODIO_LEGACY_TEST(${version} read_frame_root example_frame.root legacy_test_cases)
-  endforeach()
-
-endif()
-
-CREATE_PODIO_TEST(ostream_operator.cpp "")
-CREATE_PODIO_TEST(write_ascii.cpp "")
-
-if(USE_EXTERNAL_CATCH2)
-  if (USE_EXTERNAL_CATCH2 STREQUAL AUTO)
-    find_package(Catch2 3.1)
-  else()
-    find_package(Catch2 3.1 REQUIRED)
-  endif()
-endif()
-
-if(NOT Catch2_FOUND)
-  message(STATUS "Fetching local copy of Catch2 library for unit-tests...")
-  # Build Catch2 with the default flags, to avoid generating warnings when we
-  # build it
-  set(CXX_FLAGS_CMAKE_USED ${CMAKE_CXX_FLAGS})
-  set(CMAKE_CXX_FLAGS ${CXX_FLAGS_CMAKE_DEFAULTS})
-  Include(FetchContent)
-  FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.1.0
-    )
-  FetchContent_MakeAvailable(Catch2)
-  set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras ${CMAKE_MODULE_PATH})
-
-  # Disable clang-tidy on external contents
-  set_target_properties(Catch2 PROPERTIES CXX_CLANG_TIDY "")
-
-  # Hack around the fact, that the include directories are not declared as
-  # SYSTEM for the targets defined this way. Otherwise warnings can still occur
-  # in Catch2 code when templates are evaluated (which happens quite a bit)
-  get_target_property(CATCH2_IF_INC_DIRS Catch2 INTERFACE_INCLUDE_DIRECTORIES)
-  set_target_properties(Catch2 PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${CATCH2_IF_INC_DIRS}")
-
-  # Reset the flags
-  set(CMAKE_CXX_FLAGS ${CXX_FLAGS_CMAKE_USED})
-endif()
-
-
-if (TARGET TestDataModelSioBlocks)
-  set(sio_dependent_tests
-    write_sio.cpp
-    read_sio.cpp
-    read_and_write_sio.cpp
-    write_timed_sio.cpp
-    read_timed_sio.cpp
-    read_frame_sio.cpp
-    write_frame_sio.cpp
-    read_frame_legacy_sio.cpp)
-  set(sio_libs podio::podioSioIO)
-  foreach( sourcefile ${sio_dependent_tests} )
-    CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
-  endforeach()
-
-  # These need to be linked against TTree explicitly, since it is not done
-  # through another library and the TimedReader/Writer decorators are
-  # header-only wrappers
-  target_link_libraries(write_timed_sio PRIVATE ROOT::Tree)
-  target_link_libraries(read_timed_sio PRIVATE ROOT::Tree)
-endif()
-
-#--- set some dependencies between the different tests to ensure input generating ones are run first
-set_property(TEST read PROPERTY DEPENDS write)
-set_property(TEST read-multiple PROPERTY DEPENDS write)
-set_property(TEST read_and_write PROPERTY DEPENDS write)
-set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
-set_property(TEST read_timed PROPERTY DEPENDS write_timed)
-set_property(TEST read_frame_root PROPERTY DEPENDS write_frame_root)
-set_property(TEST read_frame_root_multiple PROPERTY DEPENDS write_frame_root)
+include(legacy_input_download.cmake)
 
 add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
 target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)
 
-add_test(NAME check_benchmark_outputs COMMAND check_benchmark_outputs write_benchmark_root.root read_benchmark_root.root)
-set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_timed)
+add_subdirectory(root_io)
+add_subdirectory(sio_io)
+add_subdirectory(unittests)
 
-if (TARGET read_sio)
-  set_property(TEST read_sio PROPERTY DEPENDS write_sio)
-  set_property(TEST read_and_write_sio PROPERTY DEPENDS write_sio)
-  set_property(TEST read_timed_sio PROPERTY DEPENDS write_timed_sio)
-  set_property(TEST read_frame_sio PROPERTY DEPENDS write_frame_sio)
-  set_property(TEST read_frame_legacy_sio PROPERTY DEPENDS write_sio)
+CREATE_PODIO_TEST(ostream_operator.cpp "")
+CREATE_PODIO_TEST(write_ascii.cpp "")
 
-  add_test(NAME check_benchmark_outputs_sio COMMAND check_benchmark_outputs write_benchmark_sio.root read_benchmark_sio.root)
-  set_property(TEST check_benchmark_outputs_sio PROPERTY DEPENDS read_timed_sio write_timed_sio)
-endif()
 
 add_test( NAME pyunittest COMMAND python3 -m unittest discover -s ${CMAKE_SOURCE_DIR}/python/podio)
 set_property(TEST pyunittest
@@ -227,79 +83,17 @@ if (TARGET write_sio)
   set_property(TEST pyunittest PROPERTY DEPENDS write_sio write_frame_sio)
 endif()
 
-# Customize CTest to potentially disable some of the tests with known problems
-configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
-
-find_package(Threads REQUIRED)
-add_executable(unittest unittest.cpp frame.cpp)
-target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
-if (ENABLE_SIO)
-  target_link_libraries(unittest PRIVATE podio::podioSioIO)
-endif()
-
-# The unittests are a bit better and they are labelled so we can put together a
-# list of labels that we want to ignore
-set(filter_tests "")
-if (NOT FORCE_RUN_ALL_TESTS)
-  if(USE_SANITIZER MATCHES "Address")
-    set(filter_tests "~[LEAK-FAIL]~[ASAN-FAIL]")
-  elseif(USE_SANITIZER MATCHES "Leak")
-    set(filter_tests "~[LEAK-FAIL]")
-  elseif(USE_SANITIZER MATCHES "Thread")
-    set(filter_tests "~[THREAD-FAIL]")
-  elseif(USE_SANITIZER MATCHES "Undefined")
-    set(filter_tests "~[UBSAN-FAIL]")
-  endif()
-endif()
-
-option(SKIP_CATCH_DISCOVERY "Skip the Catch2 test discovery" OFF)
-
-# To work around https://github.com/catchorg/Catch2/issues/2424 we need the
-# DL_PATH argument for catch_discoer_tests which requires CMake 3.22 at least
-# The whole issue can be avoied if we skip the catch test discovery and set the
-# environment on our own
-if (CMAKE_VERSION VERSION_LESS 3.22)
-  set(SKIP_CATCH_DISCOVERY ON)
-endif()
-
-if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
-  # Automatic test discovery fails with Memory sanitizers due to some issues in
-  # Catch2. So in that case we skip the discovery step and simply run the thing
-  # directly in the tests.
-  if (FORCE_RUN_ALL_TESTS OR SKIP_CATCH_DISCOVERY)
-    # Unfortunately Memory sanitizer seems to be really unhappy with Catch2 and
-    # it fails to succesfully launch the executable and execute any test. Here
-    # we just include them in order to have them show up as failing
-    add_test(NAME unittest COMMAND unittest ${filter_tests})
-    set_property(TEST unittest
-      PROPERTY ENVIRONMENT
-        "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH};PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}"
-      )
-  endif()
-else()
-  include(Catch)
-  catch_discover_tests(unittest
-      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-      TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
-      TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
-      DL_PATHS ${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-      PROPERTIES
-        ENVIRONMENT
-        PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
-  )
-endif()
-
 # Add tests for storing and retrieving the EDM definitions into the produced
 # files
 add_test(datamodel_def_store_roundtrip_root ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-  ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
+  ${CMAKE_CURRENT_BINARY_DIR}/root_io/example_frame.root
   datamodel
   ${CMAKE_CURRENT_LIST_DIR}
   )
 # The extension model needs to know about the upstream model for generation
 add_test(datamodel_def_store_roundtrip_root_extension
   ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-  ${CMAKE_CURRENT_BINARY_DIR}/example_frame.root
+  ${CMAKE_CURRENT_BINARY_DIR}/root_io/example_frame.root
   extension_model
   ${CMAKE_CURRENT_LIST_DIR}/extension_model
   --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
@@ -317,14 +111,14 @@ set(sio_roundtrip_tests "")
 if (ENABLE_SIO)
   add_test(datamodel_def_store_roundtrip_sio
     ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-    ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio
+    ${CMAKE_CURRENT_BINARY_DIR}/sio_io/example_frame.sio
     datamodel
     ${CMAKE_CURRENT_LIST_DIR}
     )
   # The extension model needs to know about the upstream model for generation
   add_test(datamodel_def_store_roundtrip_sio_extension
     ${CMAKE_CURRENT_LIST_DIR}/scripts/dumpModelRoundTrip.sh
-    ${CMAKE_CURRENT_BINARY_DIR}/example_frame.sio
+    ${CMAKE_CURRENT_BINARY_DIR}/sio_io/example_frame.sio
     extension_model
     ${CMAKE_CURRENT_LIST_DIR}/extension_model
     --upstream-edm=datamodel:${CMAKE_CURRENT_LIST_DIR}/datalayout.yaml
@@ -352,5 +146,8 @@ set_tests_properties(
   PROPERTIES
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     ENVIRONMENT
-  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};ENABLE_SIO=${ENABLE_SIO};PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH};PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}"
+  "PODIO_BASE=${CMAKE_SOURCE_DIR};IO_HANDLERS=${IO_HANDLERS};ENABLE_SIO=${ENABLE_SIO};PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/tests:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH};PODIO_SIOBLOCK_PATH=${CMAKE_BINARY_DIR}/tests"
   )
+
+# Customize CTest to potentially disable some of the tests with known problems
+configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)

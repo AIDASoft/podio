@@ -11,11 +11,11 @@ class RootReaderTestCase(ReaderTestCaseMixin, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
     """Setup the corresponding reader"""
-    self.reader = Reader('example_frame.root')
+    self.reader = Reader('root_io/example_frame.root')
 
 
 class RootLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
   """Test cases for the legacy root input files and reader."""
   def setUp(self):
     """Setup a reader, reading from the example files"""
-    self.reader = LegacyReader('example.root')
+    self.reader = LegacyReader('root_io/example.root')

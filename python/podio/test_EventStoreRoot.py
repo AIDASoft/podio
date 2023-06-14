@@ -14,9 +14,9 @@ class EventStoreRootTestCase(EventStoreBaseTestCaseMixin, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
     """Setup an EventStore reading from a ROOT file"""
-    self.filename = 'example.root'
+    self.filename = 'root_io/example.root'
     self.assertTrue(os.path.isfile(self.filename))
-    self.store = EventStore(['example.root'])
+    self.store = EventStore([self.filename])
 
   def test_chain(self):
     self.store = EventStore([self.filename,
