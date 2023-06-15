@@ -66,7 +66,9 @@ In order for the `yaml` module to be working it might also be necessary to insta
 
 Check that you can now import the `yaml` and `jinja2` modules in python.
 
-Optionally, `graphviz` is also required for the visualization tool `podio-vis`.
+Some tools have additional dependencies that are not required for code generation or library use
+- `graphviz` is required for `podio-vis`
+- `tabulate` is required for `podio-dump`
 
 ## Preparing the environment
 
