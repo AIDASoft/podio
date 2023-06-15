@@ -1,6 +1,8 @@
 #ifndef PODIO_TESTS_WRITE_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_WRITE_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "frame_test_common.h"
+
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
@@ -22,28 +24,6 @@
 
 #include <string>
 #include <tuple>
-#include <vector>
-
-static const std::vector<std::string> collsToWrite = {"mcparticles",
-                                                      "moreMCs",
-                                                      "arrays",
-                                                      "mcParticleRefs",
-                                                      "hits",
-                                                      "hitRefs",
-                                                      "refs",
-                                                      "refs2",
-                                                      "clusters",
-                                                      "OneRelation",
-                                                      "info",
-                                                      "WithVectorMember",
-                                                      "fixedWidthInts",
-                                                      "userInts",
-                                                      "userDoubles",
-                                                      "WithNamespaceMember",
-                                                      "WithNamespaceRelation",
-                                                      "WithNamespaceRelationCopy",
-                                                      "emptyCollection",
-                                                      "emptySubsetColl"};
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
