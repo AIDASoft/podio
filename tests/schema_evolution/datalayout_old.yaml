@@ -71,7 +71,6 @@ datatypes :
      - double x      // x-coordinate
      - double y      // y-coordinate
      - double z      // z-coordinate
-     - double energy // measured energy deposit
 
   ExampleMC :
     Description : "Example MC-particle"
