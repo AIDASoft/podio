@@ -35,7 +35,7 @@ podio::Frame createFrame() {
   podio::Frame event;
 
   event.put(writeSimpleStruct(), "simpleStructTest");
-  event.put(writeExampleHit(), "dataTypeMemberAdditionTest");
+  event.put(writeExampleHit(), "datatypeMemberAdditionTest");
 
   return event;
 }
