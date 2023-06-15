@@ -13,7 +13,7 @@ class SioReaderTestCase(ReaderTestCaseMixin, unittest.TestCase):
   def setUp(self):
     """Setup the corresponding reader"""
     from podio.sio_io import Reader  # pylint: disable=import-outside-toplevel
-    self.reader = Reader('example_frame.sio')
+    self.reader = Reader('sio_io/example_frame.sio')
 
 
 @unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")
@@ -22,4 +22,4 @@ class SIOLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
   def setUp(self):
     """Setup a reader, reading from the example files"""
     from podio.sio_io import LegacyReader  # pylint: disable=import-outside-toplevel
-    self.reader = LegacyReader('example.sio')
+    self.reader = LegacyReader('sio_io/example.sio')

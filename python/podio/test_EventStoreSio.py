@@ -14,7 +14,7 @@ class EventStoreSioTestCase(EventStoreBaseTestCaseMixin, unittest.TestCase):
   """Test cases for root input files"""
   def setUp(self):
     """setup an EventStore reading an SIO file"""
-    self.filename = 'example.sio'
+    self.filename = 'sio_io/example.sio'
     self.assertTrue(os.path.isfile(self.filename))
     self.store = EventStore([self.filename])
 

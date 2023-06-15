@@ -46,7 +46,7 @@ class FrameReadTest(unittest.TestCase):
     Reading only one event/Frame of each category here as looping and other
     basic checks are already handled by the Reader tests
     """
-    reader = Reader('example_frame.root')
+    reader = Reader('root_io/example_frame.root')
     self.event = reader.get('events')[0]
     self.other_event = reader.get('other_events')[7]
 

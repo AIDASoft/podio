@@ -169,12 +169,13 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
         DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 #--- project specific subdirectories -------------------------------------------
-add_subdirectory(python)
 add_subdirectory(src)
 if(BUILD_TESTING)
+  include(cmake/podioTest.cmake)
   add_subdirectory(tests)
 endif()
 add_subdirectory(tools)
+add_subdirectory(python)
 
 #--- add CMake infrastructure --------------------------------------------------
 include(cmake/podioCreateConfig.cmake)
