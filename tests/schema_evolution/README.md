@@ -16,3 +16,4 @@ tested (if it is supported)
 |--|--|--|--|
 | `SimpleStruct` | no `int y` member in v1 | Addition of new members in components | As  member of `ExampleWithArrayComponent` |
 | `ExampleHit` | no `double energy` member in v1 | Addition of new members in datatypes | Directly via `ExampleHit` |
+| `ex2::NamespaceStruct` | renaming of `y_old` to `y` | Renaming of member variables | As member of `ex42::ExampleWithNamespace` |

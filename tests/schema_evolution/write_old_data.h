@@ -3,6 +3,7 @@
 
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithArrayComponentCollection.h"
+#include "datamodel/ExampleWithNamespaceCollection.h"
 
 #include "podio/Frame.h"
 
@@ -31,11 +32,21 @@ auto writeExampleHit() {
   return coll;
 }
 
+auto writeExampleWithNamespace() {
+  ex42::ExampleWithNamespaceCollection coll;
+  auto elem = coll.create();
+  elem.y_old(42);
+  elem.x(123);
+
+  return coll;
+}
+
 podio::Frame createFrame() {
   podio::Frame event;
 
   event.put(writeSimpleStruct(), "simpleStructTest");
   event.put(writeExampleHit(), "datatypeMemberAdditionTest");
+  event.put(writeExampleWithNamespace(), "componentMemberRenameTest");
 
   return event;
 }
