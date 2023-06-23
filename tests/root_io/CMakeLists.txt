@@ -53,8 +53,7 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
 
   ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root example.root legacy_test_cases)
 
-  set(legacy_versions v00-16 v00-16-05 PARENT_SCOPE)
-  foreach(version IN LISTS legacy_versions)
+  foreach(version IN LISTS legacy_test_versions)
     ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root example.root legacy_test_cases)
     ADD_PODIO_LEGACY_TEST(${version} read_frame_root example_frame.root legacy_test_cases)
   endforeach()
