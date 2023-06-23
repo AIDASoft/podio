@@ -63,6 +63,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
   foreach(version in @legacy_test_versions@)
       list(APPEND CTEST_CUSTOM_TESTS_IGNORE read-legacy-files-root_${version})
       list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_root_${version})
   endforeach()
 
   # ostream_operator is working with Memory sanitizer (at least locally)
