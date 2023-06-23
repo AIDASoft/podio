@@ -5,16 +5,23 @@
 
 #include <iostream>
 
-int main() {
+int main(int argc, char* argv[]) {
+  std::string inputFile = "example.root";
+  bool assertBuildVersion = true;
+  if (argc == 2) {
+    inputFile = argv[1];
+    assertBuildVersion = false;
+  }
+
   auto reader = podio::ROOTLegacyReader();
   try {
-    reader.openFile("example.root");
+    reader.openFile(inputFile);
   } catch (const std::runtime_error& e) {
-    std::cout << "File could not be opened, aborting." << std::endl;
+    std::cout << "File (" << inputFile << ")could not be opened, aborting." << std::endl;
     return 1;
   }
 
-  if (reader.currentFileVersion() != podio::version::build_version) {
+  if (assertBuildVersion && reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "
               << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
               << std::endl;

@@ -41,8 +41,14 @@ PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
 
+set(legacy_test_versions
+  v00-16
+  v00-16-02
+  v00-16-05
+)
+
 ### Define the actual tests
-PODIO_DOWNLOAD_LEGACY_INPUTS()
+PODIO_DOWNLOAD_LEGACY_INPUTS("${legacy_test_versions}")
 
 add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
 target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)

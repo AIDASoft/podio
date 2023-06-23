@@ -28,14 +28,14 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
 endfunction()
 
 #--- utility macro to facilitate the downloading of legacy input data
-macro(PODIO_DOWNLOAD_LEGACY_INPUTS)
+macro(PODIO_DOWNLOAD_LEGACY_INPUTS legacy_versions)
   # Avoid fetching these everytime cmake is run by caching the directory the first
   # time the inputs are fetched or if the expected file does not exist in the
   # expected directory
   if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-05/example_frame.root)
     message(STATUS "Getting test input files")
     execute_process(
-      COMMAND bash ${CMAKE_SOURCE_DIR}/tests/scripts/get_test_inputs.sh
+      COMMAND bash ${CMAKE_SOURCE_DIR}/tests/scripts/get_test_inputs.sh ${legacy_versions}
       OUTPUT_VARIABLE podio_test_input_data_dir
       RESULT_VARIABLE test_inputs_available
     )

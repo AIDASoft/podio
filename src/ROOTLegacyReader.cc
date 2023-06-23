@@ -123,19 +123,36 @@ void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
   auto metadatatree = static_cast<TTree*>(m_chain->GetFile()->Get("metadata"));
   m_table = std::make_shared<CollectionIDTable>();
   auto* table = m_table.get();
-  metadatatree->SetBranchAddress("CollectionIDs", &table);
+  auto* tableBranch = root_utils::getBranch(metadatatree, "CollectionIDs");
+  tableBranch->SetAddress(&table);
+  tableBranch->GetEntry(0);
 
   podio::version::Version* versionPtr{nullptr};
   if (auto* versionBranch = root_utils::getBranch(metadatatree, "PodioVersion")) {
     versionBranch->SetAddress(&versionPtr);
+    versionBranch->GetEntry(0);
   }
+  m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
+  delete versionPtr;
 
   // Check if the CollectionTypeInfo branch is there and assume that the file
   // has been written with with podio pre #197 (<0.13.1) if that is not the case
   if (auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo")) {
     auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
-    collInfoBranch->SetAddress(&collectionInfo);
-    metadatatree->GetEntry(0);
+
+    if (m_fileVersion < podio::version::Version{0, 16, 4}) {
+      auto oldCollInfo = new std::vector<root_utils::CollectionInfoWithoutSchemaT>();
+      collInfoBranch->SetAddress(&oldCollInfo);
+      collInfoBranch->GetEntry(0);
+      collectionInfo->reserve(oldCollInfo->size());
+      for (auto&& [collID, collType, isSubsetColl] : *oldCollInfo) {
+        collectionInfo->emplace_back(collID, std::move(collType), isSubsetColl, 1u);
+      }
+      delete oldCollInfo;
+    } else {
+      collInfoBranch->SetAddress(&collectionInfo);
+      collInfoBranch->GetEntry(0);
+    }
     createCollectionBranches(*collectionInfo);
     delete collectionInfo;
   } else {
@@ -145,9 +162,6 @@ void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
     const auto collectionInfo = root_utils::reconstructCollectionInfo(m_chain.get(), *m_table);
     createCollectionBranches(collectionInfo);
   }
-
-  m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
-  delete versionPtr;
 }
 
 unsigned ROOTLegacyReader::getEntries(const std::string& name) const {
