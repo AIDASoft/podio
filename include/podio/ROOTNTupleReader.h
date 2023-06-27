@@ -85,7 +85,7 @@ private:
   std::unordered_map<std::string, unsigned> m_totalEntries{};
 
   struct CollectionInfo {
-    std::vector<int> id{};
+    std::vector<unsigned int> id{};
     std::vector<std::string> name{};
     std::vector<std::string> type{};
     std::vector<short> isSubsetCollection{};

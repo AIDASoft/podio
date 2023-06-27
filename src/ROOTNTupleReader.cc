@@ -40,7 +40,7 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   // Assume that the metadata is the same in all files
   auto filename = m_filenames[0];
 
-  auto id = m_metadata_readers[filename]->GetView<std::vector<int>>(root_utils::idTableName(category));
+  auto id = m_metadata_readers[filename]->GetView<std::vector<unsigned int>>(root_utils::idTableName(category));
   m_collectionInfo[category].id = id(0);
 
   auto collectionName =
@@ -136,9 +136,10 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     auto collection =
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
 
-    const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
+    // const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
+    const auto bufferClassName = collection->getTypeName();
     const auto bufferClass =
-        m_collectionInfo[category].isSubsetCollection[i] ? nullptr : TClass::GetClass(bufferClassName.c_str());
+      m_collectionInfo[category].isSubsetCollection[i] ? nullptr : TClass::GetClass(std::string(bufferClassName).c_str());
 
     const bool isSubsetColl = bufferClass == nullptr;
 

@@ -45,7 +45,7 @@ private:
   DatamodelDefinitionCollector m_datamodelCollector{};
 
   struct CollectionInfo {
-    std::vector<int> id{};
+    std::vector<unsigned int> id{};
     std::vector<std::string> name{};
     std::vector<std::string> type{};
     std::vector<short> isSubsetCollection{};

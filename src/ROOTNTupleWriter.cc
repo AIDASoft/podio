@@ -139,7 +139,7 @@ ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) 
     const auto collBuffers = coll->getBuffers();
 
     if (collBuffers.vecPtr) {
-      auto collClassName = "std::vector<" + coll->getDataTypeName() + ">";
+      auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
       auto field = ROOT::Experimental::Detail::RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
@@ -202,7 +202,7 @@ void ROOTNTupleWriter::finish() {
   }
 
   for (auto& category : m_categories) {
-    auto idField = m_metadata->MakeField<std::vector<int>>({root_utils::idTableName(category)});
+    auto idField = m_metadata->MakeField<std::vector<unsigned int>>({root_utils::idTableName(category)});
     *idField = m_collectionInfo[category].id;
     auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
     *collectionNameField = m_collectionInfo[category].name;
