@@ -218,7 +218,7 @@ bool registerCollection() {
     auto& factory = podio::CollectionBufferFactory::mutInstance();
     factory.registerCreationFunc("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion, createBuffers);
 
-    // Make the SchemaEvolution registry aware of the current version by
+    // Make the SchemaEvolution aware of the current version by
     // registering a no-op function with it
     podio::SchemaEvolution::mutInstance().registerEvolutionFunc(
       "{{ class.full_type }}Collection",
