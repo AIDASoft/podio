@@ -4,6 +4,7 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "podio/CollectionBufferFactory.h"
+#include "podio/SchemaEvolution.h"
 
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 #include "{{ incfolder }}DatamodelDefinition.h"
@@ -170,6 +171,8 @@ podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
 namespace {
 podio::CollectionReadBuffers createBuffers(bool isSubset) {
   auto readBuffers = podio::CollectionReadBuffers{};
+  readBuffers.type = "{{ class.full_type }}Collection";
+  readBuffers.schemaVersion = {{ package_name }}::meta::schemaVersion;
   readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer;
 
   // The number of ObjectID vectors is either 1 or the sum of OneToMany and
@@ -214,6 +217,7 @@ bool registerCollection() {
   const static auto reg = []() {
     auto& factory = podio::CollectionBufferFactory::mutInstance();
     factory.registerCreationFunc("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion, createBuffers);
+
     return true;
   }();
   return reg;

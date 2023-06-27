@@ -2,9 +2,11 @@
 #define PODIO_FRAME_H
 
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
 #include "podio/ICollectionProvider.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <initializer_list>
@@ -366,7 +368,16 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
       buffers = unpack(m_data.get(), name);
     }
     if (buffers) {
-      auto coll = buffers->createCollection(buffers.value(), buffers->data == nullptr);
+      std::unique_ptr<podio::CollectionBase> coll{nullptr};
+      // Subset collections do not need schema evolution (by definition)
+      if (buffers->data == nullptr) {
+        coll = buffers->createCollection(buffers.value(), true);
+      } else {
+        auto evolvedBuffers = podio::SchemaEvolution::instance().evolveBuffers(buffers.value(), buffers->schemaVersion,
+                                                                               std::string(buffers->type));
+        coll = evolvedBuffers.createCollection(evolvedBuffers, false);
+      }
+
       coll->prepareAfterRead();
       coll->setID(m_idTable.collectionID(name));
       {

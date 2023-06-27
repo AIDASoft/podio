@@ -54,6 +54,7 @@ SET(core_sources
   UserDataCollection.cc
   CollectionBufferFactory.cc
   MurmurHash3.cpp
+  SchemaEvolution.cc
   )
 
 SET(core_headers

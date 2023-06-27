@@ -43,20 +43,22 @@ struct CollectionWriteBuffers {
 };
 
 struct CollectionReadBuffers {
-  bool needsSchemaEvolution{false};
   void* data{nullptr};
-  void* data_oldschema{nullptr};
   CollRefCollection* references{nullptr};
   VectorMembersInfo* vectorMembers{nullptr};
+  SchemaVersionT schemaVersion{0};
+  std::string_view type{};
 
   using CreateFuncT = std::function<std::unique_ptr<podio::CollectionBase>(podio::CollectionReadBuffers, bool)>;
   using RecastFuncT = std::function<void(CollectionReadBuffers&)>;
 
-  CollectionReadBuffers(void* d, CollRefCollection* ref, VectorMembersInfo* vec, CreateFuncT&& createFunc,
-                        RecastFuncT&& recastFunc) :
+  CollectionReadBuffers(void* d, CollRefCollection* ref, VectorMembersInfo* vec, SchemaVersionT version,
+                        std::string_view typ, CreateFuncT&& createFunc, RecastFuncT&& recastFunc) :
       data(d),
       references(ref),
       vectorMembers(vec),
+      schemaVersion(version),
+      type(typ),
       createCollection(std::move(createFunc)),
       recast(std::move(recastFunc)) {
   }
