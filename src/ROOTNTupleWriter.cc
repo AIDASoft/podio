@@ -26,8 +26,7 @@ ROOTNTupleWriter::~ROOTNTupleWriter() {
 }
 
 template <typename T>
-std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&>
-ROOTNTupleWriter::getKeyValueVectors() {
+std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> ROOTNTupleWriter::getKeyValueVectors() {
   if constexpr (std::is_same_v<T, int>) {
     return {m_intkeys, m_intvalues};
   } else if constexpr (std::is_same_v<T, float>) {
@@ -42,7 +41,7 @@ ROOTNTupleWriter::getKeyValueVectors() {
 }
 
 template <typename T>
-void ROOTNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry *entry) {
+void ROOTNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry) {
   auto [key, value] = getKeyValueVectors<T>();
   entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &key);
   entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &value);
@@ -56,7 +55,6 @@ void ROOTNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental:
     key.emplace_back(kk);
     value.emplace_back(vv);
   }
-
 }
 
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -171,15 +169,27 @@ ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) 
   // so we have to split them manually
   // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
 
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intKeyName, "std::vector<std::string>>").Unwrap());
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatKeyName, "std::vector<std::string>>").Unwrap());
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleKeyName, "std::vector<std::string>>").Unwrap());
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(
+      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(
+      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(
+      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(
+      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringKeyName, "std::vector<std::string>>").Unwrap());
 
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intValueName, "std::vector<std::vector<int>>").Unwrap());
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatValueName, "std::vector<std::vector<float>>").Unwrap());
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleValueName, "std::vector<std::vector<double>>").Unwrap());
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringValueName, "std::vector<std::vector<std::string>>").Unwrap());
+  model->AddField(
+      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intValueName, "std::vector<std::vector<int>>")
+          .Unwrap());
+  model->AddField(
+      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatValueName, "std::vector<std::vector<float>>")
+          .Unwrap());
+  model->AddField(
+      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleValueName, "std::vector<std::vector<double>>")
+          .Unwrap());
+  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringValueName,
+                                                                 "std::vector<std::vector<std::string>>")
+                      .Unwrap());
 
   model->Freeze();
   return model;

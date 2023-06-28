@@ -138,8 +138,9 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
 
     // const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
     const auto bufferClassName = collection->getTypeName();
-    const auto bufferClass =
-      m_collectionInfo[category].isSubsetCollection[i] ? nullptr : TClass::GetClass(std::string(bufferClassName).c_str());
+    const auto bufferClass = m_collectionInfo[category].isSubsetCollection[i]
+        ? nullptr
+        : TClass::GetClass(std::string(bufferClassName).c_str());
 
     const bool isSubsetColl = bufferClass == nullptr;
 

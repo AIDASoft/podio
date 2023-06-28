@@ -26,7 +26,7 @@ public:
   ROOTNTupleWriter& operator=(const ROOTNTupleWriter&) = delete;
 
   template <typename T>
-  void fillParams(GenericParameters& params, ROOT::Experimental::REntry *entry);
+  void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
 
   void writeFrame(const podio::Frame& frame, const std::string& category);
   void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
@@ -66,9 +66,7 @@ private:
   std::vector<std::vector<std::string>> m_stringvalues{};
 
   template <typename T>
-  std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&>
-  getKeyValueVectors();
-
+  std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> getKeyValueVectors();
 };
 
 } // namespace podio
