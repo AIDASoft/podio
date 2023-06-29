@@ -57,7 +57,7 @@ class MemberParser:
       if result:
         return callback(result)
 
-    raise DefinitionError(f"'{string}' is not a valid member definition")
+    raise DefinitionError(f"'{string}' is not a valid member definition. Check syntax of the member definition.")
 
   @staticmethod
   def _full_array_conv(result):
@@ -84,19 +84,24 @@ class MemberParser:
     return MemberVariable(name=name, type=klass, default_val=def_val)
 
   def parse(self, string, require_description=True):
-    """Parse the passed string"""
-    matchers_cbs = [
-        (self.full_array_re, self._full_array_conv),
-        (self.member_re, self._full_member_conv)
+    default_matchers_cbs = [
+            (self.full_array_re, self._full_array_conv),
+            (self.member_re, self._full_member_conv)
         ]
 
-    if not require_description:
-      matchers_cbs.extend((
-          (self.bare_array_re, self._bare_array_conv),
-          (self.bare_member_re, self._bare_member_conv)
-          ))
+    no_desc_matchers_cbs = [
+                    (self.bare_array_re, self._bare_array_conv),
+                    (self.bare_member_re, self._bare_member_conv)
+      ]
 
-    return self._parse_with_regexps(string, matchers_cbs)
+    if require_description:
+      try:
+        return self._parse_with_regexps(string, default_matchers_cbs)
+      except DefinitionError:
+        self._parse_with_regexps(string, no_desc_matchers_cbs)
+        raise DefinitionError(f"'{string}' is not a valid member definition. Description (Comment after member definition) is missing. Correct Syntax: <type> <name> // <comment>")  #require_description is set to True but member definition is missing description
+
+    return self._parse_with_regexps(string, default_matchers_cbs + no_desc_matchers_cbs)
 
 
 class ClassDefinitionValidator:
