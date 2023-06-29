@@ -84,6 +84,7 @@ class MemberParser:
     return MemberVariable(name=name, type=klass, default_val=def_val)
 
   def parse(self, string, require_description=True):
+    """Parse the passed string"""
     default_matchers_cbs = [
             (self.full_array_re, self._full_array_conv),
             (self.member_re, self._full_member_conv)
