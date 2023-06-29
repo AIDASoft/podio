@@ -86,21 +86,22 @@ class MemberParser:
   def parse(self, string, require_description=True):
     """Parse the passed string"""
     default_matchers_cbs = [
-            (self.full_array_re, self._full_array_conv),
-            (self.member_re, self._full_member_conv)
-        ]
+        (self.full_array_re, self._full_array_conv),
+        (self.member_re, self._full_member_conv)]
 
     no_desc_matchers_cbs = [
-                    (self.bare_array_re, self._bare_array_conv),
-                    (self.bare_member_re, self._bare_member_conv)
-      ]
+        (self.bare_array_re, self._bare_array_conv),
+        (self.bare_member_re, self._bare_member_conv)]
 
     if require_description:
       try:
         return self._parse_with_regexps(string, default_matchers_cbs)
       except DefinitionError:
+        """check whether we could parse this if we don't require a description and
+        provide more details in the error if we can"""
         self._parse_with_regexps(string, no_desc_matchers_cbs)
-        raise DefinitionError(f"'{string}' is not a valid member definition. Description (Comment after member definition) is missing. Correct Syntax: <type> <name> // <comment>")  #require_description is set to True but member definition is missing description
+        raise DefinitionError(f"""'{string}' is not a valid member definition. Description comment is missing.
+Correct Syntax: <type> <name> // <comment>""")
 
     return self._parse_with_regexps(string, default_matchers_cbs + no_desc_matchers_cbs)
 
