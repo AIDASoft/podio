@@ -102,7 +102,7 @@ class MemberParser:
         self._parse_with_regexps(string, no_desc_matchers_cbs)
         # pylint: disable-next=raise-missing-from
         raise DefinitionError(f"'{string}' is not a valid member definition. Description comment is missing.\n"
-                               + "Correct Syntax: <type> <name> // <comment>")
+                              "Correct Syntax: <type> <name> // <comment>")
 
     return self._parse_with_regexps(string, default_matchers_cbs + no_desc_matchers_cbs)
 
