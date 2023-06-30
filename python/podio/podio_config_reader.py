@@ -97,11 +97,12 @@ class MemberParser:
       try:
         return self._parse_with_regexps(string, default_matchers_cbs)
       except DefinitionError:
-        """check whether we could parse this if we don't require a description and
-        provide more details in the error if we can"""
+        # check whether we could parse this if we don't require a description and
+        # provide more details in the error if we can
         self._parse_with_regexps(string, no_desc_matchers_cbs)
-        raise DefinitionError(f"""'{string}' is not a valid member definition. Description comment is missing.
-Correct Syntax: <type> <name> // <comment>""")
+        # pylint: disable-next=raise-missing-from
+        raise DefinitionError(f"'{string}' is not a valid member definition. Description comment is missing.\n"
+                               + "Correct Syntax: <type> <name> // <comment>")
 
     return self._parse_with_regexps(string, default_matchers_cbs + no_desc_matchers_cbs)
 
