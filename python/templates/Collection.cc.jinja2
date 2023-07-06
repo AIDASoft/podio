@@ -165,51 +165,7 @@ podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
   return {{ package_name }}::meta::schemaVersion;
 }
 
-// anonymous namespace for registration with the CollectionBufferFactory. This
-// ensures that we don't have to make up arbitrary namespace names here, since
-// none of this is publicly visible
-namespace {
-podio::CollectionReadBuffers createBuffers(bool isSubset) {
-  auto readBuffers = podio::CollectionReadBuffers{};
-  readBuffers.type = "{{ class.full_type }}Collection";
-  readBuffers.schemaVersion = {{ package_name }}::meta::schemaVersion;
-  readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer;
-
-  // The number of ObjectID vectors is either 1 or the sum of OneToMany and
-  // OneToOne relations
-  const auto nRefs = isSubset ? 1 : {{ OneToManyRelations | length }} + {{ OneToOneRelations | length }};
-  readBuffers.references = new podio::CollRefCollection(nRefs);
-  for (auto& ref : *readBuffers.references) {
-    // Make sure to place usable buffer pointers here
-    ref = std::make_unique<std::vector<podio::ObjectID>>();
-  }
-
-  readBuffers.vectorMembers = new podio::VectorMembersInfo();
-  if (!isSubset) {
-    readBuffers.vectorMembers->reserve({{ VectorMembers | length }});
-{% for member in VectorMembers %}
-    readBuffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>);
-{% endfor %}
-  }
-
-  readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
-    {{ collection_type }}Data data(buffers, isSubsetColl);
-    return std::make_unique<{{ collection_type }}>(std::move(data), isSubsetColl);
-  };
-
-  readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
-    if (buffers.data) {
-      buffers.data = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}Data>(buffers.data);
-    }
-{% if VectorMembers %}
-{% for member in VectorMembers %}
-    (*buffers.vectorMembers)[{{ loop.index0 }}].second = podio::CollectionWriteBuffers::asVector<{{ member.full_type }}>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
-{% endfor %}
-{% endif %}
-  };
-
-  return readBuffers;
-}
+ {{ macros.createBuffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, 1) }}
 
 // The usual trick with an IIFE and a static variable inside a funtion and then
 // making sure to call that function during shared library loading
