@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionIDTable.h"
+#include "podio/FrameCategories.h" // mainly for convenience
 #include "podio/GenericParameters.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/SchemaEvolution.h"

@@ -424,7 +424,7 @@ void write_frames(const std::string& filename) {
 
   for (int i = 0; i < 10; ++i) {
     auto frame = makeFrame(i);
-    writer.writeFrame(frame, "events", collsToWrite);
+    writer.writeFrame(frame, podio::Category::Event, collsToWrite);
   }
 
   for (int i = 100; i < 110; ++i) {
