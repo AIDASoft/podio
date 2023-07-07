@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Podio class generator script"""
 
+import copy
 import os
 import sys
 import subprocess
@@ -16,6 +17,7 @@ import jinja2
 from podio.podio_config_reader import PodioConfigReader
 from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
+from podio_schema_evolution import RenamedMember, root_filter
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
@@ -89,9 +91,14 @@ class ClassGenerator:
     # schema evolution specific code
     self.old_yamlfile = old_description
     self.evolution_file = evolution_file
+    self.old_schema_version = None
     self.old_datamodel = None
     self.old_datamodels_components = set()
     self.old_datamodels_datatypes = set()
+    self.root_schema_evolution_dict = {}  # containing the root relevant schema evolution per datatype
+    # information to update the selection.xml
+    self.root_schema_evolution_component_names = set()
+    self.root_schema_evolution_datatype_names = set()
 
     try:
       self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
@@ -115,9 +122,10 @@ class ClassGenerator:
 
   def process(self):
     """Run the actual generation"""
+    self.preprocess_schema_evolution()
+
     for name, component in self.datamodel.components.items():
       self._process_component(name, component)
-
     for name, datatype in self.datamodel.datatypes.items():
       self._process_datatype(name, datatype)
 
@@ -127,11 +135,10 @@ class ClassGenerator:
       self._create_selection_xml()
 
     self._write_cmake_lists_file()
-    self.process_schema_evolution()
 
     self.print_report()
 
-  def process_schema_evolution(self):
+  def preprocess_schema_evolution(self):
     """Process the schema evolution"""
     # have to make all necessary comparisons
     # which are the ones that changed?
@@ -141,7 +148,7 @@ class ClassGenerator:
                                        evolution_file=self.evolution_file)
       comparator.read()
       comparator.compare()
-
+      self.old_schema_version = "v%i" % comparator.datamodel_old.schema_version
       # some sanity checks
       if len(comparator.errors) > 0:
         print(f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
@@ -155,6 +162,17 @@ have resolvable schema evolution incompatibilities:")
         for warning in comparator.warnings:
           print(warning)
         sys.exit(-1)
+
+      # now go through all the io_handlers and see what we have to do
+      if 'ROOT' in self.io_handlers:
+          for item in root_filter(comparator.schema_changes):
+            schema_evolutions = self.root_schema_evolution_dict.get(item.klassname)
+            if (schema_evolutions is None):
+                schema_evolutions = []
+                self.root_schema_evolution_dict[item.klassname] = schema_evolutions
+
+            # add whatever is relevant to our ROOT schema evolutions
+            self.root_schema_evolution_dict[item.klassname].append(item)
 
   def print_report(self):
     """Print a summary report about the generated code"""
@@ -248,12 +266,69 @@ have resolvable schema evolution incompatibilities:")
 
     component['includes'] = self._sort_includes(includes)
     component['class'] = DataType(name)
-
     self._fill_templates('Component', component)
+
+    # Add potentially older schema for schema evolution
+    # based on ROOT capabilities for now
+    if name in self.root_schema_evolution_dict.keys():
+      schema_evolutions = self.root_schema_evolution_dict[name]
+      component = copy.deepcopy(component)
+      for schema_evolution in schema_evolutions:
+        if isinstance(schema_evolution, RenamedMember):
+          for member in component['Members']:
+            if member.name == schema_evolution.member_name_new:
+              member.name = schema_evolution.member_name_old
+          component['class'] = DataType(name + self.old_schema_version)
+        else:
+          raise NotImplementedError
+      self._fill_templates('Component', component)
+      self.root_schema_evolution_component_names.add(name + self.old_schema_version)
+
+  def _replaceComponentInPaths(self, oldname, newname, paths):
+    # strip the namespace
+    shortoldname = oldname.split("::")[-1]
+    shortnewname = newname.split("::")[-1]
+    # and do the replace in place
+    for index, thePath in enumerate(paths):
+      if shortoldname in thePath:
+        newPath = thePath.replace(shortoldname, shortnewname)
+        paths[index] = newPath
 
   def _process_datatype(self, name, definition):
     """Process one datatype"""
     datatype = self._preprocess_datatype(name, definition)
+
+    # ROOT schema evolution preparation
+    # Compute and prepare the potential schema evolution parts
+    schema_evolution_datatype = copy.deepcopy(datatype)
+    needs_schema_evolution = False
+    # check whether it has a renamed member
+    # if name in self.root_schema_evolution_dict.keys():
+    # for member in schema_evolution_datatype['Members']:
+    # if
+    # then check for components with a renamed member
+    for member in schema_evolution_datatype['Members']:
+      if member.is_array:
+        if member.array_type in self.root_schema_evolution_dict.keys():
+          needs_schema_evolution = True
+          self._replaceComponentInPaths(member.array_type, member.array_type + self.old_schema_version,
+                                        schema_evolution_datatype['includes_data'])
+          member.full_type = member.full_type.replace(member.array_type, member.array_type + self.old_schema_version)
+          member.array_type = member.array_type + self.old_schema_version
+
+      else:
+        if member.full_type in self.root_schema_evolution_dict.keys():
+          needs_schema_evolution = True
+          self._replaceComponentInPaths(member.full_type, member.full_type + self.old_schema_version,
+                                        schema_evolution_datatype['includes'])
+          member.full_type = member.full_type + self.old_schema_version
+
+    if needs_schema_evolution:
+      print("  Preparing explicit schema evolution for %s" % (name))
+      schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version # noqa
+      self._fill_templates('Data', schema_evolution_datatype)
+      self.root_schema_evolution_datatype_names.add(name + self.old_schema_version)
+
     self._fill_templates('Data', datatype)
     self._fill_templates('Object', datatype)
     self._fill_templates('MutableObject', datatype)
@@ -487,7 +562,7 @@ have resolvable schema evolution incompatibilities:")
     data = {'components': [DataType(c) for c in self.datamodel.components],
             'datatypes': [DataType(d) for d in self.datamodel.datatypes],
             'old_schema_components': [DataType(d) for d in
-                                      self.old_datamodels_datatypes | self.old_datamodels_components]}
+                                      self.root_schema_evolution_datatype_names | self.root_schema_evolution_component_names]} # noqa
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, member):
