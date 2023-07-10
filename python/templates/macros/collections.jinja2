@@ -155,16 +155,19 @@ void {{ class.bare_type }}Collection::print(std::ostream& os, bool flush) const 
 
 {% macro createBuffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, schemaVersion) %}
 
-// anonymous namespace for registration with the CollectionBufferFactory. This
-// ensures that we don't have to make up arbitrary namespace names here, since
-// none of this is publicly visible
-namespace {
+{% if schemaVersion == -1 %}
 podio::CollectionReadBuffers createBuffers(bool isSubset) {
+{% else %}
+podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
+{% endif %}
   auto readBuffers = podio::CollectionReadBuffers{};
   readBuffers.type = "{{ class.full_type }}Collection";
+{% if schemaVersion == -1 %}
   readBuffers.schemaVersion = {{ package_name }}::meta::schemaVersion;
-  readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer;
-
+{% else %}
+  readBuffers.schemaVersion = {{ schemaVersion }};
+{% endif %}
+  readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer; //TODO: replace this part for schema evolution
   // The number of ObjectID vectors is either 1 or the sum of OneToMany and
   // OneToOne relations
   const auto nRefs = isSubset ? 1 : {{ OneToManyRelations | length }} + {{ OneToOneRelations | length }};
