@@ -1,6 +1,7 @@
 #include "podio/ROOTNTupleWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/GenericParameters.h"
+#include "podio/DatamodelRegistry.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "rootUtils.h"
@@ -89,21 +90,31 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
       entry->CaptureValueUnsafe(name, (void*)collBuffers.vecPtr);
     }
 
-    if (auto refColls = collBuffers.references) {
-      int i = 0;
-      for (auto& c : (*refColls)) {
-        const auto brName = root_utils::refBranch(name, i++);
-        entry->CaptureValueUnsafe(brName, c.get());
-      }
-    }
+    if (coll->isSubsetCollection()) {
+      auto& refColl = (*collBuffers.references)[0];
+      const auto brName = root_utils::subsetBranch(name);
+      entry->CaptureValueUnsafe(brName, refColl.get());
+    } else {
 
-    if (auto vmInfo = collBuffers.vectorMembers) {
-      int i = 0;
-      for (auto& [type, vec] : (*vmInfo)) {
-        const auto typeName = "vector<" + type + ">";
-        const auto brName = root_utils::vecBranch(name, i++);
-        auto ptr = *(std::vector<int>**)vec;
-        entry->CaptureValueUnsafe(brName, ptr);
+      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
+      if (auto refColls = collBuffers.references) {
+        int i = 0;
+        for (auto& c : (*refColls)) {
+          const auto brName = root_utils::refBranch(name, relVecNames.relations[i]);
+          entry->CaptureValueUnsafe(brName, c.get());
+          ++i;
+        }
+      }
+
+      if (auto vmInfo = collBuffers.vectorMembers) {
+        int i = 0;
+        for (auto& [type, vec] : (*vmInfo)) {
+          const auto typeName = "vector<" + type + ">";
+          const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
+          auto ptr = *(std::vector<int>**)vec;
+          entry->CaptureValueUnsafe(brName, ptr);
+          ++i;
+        }
       }
     }
 
@@ -136,31 +147,41 @@ ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) 
   for (auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
 
+
     if (collBuffers.vecPtr) {
       auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
       auto field = ROOT::Experimental::Detail::RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
 
-    if (auto refColls = collBuffers.references) {
-      int i = 0;
-      for (auto& c [[maybe_unused]] : (*refColls)) {
-        const auto brName = root_utils::refBranch(name, i);
-        auto collClassName = "vector<podio::ObjectID>";
-        auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
-        model->AddField(std::move(field));
-        ++i;
-      }
-    }
+    if (coll->isSubsetCollection()) {
+      const auto brName = root_utils::subsetBranch(name);
+      auto collClassName = "vector<podio::ObjectID>";
+      auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
+      model->AddField(std::move(field));
+    } else {
 
-    if (auto vminfo = collBuffers.vectorMembers) {
-      int i = 0;
-      for (auto& [type, vec] : (*vminfo)) {
-        const auto typeName = "vector<" + type + ">";
-        const auto brName = root_utils::vecBranch(name, i);
-        auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, typeName).Unwrap();
-        model->AddField(std::move(field));
-        ++i;
+      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
+      if (auto refColls = collBuffers.references) {
+        int i = 0;
+        for (auto& c [[maybe_unused]] : (*refColls)) {
+          const auto brName = root_utils::refBranch(name, relVecNames.relations[i]);
+          auto collClassName = "vector<podio::ObjectID>";
+          auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
+          model->AddField(std::move(field));
+          ++i;
+        }
+      }
+
+      if (auto vminfo = collBuffers.vectorMembers) {
+        int i = 0;
+        for (auto& [type, vec] : (*vminfo)) {
+          const auto typeName = "vector<" + type + ">";
+          const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
+          auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, typeName).Unwrap();
+          model->AddField(std::move(field));
+          ++i;
+        }
       }
     }
   }

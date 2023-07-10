@@ -3,6 +3,7 @@
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
+#include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
 #include "rootUtils.h"
 
@@ -136,7 +137,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     auto collection =
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
 
-    // const std::string bufferClassName = "std::vector<" + collection->getDataTypeName() + ">";
     const auto bufferClassName = collection->getTypeName();
     const auto bufferClass = m_collectionInfo[category].isSubsetCollection[i]
         ? nullptr
@@ -156,23 +156,27 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
       return nullptr;
     }
 
-    if (!isSubsetColl) {
+    if (isSubsetColl) {
+      auto brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
+      auto vec = new std::vector<podio::ObjectID>;
+      dentry->CaptureValueUnsafe(brName, vec);
+      tmp[{brName, 0}] = vec;
+    } else  {
       dentry->CaptureValueUnsafe(m_collectionInfo[category].name[i], collBuffers.data);
-    }
-    if (auto* refCollections = collBuffers.references) {
-      for (size_t j = 0; j < refCollections->size(); ++j) {
+
+      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collection->getTypeName());
+      for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
+        const auto relName = relVecNames.relations[j];
         auto vec = new std::vector<podio::ObjectID>;
-        const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], j);
+        const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], relName);
         dentry->CaptureValueUnsafe(brName, vec);
         tmp[{brName, j}] = vec;
       }
-    }
 
-    if (auto* vecMembers = collBuffers.vectorMembers) {
-      for (size_t j = 0; j < vecMembers->size(); ++j) {
-        const auto typeName = "vector<" + vecMembers->at(j).first + ">";
-        const auto brName = root_utils::vecBranch(m_collectionInfo[category].name[i], j);
-        dentry->CaptureValueUnsafe(brName, vecMembers->at(j).second);
+      for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
+        const auto vecName = relVecNames.vectorMembers[j]; 
+        const auto brName = root_utils::vecBranch(m_collectionInfo[category].name[i], vecName);
+        dentry->CaptureValueUnsafe(brName, collBuffers.vectorMembers->at(j).second);
       }
     }
 
@@ -182,11 +186,29 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   m_readers[category][0]->LoadEntry(entNum);
 
   for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
+    const auto collectionClass = TClass::GetClass(m_collectionInfo[category].type[i].c_str());
+    auto collection =
+        std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
+    const auto bufferClassName = collection->getTypeName();
+    const auto bufferClass = m_collectionInfo[category].isSubsetCollection[i]
+        ? nullptr
+        : TClass::GetClass(std::string(bufferClassName).c_str());
     auto collBuffers = buffers[m_collectionInfo[category].name[i]];
+    const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collection->getTypeName());
     if (auto* refCollections = collBuffers.references) {
-      for (size_t j = 0; j < refCollections->size(); ++j) {
-        const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], j);
+      size_t maxj = refCollections->size();
+      if (bufferClass == nullptr) {
+        maxj = 1;
+      }
+      for (size_t j = 0; j < maxj; ++j) {
+        if (bufferClass != nullptr) {
+        auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], relVecNames.relations[j]);
         refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
+        }
+        if (bufferClass == nullptr) {
+          auto brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
+          refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
+        }
       }
     }
   }
