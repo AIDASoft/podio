@@ -149,6 +149,7 @@ class ClassGenerator:
       comparator.read()
       comparator.compare()
       self.old_schema_version = "v%i" % comparator.datamodel_old.schema_version
+      self.old_schema_version_int = comparator.datamodel_old.schema_version
       # some sanity checks
       if len(comparator.errors) > 0:
         print(f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
@@ -188,8 +189,15 @@ have resolvable schema evolution incompatibilities:")
       print(summaryline)
     print()
 
-  def _eval_template(self, template, data):
+  def _eval_template(self, template, data, old_schema_data=None):
     """Fill the specified template"""
+    # merge the info of data and the old schema into a single dict
+    if old_schema_data:
+      data['OneToOneRelations_old'] = old_schema_data['OneToOneRelations']
+      data['OneToManyRelations_old'] = old_schema_data['OneToManyRelations']
+      data['VectorMembers_old'] = old_schema_data['VectorMembers']
+      data['old_schema_version'] = self.old_schema_version_int
+
     return self.env.get_template(template).render(data)
 
   def _write_file(self, name, content):
@@ -239,7 +247,7 @@ have resolvable schema evolution incompatibilities:")
 
     return fn_templates
 
-  def _fill_templates(self, template_base, data):
+  def _fill_templates(self, template_base, data, old_schema_data=None):
     """Fill the template and write the results to file"""
     # Update the passed data with some global things that are the same for all
     # files
@@ -248,7 +256,7 @@ have resolvable schema evolution incompatibilities:")
     data['incfolder'] = self.incfolder
 
     for filename, template in self._get_filenames_templates(template_base, data['class'].bare_type):
-      self._write_file(filename, self._eval_template(template, data))
+      self._write_file(filename, self._eval_template(template, data, old_schema_data))
 
   def _process_component(self, name, component):
     """Process one component"""
@@ -325,9 +333,12 @@ have resolvable schema evolution incompatibilities:")
 
     if needs_schema_evolution:
       print("  Preparing explicit schema evolution for %s" % (name))
-      schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version # noqa
+      schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version  # noqa
       self._fill_templates('Data', schema_evolution_datatype)
       self.root_schema_evolution_datatype_names.add(name + self.old_schema_version)
+      self._fill_templates('Collection', datatype, schema_evolution_datatype)
+    else:
+      self._fill_templates('Collection', datatype)
 
     self._fill_templates('Data', datatype)
     self._fill_templates('Object', datatype)
@@ -562,7 +573,7 @@ have resolvable schema evolution incompatibilities:")
     data = {'components': [DataType(c) for c in self.datamodel.components],
             'datatypes': [DataType(d) for d in self.datamodel.datatypes],
             'old_schema_components': [DataType(d) for d in
-                                      self.root_schema_evolution_datatype_names | self.root_schema_evolution_component_names]} # noqa
+                                      self.root_schema_evolution_datatype_names | self.root_schema_evolution_component_names]}  # noqa
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, member):

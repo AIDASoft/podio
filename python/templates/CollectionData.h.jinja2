@@ -11,6 +11,11 @@
 {{ include }}
 {% endfor %}
 
+// schema evolution specific includes
+{% if schema_evolution_data is defined %}
+#include "{{ incfolder  }}{{ schema_evolution_data }}Data"
+{% endif %}
+
 // podio specific includes
 #include "podio/CollectionBuffers.h"
 #include "podio/ICollectionProvider.h"
