@@ -27,6 +27,7 @@ using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
  */
 struct CollectionWriteBuffers {
   void* data{nullptr};
+  void* vecPtr{nullptr};
   CollRefCollection* references{nullptr};
   VectorMembersInfo* vectorMembers{nullptr};
 

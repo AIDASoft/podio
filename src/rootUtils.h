@@ -33,6 +33,75 @@ constexpr static auto metaTreeName = "podio_metadata";
 constexpr static auto paramBranchName = "PARAMETERS";
 
 /**
+ * Names of the fields with the keys and values of the generic parameters for
+ * the RNTuples until map types are supported
+ */
+constexpr static auto intKeyName = "GPIntKeys";
+constexpr static auto floatKeyName = "GPFloatKeys";
+constexpr static auto doubleKeyName = "GPDoubleKeys";
+constexpr static auto stringKeyName = "GPStringKeys";
+
+constexpr static auto intValueName = "GPIntValues";
+constexpr static auto floatValueName = "GPFloatValues";
+constexpr static auto doubleValueName = "GPDoubleValues";
+constexpr static auto stringValueName = "GPStringValues";
+
+/**
+ * Get the name of the key depending on the type
+ */
+template <typename T>
+constexpr auto getGPKeyName() {
+  if constexpr (std::is_same<T, int>::value) {
+    return intKeyName;
+  } else if constexpr (std::is_same<T, float>::value) {
+    return floatKeyName;
+  } else if constexpr (std::is_same<T, double>::value) {
+    return doubleKeyName;
+  } else if constexpr (std::is_same<T, std::string>::value) {
+    return stringKeyName;
+  } else {
+    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
+  }
+}
+
+/**
+ * Get the name of the value depending on the type
+ */
+template <typename T>
+constexpr auto getGPValueName() {
+  if constexpr (std::is_same<T, int>::value) {
+    return intValueName;
+  } else if constexpr (std::is_same<T, float>::value) {
+    return floatValueName;
+  } else if constexpr (std::is_same<T, double>::value) {
+    return doubleValueName;
+  } else if constexpr (std::is_same<T, std::string>::value) {
+    return stringValueName;
+  } else {
+    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
+  }
+}
+
+/**
+ * Name of the field with the list of categories for RNTuples
+ */
+constexpr static auto availableCategories = "availableCategories";
+
+/**
+ * Name of the field with the names of the collections for RNTuples
+ */
+inline std::string collectionName(const std::string& category) {
+  return category + "_collectionNames";
+}
+
+/**
+ * Name of the field with the flag for subset collections for RNTuples
+ */
+inline std::string subsetCollection(const std::string& category) {
+  return category + "_isSubsetCollections";
+}
+
+/**
  * The name of the branch into which we store the build version of podio at the
  * time of writing the file
  */

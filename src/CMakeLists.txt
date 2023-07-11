@@ -34,6 +34,9 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
   target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
+  if(ENABLE_RNTUPLE)
+    target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
+  endif()
   PODIO_GENERATE_DICTIONARY(${dictname} ${headers} SELECTION ${selection}
     OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dictname}${CMAKE_SHARED_LIBRARY_SUFFIX}
     )
@@ -83,15 +86,30 @@ SET(root_sources
   ROOTFrameReader.cc
   ROOTLegacyReader.cc
 )
+if(ENABLE_RNTUPLE)
+  list(APPEND root_sources
+      ROOTNTupleReader.cc
+      ROOTNTupleWriter.cc
+     )
+endif()
 
 SET(root_headers
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameReader.h
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
+if(ENABLE_RNTUPLE)
+  list(APPEND root_headers
+      ${CMAKE_SOURCE_DIR}/include/podio/ROOTNTupleReader.h
+      ${CMAKE_SOURCE_DIR}/include/podio/ROOTNTupleWriter.h
+     )
+endif()
 
 PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" root_selection.xml)
 target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree)
+if(ENABLE_RNTUPLE)
+  target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
+endif()
 
 
 # --- Python EventStore for enabling (legacy) python bindings

@@ -92,6 +92,7 @@ podio::CollectionWriteBuffers {{ class_type }}::getCollectionBuffers(bool isSubs
 
   return {
     isSubsetColl ? nullptr : (void*)&m_data,
+    isSubsetColl ? nullptr : (void*)m_data.get(),
     &m_refCollections, // only need to store the ObjectIDs of the referenced objects
     &m_vecmem_info
   };

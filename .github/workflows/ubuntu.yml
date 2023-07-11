@@ -30,9 +30,10 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
-            -DUSE_EXTERNAL_CATCH2=OFF \
-            -DPODIO_SET_RPATH=ON \
-            -G Ninja ..
+                 -DUSE_EXTERNAL_CATCH2=OFF \
+                 -DPODIO_SET_RPATH=ON \
+                 -DENABLE_RNTUPLE=ON \
+                 -G Ninja ..
           echo "::endgroup::"
           echo "::group::Build"
           ninja -k0
