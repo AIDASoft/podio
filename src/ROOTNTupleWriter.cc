@@ -1,7 +1,7 @@
 #include "podio/ROOTNTupleWriter.h"
 #include "podio/CollectionBase.h"
-#include "podio/GenericParameters.h"
 #include "podio/DatamodelRegistry.h"
+#include "podio/GenericParameters.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "rootUtils.h"
@@ -146,7 +146,6 @@ ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) 
   auto model = ROOT::Experimental::RNTupleModel::CreateBare();
   for (auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
-
 
     if (collBuffers.vecPtr) {
       auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
