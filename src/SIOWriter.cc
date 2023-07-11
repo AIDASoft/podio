@@ -34,6 +34,12 @@ SIOWriter::SIOWriter(const std::string& filename, EventStore* store) :
   auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
 }
 
+SIOWriter::~SIOWriter() {
+  if (!m_finished) {
+    finish();
+  }
+}
+
 void SIOWriter::writeEvent() {
   if (m_firstEvent) {
     // Write the collectionIDs as a separate record at the beginning of the
@@ -86,6 +92,8 @@ void SIOWriter::finish() {
   m_stream.write(reinterpret_cast<char*>(&finalWords), sizeof(finalWords));
 
   m_stream.close();
+
+  m_finished = true;
 }
 
 void SIOWriter::registerForWrite(const std::string& name) {

@@ -20,7 +20,7 @@ class DEPR_EVTSTORE SIOWriter {
 
 public:
   SIOWriter(const std::string& filename, EventStore* store);
-  ~SIOWriter() = default;
+  ~SIOWriter();
 
   // non-copyable
   SIOWriter(const SIOWriter&) = delete;
@@ -46,6 +46,8 @@ private:
   std::shared_ptr<SIONumberedMetaDataBlock> m_collectionMetaData;
   SIOFileTOCRecord m_tocRecord{};
   std::vector<std::string> m_collectionsToWrite{};
+
+  bool m_finished{false};
 };
 
 } // namespace podio
