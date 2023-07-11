@@ -330,8 +330,9 @@ have resolvable schema evolution incompatibilities:")
         if member.full_type in self.root_schema_evolution_dict.keys():
           needs_schema_evolution = True
           self._replaceComponentInPaths(member.full_type, member.full_type + self.old_schema_version,
-                                        schema_evolution_datatype['includes'])
+                                        schema_evolution_datatype['includes_data'])
           member.full_type = member.full_type + self.old_schema_version
+          member.bare_type = member.bare_type + self.old_schema_version
 
     if needs_schema_evolution:
       print("  Preparing explicit schema evolution for %s" % (name))
