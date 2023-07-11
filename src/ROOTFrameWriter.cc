@@ -15,6 +15,12 @@ ROOTFrameWriter::ROOTFrameWriter(const std::string& filename) {
   m_file = std::make_unique<TFile>(filename.c_str(), "recreate");
 }
 
+ROOTFrameWriter::~ROOTFrameWriter() {
+  if (!m_finished) {
+    finish();
+  }
+}
+
 void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
@@ -143,6 +149,8 @@ void ROOTFrameWriter::finish() {
 
   m_file->Write();
   m_file->Close();
+
+  m_finished = true;
 }
 
 } // namespace podio
