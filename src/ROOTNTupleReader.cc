@@ -137,16 +137,10 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     auto collection =
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
 
-    const auto bufferClassName = collection->getTypeName();
-    const auto bufferClass = m_collectionInfo[category].isSubsetCollection[i]
-        ? nullptr
-        : TClass::GetClass(std::string(bufferClassName).c_str());
-
-    const bool isSubsetColl = bufferClass == nullptr;
-
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
     auto maybeBuffers = bufferFactory.createBuffers(m_collectionInfo[category].type[i],
-                                                    m_collectionInfo[category].schemaVersion[i], isSubsetColl);
+                                                    m_collectionInfo[category].schemaVersion[i],
+                                                    m_collectionInfo[category].isSubsetCollection[i]);
     auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
     if (!maybeBuffers) {
@@ -156,7 +150,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
       return nullptr;
     }
 
-    if (isSubsetColl) {
+    if (m_collectionInfo[category].isSubsetCollection[i]) {
       auto brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
       auto vec = new std::vector<podio::ObjectID>;
       dentry->CaptureValueUnsafe(brName, vec);
@@ -189,26 +183,27 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
     const auto collectionClass = TClass::GetClass(m_collectionInfo[category].type[i].c_str());
     auto collection =
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
-    const auto bufferClassName = collection->getTypeName();
-    const auto bufferClass = m_collectionInfo[category].isSubsetCollection[i]
-        ? nullptr
-        : TClass::GetClass(std::string(bufferClassName).c_str());
+
     auto collBuffers = buffers[m_collectionInfo[category].name[i]];
     const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collection->getTypeName());
     if (auto* refCollections = collBuffers.references) {
-      size_t maxj = refCollections->size();
-      if (bufferClass == nullptr) {
+      size_t maxj;
+      // If it is a subset collection, only one reference collection is filled
+      if (m_collectionInfo[category].isSubsetCollection[i]) {
         maxj = 1;
       }
+      else {
+        maxj = refCollections->size();
+      }
       for (size_t j = 0; j < maxj; ++j) {
-        if (bufferClass != nullptr) {
-        auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], relVecNames.relations[j]);
+        std::string brName;
+        if (m_collectionInfo[category].isSubsetCollection[i]) {
+          brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
+        }
+        else {
+          brName = root_utils::refBranch(m_collectionInfo[category].name[i], relVecNames.relations[j]);
+        }
         refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
-        }
-        if (bufferClass == nullptr) {
-          auto brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
-          refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
-        }
       }
     }
   }
