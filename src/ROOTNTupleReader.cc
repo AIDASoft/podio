@@ -127,10 +127,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   ROOTFrameData::BufferMap buffers;
   auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
 
-  // This map is needed to keep the pointers to the vectors that
-  // will be written later alive
-  std::map<std::pair<std::string, int>, std::vector<podio::ObjectID>*> tmp;
-
   for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
     const auto collectionClass = TClass::GetClass(m_collectionInfo[category].type[i].c_str());
 
@@ -154,7 +150,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
       auto brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
       auto vec = new std::vector<podio::ObjectID>;
       dentry->CaptureValueUnsafe(brName, vec);
-      tmp[{brName, 0}] = vec;
+      collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
     } else {
       dentry->CaptureValueUnsafe(m_collectionInfo[category].name[i], collBuffers.data);
 
@@ -164,7 +160,7 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
         auto vec = new std::vector<podio::ObjectID>;
         const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], relName);
         dentry->CaptureValueUnsafe(brName, vec);
-        tmp[{brName, j}] = vec;
+        collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
       }
 
       for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
@@ -178,33 +174,6 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   }
 
   m_readers[category][0]->LoadEntry(entNum);
-
-  for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
-    const auto collectionClass = TClass::GetClass(m_collectionInfo[category].type[i].c_str());
-    auto collection =
-        std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
-
-    auto collBuffers = buffers[m_collectionInfo[category].name[i]];
-    const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collection->getTypeName());
-    if (auto* refCollections = collBuffers.references) {
-      size_t maxj;
-      // If it is a subset collection, only one reference collection is filled
-      if (m_collectionInfo[category].isSubsetCollection[i]) {
-        maxj = 1;
-      } else {
-        maxj = refCollections->size();
-      }
-      for (size_t j = 0; j < maxj; ++j) {
-        std::string brName;
-        if (m_collectionInfo[category].isSubsetCollection[i]) {
-          brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
-        } else {
-          brName = root_utils::refBranch(m_collectionInfo[category].name[i], relVecNames.relations[j]);
-        }
-        refCollections->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(tmp[{brName, j}]);
-      }
-    }
-  }
 
   auto parameters = readEventMetaData(category, entNum);
   if (!m_table) {
