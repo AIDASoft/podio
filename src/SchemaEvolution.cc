@@ -24,7 +24,7 @@ podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(const podio::Collect
     }
 
     const auto& typeEvolFuncs = m_evolutionFuncs[mapIndex];
-    if (fromVersion < typeEvolFuncs.size() - 1) {
+    if (fromVersion < typeEvolFuncs.size() ) {
       // Do we need this check? In principle we could ensure at registration
       // time that this is always guaranteed
       return typeEvolFuncs[fromVersion - 1](oldBuffers, fromVersion);
@@ -53,21 +53,22 @@ void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaV
     m_evolutionFuncs.emplace_back();
   }
 
-  // From here on out we don't need the mutabale any longer
+  // From here on out we don't need the mutable any longer
   const auto& [_, mapIndex] = typeIt->second;
 
   auto& versionMap = m_evolutionFuncs[mapIndex];
   const auto prevSize = versionMap.size();
-  if (prevSize < fromVersion) {
-    versionMap.resize(fromVersion);
-    versionMap[fromVersion - 1] = evolutionFunc;
-  } else {
-    if (priority == Priority::UserDefined) {
-      versionMap[fromVersion - 1] = evolutionFunc;
-    } else {
-      std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
-    }
+  if (prevSize < currentVersion) {
+    versionMap.resize(currentVersion);
   }
+  versionMap[fromVersion - 1] = evolutionFunc;
+  // TODO: temporarily switching off UserDefined logic
+  //if (priority == Priority::UserDefined) {
+  //    versionMap[fromVersion - 1] = evolutionFunc;
+  //} else {
+  //    std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
+  //  }
+  //}
 }
 
 podio::CollectionReadBuffers SchemaEvolution::noOpSchemaEvolution(podio::CollectionReadBuffers&& buffers,
