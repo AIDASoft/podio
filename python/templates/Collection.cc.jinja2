@@ -9,6 +9,10 @@
 #include "{{ incfolder }}{{ class.bare_type }}Collection.h"
 #include "{{ incfolder }}DatamodelDefinition.h"
 
+{% if old_schema_version is defined %}
+#include "{{ incfolder }}{{ class.bare_type }}v{{ old_schema_version }}Data.h"
+{% endif %}
+
 {% for include in includes_coll_cc %}
 {{ include }}
 {% endfor %}
@@ -197,7 +201,15 @@ bool registerCollection() {
     factory.registerCreationFunc("{{ class.full_type }}Collection", {{ old_schema_version }}, createBuffersV{{old_schema_version}});
 
     //Make the SchemaEvolution aware of any other non-trivial conversion
-    // TODO
+    podio::SchemaEvolution::mutInstance().registerEvolutionFunc(
+      "{{ class.full_type }}Collection",
+      {{ old_schema_version }},
+      {{ package_name }}::meta::schemaVersion,
+      podio::SchemaEvolution::noOpSchemaEvolution,
+      podio::SchemaEvolution::Priority::UserDefined // TODO: fix bug in registration
+    );
+
+
 {% endif %}
 
     return true;

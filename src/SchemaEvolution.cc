@@ -31,7 +31,7 @@ podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(const podio::Collect
     }
   }
 
-  std::cerr << "PODIO WARNING: evolveBuffers has no knowledge of how to evolve buffers for " << collType << std::endl;
+  std::cerr << "PODIO WARNING: evolveBuffers has no knowledge of how to evolve buffers for " << collType << " from version " << fromVersion << std::endl;
   // TODO: exception
   return oldBuffers;
 }

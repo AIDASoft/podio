@@ -164,10 +164,11 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
   readBuffers.type = "{{ class.full_type }}Collection";
 {% if schemaVersion == -1 %}
   readBuffers.schemaVersion = {{ package_name }}::meta::schemaVersion;
+  readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer;
 {% else %}
   readBuffers.schemaVersion = {{ schemaVersion }};
+  readBuffers.data = isSubset ? nullptr : new std::vector<{{ class.bare_type }}v{{ schemaVersion }}Data>;
 {% endif %}
-  readBuffers.data = isSubset ? nullptr : new {{ class.bare_type }}DataContainer; //TODO: replace this part for schema evolution
   // The number of ObjectID vectors is either 1 or the sum of OneToMany and
   // OneToOne relations
   const auto nRefs = isSubset ? 1 : {{ OneToManyRelations | length }} + {{ OneToOneRelations | length }};
