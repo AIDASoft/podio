@@ -58,6 +58,22 @@ def _get_cpp_vector_types(type_str):
   return [f'std::vector<{t}>' for t in map(lambda x: x[0], types)]
 
 
+def _is_collection_base(thing):
+  """Check whether the passed thing is a podio::CollectionBase
+
+  Args:
+      thing (any): any object
+
+  Returns:
+      bool: True if thing is a base of podio::CollectionBase, False otherwise
+  """
+  # Make sure to only instantiate the template with things that cppyy
+  # understands
+  if "cppyy" in repr(thing):
+    return cppyy.gbl.std.is_base_of[cppyy.gbl.podio.CollectionBase, type(thing)].value
+  return False
+
+
 class Frame:
   """Frame class that serves as a container of collection and meta data."""
 
@@ -65,6 +81,7 @@ class Frame:
   # distinguish between empty and non-existant collection create a nullptr here
   # with the correct type that we can compare against
   _coll_nullptr = cppyy.bind_object(cppyy.nullptr, 'podio::CollectionBase')
+
 
   def __init__(self, data=None):
     """Create a Frame.
@@ -78,17 +95,16 @@ class Frame:
     else:
       self._frame = podio.Frame()
 
-    self._collections = tuple(str(s) for s in self._frame.getAvailableCollections())
     self._param_key_types = self._init_param_keys()
 
   @property
   def collections(self):
-    """Get the available collection (names) from this Frame.
+    """Get the currently available collection (names) from this Frame.
 
     Returns:
         tuple(str): The names of the available collections from this Frame.
     """
-    return self._collections
+    return tuple(str(s) for s in self._frame.getAvailableCollections())
 
   def get(self, name):
     """Get a collection from the Frame by name.
@@ -107,9 +123,27 @@ class Frame:
       raise KeyError(f"Collection '{name}' is not available")
     return collection
 
+  def put(self, collection, name):
+    """Put the collection into the frame
+
+    Args:
+        collection (podio.CollectionBase): The collection to put into the Frame
+        name (str): The name of the collection
+
+    Returns:
+        podio.CollectionBase: The reference to the collection that has been put
+           into the Frame
+
+    Raises:
+        ValueError: If collection is not actually a podio.CollectionBase
+    """
+    if not _is_collection_base(collection):
+      raise ValueError("Can only put podio collections into a Frame")
+    return self._frame.put(cppyy.gbl.std.move(collection), name)
+
   @property
   def parameters(self):
-    """Get the available parameter names from this Frame.
+    """Get the currently available parameter names from this Frame.
 
     Returns:
         tuple (str): The names of the available parameters from this Frame.

@@ -7,6 +7,8 @@ from podio.frame import Frame
 # using root_io as that should always be present regardless of which backends are built
 from podio.root_io import Reader
 
+from test_utils import ExampleClusterCollection, ExampleHitCollection
+
 # The expected collections in each frame
 EXPECTED_COLL_NAMES = {
     'arrays', 'WithVectorMember', 'info', 'fixedWidthInts', 'mcparticles',
@@ -33,6 +35,23 @@ class FrameTest(unittest.TestCase):
 
     with self.assertRaises(KeyError):
       _ = frame.get_parameter('NonExistantParameter')
+
+    with self.assertRaises(ValueError):
+      _ = frame.put(list(), "invalid_collection_type")
+
+  def test_frame_put_collection(self):
+    frame = Frame()
+    self.assertEqual(frame.collections, tuple())
+
+    hits = ExampleHitCollection()
+    hits.create()
+    hits2 = frame.put(hits, "hits_from_python")
+    self.assertEqual(frame.collections, tuple(["hits_from_python"]))
+    # The original collection is gone at this point, and ideally just leaves an
+    # empty shell
+    self.assertEqual(len(hits), 0)
+    # On the other hand the return value of put has the original content
+    self.assertEqual(len(hits2), 1)
 
 
 class FrameReadTest(unittest.TestCase):

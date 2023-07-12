@@ -3,4 +3,8 @@
 
 import os
 
-SKIP_SIO_TESTS = os.environ.get('SKIP_SIO_TESTS', '1') == '1'
+SKIP_SIO_TESTS = os.environ.get("SKIP_SIO_TESTS", "1") == "1"
+
+import ROOT
+ROOT.gSystem.Load("libTestDataModelDict.so")
+from ROOT import ExampleHitCollection, ExampleClusterCollection
