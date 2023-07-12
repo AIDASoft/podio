@@ -11,6 +11,7 @@ set(root_dependent_tests
   write_frame_root.cpp
   read_frame_legacy_root.cpp
   read_frame_root_multiple.cpp
+  read_python_frame_root.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -72,5 +73,6 @@ endif()
 
 #--- Write via python and the ROOT backend and see if we can read it back in in
 #--- c++
-add_test(NAME write_frame_root_python COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/write_frame_root.py)
-PODIO_SET_TEST_ENV(write_frame_root_python)
+add_test(NAME write_python_frame_root COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/write_frame_root.py)
+PODIO_SET_TEST_ENV(write_python_frame_root)
+set_property(TEST read_python_frame_root PROPERTY DEPENDS write_python_frame_root)

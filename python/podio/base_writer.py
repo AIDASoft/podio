@@ -21,4 +21,4 @@ class BaseWriterMixin:
         collections (optional, default=None): The subset of collections to
            write. If None, all collections are written
     """
-    self._writer.writeFrame(frame._frame, category, collections or list())
+    self._writer.writeFrame(frame._frame, category, collections or frame.collections)

@@ -15,7 +15,7 @@ from podio.frame import Frame
 def create_hit_collection():
   """Create a simple hit collection with two hits for testing"""
   hits = ExampleHitCollection()
-  hits.create(0xBAD, 0.0, 0.0, 23.0)
+  hits.create(0xBAD, 0.0, 0.0, 0.0, 23.0)
   hits.create(0xCAFFEE, 1.0, 0.0, 0.0, 12.0)
 
   return hits
@@ -35,8 +35,10 @@ def create_cluster_collection():
 def create_frame():
   """Create a frame with an ExampleHit and an ExampleCluster collection"""
   frame = Frame()
-  frame.put(create_hit_collection(), "hits_from_python")
-  frame.put(create_cluster_collection(), "cluster_from_python")
+  hits = create_hit_collection()
+  frame.put(hits, "hits_from_python")
+  clusters = create_cluster_collection()
+  frame.put(clusters, "clusters_from_python")
 
   return frame
 
