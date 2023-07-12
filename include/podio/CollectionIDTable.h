@@ -59,7 +59,7 @@ public:
 private:
   std::vector<uint32_t> m_collectionIDs{};
   std::vector<std::string> m_names{};
-  mutable std::unique_ptr<std::mutex> m_mutex{nullptr};
+  mutable std::unique_ptr<std::mutex> m_mutex{nullptr}; //! marked transient for ROOT
 };
 
 } // namespace podio
