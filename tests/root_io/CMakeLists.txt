@@ -69,3 +69,8 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
     ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root example.root legacy_test_cases)
   endforeach()
 endif()
+
+#--- Write via python and the ROOT backend and see if we can read it back in in
+#--- c++
+add_test(NAME write_frame_root_python COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/write_frame_root.py)
+PODIO_SET_TEST_ENV(write_frame_root_python)
