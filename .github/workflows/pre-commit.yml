@@ -15,7 +15,7 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v3
     - uses: aidasoft/run-lcg-view@v4
       with:
-        release-platform: LCG_102/x86_64-centos7-clang12-opt
+        release-platform: LCG_103/x86_64-centos7-clang12-opt
         run: |
           echo "::group::Setup pre-commit"
           export PYTHONPATH=$(python -m site --user-site):$PYTHONPATH
