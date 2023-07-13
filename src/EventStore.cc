@@ -34,7 +34,7 @@ bool EventStore::get(uint32_t id, CollectionBase*& collection) const {
 }
 
 void EventStore::registerCollection(const std::string& name, podio::CollectionBase* coll) {
-  m_collections.push_back({name, coll});
+  m_collections.emplace_back(name, coll);
   auto id = m_table->add(name);
   coll->setID(id);
 }

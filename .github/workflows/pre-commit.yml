@@ -15,19 +15,24 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v3
     - uses: aidasoft/run-lcg-view@v4
       with:
-        release-platform: LCG_102/x86_64-centos7-clang12-opt
+        container: centos7
+        view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
         run: |
           echo "::group::Setup pre-commit"
-          export PYTHONPATH=$(python -m site --user-site):$PYTHONPATH
           export PATH=/root/.local/bin:$PATH
+          # Newer versions of git are more cautious around the github runner
+          # environment and without this git rev-parse --show-cdup in pre-commit
+          # fails
+          git config --global --add safe.directory $(pwd)
           pip install pre-commit
-          # Use virtualenv from the LCG release
-          pip uninstall --yes virtualenv
+          pip install pylint==2.12.2
+          pip install flake8
           echo "::endgroup::"
           echo "::group::Run CMake"
           mkdir build
           cd build
           cmake .. -DENABLE_SIO=ON \
+            -DENABLE_RNTUPLE=ON \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror "\
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \

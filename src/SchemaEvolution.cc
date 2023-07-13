@@ -50,7 +50,7 @@ void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaV
   // structure and update the index
   if (typeIt->second.index == MapIndex::NoEvolutionAvailable) {
     typeIt->second.index = m_evolutionFuncs.size();
-    m_evolutionFuncs.emplace_back(EvolFuncVersionMapT{});
+    m_evolutionFuncs.emplace_back();
   }
 
   // From here on out we don't need the mutabale any longer
