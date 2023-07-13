@@ -8,6 +8,7 @@ from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
 from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
 
+
 class Reader(BaseReaderMixin):
   """Reader class for reading podio root files."""
 

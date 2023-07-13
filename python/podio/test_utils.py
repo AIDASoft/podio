@@ -2,14 +2,14 @@
 """Utilities for python unittests"""
 
 import os
+import ROOT
+ROOT.gSystem.Load("libTestDataModelDict.so")  # noqa: E402
+from ROOT import ExampleHitCollection, ExampleClusterCollection  # noqa: E402 # pylint: disable=wrong-import-position
+
+from podio.frame import Frame  # pylint: disable=wrong-import-position
+
 
 SKIP_SIO_TESTS = os.environ.get("SKIP_SIO_TESTS", "1") == "1"
-
-import ROOT
-ROOT.gSystem.Load("libTestDataModelDict.so")
-from ROOT import ExampleHitCollection, ExampleClusterCollection
-
-from podio.frame import Frame
 
 
 def create_hit_collection():
@@ -47,10 +47,10 @@ def create_frame():
   return frame
 
 
-def write_file(WriterT, filename):
+def write_file(writer_type, filename):
   """Write a file using the given Writer type and put one Frame into it under
   the events category
   """
-  writer = WriterT(filename)
+  writer = writer_type(filename)
   event = create_frame()
   writer.write_frame(event, "events")
