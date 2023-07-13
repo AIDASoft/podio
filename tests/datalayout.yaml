@@ -26,7 +26,7 @@ components :
     Description : "A not so simple struct"
     Author : "Someone"
     Members:
-      - SimpleStruct data // component members can have descriptions
+      - SimpleStruct data [GeV] // component members can have descriptions and units
 
   ex2::NamespaceStruct:
     Members:
