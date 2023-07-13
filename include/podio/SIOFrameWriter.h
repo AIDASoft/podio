@@ -17,7 +17,7 @@ class Frame;
 class SIOFrameWriter {
 public:
   SIOFrameWriter(const std::string& filename);
-  ~SIOFrameWriter() = default;
+  ~SIOFrameWriter();
 
   SIOFrameWriter(const SIOFrameWriter&) = delete;
   SIOFrameWriter& operator=(const SIOFrameWriter&) = delete;
@@ -37,6 +37,7 @@ private:
   sio::ofstream m_stream{};       ///< The output file stream
   SIOFileTOCRecord m_tocRecord{}; ///< The "table of contents" of the written file
   DatamodelDefinitionCollector m_datamodelCollector{};
+  bool m_finished{false}; ///< Has finish been called already?
 };
 } // namespace podio
 
