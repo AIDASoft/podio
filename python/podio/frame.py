@@ -82,7 +82,6 @@ class Frame:
   # with the correct type that we can compare against
   _coll_nullptr = cppyy.bind_object(cppyy.nullptr, 'podio::CollectionBase')
 
-
   def __init__(self, data=None):
     """Create a Frame.
 
