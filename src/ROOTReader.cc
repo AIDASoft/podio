@@ -133,7 +133,7 @@ CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranc
   collection->setID(id);
   collection->prepareAfterRead();
 
-  m_inputs.emplace_back(std::make_pair(collection, name));
+  m_inputs.emplace_back(collection, name);
   return collection;
 }
 
