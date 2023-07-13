@@ -162,7 +162,7 @@ class ClassDefinitionValidator:
     """Check the components."""
     for name, component in datamodel.components.items():
       for field in component:
-        if field not in ['Members', 'ExtraCode']:
+        if field not in ['Members', 'ExtraCode', 'Description', 'Author']:
           raise DefinitionError(f"{name} defines a '{field}' field which is not allowed for a component")
 
       if 'ExtraCode' in component:
