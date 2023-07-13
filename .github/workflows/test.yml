@@ -13,12 +13,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sio: [ON]
-        LCG: ["LCG_102/x86_64-centos7-clang12-opt",
-              "LCG_102/x86_64-centos8-gcc11-opt",
-              "dev3/x86_64-centos7-clang12-opt",
+        RNTUPLE: [ON]
+        LCG: ["dev3/x86_64-centos7-clang12-opt",
               "dev4/x86_64-centos7-gcc11-opt",
               "dev4/x86_64-centos7-clang12-opt"]
+        include:
+          - LCG: "LCG_102/x86_64-centos7-clang12-opt"
+            RNTUPLE: OFF
+          - LCG: "LCG_102/x86_64-centos8-gcc11-opt"
+            RNTUPLE: OFF
     steps:
     - uses: actions/checkout@v3
     - uses: cvmfs-contrib/github-action-cvmfs@v3
@@ -29,7 +32,8 @@ jobs:
           echo "::group::Run CMake"
           mkdir build install
           cd build
-          cmake -DENABLE_SIO=${{ matrix.sio }} \
+          cmake -DENABLE_SIO=ON \
+            -DENABLE_RNTUPLE=${{ matrix.RNTUPLE }} \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
