@@ -26,6 +26,12 @@ SIOFrameWriter::SIOFrameWriter(const std::string& filename) {
   sio_utils::writeRecord(blocks, "podio_header_info", m_stream, sizeof(podio::version::Version), false);
 }
 
+SIOFrameWriter::~SIOFrameWriter() {
+  if (!m_finished) {
+    finish();
+  }
+}
+
 void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
