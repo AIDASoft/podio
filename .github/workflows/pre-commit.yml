@@ -19,13 +19,14 @@ jobs:
         view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
         run: |
           echo "::group::Setup pre-commit"
-          # export PYTHONPATH=$(python -m site --user-site):$PYTHONPATH
-          # export PATH=/root/.local/bin:$PATH
+          export PATH=/root/.local/bin:$PATH
+          # Newer versions of git are more cautious around the github runner
+          # environment and without this git rev-parse --show-cdup in pre-commit
+          # fails
+          git config --global --add safe.directory $(pwd)
           pip install pre-commit
           pip install pylint==2.12.2
           pip install flake8
-          # Use virtualenv from the LCG release
-          # pip uninstall --yes virtualenv
           echo "::endgroup::"
           echo "::group::Run CMake"
           mkdir build
