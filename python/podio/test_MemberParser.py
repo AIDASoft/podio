@@ -250,6 +250,11 @@ class MemberParserTest(unittest.TestCase):
     parsed = parser.parse('unsigned long long var [GeV] // description')
     self.assertEqual(parsed.unit, 'GeV')
 
+    parsed = parser.parse('unsigned long long var{42} [GeV] // description')
+    self.assertEqual(parsed.unit, 'GeV')
+    self.assertEqual(parsed.default_val, '42')
+
+
   def test_string_representation(self):
     """Test that the string representation that is used in the jinja2 templates
     includes the default initialization"""
