@@ -1,3 +1,4 @@
+{% import "macros/declarations.jinja2" as macros %}
 {% import "macros/utils.jinja2" as utils %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
@@ -14,7 +15,7 @@
 #endif
 
 {{ utils.namespace_open(class.namespace) }}
-
+{{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 public:
 {% for member in Members %}

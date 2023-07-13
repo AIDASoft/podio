@@ -23,6 +23,8 @@ components :
       "
 
   NotSoSimpleStruct:
+    Description : "A not so simple struct"
+    Author : "Someone"
     Members:
       - SimpleStruct data // component members can have descriptions
 
