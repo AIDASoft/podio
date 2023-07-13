@@ -236,7 +236,6 @@ class Frame:
 
     self._param_key_types = self._get_param_keys_types()  # refresh the cache
 
-
   def get_parameters(self):
     """Get the complete podio::GenericParameters object stored in this Frame.
 

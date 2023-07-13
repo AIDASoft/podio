@@ -7,7 +7,7 @@ from podio.frame import Frame
 # using root_io as that should always be present regardless of which backends are built
 from podio.root_io import Reader
 
-from test_utils import ExampleClusterCollection, ExampleHitCollection
+from test_utils import ExampleHitCollection
 
 # The expected collections in each frame
 EXPECTED_COLL_NAMES = {
