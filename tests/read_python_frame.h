@@ -46,6 +46,39 @@ int checkClusters(const ExampleClusterCollection& clusters) {
   return 0;
 }
 
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const std::vector<T>& vec) {
+  auto delim = "[";
+  for (const auto& v : vec) {
+    o << std::exchange(delim, ", ") << v;
+  }
+  return o << "]";
+}
+
+int checkParameters(const podio::Frame& frame) {
+  const auto iVal = frame.getParameter<int>("an_int");
+  if (iVal != 42) {
+    std::cerr << "Parameter an_int was not stored correctly (expected 42, actual " << iVal << ")" << std::endl;
+    return 1;
+  }
+
+  const auto& dVal = frame.getParameter<std::vector<double>>("some_floats");
+  if (dVal.size() != 3 || dVal[0] != 1.23 || dVal[1] != 7.89 || dVal[2] != 3.14) {
+    std::cerr << "Parameter some_floats was not stored correctly (expected [1.23, 7.89, 3.14], actual " << dVal << ")"
+              << std::endl;
+    return 1;
+  }
+
+  const auto& strVal = frame.getParameter<std::vector<std ::string>>("greetings");
+  if (strVal.size() != 2 || strVal[0] != "from" || strVal[1] != "python") {
+    std::cerr << "Parameter greetings was not stored correctly (expected [from, python], actual " << strVal << ")"
+              << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
+
 template <typename ReaderT>
 int read_frame(const std::string& filename) {
   auto reader = ReaderT();
@@ -54,7 +87,7 @@ int read_frame(const std::string& filename) {
   auto event = podio::Frame(reader.readEntry("events", 0));
 
   return checkHits(event.get<ExampleHitCollection>("hits_from_python")) +
-      checkClusters(event.get<ExampleClusterCollection>("clusters_from_python"));
+      checkClusters(event.get<ExampleClusterCollection>("clusters_from_python")) + checkParameters(event);
 }
 
 #endif // PODIO_TESTS_READ_PYTHON_FRAME_H

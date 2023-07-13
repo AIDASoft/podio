@@ -40,6 +40,10 @@ def create_frame():
   clusters = create_cluster_collection()
   frame.put(clusters, "clusters_from_python")
 
+  frame.put_parameter("an_int", 42)
+  frame.put_parameter("some_floats", [1.23, 7.89, 3.14])
+  frame.put_parameter("greetings", ["from", "python"])
+
   return frame
 
 
