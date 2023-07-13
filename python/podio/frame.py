@@ -94,7 +94,7 @@ class Frame:
     else:
       self._frame = podio.Frame()
 
-    self._param_key_types = self._init_param_keys()
+    self._param_key_types = self._get_param_keys_types()
 
   @property
   def collections(self):
@@ -196,6 +196,47 @@ class Frame:
 
     return _get_param_value(vec_types[0], name)
 
+  def put_parameter(self, key, value):
+    """Put a parameter into the Frame.
+
+    Puts a parameter into the Frame after doing some (incomplete) type checks.
+    If a list is passed the parameter type is determined from looking at the
+    first element of the list only. Additionally, since python doesn't
+    differentiate between floats and doubles, floats will always be stored as
+    double.
+
+    Args:
+        key (str): The name of the parameter
+        value (int, float, str or list of these): The parameter value
+
+    Raises:
+        ValueError: If a non-supported parameter type is passed
+    """
+    # For lists we determine the c++ vector type and use that to call the
+    # correct template overload explicitly
+    if isinstance(value, (list, tuple)):
+      vec_types = _get_cpp_vector_types(type(value[0]).__name__)
+      if len(vec_types) == 0:
+        raise ValueError(f"Cannot put a parameter of type {type(value[0])} into a Frame")
+
+      par_type = vec_types[0]
+      if isinstance(value[0], float):
+        # Always store floats as doubles from the python side
+        par_type = par_type.replace("float", "double")
+
+      self._frame.putParameter[par_type](key, value)
+    else:
+      # If we have a single integer, a std::string overload kicks in with higher
+      # priority than the template for some reason. So we explicitly select the
+      # correct template here
+      if isinstance(value, int):
+        self._frame.putParameter["int"](key, value)
+      else:
+        self._frame.putParameter(key, value)
+
+    self._param_key_types = self._get_param_keys_types()  # refresh the cache
+
+
   def get_parameters(self):
     """Get the complete podio::GenericParameters object stored in this Frame.
 
@@ -233,7 +274,7 @@ class Frame:
 
     return par_infos
 
-  def _init_param_keys(self):
+  def _get_param_keys_types(self):
     """Initialize the param keys dict for easier lookup of the available parameters.
 
     Returns:

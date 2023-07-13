@@ -40,6 +40,7 @@ class FrameTest(unittest.TestCase):
       _ = frame.put(list(), "invalid_collection_type")
 
   def test_frame_put_collection(self):
+    """Check that putting a collection works as expected"""
     frame = Frame()
     self.assertEqual(frame.collections, tuple())
 
@@ -52,6 +53,36 @@ class FrameTest(unittest.TestCase):
     self.assertEqual(len(hits), 0)
     # On the other hand the return value of put has the original content
     self.assertEqual(len(hits2), 1)
+
+  def test_frame_put_parameters(self):
+    """Check that putting a parameter works as expected"""
+    frame = Frame()
+    self.assertEqual(frame.parameters, tuple())
+
+    frame.put_parameter("a_string_param", "a string")
+    self.assertEqual(frame.parameters, tuple(["a_string_param"]))
+    self.assertEqual(frame.get_parameter("a_string_param"), "a string")
+
+    frame.put_parameter("float_param", 3.14)
+    self.assertEqual(frame.get_parameter("float_param"), 3.14)
+
+    frame.put_parameter("int", 42)
+    self.assertEqual(frame.get_parameter("int"), 42)
+
+    frame.put_parameter("string_vec", ["a", "b", "cd"])
+    str_vec = frame.get_parameter("string_vec")
+    self.assertEqual(len(str_vec), 3)
+    self.assertEqual(str_vec, ["a", "b", "cd"])
+
+    frame.put_parameter("more_ints", [1, 2345])
+    int_vec = frame.get_parameter("more_ints")
+    self.assertEqual(len(int_vec), 2)
+    self.assertEqual(int_vec, [1, 2345])
+
+    frame.put_parameter("float_vec", [1.23, 4.56, 7.89])
+    vec = frame.get_parameter("float_vec", as_type="double")
+    self.assertEqual(len(vec), 3)
+    self.assertEqual(vec, [1.23, 4.56, 7.89])
 
 
 class FrameReadTest(unittest.TestCase):
