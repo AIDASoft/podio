@@ -66,10 +66,10 @@ datatypes :
     Author : "B. Hegner"
     Members:
      - unsigned long long cellID      // cellID
-     - double x      // x-coordinate
-     - double y      // y-coordinate
-     - double z      // z-coordinate
-     - double energy // measured energy deposit
+     - double x [mm]     // x-coordinate
+     - double y [mm]     // y-coordinate
+     - double z [mm]     // z-coordinate
+     - double energy [GeV] // measured energy deposit
 
   ExampleMC :
     Description : "Example MC-particle"

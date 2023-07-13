@@ -91,6 +91,7 @@ class MemberVariable:
     self.full_type = kwargs.pop('type', '')
     self.description = kwargs.pop('description', '')
     self.default_val = kwargs.pop('default_val', None)
+    self.unit = kwargs.pop('unit', None)
     self.is_builtin = False
     self.is_builtin_array = False
     self.is_array = False
@@ -190,7 +191,8 @@ class MemberVariable:
     # things again here from available information
     def_val = f'{{{self.default_val}}}' if self.default_val else ''
     description = f' // {self.description}' if self.description else ''
-    return f'{self.full_type} {self.name}{def_val}{description}'
+    unit = f'[{self.unit}]' if self.unit else ''
+    return f'{self.full_type} {self.name}{def_val}{unit}{description}'
 
 
 class DataModel:  # pylint: disable=too-few-public-methods

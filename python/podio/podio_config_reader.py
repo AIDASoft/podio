@@ -45,8 +45,8 @@ class MemberParser:
   def_val_str = r'(?:{(.+)})?'
 
   array_re = re.compile(array_str)
-  full_array_re = re.compile(rf'{array_str} *{name_str} *{def_val_str} * {unit_str} *{comment_str}')
-  member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str} * {unit_str} *{comment_str}')
+  full_array_re = re.compile(rf'{array_str} *{name_str} *{def_val_str} *{unit_str} *{comment_str}')
+  member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str} *{unit_str} *{comment_str}')
 
   # For cases where we don't require a description
   bare_member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str}')
@@ -73,7 +73,7 @@ class MemberParser:
   def _full_member_conv(result):
     """MemberVariable construction for members with a docstring"""
     klass, name, def_val, unit, comment = result.groups()
-    return MemberVariable(name=name, type=klass, description=comment.strip(), default_val=def_val)
+    return MemberVariable(name=name, type=klass, description=comment.strip(), unit=unit, default_val=def_val)
 
   @staticmethod
   def _bare_array_conv(result):

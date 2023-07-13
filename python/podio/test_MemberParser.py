@@ -243,6 +243,13 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.description, 'descriptions are not ignored even though they are not required')
     self.assertTrue(not parsed.is_builtin)
 
+  def test_parse_unit(self):
+    """Test that units are properly parsed"""
+    parser = MemberParser()
+
+    parsed = parser.parse('unsigned long long var [GeV] // description')
+    self.assertEqual(parsed.unit, 'GeV')
+
   def test_string_representation(self):
     """Test that the string representation that is used in the jinja2 templates
     includes the default initialization"""
