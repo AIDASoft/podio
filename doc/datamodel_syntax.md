@@ -85,6 +85,13 @@ It is also possible to specify default values for members via
 Note that in this case it is extremely expensive to check whether the provided `default-value` results in valid c++.
 Hence, there is only a very basic syntax check, but no actual type check, and wrong default values will be caught only when trying to compile the datamodel.
 
+For describing physics quantities it is important to know their units. Thus it is possible to add the units to the member definition:
+
+```yaml
+    Members:
+      <type> <name>{<default-value>} [<unit>] // <comment>
+```
+
 
 ### Definition of references between objects:
 There can be one-to-one-relations and one-to-many relations being stored in a particular class. This happens either in the `OneToOneRelations` or `OneToManyRelations` section of the data definition. The definition has again the form:
