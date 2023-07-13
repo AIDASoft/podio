@@ -76,6 +76,8 @@ void SIOFrameWriter::finish() {
   m_stream.write(reinterpret_cast<char*>(&finalWords), sizeof(finalWords));
 
   m_stream.close();
+
+  m_finished = true;
 }
 
 } // namespace podio
