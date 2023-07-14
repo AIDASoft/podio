@@ -6,13 +6,13 @@ function(PODIO_SET_TEST_ENV test)
   set_property(TEST ${test}
     PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/tests:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-      PYTHONPATH=${CMAKE_SOURCE_DIR}/python:$ENV{PYTHONPATH}
+      PYTHONPATH=${PROJECT_SOURCE_DIR}/python:$ENV{PYTHONPATH}
       PODIO_SIOBLOCK_PATH=${CMAKE_BINARY_DIR}/tests
-      ROOT_INCLUDE_PATH=${CMAKE_BINARY_DIR}/tests/datamodel:${CMAKE_SOURCE_DIR}/include
+      ROOT_INCLUDE_PATH=${CMAKE_BINARY_DIR}/tests/datamodel:${PROJECT_SOURCE_DIR}/include
       SKIP_SIO_TESTS=$<NOT:$<BOOL:${ENABLE_SIO}>>
       IO_HANDLERS=${IO_HANDLERS}
       PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT}
-      PODIO_BASE=${CMAKE_SOURCE_DIR}
+      PODIO_BASE=${PROJECT_SOURCE_DIR}
       ENABLE_SIO=${ENABLE_SIO}
   )
 endfunction()
@@ -35,7 +35,7 @@ macro(PODIO_DOWNLOAD_LEGACY_INPUTS legacy_versions)
   if (NOT DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR} OR NOT EXISTS ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-05/example_frame.root)
     message(STATUS "Getting test input files")
     execute_process(
-      COMMAND bash ${CMAKE_SOURCE_DIR}/tests/scripts/get_test_inputs.sh ${legacy_versions}
+      COMMAND bash ${PROJECT_SOURCE_DIR}/tests/scripts/get_test_inputs.sh ${legacy_versions}
       OUTPUT_VARIABLE podio_test_input_data_dir
       RESULT_VARIABLE test_inputs_available
     )
