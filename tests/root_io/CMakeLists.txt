@@ -54,7 +54,7 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
   macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
     add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
     set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/tests:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
       # with existing headers from other installations
       ROOT_INCLUDE_PATH=
