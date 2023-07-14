@@ -1,3 +1,14 @@
+# v00-16-06
+
+* 2023-07-14 Thomas Madlener ([PR#453](https://github.com/AIDASoft/podio/pull/453))
+  - Backport of #452
+
+* 2023-07-13 Thomas Madlener ([PR#451](https://github.com/AIDASoft/podio/pull/451))
+  - Backport some bug fixes to make a v00-16-06 patch release
+    - [#422](https://github.com/AIDASoft/podio/pull/422) 
+    - [#423](https://github.com/AIDASoft/podio/pull/423) (fixes only, no additional tests)
+    - [#434](https://github.com/AIDASoft/podio/pull/434) (fixes only, not the additional tests)
+
 # v00-16-05
 
 * 2023-05-23 tmadlener ([PR#420](https://github.com/AIDASoft/podio/pull/420))
