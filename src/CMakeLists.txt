@@ -61,16 +61,16 @@ SET(core_sources
   )
 
 SET(core_headers
-  ${CMAKE_SOURCE_DIR}/include/podio/CollectionBase.h
-  ${CMAKE_SOURCE_DIR}/include/podio/CollectionIDTable.h
-  ${CMAKE_SOURCE_DIR}/include/podio/EventStore.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ICollectionProvider.h
-  ${CMAKE_SOURCE_DIR}/include/podio/IReader.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ObjectID.h
-  ${CMAKE_SOURCE_DIR}/include/podio/UserDataCollection.h
-  ${CMAKE_SOURCE_DIR}/include/podio/podioVersion.h
-  ${CMAKE_SOURCE_DIR}/include/podio/DatamodelRegistry.h
-  ${CMAKE_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
+  ${PROJECT_SOURCE_DIR}/include/podio/CollectionBase.h
+  ${PROJECT_SOURCE_DIR}/include/podio/CollectionIDTable.h
+  ${PROJECT_SOURCE_DIR}/include/podio/EventStore.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ICollectionProvider.h
+  ${PROJECT_SOURCE_DIR}/include/podio/IReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ObjectID.h
+  ${PROJECT_SOURCE_DIR}/include/podio/UserDataCollection.h
+  ${PROJECT_SOURCE_DIR}/include/podio/podioVersion.h
+  ${PROJECT_SOURCE_DIR}/include/podio/DatamodelRegistry.h
+  ${PROJECT_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
@@ -94,14 +94,14 @@ if(ENABLE_RNTUPLE)
 endif()
 
 SET(root_headers
-  ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameReader.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
-      ${CMAKE_SOURCE_DIR}/include/podio/ROOTNTupleReader.h
-      ${CMAKE_SOURCE_DIR}/include/podio/ROOTNTupleWriter.h
+      ${PROJECT_SOURCE_DIR}/include/podio/ROOTNTupleReader.h
+      ${PROJECT_SOURCE_DIR}/include/podio/ROOTNTupleWriter.h
      )
 endif()
 
@@ -119,7 +119,7 @@ SET(python_sources
   )
 
 SET(python_headers
-  ${CMAKE_SOURCE_DIR}/include/podio/PythonEventStore.h
+  ${PROJECT_SOURCE_DIR}/include/podio/PythonEventStore.h
 )
 PODIO_ADD_LIB_AND_DICT(podioPythonStore "${python_headers}" "${python_sources}" python_selection.xml)
 target_link_libraries(podioPythonStore PUBLIC podio::podio)
@@ -140,9 +140,9 @@ if(ENABLE_SIO)
     )
 
   SET(sio_headers
-    ${CMAKE_SOURCE_DIR}/include/podio/SIOFrameReader.h
-    ${CMAKE_SOURCE_DIR}/include/podio/SIOLegacyReader.h
-    ${CMAKE_SOURCE_DIR}/include/podio/SIOFrameWriter.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOLegacyReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameWriter.h
     )
 
   PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" sio_selection.xml)
