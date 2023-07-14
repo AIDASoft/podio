@@ -18,7 +18,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
 
@@ -185,7 +185,7 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
   return Mutable{{ class.bare_type }}(obj);
 }
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collection);
 #endif
 
