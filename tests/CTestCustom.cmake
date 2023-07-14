@@ -22,6 +22,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read-legacy-files-root_v00-13
     read_frame_legacy_root
     read_frame_root_multiple
+    write_python_frame_root
+    read_python_frame_root
 
     write_frame_root
     read_frame_root
@@ -35,6 +37,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_frame_sio
     read_frame_sio
     read_frame_legacy_sio
+    write_python_frame_sio
+    read_python_frame_sio
 
     write_ascii
 
