@@ -227,7 +227,7 @@ const auto registeredCollection = registerCollection();
 } // namespace
 
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
   j = nlohmann::json::array();
   for (auto&& elem : collection) {

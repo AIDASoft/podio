@@ -10,7 +10,7 @@
 {% endfor %}
 #include <ostream>
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
 
@@ -40,7 +40,7 @@ inline std::ostream& operator<<(std::ostream& o, const {{class.full_type}}& valu
   return o;
 }
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 inline void to_json(nlohmann::json& j, const {{ class.bare_type }}& value) {
   j = nlohmann::json{
 {% set comma = joiner(",") %}
