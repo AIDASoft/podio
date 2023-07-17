@@ -2,7 +2,7 @@
 include("{{ child }}.jl")
 {% endfor %}
 
-module {{ class.bare_type }}
+module {{ package_name|capitalize }}
 
 {% for child in children['Components']%}
 using ..{{child}}Module: {{child}}
