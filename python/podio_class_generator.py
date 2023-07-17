@@ -229,7 +229,11 @@ class ClassGenerator:
     data['use_get_syntax'] = self.get_syntax
     data['incfolder'] = self.incfolder
     for filename, template in self._get_filenames_templates(template_base, data['class'].bare_type):
-      self._write_file(filename, self._eval_template(template, data))
+      # package_name as file name for parent module template
+      if (template == "ParentModule.jl.jinja2"):
+        self._write_file(f'{self.package_name.capitalize()}.jl', self._eval_template(template, data))
+      else:
+        self._write_file(filename, self._eval_template(template, data))
 
   def _process_component(self, name, component):
     """Process one component"""
