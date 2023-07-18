@@ -368,7 +368,7 @@ function(PODIO_CHECK_CPP_FS FS_LIBS)
   # After that it should be built-in
   FOREACH(FS_LIB_NAME "" stdc++fs c++fs)
     # MESSAGE(STATUS "Linking against ${FS_LIB_NAME}")
-    try_compile(have_filesystem ${CMAKE_BINARY_DIR}/try ${PROJECT_SOURCE_DIR}/cmake/try_filesystem.cpp
+    try_compile(have_filesystem ${PROJECT_BINARY_DIR}/try ${PROJECT_SOURCE_DIR}/cmake/try_filesystem.cpp
       CXX_STANDARD ${CMAKE_CXX_STANDARD}
       CXX_EXTENSIONS False
       OUTPUT_VARIABLE HAVE_FS_OUTPUT

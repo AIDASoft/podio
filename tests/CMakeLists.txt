@@ -63,4 +63,4 @@ CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
 
 # Customize CTest to potentially disable some of the tests with known problems
-configure_file(CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
+configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
