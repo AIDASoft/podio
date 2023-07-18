@@ -77,13 +77,13 @@ int read_frames(const std::string& filename) {
     return 1;
   }
 
-  if (reader.getEntries("events") != 10) {
+  if (reader.getEntries(podio::Category::Event) != 10) {
     std::cerr << "Could not read back the number of events correctly. "
-              << "(expected:" << 10 << ", actual: " << reader.getEntries("events") << ")" << std::endl;
+              << "(expected:" << 10 << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;
     return 1;
   }
 
-  if (reader.getEntries("events") != reader.getEntries("other_events")) {
+  if (reader.getEntries(podio::Category::Event) != reader.getEntries("other_events")) {
     std::cerr << "Could not read back the number of events correctly. "
               << "(expected:" << 10 << ", actual: " << reader.getEntries("other_events") << ")" << std::endl;
     return 1;
@@ -91,8 +91,8 @@ int read_frames(const std::string& filename) {
 
   // Read the frames in a different order than when writing them here to make
   // sure that the writing/reading order does not impose any usage requirements
-  for (size_t i = 0; i < reader.getEntries("events"); ++i) {
-    auto frame = podio::Frame(reader.readNextEntry("events"));
+  for (size_t i = 0; i < reader.getEntries(podio::Category::Event); ++i) {
+    auto frame = podio::Frame(reader.readNextEntry(podio::Category::Event));
     if (reader.currentFileVersion() > podio::version::Version{0, 16, 2}) {
       if (frame.get("emptySubsetColl") == nullptr) {
         std::cerr << "Could not retrieve an empty subset collection" << std::endl;
@@ -114,7 +114,7 @@ int read_frames(const std::string& filename) {
     }
   }
 
-  if (reader.readNextEntry("events")) {
+  if (reader.readNextEntry(podio::Category::Event)) {
     std::cerr << "Trying to read more frame data than is present should return a nullptr" << std::endl;
     return 1;
   }
@@ -127,10 +127,10 @@ int read_frames(const std::string& filename) {
 
   // Reading specific (jumping to) entry
   {
-    auto frame = podio::Frame(reader.readEntry("events", 4));
+    auto frame = podio::Frame(reader.readEntry(podio::Category::Event, 4));
     processEvent(frame, 4, reader.currentFileVersion());
     // Reading the next entry after jump, continues from after the jump
-    auto nextFrame = podio::Frame(reader.readNextEntry("events"));
+    auto nextFrame = podio::Frame(reader.readNextEntry(podio::Category::Event));
     processEvent(nextFrame, 5, reader.currentFileVersion());
 
     auto otherFrame = podio::Frame(reader.readEntry("other_events", 4));
@@ -147,7 +147,7 @@ int read_frames(const std::string& filename) {
     }
 
     // Trying to read a Frame that is not present returns a nullptr
-    if (reader.readEntry("events", 10)) {
+    if (reader.readEntry(podio::Category::Event, 10)) {
       std::cerr << "Trying to read a specific entry that does not exist should return a nullptr" << std::endl;
       return 1;
     }
