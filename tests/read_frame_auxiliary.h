@@ -56,9 +56,9 @@ int test_frame_aux_info(const std::string& fileName) {
   reader.openFile(fileName);
 
   // Test on the first event only here. Additionally, also only testing the
-  // "events" category, since that is the one where not all collections are
+  // events category, since that is the one where not all collections are
   // written
-  auto event = podio::Frame(reader.readEntry("events", 0));
+  auto event = podio::Frame(reader.readEntry(podio::Category::Event, 0));
 
   auto collsToRead = collsToWrite;
   if (reader.currentFileVersion() < podio::version::Version{0, 16, 3}) {
