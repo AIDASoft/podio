@@ -153,10 +153,11 @@ class MemberVariable:
 
   @property
   def docstring(self):
+    """Docstring to be used in code generation"""
     if self.unit is not None:
-        docstring = rf'{self.description} [{self.unit}]'
+      docstring = rf'{self.description} [{self.unit}]'
     else:
-        docstring = self.description
+      docstring = self.description
     return docstring
 
   def __str__(self):
