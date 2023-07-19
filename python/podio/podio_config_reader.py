@@ -67,7 +67,7 @@ class MemberParser:
   def _full_array_conv(result):
     """MemberVariable construction for array members with a docstring"""
     typ, size, name, def_val, unit, comment = result.groups()
-    return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip(), default_val=def_val)
+    return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip(), unit=unit, default_val=def_val)
 
   @staticmethod
   def _full_member_conv(result):
