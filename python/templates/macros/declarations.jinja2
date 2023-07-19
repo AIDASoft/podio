@@ -8,15 +8,15 @@
 
 {% macro member_getters(members, get_syntax) %}
 {%for member in members %}
-  /// Access the {{ member.description }}
+  /// Access the {{ member.docstring }}
   const {{ member.full_type }}& {{ member.getter_name(get_syntax) }}() const;
 {% if member.is_array %}
-  /// Access item i of the {{ member.description }}
+  /// Access item i of the {{ member.docstring }}
   const {{ member.array_type }}& {{ member.getter_name(get_syntax) }}(size_t i) const;
 {%- endif %}
 {% if member.sub_members %}
 {% for sub_member in member.sub_members %}
-  /// Access the member of {{ member.description }}
+  /// Access the member of {{ member.docstring }}
   const {{ sub_member.full_type }}& {{ sub_member.getter_name(get_sytnax) }}() const;
 {% endfor %}
 {% endif %}
@@ -27,24 +27,24 @@
 
 {% macro member_setters(members, get_syntax) %}
 {% for member in members %}
-  /// Set the {{ member.description }}
+  /// Set the {{ member.docstring }}
   void {{ member.setter_name(get_syntax) }}({{ member.full_type }} value);
 {% if member.is_array %}
   void {{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value);
 {% endif %}
 {% if not member.is_builtin %}
-  /// Get reference to {{ member.description }}
+  /// Get reference to {{ member.docstring }}
   {{ member.full_type }}& {{ member.name }}();
 {% endif %}
 {% if member.sub_members %}
 {% for sub_member in member.sub_members %}
 {% if sub_member.is_builtin %}
-  /// Set the member of {{ member.description }}
+  /// Set the member of {{ member.docstring }}
   void {{ sub_member.setter_name(get_syntax) }}({{ sub_member.full_type }} value);
 {% else %}
-  /// Get reference to the member of {{ member.description }}
+  /// Get reference to the member of {{ member.docstring }}
   {{ sub_member.full_type }}& {{ sub_member.name }}();
-  /// Set the member of  {{ member.description }}
+  /// Set the member of  {{ member.docstring }}
   void {{ sub_member.setter_name(get_sytnax) }}({{ sub_member.full_type }} value);
 {% endif %}
 {% endfor %}

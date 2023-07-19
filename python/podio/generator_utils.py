@@ -151,6 +151,14 @@ class MemberVariable:
     else:
       self.namespace, self.bare_type = _get_namespace_class(self.full_type)
 
+  @property
+  def docstring(self):
+    if self.unit is not None:
+        docstring = rf'{self.description} [{self.unit}]'
+    else:
+        docstring = self.description
+    return docstring
+
   def __str__(self):
     """string representation"""
     # Make sure to include scope-operator if necessary
@@ -164,8 +172,8 @@ class MemberVariable:
     else:
       definition = rf'{scoped_type} {self.name}{{}};'
 
-    if self.description:
-      definition += rf' ///< {self.description}'
+    if self.docstring:
+      definition += rf' ///< {self.docstring}'
     return definition
 
   def getter_name(self, get_syntax):
