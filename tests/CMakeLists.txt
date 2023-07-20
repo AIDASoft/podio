@@ -54,7 +54,9 @@ add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
 target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)
 
 add_subdirectory(root_io)
-add_subdirectory(sio_io)
+if (ENABLE_SIO)
+  add_subdirectory(sio_io)
+endif()
 add_subdirectory(unittests)
 add_subdirectory(dumpmodel)
 
