@@ -43,6 +43,8 @@ def create_frame():
   frame.put_parameter("an_int", 42)
   frame.put_parameter("some_floats", [1.23, 7.89, 3.14])
   frame.put_parameter("greetings", ["from", "python"])
+  frame.put_parameter("real_float", 3.14, as_type="float")
+  frame.put_parameter("more_real_floats", [1.23, 4.56, 7.89], as_type="float")
 
   return frame
 

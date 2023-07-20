@@ -48,13 +48,19 @@ def _determine_supported_parameter_types():
 SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
 
 
-def _get_cpp_vector_types(type_str):
-  """Get the possible std::vector<cpp_type> from the passed py_type string."""
-  # Gather a list of all types that match the type_str (c++ or python)
+def _get_cpp_types(type_str):
+  """Get all possible c++ types from the passed py_type string."""
   types = list(filter(lambda t: type_str in t, SUPPORTED_PARAMETER_TYPES))
   if not types:
     raise ValueError(f'{type_str} cannot be mapped to a valid parameter type')
 
+  return types
+
+
+def _get_cpp_vector_types(type_str):
+  """Get the possible std::vector<cpp_type> from the passed py_type string."""
+  # Gather a list of all types that match the type_str (c++ or python)
+  types = _get_cpp_types(type_str)
   return [f'std::vector<{t}>' for t in map(lambda x: x[0], types)]
 
 
@@ -196,18 +202,23 @@ class Frame:
 
     return _get_param_value(vec_types[0], name)
 
-  def put_parameter(self, key, value):
+  def put_parameter(self, key, value, as_type=None):
     """Put a parameter into the Frame.
 
     Puts a parameter into the Frame after doing some (incomplete) type checks.
     If a list is passed the parameter type is determined from looking at the
     first element of the list only. Additionally, since python doesn't
     differentiate between floats and doubles, floats will always be stored as
-    double.
+    doubles by default, use the as_type argument to change this if necessary.
 
     Args:
         key (str): The name of the parameter
         value (int, float, str or list of these): The parameter value
+        as_type (str, optional): Explicitly specify the type that should be used
+            to put the parameter into the Frame. Python types (e.g. "str") will
+            be converted to c++ types. This will override any automatic type
+            deduction that happens otherwise. Note that this will be taken at
+            pretty much face-value and there are only limited checks for this.
 
     Raises:
         ValueError: If a non-supported parameter type is passed
@@ -215,9 +226,10 @@ class Frame:
     # For lists we determine the c++ vector type and use that to call the
     # correct template overload explicitly
     if isinstance(value, (list, tuple)):
-      vec_types = _get_cpp_vector_types(type(value[0]).__name__)
+      type_name = as_type or type(value[0]).__name__
+      vec_types = _get_cpp_vector_types(type_name)
       if len(vec_types) == 0:
-        raise ValueError(f"Cannot put a parameter of type {type(value[0])} into a Frame")
+        raise ValueError(f"Cannot put a parameter of type {type_name} into a Frame")
 
       par_type = vec_types[0]
       if isinstance(value[0], float):
@@ -226,10 +238,16 @@ class Frame:
 
       self._frame.putParameter[par_type](key, value)
     else:
+      if as_type is not None:
+        cpp_types = _get_cpp_types(as_type)
+        if len(cpp_types) == 0:
+          raise ValueError(f"Cannot put a parameter of type {as_type} into a Frame")
+        self._frame.putParameter[cpp_types[0]](key, value)
+
       # If we have a single integer, a std::string overload kicks in with higher
       # priority than the template for some reason. So we explicitly select the
       # correct template here
-      if isinstance(value, int):
+      elif isinstance(value, int):
         self._frame.putParameter["int"](key, value)
       else:
         self._frame.putParameter(key, value)

@@ -76,6 +76,19 @@ int checkParameters(const podio::Frame& frame) {
     return 1;
   }
 
+  const auto realFloat = frame.getParameter<float>("real_float");
+  if (realFloat != 3.14f) {
+    std::cerr << "Parameter real_float was not stored correctly (expected 3.14, actual " << realFloat << ")"
+              << std::endl;
+    return 1;
+  }
+
+  const auto& realFloats = frame.getParameter<std::vector<float>>("more_real_floats");
+  if (realFloats.size() != 3 || realFloats[0] != 1.23f || realFloats[1] != 4.56f || realFloats[2] != 7.89f) {
+    std::cerr << "Parameter more_real_floats was not stored as correctly (expected [1.23, 4.56, 7.89], actual"
+              << realFloats << ")" << std::endl;
+  }
+
   return 0;
 }
 

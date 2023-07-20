@@ -84,6 +84,14 @@ class FrameTest(unittest.TestCase):
     self.assertEqual(len(vec), 3)
     self.assertEqual(vec, [1.23, 4.56, 7.89])
 
+    frame.put_parameter("real_float_vec", [1.23, 4.56, 7.89], as_type="float")
+    f_vec = frame.get_parameter("real_float_vec", as_type="float")
+    self.assertEqual(len(f_vec), 3)
+    self.assertEqual(vec, [1.23, 4.56, 7.89])
+
+    frame.put_parameter("float_as_float", 3.14, as_type="float")
+    self.assertAlmostEqual(frame.get_parameter("float_as_float"), 3.14, places=5)
+
 
 class FrameReadTest(unittest.TestCase):
   """Unit tests for the Frame python bindings for Frames read from file.
