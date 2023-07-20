@@ -131,13 +131,18 @@ class Frame:
   def put(self, collection, name):
     """Put the collection into the frame
 
+    The passed collectoin is "moved" into the Frame, i.e. it cannot be used any
+    longer after a call to this function. This also means that only objects that
+    were in the collection at the time of calling this function will be
+    available afterwards.
+
     Args:
         collection (podio.CollectionBase): The collection to put into the Frame
         name (str): The name of the collection
 
     Returns:
         podio.CollectionBase: The reference to the collection that has been put
-           into the Frame
+            into the Frame. NOTE: That mutating this collection is not allowed.
 
     Raises:
         ValueError: If collection is not actually a podio.CollectionBase
