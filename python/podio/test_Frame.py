@@ -37,7 +37,8 @@ class FrameTest(unittest.TestCase):
       _ = frame.get_parameter('NonExistantParameter')
 
     with self.assertRaises(ValueError):
-      _ = frame.put(list(), "invalid_collection_type")
+      collection = [1, 2, 4]
+      _ = frame.put(collection, "invalid_collection_type")
 
   def test_frame_put_collection(self):
     """Check that putting a collection works as expected"""

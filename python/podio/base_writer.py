@@ -21,4 +21,5 @@ class BaseWriterMixin:
         collections (optional, default=None): The subset of collections to
            write. If None, all collections are written
     """
+    # pylint: disable-next=protected-access
     self._writer.writeFrame(frame._frame, category, collections or frame.collections)
