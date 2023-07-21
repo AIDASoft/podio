@@ -124,7 +124,7 @@ class ClassGenerator:
     self._write_edm_def_file()
 
     if 'ROOT' in self.io_handlers:
-      self._create_selection_xml()
+      self._create_ROOT_dictionary_selection()
 
     self._write_cmake_lists_file()
     self.process_schema_evolution()
@@ -482,13 +482,13 @@ have resolvable schema evolution incompatibilities:")
 
     return IncludeFrom.NOWHERE
 
-  def _create_selection_xml(self):
+  def _create_ROOT_dictionary_selection(self):
     """Create the selection xml that is necessary for ROOT I/O"""
     data = {'components': [DataType(c) for c in self.datamodel.components],
             'datatypes': [DataType(d) for d in self.datamodel.datatypes],
             'old_schema_components': [DataType(d) for d in
                                       self.old_datamodels_datatypes | self.old_datamodels_components]}
-    self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
+    self._write_file('LinkDef.h', self._eval_template('DictLinkDef.h.jinja2', data))
 
   def _build_include(self, member):
     """Return the include statment for the passed member."""

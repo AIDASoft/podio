@@ -23,7 +23,7 @@ if (nlohmann_json_FOUND)
   target_link_libraries(TestDataModel PUBLIC nlohmann_json::nlohmann_json)
 endif()
 
-PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
+PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" datamodel/LinkDef.h)
 PODIO_ADD_SIO_IO_BLOCKS(TestDataModel "${headers}" "${sources}")
 
 # Build the extension data model and link it against the upstream model

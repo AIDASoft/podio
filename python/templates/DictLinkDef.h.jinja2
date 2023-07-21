@@ -1,3 +1,10 @@
+{% macro class_selection(class, prefix='', postfix='') %}
+{%- if class.namespace %}
+        #pragma link C++ class {{ class.namespace }}::{{ class.bare_type }}{{ postfix }}+;
+{%- else %}
+        #pragma link C++ class {{ class.bare_type }}{{ postfix }}+;
+{%- endif %}
+{% endmacro %}
 // See: https://root.cern.ch/selecting-dictionary-entries-linkdefh
 #ifdef __CINT__
 
@@ -7,7 +14,14 @@
 #pragma link C++ nestedclasses;
 
 {% for class in components %}
-#pragma link C++ class {{ class }}
+{{ class_selection(class) }}
+{% endfor %}
+
+{% for class in datatypes %}
+{{ class_selection(class) }}
+{{ class_selection(class, postfix='Data') }}
+{{ class_selection(class, postfix='Collection') }}
 {% endfor %}
 
 #endif
+
