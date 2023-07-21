@@ -36,7 +36,7 @@ PODIO_ADD_DATAMODEL_CORE_LIB(ExtensionDataModel "${ext_headers}" "${ext_sources}
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
 target_link_libraries(ExtensionDataModel PUBLIC TestDataModel)
 
-PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/src/selection.xml
+PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/extension_model/LinkDef.h
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
@@ -62,8 +62,8 @@ add_subdirectory(unittests)
 add_subdirectory(dumpmodel)
 
 # Tests that don't fit into one of the broad categories above
-CREATE_PODIO_TEST(ostream_operator.cpp "")
-CREATE_PODIO_TEST(write_ascii.cpp "")
+CREATE_PODIO_TEST(ostream_operator.cpp ROOT::Tree)
+CREATE_PODIO_TEST(write_ascii.cpp ROOT::Tree)
 
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)

@@ -163,7 +163,7 @@ private:
                                                     unsigned int localEntry);
 
   std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
-  std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
+  std::unordered_map<std::string, CategoryInfo> m_categories{}; //! All categories
   std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
 
   podio::version::Version m_fileVersion{0, 0, 0};

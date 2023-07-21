@@ -149,7 +149,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   ENDIF()
 
   IF(NOT ARG_IO_BACKEND_HANDLERS)
-    # At least build the ROOT selection.xml by default for now
+    # At least build the ROOT LinkDef.h by default for now
     SET(ARG_IO_BACKEND_HANDLERS "ROOT")
   ENDIF()
 

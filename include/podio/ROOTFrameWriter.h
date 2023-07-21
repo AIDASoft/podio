@@ -80,7 +80,7 @@ private:
                             /*const*/ podio::GenericParameters* parameters);
 
   std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
-  std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
+  std::unordered_map<std::string, CategoryInfo> m_categories{}; //! All categories
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 

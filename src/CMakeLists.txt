@@ -4,7 +4,7 @@
 #   libname         The base name for the library (and target)
 #   headers         The header files that should be passed to dictionary generation
 #   sources         The source files for the shared libraries
-#   selection       The selection xml passed to the dictionary generation
+#   linkdef         The linkdef file passed to the dictionary generation
 #
 # The function creates the following targets
 #   <libname>       The shared library. Also available under the podio::<libname> alias
@@ -19,7 +19,7 @@
 #   - <libname>Dict_rdict.pcm
 # these files have to be installed to the same directory as the dictionary shared
 # library
-FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
+FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources linkdef )
   # shared library
   add_library(${libname} SHARED ${sources})
   add_library(podio::${libname} ALIAS ${libname})
@@ -29,20 +29,11 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
 
   # dictionary
   set(dictname ${libname}Dict)
-  add_library(${dictname} SHARED)
-  target_include_directories(${dictname} PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
-  if(ENABLE_RNTUPLE)
-    target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
-  endif()
-  PODIO_GENERATE_DICTIONARY(${dictname} ${headers} SELECTION ${selection}
-    OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dictname}${CMAKE_SHARED_LIBRARY_SUFFIX}
-    )
-  # prevent generating dictionary twice
-  set_target_properties(${dictname}-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
-  target_sources(${dictname} PRIVATE ${dictname}.cxx)
+   
+  ROOT_GENERATE_DICTIONARY(${dictname} ${headers} LINKDEF ${linkdef}
+    MODULE ${libname}
+  )
+
 ENDFUNCTION()
 
 
@@ -73,7 +64,7 @@ SET(core_headers
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   )
 
-PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
+PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" DictLinkDef.h)
 target_compile_options(podio PRIVATE -pthread)
 
 
@@ -111,20 +102,6 @@ if(ENABLE_RNTUPLE)
   target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
 endif()
 
-
-# --- Python EventStore for enabling (legacy) python bindings
-SET(python_sources
-  IOHelpers.cc
-  PythonEventStore.cc
-  )
-
-SET(python_headers
-  ${PROJECT_SOURCE_DIR}/include/podio/PythonEventStore.h
-)
-PODIO_ADD_LIB_AND_DICT(podioPythonStore "${python_headers}" "${python_sources}" python_selection.xml)
-target_link_libraries(podioPythonStore PUBLIC podio::podio)
-target_link_libraries(podioPythonStore PRIVATE podio::podioRootIO)
-
 # --- SIO I/O functionality and corresponding dictionary
 if(ENABLE_SIO)
   SET(sio_sources
@@ -149,14 +126,11 @@ if(ENABLE_SIO)
   target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
   target_compile_definitions(podioSioIO PUBLIC PODIO_ENABLE_SIO=1)
 
-  # Make sure the legacy python bindings know about the SIO backend
-  target_link_libraries(podioPythonStore PRIVATE podioSioIO)
-
   LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
 endif()
 
 # --- Install everything
-install(TARGETS podio podioDict podioPythonStore podioPythonStoreDict podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
+install(TARGETS podio podioDict  podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
@@ -173,8 +147,6 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
   ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
-  ${CMAKE_CURRENT_BINARY_DIR}/podioPythonStoreDictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodioPythonStoreDict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 if (ENABLE_SIO)
