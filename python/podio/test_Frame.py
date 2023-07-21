@@ -18,7 +18,7 @@ EXPECTED_COLL_NAMES = {
     'emptyCollection', 'emptySubsetColl'
     }
 # The expected collections from the extension (only present in the other_events category)
-EXPECTED_EXTENSION_COLL_NAMES = {"extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation"}
+EXPECTED_EXTENSION_COLL_NAMES = {"extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation", "VectorMemberSubsetColl"}
 
 # The expected parameter names in each frame
 EXPECTED_PARAM_NAMES = {'anInt', 'UserEventWeight', 'UserEventName', 'SomeVectorData', 'SomeValue'}
