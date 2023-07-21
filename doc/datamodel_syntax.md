@@ -162,6 +162,6 @@ The podio `PODIO_GENERATE_DATAMODEL` cmake macro has gained an additional parame
 
 ### Potential pitfalls
 - The cmake macros do not handle linking against an upstream datamodel automatically. It is the users responsibility to explicitly link against the upstream datamodel.
-- When generating two datamodels side-by-side and into the same output directory and using the `ROOT` backend, the generated `selection.xml` file might be overwritten if both datamodels are generated into the same output directory.
+- When generating two datamodels side-by-side and into the same output directory and using the `ROOT` backend, the generated `LinkDef.h` file might be overwritten if both datamodels are generated into the same output directory.
 
 Limiting this functionality to one upstream datamodel is a conscious choice to limit the potential for abuse of this feature.
