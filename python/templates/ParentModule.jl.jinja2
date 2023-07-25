@@ -1,4 +1,4 @@
-{% for child in children['Components'] + children['Datatypes'] %}
+{% for child in children['Components'] + children['Datatypes'] + children['Collections'] %}
 include("{{ child }}.jl")
 {% endfor %}
 
@@ -8,9 +8,9 @@ module {{ package_name|capitalize }}
 using ..{{child}}Module: {{child}}
 export {{child}}
 {% endfor %}
-
-{% for child in children['Collections'] %}
-include("{{ child }}.jl")
+{% for child in children['Datatypes'] %}
+using ..{{child}}Module: {{child}}
+export {{child}}
 {% endfor %}
 
 end
