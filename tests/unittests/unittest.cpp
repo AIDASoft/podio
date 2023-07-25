@@ -782,6 +782,19 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
   }
 
   SECTION("Moved collections can be prepared") {
+    auto newHits = std::move(hitColl);
+    newHits.prepareForWrite();
+
+    auto newClusters = std::move(clusterColl);
+    newClusters.prepareForWrite();
+
+    auto newVecMems = std::move(vecMemColl);
+    newVecMems.prepareForWrite();
+
+    auto newUserData = std::move(userDataColl);
+    newUserData.prepareForWrite();
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
   }
 
   SECTION("Prepared collections can be move assigned") {
