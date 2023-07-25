@@ -12,6 +12,7 @@ set(root_dependent_tests
   read_frame_legacy_root.cpp
   read_frame_root_multiple.cpp
   read_python_frame_root.cpp
+  read_and_write_frame_root.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -33,8 +34,16 @@ set_property(TEST read-multiple PROPERTY DEPENDS write)
 set_property(TEST read_and_write PROPERTY DEPENDS write)
 set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
-set_property(TEST read_frame_root PROPERTY DEPENDS write_frame_root)
-set_property(TEST read_frame_root_multiple PROPERTY DEPENDS write_frame_root)
+
+set_tests_properties(
+  read_frame_root
+  read_frame_root_multiple
+  read_and_write_frame_root
+
+  PROPERTIES
+    DEPENDS write_frame_root
+)
+
 if(ENABLE_RNTUPLE)
   set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
 endif()
