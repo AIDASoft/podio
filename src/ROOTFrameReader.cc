@@ -155,7 +155,7 @@ void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& cat
 
   // For backwards compatibility make it possible to read the index based files
   // from older versions
-  if (m_fileVersion <= podio::version::Version{0, 16, 5}) {
+  if (m_fileVersion <= podio::version::Version{0, 16, 6}) {
     std::tie(catInfo.branches, catInfo.storedClasses) =
         createCollectionBranchesIndexBased(catInfo.chain.get(), *catInfo.table, *collInfo);
   } else {

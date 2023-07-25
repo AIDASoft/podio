@@ -45,6 +45,7 @@ set(legacy_test_versions
   v00-16
   v00-16-02
   v00-16-05
+  v00-16-06
 )
 
 ### Define the actual tests
