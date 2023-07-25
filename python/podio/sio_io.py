@@ -9,8 +9,7 @@ if ret < 0:
 from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
-
-Writer = podio.SIOFrameWriter
+from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
 
 
 class Reader(BaseReaderMixin):
@@ -46,3 +45,14 @@ class LegacyReader(BaseReaderMixin):
     self._is_legacy = True
 
     super().__init__()
+
+
+class Writer(BaseWriterMixin):
+  """Writer class for writing podio root files"""
+  def __init__(self, filename):
+    """Create a writer for writing files
+
+    Args:
+        filename (str): The name of the output file
+    """
+    self._writer = podio.SIOFrameWriter(filename)

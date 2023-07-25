@@ -48,14 +48,36 @@ def _determine_supported_parameter_types():
 SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
 
 
-def _get_cpp_vector_types(type_str):
-  """Get the possible std::vector<cpp_type> from the passed py_type string."""
-  # Gather a list of all types that match the type_str (c++ or python)
+def _get_cpp_types(type_str):
+  """Get all possible c++ types from the passed py_type string."""
   types = list(filter(lambda t: type_str in t, SUPPORTED_PARAMETER_TYPES))
   if not types:
     raise ValueError(f'{type_str} cannot be mapped to a valid parameter type')
 
+  return types
+
+
+def _get_cpp_vector_types(type_str):
+  """Get the possible std::vector<cpp_type> from the passed py_type string."""
+  # Gather a list of all types that match the type_str (c++ or python)
+  types = _get_cpp_types(type_str)
   return [f'std::vector<{t}>' for t in map(lambda x: x[0], types)]
+
+
+def _is_collection_base(thing):
+  """Check whether the passed thing is a podio::CollectionBase
+
+  Args:
+      thing (any): any object
+
+  Returns:
+      bool: True if thing is a base of podio::CollectionBase, False otherwise
+  """
+  # Make sure to only instantiate the template with things that cppyy
+  # understands
+  if "cppyy" in repr(thing):
+    return cppyy.gbl.std.is_base_of[cppyy.gbl.podio.CollectionBase, type(thing)].value
+  return False
 
 
 class Frame:
@@ -78,17 +100,16 @@ class Frame:
     else:
       self._frame = podio.Frame()
 
-    self._collections = tuple(str(s) for s in self._frame.getAvailableCollections())
-    self._param_key_types = self._init_param_keys()
+    self._param_key_types = self._get_param_keys_types()
 
   @property
   def collections(self):
-    """Get the available collection (names) from this Frame.
+    """Get the currently available collection (names) from this Frame.
 
     Returns:
         tuple(str): The names of the available collections from this Frame.
     """
-    return self._collections
+    return tuple(str(s) for s in self._frame.getAvailableCollections())
 
   def get(self, name):
     """Get a collection from the Frame by name.
@@ -107,9 +128,32 @@ class Frame:
       raise KeyError(f"Collection '{name}' is not available")
     return collection
 
+  def put(self, collection, name):
+    """Put the collection into the frame
+
+    The passed collectoin is "moved" into the Frame, i.e. it cannot be used any
+    longer after a call to this function. This also means that only objects that
+    were in the collection at the time of calling this function will be
+    available afterwards.
+
+    Args:
+        collection (podio.CollectionBase): The collection to put into the Frame
+        name (str): The name of the collection
+
+    Returns:
+        podio.CollectionBase: The reference to the collection that has been put
+            into the Frame. NOTE: That mutating this collection is not allowed.
+
+    Raises:
+        ValueError: If collection is not actually a podio.CollectionBase
+    """
+    if not _is_collection_base(collection):
+      raise ValueError("Can only put podio collections into a Frame")
+    return self._frame.put(cppyy.gbl.std.move(collection), name)
+
   @property
   def parameters(self):
-    """Get the available parameter names from this Frame.
+    """Get the currently available parameter names from this Frame.
 
     Returns:
         tuple (str): The names of the available parameters from this Frame.
@@ -163,6 +207,58 @@ class Frame:
 
     return _get_param_value(vec_types[0], name)
 
+  def put_parameter(self, key, value, as_type=None):
+    """Put a parameter into the Frame.
+
+    Puts a parameter into the Frame after doing some (incomplete) type checks.
+    If a list is passed the parameter type is determined from looking at the
+    first element of the list only. Additionally, since python doesn't
+    differentiate between floats and doubles, floats will always be stored as
+    doubles by default, use the as_type argument to change this if necessary.
+
+    Args:
+        key (str): The name of the parameter
+        value (int, float, str or list of these): The parameter value
+        as_type (str, optional): Explicitly specify the type that should be used
+            to put the parameter into the Frame. Python types (e.g. "str") will
+            be converted to c++ types. This will override any automatic type
+            deduction that happens otherwise. Note that this will be taken at
+            pretty much face-value and there are only limited checks for this.
+
+    Raises:
+        ValueError: If a non-supported parameter type is passed
+    """
+    # For lists we determine the c++ vector type and use that to call the
+    # correct template overload explicitly
+    if isinstance(value, (list, tuple)):
+      type_name = as_type or type(value[0]).__name__
+      vec_types = _get_cpp_vector_types(type_name)
+      if len(vec_types) == 0:
+        raise ValueError(f"Cannot put a parameter of type {type_name} into a Frame")
+
+      par_type = vec_types[0]
+      if isinstance(value[0], float):
+        # Always store floats as doubles from the python side
+        par_type = par_type.replace("float", "double")
+
+      self._frame.putParameter[par_type](key, value)
+    else:
+      if as_type is not None:
+        cpp_types = _get_cpp_types(as_type)
+        if len(cpp_types) == 0:
+          raise ValueError(f"Cannot put a parameter of type {as_type} into a Frame")
+        self._frame.putParameter[cpp_types[0]](key, value)
+
+      # If we have a single integer, a std::string overload kicks in with higher
+      # priority than the template for some reason. So we explicitly select the
+      # correct template here
+      elif isinstance(value, int):
+        self._frame.putParameter["int"](key, value)
+      else:
+        self._frame.putParameter(key, value)
+
+    self._param_key_types = self._get_param_keys_types()  # refresh the cache
+
   def get_parameters(self):
     """Get the complete podio::GenericParameters object stored in this Frame.
 
@@ -200,7 +296,7 @@ class Frame:
 
     return par_infos
 
-  def _init_param_keys(self):
+  def _get_param_keys_types(self):
     """Initialize the param keys dict for easier lookup of the available parameters.
 
     Returns:
