@@ -64,7 +64,7 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
 void checkVecMemSubsetColl(const podio::Frame& event) {
   const auto& subsetColl = event.get<ExampleWithVectorMemberCollection>("VectorMemberSubsetColl");
   const auto& origColl = event.get<ExampleWithVectorMemberCollection>("WithVectorMember");
-  ASSERT(subsetColl.isSubsetCollection(), "subset collection not read back as a sbuset collection");
+  ASSERT(subsetColl.isSubsetCollection(), "subset collection not read back as a subset collection");
   ASSERT(subsetColl.size() == 1, "subset collection should have size 1");
   ASSERT(subsetColl[0] == origColl[0], "subset coll does not have the right contents");
 }
