@@ -40,18 +40,18 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type version
   }
 
 {% if VectorMembers %}
+  if (not m_subsetColl) {
 {% for member in VectorMembers %}
-  // auto {{ member.name }}Buffers = new std::vector<{{ member.full_type }}>();
-  // m_buffers.vectorMembers->emplace_back("{{ member.full_type }}", &{{ member.name }}Buffers);
-  m_buffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>());
+    m_buffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>());
 {% endfor %}
-  //---- read vector members
-  auto* vecMemInfo = m_buffers.vectorMembers;
-  unsigned size{0};
+    //---- read vector members
+    auto* vecMemInfo = m_buffers.vectorMembers;
+    unsigned size{0};
 
 {% for member in VectorMembers %}
 {{ macros.vector_member_read(member, loop.index0) }}
 {% endfor %}
+  }
 {% endif %}
 }
 
@@ -72,13 +72,15 @@ void {{ block_class }}::write(sio::write_device& device) {
   }
 
 {% if VectorMembers %}
-  //---- write vector members
-  auto* vecMemInfo = m_buffers.vectorMembers;
-  unsigned size{0};
+  if (not m_subsetColl) {
+    //---- write vector members
+    auto* vecMemInfo = m_buffers.vectorMembers;
+    unsigned size{0};
 
 {% for member in VectorMembers %}
 {{ macros.vector_member_write(member, loop.index0) }}
 {% endfor %}
+  }
 {% endif %}
 }
 

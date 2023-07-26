@@ -1,6 +1,7 @@
 #ifndef PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "read_test.h"
 
 #include "extension_model/ContainedTypeCollection.h"
@@ -60,6 +61,14 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
   ASSERT(structs[2].y == 2 * iEvent, "struct value not as expected");
 }
 
+void checkVecMemSubsetColl(const podio::Frame& event) {
+  const auto& subsetColl = event.get<ExampleWithVectorMemberCollection>("VectorMemberSubsetColl");
+  const auto& origColl = event.get<ExampleWithVectorMemberCollection>("WithVectorMember");
+  ASSERT(subsetColl.isSubsetCollection(), "subset collection not read back as a subset collection");
+  ASSERT(subsetColl.size() == 1, "subset collection should have size 1");
+  ASSERT(subsetColl[0] == origColl[0], "subset coll does not have the right contents");
+}
+
 template <typename ReaderT>
 int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   auto reader = ReaderT();
@@ -111,6 +120,10 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     // The other_events category also holds external collections
     if (reader.currentFileVersion() > podio::version::Version{0, 16, 2}) {
       processExtensions(otherFrame, i + 100, reader.currentFileVersion());
+    }
+    // As well as a test for the vector members subset category
+    if (reader.currentFileVersion() >= podio::version::Version{0, 16, 99}) {
+      checkVecMemSubsetColl(otherFrame);
     }
   }
 

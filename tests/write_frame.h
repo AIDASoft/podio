@@ -215,6 +215,15 @@ auto createVectorMemberCollection(int i) {
   return vecs;
 }
 
+auto createVectorMemberSubsetCollection(const ExampleWithVectorMemberCollection& coll) {
+  ExampleWithVectorMemberCollection refs;
+  refs.setSubsetCollection();
+
+  refs.push_back(coll[0]);
+
+  return refs;
+}
+
 auto createInfoCollection(int i) {
   EventInfoCollection info;
 
@@ -361,7 +370,8 @@ podio::Frame makeFrame(int iFrame) {
   podio::Frame frame{};
 
   frame.put(createArrayCollection(iFrame), "arrays");
-  frame.put(createVectorMemberCollection(iFrame), "WithVectorMember");
+  const auto& vecMemColl = frame.put(createVectorMemberCollection(iFrame), "WithVectorMember");
+  frame.put(createVectorMemberSubsetCollection(vecMemColl), "VectorMemberSubsetColl");
   frame.put(createInfoCollection(iFrame), "info");
   frame.put(createFixedWidthCollection(), "fixedWidthInts");
 
