@@ -41,6 +41,11 @@ PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
 
+target_link_libraries(ExtensionDataModel PUBLIC TestDataModel)
+if (ENABLE_SIO)
+  target_link_libraries(ExtensionDataModel PRIVATE TestDataModelSioBlocks)
+endif()
+
 set(legacy_test_versions
   v00-16
   v00-16-02

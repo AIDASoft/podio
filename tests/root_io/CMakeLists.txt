@@ -58,7 +58,9 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
   message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
   add_executable(read-legacy-files-root read-legacy-files-root.cpp)
   target_link_libraries(read-legacy-files-root PRIVATE TestDataModel podio::podioRootIO)
-
+  if (ENABLE_SIO)
+    target_link_libraries(read-legacy-files-root PRIVATE TestDataModelSioBlocks)
+  endif()
   # Add a legacy test case based on a base executable and a version for which an
   # input file exists
   macro(ADD_PODIO_LEGACY_TEST version base_test input_file)

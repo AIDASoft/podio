@@ -43,7 +43,7 @@ find_package(Threads REQUIRED)
 add_executable(unittest unittest.cpp frame.cpp)
 target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 if (ENABLE_SIO)
-  target_link_libraries(unittest PRIVATE podio::podioSioIO)
+  target_link_libraries(unittest PRIVATE podio::podioSioIO TestDataModelSioBlocks)
 endif()
 
 # The unittests can easily be filtered and they are labelled so we can put together a

@@ -23,7 +23,12 @@ function(CREATE_PODIO_TEST sourcefile additional_libs)
   add_executable( ${name} ${sourcefile} )
   add_test(NAME ${name} COMMAND ${name})
 
-  target_link_libraries(${name} PRIVATE TestDataModel ExtensionDataModel ${additional_libs})
+if (ENABLE_SIO)
+  target_link_libraries(${name} PRIVATE TestDataModel ExtensionDataModel ${additional_libs} TestDataModelSioBlocks ExtensionDataModelSioBlocks)
+else()
+  target_link_libraries(${name} PRIVATE TestDataModel ExtensionDataModel ${additional_libs} )
+endif()
+
   PODIO_SET_TEST_ENV(${name})
 endfunction()
 

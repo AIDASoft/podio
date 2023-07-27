@@ -67,6 +67,7 @@ SET(core_headers
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" DictLinkDef.h)
 target_compile_options(podio PRIVATE -pthread)
 
+target_link_libraries(podio ROOT::RIO)
 
 # --- Root I/O functionality and corresponding dictionary
 SET(root_sources
@@ -122,7 +123,7 @@ if(ENABLE_SIO)
     ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameWriter.h
     )
 
-  PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" sio_selection.xml)
+  PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" SioLinkDef.h)
   target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
   target_compile_definitions(podioSioIO PUBLIC PODIO_ENABLE_SIO=1)
 
