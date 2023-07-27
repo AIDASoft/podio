@@ -96,7 +96,7 @@ if(ENABLE_RNTUPLE)
      )
 endif()
 
-PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" root_selection.xml)
+PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" RootLinkDef.h)
 target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree)
 if(ENABLE_RNTUPLE)
   target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
