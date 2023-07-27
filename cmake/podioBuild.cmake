@@ -50,7 +50,7 @@ macro(podio_set_compiler_flags)
   # build Catch2 locally without them
   SET(CXX_FLAGS_CMAKE_DEFAULTS "${CMAKE_CXX_FLAGS}")
 
-  SET(COMPILER_FLAGS -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Wall -Wextra -pedantic -Weffc++)
+  SET(COMPILER_FLAGS -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Wall -Wextra -pedantic )
 
   # AppleClang/Clang specific warning flags
   if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
