@@ -296,6 +296,10 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS LINKDEF)
     RETURN()
   ENDIF()
 
+  # Filter out anything I/O backend related from the generated headers as ROOT only needs
+  # the core headers
+  LIST(FILTER HEADERS EXCLUDE REGEX .*SIOBlock.h)
+
   ROOT_GENERATE_DICTIONARY(${dict_name} ${HEADERS} LINKDEF ${selectionfile}
     MODULE ${CORE_LIB}
     )
