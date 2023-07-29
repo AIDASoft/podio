@@ -140,11 +140,15 @@ class ClassGenerator:
       namespace[parent_namespace]['Datatypes'].append(child)
       namespace[parent_namespace]['Collections'].append(child + 'Collection')
 
+    namespace_dict = {}
+    namespace_dict['class'] = DataType(self.package_name.capitalize())
+    namespace_dict['children'] = []
     for parent, child in namespace.items():
-      namespace_dict = {}
-      namespace_dict['class'] = DataType(parent)
-      namespace_dict['children'] = child
-      self._fill_templates("ParentModule", namespace_dict)
+      if(parent!=""):
+        namespace_dict['children'].append({'parent' : parent, 'child' : child})
+      else:
+        namespace_dict['children'].append({'parent' : self.package_name, 'child' : child})
+    self._fill_templates("ParentModule", namespace_dict)
 
   def process(self):
     """Run the actual generation"""
