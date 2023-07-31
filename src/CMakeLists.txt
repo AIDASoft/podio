@@ -131,7 +131,7 @@ if(ENABLE_SIO)
 endif()
 
 # --- Install everything
-install(TARGETS podio podioDict  podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
+install(TARGETS podio podioDict podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
@@ -144,16 +144,16 @@ else()
 endif()
 
 install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
-  ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodio.rootmap
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodio_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIO.rootmap
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIO_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 if (ENABLE_SIO)
   install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/podioSioIODictDict.rootmap
-    ${CMAKE_CURRENT_BINARY_DIR}/libpodioSioIODict_rdict.pcm
+    ${CMAKE_CURRENT_BINARY_DIR}/libpodioSioIO.rootmap
+    ${CMAKE_CURRENT_BINARY_DIR}/libpodioSioIO_rdict.pcm
     DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     )
 endif()
