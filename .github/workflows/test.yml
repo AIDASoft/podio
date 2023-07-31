@@ -40,7 +40,7 @@ jobs:
             -DENABLE_RNTUPLE=${{ matrix.RNTUPLE }} \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=${{ matrix.CXX_STANDARD }} \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
+            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations -Wno-error=deprecated-copy-dtor -Wno-error=shadow" \
             -DUSE_EXTERNAL_CATCH2=OFF \
             -G Ninja ..
           echo "::endgroup::"
