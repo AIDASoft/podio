@@ -29,7 +29,7 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources linkdef )
 
   # dictionary
   set(dictname ${libname}Dict)
-   
+
   ROOT_GENERATE_DICTIONARY(${dictname} ${headers} LINKDEF ${linkdef}
     MODULE ${libname}
   )
