@@ -22,6 +22,7 @@
 
 {{ utils.namespace_open(class.namespace) }}
 class Mutable{{ class.bare_type }};
+class {{ class.bare_type }}Collection;
 
 {{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
@@ -31,6 +32,9 @@ class {{ class.bare_type }} {
   friend class {{ class.bare_type }}CollectionIterator;
 
 public:
+  using mutable_type = Mutable{{ class.bare_type }};
+  using collection_type = {{ class.bare_type }}Collection;
+
 {{ macros.constructors_destructors(class.bare_type, Members) }}
 
 public:
