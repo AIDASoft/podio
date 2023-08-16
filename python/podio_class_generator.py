@@ -144,10 +144,10 @@ class ClassGenerator:
     namespace_dict['class'] = DataType(self.package_name.capitalize())
     namespace_dict['children'] = []
     for parent, child in namespace.items():
-      if(parent!=""):
-        namespace_dict['children'].append({'parent' : parent, 'child' : child})
+      if parent != "":
+        namespace_dict['children'].append({'parent': parent, 'child': child})
       else:
-        namespace_dict['children'].append({'parent' : self.package_name, 'child' : child})
+        namespace_dict['children'].append({'parent': self.package_name, 'child': child})
     self._fill_templates("ParentModule", namespace_dict)
 
   def process(self):
