@@ -9,8 +9,7 @@ using .ExampleWithOneRelationModule: ExampleWithOneRelation
 include("datamodel/ExampleCluster.jl")
 using .ExampleClusterModule: ExampleCluster
 include("datamodel/ExampleMCCollection.jl")
-include("datamodel/ex2.jl")
-include("datamodel/ex42.jl")
+include("datamodel/Datamodel.jl")
 
 using Test
 @testset "Julia Bindings" begin
@@ -104,7 +103,7 @@ using Test
 
 	@testset "Namespaces" begin
 
-		using .ex2: NamespaceStruct, NamespaceInNamespaceStruct
+		using .Ex2: NamespaceStruct, NamespaceInNamespaceStruct
 
 		s1 = NamespaceStruct()
 		s1.x = Int32(1)
@@ -113,7 +112,7 @@ using Test
 		s2 = NamespaceInNamespaceStruct()
 		s2.data = s1
 
-		using .ex42: ExampleWithNamespace, ExampleWithARelation
+		using .Ex42: ExampleWithNamespace, ExampleWithARelation
 
 		s3 = NamespaceStruct()
 		s3.x = Int32(2)

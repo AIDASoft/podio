@@ -10,7 +10,7 @@ export {{ class.bare_type }}
 function {{ class.bare_type }}(
     {% for member in Members %}
 	{% if member.is_array %}
-	{{ member.name }}::{{ member.julia_type }} = Main.{{ member.julia_type }}(undef),
+	{{ member.name }}::Main.{{ member.julia_type }} = Main.{{ member.julia_type }}(undef),
 	{% elif member.is_builtin %}
 	{{ member.name }}::{{ member.julia_type }} = {{ member.julia_type }}(0),
 	{% else %}
