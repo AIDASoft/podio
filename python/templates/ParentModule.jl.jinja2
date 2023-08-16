@@ -1,15 +1,15 @@
-{% for value in children %}
-{% for childvalue in value['child']['Components'] +  value['child']['Datatypes'] +  value['child']['Collections'] %}
-include("{{ childvalue }}.jl")
-{% endfor %}
+module {{ class }}
+{% for child in Components + Datatypes %}
+include("{{ child}}.jl")
 {% endfor %}
 
-{% for value in children %}
-module {{  value['parent']|capitalize }}
-{% for childvalue in  value['child']['Components'] +  value['child']['Datatypes'] %}
-using ..{{childvalue}}Module: {{childvalue}}
-export {{childvalue}}
+{% for child in Components %}
+using .{{child}}Module
+export {{child}}
+{% endfor %}
+{% for child in Datatypes %}
+using .{{child}}Module
+export {{child}}
+export {{child}}Collection
 {% endfor %}
 end
-
-{% endfor %}
