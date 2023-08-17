@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 """
 Tests for the MemberParser highlighting what it is currently capable of and
@@ -6,7 +7,7 @@ what trips it up
 
 import unittest
 
-from podio_config_reader import MemberParser, DefinitionError
+from podio.podio_config_reader import MemberParser, DefinitionError
 
 
 class MemberParserTest(unittest.TestCase):
@@ -216,6 +217,7 @@ class MemberParserTest(unittest.TestCase):
       try:
         self.assertRaises(DefinitionError, parser.parse, inp)
       except AssertionError:
+        # pylint: disable-next=raise-missing-from
         raise AssertionError(f"'{inp}' should raise a DefinitionError from the MemberParser")
 
   def test_parse_valid_no_description(self):
