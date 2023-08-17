@@ -3,6 +3,7 @@
 
 #include "podio/BenchmarkRecorder.h"
 #include "podio/BenchmarkUtil.h"
+#include "podio/utilities/Deprecated.h"
 
 #include <chrono>
 #include <string>
@@ -10,7 +11,7 @@
 namespace podio {
 
 template <class WrappedWriter>
-class TimedWriter {
+class DEPR_EVTSTORE TimedWriter {
   using ClockT = benchmark::ClockT;
 
 public:

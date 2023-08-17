@@ -1,6 +1,8 @@
 #ifndef PODIO_COLLECTIONIDTABLE_H
 #define PODIO_COLLECTIONIDTABLE_H
 
+#include <cstdint>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -10,18 +12,24 @@ namespace podio {
 class CollectionIDTable {
 
 public:
-  /// default constructor
-  CollectionIDTable() = default;
+  CollectionIDTable();
+  ~CollectionIDTable() = default;
+
+  CollectionIDTable(const CollectionIDTable&) = delete;
+  CollectionIDTable& operator=(const CollectionIDTable&) = delete;
+  CollectionIDTable(CollectionIDTable&&) = default;
+  CollectionIDTable& operator=(CollectionIDTable&&) = default;
 
   /// constructor from existing ID:name mapping
-  CollectionIDTable(std::vector<int>&& ids, std::vector<std::string>&& names) :
-      m_collectionIDs(std::move(ids)), m_names(std::move(names)){};
+  CollectionIDTable(std::vector<uint32_t>&& ids, std::vector<std::string>&& names);
+
+  CollectionIDTable(const std::vector<uint32_t>& ids, const std::vector<std::string>& names);
 
   /// return collection ID for given name
-  int collectionID(const std::string& name) const;
+  uint32_t collectionID(const std::string& name) const;
 
   /// return name for given collection ID
-  const std::string name(int collectionID) const;
+  const std::string name(uint32_t collectionID) const;
 
   /// Check if collection name is known
   bool present(const std::string& name) const;
@@ -32,21 +40,26 @@ public:
   };
 
   /// return the ids
-  const std::vector<int>& ids() const {
+  const std::vector<uint32_t>& ids() const {
     return m_collectionIDs;
   }
 
   /// register new name to the table
   /// returns assigned collection ID
-  int add(const std::string& name);
+  uint32_t add(const std::string& name);
 
   /// Prints collection information
   void print() const;
 
+  /// Does this table hold any information?
+  bool empty() const {
+    return m_names.empty();
+  }
+
 private:
-  std::vector<int> m_collectionIDs{};
+  std::vector<uint32_t> m_collectionIDs{};
   std::vector<std::string> m_names{};
-  mutable std::mutex m_mutex{};
+  mutable std::unique_ptr<std::mutex> m_mutex{nullptr};
 };
 
 } // namespace podio

@@ -6,6 +6,7 @@
 #include <podio/EventStore.h>
 #include <podio/GenericParameters.h>
 #include <podio/podioVersion.h>
+#include <podio/utilities/TypeHelpers.h>
 
 #include <sio/block.h>
 #include <sio/io_device.h>
@@ -14,6 +15,9 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
+#include <tuple>
+#include <vector>
 
 namespace podio {
 
@@ -22,6 +26,34 @@ void handlePODDataSIO(devT& device, PODData* data, size_t size) {
   unsigned count = size * sizeof(PODData);
   char* dataPtr = reinterpret_cast<char*>(data);
   device.data(dataPtr, count);
+}
+
+/// Write anything that iterates like an std::map
+template <typename MapLikeT>
+void writeMapLike(sio::write_device& device, const MapLikeT& map) {
+  device.data((int)map.size());
+  for (const auto& [key, value] : map) {
+    device.data(key);
+    device.data(value);
+  }
+}
+
+/// Read anything that iterates like an std::map
+template <typename MapLikeT>
+void readMapLike(sio::read_device& device, MapLikeT& map) {
+  int size;
+  device.data(size);
+  while (size--) {
+    detail::GetKeyType<MapLikeT> key;
+    device.data(key);
+    detail::GetMappedType<MapLikeT> value;
+    device.data(value);
+    if constexpr (podio::detail::isVector<MapLikeT>) {
+      map.emplace_back(std::move(key), std::move(value));
+    } else {
+      map.emplace(std::move(key), std::move(value));
+    }
+  }
 }
 
 /// Base class for sio::block handlers used with PODIO
@@ -35,24 +67,31 @@ public:
   SIOBlock& operator=(const SIOBlock&) = delete;
 
   podio::CollectionBase* getCollection() {
-    return _col;
+    return m_buffers.createCollection(m_buffers, m_subsetColl).release();
+  }
+
+  podio::CollectionReadBuffers getBuffers() const {
+    return m_buffers;
   }
 
   std::string name() {
     return sio::block::name();
   }
 
+  void setSubsetCollection(bool subsetColl) {
+    m_subsetColl = subsetColl;
+  }
+
   void setCollection(podio::CollectionBase* col) {
-    _col = col;
+    m_subsetColl = col->isSubsetCollection();
+    m_buffers = col->getBuffers();
   }
 
   virtual SIOBlock* create(const std::string& name) const = 0;
 
-  // create a new collection for this block
-  virtual void createCollection(const bool subsetCollection = false) = 0;
-
 protected:
-  podio::CollectionBase* _col{};
+  bool m_subsetColl{false};
+  podio::CollectionReadBuffers m_buffers{};
 };
 
 /**
@@ -64,6 +103,15 @@ public:
   }
 
   SIOCollectionIDTableBlock(podio::EventStore* store);
+
+  SIOCollectionIDTableBlock(std::vector<std::string>&& names, std::vector<uint32_t>&& ids,
+                            std::vector<std::string>&& types, std::vector<short>&& isSubsetColl) :
+      sio::block("CollectionIDs", sio::version::encode_version(0, 3)),
+      _names(std::move(names)),
+      _ids(std::move(ids)),
+      _types(std::move(types)),
+      _isSubsetColl(std::move(isSubsetColl)) {
+  }
 
   SIOCollectionIDTableBlock(const SIOCollectionIDTableBlock&) = delete;
   SIOCollectionIDTableBlock& operator=(const SIOCollectionIDTableBlock&) = delete;
@@ -83,7 +131,7 @@ public:
 
 private:
   std::vector<std::string> _names{};
-  std::vector<int> _ids{};
+  std::vector<uint32_t> _ids{};
   std::vector<std::string> _types{};
   std::vector<short> _isSubsetColl{};
 };
@@ -112,7 +160,7 @@ struct SIOVersionBlock : public sio::block {
  */
 class SIOEventMetaDataBlock : public sio::block {
 public:
-  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 1)) {
+  SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 2)) {
   }
 
   SIOEventMetaDataBlock(const SIOEventMetaDataBlock&) = delete;
@@ -125,11 +173,37 @@ public:
 };
 
 /**
+ * A block to serialize anything that behaves similar in iterating as a
+ * map<KeyT, ValueT>, e.g. vector<tuple<KeyT, ValueT>>, which is what is used
+ * internally to represent the data to be written.
+ */
+template <typename KeyT, typename ValueT>
+struct SIOMapBlock : public sio::block {
+  SIOMapBlock() : sio::block("SIOMapBlock", sio::version::encode_version(0, 1)) {
+  }
+  SIOMapBlock(std::vector<std::tuple<KeyT, ValueT>>&& data) :
+      sio::block("SIOMapBlock", sio::version::encode_version(0, 1)), mapData(std::move(data)) {
+  }
+
+  SIOMapBlock(const SIOMapBlock&) = delete;
+  SIOMapBlock& operator=(const SIOMapBlock&) = delete;
+
+  void read(sio::read_device& device, sio::version_type) override {
+    readMapLike(device, mapData);
+  }
+  void write(sio::write_device& device) override {
+    writeMapLike(device, mapData);
+  }
+
+  std::vector<std::tuple<KeyT, ValueT>> mapData{};
+};
+
+/**
  * A block for handling the run and collection meta data
  */
 class SIONumberedMetaDataBlock : public sio::block {
 public:
-  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 1)) {
+  SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 2)) {
   }
 
   SIONumberedMetaDataBlock(const SIONumberedMetaDataBlock&) = delete;
@@ -146,7 +220,7 @@ class SIOBlockFactory {
 private:
   SIOBlockFactory() = default;
 
-  typedef std::map<std::string, SIOBlock*> BlockMap;
+  typedef std::unordered_map<std::string, SIOBlock*> BlockMap;
   BlockMap _map{};
 
 public:
@@ -169,15 +243,20 @@ public:
 class SIOBlockLibraryLoader {
 private:
   SIOBlockLibraryLoader();
+
+  /// Status code for loading shared SIOBlocks libraries
+  enum class LoadStatus : short { Success = 0, AlreadyLoaded = 1, Error = 2 };
+
   /**
    * Load a library with the given name via dlopen
    */
-  void loadLib(const std::string& libname);
+  LoadStatus loadLib(const std::string& libname);
+
   /**
    * Get all files that are found on LD_LIBRARY_PATH and that have "SioBlocks"
-   * in their name
+   * in their name together with the directory they are in
    */
-  static std::vector<std::string> getLibNames();
+  static std::vector<std::tuple<std::string, std::string>> getLibNames();
 
   std::map<std::string, void*> _loadedLibs{};
 
@@ -197,6 +276,9 @@ namespace sio_helpers {
   /// The name of the TOCRecord
   static constexpr const char* SIOTocRecordName = "podio_SIO_TOC_Record";
 
+  /// The name of the record containing the EDM definitions in json format
+  static constexpr const char* SIOEDMDefinitionName = "podio_SIO_EDMDefinitions";
+
   // should hopefully be enough for all practical purposes
   using position_type = uint32_t;
 } // namespace sio_helpers
@@ -207,6 +289,17 @@ public:
   void addRecord(const std::string& name, PositionType startPos);
 
   size_t getNRecords(const std::string& name) const;
+
+  /** Get the position of the iEntry-th record with the given name. If no entry
+   * with the given name is recorded, return 0. Note there is no internal check
+   * on whether the given name actually has iEntry records. Use getNRecords to
+   * check for that if necessary.
+   */
+  PositionType getPosition(const std::string& name, unsigned iEntry = 0) const;
+
+  /** Get all the record names that are stored in this TOC record
+   */
+  std::vector<std::string_view> getRecordNames() const;
 
 private:
   friend struct SIOFileTOCRecordBlock;
@@ -219,6 +312,10 @@ private:
 
 struct SIOFileTOCRecordBlock : public sio::block {
   SIOFileTOCRecordBlock() : sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)) {
+  }
+
+  SIOFileTOCRecordBlock(SIOFileTOCRecord* r) :
+      sio::block(sio_helpers::SIOTocRecordName, sio::version::encode_version(0, 1)), record(r) {
   }
 
   SIOFileTOCRecordBlock(const SIOFileTOCRecordBlock&) = delete;

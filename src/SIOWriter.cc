@@ -4,6 +4,8 @@
 #include "podio/EventStore.h"
 #include "podio/SIOBlock.h"
 
+#include "sioUtils.h"
+
 // SIO specifc includes
 #include "sio/block.h"
 #include "sio/compression/zlib.h"
@@ -32,6 +34,12 @@ SIOWriter::SIOWriter(const std::string& filename, EventStore* store) :
   auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
 }
 
+SIOWriter::~SIOWriter() {
+  if (!m_finished) {
+    finish();
+  }
+}
+
 void SIOWriter::writeEvent() {
   if (m_firstEvent) {
     // Write the collectionIDs as a separate record at the beginning of the
@@ -41,23 +49,8 @@ void SIOWriter::writeEvent() {
     m_firstEvent = false;
   }
 
-  m_buffer.clear();
-  m_com_buffer.clear();
-
   auto blocks = createBlocks();
-
-  // write the record to the sio buffer
-  auto rec_info = sio::api::write_record("event_record", m_buffer, blocks, 0);
-
-  // use zlib to compress the record into another buffer
-  sio::zlib_compression compressor;
-  compressor.set_level(6); // Z_DEFAULT_COMPRESSION==6
-  sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
-
-  // and now write record to the file !
-  sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
-
-  m_tocRecord.addRecord("event_record", rec_info._file_start);
+  m_tocRecord.addRecord("event_record", sio_utils::writeRecord(blocks, "event_record", m_stream));
 }
 
 sio::block_list SIOWriter::createBlocks() const {
@@ -67,6 +60,7 @@ sio::block_list SIOWriter::createBlocks() const {
   for (const auto& name : m_collectionsToWrite) {
     const podio::CollectionBase* col{nullptr};
     m_store->get(name, col);
+    col->prepareForWrite();
 
     blocks.emplace_back(podio::SIOBlockFactory::instance().createBlock(col, name));
   }
@@ -75,50 +69,31 @@ sio::block_list SIOWriter::createBlocks() const {
 }
 
 void SIOWriter::finish() {
-  m_buffer.clear();
-  m_com_buffer.clear();
-
   sio::block_list blocks{};
   blocks.push_back(m_runMetaData);
 
-  auto rec_info = sio::api::write_record(m_runMetaData->name(), m_buffer, blocks, 0);
-  sio::zlib_compression compressor;
-  compressor.set_level(6);
-  sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
-  sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
-
-  m_tocRecord.addRecord(m_runMetaData->name(), rec_info._file_start);
+  m_tocRecord.addRecord(m_runMetaData->name(), sio_utils::writeRecord(blocks, m_runMetaData->name(), m_stream));
 
   blocks.clear();
-  m_buffer.clear();
-  m_com_buffer.clear();
-
   blocks.push_back(m_collectionMetaData);
-  rec_info = sio::api::write_record(m_collectionMetaData->name(), m_buffer, blocks, 0);
-  sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
-  sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
-
-  m_tocRecord.addRecord(m_collectionMetaData->name(), rec_info._file_start);
+  m_tocRecord.addRecord(m_collectionMetaData->name(),
+                        sio_utils::writeRecord(blocks, m_collectionMetaData->name(), m_stream));
 
   blocks.clear();
-  m_buffer.clear();
-  m_com_buffer.clear();
-
   auto tocRecordBlock = std::make_shared<SIOFileTOCRecordBlock>();
   tocRecordBlock->record = &m_tocRecord;
   blocks.push_back(tocRecordBlock);
 
-  rec_info = sio::api::write_record(sio_helpers::SIOTocRecordName, m_buffer, blocks, 0);
-  sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
-  sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
-
+  const auto tocStartPos = sio_utils::writeRecord(blocks, sio_helpers::SIOTocRecordName, m_stream);
   // Now that we know the position of the TOC Record, put this information
   // into a final marker that can be identified and interpreted when reading
   // again
-  uint64_t finalWords = (((uint64_t)sio_helpers::SIOTocMarker) << 32) | ((uint64_t)rec_info._file_start & 0xffffffff);
+  uint64_t finalWords = (((uint64_t)sio_helpers::SIOTocMarker) << 32) | ((uint64_t)tocStartPos & 0xffffffff);
   m_stream.write(reinterpret_cast<char*>(&finalWords), sizeof(finalWords));
 
   m_stream.close();
+
+  m_finished = true;
 }
 
 void SIOWriter::registerForWrite(const std::string& name) {
@@ -131,7 +106,7 @@ void SIOWriter::registerForWrite(const std::string& name) {
   }
   // Check if we can instantiate the blocks here so that we can skip the checks later
   if (auto blk = podio::SIOBlockFactory::instance().createBlock(colB, name); !blk) {
-    const auto typName = colB->getValueTypeName();
+    const auto typName = std::string(colB->getValueTypeName());
     throw std::runtime_error(std::string("could not create SIOBlock for type: ") + typName);
   }
 
@@ -139,21 +114,11 @@ void SIOWriter::registerForWrite(const std::string& name) {
 }
 
 void SIOWriter::writeCollectionIDTable() {
-  m_buffer.clear();
-  m_com_buffer.clear();
   sio::block_list blocks;
   blocks.emplace_back(std::make_shared<SIOCollectionIDTableBlock>(m_store));
   blocks.emplace_back(std::make_shared<SIOVersionBlock>(podio::version::build_version));
 
-  auto rec_info = sio::api::write_record("file_metadata", m_buffer, blocks, 0);
-
-  sio::zlib_compression compressor;
-  compressor.set_level(6);
-  sio::api::compress_record(rec_info, m_buffer, m_com_buffer, compressor);
-
-  sio::api::write_record(m_stream, m_buffer.span(0, rec_info._header_length), m_com_buffer.span(), rec_info);
-
-  m_tocRecord.addRecord("file_metadata", rec_info._file_start);
+  m_tocRecord.addRecord("file_metadata", sio_utils::writeRecord(blocks, "file_metadata", m_stream));
 }
 
 } // namespace podio

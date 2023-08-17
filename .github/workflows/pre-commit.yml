@@ -1,30 +1,47 @@
 name: pre-commit
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: actions/checkout@v3
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: aidasoft/run-lcg-view@v4
       with:
-        release-platform: LCG_99/x86_64-centos7-clang10-opt
+        container: centos7
+        view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
         run: |
-          export PYTHONPATH=$(python -m site --user-site):$PYTHONPATH
+          echo "::group::Setup pre-commit"
           export PATH=/root/.local/bin:$PATH
-          pip install argparse --user
-          pip install pre-commit --user
+          # Newer versions of git are more cautious around the github runner
+          # environment and without this git rev-parse --show-cdup in pre-commit
+          # fails
+          git config --global --add safe.directory $(pwd)
+          pip install pre-commit
+          pip install pylint==2.12.2
+          pip install flake8
+          echo "::endgroup::"
+          echo "::group::Run CMake"
           mkdir build
           cd build
           cmake .. -DENABLE_SIO=ON \
+            -DENABLE_RNTUPLE=ON \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror "\
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DUSE_EXTERNAL_CATCH2=OFF
           ln -s $(pwd)/compile_commands.json ../
           cd ..
+          echo "::endgroup::"
+          echo "::group::Run pre-commit"
           pre-commit run --show-diff-on-failure \
             --color=always \
             --all-files
+          echo "::endgroup::"

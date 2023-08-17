@@ -1,6 +1,8 @@
 #ifndef PODIO_SIOBLOCKUSERDATA_H
 #define PODIO_SIOBLOCKUSERDATA_H
 
+#include "podio/CollectionBufferFactory.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/SIOBlock.h"
 #include "podio/UserDataCollection.h"
 
@@ -28,39 +30,43 @@ namespace podio {
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 class SIOBlockUserData : public podio::SIOBlock {
 public:
-  SIOBlockUserData() : SIOBlock(::sio_name<BasicType>(), sio::version::encode_version(0, 1)) {
+  SIOBlockUserData() :
+      SIOBlock(::sio_name<BasicType>(), sio::version::encode_version(UserDataCollection<BasicType>::schemaVersion, 0)) {
 
     podio::SIOBlockFactory::instance().registerBlockForCollection(podio::userDataTypeName<BasicType>(), this);
   }
 
-  SIOBlockUserData(const std::string& name) : SIOBlock(name, sio::version::encode_version(0, 1)) {
+  SIOBlockUserData(const std::string& name) :
+      SIOBlock(name, sio::version::encode_version(UserDataCollection<BasicType>::schemaVersion, 0)) {
   }
 
-  void read(sio::read_device& device, sio::version_type /*version*/) override {
-    auto collBuffers = _col->getBuffers();
-    auto* dataVec = collBuffers.dataAsVector<BasicType>();
+  void read(sio::read_device& device, sio::version_type version) override {
+    const auto& bufferFactory = podio::CollectionBufferFactory::instance();
+    m_buffers =
+        bufferFactory
+            .createBuffers(podio::userDataCollTypeName<BasicType>(), sio::version::major_version(version), false)
+            .value();
+
+    auto* dataVec = new std::vector<BasicType>();
     unsigned size(0);
     device.data(size);
     dataVec->resize(size);
     podio::handlePODDataSIO(device, &(*dataVec)[0], size);
+    m_buffers.data = dataVec;
   }
 
   void write(sio::write_device& device) override {
-    _col->prepareForWrite();
-    auto collBuffers = _col->getBuffers();
-    auto* dataVec = collBuffers.dataAsVector<BasicType>();
+    auto* dataVec = podio::CollectionWriteBuffers::asVector<BasicType>(m_buffers.data);
     unsigned size = dataVec->size();
     device.data(size);
     podio::handlePODDataSIO(device, &(*dataVec)[0], size);
   }
 
-  void createCollection(const bool) override {
-    setCollection(new podio::UserDataCollection<BasicType>);
-  }
-
   SIOBlock* create(const std::string& name) const override {
     return new SIOBlockUserData(name);
   }
+
+private:
 };
 
 } // namespace podio

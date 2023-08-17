@@ -1,6 +1,8 @@
 #ifndef PODIO_ICOLLECTIONPROVIDER_H
 #define PODIO_ICOLLECTIONPROVIDER_H
 
+#include <cstdint>
+
 namespace podio {
 
 class CollectionBase;
@@ -10,7 +12,7 @@ public:
   /// destructor
   virtual ~ICollectionProvider() = default;
   /// access a collection by ID. returns true if successful
-  virtual bool get(int collectionID, CollectionBase*& collection) const = 0;
+  virtual bool get(uint32_t collectionID, CollectionBase*& collection) const = 0;
 };
 
 } // namespace podio

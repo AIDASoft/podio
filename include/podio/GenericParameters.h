@@ -5,16 +5,31 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include <algorithm>
+#include <iostream>
 #include <map>
+#include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
-#define DEPRECATED_ACCESS [[deprecated("Use templated access functionality")]]
+namespace sio {
+class read_device;
+class write_device;
+using version_type = uint32_t; // from sio/definitions
+} // namespace sio
+
+namespace podio {
+class ROOTNTupleReader;
+class ROOTNTupleWriter;
+} // namespace podio
+
+#define DEPR_NON_TEMPLATE                                                                                              \
+  [[deprecated("Non-templated access will be removed. Switch to templated access functionality")]]
 
 namespace podio {
 
 /// The types which are supported in the GenericParameters
-using SupportedGenericDataTypes = std::tuple<int, float, std::string>;
+using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
 
 /// Static bool for determining if a type T is a supported GenericParamter type
 template <typename T>
@@ -52,12 +67,6 @@ namespace detail {
 template <typename T>
 using GenericDataReturnType = typename detail::GenericDataReturnTypeHelper<T>::type;
 
-// These should be trivial to remove once the deprecated non-templated access
-// functionality is actually removed
-typedef std::vector<int> IntVec;
-typedef std::vector<float> FloatVec;
-typedef std::vector<std::string> StringVec;
-
 /** GenericParameters objects allow to store generic named parameters of type
  *  int, float and string or vectors of these types.
  *  They can be used  to store (user) meta data that is
@@ -74,11 +83,24 @@ public:
   using MapType = std::map<std::string, std::vector<T>>;
 
 private:
-  using IntMap = MapType<int>;
-  using FloatMap = MapType<float>;
-  using StringMap = MapType<std::string>;
+  // need mutex pointers for having the possibility to copy/move GenericParameters
+  using MutexPtr = std::unique_ptr<std::mutex>;
 
 public:
+  GenericParameters();
+
+  /// GenericParameters are copyable
+  /// NOTE: This is currently mainly done to keep the ROOT I/O happy, because
+  /// that needs a copy constructor
+  GenericParameters(const GenericParameters&);
+  GenericParameters& operator=(const GenericParameters&) = delete;
+
+  /// GenericParameters are default moveable
+  GenericParameters(GenericParameters&&) = default;
+  GenericParameters& operator=(GenericParameters&&) = default;
+
+  ~GenericParameters() = default;
+
   /// Get the value that is stored under the given key, by const reference or by
   /// value depending on the desired type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
@@ -91,6 +113,11 @@ public:
   /// Overload for catching const char* setting for string values
   void setValue(const std::string& key, std::string value) {
     setValue<std::string>(key, std::move(value));
+  }
+
+  /// Overlaod for catching initializer list setting of string vector values
+  void setValue(const std::string& key, std::vector<std::string> values) {
+    setValue<std::vector<std::string>>(key, std::move(values));
   }
 
   /// Overload for catching initializer list setting for vector values
@@ -107,69 +134,6 @@ public:
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   std::vector<std::string> getKeys() const;
 
-  /** Returns the first integer value for the given key.
-   */
-  DEPRECATED_ACCESS int getIntVal(const std::string& key) const;
-
-  /** Returns the first float value for the given key.
-   */
-  DEPRECATED_ACCESS float getFloatVal(const std::string& key) const;
-
-  /** Returns the first string value for the given key.
-   */
-  DEPRECATED_ACCESS const std::string& getStringVal(const std::string& key) const;
-
-  /** Adds all integer values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS IntVec& getIntVals(const std::string& key, IntVec& values) const;
-
-  /** Adds all float values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS FloatVec& getFloatVals(const std::string& key, FloatVec& values) const;
-
-  /** Adds all float values for the given key to values.
-   *  Returns a reference to values for convenience.
-   */
-  DEPRECATED_ACCESS StringVec& getStringVals(const std::string& key, StringVec& values) const;
-
-  /** Returns a list of all keys of integer parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getIntKeys(StringVec& keys) const;
-
-  /** Returns a list of all keys of float parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getFloatKeys(StringVec& keys) const;
-
-  /** Returns a list of all keys of string parameters.
-   */
-  DEPRECATED_ACCESS const StringVec& getStringKeys(StringVec& keys) const;
-
-  /** The number of integer values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNInt(const std::string& key) const;
-
-  /** The number of float values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNFloat(const std::string& key) const;
-
-  /** The number of string values stored for this key.
-   */
-  DEPRECATED_ACCESS int getNString(const std::string& key) const;
-
-  /** Set integer values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const IntVec& values);
-
-  /** Set float values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const FloatVec& values);
-
-  /** Set string values for the given key.
-   */
-  DEPRECATED_ACCESS void setValues(const std::string& key, const StringVec& values);
-
   /// erase all elements
   void clear() {
     _intMap.clear();
@@ -177,54 +141,45 @@ public:
     _stringMap.clear();
   }
 
+  void print(std::ostream& os = std::cout, bool flush = true);
+
   /// Check if no parameter is stored (i.e. if all internal maps are empty)
   bool empty() const {
     return _intMap.empty() && _floatMap.empty() && _stringMap.empty();
   }
 
-  /**
-   * Get the internal int map (necessary for serialization with SIO)
-   */
-  const IntMap& getIntMap() const {
-    return getMap<int>();
-  }
-  IntMap& getIntMap() {
-    return getMap<int>();
-  }
+  friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
+  friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
+  friend ROOTNTupleReader;
+  friend ROOTNTupleWriter;
 
-  /**
-   * Get the internal float map (necessary for serialization with SIO)
-   */
-  const FloatMap& getFloatMap() const {
-    return getMap<float>();
-  }
-  FloatMap& getFloatMap() {
-    return getMap<float>();
-  }
-
-  /**
-   * Get the internal string map (necessary for serialization with SIO)
-   */
-  const StringMap& getStringMap() const {
-    return getMap<std::string>();
-  }
-  StringMap& getStringMap() {
-    return getMap<std::string>();
-  }
-
-private:
-  /// Get a reference to the internal map for a given type (necessary for SIO)
+  /// Get a reference to the internal map for a given type
   template <typename T>
   const MapType<detail::GetVectorType<T>>& getMap() const {
     if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
       return _intMap;
     } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
       return _floatMap;
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
+      return _doubleMap;
     } else {
       return _stringMap;
     }
   }
 
+  DEPR_NON_TEMPLATE const auto& getStringMap() const {
+    return getMap<std::string>();
+  }
+
+  DEPR_NON_TEMPLATE const auto& getFloatMap() const {
+    return getMap<float>();
+  }
+
+  DEPR_NON_TEMPLATE const auto& getIntMap() const {
+    return getMap<int>();
+  }
+
+private:
   /// Get a reference to the internal map for a given type (necessary for SIO)
   template <typename T>
   MapType<detail::GetVectorType<T>>& getMap() {
@@ -232,20 +187,44 @@ private:
       return _intMap;
     } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
       return _floatMap;
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
+      return _doubleMap;
     } else {
       return _stringMap;
     }
   }
 
 private:
-  IntMap _intMap{};
-  FloatMap _floatMap{};
-  StringMap _stringMap{};
+  /// Get the mutex that guards the map for the given type
+  template <typename T>
+  std::mutex& getMutex() const {
+    if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
+      return *(m_intMtx.get());
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
+      return *(m_floatMtx.get());
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
+      return *(m_doubleMtx.get());
+    } else {
+      return *(m_stringMtx.get());
+    }
+  }
+
+private:
+  MapType<int> _intMap{};                ///< The map storing the integer values
+  mutable MutexPtr m_intMtx{nullptr};    ///< The mutex guarding the integer map
+  MapType<float> _floatMap{};            ///< The map storing the float values
+  mutable MutexPtr m_floatMtx{nullptr};  ///< The mutex guarding the float map
+  MapType<std::string> _stringMap{};     ///< The map storing the string values
+  mutable MutexPtr m_stringMtx{nullptr}; ///< The mutex guarding the string map
+  MapType<double> _doubleMap{};          ///< The map storing the double values
+  mutable MutexPtr m_doubleMtx{nullptr}; ///< The mutex guarding the double map
 };
 
 template <typename T, typename>
 GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) const {
   const auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+  std::lock_guard lock{mtx};
   const auto it = map.find(key);
   // If there is no entry to the key, we just return an empty default
   // TODO: make this case detectable from the outside
@@ -266,11 +245,15 @@ GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) con
 template <typename T, typename>
 void GenericParameters::setValue(const std::string& key, T value) {
   auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+
   if constexpr (detail::isVector<T>) {
+    std::lock_guard lock{mtx};
     map.insert_or_assign(key, std::move(value));
   } else {
     // Wrap the value into a vector with exactly one entry and store that
     std::vector<T> v = {value};
+    std::lock_guard lock{mtx};
     map.insert_or_assign(key, std::move(v));
   }
 }
@@ -278,6 +261,8 @@ void GenericParameters::setValue(const std::string& key, T value) {
 template <typename T, typename>
 size_t GenericParameters::getN(const std::string& key) const {
   const auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+  std::lock_guard lock{mtx};
   if (const auto it = map.find(key); it != map.end()) {
     return it->second.size();
   }
@@ -289,7 +274,11 @@ std::vector<std::string> GenericParameters::getKeys() const {
   std::vector<std::string> keys;
   const auto& map = getMap<T>();
   keys.reserve(map.size());
-  std::transform(map.begin(), map.end(), std::back_inserter(keys), [](const auto& pair) { return pair.first; });
+  {
+    auto& mtx = getMutex<T>();
+    std::lock_guard lock{mtx};
+    std::transform(map.begin(), map.end(), std::back_inserter(keys), [](const auto& pair) { return pair.first; });
+  }
 
   return keys;
 }

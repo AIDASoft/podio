@@ -4,7 +4,7 @@ generated datamodel
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-from EventStore import EventStore
+from podio.EventStore import EventStore
 
 if __name__ == '__main__':
 

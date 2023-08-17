@@ -2,11 +2,15 @@
 #define PODIO_PYTHONEVENTSTORE_H
 
 #include "podio/EventStore.h"
-#include "podio/ROOTReader.h"
+#include "podio/GenericParameters.h"
+#include "podio/IReader.h"
+#include "podio/utilities/Deprecated.h"
+
+#include <memory>
 
 namespace podio {
 
-class PythonEventStore {
+class DEPR_EVTSTORE PythonEventStore {
 public:
   /// constructor from filename
   PythonEventStore(const char* filename);
@@ -29,17 +33,21 @@ public:
   }
 
   bool isValid() const {
-    return m_reader.isValid();
+    return m_reader && m_reader->isValid();
   }
   void close() {
-    m_reader.closeFiles();
+    m_reader->closeFile();
   }
 
   /// list available collections
   const std::vector<std::string>& getCollectionNames() const;
 
+  const podio::GenericParameters& getEventMetaData() {
+    return m_store.getEventMetaData();
+  }
+
 private:
-  podio::ROOTReader m_reader;
+  std::unique_ptr<podio::IReader> m_reader;
   podio::EventStore m_store;
 
   /// set to true if input root file accessible, false otherwise

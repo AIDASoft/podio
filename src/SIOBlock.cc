@@ -14,7 +14,7 @@
 namespace podio {
 SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
     sio::block("CollectionIDs", sio::version::encode_version(0, 3)) {
-  const auto* table = store->getCollectionIDTable();
+  const auto table = store->getCollectionIDTable();
   _names = table->names();
   _ids = table->ids();
   _types.reserve(_names.size());
@@ -27,7 +27,7 @@ SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
           << id << ", name: " << table->name(id) << ")" << std::endl;
     }
 
-    _types.push_back(tmp->getValueTypeName());
+    _types.emplace_back(tmp->getValueTypeName());
     _isSubsetColl.push_back(tmp->isSubsetCollection());
   }
 }
@@ -49,56 +49,38 @@ void SIOCollectionIDTableBlock::write(sio::write_device& device) {
   device.data(_isSubsetColl);
 }
 
-template <typename MappedT>
-void writeParamMap(sio::write_device& device, const GenericParameters::MapType<MappedT>& map) {
-  device.data((int)map.size());
-  for (const auto& [key, value] : map) {
-    device.data(key);
-    device.data(value);
-  }
-}
-
-template <typename MappedT>
-void readParamMap(sio::read_device& device, GenericParameters::MapType<MappedT>& map) {
-  int size;
-  device.data(size);
-  while (size--) {
-    std::string key;
-    device.data(key);
-    std::vector<MappedT> values;
-    device.data(values);
-    map.emplace(std::move(key), std::move(values));
-  }
-}
-
 void writeGenericParameters(sio::write_device& device, const GenericParameters& params) {
-  writeParamMap(device, params.getIntMap());
-  writeParamMap(device, params.getFloatMap());
-  writeParamMap(device, params.getStringMap());
+  writeMapLike(device, params.getMap<int>());
+  writeMapLike(device, params.getMap<float>());
+  writeMapLike(device, params.getMap<std::string>());
+  writeMapLike(device, params.getMap<double>());
 }
 
-void readGenericParameters(sio::read_device& device, GenericParameters& params) {
-  readParamMap(device, params.getIntMap());
-  readParamMap(device, params.getFloatMap());
-  readParamMap(device, params.getStringMap());
+void readGenericParameters(sio::read_device& device, GenericParameters& params, sio::version_type version) {
+  readMapLike(device, params.getMap<int>());
+  readMapLike(device, params.getMap<float>());
+  readMapLike(device, params.getMap<std::string>());
+  if (version >= sio::version::encode_version(0, 2)) {
+    readMapLike(device, params.getMap<double>());
+  }
 }
 
-void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type) {
-  readGenericParameters(device, *metadata);
+void SIOEventMetaDataBlock::read(sio::read_device& device, sio::version_type version) {
+  readGenericParameters(device, *metadata, version);
 }
 
 void SIOEventMetaDataBlock::write(sio::write_device& device) {
   writeGenericParameters(device, *metadata);
 }
 
-void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type) {
+void SIONumberedMetaDataBlock::read(sio::read_device& device, sio::version_type version) {
   int size;
   device.data(size);
   while (size--) {
     int id;
     device.data(id);
     GenericParameters params;
-    readGenericParameters(device, params);
+    readGenericParameters(device, params, version);
 
     data->emplace(id, std::move(params));
   }
@@ -113,12 +95,12 @@ void SIONumberedMetaDataBlock::write(sio::write_device& device) {
 }
 
 std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeStr, const std::string& name,
-                                                       const bool isRefColl) const {
+                                                       const bool isSubsetColl) const {
   const auto it = _map.find(typeStr);
 
   if (it != _map.end()) {
     auto blk = std::shared_ptr<SIOBlock>(it->second->create(name));
-    blk->createCollection(isRefColl);
+    blk->setSubsetCollection(isSubsetColl);
     return blk;
   } else {
     return nullptr;
@@ -127,7 +109,7 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeSt
 
 std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBase* col,
                                                        const std::string& name) const {
-  const std::string typeStr = col->getValueTypeName();
+  const auto typeStr = std::string(col->getValueTypeName()); // Need c++20 for transparent lookup
   const auto it = _map.find(typeStr);
 
   if (it != _map.end()) {
@@ -140,39 +122,56 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBa
 }
 
 SIOBlockLibraryLoader::SIOBlockLibraryLoader() {
-  for (const auto& lib : getLibNames()) {
-    loadLib(lib);
+  for (const auto& [lib, dir] : getLibNames()) {
+    const auto status = loadLib(lib);
+    switch (status) {
+    case LoadStatus::Success:
+      std::cerr << "Loaded SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
+      break;
+    case LoadStatus::AlreadyLoaded:
+      std::cerr << "SIOBlocks library \'" << lib << "\' already loaded. Not loading again from " << dir << std::endl;
+      break;
+    case LoadStatus::Error:
+      std::cerr << "ERROR while loading SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
+      break;
+    }
   }
 }
 
-void SIOBlockLibraryLoader::loadLib(const std::string& libname) {
+SIOBlockLibraryLoader::LoadStatus SIOBlockLibraryLoader::loadLib(const std::string& libname) {
   if (_loadedLibs.find(libname) != _loadedLibs.end()) {
-    std::cerr << "SIOBlocks library \'" << libname << "\' already loaded. Not loading it again" << std::endl;
-    return;
+    return LoadStatus::AlreadyLoaded;
   }
-
   void* libhandle = dlopen(libname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
   if (libhandle) {
-    std::cout << "Loading SIOBlocks library \'" << libname << "\'" << std::endl;
     _loadedLibs.insert({libname, libhandle});
-  } else {
-    std::cerr << "ERROR while loading SIOBlocks library \'" << libname << "\'" << std::endl;
+    return LoadStatus::Success;
   }
+
+  return LoadStatus::Error;
 }
 
-std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
+std::vector<std::tuple<std::string, std::string>> SIOBlockLibraryLoader::getLibNames() {
 #ifdef USE_BOOST_FILESYSTEM
   namespace fs = boost::filesystem;
 #else
   namespace fs = std::filesystem;
 #endif
-  std::vector<std::string> libs;
+  std::vector<std::tuple<std::string, std::string>> libs;
 
-  std::string dir;
-  const auto ldLibPath = std::getenv("LD_LIBRARY_PATH");
+  const auto ldLibPath = []() {
+    // Check PODIO_SIOBLOCK_PATH first and fall back to LD_LIBRARY_PATH
+    auto pathVar = std::getenv("PODIO_SIOBLOCK_PATH");
+    if (!pathVar) {
+      pathVar = std::getenv("LD_LIBRARY_PATH");
+    }
+    return pathVar;
+  }();
   if (!ldLibPath) {
     return libs;
   }
+
+  std::string dir;
   std::istringstream stream(ldLibPath);
   while (std::getline(stream, dir, ':')) {
     if (not fs::exists(dir)) {
@@ -182,7 +181,7 @@ std::vector<std::string> SIOBlockLibraryLoader::getLibNames() {
     for (auto& lib : fs::directory_iterator(dir)) {
       const auto filename = lib.path().filename().string();
       if (filename.find("SioBlocks") != std::string::npos) {
-        libs.emplace_back(std::move(filename));
+        libs.emplace_back(std::move(filename), dir);
       }
     }
   }
@@ -208,6 +207,28 @@ size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
     return it->second.size();
   }
   return 0;
+}
+
+SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(const std::string& name, unsigned iEntry) const {
+  const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
+                               [&name](const auto& keyVal) { return keyVal.first == name; });
+  if (it != m_recordMap.end()) {
+    if (iEntry < it->second.size()) {
+      return it->second[iEntry];
+    }
+  }
+
+  return 0;
+}
+
+std::vector<std::string_view> SIOFileTOCRecord::getRecordNames() const {
+  std::vector<std::string_view> cats;
+  cats.reserve(m_recordMap.size());
+  for (const auto& [cat, _] : m_recordMap) {
+    cats.emplace_back(cat);
+  }
+
+  return cats;
 }
 
 void SIOFileTOCRecordBlock::read(sio::read_device& device, sio::version_type) {

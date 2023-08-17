@@ -1,0 +1,66 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "podio/DatamodelRegistry.h"
+#include "podio/SchemaEvolution.h"
+
+namespace {{ package_name }}::meta {
+/**
+ * The complete definition of the datamodel at generation time in JSON format.
+ */
+static constexpr auto {{ package_name }}__JSONDefinition = R"DATAMODELDEF({{ edm_definition }})DATAMODELDEF";
+
+
+/**
+ * The names of all relations and vector members for all datatypes
+ */
+inline podio::RelationNameMapping {{ package_name }}__getRelationNames() {
+  using namespace std::string_view_literals;
+  return {
+{% for typeName, type in datatypes.items() %}
+    {"{{ typeName }}"sv,
+      { {{ (type.OneToManyRelations + type.OneToOneRelations) | map(attribute="name") | map("quoted_sv") | join(", ") }} },
+      { {{ type.VectorMembers | map(attribute="name") | map("quoted_sv") | join(", ")}} },
+    },
+{% endfor %}
+  };
+}
+
+/**
+ * The schema version at generation time
+ */
+static constexpr podio::SchemaVersionT schemaVersion = {{ schema_version }};
+
+/**
+ * The helper class that takes care of registering the datamodel definition to
+ * the DatamodelRegistry and to provide the index in that registry.
+ *
+ * Implemented as a singleton mainly to ensure only a single registration of
+ * each datamodel, during the constructor
+ */
+class DatamodelRegistryIndex {
+public:
+  static size_t value() {
+    static const auto relationNames = {{ package_name }}__getRelationNames();
+    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition, relationNames));
+    return index.m_value;
+  }
+private:
+  DatamodelRegistryIndex(size_t v) : m_value(v) {}
+  size_t m_value{podio::DatamodelRegistry::NoDefinitionAvailable};
+};
+
+
+namespace static_registration {
+  // The usual trick via an IIFE and a const variable that we assign to, to
+  // ensure that we populate this before everything starts
+  inline  bool ensureRegistration() {
+    const static auto reg = []() {
+      return {{ package_name }}::meta::DatamodelRegistryIndex::value() != podio::DatamodelRegistry::NoDefinitionAvailable;
+    }();
+    return reg;
+  }
+
+  const auto registrationEnsured = ensureRegistration();
+}
+
+} // namespace {{ package_name }}::meta

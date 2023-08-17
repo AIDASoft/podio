@@ -7,7 +7,6 @@
 namespace podio {
 
 EventStore::EventStore() : m_table(new CollectionIDTable()) {
-  m_cachedCollections.resize(128); // allow for a sufficiently large initial number of collections
 }
 
 EventStore::~EventStore() {
@@ -16,24 +15,13 @@ EventStore::~EventStore() {
   }
 }
 
-bool EventStore::get(int id, CollectionBase*& collection) const {
-  // see if we have a cached collection
-  if ((collection = getFast(id)) != nullptr) {
-    return true;
-  }
-
+bool EventStore::get(uint32_t id, CollectionBase*& collection) const {
   auto val = m_retrievedIDs.insert(id);
   bool success = false;
   if (val.second == true) {
     // collection not yet retrieved in recursive-call
     auto name = m_table->name(id);
     success = doGet(name, collection, true);
-    if (collection != nullptr) { // cache the collection for faster retreaval later
-      if (m_cachedCollections.size() < (unsigned)id + 1) {
-        m_cachedCollections.resize(id + 1);
-      }
-      m_cachedCollections[id] = collection;
-    }
   } else {
     // collection already requested in recursive call
     // do not set the references to break collection dependency-cycle
@@ -46,7 +34,7 @@ bool EventStore::get(int id, CollectionBase*& collection) const {
 }
 
 void EventStore::registerCollection(const std::string& name, podio::CollectionBase* coll) {
-  m_collections.push_back({name, coll});
+  m_collections.emplace_back(name, coll);
   auto id = m_table->add(name);
   coll->setID(id);
 }
@@ -106,7 +94,7 @@ GenericParameters& EventStore::getRunMetaData(int runID) {
   return m_runMDMap[runID];
 }
 
-GenericParameters& EventStore::getCollectionMetaData(int colID) {
+GenericParameters& EventStore::getCollectionMetaData(uint32_t colID) {
 
   if (m_colMDMap.empty() && m_reader != nullptr) {
     ColMDMap* tmp = m_reader->readCollectionMetaData();
@@ -135,8 +123,6 @@ void EventStore::clear() {
 
 void EventStore::clearCaches() {
   m_collections.clear();
-  m_cachedCollections.clear();
-  m_cachedCollections.resize(128);
   m_retrievedIDs.clear();
 }
 

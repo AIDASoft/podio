@@ -23,7 +23,12 @@
 {# we have to declare them here, otherwise they cannot be easily imported #}
 {{ class_selection(class) }}
 {{ class_selection(class, postfix='Collection') }}
-
 {% endfor %}
+
+        <!-- previous schema components and pods -->
+{% for class in old_schema_components %}
+{{ class_selection(class) }}
+{% endfor %}
+
     </selection>
 </lcgdict>

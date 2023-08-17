@@ -31,7 +31,8 @@ else()
   find_dependency(Python COMPONENTS Interpreter)
 endif()
 
-if(@ENABLE_SIO@)
+SET(ENABLE_SIO @ENABLE_SIO@)
+if(ENABLE_SIO)
   find_dependency(SIO)
   # Targets from SIO only become available with v00-01 so we rig them here to be
   # able to use them

@@ -18,7 +18,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
 
@@ -30,6 +30,11 @@
 #include <ostream>
 #include <mutex>
 #include <memory>
+#include <cstddef>
+
+namespace podio {
+  struct RelationNames;
+}
 
 {{ utils.namespace_open(class.namespace) }}
 
@@ -47,16 +52,24 @@ public:
   using iterator = {{ class.bare_type }}MutableCollectionIterator;
 
   {{ class.bare_type }}Collection();
+  {{ class.bare_type }}Collection({{ class.bare_type }}CollectionData&& data, bool isSubsetColl);
   // This is a move-only type
   {{ class.bare_type }}Collection(const {{ class.bare_type}}Collection& ) = delete;
   {{ class.bare_type }}Collection& operator=(const {{ class.bare_type}}Collection& ) = delete;
   {{ class.bare_type }}Collection({{ class.bare_type }}Collection&&) = default;
   {{ class.bare_type }}Collection& operator=({{ class.bare_type }}Collection&&) = default;
 
-//  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, int collectionID);
+//  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, uint32_t collectionID);
   ~{{ class.bare_type }}Collection();
 
+  constexpr static auto typeName = "{{ (class | string ).strip(':') + "Collection" }}";
+  constexpr static auto valueTypeName = "{{ (class | string ).strip(':') }}";
+  constexpr static auto dataTypeName = "{{ (class | string ).strip(':') + "Data" }}";
+
   void clear() final;
+
+  /// Print this collection to the passed stream
+  void print(std::ostream& os=std::cout, bool flush=true) const final;
 
   /// operator to allow pointer like calling of members a la LCIO
   {{ class.bare_type }}Collection* operator->() { return ({{ class.bare_type }}Collection*) this; }
@@ -70,14 +83,16 @@ public:
   Mutable{{ class.bare_type }} create(Args&&... args);
 
   /// number of elements in the collection
-  size_t size() const final;
+  std::size_t size() const final;
 
   /// fully qualified type name
-  std::string getTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Collection" }}"); }
+  const std::string_view getTypeName() const final { return typeName; }
   /// fully qualified type name of elements - with namespace
-  std::string getValueTypeName() const final { return std::string("{{ (class | string ).strip(':') }}"); }
+  const std::string_view getValueTypeName() const final { return valueTypeName; }
   /// fully qualified type name of stored POD elements - with namespace
-  std::string getDataTypeName() const final { return std::string("{{ (class | string ).strip(':')+"Data" }}"); }
+  const std::string_view getDataTypeName() const final { return dataTypeName; }
+  /// schema version
+  podio::SchemaVersionT getSchemaVersion() const final;
 
   bool isSubsetCollection() const final {
     return m_isSubsetColl;
@@ -86,13 +101,13 @@ public:
   void setSubsetCollection(bool setSubset=true) final;
 
   /// Returns the const object of given index
-  {{ class.bare_type }} operator[](unsigned int index) const;
+  {{ class.bare_type }} operator[](std::size_t index) const;
   /// Returns the object of a given index
-  Mutable{{ class.bare_type }} operator[](unsigned int index);
+  Mutable{{ class.bare_type }} operator[](std::size_t index);
   /// Returns the const object of given index
-  {{ class.bare_type }} at(unsigned int index) const;
+  {{ class.bare_type }} at(std::size_t index) const;
   /// Returns the object of given index
-  Mutable{{ class.bare_type }} at(unsigned int index);
+  Mutable{{ class.bare_type }} at(std::size_t index);
 
 
   /// Append object to the collection
@@ -103,25 +118,27 @@ public:
   bool setReferences(const podio::ICollectionProvider* collectionProvider) final;
 
   /// Get the collection buffers for this collection
-  podio::CollectionBuffers getBuffers() final;
+  podio::CollectionWriteBuffers getBuffers() final;
 
-  void setID(unsigned ID) final {
+  void setID(uint32_t ID) final {
     m_collectionID = ID;
     if (!m_isSubsetColl) {
       std::for_each(m_storage.entries.begin(), m_storage.entries.end(),
-                  [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<int>(ID)}; }
+                  [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<uint32_t>(ID)}; }
       );
     }
     m_isValid = true;
   };
 
-  unsigned getID() const final {
+  uint32_t getID() const final {
     return m_collectionID;
   }
 
   bool isValid() const final {
     return m_isValid;
   }
+
+  size_t getDatamodelRegistryIndex() const final;
 
   // support for the iterator protocol
   iterator begin() {
@@ -138,8 +155,7 @@ public:
   }
 
 {% for member in Members %}
-  template<size_t arraysize>
-  const std::array<{{ member.full_type }}, arraysize> {{ member.name }}() const;
+  std::vector<{{ member.full_type }}> {{ member.name }}(const size_t nElem = 0) const;
 {% endfor %}
 
 private:
@@ -151,8 +167,8 @@ private:
   bool m_isValid{false};
   mutable bool m_isPrepared{false};
   bool m_isSubsetColl{false};
-  int m_collectionID{0};
-  mutable std::unique_ptr<std::mutex> m_storageMtx{std::make_unique<std::mutex>()};
+  uint32_t m_collectionID{0};
+  mutable std::unique_ptr<std::mutex> m_storageMtx{nullptr};
   mutable {{ class.bare_type }}CollectionData m_storage{};
 };
 
@@ -177,11 +193,7 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
   return Mutable{{ class.bare_type }}(obj);
 }
 
-{% for member in Members %}
-{{ macros.vectorized_access(class, member) }}
-{% endfor %}
-
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collection);
 #endif
 

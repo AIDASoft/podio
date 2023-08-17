@@ -5,18 +5,17 @@
 import os
 import sys
 import subprocess
-import pickle
 from copy import deepcopy
 from enum import IntEnum
 
 from collections.abc import Mapping
-
-from itertools import zip_longest
+from collections import defaultdict
 
 import jinja2
 
-from podio_config_reader import PodioConfigReader
-from generator_utils import DataType, DefinitionError
+from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
+from podio.podio_config_reader import PodioConfigReader
+from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
@@ -24,15 +23,8 @@ TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 REPORT_TEXT = """
   PODIO Data Model
   ================
-  Used
-    {yamlfile}
-  to create
-    {nclasses} classes
-  in
-    {installdir}/
-  Read instructions in
-  the README.md to run
-  your first example!
+  Used {yamlfile} to create {nclasses} classes in {installdir}/
+  Read instructions in the README.md to run your first example!
 """
 
 
@@ -40,11 +32,21 @@ def get_clang_format():
   """Check if clang format is available and if so get the list of arguments to
   invoke it via subprocess.Popen"""
   try:
-    cformat_exe = subprocess.check_output(['which', 'clang-format']).strip()
-    return [cformat_exe, "-style=file", "-fallback-style=llvm"]
-  except subprocess.CalledProcessError:
+    # This one can raise if -fallback-style is not found
+    out = subprocess.check_output(["clang-format", "-style=file", "-fallback-style=llvm", "--help"],
+                                  stderr=subprocess.STDOUT)
+    # This one doesn't raise
+    out = subprocess.check_output('echo | clang-format -style=file ', stderr=subprocess.STDOUT, shell=True)
+    if b'.clang-format' in out:
+      return []
+    return ["clang-format", "-style=file", "-fallback-style=llvm"]
+  except FileNotFoundError:
     print("ERROR: Cannot find clang-format executable")
     print("       Please make sure it is in the PATH.")
+    return []
+  except subprocess.CalledProcessError:
+    print('ERROR: At least one argument was not recognized by clang-format')
+    print('       Most likely the version you are using is old')
     return []
 
 
@@ -76,13 +78,20 @@ class IncludeFrom(IntEnum):
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
-  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun, upstream_edm):
+  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun,
+               upstream_edm, old_description, evolution_file):
     self.install_dir = install_dir
     self.package_name = package_name
     self.io_handlers = io_handlers
     self.verbose = verbose
     self.dryrun = dryrun
     self.yamlfile = yamlfile
+    # schema evolution specific code
+    self.old_yamlfile = old_description
+    self.evolution_file = evolution_file
+    self.old_datamodel = None
+    self.old_datamodels_components = set()
+    self.old_datamodels_datatypes = set()
 
     try:
       self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
@@ -140,31 +149,53 @@ class ClassGenerator:
     for name, datatype in self.datamodel.datatypes.items():
       self._process_datatype(name, datatype)
 
-    self._get_namespace_dict()
+    self._write_edm_def_file()
+
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
-    self.print_report()
 
     self._write_cmake_lists_file()
+    self.process_schema_evolution()
+
+    self.print_report()
+
+  def process_schema_evolution(self):
+    """Process the schema evolution"""
+    # have to make all necessary comparisons
+    # which are the ones that changed?
+    # have to extend the selection xml file
+    if self.old_yamlfile:
+      comparator = DataModelComparator(self.yamlfile, self.old_yamlfile,
+                                       evolution_file=self.evolution_file)
+      comparator.read()
+      comparator.compare()
+
+      # some sanity checks
+      if len(comparator.errors) > 0:
+        print(f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+have unresolvable schema evolution incompatibilities:")
+        for error in comparator.errors:
+          print(error)
+        sys.exit(-1)
+      if len(comparator.warnings) > 0:
+        print(f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+have resolvable schema evolution incompatibilities:")
+        for warning in comparator.warnings:
+          print(warning)
+        sys.exit(-1)
 
   def print_report(self):
     """Print a summary report about the generated code"""
     if not self.verbose:
       return
 
-    with open(os.path.join(THIS_DIR, "figure.txt"), 'rb') as pkl:
-      figure = pickle.load(pkl)
-
     nclasses = 5 * len(self.datamodel.datatypes) + len(self.datamodel.components)
     text = REPORT_TEXT.format(yamlfile=self.yamlfile,
                               nclasses=nclasses,
                               installdir=self.install_dir)
 
-    print()
-    for figline, summaryline in zip_longest(figure, text.splitlines(), fillvalue=''):
-      print(figline + summaryline)
-    print("     'Homage to the Square' - Josef Albers")
-    print()
+    for summaryline in text.splitlines():
+      print(summaryline)
     print()
 
   def _eval_template(self, template, data):
@@ -237,6 +268,9 @@ class ClassGenerator:
 
   def _process_component(self, name, component):
     """Process one component"""
+    # Make a copy here and add the preprocessing steps to that such that the
+    # original definition can be left untouched
+    component = deepcopy(component)
     includes, includes_jl = set(), set()
     includes.update(*(m.includes for m in component['Members']))
     includes_jl.update(*(m.jl_imports for m in component['Members']))
@@ -298,12 +332,10 @@ class ClassGenerator:
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
-    fwd_declarations = {}
+    fwd_declarations = defaultdict(list)
     includes, includes_cc = set(), set()
     for relation in datatype['OneToOneRelations']:
       if relation.full_type != datatype['class'].full_type:
-        if relation.namespace not in fwd_declarations:
-          fwd_declarations[relation.namespace] = []
         fwd_declarations[relation.namespace].append(relation.bare_type)
         includes_cc.add(self._build_include(relation))
 
@@ -439,6 +471,25 @@ class ClassGenerator:
 
     return data
 
+  def _write_edm_def_file(self):
+    """Write the edm definition to a compile time string"""
+    model_encoder = DataModelJSONEncoder()
+    data = {
+        'package_name': self.package_name,
+        'edm_definition': model_encoder.encode(self.datamodel),
+        'incfolder': self.incfolder,
+        'schema_version': self.datamodel.schema_version,
+        'datatypes': self.datamodel.datatypes,
+        }
+
+    def quoted_sv(string):
+      return f"\"{string}\"sv"
+
+    self.env.filters["quoted_sv"] = quoted_sv
+
+    self._write_file('DatamodelDefinition.h',
+                     self._eval_template('DatamodelDefinition.h.jinja2', data))
+
   def _get_member_includes(self, members, julia=False):
     """Process all members and gather the necessary includes"""
     includes, includes_jl = set(), set()
@@ -477,7 +528,6 @@ class ClassGenerator:
         list_cont.append(f'  {os.path.join(target_folder, fname)}')
 
       list_cont.append(')')
-      list_cont.append(f'SET_PROPERTY(SOURCE ${{{name}}} PROPERTY GENERATED TRUE)\n')
 
       return '\n'.join(list_cont)
 
@@ -509,7 +559,9 @@ class ClassGenerator:
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
     data = {'components': [DataType(c) for c in self.datamodel.components],
-            'datatypes': [DataType(d) for d in self.datamodel.datatypes]}
+            'datatypes': [DataType(d) for d in self.datamodel.datatypes],
+            'old_schema_components': [DataType(d) for d in
+                                      self.old_datamodels_datatypes | self.old_datamodels_components]}
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, member):
@@ -562,17 +614,6 @@ class ClassGenerator:
     return package_includes + upstream_includes + podio_includes + stl_includes
 
 
-def verify_io_handlers(handler):
-  """Briefly verify that all arguments passed as handlers are indeed valid"""
-  valid_handlers = (
-      'ROOT',
-      'SIO',
-      )
-  if handler in valid_handlers:
-    return handler
-  raise argparse.ArgumentTypeError(f'{handler} is not a valid io handler')
-
-
 def read_upstream_edm(name_path):
   """Read an upstream EDM yaml definition file to make the types that are defined
   in that available to the current EDM"""
@@ -581,17 +622,17 @@ def read_upstream_edm(name_path):
 
   try:
     name, path = name_path.split(':')
-  except ValueError as exc:
+  except ValueError as err:
     raise argparse.ArgumentTypeError('upstream-edm argument needs to be the upstream package '
-                                     'name and the upstream edm yaml file separated by a colon') from exc
+                                     'name and the upstream edm yaml file separated by a colon') from err
 
   if not os.path.isfile(path):
     raise argparse.ArgumentTypeError(f'{path} needs to be an EDM yaml file')
 
   try:
     return PodioConfigReader.read(path, name)
-  except DefinitionError as exc:
-    raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition') from exc
+  except DefinitionError as err:
+    raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition') from err
 
 
 if __name__ == "__main__":
@@ -605,8 +646,8 @@ if __name__ == "__main__":
                       'Header files will be put under <targetdir>/<packagename>/*.h. '
                       'Source files will be put under <targetdir>/src/*.cc')
   parser.add_argument('packagename', help='Name of the package.')
-  parser.add_argument('iohandlers', help='The IO backend specific code that should be generated',
-                      type=verify_io_handlers, nargs='+')
+  parser.add_argument('iohandlers', choices=['ROOT', 'SIO'], nargs='+',
+                      help='The IO backend specific code that should be generated')
   parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True,
                       help='Don\'t write a report to screen')
   parser.add_argument('-d', '--dryrun', action='store_true', default=False,
@@ -618,6 +659,11 @@ if __name__ == "__main__":
                       ' EDM. Format is \'<upstream-name>:<upstream.yaml>\'. '
                       'Note that only the code for the current EDM will be generated',
                       default=None, type=read_upstream_edm)
+  parser.add_argument('--old-description',
+                      help='Provide schema evolution relative to the old yaml file.',
+                      default=None, action='store')
+  parser.add_argument('-e', '--evolution_file', help='yaml file clarifying schema evolutions',
+                      default=None, action='store')
 
   args = parser.parse_args()
 
@@ -630,7 +676,8 @@ if __name__ == "__main__":
       os.makedirs(directory)
 
   gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers,
-                       verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm)
+                       verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm,
+                       old_description=args.old_description, evolution_file=args.evolution_file)
   if args.clangformat:
     gen.clang_format = get_clang_format()
   gen.process()

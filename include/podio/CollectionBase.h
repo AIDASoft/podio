@@ -3,14 +3,18 @@
 
 #include "podio/CollectionBuffers.h"
 #include "podio/ObjectID.h"
+#include "podio/SchemaEvolution.h"
 
-#include <string>
+#include <iostream>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 namespace podio {
 // forward declarations
 class ICollectionProvider;
+
+struct RelationNames;
 
 class CollectionBase {
 protected:
@@ -37,13 +41,13 @@ public:
   virtual bool setReferences(const ICollectionProvider* collectionProvider) = 0;
 
   /// set collection ID
-  virtual void setID(unsigned id) = 0;
+  virtual void setID(uint32_t id) = 0;
 
   /// get collection ID
-  virtual unsigned getID() const = 0;
+  virtual uint32_t getID() const = 0;
 
   /// Get the collection buffers for this collection
-  virtual podio::CollectionBuffers getBuffers() = 0;
+  virtual podio::CollectionWriteBuffers getBuffers() = 0;
 
   /// check for validity of the container after read
   virtual bool isValid() const = 0;
@@ -52,11 +56,13 @@ public:
   virtual size_t size() const = 0;
 
   /// fully qualified type name
-  virtual std::string getTypeName() const = 0;
+  virtual const std::string_view getTypeName() const = 0;
   /// fully qualified type name of elements - with namespace
-  virtual std::string getValueTypeName() const = 0;
+  virtual const std::string_view getValueTypeName() const = 0;
   /// fully qualified type name of stored POD elements - with namespace
-  virtual std::string getDataTypeName() const = 0;
+  virtual const std::string_view getDataTypeName() const = 0;
+  /// schema version of the collection
+  virtual SchemaVersionT getSchemaVersion() const = 0;
 
   /// destructor
   virtual ~CollectionBase() = default;
@@ -69,6 +75,12 @@ public:
 
   /// declare this collection to be a subset collection
   virtual void setSubsetCollection(bool setSubset = true) = 0;
+
+  /// print this collection to the passed stream
+  virtual void print(std::ostream& os = std::cout, bool flush = true) const = 0;
+
+  /// Get the index in the DatatypeRegistry of the EDM this collection belongs to
+  virtual size_t getDatamodelRegistryIndex() const = 0;
 };
 
 } // namespace podio
