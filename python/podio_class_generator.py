@@ -150,6 +150,7 @@ class ClassGenerator:
       self._process_datatype(name, datatype)
 
     self._write_edm_def_file()
+    self._get_namespace_dict()
 
     if 'ROOT' in self.io_handlers:
       self._create_selection_xml()
