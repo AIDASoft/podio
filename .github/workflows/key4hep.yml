@@ -14,8 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - release: "sw.hsf.org/key4hep"
-            RNTUPLE: OFF
           - release: "sw-nightlies.hsf.org/key4hep"
             RNTUPLE: ON
     steps:
