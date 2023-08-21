@@ -11,10 +11,10 @@ options :
 components :
   SimpleStruct:
     Members:
-      - int x
-      - int y
-      - int z
-      - std::array<int, 4> p
+      - int x [mm]
+      - int y [mm]
+      - int z [mm]
+      - std::array<int, 4> p [mm]
     # can also add c'tors:
     ExtraCode :
       declaration: "
