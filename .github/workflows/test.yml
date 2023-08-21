@@ -14,9 +14,9 @@ jobs:
       fail-fast: false
       matrix:
         RNTUPLE: [ON]
-        LCG: ["dev3/x86_64-centos7-clang12-opt",
+        LCG: ["dev3/x86_64-el9-clang16-opt",
               "dev4/x86_64-centos7-gcc11-opt",
-              "dev4/x86_64-centos7-clang12-opt"]
+              "dev4/x86_64-el9-clang16-opt"]
         include:
           - LCG: "LCG_102/x86_64-centos7-clang12-opt"
             RNTUPLE: OFF
