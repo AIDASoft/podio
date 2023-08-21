@@ -13,10 +13,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CXX_STANDARD: [20]
-        RNTUPLE: [ON]
         LCG: ["dev3/x86_64-el9-clang16-opt",
               "dev4/x86_64-el9-clang16-opt"]
+        CXX_STANDARD: [20]
+        RNTUPLE: [ON]
         include:
           - LCG: "dev4/x86_64-centos7-gcc11-opt"
             CXX_STANDARD: 17
