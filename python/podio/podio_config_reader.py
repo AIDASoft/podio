@@ -30,6 +30,10 @@ class MemberParser:
   name_str = r'([a-zA-Z_]+\w*)'
   name_re = re.compile(name_str)
 
+  # Units are given in square brakets
+  unit_str = r'(?:\[([a-zA-Z_*\/]+\w*)\])?'
+  unit_re = re.compile(unit_str)
+
   # Comments can be anything after //
   # stripping of trailing whitespaces is done later as it is hard to do with regex
   comment_str = r'\/\/ *(.*)'
@@ -41,12 +45,12 @@ class MemberParser:
   def_val_str = r'(?:{(.+)})?'
 
   array_re = re.compile(array_str)
-  full_array_re = re.compile(rf'{array_str} *{name_str} *{def_val_str} *{comment_str}')
-  member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str} *{comment_str}')
+  full_array_re = re.compile(rf'{array_str} *{name_str} *{def_val_str} *{unit_str} *{comment_str}')
+  member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str} *{unit_str} *{comment_str}')
 
   # For cases where we don't require a description
-  bare_member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str}')
-  bare_array_re = re.compile(rf' *{array_str} +{name_str} *{def_val_str}')
+  bare_member_re = re.compile(rf' *{type_str} +{name_str} *{def_val_str} *{unit_str}')
+  bare_array_re = re.compile(rf' *{array_str} +{name_str} *{def_val_str} *{unit_str}')
 
   @staticmethod
   def _parse_with_regexps(string, regexps_callbacks):
@@ -56,32 +60,32 @@ class MemberParser:
       result = rgx.match(string)
       if result:
         return callback(result)
-
     raise DefinitionError(f"'{string}' is not a valid member definition. Check syntax of the member definition.")
 
   @staticmethod
   def _full_array_conv(result):
     """MemberVariable construction for array members with a docstring"""
-    typ, size, name, def_val, comment = result.groups()
-    return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip(), default_val=def_val)
+    typ, size, name, def_val, unit, comment = result.groups()
+    return MemberVariable(name=name, array_type=typ, array_size=size, description=comment.strip(),
+                          unit=unit, default_val=def_val)
 
   @staticmethod
   def _full_member_conv(result):
     """MemberVariable construction for members with a docstring"""
-    klass, name, def_val, comment = result.groups()
-    return MemberVariable(name=name, type=klass, description=comment.strip(), default_val=def_val)
+    klass, name, def_val, unit, comment = result.groups()
+    return MemberVariable(name=name, type=klass, description=comment.strip(), unit=unit, default_val=def_val)
 
   @staticmethod
   def _bare_array_conv(result):
     """MemberVariable construction for array members without docstring"""
-    typ, size, name, def_val = result.groups()
-    return MemberVariable(name=name, array_type=typ, array_size=size, default_val=def_val)
+    typ, size, name, def_val, unit = result.groups()
+    return MemberVariable(name=name, array_type=typ, array_size=size, unit=unit, default_val=def_val)
 
   @staticmethod
   def _bare_member_conv(result):
     """MemberVarible construction for members without docstring"""
-    klass, name, def_val = result.groups()
-    return MemberVariable(name=name, type=klass, default_val=def_val)
+    klass, name, def_val, unit = result.groups()
+    return MemberVariable(name=name, type=klass, unit=unit, default_val=def_val)
 
   def parse(self, string, require_description=True):
     """Parse the passed string"""

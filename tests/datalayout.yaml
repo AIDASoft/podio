@@ -11,10 +11,10 @@ options :
 components :
   SimpleStruct:
     Members:
-      - int x
-      - int y
-      - int z
-      - std::array<int, 4> p
+      - int x [mm]
+      - int y [mm]
+      - int z [mm]
+      - std::array<int, 4> p [mm]
     # can also add c'tors:
     ExtraCode :
       declaration: "
@@ -26,7 +26,7 @@ components :
     Description : "A not so simple struct"
     Author : "Someone"
     Members:
-      - SimpleStruct data // component members can have descriptions
+      - SimpleStruct data [GeV] // component members can have descriptions and units
 
   ex2::NamespaceStruct:
     Members:
@@ -66,10 +66,10 @@ datatypes :
     Author : "B. Hegner"
     Members:
      - unsigned long long cellID      // cellID
-     - double x      // x-coordinate
-     - double y      // y-coordinate
-     - double z      // z-coordinate
-     - double energy // measured energy deposit
+     - double x [mm]     // x-coordinate
+     - double y [mm]     // y-coordinate
+     - double z [mm]     // z-coordinate
+     - double energy [GeV] // measured energy deposit
 
   ExampleMC :
     Description : "Example MC-particle"
