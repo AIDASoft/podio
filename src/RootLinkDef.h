@@ -5,7 +5,7 @@
   #pragma link off all functions;
   #pragma link C++ nestedclasses;
 
-  #pragma link C++ class podio::ROOTFrameReader;
+  #pragma link C++ class podio::ROOTFrameReader + ;
   #pragma link C++ class podio::ROOTLegacyReader + ;
   #pragma link C++ class podio::ROOTFrameWriter + ;
 
