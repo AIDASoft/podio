@@ -13,8 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: ["sw.hsf.org/key4hep",
-                  "sw-nightlies.hsf.org/key4hep"]
+        include:
+          - release: "sw-nightlies.hsf.org/key4hep"
+            RNTUPLE: ON
     steps:
     - uses: actions/checkout@v3
     - uses: cvmfs-contrib/github-action-cvmfs@v3
@@ -30,8 +31,8 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
-            -DUSE_EXTERNAL_CATCH2=ON \
-            -DENABLE_RNTUPLE=ON \
+            -DUSE_EXTERNAL_CATCH2=AUTO \
+            -DENABLE_RNTUPLE=${{ matrix.RNTUPLE }} \
             -G Ninja ..
           echo "::endgroup::"
           echo "::group::Build"
