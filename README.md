@@ -24,9 +24,9 @@ use a recent LCG or FCC stack release.
 
 On Mac OS or Ubuntu, you need to install the following software.
 
-### ROOT 6.08.06
+### ROOT 6.26.10
 
-Install ROOT 6.08.06 (or later) and set up your ROOT environment:
+Install ROOT 6.26.10 (or later) and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
 
