@@ -177,7 +177,9 @@ have resolvable schema evolution incompatibilities:")
   def _write_file(self, name, content):
     """Write the content to file. Dispatch to the correct directory depending on
     whether it is a header or a .cc file."""
-    if name.endswith("h"):
+    if name.endswith("LinkDef.h"):
+      fullname = os.path.join(self.install_dir, "src", name)
+    elif name.endswith("h"):
       fullname = os.path.join(self.install_dir, self.package_name, name)
     else:
       fullname = os.path.join(self.install_dir, "src", name)
