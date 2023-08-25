@@ -7,7 +7,7 @@ mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"
 	{% if member.is_array or member.is_builtin %}
 	{{ member.name }}::{{ member.julia_type }}
 	{% else %}
-	{{ member.name }}::Main.{{ member.julia_type }}Struct
+	{{ member.name }}::{{ member.julia_type }}Struct
 	{% endif %}
 {% endfor %}
 {% for relation in OneToManyRelations %}
@@ -20,7 +20,7 @@ mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"
 	{% if member.is_builtin %}
 	{{ member.name }}::Vector{ {{ member.julia_type }} }
 	{% else %}
-	{{ member.name }}::Vector{ Main.{{ member.julia_type }}Struct }
+	{{ member.name }}::Vector{ {{ member.julia_type }}Struct }
 	{% endif %}
 {% endfor %}
 end

@@ -1,16 +1,5 @@
-include("datamodel/ExampleWithVectorMember.jl")
-using .ExampleWithVectorMemberModule: ExampleWithVectorMember
-include("datamodel/ExampleForCyclicDependency1.jl")
-using .ExampleForCyclicDependency1Module: ExampleForCyclicDependency1
-include("datamodel/ExampleForCyclicDependency2.jl")
-using .ExampleForCyclicDependency2Module: ExampleForCyclicDependency2
-include("datamodel/ExampleWithOneRelation.jl")
-using .ExampleWithOneRelationModule: ExampleWithOneRelation
-include("datamodel/ExampleCluster.jl")
-using .ExampleClusterModule: ExampleCluster
-include("datamodel/ExampleMCCollection.jl")
 include("datamodel/Datamodel.jl")
-
+using .Datamodel
 using Test
 @testset "Julia Bindings" begin
 	@testset "Relations" begin
@@ -103,16 +92,12 @@ using Test
 
 	@testset "Namespaces" begin
 
-		using .Ex2: NamespaceStruct, NamespaceInNamespaceStruct
-
 		s1 = NamespaceStruct()
 		s1.x = Int32(1)
 		s1.y = Int32(2)
 
 		s2 = NamespaceInNamespaceStruct()
 		s2.data = s1
-
-		using .Ex42: ExampleWithNamespace, ExampleWithARelation
 
 		s3 = NamespaceStruct()
 		s3.x = Int32(2)

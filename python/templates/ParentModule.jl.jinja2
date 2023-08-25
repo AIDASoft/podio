@@ -1,15 +1,105 @@
-{% for value in children %}
-{% for childvalue in value['child']['Components'] +  value['child']['Datatypes'] +  value['child']['Collections'] %}
-include("{{ childvalue }}.jl")
+{% import "macros/params.jinja2" as params %}
+module {{ class.bare_type }}
+{% for component in components %}
+export {{ component['class'].bare_type }}
 {% endfor %}
+{% for datatype in datatypes %}
+export {{ datatype['class'].bare_type }}
+export {{ datatype['class'].bare_type }}Collection
 {% endfor %}
 
-{% for value in children %}
-module {{  value['parent']|capitalize }}
-{% for childvalue in  value['child']['Components'] +  value['child']['Datatypes'] %}
-using ..{{childvalue}}Module: {{childvalue}}
-export {{childvalue}}
+{% for component in components %}
+include("{{ component['class'].bare_type }}Struct.jl")
 {% endfor %}
+{% for datatype in datatypes %}
+include("{{ datatype['class'].bare_type }}Struct.jl")
+{% endfor %}
+
+{% for component in components %}
+function {{ component['class'].bare_type }}(
+    {% for member in component['Members'] %}
+	{% if member.is_array %}
+	{{ member.name }}::{{ member.julia_type }} = {{ member.julia_type }}(undef),
+	{% elif member.is_builtin %}
+	{{ member.name }}::{{ member.julia_type }} = {{ member.julia_type }}(0),
+	{% else %}
+	{{ member.name }}::{{ member.julia_type }}Struct = {{ member.julia_type }}(),
+	{% endif %}
+{% endfor %}
+{% for relation in component['OneToManyRelations'] %}
+	{{ relation.name }}::Vector{ {{ relation.julia_type }}Struct } = Vector{ {{ relation.julia_type }}Struct }(),
+{% endfor %}
+{% for relation in component['OneToOneRelations'] %}
+	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}Struct } = nothing,
+{% endfor %}
+{% for member in component['VectorMembers'] %}
+	{% if member.is_builtin %}
+	{{ member.name }}::Vector{ {{ member.julia_type }} } = Vector{ {{ member.julia_type }} }([]),
+	{% else %}
+	{{ member.name }}::Vector{ {{ member.julia_type }}Struct } = Vector{ {{ member.julia_type }}Struct }([]),
+	{% endif %}
+{% endfor %}
+)
+	return {{ component['class'].bare_type }}Struct{{ params.julia_parameters(component['params_jl'], "", "Struct") }}(
+	{% for member in component['Members'] %}
+	{{ member.name }},
+	{% endfor %}
+	{% for relation in component['OneToManyRelations'] %}
+	{{ relation.name }},
+	{% endfor %}
+	{% for relation in component['OneToOneRelations'] %}
+	{{ relation.name }},
+	{% endfor %}
+	{% for member in component['VectorMembers'] %}
+	{{ member.name }},
+	{% endfor %}
+	)
 end
 
 {% endfor %}
+
+{% for datatype in datatypes %}
+function {{ datatype['class'].bare_type }}(
+    {% for member in datatype['Members'] %}
+	{% if member.is_array %}
+	{{ member.name }}::{{ member.julia_type }} = {{ member.julia_type }}(undef),
+	{% elif member.is_builtin %}
+	{{ member.name }}::{{ member.julia_type }} = {{ member.julia_type }}(0),
+	{% else %}
+	{{ member.name }}::{{ member.julia_type }}Struct = {{ member.julia_type }}(),
+	{% endif %}
+{% endfor %}
+{% for relation in datatype['OneToManyRelations'] %}
+	{{ relation.name }}::Vector{ {{ relation.julia_type }}Struct } = Vector{ {{ relation.julia_type }}Struct }(),
+{% endfor %}
+{% for relation in datatype['OneToOneRelations'] %}
+	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}Struct } = nothing,
+{% endfor %}
+{% for member in datatype['VectorMembers'] %}
+	{% if member.is_builtin %}
+	{{ member.name }}::Vector{ {{ member.julia_type }} } = Vector{ {{ member.julia_type }} }([]),
+	{% else %}
+	{{ member.name }}::Vector{ {{ member.julia_type }}Struct } = Vector{ {{ member.julia_type }}Struct }([]),
+	{% endif %}
+{% endfor %}
+)
+	return {{ datatype['class'].bare_type }}Struct{{ params.julia_parameters(datatype['params_jl'], "", "Struct") }}(
+	{% for member in datatype['Members'] %}
+	{{ member.name }},
+	{% endfor %}
+	{% for relation in datatype['OneToManyRelations'] %}
+	{{ relation.name }},
+	{% endfor %}
+	{% for relation in datatype['OneToOneRelations'] %}
+	{{ relation.name }},
+	{% endfor %}
+	{% for member in datatype['VectorMembers'] %}
+	{{ member.name }},
+	{% endfor %}
+	)
+end
+
+{{ datatype['class'].bare_type }}Collection = Vector{ {{ datatype['class'].bare_type }}Struct{{ params.julia_parameters(datatype['params_jl'], prefix="", suffix="Struct") }} }
+
+{% endfor %}
+end
