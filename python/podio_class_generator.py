@@ -670,7 +670,7 @@ have resolvable schema evolution incompatibilities:")
     if include_from == IncludeFrom.NOWHERE:
       # We don't need an include in this case
       return ''
-    
+
     return f'include("{inc_folder}{classname}Struct.jl")'
 
   def _sort_includes(self, includes):
