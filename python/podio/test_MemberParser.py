@@ -1,5 +1,5 @@
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 """
 Tests for the MemberParser highlighting what it is currently capable of and
 what trips it up
