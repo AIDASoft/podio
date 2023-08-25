@@ -17,7 +17,7 @@ components:
       - ex2::NamespaceStruct nspStruct
 
 datatypes:
-  extenstion::ContainedType:
+  extension::ContainedType:
     Author: "T. Madlener"
     Description: "A datatype in the extension that is self-contained"
     Members:

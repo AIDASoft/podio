@@ -2,6 +2,7 @@
 #define PODIO_IMETADATAPROVIDER_H
 
 #include "podio/GenericParameters.h"
+#include "podio/utilities/Deprecated.h"
 
 namespace podio {
 
@@ -9,7 +10,7 @@ namespace podio {
  * @author F. Gaede, DESY
  * @date Apr 2020
  */
-class IMetaDataProvider {
+class DEPR_EVTSTORE IMetaDataProvider {
 
 public:
   /// destructor
@@ -22,7 +23,7 @@ public:
   virtual GenericParameters& getRunMetaData(int runID) = 0;
 
   /// return the collection meta data for the given colID
-  virtual GenericParameters& getCollectionMetaData(int colID) = 0;
+  virtual GenericParameters& getCollectionMetaData(uint32_t colID) = 0;
 };
 
 } // namespace podio

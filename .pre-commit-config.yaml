@@ -9,7 +9,7 @@ repos:
     hooks:
       - id: clang-tidy
         name: clang-tidy
-        entry: clang-tidy -warnings-as-errors='*' -p compile_commands.json
+        entry: clang-tidy -warnings-as-errors='*,-clang-diagnostic-deprecated-declarations' -p compile_commands.json
         types: [c++]
         exclude: (tests/(datamodel|src)/.*(h|cc)|podioVersion.in.h)
         language: system

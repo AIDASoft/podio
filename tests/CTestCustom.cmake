@@ -19,7 +19,15 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_timed
     check_benchmark_outputs
     read-multiple
-    read-legacy-files
+    read-legacy-files-root_v00-13
+    read_frame_legacy_root
+    read_frame_root_multiple
+    write_python_frame_root
+    read_python_frame_root
+    read_and_write_frame_root
+
+    write_frame_root
+    read_frame_root
 
     write_sio
     read_sio
@@ -27,6 +35,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_timed_sio
     read_timed_sio
     check_benchmark_outputs_sio
+    write_frame_sio
+    read_frame_sio
+    read_frame_legacy_sio
+    write_python_frame_sio
+    read_python_frame_sio
+    read_and_write_frame_sio
 
     write_ascii
 
@@ -34,7 +48,29 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     relation_range
 
     pyunittest
+
+    podio-dump-help
+    podio-dump-root-legacy
+    podio-dump-root
+    podio-dump-detailed-root
+    podio-dump-detailed-root-legacy
+
+    podio-dump-sio-legacy
+    podio-dump-sio
+    podio-dump-detailed-sio
+    podio-dump-detailed-sio-legacy
+
+    datamodel_def_store_roundtrip_root
+    datamodel_def_store_roundtrip_root_extension
+    datamodel_def_store_roundtrip_sio
+    datamodel_def_store_roundtrip_sio_extension
   )
+
+  foreach(version in @legacy_test_versions@)
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read-legacy-files-root_${version})
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_root_${version})
+  endforeach()
 
   # ostream_operator is working with Memory sanitizer (at least locally)
   if("@USE_SANITIZER@" MATCHES "Memory(WithOrigin)?")

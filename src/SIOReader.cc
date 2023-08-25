@@ -25,10 +25,12 @@ CollectionBase* SIOReader::readCollection(const std::string& name) {
     readEvent();
   }
 
+  // Have we unpacked this already?
   auto p =
       std::find_if(begin(m_inputs), end(m_inputs), [&name](const SIOReader::Input& t) { return t.second == name; });
 
   if (p != end(m_inputs)) {
+    p->first->setID(m_table->collectionID(name));
     p->first->prepareAfterRead();
     return p->first;
   }
@@ -37,22 +39,16 @@ CollectionBase* SIOReader::readCollection(const std::string& name) {
 }
 
 std::map<int, GenericParameters>* SIOReader::readCollectionMetaData() {
-  // Only read the data if it hasn't been read already
-  if (!m_collectionMetaData->data) {
-    m_collectionMetaData->data = new ColMDMap();
-    readMetaDataRecord(m_collectionMetaData);
-  }
-
+  // Always read a new map, because the EventStore takes ownership
+  m_collectionMetaData->data = new ColMDMap();
+  readMetaDataRecord(m_collectionMetaData);
   return m_collectionMetaData->data;
 }
 
 std::map<int, GenericParameters>* SIOReader::readRunMetaData() {
-  // Only read the data if it hasn't been read already
-  if (!m_runMetaData->data) {
-    m_runMetaData->data = new RunMDMap();
-    readMetaDataRecord(m_runMetaData);
-  }
-
+  // Always read a new map, because the EventStore takes ownership
+  m_runMetaData->data = new RunMDMap();
+  readMetaDataRecord(m_runMetaData);
   return m_runMetaData->data;
 }
 
@@ -65,6 +61,9 @@ podio::GenericParameters* SIOReader::readEventMetaData() {
 
 void SIOReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
+  if (!this->isValid()) {
+    throw std::runtime_error("File " + filename + " couldn't be found");
+  }
   readCollectionIDTable();
 
   if (!readFileTOCRecord()) {
@@ -93,8 +92,9 @@ void SIOReader::readEvent() {
   compressor.uncompress(m_rec_buffer.span(), m_unc_buffer);
   sio::api::read_blocks(m_unc_buffer.span(), m_blocks);
 
-  for (auto& [collection, name] : m_inputs) {
-    collection->setID(m_table->collectionID(name));
+  for (size_t i = 1; i < m_blocks.size(); ++i) {
+    auto* blk = static_cast<podio::SIOBlock*>(m_blocks[i].get());
+    m_inputs.emplace_back(blk->getCollection(), m_table->names()[i - 1]);
   }
 
   m_lastEventRead = m_eventNumber;
@@ -110,6 +110,24 @@ void SIOReader::endOfEvent() {
   m_inputs.clear();
 }
 
+void SIOReader::goToEvent(unsigned eventNumber) {
+  // If we are already past the desired event number, rewind to the start first
+  if (eventNumber < (unsigned)m_eventNumber) {
+    m_stream.clear();
+    m_stream.seekg(0);
+    m_eventNumber = 0;
+  }
+
+  sio::api::go_to_record(m_stream, "event_record");
+  if ((eventNumber - m_eventNumber) > 0) {
+    sio::api::skip_n_records(m_stream, eventNumber - m_eventNumber);
+  }
+  m_eventNumber = eventNumber;
+
+  m_inputs.clear();
+  m_blocks.clear();
+}
+
 void SIOReader::createBlocks() {
   // make sure that the first block is EventMetaData as it is also the first
   // during wrting
@@ -120,7 +138,6 @@ void SIOReader::createBlocks() {
     const bool subsetColl = !m_subsetCollectionBits.empty() && m_subsetCollectionBits[i];
     auto blk = podio::SIOBlockFactory::instance().createBlock(m_typeNames[i], m_table->names()[i], subsetColl);
     m_blocks.push_back(blk);
-    m_inputs.emplace_back(blk->getCollection(), m_table->names()[i]);
   }
 }
 
@@ -139,7 +156,8 @@ void SIOReader::readCollectionIDTable() {
   sio::api::read_blocks(m_unc_buffer.span(), blocks);
 
   auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
-  m_table = idTableBlock->getTable();
+  m_table = std::make_shared<podio::CollectionIDTable>();
+  m_table.reset(idTableBlock->getTable());
   m_typeNames = idTableBlock->getTypeNames();
   m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
   m_fileVersion = static_cast<SIOVersionBlock*>(blocks[1].get())->version;

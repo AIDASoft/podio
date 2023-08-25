@@ -1,9 +1,11 @@
 #ifndef PODIO_UTILITIES_TYPEHELPERS_H
 #define PODIO_UTILITIES_TYPEHELPERS_H
 
+#include <map>
 #include <string>
 #include <tuple>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 namespace podio {
@@ -100,7 +102,73 @@ namespace detail {
   template <typename T>
   static constexpr bool isVector = IsVectorHelper<T>::value;
 
+  /**
+   * Helper struct to detect whether a type is a std::map or std::unordered_map
+   */
+  template <typename T>
+  struct IsMapHelper : std::false_type {};
+
+  template <typename K, typename V>
+  struct IsMapHelper<std::map<K, V>> : std::true_type {};
+
+  template <typename K, typename V>
+  struct IsMapHelper<std::unordered_map<K, V>> : std::true_type {};
+
+  /**
+   * Alias template for deciding whether the passed type T is a map or
+   * unordered_map
+   */
+  template <typename T>
+  static constexpr bool isMap = IsMapHelper<T>::value;
+
+  /**
+   * Helper struct to homogenize the (type) access for things that behave like
+   * maps, e.g. vectors of pairs (and obviously maps).
+   *
+   * NOTE: This is not SFINAE friendly.
+   */
+  template <typename T, typename IsMap = std::bool_constant<isMap<T>>,
+            typename IsVector = std::bool_constant<isVector<T> && (std::tuple_size<typename T::value_type>() == 2)>>
+  struct MapLikeTypeHelper {};
+
+  /**
+   * Specialization for actual maps
+   */
+  template <typename T>
+  struct MapLikeTypeHelper<T, std::bool_constant<true>, std::bool_constant<false>> {
+    using key_type = typename T::key_type;
+    using mapped_type = typename T::mapped_type;
+  };
+
+  /**
+   * Specialization for vector of pairs / tuples (of size 2)
+   */
+  template <typename T>
+  struct MapLikeTypeHelper<T, std::bool_constant<false>, std::bool_constant<true>> {
+    using key_type = typename std::tuple_element<0, typename T::value_type>::type;
+    using mapped_type = typename std::tuple_element<1, typename T::value_type>::type;
+  };
+
+  /**
+   * Type aliases for easier usage in actual code
+   */
+  template <typename T>
+  using GetKeyType = typename MapLikeTypeHelper<T>::key_type;
+
+  template <typename T>
+  using GetMappedType = typename MapLikeTypeHelper<T>::mapped_type;
+
 } // namespace detail
+
+// forward declaration to be able to use it below
+class CollectionBase;
+
+/**
+ * Alias template for checking whether a passed type T inherits from podio::CollectionBase
+ */
+template <typename T>
+static constexpr bool isCollection = std::is_base_of_v<CollectionBase, T>;
+
 } // namespace podio
 
 #endif // PODIO_UTILITIES_TYPEHELPERS_H

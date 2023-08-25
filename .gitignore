@@ -4,6 +4,7 @@ build
 install
 tests/src
 tests/datamodel
+tests/extension_model
 
 # Python
 *pyc
@@ -55,9 +56,16 @@ spack*
 # Tooling
 /.clangd/
 /compile_commands.json
+.vscode
+/.cache/
 
 # Generated files
 *podio_generated_files.cmake
 
 # Populated by cmake before build
 /include/podio/podioVersion.h
+/python/podio/__init__.py
+
+# CLion artifacts
+.idea/
+cmake-build*/

@@ -1,6 +1,12 @@
 name: key4hep
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+  workflow_dispatch:
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -10,21 +16,30 @@ jobs:
         release: ["sw.hsf.org/key4hep",
                   "sw-nightlies.hsf.org/key4hep"]
     steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: actions/checkout@v3
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: aidasoft/run-lcg-view@v4
       with:
         container: centos7
         view-path: /cvmfs/${{ matrix.release }}
         run: |
+          echo "::group::Run CMake"
           mkdir build install
           cd build
           cmake -DENABLE_SIO=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
+            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=ON \
+            -DENABLE_RNTUPLE=ON \
             -G Ninja ..
+          echo "::endgroup::"
+          echo "::group::Build"
           ninja -k0
+          echo "::endgroup"
+          echo "::group::Run tests"
           ctest --output-on-failure
+          echo "::endgroup::"
+          echo "::group::Install"
           ninja install
+          echo "::endgroup::"

@@ -1,3 +1,4 @@
+{% import "macros/declarations.jinja2" as macros %}
 {% import "macros/utils.jinja2" as utils %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
@@ -9,12 +10,12 @@
 {% endfor %}
 #include <ostream>
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
 
 {{ utils.namespace_open(class.namespace) }}
-
+{{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 public:
 {% for member in Members %}
@@ -39,7 +40,7 @@ inline std::ostream& operator<<(std::ostream& o, const {{class.full_type}}& valu
   return o;
 }
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 inline void to_json(nlohmann::json& j, const {{ class.bare_type }}& value) {
   j = nlohmann::json{
 {% set comma = joiner(",") %}

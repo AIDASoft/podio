@@ -7,8 +7,8 @@ project(podio)
 
 #--- Version -------------------------------------------------------------------
 SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
-SET( ${PROJECT_NAME}_VERSION_MINOR 15 )
-SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
+SET( ${PROJECT_NAME}_VERSION_MINOR 16 )
+SET( ${PROJECT_NAME}_VERSION_PATCH 99 )
 
 SET( ${PROJECT_NAME}_VERSION  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}" )
 
@@ -65,19 +65,28 @@ option(CLANG_TIDY "Run clang-tidy after compilation." OFF)
 ADD_CLANG_TIDY()
 
 #--- Declare options -----------------------------------------------------------
-option(CREATE_DOC "Whether or not to create doxygen doc target." OFF)
-option(ENABLE_SIO "Build SIO I/O support" OFF)
+option(CREATE_DOC        "Whether or not to create doxygen doc target." OFF)
+option(ENABLE_SIO        "Build SIO I/O support" OFF)
+option(PODIO_RELAX_PYVER "Do not require exact python version match with ROOT" OFF)
+option(ENABLE_RNTUPLE    "Build with support for the new ROOT NTtuple format" OFF)
 
 
 #--- Declare ROOT dependency ---------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+if(NOT ENABLE_RNTUPLE)
+  find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+else()
+  find_package(ROOT REQUIRED COMPONENTS RIO Tree ROOTNTuple)
+  if(${ROOT_VERSION} VERSION_LESS 6.28.02)
+    message(FATAL_ERROR "You are trying to build podio with support for the new ROOT NTuple format, but your ROOT version is too old. Please update ROOT to at least version 6.28.02")
+  endif()
+endif()
 
 # Check that root is compiled with a modern enough c++ standard
 get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
-if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES)
-  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17")
+if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES AND NOT "cxx_std_20" IN_LIST ROOT_COMPILE_FEATURES)
+  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
 endif()
 #Check if Python version detected matches the version used to build ROOT
 SET(Python_FIND_FRAMEWORK LAST)
@@ -90,10 +99,23 @@ IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION
   ENDIF()
   message( STATUS "Python version used for building ROOT ${ROOT_PYTHON_VERSION}" )
   message( STATUS "Required python version ${REQUIRE_PYTHON_VERSION}")
-  FIND_PACKAGE(Python ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development Interpreter)
-ELSE()
-  FIND_PACKAGE(Python COMPONENTS Development Interpreter)
-ENDIF()
+
+  if(NOT PODIO_RELAX_PYVER)
+    find_package(Python ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development Interpreter)
+  else()
+    find_package(Python ${REQUIRE_PYTHON_VERSION} REQUIRED COMPONENTS Development Interpreter)
+    string(REPLACE "." ";" _root_pyver_tuple ${REQUIRE_PYTHON_VERSION})
+    list(GET _root_pyver_tuple 0 _root_pyver_major)
+    list(GET _root_pyver_tuple 1 _root_pyver_minor)
+    if(NOT "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}" VERSION_EQUAL "${_root_pyver_major}.${_root_pyver_minor}")
+      message(FATAL_ERROR "There is a mismatch between the major and minor versions in Python"
+        " (found ${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}) and ROOT, compiled with "
+        "Python ${_root_pyver_major}.${_root_pyver_minor}")
+    endif()
+  endif()
+else()
+  find_package(Python COMPONENTS Development Interpreter)
+endif()
 
 # ROOT only sets usage requirements from 6.14, so for
 # earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
@@ -128,7 +150,8 @@ endif()
 
 #--- enable unit testing capabilities ------------------------------------------
 include(CTest)
-option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" ON)
+set(USE_EXTERNAL_CATCH2 AUTO CACHE STRING "Link against an external Catch2 v3 static library, otherwise build it locally")
+set_property(CACHE USE_EXTERNAL_CATCH2 PROPERTY STRINGS AUTO ON OFF)
 
 #--- enable CPack --------------------------------------------------------------
 
@@ -146,20 +169,21 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podioVersion.in.h
                ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h )
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/python/podio/__init__.py)
 
 #--- add license files ---------------------------------------------------------
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
-              ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
         DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 #--- project specific subdirectories -------------------------------------------
-add_subdirectory(python)
 add_subdirectory(src)
 if(BUILD_TESTING)
+  include(cmake/podioTest.cmake)
   add_subdirectory(tests)
 endif()
+add_subdirectory(tools)
+add_subdirectory(python)
 
 #--- add CMake infrastructure --------------------------------------------------
 include(cmake/podioCreateConfig.cmake)
-
-

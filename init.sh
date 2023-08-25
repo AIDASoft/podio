@@ -11,14 +11,14 @@
 
 # First see if PODIO is already set
 if [ -n "$PODIO" -a "$1" != "-r" ]; then
-	echo "PODIO already set - use '-r' if you want to reinitialise it"
-	return
+  echo "PODIO already set - use '-r' if you want to reinitialise it"
+  return
 fi
 
 export PODIO=$(pwd)/install
 
 if [ -e env.sh ]; then
-	source ./env.sh
+  source ./env.sh
 else
-	echo "To complete PODIO setup please source the 'env.sh' script"
+  echo "To complete PODIO setup please source the 'env.sh' script"
 fi

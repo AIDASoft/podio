@@ -2,6 +2,9 @@
 #define PODIO_USERDATACOLLECTION_H
 
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/DatamodelRegistry.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
@@ -14,6 +17,10 @@
   template <>                                                                                                          \
   constexpr const char* userDataTypeName<type>() {                                                                     \
     return #type;                                                                                                      \
+  }                                                                                                                    \
+  template <>                                                                                                          \
+  constexpr const char* userDataCollTypeName<type>() {                                                                 \
+    return "podio::UserDataCollection<" #type ">";                                                                     \
   }
 
 namespace podio {
@@ -34,6 +41,12 @@ using EnableIfSupportedUserType = std::enable_if_t<detail::isInTuple<T, Supporte
  */
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 constexpr const char* userDataTypeName();
+
+/** Helper template to provide the fully qualified name of a UserDataCollection.
+ * Implementations are populated by the PODIO_ADD_USER_TYPE macro.
+ */
+template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
+constexpr const char* userDataCollTypeName();
 
 PODIO_ADD_USER_TYPE(float)
 PODIO_ADD_USER_TYPE(double)
@@ -62,17 +75,27 @@ private:
   // simpler move-semantics this will be set and properly initialized on
   // demand during the call to getBuffers
   std::vector<BasicType>* _vecPtr{nullptr};
-  int m_collectionID{0};
+  uint32_t m_collectionID{0};
   CollRefCollection m_refCollections{};
   VectorMembersInfo m_vecmem_info{};
 
 public:
   UserDataCollection() = default;
+  /// Constructor from an existing vector (wich will be moved from!)
+  UserDataCollection(std::vector<BasicType>&& vec) : _vec(std::move(vec)) {
+  }
   UserDataCollection(const UserDataCollection&) = delete;
   UserDataCollection& operator=(const UserDataCollection&) = delete;
   UserDataCollection(UserDataCollection&&) = default;
   UserDataCollection& operator=(UserDataCollection&&) = default;
   ~UserDataCollection() = default;
+
+  /// The schema version of UserDataCollections
+  static constexpr SchemaVersionT schemaVersion = 1;
+
+  constexpr static auto typeName = userDataCollTypeName<BasicType>();
+  constexpr static auto valueTypeName = userDataTypeName<BasicType>();
+  constexpr static auto dataTypeName = userDataTypeName<BasicType>();
 
   /// prepare buffers for serialization
   void prepareForWrite() const override {
@@ -88,19 +111,19 @@ public:
   }
 
   /// set collection ID
-  void setID(unsigned id) override {
+  void setID(uint32_t id) override {
     m_collectionID = id;
   }
 
   /// get collection ID
-  unsigned getID() const override {
+  uint32_t getID() const override {
     return m_collectionID;
   }
 
   /// Get the collection buffers for this collection
-  podio::CollectionBuffers getBuffers() override {
+  podio::CollectionWriteBuffers getBuffers() override {
     _vecPtr = &_vec; // Set the pointer to the correct internal vector
-    return {&_vecPtr, &m_refCollections, &m_vecmem_info};
+    return {&_vecPtr, _vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
   /// check for validity of the container after read
@@ -114,18 +137,18 @@ public:
   }
 
   /// fully qualified type name
-  std::string getTypeName() const override {
-    return std::string("podio::UserDataCollection<") + userDataTypeName<BasicType>() + ">";
+  const std::string_view getTypeName() const override {
+    return typeName;
   }
 
   /// fully qualified type name of elements - with namespace
-  std::string getValueTypeName() const override {
-    return userDataTypeName<BasicType>();
+  const std::string_view getValueTypeName() const override {
+    return valueTypeName;
   }
 
   /// fully qualified type name of stored POD elements - with namespace
-  std::string getDataTypeName() const override {
-    return userDataTypeName<BasicType>();
+  const std::string_view getDataTypeName() const override {
+    return dataTypeName;
   }
 
   /// clear the collection and all internal states
@@ -140,6 +163,31 @@ public:
 
   /// declare this collection to be a subset collectionv - no effect
   void setSubsetCollection(bool) override {
+  }
+
+  /// The schema version is fixed manually
+  SchemaVersionT getSchemaVersion() const final {
+    return schemaVersion;
+  }
+
+  /// Print this collection to the passed stream
+  void print(std::ostream& os = std::cout, bool flush = true) const override {
+    os << "[";
+    if (!_vec.empty()) {
+      os << _vec[0];
+      for (size_t i = 1; i < _vec.size(); ++i) {
+        os << ", " << _vec[i];
+      }
+    }
+    os << "]";
+
+    if (flush) {
+      os.flush(); // Necessary for python
+    }
+  }
+
+  size_t getDatamodelRegistryIndex() const override {
+    return DatamodelRegistry::NoDefinitionNecessary;
   }
 
   // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)
@@ -184,6 +232,12 @@ public:
 
 // don't make this macro public as it should only be used internally here...
 #undef PODIO_ADD_USER_TYPE
+
+template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
+std::ostream& operator<<(std::ostream& o, const podio::UserDataCollection<BasicType>& coll) {
+  coll.print(o);
+  return o;
+}
 
 } // namespace podio
 

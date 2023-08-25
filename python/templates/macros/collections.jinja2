@@ -1,10 +1,10 @@
 {% macro vectorized_access(class, member) %}
-template<size_t arraysize>
-const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collection::{{ member.name }}() const {
-  std::array<{{ member.full_type }}, arraysize> tmp{};
-  const auto valid_size = std::min(arraysize, m_storage.entries.size());
-  for (unsigned i = 0; i < valid_size; ++i) {
-    tmp[i] = m_storage.entries[i]->data.{{ member.name }};
+std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.name }}(const size_t nElem) const {
+  std::vector<{{ member.full_type }}> tmp;
+  const auto valid_size = nElem != 0 ? std::min(nElem, m_storage.entries.size()) : m_storage.entries.size();
+  tmp.reserve(valid_size);
+  for (size_t i = 0; i < valid_size; ++i) {
+    tmp.emplace_back(m_storage.entries[i]->data.{{ member.name }});
   }
   return tmp;
 }
@@ -48,7 +48,7 @@ const std::array<{{ member.full_type }}, arraysize> {{ class.bare_type }}Collect
     if (obj->m_{{ relation.name }}) {
       m_refCollections[{{ real_index }}]->emplace_back(obj->m_{{ relation.name }}->getObjectID());
     } else {
-       m_refCollections[{{ real_index }}]->push_back({podio::ObjectID::invalid, podio::ObjectID::invalid});
+       m_refCollections[{{ real_index }}]->push_back({podio::ObjectID::invalid, 0});
     }
   }
 {% endmacro %}
@@ -143,5 +143,12 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection&
 
   o.flags(old_flags);
   return o;
+}
+
+void {{ class.bare_type }}Collection::print(std::ostream& os, bool flush) const {
+  os << *this;
+  if (flush) {
+    os.flush();
+  }
 }
 {%- endmacro %}
