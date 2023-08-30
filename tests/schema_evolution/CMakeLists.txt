@@ -7,7 +7,7 @@ PODIO_ADD_DATAMODEL_CORE_LIB(TestDataModel_v1 "${headers}" "${sources}"
   OUTPUT_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/datamodel_old
 )
 
-PODIO_ADD_ROOT_IO_DICT(TestDataModel_v1Dict TestDataModel_v1 "${headers}" ${CMAKE_CURRENT_BINARY_DIR}/datamodel_old/src/selection.xml
+PODIO_ADD_ROOT_IO_DICT(TestDataModel_v1Dict TestDataModel_v1 "${headers}" ${CMAKE_CURRENT_BINARY_DIR}/datamodel_old/src/LinkDef.h
   OUTPUT_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/datamodel_old
 )
 
