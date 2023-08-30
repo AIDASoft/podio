@@ -12,7 +12,8 @@
 
 #define ASSERT_EQUAL(actual, expected, msg)                                                                            \
   if ((expected) != (actual)) {                                                                                        \
-    std::cerr << __PRETTY_FUNCTION__ << ": " << msg << " (expected: " << expected << ", actual: " << actual << ")";    \
+    std::cerr << __PRETTY_FUNCTION__ << ": " << msg << " (expected: " << expected << ", actual: " << actual << ")"     \
+              << std::endl;                                                                                            \
     return 1;                                                                                                          \
   }
 
