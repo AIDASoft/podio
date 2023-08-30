@@ -1,3 +1,10 @@
+# v00-16-07
+
+* 2023-08-30 Thomas Madlener ([PR#470](https://github.com/AIDASoft/podio/pull/470))
+  - Backport of #439
+  - (Partial) backport of #469 to fix CI for this branch. Removed the RNTuple setup since that is not available here yet.
+  - Backport the `AUTO` configuration option for the cmake `USE_EXTERNAL_CATCH2` config parameter
+
 # v00-16-06
 
 * 2023-07-14 Thomas Madlener ([PR#453](https://github.com/AIDASoft/podio/pull/453))
