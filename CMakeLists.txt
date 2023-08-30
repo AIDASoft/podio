@@ -142,7 +142,9 @@ endif()
 
 #--- enable unit testing capabilities ------------------------------------------
 include(CTest)
-option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" ON)
+
+set(USE_EXTERNAL_CATCH2 AUTO CACHE STRING "Link against an external Catch2 v3 static library, otherwise build it locally")
+set_property(CACHE USE_EXTERNAL_CATCH2 PROPERTY STRINGS AUTO ON OFF)
 
 #--- enable CPack --------------------------------------------------------------
 
