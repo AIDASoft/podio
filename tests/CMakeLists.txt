@@ -110,9 +110,20 @@ endif()
 CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
 
-if(USE_EXTERNAL_CATCH2)
-  find_package(Catch2 3 REQUIRED)
+if(CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set(CATCH2_MIN_VERSION 3.4)
 else()
+  set(CATCH2_MIN_VERSION 3.1)
+endif()
+if(USE_EXTERNAL_CATCH2)
+  if (USE_EXTERNAL_CATCH2 STREQUAL AUTO)
+    find_package(Catch2 ${CATCH2_MIN_VERSION})
+  else()
+    find_package(Catch2 ${CATCH2_MIN_VERSION} REQUIRED)
+  endif()
+endif()
+
+if(NOT Catch2_FOUND)
   message(STATUS "Fetching local copy of Catch2 library for unit-tests...")
   # Build Catch2 with the default flags, to avoid generating warnings when we
   # build it
@@ -122,7 +133,7 @@ else()
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.0.1
+    GIT_TAG        v3.4.0
     )
   FetchContent_MakeAvailable(Catch2)
   set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras ${CMAKE_MODULE_PATH})
