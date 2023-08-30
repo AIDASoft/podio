@@ -440,7 +440,7 @@ have resolvable schema evolution incompatibilities:")
 
   def _write_cmake_lists_file(self):
     """Write the names of all generated header and src files into cmake lists"""
-    header_files = (f for f in self.generated_files if f.endswith('.h'))
+    header_files = (f for f in self.generated_files if f.endswith('.h') and not 'LinkDef.h' in f)
     src_files = (f for f in self.generated_files if f.endswith('.cc'))
     xml_files = (f for f in self.generated_files if f.endswith('.xml'))
 
