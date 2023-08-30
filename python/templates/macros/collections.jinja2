@@ -194,7 +194,11 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
   readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
     // We only have any of these buffers if this is ont a subste collection
     if (buffers.data) {
+{% if schemaVersion == -1 %}
       buffers.data = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}Data>(buffers.data);
+{% else %}
+      buffers.data = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}v{{ schemaVersion }}Data>(buffers.data);
+{% endif %}
 
 {% if VectorMembers %}
 {% for member in VectorMembers %}
