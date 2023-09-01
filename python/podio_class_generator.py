@@ -397,7 +397,7 @@ have resolvable schema evolution incompatibilities:")
       if not member.is_builtin:
         includes_jl_struct.add(self._build_julia_include(member))
     datatype['includes_jl']['struct'].update((includes_jl_struct))
-    sorted(datatype['includes_jl']['struct'])
+    datatype['includes_jl']['struct'] = sorted(datatype['includes_jl']['struct'])
 
   @staticmethod
   def _get_julia_params(datatype):

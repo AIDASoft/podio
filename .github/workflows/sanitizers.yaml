@@ -51,3 +51,6 @@ jobs:
             echo "::group::Run tests"
             ctest --output-on-failure
             echo "::endgroup::"
+
+      - name: Install StaticArrays Julia Package
+        run: julia -e 'import Pkg; Pkg.add("StaticArrays")'

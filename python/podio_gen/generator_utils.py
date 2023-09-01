@@ -187,7 +187,7 @@ class MemberVariable:
 
     self.julia_type = get_julia_type(cpp_type=self.bare_type, is_array=self.is_array,
                                      array_type=self.array_type, array_size=self.array_size)
-  
+
   @property
   def docstring(self):
     """Docstring to be used in code generation"""
