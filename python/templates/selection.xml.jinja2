@@ -1,9 +1,17 @@
 {% macro class_selection(class, prefix='', postfix='') %}
 {%- if class.namespace %}
-        <class name="{{ class.namespace }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}"/>
+        <class name="{{ class.namespace }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}" ClassVersion="{{ version }}"/>
 {%- else %}
-        <class name="{{ prefix }}{{ class.bare_type }}{{ postfix }}"/>
+        <class name="{{ prefix }}{{ class.bare_type }}{{ postfix }}" ClassVersion="{{ version }}"/>
 {%- endif %}
+{% endmacro %}
+
+{% macro ioread(iorule) %}
+        <ioread sourceClass="{{ iorule.sourceClass }}" targetClass="{{ iorule.targetClass}}" version="[{{ iorule.version }}]" target="{{ iorule.target }}" source="{{ iorule.source }}">
+        <![CDATA[
+	     {{ iorule.code }}
+        ]]>
+        </ioread>
 {% endmacro %}
 
 <lcgdict>
@@ -31,4 +39,8 @@
 {% endfor %}
 
     </selection>
+
+{% for iorule in iorules %}
+{{ ioread(iorule) }}
+{% endfor %}
 </lcgdict>
