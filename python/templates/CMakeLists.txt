@@ -23,8 +23,6 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/macros/sioblocks.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/utils.jinja2
 
-  ${CMAKE_CURRENT_LIST_DIR}/JuliaCollection.jl.jinja2
-  ${CMAKE_CURRENT_LIST_DIR}/Constructor.jl.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/MutableStruct.jl.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/ParentModule.jl.jinja2
 )
