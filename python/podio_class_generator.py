@@ -114,6 +114,8 @@ class ClassGenerator:
     self.any_changes = False
 
   def _process_parent_module(self, datamodel):
+    """Process parent module of julia that contains constructor definitions
+    of components and datatypes"""
     self._fill_templates("ParentModule", datamodel)
 
   def process(self):
@@ -259,7 +261,7 @@ have resolvable schema evolution incompatibilities:")
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
-    component['includes_jl'] = {'struct': includes_jl}
+    component['includes_jl'] = {'struct': sorted(includes_jl)}
     component['class'] = DataType(name)
 
     self._fill_templates('Component', component)
@@ -289,6 +291,7 @@ have resolvable schema evolution incompatibilities:")
       if not member.is_builtin:
         includes_jl_struct.add(self._build_julia_include(member))
     datatype['includes_jl']['struct'].update((includes_jl_struct))
+    sorted(datatype['includes_jl']['struct'])
 
   @staticmethod
   def _get_julia_params(datatype):
@@ -431,7 +434,7 @@ have resolvable schema evolution incompatibilities:")
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     data['includes_jl'] = {'struct': self._get_member_includes(definition["Members"], julia=True)}
-    data['params_jl'] = self._get_julia_params(data)
+    data['params_jl'] = sorted(self._get_julia_params(data))
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
