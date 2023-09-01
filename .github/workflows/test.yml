@@ -48,12 +48,12 @@ jobs:
           echo "::group::Build"
           ninja -k0
           echo "::endgroup"
+          echo "::group::Julia StaticArrays Package Install"
+          julia -e 'import Pkg; Pkg.add("StaticArrays")'
+          echo "::endgroup"
           echo "::group::Run tests"
           ctest --output-on-failure
           echo "::endgroup::"
           echo "::group::Install"
           ninja install
           echo "::endgroup::"
-
-    - name: Install StaticArrays Julia Package
-      run: julia -e 'import Pkg; Pkg.add("StaticArrays")'
