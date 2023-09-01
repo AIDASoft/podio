@@ -76,6 +76,9 @@ class IncludeFrom(IntEnum):
   INTERNAL = 1  # include from within the datamodel
   EXTERNAL = 2  # include from an upstream datamodel
 
+class RootIoRule:
+  pass
+
 
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
@@ -99,6 +102,7 @@ class ClassGenerator:
     # information to update the selection.xml
     self.root_schema_evolution_component_names = set()
     self.root_schema_evolution_datatype_names = set()
+    self.root_schema_evolution_iorules = set()
 
     try:
       self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
@@ -132,6 +136,7 @@ class ClassGenerator:
     self._write_edm_def_file()
 
     if 'ROOT' in self.io_handlers:
+      self.prepare_iorules()
       self._create_selection_xml()
 
     self._write_cmake_lists_file()
@@ -327,9 +332,22 @@ have resolvable schema evolution incompatibilities:")
       else:
         if member.full_type in self.root_schema_evolution_dict.keys():
           needs_schema_evolution = True
+          # prepare the ROOT I/O rule
+          print(member.full_type)
+          dir(member)
+#          iorule = RootIoRule()
+#          iorule.sourceClass = member.full_type
+#          iorule.targetClass = member.full_type
+#          iorule.version = 2 #self.schema_version.lstrip("v")
+#          iorule.target = "y"
+#          iorule.source = "int y_old"
+#          iorule.code = "std::cout<< onfile.y_old << y << std::endl; y = onfile.y_old;"
+#          if len(self.root_schema_evolution_iorules) == 0:
+#            self.root_schema_evolution_iorules.add(iorule)
           self._replaceComponentInPaths(member.full_type, member.full_type + self.old_schema_version,
-                                        schema_evolution_datatype['includes'])
+                                        schema_evolution_datatype['includes_data'])
           member.full_type = member.full_type + self.old_schema_version
+          member.bare_type = member.bare_type + self.old_schema_version
 
     if needs_schema_evolution:
       print("  Preparing explicit schema evolution for %s" % (name))
@@ -349,6 +367,29 @@ have resolvable schema evolution incompatibilities:")
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
+
+  def prepare_iorules(self):
+    """Prepare the IORules to be put in the Reflex dictionary"""
+    for type_name, schema_changes in self.root_schema_evolution_dict.items():
+      for schema_change in schema_changes:
+        if type(schema_change) == RenamedMember:
+          # find out the type of the renamed member
+          component = self.datamodel.components[type_name]
+          for member in component["Members"]:
+            if member.name == schema_change.member_name_new:
+              member_type = member.full_type
+
+          iorule = RootIoRule()
+          iorule.sourceClass = type_name
+          iorule.targetClass = type_name
+          iorule.version = self.old_schema_version.lstrip("v")
+          iorule.source = f'{member_type} {schema_change.member_name_old}'
+          iorule.target = schema_change.member_name_new
+          iorule.code = f'std::cout<< "reading {schema_change.member_name_old} with value " << onfile.{schema_change.member_name_old} << std::endl; {iorule.target} = onfile.{schema_change.member_name_old};'
+          self.root_schema_evolution_iorules.add(iorule)
+        else:
+          raise NotImplementedError("Schema evolution for this type not yet implemented")
+
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
@@ -570,10 +611,13 @@ have resolvable schema evolution incompatibilities:")
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c) for c in self.datamodel.components],
+    data = {'version': self.datamodel.schema_version,
+            'components': [DataType(c) for c in self.datamodel.components],
             'datatypes': [DataType(d) for d in self.datamodel.datatypes],
             'old_schema_components': [DataType(d) for d in
-                                      self.root_schema_evolution_datatype_names | self.root_schema_evolution_component_names]}  # noqa
+                                      self.root_schema_evolution_datatype_names | self.root_schema_evolution_component_names], # noqa
+            'iorules': self.root_schema_evolution_iorules}
+
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, member):
