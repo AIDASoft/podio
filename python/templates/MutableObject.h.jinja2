@@ -16,7 +16,7 @@
 #include <ostream>
 #include <cstddef>
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json_fwd.hpp"
 #endif
 
