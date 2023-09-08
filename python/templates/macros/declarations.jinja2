@@ -134,7 +134,7 @@
 {%- endmacro %}
 
 {% macro json_output(type, prefix='') %}
-#ifdef PODIO_JSON_OUTPUT
+#ifdef PODIO_JSON_OUTPUT && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ prefix }}{{ type }}& value);
 #endif
 {% endmacro %}
