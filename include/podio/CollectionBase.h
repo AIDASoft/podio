@@ -55,6 +55,9 @@ public:
   /// number of elements in the collection
   virtual size_t size() const = 0;
 
+  /// Is the collection empty
+  virtual bool empty() const = 0;
+
   /// fully qualified type name
   virtual const std::string_view getTypeName() const = 0;
   /// fully qualified type name of elements - with namespace

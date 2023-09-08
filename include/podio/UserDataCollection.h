@@ -136,6 +136,11 @@ public:
     return _vec.size();
   }
 
+  /// Is the collection empty
+  bool empty() const override {
+    return _vec.empty();
+  }
+
   /// fully qualified type name
   const std::string_view getTypeName() const override {
     return typeName;

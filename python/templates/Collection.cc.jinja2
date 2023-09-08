@@ -51,6 +51,10 @@ std::size_t {{ collection_type }}::size() const {
   return m_storage.entries.size();
 }
 
+bool {{ collection_type }}::empty() const {
+  return m_storage.entries.empty();
+}
+
 void {{ collection_type }}::setSubsetCollection(bool setSubset) {
   if (m_isSubsetColl != setSubset && !m_storage.entries.empty()) {
     throw std::logic_error("Cannot change the character of a collection that already contains elements");
