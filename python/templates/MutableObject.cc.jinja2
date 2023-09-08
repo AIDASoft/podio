@@ -8,6 +8,10 @@
 {{ include }}
 {% endfor %}
 
+#ifdef PODIO_JSON_OUTPUT && !defined(__CLING__)
+#include "nlohmann/json.hpp"
+#endif
+
 #include <ostream>
 
 {{ utils.namespace_open(class.namespace) }}
