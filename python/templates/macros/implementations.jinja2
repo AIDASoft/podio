@@ -210,7 +210,7 @@ std::ostream& operator<<(std::ostream& o, const {{ type }}& value) {
 {%- endmacro %}
 
 {% macro json_output(class, members, single_relations, multi_relations, vector_members, get_syntax, prefix='') %}
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ prefix }}{{ class.bare_type }}& value) {
   j = nlohmann::json{
 {% set comma = joiner(",") %}
