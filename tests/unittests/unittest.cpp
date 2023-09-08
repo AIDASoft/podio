@@ -80,7 +80,6 @@ TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
 }
 
 TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-management]") {
-  bool success = true;
   auto store = podio::EventStore();
   auto& hits = store.create<ExampleHitCollection>("hits");
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
@@ -102,10 +101,7 @@ TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-manag
     oneRels.push_back(oneRel);
   }
   hits.clear();
-  if (hits.size() != 0) {
-    success = false;
-  }
-  REQUIRE(success);
+  REQUIRE(hits.empty());
 }
 
 TEST_CASE("Cloning", "[basics][memory-management]") {
@@ -438,6 +434,15 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
 TEST_CASE("NonPresentCollection", "[basics][event-store]") {
   auto store = podio::EventStore();
   REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
+}
+
+TEST_CASE("Collection size and empty", "[basics][collections]") {
+  ExampleClusterCollection coll{};
+  REQUIRE(coll.empty());
+
+  coll.create();
+  coll.create();
+  REQUIRE(coll.size() == 2u);
 }
 
 TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {

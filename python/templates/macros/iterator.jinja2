@@ -11,6 +11,10 @@ public:
     return m_index != x.m_index; // TODO: may not be complete
   }
 
+  bool operator==(const {{ iterator_type }}& x) const {
+    return m_index ==  x.m_index; // TODO: may not be complete
+  }
+
   {{ prefix }}{{ class.bare_type }} operator*();
   {{ prefix }}{{ class.bare_type }}* operator->();
   {{ iterator_type }}& operator++();
