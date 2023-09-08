@@ -209,7 +209,6 @@ have resolvable schema evolution incompatibilities:")
 
     endings = {
         'Data': ('h',),
-        'Component': ('h',),
         'PrintInfo': ('h',)
         }.get(template_base, ('h', 'cc'))
 

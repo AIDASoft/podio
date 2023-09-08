@@ -4,6 +4,7 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/CollectionData.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/CollectionData.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Component.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/Component.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Data.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Obj.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Obj.cc.jinja2
