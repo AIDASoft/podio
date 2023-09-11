@@ -76,8 +76,16 @@ class IncludeFrom(IntEnum):
   INTERNAL = 1  # include from within the datamodel
   EXTERNAL = 2  # include from an upstream datamodel
 
+
 class RootIoRule:
-  pass
+  """A placeholder IORule class"""
+  def __init__(self):
+    self.sourceClass = None
+    self.targetClass = None
+    self.version = None
+    self.source = None
+    self.target = None
+    self.code = None
 
 
 class ClassGenerator:
@@ -95,14 +103,15 @@ class ClassGenerator:
     self.old_yamlfile = old_description
     self.evolution_file = evolution_file
     self.old_schema_version = None
+    self.old_schema_version_int = None
     self.old_datamodel = None
     self.old_datamodels_components = set()
     self.old_datamodels_datatypes = set()
-    self.root_schema_evolution_dict = {}  # containing the root relevant schema evolution per datatype
+    self.root_schema_dict = {}  # containing the root relevant schema evolution per datatype
     # information to update the selection.xml
-    self.root_schema_evolution_component_names = set()
-    self.root_schema_evolution_datatype_names = set()
-    self.root_schema_evolution_iorules = set()
+    self.root_schema_component_names = set()
+    self.root_schema_datatype_names = set()
+    self.root_schema_iorules = set()
 
     try:
       self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
@@ -153,7 +162,7 @@ class ClassGenerator:
                                        evolution_file=self.evolution_file)
       comparator.read()
       comparator.compare()
-      self.old_schema_version = "v%i" % comparator.datamodel_old.schema_version
+      self.old_schema_version = f"v{comparator.datamodel_old.schema_version}"
       self.old_schema_version_int = comparator.datamodel_old.schema_version
       # some sanity checks
       if len(comparator.errors) > 0:
@@ -171,14 +180,14 @@ have resolvable schema evolution incompatibilities:")
 
       # now go through all the io_handlers and see what we have to do
       if 'ROOT' in self.io_handlers:
-          for item in root_filter(comparator.schema_changes):
-            schema_evolutions = self.root_schema_evolution_dict.get(item.klassname)
-            if (schema_evolutions is None):
-                schema_evolutions = []
-                self.root_schema_evolution_dict[item.klassname] = schema_evolutions
+        for item in root_filter(comparator.schema_changes):
+          schema_evolutions = self.root_schema_dict.get(item.klassname)
+          if schema_evolutions is None:
+            schema_evolutions = []
+            self.root_schema_dict[item.klassname] = schema_evolutions
 
-            # add whatever is relevant to our ROOT schema evolutions
-            self.root_schema_evolution_dict[item.klassname].append(item)
+          # add whatever is relevant to our ROOT schema evolutions
+          self.root_schema_dict[item.klassname].append(item)
 
   def print_report(self):
     """Print a summary report about the generated code"""
@@ -283,8 +292,8 @@ have resolvable schema evolution incompatibilities:")
 
     # Add potentially older schema for schema evolution
     # based on ROOT capabilities for now
-    if name in self.root_schema_evolution_dict.keys():
-      schema_evolutions = self.root_schema_evolution_dict[name]
+    if name in self.root_schema_dict:
+      schema_evolutions = self.root_schema_dict[name]
       component = copy.deepcopy(component)
       for schema_evolution in schema_evolutions:
         if isinstance(schema_evolution, RenamedMember):
@@ -295,9 +304,10 @@ have resolvable schema evolution incompatibilities:")
         else:
           raise NotImplementedError
       self._fill_templates('Component', component)
-      self.root_schema_evolution_component_names.add(name + self.old_schema_version)
+      self.root_schema_component_names.add(name + self.old_schema_version)
 
   def _replaceComponentInPaths(self, oldname, newname, paths):
+    """Replace component in paths"""
     # strip the namespace
     shortoldname = oldname.split("::")[-1]
     shortnewname = newname.split("::")[-1]
@@ -316,13 +326,13 @@ have resolvable schema evolution incompatibilities:")
     schema_evolution_datatype = copy.deepcopy(datatype)
     needs_schema_evolution = False
     # check whether it has a renamed member
-    # if name in self.root_schema_evolution_dict.keys():
+    # if name in self.root_schema_dict.keys():
     # for member in schema_evolution_datatype['Members']:
     # if
     # then check for components with a renamed member
     for member in schema_evolution_datatype['Members']:
       if member.is_array:
-        if member.array_type in self.root_schema_evolution_dict.keys():
+        if member.array_type in self.root_schema_dict:
           needs_schema_evolution = True
           self._replaceComponentInPaths(member.array_type, member.array_type + self.old_schema_version,
                                         schema_evolution_datatype['includes_data'])
@@ -330,7 +340,7 @@ have resolvable schema evolution incompatibilities:")
           member.array_type = member.array_type + self.old_schema_version
 
       else:
-        if member.full_type in self.root_schema_evolution_dict.keys():
+        if member.full_type in self.root_schema_dict:
           needs_schema_evolution = True
           # prepare the ROOT I/O rule
           print(member.full_type)
@@ -342,18 +352,18 @@ have resolvable schema evolution incompatibilities:")
 #          iorule.target = "y"
 #          iorule.source = "int y_old"
 #          iorule.code = "std::cout<< onfile.y_old << y << std::endl; y = onfile.y_old;"
-#          if len(self.root_schema_evolution_iorules) == 0:
-#            self.root_schema_evolution_iorules.add(iorule)
+#          if len(self.root_schema_iorules) == 0:
+#            self.root_schema_iorules.add(iorule)
           self._replaceComponentInPaths(member.full_type, member.full_type + self.old_schema_version,
                                         schema_evolution_datatype['includes_data'])
           member.full_type = member.full_type + self.old_schema_version
           member.bare_type = member.bare_type + self.old_schema_version
 
     if needs_schema_evolution:
-      print("  Preparing explicit schema evolution for %s" % (name))
+      print(f"  Preparing explicit schema evolution for {name}")
       schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version  # noqa
       self._fill_templates('Data', schema_evolution_datatype)
-      self.root_schema_evolution_datatype_names.add(name + self.old_schema_version)
+      self.root_schema_datatype_names.add(name + self.old_schema_version)
       self._fill_templates('Collection', datatype, schema_evolution_datatype)
     else:
       self._fill_templates('Collection', datatype)
@@ -370,9 +380,9 @@ have resolvable schema evolution incompatibilities:")
 
   def prepare_iorules(self):
     """Prepare the IORules to be put in the Reflex dictionary"""
-    for type_name, schema_changes in self.root_schema_evolution_dict.items():
+    for type_name, schema_changes in self.root_schema_dict.items():
       for schema_change in schema_changes:
-        if type(schema_change) == RenamedMember:
+        if isinstance(schema_change, RenamedMember):
           # find out the type of the renamed member
           component = self.datamodel.components[type_name]
           for member in component["Members"]:
@@ -385,11 +395,10 @@ have resolvable schema evolution incompatibilities:")
           iorule.version = self.old_schema_version.lstrip("v")
           iorule.source = f'{member_type} {schema_change.member_name_old}'
           iorule.target = schema_change.member_name_new
-          iorule.code = f'std::cout<< "reading {schema_change.member_name_old} with value " << onfile.{schema_change.member_name_old} << std::endl; {iorule.target} = onfile.{schema_change.member_name_old};'
-          self.root_schema_evolution_iorules.add(iorule)
+          iorule.code = f'std::cout<< "reading {schema_change.member_name_old} with value " << onfile.{schema_change.member_name_old} << std::endl; {iorule.target} = onfile.{schema_change.member_name_old};' # noqa
+          self.root_schema_iorules.add(iorule)
         else:
           raise NotImplementedError("Schema evolution for this type not yet implemented")
-
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
@@ -615,8 +624,8 @@ have resolvable schema evolution incompatibilities:")
             'components': [DataType(c) for c in self.datamodel.components],
             'datatypes': [DataType(d) for d in self.datamodel.datatypes],
             'old_schema_components': [DataType(d) for d in
-                                      self.root_schema_evolution_datatype_names | self.root_schema_evolution_component_names], # noqa
-            'iorules': self.root_schema_evolution_iorules}
+                                      self.root_schema_datatype_names | self.root_schema_component_names], # noqa
+            'iorules': self.root_schema_iorules}
 
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 

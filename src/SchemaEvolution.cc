@@ -24,14 +24,15 @@ podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(const podio::Collect
     }
 
     const auto& typeEvolFuncs = m_evolutionFuncs[mapIndex];
-    if (fromVersion < typeEvolFuncs.size() ) {
+    if (fromVersion < typeEvolFuncs.size()) {
       // Do we need this check? In principle we could ensure at registration
       // time that this is always guaranteed
       return typeEvolFuncs[fromVersion - 1](oldBuffers, fromVersion);
     }
   }
 
-  std::cerr << "PODIO WARNING: evolveBuffers has no knowledge of how to evolve buffers for " << collType << " from version " << fromVersion << std::endl;  // TODO: exception
+  std::cerr << "PODIO WARNING: evolveBuffers has no knowledge of how to evolve buffers for " << collType
+            << " from version " << fromVersion << std::endl; // TODO: exception
   return oldBuffers;
 }
 
@@ -63,7 +64,7 @@ void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaV
 
   versionMap[fromVersion - 1] = evolutionFunc;
   if (priority != Priority::UserDefined) {
-  //  std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
+    //  std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
   }
 }
 
