@@ -306,8 +306,9 @@ have resolvable schema evolution incompatibilities:")
       self._fill_templates('Component', component)
       self.root_schema_component_names.add(name + self.old_schema_version)
 
-  def _replaceComponentInPaths(self, oldname, newname, paths):
-    """Replace component in paths"""
+  @staticmethod
+  def _replace_component_in_paths(oldname, newname, paths):
+    """Replace component name by another one in existing paths"""
     # strip the namespace
     shortoldname = oldname.split("::")[-1]
     shortnewname = newname.split("::")[-1]
@@ -334,7 +335,7 @@ have resolvable schema evolution incompatibilities:")
       if member.is_array:
         if member.array_type in self.root_schema_dict:
           needs_schema_evolution = True
-          self._replaceComponentInPaths(member.array_type, member.array_type + self.old_schema_version,
+          self._replace_component_in_paths(member.array_type, member.array_type + self.old_schema_version,
                                         schema_evolution_datatype['includes_data'])
           member.full_type = member.full_type.replace(member.array_type, member.array_type + self.old_schema_version)
           member.array_type = member.array_type + self.old_schema_version
@@ -345,16 +346,7 @@ have resolvable schema evolution incompatibilities:")
           # prepare the ROOT I/O rule
           print(member.full_type)
           dir(member)
-#          iorule = RootIoRule()
-#          iorule.sourceClass = member.full_type
-#          iorule.targetClass = member.full_type
-#          iorule.version = 2 #self.schema_version.lstrip("v")
-#          iorule.target = "y"
-#          iorule.source = "int y_old"
-#          iorule.code = "std::cout<< onfile.y_old << y << std::endl; y = onfile.y_old;"
-#          if len(self.root_schema_iorules) == 0:
-#            self.root_schema_iorules.add(iorule)
-          self._replaceComponentInPaths(member.full_type, member.full_type + self.old_schema_version,
+          self._replace_component_in_paths(member.full_type, member.full_type + self.old_schema_version,
                                         schema_evolution_datatype['includes_data'])
           member.full_type = member.full_type + self.old_schema_version
           member.bare_type = member.bare_type + self.old_schema_version
@@ -395,7 +387,7 @@ have resolvable schema evolution incompatibilities:")
           iorule.version = self.old_schema_version.lstrip("v")
           iorule.source = f'{member_type} {schema_change.member_name_old}'
           iorule.target = schema_change.member_name_new
-          iorule.code = f'std::cout<< "reading {schema_change.member_name_old} with value " << onfile.{schema_change.member_name_old} << std::endl; {iorule.target} = onfile.{schema_change.member_name_old};' # noqa
+          iorule.code = f'{iorule.target} = onfile.{schema_change.member_name_old};'
           self.root_schema_iorules.add(iorule)
         else:
           raise NotImplementedError("Schema evolution for this type not yet implemented")

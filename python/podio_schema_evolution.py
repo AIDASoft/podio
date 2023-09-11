@@ -107,6 +107,17 @@ class RenamedMember(SchemaChange):
     super().__init__(f"'{self.name}': member '{self.member_name_old}' renamed to '{self.member_name_new}'.")
 
 
+class RootIoRule:
+  """A placeholder IORule class"""
+  def __init__(self):
+    self.sourceClass = None
+    self.targetClass = None
+    self.version = None
+    self.source = None
+    self.target = None
+    self.code = None
+
+
 def sio_filter(schema_changes):
   """
   Checks what is required/supported for the SIO backend

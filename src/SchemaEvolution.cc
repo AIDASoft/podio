@@ -68,7 +68,6 @@ void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaV
   }
 }
 
-
 podio::CollectionReadBuffers SchemaEvolution::noOpSchemaEvolution(podio::CollectionReadBuffers&& buffers,
                                                                   SchemaVersionT) {
   return buffers;
