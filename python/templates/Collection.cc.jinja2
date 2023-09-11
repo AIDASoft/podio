@@ -179,9 +179,10 @@ podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
 namespace {
  {{ macros.createBuffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, -1) }}
 
-{% if old_schema_version is defined %}
- {{ macros.createBuffers(class, package_name, collection_type, OneToManyRelations_old, OneToOneRelations_old, VectorMembers_old, old_schema_version) }}
-{% endif %}
+// SCHEMA EVOLUTION: Not yet required with only ROOT backend
+// {% if old_schema_version is defined %}
+// {{ macros.createBuffers(class, package_name, collection_type, OneToManyRelations_old, OneToOneRelations_old, VectorMembers_old, old_schema_version) }}
+// {% endif %}
 
 // The usual trick with an IIFE and a static variable inside a funtion and then
 // making sure to call that function during shared library loading
@@ -205,6 +206,7 @@ bool registerCollection() {
 
 {% if old_schema_version is defined %}
     // register a buffer creation function for the schema evolution buffer
+   // SCHEMA EVOLUTION: Not yet required with only ROOT backend
    // factory.registerCreationFunc("{{ class.full_type }}Collection", {{ old_schema_version }}, createBuffersV{{old_schema_version}}); //TODO
 
     //Make the SchemaEvolution aware of any other non-trivial conversion
