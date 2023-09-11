@@ -7,6 +7,8 @@ from podio.frame import Frame
 # using root_io as that should always be present regardless of which backends are built
 from podio.root_io import Reader
 
+from podio.test_utils import ExampleHitCollection
+
 # The expected collections in each frame
 EXPECTED_COLL_NAMES = {
     'arrays', 'WithVectorMember', 'info', 'fixedWidthInts', 'mcparticles',
@@ -16,7 +18,10 @@ EXPECTED_COLL_NAMES = {
     'emptyCollection', 'emptySubsetColl'
     }
 # The expected collections from the extension (only present in the other_events category)
-EXPECTED_EXTENSION_COLL_NAMES = {"extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation"}
+EXPECTED_EXTENSION_COLL_NAMES = {
+    "extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation",
+    "VectorMemberSubsetColl"
+    }
 
 # The expected parameter names in each frame
 EXPECTED_PARAM_NAMES = {'anInt', 'UserEventWeight', 'UserEventName', 'SomeVectorData', 'SomeValue'}
@@ -33,6 +38,63 @@ class FrameTest(unittest.TestCase):
 
     with self.assertRaises(KeyError):
       _ = frame.get_parameter('NonExistantParameter')
+
+    with self.assertRaises(ValueError):
+      collection = [1, 2, 4]
+      _ = frame.put(collection, "invalid_collection_type")
+
+  def test_frame_put_collection(self):
+    """Check that putting a collection works as expected"""
+    frame = Frame()
+    self.assertEqual(frame.collections, tuple())
+
+    hits = ExampleHitCollection()
+    hits.create()
+    hits2 = frame.put(hits, "hits_from_python")
+    self.assertEqual(frame.collections, tuple(["hits_from_python"]))
+    # The original collection is gone at this point, and ideally just leaves an
+    # empty shell
+    self.assertEqual(len(hits), 0)
+    # On the other hand the return value of put has the original content
+    self.assertEqual(len(hits2), 1)
+
+  def test_frame_put_parameters(self):
+    """Check that putting a parameter works as expected"""
+    frame = Frame()
+    self.assertEqual(frame.parameters, tuple())
+
+    frame.put_parameter("a_string_param", "a string")
+    self.assertEqual(frame.parameters, tuple(["a_string_param"]))
+    self.assertEqual(frame.get_parameter("a_string_param"), "a string")
+
+    frame.put_parameter("float_param", 3.14)
+    self.assertEqual(frame.get_parameter("float_param"), 3.14)
+
+    frame.put_parameter("int", 42)
+    self.assertEqual(frame.get_parameter("int"), 42)
+
+    frame.put_parameter("string_vec", ["a", "b", "cd"])
+    str_vec = frame.get_parameter("string_vec")
+    self.assertEqual(len(str_vec), 3)
+    self.assertEqual(str_vec, ["a", "b", "cd"])
+
+    frame.put_parameter("more_ints", [1, 2345])
+    int_vec = frame.get_parameter("more_ints")
+    self.assertEqual(len(int_vec), 2)
+    self.assertEqual(int_vec, [1, 2345])
+
+    frame.put_parameter("float_vec", [1.23, 4.56, 7.89])
+    vec = frame.get_parameter("float_vec", as_type="double")
+    self.assertEqual(len(vec), 3)
+    self.assertEqual(vec, [1.23, 4.56, 7.89])
+
+    frame.put_parameter("real_float_vec", [1.23, 4.56, 7.89], as_type="float")
+    f_vec = frame.get_parameter("real_float_vec", as_type="float")
+    self.assertEqual(len(f_vec), 3)
+    self.assertEqual(vec, [1.23, 4.56, 7.89])
+
+    frame.put_parameter("float_as_float", 3.14, as_type="float")
+    self.assertAlmostEqual(frame.get_parameter("float_as_float"), 3.14, places=5)
 
 
 class FrameReadTest(unittest.TestCase):

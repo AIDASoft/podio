@@ -18,7 +18,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
 
@@ -48,6 +48,7 @@ A Collection is identified by an ID.
 */
 class {{ class.bare_type }}Collection : public podio::CollectionBase {
 public:
+  using value_type = {{ class.bare_type }};
   using const_iterator = {{ class.bare_type }}CollectionIterator;
   using iterator = {{ class.bare_type }}MutableCollectionIterator;
 
@@ -84,6 +85,9 @@ public:
 
   /// number of elements in the collection
   std::size_t size() const final;
+
+  /// Is the collection empty
+  bool empty() const final;
 
   /// fully qualified type name
   const std::string_view getTypeName() const final { return typeName; }
@@ -193,7 +197,7 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
   return Mutable{{ class.bare_type }}(obj);
 }
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collection);
 #endif
 

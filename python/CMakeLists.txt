@@ -28,12 +28,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
   DESTINATION ${podio_PYTHON_INSTALLDIR})
 
 IF (BUILD_TESTING)
-  add_test( NAME pyunittest COMMAND python3 -m unittest discover -s ${CMAKE_SOURCE_DIR}/python/podio)
+  add_test( NAME pyunittest COMMAND python3 -m unittest discover -s ${PROJECT_SOURCE_DIR}/python/podio)
   PODIO_SET_TEST_ENV(pyunittest)
 
   set_property(TEST pyunittest PROPERTY DEPENDS write write_frame_root)
   if (TARGET write_sio)
     set_property(TEST pyunittest PROPERTY DEPENDS write_sio write_frame_sio)
   endif()
-  set_property(TEST pyunittest PROPERTY WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
+  set_property(TEST pyunittest PROPERTY WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
 ENDIF()

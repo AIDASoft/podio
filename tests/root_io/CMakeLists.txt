@@ -11,7 +11,16 @@ set(root_dependent_tests
   write_frame_root.cpp
   read_frame_legacy_root.cpp
   read_frame_root_multiple.cpp
+  read_python_frame_root.cpp
+  read_and_write_frame_root.cpp
   )
+if(ENABLE_RNTUPLE)
+  set(root_dependent_tests
+      ${root_dependent_tests}
+      write_rntuple.cpp
+      read_rntuple.cpp
+     )
+endif()
 set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
@@ -25,8 +34,19 @@ set_property(TEST read-multiple PROPERTY DEPENDS write)
 set_property(TEST read_and_write PROPERTY DEPENDS write)
 set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
 set_property(TEST read_timed PROPERTY DEPENDS write_timed)
-set_property(TEST read_frame_root PROPERTY DEPENDS write_frame_root)
-set_property(TEST read_frame_root_multiple PROPERTY DEPENDS write_frame_root)
+
+set_tests_properties(
+  read_frame_root
+  read_frame_root_multiple
+  read_and_write_frame_root
+
+  PROPERTIES
+    DEPENDS write_frame_root
+)
+
+if(ENABLE_RNTUPLE)
+  set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
+endif()
 
 add_test(NAME check_benchmark_outputs COMMAND check_benchmark_outputs write_benchmark_root.root read_benchmark_root.root)
 set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_timed)
@@ -44,7 +64,7 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
   macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
     add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
     set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/tests:${CMAKE_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
       # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
       # with existing headers from other installations
       ROOT_INCLUDE_PATH=
@@ -59,3 +79,9 @@ if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
     ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root example.root legacy_test_cases)
   endforeach()
 endif()
+
+#--- Write via python and the ROOT backend and see if we can read it back in in
+#--- c++
+add_test(NAME write_python_frame_root COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/write_frame_root.py)
+PODIO_SET_TEST_ENV(write_python_frame_root)
+set_property(TEST read_python_frame_root PROPERTY DEPENDS write_python_frame_root)

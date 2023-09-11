@@ -14,10 +14,10 @@ from collections import defaultdict
 
 import jinja2
 
-from podio.podio_config_reader import PodioConfigReader
-from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
 from podio_schema_evolution import RenamedMember, root_filter
+from podio.podio_config_reader import PodioConfigReader
+from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')

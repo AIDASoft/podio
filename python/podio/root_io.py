@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
-from podio.base_reader import BaseReaderMixin
-
 from ROOT import gSystem
 gSystem.Load('libpodioRootIO')  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
-Writer = podio.ROOTFrameWriter
+from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
+from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
 
 
 class Reader(BaseReaderMixin):
@@ -49,3 +48,14 @@ class LegacyReader(BaseReaderMixin):
     self._is_legacy = True
 
     super().__init__()
+
+
+class Writer(BaseWriterMixin):
+  """Writer class for writing podio root files"""
+  def __init__(self, filename):
+    """Create a writer for writing files
+
+    Args:
+        filename (str): The name of the output file
+    """
+    self._writer = podio.ROOTFrameWriter(filename)

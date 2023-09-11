@@ -80,7 +80,6 @@ TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
 }
 
 TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-management]") {
-  bool success = true;
   auto store = podio::EventStore();
   auto& hits = store.create<ExampleHitCollection>("hits");
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
@@ -102,10 +101,7 @@ TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-manag
     oneRels.push_back(oneRel);
   }
   hits.clear();
-  if (hits.size() != 0) {
-    success = false;
-  }
-  REQUIRE(success);
+  REQUIRE(hits.empty());
 }
 
 TEST_CASE("Cloning", "[basics][memory-management]") {
@@ -438,6 +434,15 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
 TEST_CASE("NonPresentCollection", "[basics][event-store]") {
   auto store = podio::EventStore();
   REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
+}
+
+TEST_CASE("Collection size and empty", "[basics][collections]") {
+  ExampleClusterCollection coll{};
+  REQUIRE(coll.empty());
+
+  coll.create();
+  coll.create();
+  REQUIRE(coll.size() == 2u);
 }
 
 TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
@@ -773,20 +778,6 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
     auto newClusters = std::move(clusterColl);
 
     vecMemColl.prepareForWrite();
-    auto buffers = vecMemColl.getBuffers();
-    auto vecBuffers = buffers.vectorMembers;
-    auto thisVec = (*vecBuffers)[0].second;
-
-    const auto floatVec = podio::CollectionWriteBuffers::asVector<float>(thisVec);
-    const auto floatVec2 = podio::CollectionReadBuffers::asVector<float>(thisVec);
-
-    std::cout << floatVec->size() << '\n';
-    std::cout << floatVec2->size() << '\n';
-
-    // auto vecBuffers = buffers.vectorMembers;
-    // const auto vecBuffer = podio::CollectionWriteBuffers::asVector<float>((*vecBuffers)[0].second);
-    // TD<decltype(vecBuffer)> td;
-    // REQUIRE(vecBuffer->size() == 2);
     auto newVecMems = std::move(vecMemColl);
 
     userDataColl.prepareForWrite();
@@ -796,6 +787,19 @@ TEST_CASE("Move-only collections", "[collections][move-semantics]") {
   }
 
   SECTION("Moved collections can be prepared") {
+    auto newHits = std::move(hitColl);
+    newHits.prepareForWrite();
+
+    auto newClusters = std::move(clusterColl);
+    newClusters.prepareForWrite();
+
+    auto newVecMems = std::move(vecMemColl);
+    newVecMems.prepareForWrite();
+
+    auto newUserData = std::move(userDataColl);
+    newUserData.prepareForWrite();
+
+    checkCollections(newHits, newClusters, newVecMems, newUserData);
   }
 
   SECTION("Prepared collections can be move assigned") {

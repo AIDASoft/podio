@@ -32,6 +32,8 @@ class Mutable{{ class.bare_type }} {
   friend class {{ class.bare_type }};
 
 public:
+  using object_type = {{ class.bare_type }};
+  using collection_type = {{ class.bare_type }}Collection;
 
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
   /// conversion to const object

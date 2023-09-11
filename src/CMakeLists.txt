@@ -34,6 +34,9 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
   target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
+  if(ENABLE_RNTUPLE)
+    target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
+  endif()
   PODIO_GENERATE_DICTIONARY(${dictname} ${headers} SELECTION ${selection}
     OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dictname}${CMAKE_SHARED_LIBRARY_SUFFIX}
     )
@@ -58,16 +61,16 @@ SET(core_sources
   )
 
 SET(core_headers
-  ${CMAKE_SOURCE_DIR}/include/podio/CollectionBase.h
-  ${CMAKE_SOURCE_DIR}/include/podio/CollectionIDTable.h
-  ${CMAKE_SOURCE_DIR}/include/podio/EventStore.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ICollectionProvider.h
-  ${CMAKE_SOURCE_DIR}/include/podio/IReader.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ObjectID.h
-  ${CMAKE_SOURCE_DIR}/include/podio/UserDataCollection.h
-  ${CMAKE_SOURCE_DIR}/include/podio/podioVersion.h
-  ${CMAKE_SOURCE_DIR}/include/podio/DatamodelRegistry.h
-  ${CMAKE_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
+  ${PROJECT_SOURCE_DIR}/include/podio/CollectionBase.h
+  ${PROJECT_SOURCE_DIR}/include/podio/CollectionIDTable.h
+  ${PROJECT_SOURCE_DIR}/include/podio/EventStore.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ICollectionProvider.h
+  ${PROJECT_SOURCE_DIR}/include/podio/IReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ObjectID.h
+  ${PROJECT_SOURCE_DIR}/include/podio/UserDataCollection.h
+  ${PROJECT_SOURCE_DIR}/include/podio/podioVersion.h
+  ${PROJECT_SOURCE_DIR}/include/podio/DatamodelRegistry.h
+  ${PROJECT_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
@@ -83,15 +86,30 @@ SET(root_sources
   ROOTFrameReader.cc
   ROOTLegacyReader.cc
 )
+if(ENABLE_RNTUPLE)
+  list(APPEND root_sources
+      ROOTNTupleReader.cc
+      ROOTNTupleWriter.cc
+     )
+endif()
 
 SET(root_headers
-  ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameReader.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
-  ${CMAKE_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
+if(ENABLE_RNTUPLE)
+  list(APPEND root_headers
+      ${PROJECT_SOURCE_DIR}/include/podio/ROOTNTupleReader.h
+      ${PROJECT_SOURCE_DIR}/include/podio/ROOTNTupleWriter.h
+     )
+endif()
 
 PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" root_selection.xml)
 target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree)
+if(ENABLE_RNTUPLE)
+  target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
+endif()
 
 
 # --- Python EventStore for enabling (legacy) python bindings
@@ -101,7 +119,7 @@ SET(python_sources
   )
 
 SET(python_headers
-  ${CMAKE_SOURCE_DIR}/include/podio/PythonEventStore.h
+  ${PROJECT_SOURCE_DIR}/include/podio/PythonEventStore.h
 )
 PODIO_ADD_LIB_AND_DICT(podioPythonStore "${python_headers}" "${python_sources}" python_selection.xml)
 target_link_libraries(podioPythonStore PUBLIC podio::podio)
@@ -122,9 +140,9 @@ if(ENABLE_SIO)
     )
 
   SET(sio_headers
-    ${CMAKE_SOURCE_DIR}/include/podio/SIOFrameReader.h
-    ${CMAKE_SOURCE_DIR}/include/podio/SIOLegacyReader.h
-    ${CMAKE_SOURCE_DIR}/include/podio/SIOFrameWriter.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOLegacyReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameWriter.h
     )
 
   PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" sio_selection.xml)

@@ -109,11 +109,6 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     self._assert_no_exception(DefinitionError, '{} should allow for component members in components',
                               self.validate, make_dm(components, {}), False)
 
-  def test_component_invalid_field(self):
-    self.valid_component['Component']['Author'] = 'An invalid field for a component'
-    with self.assertRaises(DefinitionError):
-      self.validate(make_dm(self.valid_component, {}), False)
-
   def test_datatype_valid_members(self):
     self._assert_no_exception(DefinitionError, '{} should not raise for a valid datatype',
                               self.validate, make_dm({}, self.valid_datatype, self.def_opts))

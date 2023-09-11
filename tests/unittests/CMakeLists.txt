@@ -1,8 +1,13 @@
+if(CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set(CATCH2_MIN_VERSION 3.4)
+else()
+  set(CATCH2_MIN_VERSION 3.1)
+endif()
 if(USE_EXTERNAL_CATCH2)
   if (USE_EXTERNAL_CATCH2 STREQUAL AUTO)
-    find_package(Catch2 3.1)
+    find_package(Catch2 ${CATCH2_MIN_VERSION})
   else()
-    find_package(Catch2 3.1 REQUIRED)
+    find_package(Catch2 ${CATCH2_MIN_VERSION} REQUIRED)
   endif()
 endif()
 
@@ -16,7 +21,7 @@ if(NOT Catch2_FOUND)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.1.0
+    GIT_TAG        v3.4.0
     )
   FetchContent_MakeAvailable(Catch2)
   set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras ${CMAKE_MODULE_PATH})
@@ -83,7 +88,7 @@ else()
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
-      DL_PATHS ${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+      DL_PATHS ${CMAKE_CURRENT_BINARY_DIR}:${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PROPERTIES
         ENVIRONMENT
         PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}

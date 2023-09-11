@@ -83,15 +83,18 @@ void {{ class_type }}::clear(bool isSubsetColl) {
 
 podio::CollectionWriteBuffers {{ class_type }}::getCollectionBuffers(bool isSubsetColl) {
 {% if VectorMembers %}
-  // Make sure these point to the right place, even if a collection has been
-  // moved since it has been created
+  if (!isSubsetColl) {
+    // Make sure these point to the right place, even if a collection has been
+    // moved since it has been created
 {% for member in VectorMembers %}
-  m_vecmem_info[{{ loop.index0 }}].second = &m_vec_{{ member.name }};
+    m_vecmem_info[{{ loop.index0 }}].second = &m_vec_{{ member.name }};
 {% endfor %}
+  }
 {% endif -%}
 
   return {
     isSubsetColl ? nullptr : (void*)&m_data,
+    isSubsetColl ? nullptr : (void*)m_data.get(),
     &m_refCollections, // only need to store the ObjectIDs of the referenced objects
     &m_vecmem_info
   };

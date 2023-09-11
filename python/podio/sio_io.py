@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Python module for reading sio files containing podio Frames"""
 
-from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
-
 from ROOT import gSystem
 ret = gSystem.Load('libpodioSioIO')  # noqa: 402
 # Return values: -1 when it doesn't exist and -2 when there is a version mismatch
@@ -10,7 +8,8 @@ if ret < 0:
   raise ImportError('Error when importing libpodioSioIO')
 from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
 
-Writer = podio.SIOFrameWriter
+from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
+from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
 
 
 class Reader(BaseReaderMixin):
@@ -46,3 +45,14 @@ class LegacyReader(BaseReaderMixin):
     self._is_legacy = True
 
     super().__init__()
+
+
+class Writer(BaseWriterMixin):
+  """Writer class for writing podio root files"""
+  def __init__(self, filename):
+    """Create a writer for writing files
+
+    Args:
+        filename (str): The name of the output file
+    """
+    self._writer = podio.SIOFrameWriter(filename)

@@ -123,7 +123,7 @@ public:
   /// Get the collection buffers for this collection
   podio::CollectionWriteBuffers getBuffers() override {
     _vecPtr = &_vec; // Set the pointer to the correct internal vector
-    return {&_vecPtr, &m_refCollections, &m_vecmem_info};
+    return {&_vecPtr, _vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
   /// check for validity of the container after read
@@ -134,6 +134,11 @@ public:
   /// number of elements in the collection
   size_t size() const override {
     return _vec.size();
+  }
+
+  /// Is the collection empty
+  bool empty() const override {
+    return _vec.empty();
   }
 
   /// fully qualified type name

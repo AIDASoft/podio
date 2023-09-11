@@ -1,19 +1,19 @@
 # Add tests for storing and retrieving the EDM definitions into the produced
 # files
-add_test(NAME datamodel_def_store_roundtrip_root COMMAND ${CMAKE_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
-  ${CMAKE_BINARY_DIR}/tests/root_io/example_frame.root
+add_test(NAME datamodel_def_store_roundtrip_root COMMAND ${PROJECT_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
+  ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root
   datamodel
-  ${CMAKE_SOURCE_DIR}/tests
+  ${PROJECT_SOURCE_DIR}/tests
   )
 PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_root)
 
 # The extension model needs to know about the upstream model for generation
 add_test(NAME datamodel_def_store_roundtrip_root_extension COMMAND
-  ${CMAKE_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
-  ${CMAKE_BINARY_DIR}/tests/root_io/example_frame.root
+  ${PROJECT_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
+  ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root
   extension_model
-  ${CMAKE_SOURCE_DIR}/tests/extension_model
-  --upstream-edm=datamodel:${CMAKE_SOURCE_DIR}/tests/datalayout.yaml
+  ${PROJECT_SOURCE_DIR}/tests/extension_model
+  --upstream-edm=datamodel:${PROJECT_SOURCE_DIR}/tests/datalayout.yaml
   )
 PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_root_extension)
 
@@ -27,18 +27,18 @@ set_tests_properties(
 
 set(sio_roundtrip_tests "")
 if (ENABLE_SIO)
-  add_test(NAME datamodel_def_store_roundtrip_sio COMMAND ${CMAKE_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
-    ${CMAKE_BINARY_DIR}/tests/sio_io/example_frame.sio
+  add_test(NAME datamodel_def_store_roundtrip_sio COMMAND ${PROJECT_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
+    ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio
     datamodel
-    ${CMAKE_SOURCE_DIR}/tests
+    ${PROJECT_SOURCE_DIR}/tests
     )
   PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_sio)
   # The extension model needs to know about the upstream model for generation
-  add_test(NAME datamodel_def_store_roundtrip_sio_extension COMMAND ${CMAKE_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
-    ${CMAKE_BINARY_DIR}/tests/sio_io/example_frame.sio
+  add_test(NAME datamodel_def_store_roundtrip_sio_extension COMMAND ${PROJECT_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
+    ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio
     extension_model
-    ${CMAKE_SOURCE_DIR}/tests/extension_model
-    --upstream-edm=datamodel:${CMAKE_SOURCE_DIR}/tests/datalayout.yaml
+    ${PROJECT_SOURCE_DIR}/tests/extension_model
+    --upstream-edm=datamodel:${PROJECT_SOURCE_DIR}/tests/datalayout.yaml
     )
   PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_sio_extension)
 

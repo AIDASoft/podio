@@ -220,7 +220,7 @@ void checkFrame(const podio::Frame& frame) {
   REQUIRE(hits[1].energy() == 1);
   REQUIRE(hits[1].cellID() == 0x123ULL);
 
-  REQUIRE(frame.get<ExampleClusterCollection>("emptyClusters").size() == 0);
+  REQUIRE(frame.get<ExampleClusterCollection>("emptyClusters").empty());
 
   auto& clusters = frame.get<ExampleClusterCollection>("clusters");
   REQUIRE(clusters.size() == 2);
