@@ -60,9 +60,10 @@ void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaV
   if (prevSize < currentVersion) {
     versionMap.resize(currentVersion);
   }
+
   versionMap[fromVersion - 1] = evolutionFunc;
   if (priority != Priority::UserDefined) {
-    std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
+  //  std::cerr << "Not updating evolution function because priority is not UserDefined" << std::endl;
   }
 }
 
