@@ -188,14 +188,15 @@ podio::CollectionReadBuffers createBuffers(bool isSubset) {
   };
 
   readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
+    // We only have any of these buffers if this is not a subset collection
     if (buffers.data) {
       buffers.data = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}Data>(buffers.data);
-    }
 {% if VectorMembers %}
 {% for member in VectorMembers %}
-    (*buffers.vectorMembers)[{{ loop.index0 }}].second = podio::CollectionWriteBuffers::asVector<{{ member.full_type }}>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
+      (*buffers.vectorMembers)[{{ loop.index0 }}].second = podio::CollectionWriteBuffers::asVector<{{ member.full_type }}>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
 {% endfor %}
 {% endif %}
+    }
   };
 
   return readBuffers;
