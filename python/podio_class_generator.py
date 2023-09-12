@@ -15,7 +15,7 @@ from collections import defaultdict
 import jinja2
 
 from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
-from podio_schema_evolution import RenamedMember, root_filter
+from podio_schema_evolution import RenamedMember, root_filter, RootIoRule
 from podio.podio_config_reader import PodioConfigReader
 from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 
@@ -77,17 +77,6 @@ class IncludeFrom(IntEnum):
   EXTERNAL = 2  # include from an upstream datamodel
 
 
-class RootIoRule:
-  """A placeholder IORule class"""
-  def __init__(self):
-    self.sourceClass = None
-    self.targetClass = None
-    self.version = None
-    self.source = None
-    self.target = None
-    self.code = None
-
-
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
@@ -135,7 +124,7 @@ class ClassGenerator:
 
   def process(self):
     """Run the actual generation"""
-    self.preprocess_schema_evolution()
+    self.process_schema_evolution()
 
     for name, component in self.datamodel.components.items():
       self._process_component(name, component)
@@ -152,7 +141,7 @@ class ClassGenerator:
 
     self.print_report()
 
-  def preprocess_schema_evolution(self):
+  def process_schema_evolution(self):
     """Process the schema evolution"""
     # have to make all necessary comparisons
     # which are the ones that changed?
@@ -181,13 +170,8 @@ have resolvable schema evolution incompatibilities:")
       # now go through all the io_handlers and see what we have to do
       if 'ROOT' in self.io_handlers:
         for item in root_filter(comparator.schema_changes):
-          schema_evolutions = self.root_schema_dict.get(item.klassname)
-          if schema_evolutions is None:
-            schema_evolutions = []
-            self.root_schema_dict[item.klassname] = schema_evolutions
-
-          # add whatever is relevant to our ROOT schema evolutions
-          self.root_schema_dict[item.klassname].append(item)
+          # add whatever is relevant to our ROOT schema evolution
+          self.root_schema_dict.setdefault(item.klassname, []).append(item)
 
   def print_report(self):
     """Print a summary report about the generated code"""
@@ -336,7 +320,7 @@ have resolvable schema evolution incompatibilities:")
         if member.array_type in self.root_schema_dict:
           needs_schema_evolution = True
           self._replace_component_in_paths(member.array_type, member.array_type + self.old_schema_version,
-                                        schema_evolution_datatype['includes_data'])
+                                           schema_evolution_datatype['includes_data'])
           member.full_type = member.full_type.replace(member.array_type, member.array_type + self.old_schema_version)
           member.array_type = member.array_type + self.old_schema_version
 
@@ -344,10 +328,8 @@ have resolvable schema evolution incompatibilities:")
         if member.full_type in self.root_schema_dict:
           needs_schema_evolution = True
           # prepare the ROOT I/O rule
-          print(member.full_type)
-          dir(member)
           self._replace_component_in_paths(member.full_type, member.full_type + self.old_schema_version,
-                                        schema_evolution_datatype['includes_data'])
+                                           schema_evolution_datatype['includes_data'])
           member.full_type = member.full_type + self.old_schema_version
           member.bare_type = member.bare_type + self.old_schema_version
 
