@@ -150,7 +150,7 @@ datatypes :
     Description : "Type with namespace and namespaced relation"
     Author : "Joschka Lingemann"
     Members:
-     - float number // just a number
+     - double number // just a number
     OneToOneRelations :
      - ex42::ExampleWithNamespace ref // a ref in a namespace
     OneToManyRelations :

@@ -2,6 +2,7 @@
 #define PODIO_TESTS_SCHEMAEVOLUTION_READNEWDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithArrayComponentCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
 
@@ -52,6 +53,15 @@ int readExampleWithNamespace(const podio::Frame& event) {
   return 0;
 }
 
+int readExampleWithARelation(const podio::Frame& event) {
+  const auto& coll = event.get<ex42::ExampleWithARelationCollection>("floatToDoubleMemberTest");
+  auto elem = coll[0];
+
+  ASSERT_EQUAL(elem.number(), (double)3.14f, "Conversion from float to double member does not work as expected");
+
+  return 0;
+}
+
 template <typename ReaderT>
 int read_new_data(const std::string& filename) {
   ReaderT reader{};
@@ -63,6 +73,7 @@ int read_new_data(const std::string& filename) {
   result += readSimpleStruct(event);
   result += readExampleHit(event);
   result += readExampleWithNamespace(event);
+  result += readExampleWithARelation(event);
 
   return result;
 }

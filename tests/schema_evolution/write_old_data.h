@@ -2,6 +2,7 @@
 #define PODIO_TESTS_SCHEMAEVOLUTION_WRITEOLDDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithArrayComponentCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
 
@@ -41,12 +42,21 @@ auto writeExampleWithNamespace() {
   return coll;
 }
 
+auto writeExamplewWithARelation() {
+  ex42::ExampleWithARelationCollection coll;
+  auto elem = coll.create();
+  elem.number(3.14f);
+
+  return coll;
+}
+
 podio::Frame createFrame() {
   podio::Frame event;
 
   event.put(writeSimpleStruct(), "simpleStructTest");
   event.put(writeExampleHit(), "datatypeMemberAdditionTest");
   event.put(writeExampleWithNamespace(), "componentMemberRenameTest");
+  event.put(writeExamplewWithARelation(), "floatToDoubleMemberTest");
 
   return event;
 }
