@@ -1,4 +1,4 @@
-#include "schema_evolution/read_new_data.h"
+#include "read_new_data.h"
 
 #include "podio/ROOTFrameReader.h"
 

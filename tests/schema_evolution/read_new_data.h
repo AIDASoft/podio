@@ -32,10 +32,11 @@ int readExampleHit(const podio::Frame& event) {
   const auto& coll = event.get<ExampleHitCollection>("datatypeMemberAdditionTest");
   auto elem = coll[0];
 
-  ASSERT_EQUAL(elem.energy(), 0, "New datatype member variable not 0 initialized");
+  ASSERT_EQUAL(elem.t(), 0, "New datatype member variable not 0 initialized");
   ASSERT_EQUAL(elem.x(), 1.23, "Member variables unrelated to schema evolution have changed");
   ASSERT_EQUAL(elem.y(), 1.23, "Member variables unrelated to schema evolution have changed");
   ASSERT_EQUAL(elem.z(), 1.23, "Member variables unrelated to schema evolution have changed");
+  ASSERT_EQUAL(elem.energy(), 0, "Member variables unrelated to schema evolution have changed");
   ASSERT_EQUAL(elem.cellID(), 0xcaffee, "Member variables unrelated to schema evolution have changed");
 
   return 0;
@@ -45,7 +46,7 @@ int readExampleWithNamespace(const podio::Frame& event) {
   const auto& coll = event.get<ex42::ExampleWithNamespaceCollection>("componentMemberRenameTest");
   auto elem = coll[0];
 
-  ASSERT_EQUAL(elem.y(), 42, "Renamed component member variable does not have the expected value");
+  ASSERT_EQUAL(elem.y_new(), 42, "Renamed component member variable does not have the expected value");
   ASSERT_EQUAL(elem.x(), 123, "Member variables unrelated to schema evolution have changed");
 
   return 0;

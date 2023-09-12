@@ -1,5 +1,5 @@
 ---
-schema_version : 2
+schema_version : 3
 
 options :
   # should getters / setters be prefixed with get / set?
@@ -10,14 +10,12 @@ options :
 
 components :
 
-  ToBeDroppedStruct:
-    Members:
-      - int x
-
   SimpleStruct:
     Members:
       - int x
+      - int y
       - int z
+      - int t
       - std::array<int, 4> p
     # can also add c'tors:
     ExtraCode :
@@ -33,7 +31,7 @@ components :
   ex2::NamespaceStruct:
     Members:
       - int x
-      - int y_old
+      - int y_new
 
   ex2::NamespaceInNamespaceStruct:
     Members:
@@ -52,7 +50,7 @@ components :
 
 datatypes :
 
-  EventInfoOldName:
+  EventInfoNewName:
     Description : "Event info"
     Author : "B. Hegner"
     Members :
@@ -71,6 +69,8 @@ datatypes :
      - double x      // x-coordinate
      - double y      // y-coordinate
      - double z      // z-coordinate
+     - double energy // energy
+     - double t      // time
 
   ExampleMC :
     Description : "Example MC-particle"

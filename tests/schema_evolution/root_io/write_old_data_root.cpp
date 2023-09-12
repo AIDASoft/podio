@@ -1,4 +1,4 @@
-#include "write_old_data.h"
+#include "schema_evolution/write_old_data.h"
 
 #include "podio/ROOTFrameWriter.h"
 

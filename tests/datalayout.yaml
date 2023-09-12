@@ -1,5 +1,5 @@
 ---
-schema_version : 3
+schema_version : 2
 
 options :
   # should getters / setters be prefixed with get / set?
@@ -9,6 +9,11 @@ options :
   includeSubfolder: True
 
 components :
+  ToBeDroppedStruct:
+    Description: "A struct to be dropped during schema evolution"
+    Members:
+      - int x
+
   SimpleStruct:
     Members:
       - int x [mm]

@@ -6,8 +6,8 @@ evolutions:
 
   ex2::NamespaceStruct:
     member_rename:
-      - y_old
       - y
+      - y_new
 
-  EventInfoOldName:
-    class_renamed_to: EventInfo
+  EventInfo:
+    class_renamed_to: EventInfoNewName

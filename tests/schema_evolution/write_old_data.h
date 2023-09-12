@@ -35,7 +35,7 @@ auto writeExampleHit() {
 auto writeExampleWithNamespace() {
   ex42::ExampleWithNamespaceCollection coll;
   auto elem = coll.create();
-  elem.y_old(42);
+  elem.y(42);
   elem.x(123);
 
   return coll;
