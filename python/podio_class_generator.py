@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Podio class generator script"""
 
+import copy
 import os
 import sys
 import subprocess
@@ -14,6 +15,7 @@ from collections import defaultdict
 import jinja2
 
 from podio_schema_evolution import DataModelComparator  # dealing with cyclic imports
+from podio_schema_evolution import RenamedMember, root_filter, RootIoRule
 from podio.podio_config_reader import PodioConfigReader
 from podio.generator_utils import DataType, DefinitionError, DataModelJSONEncoder
 
@@ -89,9 +91,16 @@ class ClassGenerator:
     # schema evolution specific code
     self.old_yamlfile = old_description
     self.evolution_file = evolution_file
+    self.old_schema_version = None
+    self.old_schema_version_int = None
     self.old_datamodel = None
     self.old_datamodels_components = set()
     self.old_datamodels_datatypes = set()
+    self.root_schema_dict = {}  # containing the root relevant schema evolution per datatype
+    # information to update the selection.xml
+    self.root_schema_component_names = set()
+    self.root_schema_datatype_names = set()
+    self.root_schema_iorules = set()
 
     try:
       self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)
@@ -115,19 +124,20 @@ class ClassGenerator:
 
   def process(self):
     """Run the actual generation"""
+    self.process_schema_evolution()
+
     for name, component in self.datamodel.components.items():
       self._process_component(name, component)
-
     for name, datatype in self.datamodel.datatypes.items():
       self._process_datatype(name, datatype)
 
     self._write_edm_def_file()
 
     if 'ROOT' in self.io_handlers:
+      self.prepare_iorules()
       self._create_selection_xml()
 
     self._write_cmake_lists_file()
-    self.process_schema_evolution()
 
     self.print_report()
 
@@ -141,7 +151,8 @@ class ClassGenerator:
                                        evolution_file=self.evolution_file)
       comparator.read()
       comparator.compare()
-
+      self.old_schema_version = f"v{comparator.datamodel_old.schema_version}"
+      self.old_schema_version_int = comparator.datamodel_old.schema_version
       # some sanity checks
       if len(comparator.errors) > 0:
         print(f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
@@ -155,6 +166,12 @@ have resolvable schema evolution incompatibilities:")
         for warning in comparator.warnings:
           print(warning)
         sys.exit(-1)
+
+      # now go through all the io_handlers and see what we have to do
+      if 'ROOT' in self.io_handlers:
+        for item in root_filter(comparator.schema_changes):
+          # add whatever is relevant to our ROOT schema evolution
+          self.root_schema_dict.setdefault(item.klassname, []).append(item)
 
   def print_report(self):
     """Print a summary report about the generated code"""
@@ -170,8 +187,15 @@ have resolvable schema evolution incompatibilities:")
       print(summaryline)
     print()
 
-  def _eval_template(self, template, data):
+  def _eval_template(self, template, data, old_schema_data=None):
     """Fill the specified template"""
+    # merge the info of data and the old schema into a single dict
+    if old_schema_data:
+      data['OneToOneRelations_old'] = old_schema_data['OneToOneRelations']
+      data['OneToManyRelations_old'] = old_schema_data['OneToManyRelations']
+      data['VectorMembers_old'] = old_schema_data['VectorMembers']
+      data['old_schema_version'] = self.old_schema_version_int
+
     return self.env.get_template(template).render(data)
 
   def _write_file(self, name, content):
@@ -220,7 +244,7 @@ have resolvable schema evolution incompatibilities:")
 
     return fn_templates
 
-  def _fill_templates(self, template_base, data):
+  def _fill_templates(self, template_base, data, old_schema_data=None):
     """Fill the template and write the results to file"""
     # Update the passed data with some global things that are the same for all
     # files
@@ -229,7 +253,7 @@ have resolvable schema evolution incompatibilities:")
     data['incfolder'] = self.incfolder
 
     for filename, template in self._get_filenames_templates(template_base, data['class'].bare_type):
-      self._write_file(filename, self._eval_template(template, data))
+      self._write_file(filename, self._eval_template(template, data, old_schema_data))
 
   def _process_component(self, name, component):
     """Process one component"""
@@ -247,12 +271,71 @@ have resolvable schema evolution incompatibilities:")
 
     component['includes'] = self._sort_includes(includes)
     component['class'] = DataType(name)
-
     self._fill_templates('Component', component)
+
+    # Add potentially older schema for schema evolution
+    # based on ROOT capabilities for now
+    if name in self.root_schema_dict:
+      schema_evolutions = self.root_schema_dict[name]
+      component = copy.deepcopy(component)
+      for schema_evolution in schema_evolutions:
+        if isinstance(schema_evolution, RenamedMember):
+          for member in component['Members']:
+            if member.name == schema_evolution.member_name_new:
+              member.name = schema_evolution.member_name_old
+          component['class'] = DataType(name + self.old_schema_version)
+        else:
+          raise NotImplementedError
+      self._fill_templates('Component', component)
+      self.root_schema_component_names.add(name + self.old_schema_version)
+
+  @staticmethod
+  def _replace_component_in_paths(oldname, newname, paths):
+    """Replace component name by another one in existing paths"""
+    # strip the namespace
+    shortoldname = oldname.split("::")[-1]
+    shortnewname = newname.split("::")[-1]
+    # and do the replace in place
+    for index, thePath in enumerate(paths):
+      if shortoldname in thePath:
+        newPath = thePath.replace(shortoldname, shortnewname)
+        paths[index] = newPath
 
   def _process_datatype(self, name, definition):
     """Process one datatype"""
     datatype = self._preprocess_datatype(name, definition)
+
+    # ROOT schema evolution preparation
+    # Compute and prepare the potential schema evolution parts
+    schema_evolution_datatype = copy.deepcopy(datatype)
+    needs_schema_evolution = False
+    for member in schema_evolution_datatype['Members']:
+      if member.is_array:
+        if member.array_type in self.root_schema_dict:
+          needs_schema_evolution = True
+          self._replace_component_in_paths(member.array_type, member.array_type + self.old_schema_version,
+                                           schema_evolution_datatype['includes_data'])
+          member.full_type = member.full_type.replace(member.array_type, member.array_type + self.old_schema_version)
+          member.array_type = member.array_type + self.old_schema_version
+
+      else:
+        if member.full_type in self.root_schema_dict:
+          needs_schema_evolution = True
+          # prepare the ROOT I/O rule
+          self._replace_component_in_paths(member.full_type, member.full_type + self.old_schema_version,
+                                           schema_evolution_datatype['includes_data'])
+          member.full_type = member.full_type + self.old_schema_version
+          member.bare_type = member.bare_type + self.old_schema_version
+
+    if needs_schema_evolution:
+      print(f"  Preparing explicit schema evolution for {name}")
+      schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version  # noqa
+      self._fill_templates('Data', schema_evolution_datatype)
+      self.root_schema_datatype_names.add(name + self.old_schema_version)
+      self._fill_templates('Collection', datatype, schema_evolution_datatype)
+    else:
+      self._fill_templates('Collection', datatype)
+
     self._fill_templates('Data', datatype)
     self._fill_templates('Object', datatype)
     self._fill_templates('MutableObject', datatype)
@@ -262,6 +345,28 @@ have resolvable schema evolution incompatibilities:")
 
     if 'SIO' in self.io_handlers:
       self._fill_templates('SIOBlock', datatype)
+
+  def prepare_iorules(self):
+    """Prepare the IORules to be put in the Reflex dictionary"""
+    for type_name, schema_changes in self.root_schema_dict.items():
+      for schema_change in schema_changes:
+        if isinstance(schema_change, RenamedMember):
+          # find out the type of the renamed member
+          component = self.datamodel.components[type_name]
+          for member in component["Members"]:
+            if member.name == schema_change.member_name_new:
+              member_type = member.full_type
+
+          iorule = RootIoRule()
+          iorule.sourceClass = type_name
+          iorule.targetClass = type_name
+          iorule.version = self.old_schema_version.lstrip("v")
+          iorule.source = f'{member_type} {schema_change.member_name_old}'
+          iorule.target = schema_change.member_name_new
+          iorule.code = f'{iorule.target} = onfile.{schema_change.member_name_old};'
+          self.root_schema_iorules.add(iorule)
+        else:
+          raise NotImplementedError("Schema evolution for this type not yet implemented")
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
@@ -483,10 +588,13 @@ have resolvable schema evolution incompatibilities:")
 
   def _create_selection_xml(self):
     """Create the selection xml that is necessary for ROOT I/O"""
-    data = {'components': [DataType(c) for c in self.datamodel.components],
+    data = {'version': self.datamodel.schema_version,
+            'components': [DataType(c) for c in self.datamodel.components],
             'datatypes': [DataType(d) for d in self.datamodel.datatypes],
             'old_schema_components': [DataType(d) for d in
-                                      self.old_datamodels_datatypes | self.old_datamodels_components]}
+                                      self.root_schema_datatype_names | self.root_schema_component_names], # noqa
+            'iorules': self.root_schema_iorules}
+
     self._write_file('selection.xml', self._eval_template('selection.xml.jinja2', data))
 
   def _build_include(self, member):

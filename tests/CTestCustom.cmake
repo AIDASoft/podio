@@ -64,6 +64,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     datamodel_def_store_roundtrip_root_extension
     datamodel_def_store_roundtrip_sio
     datamodel_def_store_roundtrip_sio_extension
+
+    write_old_data_root
+    read_new_data_root
   )
 
   foreach(version in @legacy_test_versions@)

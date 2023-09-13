@@ -10,9 +10,7 @@ SET(podio_PYTHON_DIR ${PROJECT_SOURCE_DIR}/python CACHE PATH "Path to the podio 
 
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
   IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-  OLD_DESCRIPTION datalayout_old.yaml
-  SCHEMA_EVOLUTION schema_evolution.yaml
-   )
+  )
 
 # Use the cmake building blocks to add the different parts (conditionally)
 PODIO_ADD_DATAMODEL_CORE_LIB(TestDataModel "${headers}" "${sources}")
@@ -60,6 +58,7 @@ if (ENABLE_SIO)
 endif()
 add_subdirectory(unittests)
 add_subdirectory(dumpmodel)
+add_subdirectory(schema_evolution)
 
 # Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")

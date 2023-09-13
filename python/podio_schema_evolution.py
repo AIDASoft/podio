@@ -107,6 +107,17 @@ class RenamedMember(SchemaChange):
     super().__init__(f"'{self.name}': member '{self.member_name_old}' renamed to '{self.member_name_new}'.")
 
 
+class RootIoRule:
+  """A placeholder IORule class"""
+  def __init__(self):
+    self.sourceClass = None
+    self.targetClass = None
+    self.version = None
+    self.source = None
+    self.target = None
+    self.code = None
+
+
 def sio_filter(schema_changes):
   """
   Checks what is required/supported for the SIO backend
@@ -225,7 +236,7 @@ class DataModelComparator:
     """make analysis of member changes in a given data type """
     for dropped_member in dropped_members:
       added_members_in_definition = [member for member in added_members if
-                                          dropped_member.definition_name == member.definition_name]
+                                     dropped_member.definition_name == member.definition_name]
       for added_member in added_members_in_definition:
         if added_member.member.full_type == dropped_member.member.full_type:
           # this is a rename candidate. So let's see whether it has been explicitly declared by the user
