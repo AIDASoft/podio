@@ -309,11 +309,6 @@ have resolvable schema evolution incompatibilities:")
     # Compute and prepare the potential schema evolution parts
     schema_evolution_datatype = copy.deepcopy(datatype)
     needs_schema_evolution = False
-    # check whether it has a renamed member
-    # if name in self.root_schema_dict.keys():
-    # for member in schema_evolution_datatype['Members']:
-    # if
-    # then check for components with a renamed member
     for member in schema_evolution_datatype['Members']:
       if member.is_array:
         if member.array_type in self.root_schema_dict:
