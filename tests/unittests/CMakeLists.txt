@@ -40,10 +40,10 @@ if(NOT Catch2_FOUND)
 endif()
 
 find_package(Threads REQUIRED)
-add_executable(unittest unittest.cpp frame.cpp)
-target_link_libraries(unittest PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
+add_executable(unittest_podio unittest.cpp frame.cpp)
+target_link_libraries(unittest_podio PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 if (ENABLE_SIO)
-  target_link_libraries(unittest PRIVATE podio::podioSioIO)
+  target_link_libraries(unittest_podio PRIVATE podio::podioSioIO)
 endif()
 
 # The unittests can easily be filtered and they are labelled so we can put together a
@@ -79,12 +79,12 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
     # Unfortunately Memory sanitizer seems to be really unhappy with Catch2 and
     # it fails to succesfully launch the executable and execute any test. Here
     # we just include them in order to have them show up as failing
-    add_test(NAME unittest COMMAND unittest ${filter_tests})
+    add_test(NAME unittest COMMAND unittest_podio ${filter_tests})
     PODIO_SET_TEST_ENV(unittest)
   endif()
 else()
   include(Catch)
-  catch_discover_tests(unittest
+  catch_discover_tests(unittest_podio
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
