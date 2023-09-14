@@ -80,11 +80,12 @@ class IncludeFrom(IntEnum):
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
-  def __init__(self, yamlfile, install_dir, package_name, io_handlers, verbose, dryrun,
+  def __init__(self, yamlfile, install_dir, package_name, io_handlers, proglang, verbose, dryrun,
                upstream_edm, old_description, evolution_file):
     self.install_dir = install_dir
     self.package_name = package_name
     self.io_handlers = io_handlers
+    self.proglang = proglang
     self.verbose = verbose
     self.dryrun = dryrun
     self.yamlfile = yamlfile
@@ -141,15 +142,18 @@ class ClassGenerator:
     for name, datatype in self.datamodel.datatypes.items():
       datamodel['datatypes'].append(self._process_datatype(name, datatype))
 
-    self._write_edm_def_file()
-    self._process_parent_module(datamodel)
+    if self.proglang == "julia":
+      self._process_parent_module(datamodel)
 
-    if 'ROOT' in self.io_handlers:
-      self.prepare_iorules()
-      self._create_selection_xml()
+    if self.proglang == "cpp":
+      self._write_edm_def_file()
 
-    self._write_cmake_lists_file()
+      if 'ROOT' in self.io_handlers:
+        self._create_selection_xml()
 
+      self._write_cmake_lists_file()
+
+    self.process_schema_evolution()
     self.print_report()
 
   def process_schema_evolution(self):
@@ -288,8 +292,12 @@ have resolvable schema evolution incompatibilities:")
     component['includes'] = self._sort_includes(includes)
     component['includes_jl'] = {'struct': sorted(includes_jl)}
     component['class'] = DataType(name)
-    self._fill_templates('Component', component)
-    self._fill_templates('MutableStruct', component)
+
+    if self.proglang == "cpp":
+      self._fill_templates('Component', component)
+    if self.proglang == "julia":
+      self._fill_templates('MutableStruct', component)
+
     return component
 
     # Add potentially older schema for schema evolution
@@ -324,47 +332,50 @@ have resolvable schema evolution incompatibilities:")
     """Process one datatype"""
     datatype = self._preprocess_datatype(name, definition)
 
-    # ROOT schema evolution preparation
-    # Compute and prepare the potential schema evolution parts
-    schema_evolution_datatype = copy.deepcopy(datatype)
-    needs_schema_evolution = False
-    for member in schema_evolution_datatype['Members']:
-      if member.is_array:
-        if member.array_type in self.root_schema_dict:
-          needs_schema_evolution = True
-          self._replace_component_in_paths(member.array_type, member.array_type + self.old_schema_version,
-                                           schema_evolution_datatype['includes_data'])
-          member.full_type = member.full_type.replace(member.array_type, member.array_type + self.old_schema_version)
-          member.array_type = member.array_type + self.old_schema_version
+    if self.proglang == "julia":
+      self._fill_templates('MutableStruct', datatype)
 
+    if self.proglang == "cpp":
+      # ROOT schema evolution preparation
+      # Compute and prepare the potential schema evolution parts
+      schema_evolution_datatype = copy.deepcopy(datatype)
+      needs_schema_evolution = False
+      for member in schema_evolution_datatype['Members']:
+        if member.is_array:
+          if member.array_type in self.root_schema_dict:
+            needs_schema_evolution = True
+            self._replace_component_in_paths(member.array_type, member.array_type + self.old_schema_version,
+                                            schema_evolution_datatype['includes_data'])
+            member.full_type = member.full_type.replace(member.array_type, member.array_type + self.old_schema_version)
+            member.array_type = member.array_type + self.old_schema_version
+
+        else:
+          if member.full_type in self.root_schema_dict:
+            needs_schema_evolution = True
+            # prepare the ROOT I/O rule
+            self._replace_component_in_paths(member.full_type, member.full_type + self.old_schema_version,
+                                            schema_evolution_datatype['includes_data'])
+            member.full_type = member.full_type + self.old_schema_version
+            member.bare_type = member.bare_type + self.old_schema_version
+
+      if needs_schema_evolution:
+        print(f"  Preparing explicit schema evolution for {name}")
+        schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version  # noqa
+        self._fill_templates('Data', schema_evolution_datatype)
+        self.root_schema_datatype_names.add(name + self.old_schema_version)
+        self._fill_templates('Collection', datatype, schema_evolution_datatype)
       else:
-        if member.full_type in self.root_schema_dict:
-          needs_schema_evolution = True
-          # prepare the ROOT I/O rule
-          self._replace_component_in_paths(member.full_type, member.full_type + self.old_schema_version,
-                                           schema_evolution_datatype['includes_data'])
-          member.full_type = member.full_type + self.old_schema_version
-          member.bare_type = member.bare_type + self.old_schema_version
+        self._fill_templates('Collection', datatype)
 
-    if needs_schema_evolution:
-      print(f"  Preparing explicit schema evolution for {name}")
-      schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version  # noqa
-      self._fill_templates('Data', schema_evolution_datatype)
-      self.root_schema_datatype_names.add(name + self.old_schema_version)
-      self._fill_templates('Collection', datatype, schema_evolution_datatype)
-    else:
+      self._fill_templates('Data', datatype)
+      self._fill_templates('Object', datatype)
+      self._fill_templates('MutableObject', datatype)
+      self._fill_templates('Obj', datatype)
       self._fill_templates('Collection', datatype)
+      self._fill_templates('CollectionData', datatype)
 
-    self._fill_templates('Data', datatype)
-    self._fill_templates('Object', datatype)
-    self._fill_templates('MutableObject', datatype)
-    self._fill_templates('Obj', datatype)
-    self._fill_templates('Collection', datatype)
-    self._fill_templates('CollectionData', datatype)
-    self._fill_templates('MutableStruct', datatype)
-
-    if 'SIO' in self.io_handlers:
-      self._fill_templates('SIOBlock', datatype)
+      if 'SIO' in self.io_handlers:
+        self._fill_templates('SIOBlock', datatype)
 
     return datatype
 
@@ -717,15 +728,18 @@ if __name__ == "__main__":
   import argparse
   # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
   parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
-                                   'the necessary c++ files in the target directory')
+                                   'the necessary c++ or julia files in the target directory')
 
   parser.add_argument('description', help='yaml file describing the datamodel')
   parser.add_argument('targetdir', help='Target directory where the generated data classes will be put. '
                       'Header files will be put under <targetdir>/<packagename>/*.h. '
-                      'Source files will be put under <targetdir>/src/*.cc')
+                      'Source files will be put under <targetdir>/src/*.cc. '
+                      'Julia files will be put under <targetdir>/<packagename>/*.jl.')
   parser.add_argument('packagename', help='Name of the package.')
   parser.add_argument('iohandlers', choices=['ROOT', 'SIO'], nargs='+',
                       help='The IO backend specific code that should be generated')
+  parser.add_argument('-l', '--lang', choices=['cpp', 'julia'], default='cpp',
+                      help='Specify the programming language (default: cpp)')
   parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True,
                       help='Don\'t write a report to screen')
   parser.add_argument('-d', '--dryrun', action='store_true', default=False,
@@ -753,7 +767,7 @@ if __name__ == "__main__":
     if not os.path.exists(directory):
       os.makedirs(directory)
 
-  gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers,
+  gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers, proglang=args.lang,
                        verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm,
                        old_description=args.old_description, evolution_file=args.evolution_file)
   if args.clangformat:

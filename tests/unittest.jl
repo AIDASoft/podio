@@ -1,5 +1,5 @@
-include("datamodel/Datamodel.jl")
-using .Datamodel
+include("datamodeljulia/Datamodeljulia.jl")
+using .Datamodeljulia
 using Test
 @testset "Julia Bindings" begin
 	@testset "Relations" begin

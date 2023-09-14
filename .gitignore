@@ -5,6 +5,7 @@ install
 tests/src
 tests/datamodel
 tests/extension_model
+tests/datamodeljulia
 
 # Python
 *pyc

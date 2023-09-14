@@ -63,6 +63,20 @@ add_subdirectory(schema_evolution)
 CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
 
+PODIO_GENERATE_DATAMODEL(datamodeljulia datalayout.yaml headers sources
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+  OLD_DESCRIPTION datalayout_old.yaml
+  SCHEMA_EVOLUTION schema_evolution.yaml
+  LANG julia
+  )
+
+PODIO_GENERATE_DATAMODEL(extensionmodeljulia datalayout_extension.yaml ext_headers ext_sources
+  UPSTREAM_EDM datamodel:datalayout.yaml
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model
+  LANG julia
+  )
+
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
 
