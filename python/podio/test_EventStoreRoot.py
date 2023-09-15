@@ -6,8 +6,9 @@ import os
 
 from ROOT import TFile
 
+from test_EventStore import EventStoreBaseTestCaseMixin  # pylint: disable=import-error
+
 from podio.EventStore import EventStore
-from test_EventStore import EventStoreBaseTestCaseMixin
 
 
 class EventStoreRootTestCase(EventStoreBaseTestCaseMixin, unittest.TestCase):

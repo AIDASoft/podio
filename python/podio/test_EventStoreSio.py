@@ -4,9 +4,10 @@
 import unittest
 import os
 
+from test_utils import SKIP_SIO_TESTS  # pylint: disable=import-error
+from test_EventStore import EventStoreBaseTestCaseMixin  # pylint: disable=import-error
+
 from podio.EventStore import EventStore
-from test_EventStore import EventStoreBaseTestCaseMixin
-from test_utils import SKIP_SIO_TESTS
 
 
 @unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")

@@ -5,7 +5,7 @@ from .__version__ import __version__
 
 from .podio_config_reader import *  # noqa: F403, F401
 
-import ROOT
+import ROOT  # pylint: disable=wrong-import-order
 
 # Track whether we were able to dynamially load the library that is built by
 # podio and enable certain features of the bindings only if they are actually

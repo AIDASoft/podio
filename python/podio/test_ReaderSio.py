@@ -3,8 +3,8 @@
 
 import unittest
 
-from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
-from test_utils import SKIP_SIO_TESTS
+from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin  # pylint: disable=import-error
+from test_utils import SKIP_SIO_TESTS  # pylint: disable=import-error
 
 
 @unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")
