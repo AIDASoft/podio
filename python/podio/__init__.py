@@ -15,18 +15,18 @@ _DYNAMIC_LIBS_LOADED = False
 # Check if we can locate the dictionary wthout loading it as this allows us to
 # silence any ouptput. If we can find it, we can also safely load it
 if ROOT.gSystem.DynamicPathName("libpodioDict.so", True):
-    ROOT.gSystem.Load("libpodioDict.so")
-    from ROOT import podio
+  ROOT.gSystem.Load("libpodioDict.so")
+  from ROOT import podio
 
-    _DYNAMIC_LIBS_LOADED = True
+  _DYNAMIC_LIBS_LOADED = True
 
 if _DYNAMIC_LIBS_LOADED:
-    from .frame import Frame
-    from . import root_io, sio_io, reading
-    from .test_utils import *
+  from .frame import Frame
+  from . import root_io, sio_io, reading
+  from .test_utils import *
 
-    from . import EventStore
+  from . import EventStore
 
-    # Make sure that this module is actually usable as podio even though most of
-    # it is dynamically populated by cppyy
-    sys.modules["podio"] = podio
+  # Make sure that this module is actually usable as podio even though most of
+  # it is dynamically populated by cppyy
+  sys.modules["podio"] = podio
