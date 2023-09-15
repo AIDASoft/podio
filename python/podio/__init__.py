@@ -3,9 +3,9 @@ import sys
 
 from .__version__ import __version__
 
-import ROOT
-
 from .podio_config_reader import *
+
+import ROOT
 
 # Track whether we were able to dynamially load the library that is built by
 # podio and enable certain features of the bindings only if they are actually
@@ -23,10 +23,17 @@ if ROOT.gSystem.DynamicPathName("libpodioDict.so", True):
 if _DYNAMIC_LIBS_LOADED:
   from .frame import Frame
   from . import root_io, sio_io, reading
-  from .test_utils import *
 
   from . import EventStore
 
   # Make sure that this module is actually usable as podio even though most of
   # it is dynamically populated by cppyy
   sys.modules["podio"] = podio
+
+  __all__ = [
+      "__version__",
+      "Frame",
+      "root_io",
+      "sio_io",
+      "reading",
+      ]

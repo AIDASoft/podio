@@ -4,7 +4,7 @@
 import unittest
 
 from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
-from podio.test_utils import SKIP_SIO_TESTS
+from test_utils import SKIP_SIO_TESTS
 
 
 @unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")

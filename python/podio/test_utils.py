@@ -4,8 +4,8 @@
 import os
 import ROOT
 
-if ROOT.gSystem.Load("libTestDataModelDict.so") >= 0:  # noqa: E402
-  from ROOT import ExampleHitCollection, ExampleClusterCollection  # noqa: E402 # pylint: disable=wrong-import-position
+ROOT.gSystem.Load("libTestDataModelDict.so")  # noqa: E402
+from ROOT import ExampleHitCollection, ExampleClusterCollection  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio import Frame  # pylint: disable=wrong-import-position
 
