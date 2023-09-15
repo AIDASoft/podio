@@ -5,7 +5,7 @@ import unittest
 import os
 
 from podio.EventStore import EventStore
-from podio.test_EventStore import EventStoreBaseTestCaseMixin
+from test_EventStore import EventStoreBaseTestCaseMixin
 from podio.test_utils import SKIP_SIO_TESTS
 
 

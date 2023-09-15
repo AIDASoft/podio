@@ -7,7 +7,7 @@ import os
 from ROOT import TFile
 
 from podio.EventStore import EventStore
-from podio.test_EventStore import EventStoreBaseTestCaseMixin
+from test_EventStore import EventStoreBaseTestCaseMixin
 
 
 class EventStoreRootTestCase(EventStoreBaseTestCaseMixin, unittest.TestCase):

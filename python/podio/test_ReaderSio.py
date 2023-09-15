@@ -3,7 +3,7 @@
 
 import unittest
 
-from podio.test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
+from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
 from podio.test_utils import SKIP_SIO_TESTS
 
 
