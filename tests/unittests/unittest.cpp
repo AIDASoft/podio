@@ -1155,9 +1155,6 @@ TEST_CASE("GenericParameters return types", "[generic-parameters][static-checks]
 }
 
 TEST_CASE("Missing files (ROOT readers)", "[basics]") {
-  auto root_reader = podio::ROOTReader();
-  REQUIRE_THROWS_AS(root_reader.openFile("NonExistentFile.root"), std::runtime_error);
-
   auto root_legacy_reader = podio::ROOTLegacyReader();
   REQUIRE_THROWS_AS(root_legacy_reader.openFile("NonExistentFile.root"), std::runtime_error);
 
@@ -1167,9 +1164,6 @@ TEST_CASE("Missing files (ROOT readers)", "[basics]") {
 
 #if PODIO_ENABLE_SIO
 TEST_CASE("Missing files (SIO readers)", "[basics]") {
-  auto sio_reader = podio::SIOReader();
-  REQUIRE_THROWS_AS(sio_reader.openFile("NonExistentFile.sio"), std::runtime_error);
-
   auto sio_legacy_reader = podio::SIOLegacyReader();
   REQUIRE_THROWS_AS(sio_legacy_reader.openFile("NonExistentFile.sio"), std::runtime_error);
 

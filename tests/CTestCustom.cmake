@@ -11,15 +11,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
   set(CTEST_CUSTOM_TESTS_IGNORE
     ${CTEST_CUSTOM_TESTS_IGNORE}
 
-    write
-    read
-    read_and_write
     read_and_write_associated
-    write_timed
-    read_timed
     check_benchmark_outputs
-    read-multiple
-    read-legacy-files-root_v00-13
     read_frame_legacy_root
     read_frame_root_multiple
     write_python_frame_root
@@ -29,11 +22,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_frame_root
     read_frame_root
 
-    check_benchmark_outputs_sio
     write_python_frame_sio
     read_python_frame_sio
-
-    write_ascii
 
     relation_range
 
@@ -60,7 +50,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
   )
 
   foreach(version in @legacy_test_versions@)
-      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read-legacy-files-root_${version})
       list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
       list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_root_${version})
   endforeach()

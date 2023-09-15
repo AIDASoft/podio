@@ -10,7 +10,6 @@
     <class name="podio::GenericParameters::MapType<float>"/>
     <class name="podio::GenericParameters::MapType<double>"/>
     <class name="podio::GenericParameters::MapType<std::string>"/>
-    <class name="std::map<int,podio::GenericParameters>"/>
     <class name="std::vector<std::tuple<int, std::string, bool, unsigned int>>"/>
     <class name="std::vector<std::tuple<int, std::string, bool, unsigned>>"/>
     <class name="std::vector<std::tuple<int, std::string, bool>>"/>

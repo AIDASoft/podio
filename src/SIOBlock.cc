@@ -12,25 +12,6 @@
 #endif
 
 namespace podio {
-SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
-    sio::block("CollectionIDs", sio::version::encode_version(0, 3)) {
-  const auto table = store->getCollectionIDTable();
-  _names = table->names();
-  _ids = table->ids();
-  _types.reserve(_names.size());
-  _isSubsetColl.reserve(_names.size());
-  for (const int id : _ids) {
-    CollectionBase* tmp;
-    if (!store->get(id, tmp)) {
-      std::cerr
-          << "PODIO-ERROR cannot construct CollectionIDTableBlock because a collection is missing from the store (id: "
-          << id << ", name: " << table->name(id).value_or("<not available>") << ")" << std::endl;
-    }
-
-    _types.emplace_back(tmp->getValueTypeName());
-    _isSubsetColl.push_back(tmp->isSubsetCollection());
-  }
-}
 
 void SIOCollectionIDTableBlock::read(sio::read_device& device, sio::version_type version) {
   device.data(_names);

@@ -1,12 +1,6 @@
 set(root_dependent_tests
-  write.cpp
-  read.cpp
-  read-multiple.cpp
-  relation_range.cpp
-  read_and_write.cpp
+  # relation_range.cpp
   read_and_write_associated.cpp
-  write_timed.cpp
-  read_timed.cpp
   read_frame_root.cpp
   write_frame_root.cpp
   read_frame_legacy_root.cpp
@@ -29,11 +23,7 @@ endforeach()
 
 
 #--- set some dependencies between the different tests to ensure input generating ones are run first
-set_property(TEST read PROPERTY DEPENDS write)
-set_property(TEST read-multiple PROPERTY DEPENDS write)
-set_property(TEST read_and_write PROPERTY DEPENDS write)
 set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
-set_property(TEST read_timed PROPERTY DEPENDS write_timed)
 
 set_tests_properties(
   read_frame_root
@@ -48,8 +38,6 @@ if(ENABLE_RNTUPLE)
   set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
 endif()
 
-add_test(NAME check_benchmark_outputs COMMAND check_benchmark_outputs write_benchmark_root.root read_benchmark_root.root)
-set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_timed)
 
 message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")
 add_executable(read-legacy-files-root read-legacy-files-root.cpp)
@@ -68,7 +56,6 @@ macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
     # with existing headers from other installations
     ROOT_INCLUDE_PATH=
   )
-
 endmacro()
 
 ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root v00-13-example.root legacy_test_cases)

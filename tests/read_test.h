@@ -14,8 +14,6 @@
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 // podio specific includes
-#include "podio/EventStore.h"
-#include "podio/IReader.h"
 #include "podio/UserDataCollection.h"
 #include "podio/podioVersion.h"
 
@@ -40,9 +38,9 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
 }
 
 template <typename StoreT>
-static constexpr bool isEventStore = std::is_same_v<podio::EventStore, StoreT>;
+static constexpr bool isEventStore = false;
 
-template <typename StoreT = podio::EventStore>
+template <typename StoreT>
 void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersion) {
 
   float evtWeight = -1;
@@ -461,47 +459,6 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
       }
     }
   }
-}
-
-void run_read_test(podio::IReader& reader) {
-  auto store = podio::EventStore();
-  store.setReader(&reader);
-
-  const auto nEvents = reader.getEntries();
-
-  // Some information in the test files dpends directly on the index. In
-  // read-multiple, the same file is essentially read twice, so that at the file
-  // change the index which is used for testing has to start at 0 again. This
-  // function just wraps that. The magic number of 2000 is the number of events
-  // that are present in each file that is written in write
-  const auto correctIndex = [nEvents](unsigned index) {
-    if (nEvents > 2000) {
-      return index % (nEvents / 2);
-    }
-    return index;
-  };
-
-  for (unsigned i = 0; i < nEvents; ++i) {
-
-    if (i % 1000 == 0) {
-      std::cout << "reading event " << i << std::endl;
-    }
-
-    processEvent(store, correctIndex(i), reader.currentFileVersion());
-    store.clear();
-    reader.endOfEvent();
-  }
-}
-
-// Same as above but only for a specified event
-void run_read_test_event(podio::IReader& reader, unsigned event) {
-  auto store = podio::EventStore();
-  store.setReader(&reader);
-
-  reader.goToEvent(event);
-  processEvent(store, event, reader.currentFileVersion());
-  store.clear();
-  reader.endOfEvent();
 }
 
 #endif // PODIO_TESTS_READ_TEST_H

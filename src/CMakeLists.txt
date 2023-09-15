@@ -50,8 +50,6 @@ ENDFUNCTION()
 SET(core_sources
   CollectionIDTable.cc
   GenericParameters.cc
-  ASCIIWriter.cc
-  EventStore.cc
   DatamodelRegistry.cc
   DatamodelRegistryIOHelpers.cc
   UserDataCollection.cc
@@ -63,14 +61,13 @@ SET(core_sources
 SET(core_headers
   ${PROJECT_SOURCE_DIR}/include/podio/CollectionBase.h
   ${PROJECT_SOURCE_DIR}/include/podio/CollectionIDTable.h
-  ${PROJECT_SOURCE_DIR}/include/podio/EventStore.h
   ${PROJECT_SOURCE_DIR}/include/podio/ICollectionProvider.h
-  ${PROJECT_SOURCE_DIR}/include/podio/IReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ObjectID.h
   ${PROJECT_SOURCE_DIR}/include/podio/UserDataCollection.h
   ${PROJECT_SOURCE_DIR}/include/podio/podioVersion.h
   ${PROJECT_SOURCE_DIR}/include/podio/DatamodelRegistry.h
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
+  ${PROJECT_SOURCE_DIR}/include/podio/GenericParameters.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
@@ -80,8 +77,6 @@ target_compile_options(podio PRIVATE -pthread)
 # --- Root I/O functionality and corresponding dictionary
 SET(root_sources
   rootUtils.h
-  ROOTWriter.cc
-  ROOTReader.cc
   ROOTFrameWriter.cc
   ROOTFrameReader.cc
   ROOTLegacyReader.cc
@@ -115,24 +110,9 @@ else()
 endif()
 
 
-# --- Python EventStore for enabling (legacy) python bindings
-SET(python_sources
-  IOHelpers.cc
-  PythonEventStore.cc
-  )
-
-SET(python_headers
-  ${PROJECT_SOURCE_DIR}/include/podio/PythonEventStore.h
-)
-PODIO_ADD_LIB_AND_DICT(podioPythonStore "${python_headers}" "${python_sources}" python_selection.xml)
-target_link_libraries(podioPythonStore PUBLIC podio::podio)
-target_link_libraries(podioPythonStore PRIVATE podio::podioRootIO)
-
 # --- SIO I/O functionality and corresponding dictionary
 if(ENABLE_SIO)
   SET(sio_sources
-    SIOReader.cc
-    SIOWriter.cc
     SIOBlockUserData.cc
     SIOBlock.cc
     SIOFrameWriter.cc
@@ -152,14 +132,11 @@ if(ENABLE_SIO)
   target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
   target_compile_definitions(podioSioIO PUBLIC PODIO_ENABLE_SIO=1)
 
-  # Make sure the legacy python bindings know about the SIO backend
-  target_link_libraries(podioPythonStore PRIVATE podioSioIO)
-
   LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
 endif()
 
 # --- Install everything
-install(TARGETS podio podioDict podioPythonStore podioPythonStoreDict podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
+install(TARGETS podio podioDict podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 

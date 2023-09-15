@@ -48,9 +48,6 @@ list(APPEND ExternalData_URL_TEMPLATES
  "https://key4hep.web.cern.ch:443/testFiles/podio/%(hash)"
  )
 
-add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
-target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)
-
 add_subdirectory(root_io)
 if (ENABLE_SIO)
   add_subdirectory(sio_io)
@@ -61,7 +58,6 @@ add_subdirectory(schema_evolution)
 
 # Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")
-CREATE_PODIO_TEST(write_ascii.cpp "")
 
 if (ENABLE_JULIA)
   message(STATUS "Julia Datamodel generation is enabled.")

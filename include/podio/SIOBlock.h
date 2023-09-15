@@ -3,7 +3,6 @@
 
 #include <podio/CollectionBase.h>
 #include <podio/CollectionIDTable.h>
-#include <podio/EventStore.h>
 #include <podio/GenericParameters.h>
 #include <podio/podioVersion.h>
 #include <podio/utilities/TypeHelpers.h>
@@ -101,8 +100,6 @@ class SIOCollectionIDTableBlock : public sio::block {
 public:
   SIOCollectionIDTableBlock() : sio::block("CollectionIDs", sio::version::encode_version(0, 4)) {
   }
-
-  SIOCollectionIDTableBlock(podio::EventStore* store);
 
   SIOCollectionIDTableBlock(std::vector<std::string>&& names, std::vector<uint32_t>&& ids,
                             std::vector<std::string>&& types, std::vector<short>&& isSubsetColl) :
