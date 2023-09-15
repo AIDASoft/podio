@@ -366,7 +366,7 @@ have resolvable schema evolution incompatibilities:")
           iorule.code = f'{iorule.target} = onfile.{schema_change.member_name_old};'
           self.root_schema_iorules.add(iorule)
         else:
-          raise NotImplementedError("Schema evolution for this type not yet implemented")
+          raise NotImplementedError(f"Schema evolution for {schema_change} not yet implemented.")
 
   def _preprocess_for_obj(self, datatype):
     """Do the preprocessing that is necessary for the Obj classes"""
