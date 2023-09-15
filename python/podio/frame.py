@@ -5,9 +5,16 @@
 import cppyy
 
 import ROOT
+
 # NOTE: It is necessary that this can be found on the ROOT_INCLUDE_PATH
-ROOT.gInterpreter.LoadFile('podio/Frame.h')  # noqa: E402
-from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
+#
+# We check whether we can actually load the header to not break python bindings
+# in environments with *ancient* podio versions
+if ROOT.gInterpreter.LoadFile('podio/Frame.h') == 0:  # noqa: E402
+  from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
+  _FRAME_HEADER_AVAILABLE = True
+else:
+  _FRAME_HEADER_AVAILABLE = False
 
 
 def _determine_supported_parameter_types():
@@ -45,7 +52,8 @@ def _determine_supported_parameter_types():
   return tuple(zip(cpp_types, py_types))
 
 
-SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
+if _FRAME_HEADER_AVAILABLE:
+  SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
 
 
 def _get_cpp_types(type_str):
