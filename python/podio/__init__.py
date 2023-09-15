@@ -3,7 +3,7 @@ import sys
 
 from .__version__ import __version__
 
-from .podio_config_reader import *
+from .podio_config_reader import *  # noqa: F403, F401
 
 import ROOT
 
@@ -36,4 +36,5 @@ if _DYNAMIC_LIBS_LOADED:
       "root_io",
       "sio_io",
       "reading",
+      "EventStore"
       ]
