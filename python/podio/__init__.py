@@ -5,19 +5,28 @@ from .__version__ import __version__
 
 import ROOT
 
-if ROOT.gSystem.Load("libpodioDict.so") < 0:
-    raise RuntimeError("Failed to load libpodioDict.so")
-
-from ROOT import podio
-
 from .podio_config_reader import *
 
-from .frame import Frame
+# Track whether we were able to dynamially load the library that is built by
+# podio and enable certain features of the bindings only if they are actually
+# available.
+_DYNAMIC_LIBS_LOADED = False
 
-from . import root_io, sio_io, reading
+# Check if we can locate the dictionary wthout loading it as this allows us to
+# silence any ouptput. If we can find it, we can also safely load it
+if ROOT.gSystem.DynamicPathName("libpodioDict.so", True):
+    ROOT.gSystem.Load("libpodioDict.so")
+    from ROOT import podio
 
-from .test_utils import *
+    _DYNAMIC_LIBS_LOADED = True
 
-from . import EventStore
+if _DYNAMIC_LIBS_LOADED:
+    from .frame import Frame
+    from . import root_io, sio_io, reading
+    from .test_utils import *
 
-sys.modules["podio"] = podio
+    from . import EventStore
+
+    # Make sure that this module is actually usable as podio even though most of
+    # it is dynamically populated by cppyy
+    sys.modules["podio"] = podio
