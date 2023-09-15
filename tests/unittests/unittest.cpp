@@ -12,14 +12,10 @@
 #include "catch2/matchers/catch_matchers_vector.hpp"
 
 // podio specific includes
-#include "datamodel/MutableExampleHit.h"
-#include "podio/EventStore.h"
-#include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/ROOTFrameReader.h"
 #include "podio/ROOTFrameWriter.h"
 #include "podio/ROOTLegacyReader.h"
-#include "podio/ROOTReader.h"
 #include "podio/podioVersion.h"
 
 #ifndef PODIO_ENABLE_SIO
@@ -28,7 +24,6 @@
 #if PODIO_ENABLE_SIO
   #include "podio/SIOFrameReader.h"
   #include "podio/SIOLegacyReader.h"
-  #include "podio/SIOReader.h"
 #endif
 
 #if PODIO_ENABLE_RNTUPLE
@@ -52,11 +47,10 @@
 #include "podio/UserDataCollection.h"
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
-  auto store = podio::EventStore();
+  auto coll = EventInfoCollection();
   auto hit1 = MutableEventInfo();
   auto hit2 = MutableEventInfo();
   auto hit3 = MutableEventInfo();
-  auto& coll = store.create<EventInfoCollection>("info");
   coll.push_back(hit1);
   hit3 = hit2;
 }
@@ -205,11 +199,10 @@ TEST_CASE("Container lifetime", "[basics][memory-management]") {
 }
 
 TEST_CASE("Invalid_refs", "[basics][relations]") {
-  auto store = podio::EventStore();
-  auto& hits = store.create<ExampleHitCollection>("hits");
+  auto hits = ExampleHitCollection();
   auto hit1 = hits.create(0xcaffeeULL, 0., 0., 0., 0.);
-  auto hit2 = MutableExampleHit();
-  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+  auto hit2 = ExampleHit();
+  auto clusters = ExampleClusterCollection();
   auto cluster = clusters.create();
   cluster.addHits(hit1);
   cluster.addHits(hit2);
@@ -217,8 +210,7 @@ TEST_CASE("Invalid_refs", "[basics][relations]") {
 }
 
 TEST_CASE("Looping", "[basics]") {
-  auto store = podio::EventStore();
-  auto& coll = store.create<ExampleHitCollection>("name");
+  auto coll = ExampleHitCollection();
   auto hit1 = coll.create(0xbadULL, 0., 0., 0., 0.);
   auto hit2 = coll.create(0xcaffeeULL, 1., 1., 1., 1.);
   for (auto&& i : coll) {
@@ -235,7 +227,7 @@ TEST_CASE("Looping", "[basics]") {
   REQUIRE(coll[0].energy() == 0);
   REQUIRE(coll[1].energy() == 1);
 
-  auto& constColl = store.get<ExampleHitCollection>("name");
+  const auto& constColl = coll;
   int index = 0;
   for (auto hit : constColl) {
     auto energy = hit.energy();
@@ -244,8 +236,7 @@ TEST_CASE("Looping", "[basics]") {
 }
 
 TEST_CASE("Notebook", "[basics]") {
-  auto store = podio::EventStore();
-  auto& hits = store.create<ExampleHitCollection>("hits");
+  auto hits = ExampleHitCollection();
   for (unsigned i = 0; i < 12; ++i) {
     auto hit = hits.create(0xcaffeeULL, 0., 0., 0., double(i));
   }
@@ -285,11 +276,10 @@ TEST_CASE("Podness", "[basics][code-gen]") {
 }
 
 TEST_CASE("Referencing", "[basics][relations]") {
-  auto store = podio::EventStore();
-  auto& hits = store.create<ExampleHitCollection>("hits");
+  auto hits = ExampleHitCollection();
   auto hit1 = hits.create(0x42ULL, 0., 0., 0., 0.);
   auto hit2 = hits.create(0x42ULL, 1., 1., 1., 1.);
-  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+  auto clusters = ExampleClusterCollection();
   auto cluster = clusters.create();
   cluster.addHits(hit1);
   cluster.addHits(hit2);
@@ -302,8 +292,7 @@ TEST_CASE("Referencing", "[basics][relations]") {
 
 TEST_CASE("VariadicCreate", "[basics]") {
   // Test that objects created via the variadic create template function handle relations correctly
-  auto store = podio::EventStore();
-  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+  auto clusters = ExampleClusterCollection();
 
   auto variadic_cluster = clusters.create(3.14f);
   auto normal_cluster = clusters.create();
@@ -315,11 +304,10 @@ TEST_CASE("VariadicCreate", "[basics]") {
 }
 
 TEST_CASE("write_buffer", "[basics][io]") {
-  auto store = podio::EventStore();
-  auto& coll = store.create<ExampleHitCollection>("data");
+  auto coll = ExampleHitCollection();
   auto hit1 = coll.create(0x42ULL, 0., 0., 0., 0.);
   auto hit2 = coll.create(0x42ULL, 1., 1., 1., 1.);
-  auto& clusters = store.create<ExampleClusterCollection>("clusters");
+  auto clusters = ExampleClusterCollection();
   auto cluster = clusters.create();
   // add a few related objects to also exercise relation writing
   cluster.addHits(hit1);
@@ -333,7 +321,7 @@ TEST_CASE("write_buffer", "[basics][io]") {
   REQUIRE_NOTHROW(clusters.prepareForWrite());
   REQUIRE(clusters.getBuffers().data == buffers.data);
 
-  auto& ref_coll = store.create<ExampleWithOneRelationCollection>("onerel");
+  auto ref_coll = ExampleWithOneRelationCollection();
   auto withRef = ref_coll.create();
   REQUIRE_NOTHROW(ref_coll.prepareForWrite());
 }
