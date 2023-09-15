@@ -181,12 +181,12 @@ podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
 // ensures that we don't have to make up arbitrary namespace names here, since
 // none of this is publicly visible
 namespace {
- {{ macros.createBuffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, -1) }}
+ {{ macros.create_buffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, -1) }}
 
 {#
 // SCHEMA EVOLUTION: Not yet required with only ROOT backend
 // {% if old_schema_version is defined %}
-// {{ macros.createBuffers(class, package_name, collection_type, OneToManyRelations_old, OneToOneRelations_old, VectorMembers_old, old_schema_version) }}
+// {{ macros.create_buffers(class, package_name, collection_type, OneToManyRelations_old, OneToOneRelations_old, VectorMembers_old, old_schema_version) }}
 // {% endif %}
 #}
 
