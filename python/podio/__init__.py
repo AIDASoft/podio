@@ -26,6 +26,14 @@ if _DYNAMIC_LIBS_LOADED:
 
   from . import EventStore
 
+  try:
+    # For some reason the test_utils only work at (test) runtime if they are
+    # imported with the rest of podio. Otherwise they produce a weird c++ error.
+    # This happens even if we import the *exact* same file.
+    from . import test_utils  # noqa: F401
+  except ImportError:
+    pass
+
   # Make sure that this module is actually usable as podio even though most of
   # it is dynamically populated by cppyy
   sys.modules["podio"] = podio
