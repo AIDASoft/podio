@@ -16,7 +16,7 @@
 {{ utils.namespace_open(class.namespace) }}
 {% with obj_type = class.bare_type + 'Obj' %}
 {{ obj_type }}::{{ obj_type }}() :
-{% raw %}  ObjBase{{podio::ObjectID::untracked, 0}, 0}{% endraw %},
+{% raw %}  ObjBase{{}, 0}{% endraw %},
   data(){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
   m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>())
@@ -29,7 +29,7 @@
 {  }
 
 {{ obj_type }}::{{ obj_type }}(const {{ obj_type }}& other) :
-{% raw %}  ObjBase{{podio::ObjectID::untracked, 0}, 0}{% endraw %},
+{% raw %}  ObjBase{{}, 0}{% endraw %},
   data(other.data){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
   m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>(*(other.m_{{ relation.name }})))
