@@ -400,6 +400,9 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
 
 template <typename FrameDataT>
 bool Frame::FrameModel<FrameDataT>::get(uint32_t collectionID, CollectionBase*& collection) const {
+  if (!m_idTable.present(collectionID)) {
+    return false;
+  }
   const auto& name = m_idTable.name(collectionID);
   const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
 

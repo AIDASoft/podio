@@ -1,9 +1,10 @@
 // podio specific includes
 #include "podio/CollectionIDTable.h"
-#include <algorithm>
-#include <iostream>
 
 #include "MurmurHash3.h"
+
+#include <algorithm>
+#include <iostream>
 
 namespace podio {
 
@@ -44,6 +45,11 @@ bool CollectionIDTable::present(const std::string& name) const {
   std::lock_guard<std::mutex> lock(*m_mutex);
   const auto result = std::find(begin(m_names), end(m_names), name);
   return result != end(m_names);
+}
+
+bool CollectionIDTable::present(uint32_t collectionID) const {
+  std::lock_guard<std::mutex> lock{*m_mutex};
+  return std::find(m_collectionIDs.begin(), m_collectionIDs.end(), collectionID) != m_collectionIDs.end();
 }
 
 uint32_t CollectionIDTable::add(const std::string& name) {

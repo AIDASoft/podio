@@ -34,6 +34,9 @@ public:
   /// Check if collection name is known
   bool present(const std::string& name) const;
 
+  /// Check if collection ID is known
+  bool present(uint32_t collectionID) const;
+
   /// return registered names
   const std::vector<std::string>& names() const {
     return m_names;
