@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,10 +27,10 @@ public:
   CollectionIDTable(const std::vector<uint32_t>& ids, const std::vector<std::string>& names);
 
   /// return collection ID for given name
-  uint32_t collectionID(const std::string& name) const;
+  std::optional<uint32_t> collectionID(const std::string& name) const;
 
   /// return name for given collection ID
-  const std::string name(uint32_t collectionID) const;
+  std::optional<const std::string> name(uint32_t collectionID) const;
 
   /// Check if collection name is known
   bool present(const std::string& name) const;

@@ -24,7 +24,7 @@ SIOCollectionIDTableBlock::SIOCollectionIDTableBlock(podio::EventStore* store) :
     if (!store->get(id, tmp)) {
       std::cerr
           << "PODIO-ERROR cannot construct CollectionIDTableBlock because a collection is missing from the store (id: "
-          << id << ", name: " << table->name(id) << ")" << std::endl;
+          << id << ", name: " << table->name(id).value_or("<not available>") << ")" << std::endl;
     }
 
     _types.emplace_back(tmp->getValueTypeName());

@@ -20,12 +20,12 @@ bool EventStore::get(uint32_t id, CollectionBase*& collection) const {
   bool success = false;
   if (val.second == true) {
     // collection not yet retrieved in recursive-call
-    auto name = m_table->name(id);
+    auto name = m_table->name(id).value();
     success = doGet(name, collection, true);
   } else {
     // collection already requested in recursive call
     // do not set the references to break collection dependency-cycle
-    auto name = m_table->name(id);
+    auto name = m_table->name(id).value();
     success = doGet(name, collection, false);
   }
   // fg: the set should only be cleared at the end of event (in clear() ) ...

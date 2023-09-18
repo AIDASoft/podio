@@ -380,7 +380,7 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
       }
 
       coll->prepareAfterRead();
-      coll->setID(m_idTable.collectionID(name));
+      coll->setID(m_idTable.collectionID(name).value());
       {
         std::lock_guard mapLock{*m_mapMtx};
         auto [it, success] = m_collections.emplace(name, std::move(coll));
@@ -400,20 +400,20 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
 
 template <typename FrameDataT>
 bool Frame::FrameModel<FrameDataT>::get(uint32_t collectionID, CollectionBase*& collection) const {
-  if (!m_idTable.present(collectionID)) {
+  const auto name = m_idTable.name(collectionID);
+  if (!name) {
     return false;
   }
-  const auto& name = m_idTable.name(collectionID);
   const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
 
   if (inserted) {
-    auto coll = doGet(name);
+    auto coll = doGet(name.value());
     if (coll) {
       collection = coll;
       return true;
     }
   } else {
-    auto coll = doGet(name, false);
+    auto coll = doGet(name.value(), false);
     if (coll) {
       collection = coll;
       return true;

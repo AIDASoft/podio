@@ -106,7 +106,7 @@ void ROOTWriter::finish() {
   std::vector<root_utils::CollectionInfoT> collectionInfo;
   collectionInfo.reserve(m_collectionsToWrite.size());
   for (const auto& name : m_collectionsToWrite) {
-    const auto collID = collIDTable->collectionID(name);
+    const auto collID = collIDTable->collectionID(name).value();
     const podio::CollectionBase* coll{nullptr};
     // No check necessary, only registered collections possible
     m_store->get(name, coll);
