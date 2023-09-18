@@ -27,6 +27,24 @@ class Reader(BaseReaderMixin):
     super().__init__()
 
 
+class RNTupleReader(BaseReaderMixin):
+  """Reader class for reading podio RNTuple root files."""
+
+  def __init__(self, filenames):
+    """Create an RNTuple reader that reads from the passed file(s).
+
+    Args:
+        filenames (str or list[str]): file(s) to open and read data from
+    """
+    if isinstance(filenames, str):
+      filenames = (filenames,)
+
+    self._reader = podio.ROOTNTupleReader()
+    self._reader.openFiles(filenames)
+
+    super().__init__()
+
+
 class LegacyReader(BaseReaderMixin):
   """Reader class for reading legacy podio root files.
 
