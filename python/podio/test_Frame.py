@@ -3,11 +3,13 @@
 
 import unittest
 
+# pylint: disable=import-error
+from test_utils import ExampleHitCollection  # noqa: E402
+
 from podio.frame import Frame
 # using root_io as that should always be present regardless of which backends are built
 from podio.root_io import Reader
 
-from podio.test_utils import ExampleHitCollection
 
 # The expected collections in each frame
 EXPECTED_COLL_NAMES = {

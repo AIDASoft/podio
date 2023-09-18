@@ -169,8 +169,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podioVersion.in.h
                ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h )
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py.in
-               ${CMAKE_CURRENT_SOURCE_DIR}/python/podio/__init__.py)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__version__.py.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/python/podio/__version__.py)
 
 #--- add license files ---------------------------------------------------------
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE

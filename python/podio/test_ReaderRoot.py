@@ -3,8 +3,9 @@
 
 import unittest
 
+from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin  # pylint: disable=import-error
+
 from podio.root_io import Reader, LegacyReader
-from podio.test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin
 
 
 class RootReaderTestCase(ReaderTestCaseMixin, unittest.TestCase):

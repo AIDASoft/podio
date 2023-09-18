@@ -3,10 +3,11 @@
 
 import os
 import ROOT
+
 ROOT.gSystem.Load("libTestDataModelDict.so")  # noqa: E402
 from ROOT import ExampleHitCollection, ExampleClusterCollection  # noqa: E402 # pylint: disable=wrong-import-position
 
-from podio.frame import Frame  # pylint: disable=wrong-import-position
+from podio import Frame  # pylint: disable=wrong-import-position
 
 
 SKIP_SIO_TESTS = os.environ.get("SKIP_SIO_TESTS", "1") == "1"
