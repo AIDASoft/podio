@@ -22,7 +22,15 @@ if ROOT.gSystem.DynamicPathName("libpodioDict.so", True):
 
 if _DYNAMIC_LIBS_LOADED:
   from .frame import Frame
-  from . import root_io, sio_io, reading
+  from . import root_io, reading
+
+  try:
+    # We try to import the sio bindings which may fail if ROOT is not able to
+    # load the dictionary in this case they have most likely not been built and
+    # we just move on
+    from . import sio_io
+  except ImportError:
+    pass
 
   from . import EventStore
 
