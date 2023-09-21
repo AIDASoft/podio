@@ -4,7 +4,8 @@
 import os
 import ROOT
 
-ROOT.gSystem.Load("libTestDataModelDict.so")  # noqa: E402
+if ROOT.gSystem.DynamicPathName("libTestDataModelDict.so", True):  # noqa: E402
+  ROOT.gSystem.Load("libTestDataModelDict.so")  # noqa: E402
 from ROOT import ExampleHitCollection, ExampleClusterCollection  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio import Frame  # pylint: disable=wrong-import-position
