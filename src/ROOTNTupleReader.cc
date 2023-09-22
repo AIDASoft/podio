@@ -59,6 +59,9 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   auto schemaVersion = m_metadata_readers[filename]->GetView<std::vector<SchemaVersionT>>("schemaVersion_" + category);
   m_collectionInfo[category].schemaVersion = schemaVersion(0);
 
+  m_idTables[category] =
+      std::make_shared<CollectionIDTable>(m_collectionInfo[category].id, m_collectionInfo[category].name);
+
   return true;
 }
 
@@ -176,11 +179,8 @@ std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& ca
   m_readers[category][0]->LoadEntry(entNum);
 
   auto parameters = readEventMetaData(category, entNum);
-  if (!m_table) {
-    m_table = std::make_shared<CollectionIDTable>(m_collectionInfo[category].id, m_collectionInfo[category].name);
-  }
 
-  return std::make_unique<ROOTFrameData>(std::move(buffers), m_table, std::move(parameters));
+  return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[category], std::move(parameters));
 }
 
 } // namespace podio

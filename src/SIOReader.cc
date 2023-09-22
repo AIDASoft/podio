@@ -30,7 +30,7 @@ CollectionBase* SIOReader::readCollection(const std::string& name) {
       std::find_if(begin(m_inputs), end(m_inputs), [&name](const SIOReader::Input& t) { return t.second == name; });
 
   if (p != end(m_inputs)) {
-    p->first->setID(m_table->collectionID(name));
+    p->first->setID(m_table->collectionID(name).value());
     p->first->prepareAfterRead();
     return p->first;
   }

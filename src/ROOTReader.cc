@@ -129,7 +129,7 @@ CollectionBase* ROOTReader::readCollectionData(const root_utils::CollectionBranc
   }
 
   // do the unpacking
-  const auto id = m_table->collectionID(name);
+  const auto id = m_table->collectionID(name).value();
   collection->setID(id);
   collection->prepareAfterRead();
 
@@ -249,7 +249,7 @@ void ROOTReader::createCollectionBranches(const std::vector<root_utils::Collecti
   for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
-    const auto name = m_table->name(collID);
+    const auto name = m_table->name(collID).value();
 
     root_utils::CollectionBranches branches{};
     const auto collectionClass = TClass::GetClass(collType.c_str());

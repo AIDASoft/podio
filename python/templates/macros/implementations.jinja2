@@ -164,7 +164,7 @@ const podio::ObjectID {{ full_type }}::getObjectID() const {
   if (m_obj) {
     return m_obj->id;
   }
-  return podio::ObjectID{podio::ObjectID::invalid, 0};
+  return podio::ObjectID{};
 }
 
 {% set inverse_type = class.bare_type if prefix else 'Mutable' + class.bare_type %}

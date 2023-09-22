@@ -263,7 +263,7 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
   for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
-    const auto name = idTable.name(collID);
+    const auto name = idTable.name(collID).value();
 
     const auto collectionClass = TClass::GetClass(collType.c_str());
     // Need the collection here to setup all the branches. Have to manage the
@@ -315,7 +315,7 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
   for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
-    const auto name = idTable.name(collID);
+    const auto name = idTable.name(collID).value();
 
     root_utils::CollectionBranches branches{};
     if (isSubsetColl) {

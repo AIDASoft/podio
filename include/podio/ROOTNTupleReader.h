@@ -96,7 +96,7 @@ private:
 
   std::vector<std::string> m_availableCategories{};
 
-  std::shared_ptr<podio::CollectionIDTable> m_table{};
+  std::unordered_map<std::string, std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
 };
 
 } // namespace podio

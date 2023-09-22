@@ -1,6 +1,6 @@
-#include "podio/EventStore.h"
-#include "podio/ROOTReader.h"
-#include "podio/ROOTWriter.h"
+#include "podio/Frame.h"
+#include "podio/ROOTFrameReader.h"
+#include "podio/ROOTFrameWriter.h"
 
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
@@ -10,34 +10,25 @@
 #include <string>
 
 void writeCollection() {
-
-  auto store = podio::EventStore();
-  podio::ROOTWriter writer("associations.root", &store);
+  podio::ROOTFrameWriter writer("associations.root");
 
   std::cout << "start writting collections...\n";
-  auto& info = store.create<EventInfoCollection>("info");
-  auto& hits = store.create<ExampleHitCollection>("hits");
-  auto& clusters = store.create<ExampleClusterCollection>("clusters");
-  auto& hits_subset = store.create<ExampleHitCollection>("hits_subset");
-  hits_subset.setSubsetCollection(true);
-
-  writer.registerForWrite("clusters");
-  // writer.registerForWrite("hits");
-  writer.registerForWrite("hits_subset");
 
   unsigned nevents = 2;
 
   for (unsigned i = 0; i < nevents; ++i) {
+    auto event = podio::Frame{};
 
+    auto info = EventInfoCollection{};
     auto item1 = MutableEventInfo();
     item1.Number(i);
     info.push_back(item1);
 
-    auto& evtMD = store.getEventMetaData();
-    evtMD.setValue("UserEventWeight", (float)100. * i);
+    event.putParameter("UserEventWeight", (float)100. * i);
     std::cout << " event number: " << i << std::endl;
-    evtMD.setValue("UserEventName", std::to_string(i));
+    event.putParameter("UserEventName", std::to_string(i));
 
+    auto hits = ExampleHitCollection{};
     auto hit1 = ExampleHit(0xbad, 0., 0., 0., 23. + i);
     auto hit2 = ExampleHit(0xcaffee, 1., 0., 0., 12. + i);
 
@@ -45,6 +36,7 @@ void writeCollection() {
     hits.push_back(hit2);
 
     // Clusters
+    auto clusters = ExampleClusterCollection{};
     auto cluster = MutableExampleCluster();
     auto clu0 = MutableExampleCluster();
     auto clu1 = MutableExampleCluster();
@@ -60,6 +52,8 @@ void writeCollection() {
     cluster.addClusters(clu1);
 
     // Add tracked hits to subset hits collection
+    auto hits_subset = ExampleHitCollection{};
+    hits_subset.setSubsetCollection();
     hits_subset.push_back(hit1);
     hits_subset.push_back(hit2);
 
@@ -68,24 +62,24 @@ void writeCollection() {
     clusters.push_back(clu1);
     clusters.push_back(cluster);
 
-    writer.writeEvent();
-    store.clearCollections();
+    // event.put(std::move(hits), "hits");
+    event.put(std::move(info), "info");
+    event.put(std::move(hits_subset), "hits_subset");
+    event.put(std::move(clusters), "clusters");
+
+    writer.writeFrame(event, podio::Category::Event);
   }
-  writer.finish();
 }
 
 void readCollection() {
-
   // Start reading the input
-  auto reader = podio::ROOTReader();
+  auto reader = podio::ROOTFrameReader();
   reader.openFile("associations.root");
 
-  auto store = podio::EventStore();
-  store.setReader(&reader);
-
-  const auto nEvents = reader.getEntries();
+  const auto nEvents = reader.getEntries(podio::Category::Event);
 
   for (unsigned i = 0; i < nEvents; ++i) {
+    auto store = podio::Frame(reader.readNextEntry(podio::Category::Event));
 
     auto& clusters = store.get<ExampleClusterCollection>("clusters");
     if (clusters.isValid()) {
@@ -121,9 +115,6 @@ void readCollection() {
     } else {
       throw std::runtime_error("Collection 'hits_subset' should be present");
     }
-
-    store.clear();
-    reader.endOfEvent();
   }
 }
 

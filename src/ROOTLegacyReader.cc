@@ -177,7 +177,7 @@ void ROOTLegacyReader::createCollectionBranches(const std::vector<root_utils::Co
   for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
-    const auto name = m_table->name(collID);
+    const auto name = m_table->name(collID).value();
 
     root_utils::CollectionBranches branches{};
     const auto collectionClass = TClass::GetClass(collType.c_str());

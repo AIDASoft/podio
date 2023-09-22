@@ -42,7 +42,7 @@ std::vector<std::string> SIOFrameData::getAvailableCollections() {
       // no guarantee that it coincides with the index in the blocks.
       // Additionally, collection indices start at 1
       const auto collID = m_idTable.ids()[i - 1];
-      collections.push_back(m_idTable.name(collID));
+      collections.push_back(m_idTable.name(collID).value());
     }
   }
 
