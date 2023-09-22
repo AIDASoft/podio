@@ -81,7 +81,7 @@ def print_frame(frame, cat_name, ientry, detailed):
       ientry (int): The entry number of this Frame
       detailed (bool): Print just an overview or dump the whole contents
   """
-  print('{:#^82}'.format(f' {cat_name} {ientry} '))  # pylint: disable=consider-using-f-string
+  print('{:#^82}'.format(f' {cat_name}: {ientry} '))  # pylint: disable=consider-using-f-string
 
   if detailed:
     print_frame_detailed(frame)
@@ -126,7 +126,10 @@ def main(args):
 
   frames = reader.get(args.category)
   for ient in args.entries:
-    print_frame(frames[ient], args.category, ient, args.detailed)
+    try:
+      print_frame(frames[ient], args.category, ient, args.detailed)
+    except IndexError:
+      print(f'WARNING: Entry no. {ient} in "{args.category}" not present in the file!')
 
 
 def parse_entry_range(ent_string):
