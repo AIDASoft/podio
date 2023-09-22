@@ -130,7 +130,6 @@ def main(args):
       print_frame(frames[ient], args.category, ient, args.detailed)
     except IndexError:
       print(f'WARNING: Entry no. {ient} in "{args.category}" not present in the file!')
-      pass
 
 
 def parse_entry_range(ent_string):
