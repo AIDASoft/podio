@@ -19,7 +19,7 @@ else()
     DESTINATION ${podio_PYTHON_INSTALLDIR}
     REGEX test_.*\\.py$ EXCLUDE  # Do not install test files
     PATTERN __pycache__ EXCLUDE  # Or pythons caches
-    REGEX .*sio.*\\.py$ EXCLUDE  # All things sio related
+    REGEX .*sio_.*\\.py$ EXCLUDE  # All things sio related
     )
 endif()
 
