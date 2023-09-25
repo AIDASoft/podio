@@ -1,3 +1,172 @@
+# v00-17
+
+* 2023-09-22 Juraj Smiesko ([PR#491](https://github.com/AIDASoft/podio/pull/491))
+  - podio-dump: print warning if requested entry not present in the file
+
+* 2023-09-22 tmadlener ([PR#490](https://github.com/AIDASoft/podio/pull/490))
+  - Fix bugs in python imports when podio is built without SIO support. Fixes #489
+
+* 2023-09-22 tmadlener ([PR#486](https://github.com/AIDASoft/podio/pull/486))
+  - Make sure to initialize `ObjectID`s to *untracked* to properly track whether they have been added to a Frame or not
+  - Change `CollectionIDTable` interfaces of `name` and `collectionID` to return `optional` to signal whether a collection (ID) is known to the table. **This is a breaking change if you use the `CollectionIDTable`!**
+    - Avoids having to do the lookup twice to check existence and a subsequent retrieval
+  - Fix bug of overly shared CollectionIDTable in `ROOTNTupleReader` that was uncovered by the CollectionIDTable switch to optional returns.
+  - Switch tests from EventStore to Frame based I/O.
+  - Fix bug in Frame based I/O that lead to crashes when trying to resolve relations to unpersisted objects.
+
+* 2023-09-18 tmadlener ([PR#484](https://github.com/AIDASoft/podio/pull/484))
+  - Make the podio python bindings import structure "feel more pythonic"
+
+* 2023-09-15 Benedikt Hegner ([PR#483](https://github.com/AIDASoft/podio/pull/483))
+  - Clarify error message in case of not implemented schema changes
+
+* 2023-09-15 Benedikt Hegner ([PR#482](https://github.com/AIDASoft/podio/pull/482))
+  - rename CMake macro createBuffers into create_buffers
+
+* 2023-09-13 jmcarcell ([PR#481](https://github.com/AIDASoft/podio/pull/481))
+  - Rename the cmake executable or target `unittest` to `unittest_podio`, to avoid possible collisions since the `unittest` name is relatively common
+
+* 2023-09-13 Benedikt Hegner ([PR#480](https://github.com/AIDASoft/podio/pull/480))
+  - Move the code generation of buffers into the 'create_buffers' macro
+
+* 2023-09-13 Thomas Madlener ([PR#472](https://github.com/AIDASoft/podio/pull/472))
+  - Allow comparison of data schemata across versions
+  - Provide syntax to clarify user intentions in schema evolution
+  - Provide schema evolution implementation based on ROOT backend
+  - Include infrastructure for future support for schema evolution in other backends
+  - Documentation for schema evolution functionality
+
+* 2023-09-11 tmadlener ([PR#477](https://github.com/AIDASoft/podio/pull/477))
+  - Use `nlohmann/json_fwd.hpp` in headers to reduce unnecessary template instantiations. Fixes #475
+
+* 2023-09-08 tmadlener ([PR#478](https://github.com/AIDASoft/podio/pull/478))
+  - Add `empty` method to `CollectionBase`
+  - Add `operator==` to the collection iterators
+
+* 2023-09-08 Dmitry Kalinkin ([PR#465](https://github.com/AIDASoft/podio/pull/465))
+  - Introduce member typedefs to the user facing classes.
+    - Object's collection type can now be referenced as `Object::collection_type`. Conversely, the object type is reachable as `ObjectCollection::value_type`. The mutable objects can be reached via `Object::mutable_type`.
+
+* 2023-08-30 tmadlener ([PR#471](https://github.com/AIDASoft/podio/pull/471))
+  - Initialize the branch names to be index based for reading (i.e. legacy behavior) for all releases of the v00-16 series.
+
+* 2023-08-22 Andre Sailer ([PR#469](https://github.com/AIDASoft/podio/pull/469))
+  - Tests: update required catch2 version to 3.4 for builds with c++20
+  - CI: use clang16 on el9 (alma9), instead of clang12 on cs7, using c++20
+  - CI: disable key4hep-release-based tests (`tabulate` available)
+
+* 2023-08-22 Benedikt Hegner ([PR#445](https://github.com/AIDASoft/podio/pull/445))
+  - Allow to specify units as part of the datamodel definition
+
+* 2023-07-26 tmadlener ([PR#463](https://github.com/AIDASoft/podio/pull/463))
+  - Make sure to only access vector member buffers of collections of datatypes with `VectorMembers` if they actually exist. This is necessary to make subset collections of such datatypes work in I/O. Fixes [#462](https://github.com/AIDASoft/podio/issues/462)
+  - Add a test that reproduces the original issue and is fixed by this.
+
+* 2023-07-25 tmadlener ([PR#461](https://github.com/AIDASoft/podio/pull/461))
+  - Make sure the `ROOTFrameReader` on the master branch can read `v00-16-06` files
+  - Add `v00-16-06` to the legacy versions that are tested
+
+* 2023-07-25 tmadlener ([PR#447](https://github.com/AIDASoft/podio/pull/447))
+  - Add a python wrapper around the different available Frame writers.
+  - Add a `put` method to the `Frame` wrapper that allows to add collections to the Frame without having to explicitly use `cppyy.gbl.std.move`. Fixes #432 
+  - Add test cases that write via python bindings and read via c++.
+
+* 2023-07-20 tmadlener ([PR#457](https://github.com/AIDASoft/podio/pull/457))
+  - Simplify the test setup for SIO in CMake and make it explicit on the `ENABLE_SIO` option rather than on the presence of targets.
+
+* 2023-07-18 jmcarcell ([PR#456](https://github.com/AIDASoft/podio/pull/456))
+  - Cache podio_PYTHON_DIR
+
+* 2023-07-18 jmcarcell ([PR#455](https://github.com/AIDASoft/podio/pull/455))
+  - Rename `CMAKE_BINARY_DIR` to `PROJECT_BINARY_DIR`
+
+* 2023-07-18 tmadlener ([PR#439](https://github.com/AIDASoft/podio/pull/439))
+  - Introduce the `FrameCategories.h` header that puts a few of the conventions and otherwise hardcoded strings into variables / functions.
+
+* 2023-07-14 jmcarcell ([PR#454](https://github.com/AIDASoft/podio/pull/454))
+  - Rename `CMAKE_{SOURCE,BIN}_DIR` to `PROJECT_{SOURCE,BIN}_DIR`
+
+* 2023-07-14 tmadlener ([PR#452](https://github.com/AIDASoft/podio/pull/452))
+  - Extend the pre-processor condition for the `to_json` functionality to not be visible in `rootcling` or the root interpreter. Fixes #435
+
+* 2023-07-13 Benedikt Hegner ([PR#450](https://github.com/AIDASoft/podio/pull/450))
+  - Add optional description and author fields to component definition
+
+* 2023-07-13 tmadlener ([PR#449](https://github.com/AIDASoft/podio/pull/449))
+  - Fix the `pre-commit` workflow by making it run on top of the key4hep nightlies that come with a recent enough root version to be able to work with the RNTuple addition (#395)
+  - Fix a few minor complaints from newer versions of `clang-format`, `clang-tidy` and `pylint`
+  - Enable building the RNTuple backend for more workflows (anything that comes with a new enough ROOT essentially).
+
+* 2023-07-13 tmadlener ([PR#448](https://github.com/AIDASoft/podio/pull/448))
+  - Remove the lcio datalayout which has been untouched (and unbuilt) for quite a few years.
+
+* 2023-07-13 tmadlener ([PR#446](https://github.com/AIDASoft/podio/pull/446))
+  - Make calling `finish` for the `SIOFrameWriter` non-mandatory. See #442 for other related changes.
+
+* 2023-07-11 jmcarcell ([PR#442](https://github.com/AIDASoft/podio/pull/442))
+  - Allow not calling `finish()` when using the writers
+
+* 2023-07-11 jmcarcell ([PR#395](https://github.com/AIDASoft/podio/pull/395))
+  - Add support for the new RNTuple format by adding a writer, reader and tests.
+
+* 2023-06-30 Ananya Gupta ([PR#437](https://github.com/AIDASoft/podio/pull/437))
+  - Modified parse function definition to incorporate `missing description in member definition` error message. Fixes #436
+
+* 2023-06-27 Thomas Madlener ([PR#413](https://github.com/AIDASoft/podio/pull/413))
+  - Introduce `podio::SchemaEvolution` that can hold schema evolution functions and that offers an `evolveBuffers` method that does the schema evolution on these buffers before collections are created.
+  - Add hooks in `podio::Frame` to call this when collections are read from the FrameData.
+
+* 2023-06-23 tmadlener ([PR#434](https://github.com/AIDASoft/podio/pull/434))
+  - Properly handle the slightly different branch contents before `v00-16-04`. Fixes #433 
+  - Add tests that use the `ROOTLegacyReader` to actually read the downloaded legacy files
+
+* 2023-06-15 tmadlener ([PR#428](https://github.com/AIDASoft/podio/pull/428))
+  - Split the tests directory into several (more or less) topical sub-directories to declutter the main test `CMakeLists.txt` a bit
+  - Move commonly used functionality into `cmake/podioTests.cmake` (e.g. setting up a test environment)
+  - Move python unittests config to the `python` directory
+
+* 2023-06-15 tmadlener ([PR#427](https://github.com/AIDASoft/podio/pull/427))
+  - Delay library loading as long as possible, mainly for quicker responses for `--help`
+  - Add a `--version` flag for dumping the podio version
+  - Display collections and parameters in alphabetical order and automatically adjust column widths to fit contents (using the `tabulate` package).
+
+* 2023-06-09 Thomas Madlener ([PR#402](https://github.com/AIDASoft/podio/pull/402))
+  - Add public `static constexpr char*` type names to the collections and make the `getXXXName()` methods return `string_view`s to these strings. **This is a breaking change to the interface of the collections if you explicitly rely on them being `std::string`**
+    - `typeName`: the full type name of the collection (returned also by `getTypeName`)
+    - `valueTypeName`: the (immutable) type name of the objects of the collection (returned by `getValueTypeName`)
+    - `dataTypeName`: the type name of the data PODs (returned by `getDataTypeName`)
+  - Make unittest environment properly use `PODIO_SIOBLOCK_PATH`
+  - `USE_EXTERNAL_CATCH2` now can also be set to `AUTO` to look for a suitable version of Catch2 before falling back and fetching and building it's own version instead of a hard fail.
+
+* 2023-06-08 tmadlener ([PR#426](https://github.com/AIDASoft/podio/pull/426))
+  - Check if `PODIO_SIOBLOCK_PATH` exists in the environment and use that to look for SIO Blocks libraries before falling back to `LD_LIBRARY_PATH`. This makes it possible to make slightly more robust environments if several (incompatible) podio installations are visible on `LD_LIBRARY_PATH`
+
+* 2023-06-08 tmadlener ([PR#425](https://github.com/AIDASoft/podio/pull/425))
+  - Add a `SKIP_CATCH_DISCOVERY` cmake option to skip the unittest discovery of Catch2 to avoid running the catch discovery in an unsuitable environment.
+  - Make environment for unittests more specific to avoid catching too much of the underlying environment.
+
+* 2023-06-08 tmadlener ([PR#412](https://github.com/AIDASoft/podio/pull/412))
+  - Using string hashes as CollectionID based on MurmurHash
+
+* 2023-06-05 tmadlener ([PR#423](https://github.com/AIDASoft/podio/pull/423))
+  - Add some more structure to make it easier to add more legacy tests.
+    - Use this to download more legacy files automatically
+    - Restructure CMake config to make this possible
+  - Add tests for Frame based root I/O reading files that have been produced with prior versions of podio
+  - Add more tests for EventStore based root I/O reading files that have been produced with prior versions of podio
+
+* 2023-06-05 tmadlener ([PR#421](https://github.com/AIDASoft/podio/pull/421))
+  - Make the collections appear in alphabetical order in root files, using a case insensitive sorting of the collections that are written.
+
+* 2023-06-05 Thomas Madlener ([PR#405](https://github.com/AIDASoft/podio/pull/405))
+  - Make the branch names for relations and vector members more legible and valid c++ variable names to improve interoperability with RDataFrame. Fixes #169 
+    - The branch names will have the following structure: `_<collection-name>_<relation-name>`, resp. `_<collection-name>_<vectormember-name>`, where `relation-name`, resp.`vectormember-name` are taken from the YAML definitions.
+    - Subset collections will have a single branch with `<collection-name>_objIdx`. This makes it easier to disambiguate them from normal collections.
+  - **This is a breaking change if you use the root files directly! If you use the podio Readers/Writers everything should be transparent**
+
+* 2023-05-30 tmadlener ([PR#422](https://github.com/AIDASoft/podio/pull/422))
+  - Fix small bug in Frame python bindings where set but empty parameters could crash `podio-dump` when trying to access a non-existent element
+
 # v00-16-05
 
 * 2023-05-23 tmadlener ([PR#420](https://github.com/AIDASoft/podio/pull/420))
