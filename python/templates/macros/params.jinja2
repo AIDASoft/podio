@@ -1,8 +1,13 @@
-{% macro julia_parameters(params, prefix, suffix) %}
+{% macro julia_parameters(params, suffix, upstream_edm=None, upstream_edm_name=None) %}
 {%- if params -%}{
 {%- set comma = joiner(',') -%}
 {%- for par in params -%}
-{{ comma() }}{{ prefix }}{{ par }}{{ suffix }}
+{{comma() }}
+    {%- if upstream_edm and (par[1] in upstream_edm.components or par[1] in upstream_edm.datatypes) %}
+        {{- upstream_edm_name }}.{{ par[0] }}{{ suffix -}}
+    {%- else %}
+        {{- par[0] }}{{ suffix -}}
+    {%- endif %}
 {%- endfor -%}
 }{%- endif -%}
 {%- endmacro -%}

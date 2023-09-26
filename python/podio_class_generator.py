@@ -28,6 +28,12 @@ REPORT_TEXT = """
   Used {yamlfile} to create {nclasses} classes in {installdir}/
   Read instructions in the README.md to run your first example!
 """
+REPORT_TEXT_JULIA = """
+  PODIO Data Model
+  ================
+  Used {yamlfile} to create {nclasses} julia files in {installdir}/
+  Read instructions in the README.md to run your first example!
+"""
 
 
 def get_clang_format():
@@ -134,6 +140,10 @@ class ClassGenerator:
 
     datamodel = {}
     datamodel['class'] = DataType(self.package_name.capitalize())
+    datamodel['upstream_edm'] = self.upstream_edm
+    datamodel['upstream_edm_name'] = ''
+    if self.upstream_edm:
+      datamodel['upstream_edm_name'] = self.upstream_edm.options["includeSubfolder"].split("/")[-2].capitalize()
     datamodel['components'] = []
     datamodel['datatypes'] = []
     for name, component in self.datamodel.components.items():
@@ -149,11 +159,11 @@ class ClassGenerator:
       self._write_edm_def_file()
 
       if 'ROOT' in self.io_handlers:
+        self.prepare_iorules()
         self._create_selection_xml()
 
       self._write_cmake_lists_file()
 
-    self.process_schema_evolution()
     self.print_report()
 
   def process_schema_evolution(self):
@@ -192,11 +202,16 @@ have resolvable schema evolution incompatibilities:")
     """Print a summary report about the generated code"""
     if not self.verbose:
       return
-
-    nclasses = 5 * len(self.datamodel.datatypes) + len(self.datamodel.components)
-    text = REPORT_TEXT.format(yamlfile=self.yamlfile,
-                              nclasses=nclasses,
-                              installdir=self.install_dir)
+    if self.proglang == "julia":
+      nclasses = len(self.datamodel.datatypes) + len(self.datamodel.components) + 1
+      text = REPORT_TEXT_JULIA.format(yamlfile=self.yamlfile,
+                                      nclasses=nclasses,
+                                      installdir=self.install_dir)
+    if self.proglang == "cpp":
+      nclasses = 5 * len(self.datamodel.datatypes) + len(self.datamodel.components)
+      text = REPORT_TEXT.format(yamlfile=self.yamlfile,
+                                nclasses=nclasses,
+                                installdir=self.install_dir)
 
     for summaryline in text.splitlines():
       print(summaryline)
@@ -250,7 +265,6 @@ have resolvable schema evolution incompatibilities:")
 
     endings = {
         'Data': ('h',),
-        'Component': ('h',),
         'PrintInfo': ('h',),
         'MutableStruct': ('jl',),
         'ParentModule': ('jl',),
@@ -292,29 +306,34 @@ have resolvable schema evolution incompatibilities:")
     component['includes'] = self._sort_includes(includes)
     component['includes_jl'] = {'struct': sorted(includes_jl)}
     component['class'] = DataType(name)
+    component['upstream_edm'] = self.upstream_edm
+    component['upstream_edm_name'] = ''
+    if self.upstream_edm:
+      component['upstream_edm_name'] = self.upstream_edm.options["includeSubfolder"].split("/")[-2].capitalize()
 
-    if self.proglang == "cpp":
-      self._fill_templates('Component', component)
     if self.proglang == "julia":
       self._fill_templates('MutableStruct', component)
 
-    return component
-
-    # Add potentially older schema for schema evolution
-    # based on ROOT capabilities for now
-    if name in self.root_schema_dict:
-      schema_evolutions = self.root_schema_dict[name]
-      component = copy.deepcopy(component)
-      for schema_evolution in schema_evolutions:
-        if isinstance(schema_evolution, RenamedMember):
-          for member in component['Members']:
-            if member.name == schema_evolution.member_name_new:
-              member.name = schema_evolution.member_name_old
-          component['class'] = DataType(name + self.old_schema_version)
-        else:
-          raise NotImplementedError
+    if self.proglang == "cpp":
       self._fill_templates('Component', component)
-      self.root_schema_component_names.add(name + self.old_schema_version)
+
+      # Add potentially older schema for schema evolution
+      # based on ROOT capabilities for now
+      if name in self.root_schema_dict:
+        schema_evolutions = self.root_schema_dict[name]
+        component = copy.deepcopy(component)
+        for schema_evolution in schema_evolutions:
+          if isinstance(schema_evolution, RenamedMember):
+            for member in component['Members']:
+              if member.name == schema_evolution.member_name_new:
+                member.name = schema_evolution.member_name_old
+            component['class'] = DataType(name + self.old_schema_version)
+          else:
+            raise NotImplementedError
+        self._fill_templates('Component', component)
+        self.root_schema_component_names.add(name + self.old_schema_version)
+
+    return component
 
   @staticmethod
   def _replace_component_in_paths(oldname, newname, paths):
@@ -345,7 +364,7 @@ have resolvable schema evolution incompatibilities:")
           if member.array_type in self.root_schema_dict:
             needs_schema_evolution = True
             self._replace_component_in_paths(member.array_type, member.array_type + self.old_schema_version,
-                                            schema_evolution_datatype['includes_data'])
+                                             schema_evolution_datatype['includes_data'])
             member.full_type = member.full_type.replace(member.array_type, member.array_type + self.old_schema_version)
             member.array_type = member.array_type + self.old_schema_version
 
@@ -354,7 +373,7 @@ have resolvable schema evolution incompatibilities:")
             needs_schema_evolution = True
             # prepare the ROOT I/O rule
             self._replace_component_in_paths(member.full_type, member.full_type + self.old_schema_version,
-                                            schema_evolution_datatype['includes_data'])
+                                             schema_evolution_datatype['includes_data'])
             member.full_type = member.full_type + self.old_schema_version
             member.bare_type = member.bare_type + self.old_schema_version
 
@@ -416,7 +435,7 @@ have resolvable schema evolution incompatibilities:")
     params = set()
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       if not relation.is_builtin:
-        params.add(relation.bare_type)
+        params.add((relation.bare_type, relation.full_type))
     return list(params)
 
   def _preprocess_for_obj(self, datatype):
@@ -551,7 +570,11 @@ have resolvable schema evolution incompatibilities:")
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
     data['includes_jl'] = {'struct': self._get_member_includes(definition["Members"], julia=True)}
-    data['params_jl'] = sorted(self._get_julia_params(data))
+    data['params_jl'] = sorted(self._get_julia_params(data), key=lambda x: x[0])
+    data['upstream_edm'] = self.upstream_edm
+    data['upstream_edm_name'] = ''
+    if self.upstream_edm:
+      data['upstream_edm_name'] = self.upstream_edm.options["includeSubfolder"].split("/")[-2].capitalize()
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
@@ -678,14 +701,8 @@ have resolvable schema evolution incompatibilities:")
     """Return the include statement for julia for this specific class"""
     if include_from == IncludeFrom.INTERNAL:
       # If we have an internal include all includes should be relative
-      inc_folder = ''
-    if include_from == IncludeFrom.EXTERNAL:
-      inc_folder = f'{self.upstream_edm.options["includeSubfolder"]}'
-    if include_from == IncludeFrom.NOWHERE:
-      # We don't need an include in this case
-      return ''
-
-    return f'include("{inc_folder}{classname}Struct.jl")'
+      return f'include("{classname}Struct.jl")'
+    return ''
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""

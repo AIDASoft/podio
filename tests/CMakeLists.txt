@@ -65,22 +65,15 @@ CREATE_PODIO_TEST(write_ascii.cpp "")
 
 PODIO_GENERATE_DATAMODEL(datamodeljulia datalayout.yaml headers sources
   IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-  OLD_DESCRIPTION datalayout_old.yaml
-  SCHEMA_EVOLUTION schema_evolution.yaml
   LANG julia
   )
 
 PODIO_GENERATE_DATAMODEL(extensionmodeljulia datalayout_extension.yaml ext_headers ext_sources
-  UPSTREAM_EDM datamodel:datalayout.yaml
+  UPSTREAM_EDM ../../datamodeljulia:datalayout.yaml
   IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model
   LANG julia
   )
-
-# Customize CTest to potentially disable some of the tests with known problems
-configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
-
-ExternalData_Add_Target(legacy_test_cases)
 
 find_program(Julia_EXECUTABLE julia)
 if (Julia_EXECUTABLE)
@@ -90,3 +83,8 @@ if (Julia_EXECUTABLE)
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
 endif()
+
+# Customize CTest to potentially disable some of the tests with known problems
+configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
+
+ExternalData_Add_Target(legacy_test_cases)

@@ -2,12 +2,22 @@
 {% for include in includes_jl['struct'] %}
 {{ include }}
 {% endfor %}
-mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"" ,"T" ) }}
+mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"T" ) }}
 {% for member in Members %}
-	{% if member.is_array or member.is_builtin %}
+	{% if member.is_array %}
+	{% if not member.is_builtin_array and upstream_edm and (member.array_type in upstream_edm.components or member.array_type in upstream_edm.datatypes) %}
+	{{ member.name }}::MVector{{ '{' }}{{ member.array_size }}, {{ upstream_edm_name }}.{{ member.array_bare_type }}Struct{{ '}' }}
+	{% else %}
+	{{ member.name }}::{{ member.julia_type }}
+	{% endif %}
+	{% elif member.is_builtin %}
 	{{ member.name }}::{{ member.julia_type }}
 	{% else %}
+	{% if upstream_edm and (member.full_type in upstream_edm.components or member.full_type in upstream_edm.datatypes) %}
+	{{ member.name }}::{{ upstream_edm_name }}.{{ member.julia_type }}Struct
+	{% else %}
 	{{ member.name }}::{{ member.julia_type }}Struct
+	{% endif %}
 	{% endif %}
 {% endfor %}
 {% for relation in OneToManyRelations %}
@@ -20,7 +30,11 @@ mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"
 	{% if member.is_builtin %}
 	{{ member.name }}::Vector{ {{ member.julia_type }} }
 	{% else %}
+	{% if upstream_edm and (member.full_type in upstream_edm.components or member.full_type in upstream_edm.datatypes) %}
+	{{ member.name }}::Vector{ {{ upstream_edm_name }}.{{ member.julia_type }}Struct }
+	{% else %}
 	{{ member.name }}::Vector{ {{ member.julia_type }}Struct }
+	{% endif %}
 	{% endif %}
 {% endfor %}
 end
