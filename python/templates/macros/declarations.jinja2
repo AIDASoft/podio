@@ -93,7 +93,7 @@
   // less comparison operator, so that objects can be e.g. stored in sets.
   bool operator<(const {{ full_type }}& other) const { return m_obj < other.m_obj; }
 
-  unsigned int id() const { return getObjectID().collectionID * 10000000 + getObjectID().index; }
+  podio::ObjectID id() const { return getObjectID(); }
 
   const podio::ObjectID getObjectID() const;
 
