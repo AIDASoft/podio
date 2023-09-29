@@ -189,13 +189,13 @@ void write(podio::EventStore& store, WriterT& writer) {
 
     // ----------------- add all "odd" mc particles into a subset collection
     for (auto p : mcps) {
-      if (p.id() % 2) {
+      if (p.id().index % 2) {
         mcpsRefs.push_back(p);
       }
     }
     // ----------------- add the "even" counterparts from a different collection
     for (auto p : moreMCs) {
-      if (p.id() % 2 == 0) {
+      if (p.id().index % 2 == 0) {
         mcpsRefs.push_back(p);
       }
     }
