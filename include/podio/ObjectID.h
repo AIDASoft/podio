@@ -25,6 +25,9 @@ public:
   bool operator==(const ObjectID& other) const {
     return index == other.index && collectionID == other.collectionID;
   }
+  bool operator!=(const ObjectID& other) const {
+    return !(*this == other);
+  }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const podio::ObjectID& id) {
