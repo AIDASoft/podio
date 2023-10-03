@@ -178,6 +178,11 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
 
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(src)
+
+# Set the podio_PYTHON_DIR manually here because the macros in tests expect it
+# If testing is not build this helps when building together with other packages
+SET(podio_PYTHON_DIR ${PROJECT_SOURCE_DIR}/python CACHE PATH "Path to the podio python directory")
+
 if(BUILD_TESTING)
   include(cmake/podioTest.cmake)
   add_subdirectory(tests)
