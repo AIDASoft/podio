@@ -29,6 +29,7 @@ REPORT_TEXT = """
   Read instructions in the README.md to run your first example!
 """
 REPORT_TEXT_JULIA = """
+  Warning: ExtraCode and MutableExtraCode will be ignored during julia code generation.
   PODIO Data Model
   ================
   Used {yamlfile} to create {nclasses} julia files in {installdir}/
@@ -86,6 +87,7 @@ class IncludeFrom(IntEnum):
 class ClassGenerator:
   """The entry point for reading a datamodel definition and generating the
   necessary source code from it."""
+  # pylint: disable=too-many-arguments
   def __init__(self, yamlfile, install_dir, package_name, io_handlers, proglang, verbose, dryrun,
                upstream_edm, old_description, evolution_file):
     self.install_dir = install_dir
@@ -292,6 +294,7 @@ have resolvable schema evolution incompatibilities:")
     """Process one component"""
     # Make a copy here and add the preprocessing steps to that such that the
     # original definition can be left untouched
+    # pylint: disable=too-many-nested-blocks
     component = deepcopy(component)
     includes, includes_jl = set(), set()
     includes.update(*(m.includes for m in component['Members']))
@@ -316,7 +319,6 @@ have resolvable schema evolution incompatibilities:")
 
     if self.proglang == "cpp":
       self._fill_templates('Component', component)
-
       # Add potentially older schema for schema evolution
       # based on ROOT capabilities for now
       if name in self.root_schema_dict:
@@ -697,7 +699,8 @@ have resolvable schema evolution incompatibilities:")
     """Return the include statement for julia"""
     return self._build_julia_include_for_class(member.bare_type, self._needs_include(member.full_type))
 
-  def _build_julia_include_for_class(self, classname, include_from: IncludeFrom) -> str:
+  @staticmethod
+  def _build_julia_include_for_class(classname, include_from: IncludeFrom) -> str:
     """Return the include statement for julia for this specific class"""
     if include_from == IncludeFrom.INTERNAL:
       # If we have an internal include all includes should be relative

@@ -32,10 +32,8 @@ They are broadly split along the classes that are generated for each datatype or
 | `CollectionData.{h,cc}.jinja2`  | The classes managing the collection storage (not user facing!)                                          | `[<package>/]<datatype-name>CollectionData.h`, `src/<datatype-name>CollectionData.cc` |
 | `selection.xml.jinja2`          | The `selection.xml` file that is necessary for generating a root dictionary for the generated datamodel | `src/selection.xml`                                                                   |
 | `SIOBlock.{h,cc}.jinja2`        | The SIO blocks that are necessary for the SIO backend                                                   | `[<package>/]<datatype-name>SIOBlock.h`, `src/<datatype-name>SIOBlock.cc`             |
-| `MutableStruct.jl.jinja2`		  | The Structs define components and datatypes for julia 													|`[<package>/]<datatype-name>Struct.jl`, `[<package>/]<component-name>Struct.jl`	   |
-| `Constructor.jl.jinja2`		  | Initializes components and datatypes for julia 										                	|`[<package>/]<datatype-name>.jl`, `[<package>/]<component-name>.jl`				   |
-| `JuliaCollection.jl.jinja2`	  | Vectorizes components and datatypes for julia 										                    |`[<package>/]<datatype-name>Collection.jl`											   |
-| `ParentModule.jl.jinja2`	      | The top level namespace with collected children										    				|`[<package>/]<datatype-name>Collection.jl`											   |
+| `MutableStruct.jl.jinja2`		  | The mutable struct definitions of components and datatypes for julia 													|`[<package>/]<datatype-name>Struct.jl`, `[<package>/]<component-name>Struct.jl`	   |
+| `ParentModule.jl.jinja2`	      | The constructor and collection definitions of components and datatypes in the data model are contained within a single module named after the package-name										    				|`[<package>/]<package-name>.jl`											   |
 
 
 The presence of a `[<package>]` subdirectory for the header files is controlled by the `includeSubfolder` option in the yaml definition file.
@@ -60,7 +58,7 @@ The main entry point to the generation is the `process` method which essentially
 The following gives an overview of the information that is available from the dictionary that is passed to the templates from the `ClassGenerator`.
 Each (top level) key in this dict is directly available as a variable in the Jinja2 templates, e.g.
 ```python
-component['include'] = # list of includes
+component['includes'] = # list of includes
 ```
 will become available as
 ```jinja2
@@ -143,4 +141,17 @@ The available fields are
 | `full_type` | The fully qualified type, corresponding to `{{ namespace }}::{{ bare_type }}`. |
 
 ### Julia code generation
-Julia code generation was done as a part of Google Summer of Code [*documented here*](https://hepsoftwarefoundation.org/gsoc/blogs/2022/blog_PODIO_SoumilBaldota.html) in detail.
+Builtin types mapping in Julia
+| cpp       | julia                                                                    |
+|-------------|--------------------------------------------------------------------------------|
+| `bool` | `Bool` |
+| `char` | `Char` |
+| `short` | `Int16` |
+| `int` | `Int32` |
+| `unsigned int` | `UInt32` |
+| `float` | `Float32` |
+| `double` | `Float64` |
+| `long` | `Int64` |
+| `unsigned long` | `UInt64` |
+| `long long` | `Int64` |
+| `unsigned long long` | `UInt64` |

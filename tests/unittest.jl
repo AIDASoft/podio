@@ -1,5 +1,7 @@
-include("datamodeljulia/Datamodeljulia.jl")
+# datamodeljulia/Datamodeljulia.jl file included inside extension_model/extensionmodeljulia/Extensionmodeljulia.jl file
+include("extension_model/extensionmodeljulia/Extensionmodeljulia.jl")
 using .Datamodeljulia
+using .Extensionmodeljulia
 using Test
 @testset "Julia Bindings" begin
 	@testset "Relations" begin
@@ -90,36 +92,22 @@ using Test
 	    @test mc3.parents[1] == mc1
 	end
 
-	@testset "Namespaces" begin
+	@testset "Upstream EDM" begin
+		# Upstream EDM : Datamodeljulia
+		s1 = NamespaceStruct(1, 2)
+		s2 = SimpleStruct(1, 2, 3)
+		s3 = NotSoSimpleStruct(s2)
 
-		s1 = NamespaceStruct()
-		s1.x = Int32(1)
-		s1.y = Int32(2)
-
-		s2 = NamespaceInNamespaceStruct()
-		s2.data = s1
-
-		s3 = NamespaceStruct()
-		s3.x = Int32(2)
-		s3.y = Int32(3)
-
-		ex1 = ExampleWithNamespace()
-		ex1.component = s3
-
-		ex3 = ExampleWithARelation()
-		ex3.number = Float32(5.55)
-		push!(ex3.refs, ex1)
-		ex3.ref = ex1
+		# Extensionmodeljulia
+		ec1 = ExtComponent(s3, s1)
 
 		@test s1.x == Int32(1)
 		@test s1.y == Int32(2)
-		@test s2.data.x == Int32(1)
-		@test s2.data.y == Int32(2)
-		@test ex1.component.x == Int32(2)
-		@test ex1.component.y == Int32(3)
-		@test ex3.number == Float32(5.55)
-		@test ex3.refs[1] === ex1
-		@test ex3.ref.component.x == Int32(2)
-		@test ex3.ref.component.y == Int32(3)
+		@test s3.data.x == Int32(1)
+		@test s3.data.y == Int32(2)
+		@test ec1.nspStruct.x == Int32(1)
+		@test ec1.nspStruct.y == Int32(2)
+		@test ec1.aStruct.data.x == Int32(1)
+		@test ec1.aStruct.data.y == Int32(2)
 	end
 end;

@@ -162,6 +162,7 @@ The generation script has the following additional options:
 - `--clangformat` (`-c`): Apply clang-format after file creation (uses [option `-style=file`](https://clang.llvm.org/docs/ClangFormatStyleOptions.html) with llvm as backup style), needs clang-format in `$PATH`.
 - `--quiet` (`-q`): Suppress all print out to STDOUT
 - `--dryrun` (`-d`): Only run the generation logic and validate yaml, do not write files to disk
+- `--lang` (`-l`): Specify the programming language (default: cpp), choices: cpp, julia
 
 ## Running tests
 After compilation you can run rudimentary tests with

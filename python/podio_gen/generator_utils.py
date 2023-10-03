@@ -32,8 +32,8 @@ def _prefix_name(name, prefix):
 def get_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=None):
   """Parse the given c++ type to a Julia type"""
   builtin_types_map = {"int": "Int32", "float": "Float32", "double": "Float64",
-                       "bool": "Bool", "long": "Int32", "unsigned int": "UInt32",
-                       "unsigned long": "UInt32", "char": "Char", "short": "Int16",
+                       "bool": "Bool", "long": "Int64", "unsigned int": "UInt32",
+                       "unsigned long": "UInt64", "char": "Char", "short": "Int16",
                        "long long": "Int64", "unsigned long long": "UInt64"}
   # is a global type as described in test_MemberParser.py #L121
   if cpp_type and cpp_type.startswith("::"):

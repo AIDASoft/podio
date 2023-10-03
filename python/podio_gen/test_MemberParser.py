@@ -249,12 +249,12 @@ class MemberParserTest(unittest.TestCase):
     self.assertEqual(parsed.name, 'unDescribedArray')
     self.assertEqual(parsed.array_type, 'unsigned long')
     self.assertTrue(parsed.is_builtin_array)
-    self.assertEqual(parsed.julia_type, r'MVector{123, UInt32}')
+    self.assertEqual(parsed.julia_type, r'MVector{123, UInt64}')
 
     parsed = parser.parse('unsigned long longWithReallyStupidName', False)
     self.assertEqual(parsed.full_type, 'unsigned long')
     self.assertEqual(parsed.name, 'longWithReallyStupidName')
-    self.assertEqual(parsed.julia_type, r'UInt32')
+    self.assertEqual(parsed.julia_type, r'UInt64')
 
     parsed = parser.parse('NonBuiltIn aType // descriptions are not ignored even though they are not required', False)
     self.assertEqual(parsed.full_type, 'NonBuiltIn')
