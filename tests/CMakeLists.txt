@@ -5,9 +5,6 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
-# Set the podio_PYTHON_DIR manually here because the macros below expect it
-SET(podio_PYTHON_DIR ${PROJECT_SOURCE_DIR}/python CACHE PATH "Path to the podio python directory")
-
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
   IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
   )
