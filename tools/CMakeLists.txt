@@ -1,4 +1,5 @@
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-vis DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Add a very basic tests here to make sure that podio-dump at least runs
 if(BUILD_TESTING)
