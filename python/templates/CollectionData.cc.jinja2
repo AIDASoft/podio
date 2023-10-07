@@ -43,6 +43,10 @@
   m_vec_{{ member.name }}.reset(podio::CollectionReadBuffers::asVector<{{ member.full_type }}>(m_vecmem_info[{{ loop.index0 }}].second));
 {% endfor %}
   }
+
+  // Cleanup these to avoid leaking them
+  delete buffers.references;
+  delete buffers.vectorMembers;
 }
 
 void {{ class_type }}::clear(bool isSubsetColl) {
