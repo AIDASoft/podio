@@ -19,7 +19,7 @@ public:
   using BufferMap = std::unordered_map<std::string, podio::CollectionReadBuffers>;
 
   ROOTFrameData() = delete;
-  ~ROOTFrameData() = default;
+  ~ROOTFrameData();
   ROOTFrameData(ROOTFrameData&&) = default;
   ROOTFrameData& operator=(ROOTFrameData&&) = default;
   ROOTFrameData(const ROOTFrameData&) = delete;
@@ -65,6 +65,14 @@ private:
   CollIDPtr m_idTable{nullptr};
   podio::GenericParameters m_parameters{};
 };
+
+// Interim workaround for https://github.com/AIDASoft/podio#500
+inline ROOTFrameData::~ROOTFrameData() {
+  for (auto& [_, buffer] : m_buffers) {
+    buffer.deleteBuffers(buffer);
+  }
+}
+
 } // namespace podio
 
 #endif // PODIO_ROOTFRAMEDATA_H

@@ -20,18 +20,19 @@ namespace {
     // Register with schema version 1 to allow for potential changes
     CollectionBufferFactory::mutInstance().registerCreationFunc(
         userDataCollTypeName<T>(), UserDataCollection<T>::schemaVersion, [](bool) {
-          return podio::CollectionReadBuffers{new std::vector<T>(),
-                                              nullptr,
-                                              nullptr,
-                                              podio::UserDataCollection<T>::schemaVersion,
-                                              podio::userDataCollTypeName<T>(),
-                                              [](podio::CollectionReadBuffers buffers, bool) {
-                                                return std::make_unique<UserDataCollection<T>>(
-                                                    std::move(*buffers.dataAsVector<T>()));
-                                              },
-                                              [](podio::CollectionReadBuffers& buffers) {
-                                                buffers.data = podio::CollectionWriteBuffers::asVector<T>(buffers.data);
-                                              }};
+          return podio::CollectionReadBuffers{
+              new std::vector<T>(),
+              nullptr,
+              nullptr,
+              podio::UserDataCollection<T>::schemaVersion,
+              podio::userDataCollTypeName<T>(),
+              [](podio::CollectionReadBuffers buffers, bool) {
+                return std::make_unique<UserDataCollection<T>>(std::move(*buffers.dataAsVector<T>()));
+              },
+              [](podio::CollectionReadBuffers& buffers) {
+                buffers.data = podio::CollectionWriteBuffers::asVector<T>(buffers.data);
+              },
+              [](podio::CollectionReadBuffers& buffers) { delete static_cast<std::vector<T>*>(buffers.data); }};
         });
 
     // For now passing the same schema version for from and current versions
