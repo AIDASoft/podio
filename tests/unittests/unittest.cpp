@@ -55,20 +55,6 @@ TEST_CASE("AutoDelete", "[basics][memory-management]") {
   hit3 = hit2;
 }
 
-TEST_CASE("Basics", "[basics][memory-management]") {
-  auto store = podio::EventStore();
-  // Adding
-  auto& collection = store.create<ExampleHitCollection>("name");
-  auto hit1 = collection.create(0xcaffeeULL, 0., 0., 0., 0.); // initialize w/ value
-  auto hit2 = collection.create();                            // default initialize
-  hit2.energy(12.5);
-  // Retrieving
-  const ExampleHitCollection* coll2(nullptr);
-  REQUIRE(store.get("name", coll2));
-  const ExampleHitCollection* coll3(nullptr);
-  REQUIRE_FALSE(store.get("wrongName", coll3));
-}
-
 TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
   // Make sure that the assignment operator handles the reference count
   // correctly. (Will trigger in an ASan build if it is not the case)

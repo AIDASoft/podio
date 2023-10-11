@@ -22,6 +22,8 @@ TEST_CASE("Frame collections", "[frame][basics]") {
   auto& coll = event.get<ExampleClusterCollection>("clusters");
   REQUIRE(coll[0].energy() == 3.14f);
   REQUIRE(coll[1].energy() == 42.0f);
+
+  REQUIRE_FALSE(event.get("non-existant"));
 }
 
 TEST_CASE("Frame parameters", "[frame][basics]") {
