@@ -81,31 +81,6 @@ TEST_CASE("ostream-operator", "[basics]") {
   REQUIRE(sstr.str() == "[not available]");
 }
 
-TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-management]") {
-  auto store = podio::EventStore();
-  auto& hits = store.create<ExampleHitCollection>("hits");
-  auto& clusters = store.create<ExampleClusterCollection>("clusters");
-  auto& oneRels = store.create<ExampleWithOneRelationCollection>("OneRelation");
-  auto nevents = unsigned(1000);
-  for (unsigned i = 0; i < nevents; ++i) {
-    hits.clear();
-    clusters.clear();
-    auto hit1 = hits.create();
-    auto hit2 = MutableExampleHit();
-    hit1.energy(double(i));
-    auto cluster = clusters.create();
-    cluster.addHits(hit1);
-    cluster.addHits(hit2);
-    hits.push_back(hit2);
-    auto oneRel = MutableExampleWithOneRelation();
-    oneRel.cluster(cluster);
-    oneRel.cluster(cluster);
-    oneRels.push_back(oneRel);
-  }
-  hits.clear();
-  REQUIRE(hits.empty());
-}
-
 TEST_CASE("Cloning", "[basics][memory-management]") {
   bool success = true;
   auto hit = MutableExampleHit();
@@ -488,11 +463,6 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
   REQUIRE(ex.comp().arr[1] == 3.4);
 }
 
-TEST_CASE("NonPresentCollection", "[basics][event-store]") {
-  auto store = podio::EventStore();
-  REQUIRE_THROWS_AS(store.get<ExampleHitCollection>("NonPresentCollection"), std::runtime_error);
-}
-
 TEST_CASE("Collection size and empty", "[basics][collections]") {
   ExampleClusterCollection coll{};
   REQUIRE(coll.empty());
@@ -512,11 +482,7 @@ TEST_CASE("const correct indexed access to const collections", "[const-correctne
 }
 
 TEST_CASE("const correct indexed access to collections", "[const-correctness]") {
-  auto store = podio::EventStore();
-  auto& collection = store.create<ExampleHitCollection>("irrelevant name");
-
-  STATIC_REQUIRE(std::is_same_v<decltype(collection), ExampleHitCollection&>); // collection created by store should not
-                                                                               // be const
+  auto collection = ExampleHitCollection();
 
   STATIC_REQUIRE(std::is_same_v<decltype(collection[0]), MutableExampleHit>); // non-const collections should have
                                                                               // indexed access to mutable objects
