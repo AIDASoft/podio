@@ -53,15 +53,19 @@ struct CollectionReadBuffers {
   using CreateFuncT = std::function<std::unique_ptr<podio::CollectionBase>(podio::CollectionReadBuffers, bool)>;
   using RecastFuncT = std::function<void(CollectionReadBuffers&)>;
 
+  using DeleteFuncT = std::function<void(CollectionReadBuffers&)>;
+
   CollectionReadBuffers(void* d, CollRefCollection* ref, VectorMembersInfo* vec, SchemaVersionT version,
-                        std::string_view typ, CreateFuncT&& createFunc, RecastFuncT&& recastFunc) :
+                        std::string_view typ, CreateFuncT&& createFunc, RecastFuncT&& recastFunc,
+                        DeleteFuncT&& deleteFunc) :
       data(d),
       references(ref),
       vectorMembers(vec),
       schemaVersion(version),
       type(typ),
       createCollection(std::move(createFunc)),
-      recast(std::move(recastFunc)) {
+      recast(std::move(recastFunc)),
+      deleteBuffers(std::move(deleteFunc)) {
   }
 
   CollectionReadBuffers() = default;
@@ -105,6 +109,11 @@ struct CollectionReadBuffers {
   // generation) to do the second cast and assign the result of that to the data
   // field again.
   RecastFuncT recast{};
+
+  // Workaround for https://github.com/AIDASoft/podio#500
+  // We need a function that explicitly deletes the buffers, but for this we
+  // need type information, so we attach a delete function at generation time
+  DeleteFuncT deleteBuffers{};
 };
 
 } // namespace podio

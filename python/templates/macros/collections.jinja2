@@ -203,6 +203,21 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
     }
   };
 
+  readBuffers.deleteBuffers = [](podio::CollectionReadBuffers& buffers) {
+    if (buffers.data) {
+      // If we have data then we are not a subset collection and we have to
+      // clean up all type erased buffers by casting them back to something that
+      // we can delete
+      delete static_cast<{{ class.full_type }}DataContainer*>(buffers.data);
+{% for member in VectorMembers %}
+      delete static_cast<std::vector<{{ member.full_type }}>*>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
+{% endfor %}
+
+    }
+    delete buffers.references;
+    delete buffers.vectorMembers;
+  };
+
   return readBuffers;
 }
 
