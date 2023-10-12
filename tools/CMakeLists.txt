@@ -19,22 +19,33 @@ if(BUILD_TESTING)
     PODIO_SET_TEST_ENV(${name})
 
     set_tests_properties(${name} PROPERTIES
-      DEPENDS ${depends_on}
        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
        )
+    if (depends_on)
+      set_tests_properties(${name} PROPERTIES
+        DEPENDS ${depends_on}
+        )
+    endif()
   endfunction()
 
   CREATE_DUMP_TEST(podio-dump-help _dummy_target_ --help)
-  CREATE_DUMP_TEST(podio-dump-root-legacy "write" ${PROJECT_BINARY_DIR}/tests/root_io/example.root)
   CREATE_DUMP_TEST(podio-dump-root "write_frame_root" ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
   CREATE_DUMP_TEST(podio-dump-detailed-root "write_frame_root" --detailed --category other_events --entries 2:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
-  CREATE_DUMP_TEST(podio-dump-detailed-root-legacy "write" --detailed --entries 2:3 ${PROJECT_BINARY_DIR}/tests/root_io/example.root)
+
+
+  if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
+    CREATE_DUMP_TEST(podio-dump-root-legacy "" ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.root)
+    CREATE_DUMP_TEST(podio-dump-detailed-root-legacy "" --detailed --entries 2:3 ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.root)
+  endif()
 
   if (ENABLE_SIO)
-    CREATE_DUMP_TEST(podio-dump-sio-legacy "write_sio" ${PROJECT_BINARY_DIR}/tests/sio_io/example.sio)
     CREATE_DUMP_TEST(podio-dump-sio "write_frame_sio" --entries 4:7 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
     CREATE_DUMP_TEST(podio-dump-detailed-sio "write_frame_sio" --detailed --entries 9 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
-    CREATE_DUMP_TEST(podio-dump-detailed-sio-legacy "write_sio" --detailed --entries 9 ${PROJECT_BINARY_DIR}/tests/sio_io/example.sio)
+
+    if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
+      CREATE_DUMP_TEST(podio-dump-sio-legacy "" ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.sio)
+      CREATE_DUMP_TEST(podio-dump-detailed-sio-legacy "" --detailed --entries 2:3 ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.sio)
+    endif()
   endif()
 
   if (ENABLE_RNTUPLE)
