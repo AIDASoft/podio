@@ -3,9 +3,8 @@
 function(PODIO_SET_TEST_ENV test)
   # We need to convert this into a list of arguments that can be used as environment variable
   list(JOIN PODIO_IO_HANDLERS " " IO_HANDLERS)
-  set_property(TEST ${test}
-    PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+  set(test_environment
+    LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PYTHONPATH=${PROJECT_SOURCE_DIR}/python:$ENV{PYTHONPATH}
       PODIO_SIOBLOCK_PATH=${PROJECT_BINARY_DIR}/tests
       ROOT_INCLUDE_PATH=${PROJECT_BINARY_DIR}/tests/datamodel:${PROJECT_SOURCE_DIR}/include
@@ -14,7 +13,15 @@ function(PODIO_SET_TEST_ENV test)
       PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT}
       PODIO_BASE=${PROJECT_SOURCE_DIR}
       ENABLE_SIO=${ENABLE_SIO}
-      PODIO_TEST_INPUT_DATA_DIR=${PODIO_TEST_INPUT_DATA_DIR}
+  )
+  if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
+    list(APPEND test_environment
+    PODIO_TEST_INPUT_DATA_DIR=${PODIO_TEST_INPUT_DATA_DIR}
+    )
+  endif()
+
+  set_property(TEST ${test}
+    PROPERTY ENVIRONMENT "${test_environment}"
   )
 endfunction()
 
