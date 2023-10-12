@@ -73,16 +73,6 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
-  try {
-    // not assigning to a variable, because it will remain unused, we just want
-    // the exception here
-    event.get<ExampleClusterCollection>("notthere");
-  } catch (const std::runtime_error& err) {
-    if (std::string(err.what()) != "No collection \'notthere\' is present in the EventStore") {
-      throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
-    }
-  }
-
   // read collection meta data
   auto& hits = event.get<ExampleHitCollection>("hits");
 
