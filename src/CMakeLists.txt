@@ -153,8 +153,6 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
   ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
-  ${CMAKE_CURRENT_BINARY_DIR}/podioPythonStoreDictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodioPythonStoreDict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 if (ENABLE_SIO)
