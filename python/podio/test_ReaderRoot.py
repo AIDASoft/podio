@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Python unit tests for the ROOT backend (using Frames)"""
 
+import os
 import unittest
 
 from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin  # pylint: disable=import-error
@@ -19,4 +20,4 @@ class RootLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
   """Test cases for the legacy root input files and reader."""
   def setUp(self):
     """Setup a reader, reading from the example files"""
-    self.reader = LegacyReader('root_io/example.root')
+    self.reader = LegacyReader(os.path.join(os.environ["PODIO_TEST_INPUT_DATA_DIR"], "v00-16-06", "example.root"))
