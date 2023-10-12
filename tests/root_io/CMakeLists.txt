@@ -1,5 +1,5 @@
 set(root_dependent_tests
-  # relation_range.cpp
+  relation_range.cpp
   read_and_write_associated.cpp
   read_frame_root.cpp
   write_frame_root.cpp
