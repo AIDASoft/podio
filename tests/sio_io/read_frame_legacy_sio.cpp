@@ -5,12 +5,18 @@
 
 #include <iostream>
 
-int main() {
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    std::cerr << "usage: read_frame_legacy_sio inputfile" << std::endl;
+    return 1;
+  }
+
+  const auto inputFile = argv[1];
   auto reader = podio::SIOLegacyReader();
   try {
-    reader.openFile("example.sio");
+    reader.openFile(inputFile);
   } catch (const std::runtime_error& e) {
-    std::cout << "File could not be opened, aborting." << std::endl;
+    std::cout << "File (" << inputFile << ") could not be opened, aborting." << std::endl;
     return 1;
   }
 
