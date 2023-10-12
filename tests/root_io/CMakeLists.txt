@@ -3,9 +3,8 @@ set(root_dependent_tests
   read_and_write_associated.cpp
   read_frame_root.cpp
   write_frame_root.cpp
-  read_frame_legacy_root.cpp
-  read_frame_root_multiple.cpp
   read_python_frame_root.cpp
+  read_frame_root_multiple.cpp
   read_and_write_frame_root.cpp
   )
 if(ENABLE_RNTUPLE)
@@ -21,10 +20,6 @@ foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
 
-
-#--- set some dependencies between the different tests to ensure input generating ones are run first
-set_property(TEST read_frame_legacy_root PROPERTY DEPENDS write)
-
 set_tests_properties(
   read_frame_root
   read_frame_root_multiple
@@ -38,6 +33,8 @@ if(ENABLE_RNTUPLE)
   set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
 endif()
 
+add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
+target_link_libraries(read_frame_legacy_root PRIVATE "${root_libs}")
 
 message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")
 add_executable(read-legacy-files-root read-legacy-files-root.cpp)
