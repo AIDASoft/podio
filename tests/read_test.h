@@ -289,7 +289,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   auto& arrays = event.get<ExampleWithArrayCollection>("arrays");
-  if (arrays.isValid() && arrays.size() != 0) {
+  if (arrays.isValid() && !arrays.empty()) {
     auto array = arrays[0];
     if (array.myArray(1) != eventNum) {
       throw std::runtime_error("Array not properly set.");
