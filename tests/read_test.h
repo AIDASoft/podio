@@ -14,6 +14,7 @@
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 // podio specific includes
+#include "podio/Frame.h"
 #include "podio/UserDataCollection.h"
 #include "podio/podioVersion.h"
 
@@ -37,19 +38,8 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
   return true;
 }
 
-template <typename StoreT>
-static constexpr bool isEventStore = false;
-
-template <typename StoreT>
-void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersion) {
-
-  float evtWeight = -1;
-  if constexpr (isEventStore<StoreT>) {
-    const auto& evtMD = store.getEventMetaData();
-    evtWeight = evtMD.template getValue<float>("UserEventWeight");
-  } else {
-    evtWeight = store.template getParameter<float>("UserEventWeight");
-  }
+void processEvent(const podio::Frame& store, int eventNum, podio::version::Version fileVersion) {
+  const float evtWeight = store.getParameter<float>("UserEventWeight");
   if (evtWeight != (float)100. * eventNum) {
     std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float)100. * eventNum << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
@@ -57,13 +47,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
 
   std::stringstream ss;
   ss << " event_number_" << eventNum;
-  std::string evtName = "";
-  if constexpr (isEventStore<StoreT>) {
-    const auto& evtMD = store.getEventMetaData();
-    evtName = evtMD.template getValue<std::string>("UserEventName");
-  } else {
-    evtName = store.template getParameter<std::string>("UserEventName");
-  }
+  const auto& evtName = store.getParameter<std::string>("UserEventName");
 
   if (evtName != ss.str()) {
     std::cout << " read UserEventName: " << evtName << " - expected : " << ss.str() << std::endl;
@@ -71,13 +55,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
   }
 
   if (fileVersion > podio::version::Version{0, 14, 1}) {
-    std::vector<int> someVectorData{};
-    if constexpr (isEventStore<StoreT>) {
-      const auto& evtMD = store.getEventMetaData();
-      someVectorData = evtMD.template getValue<std::vector<int>>("SomeVectorData");
-    } else {
-      someVectorData = store.template getParameter<std::vector<int>>("SomeVectorData");
-    }
+    const auto& someVectorData = store.getParameter<std::vector<int>>("SomeVectorData");
     if (someVectorData.size() != 4) {
       throw std::runtime_error("Couldn't read event meta data parameters: 'SomeVectorData'");
     }
@@ -88,19 +66,17 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     }
   }
 
-  if constexpr (!isEventStore<StoreT>) {
-    if (fileVersion > podio::version::Version{0, 16, 2}) {
-      const auto doubleParams = store.template getParameter<std::vector<double>>("SomeVectorData");
-      if (doubleParams.size() != 2 || doubleParams[0] != eventNum * 1.1 || doubleParams[1] != eventNum * 2.2) {
-        throw std::runtime_error("Could not read event parameter: 'SomeDoubleValues' correctly");
-      }
+  if (fileVersion > podio::version::Version{0, 16, 2}) {
+    const auto& doubleParams = store.getParameter<std::vector<double>>("SomeVectorData");
+    if (doubleParams.size() != 2 || doubleParams[0] != eventNum * 1.1 || doubleParams[1] != eventNum * 2.2) {
+      throw std::runtime_error("Could not read event parameter: 'SomeDoubleValues' correctly");
     }
   }
 
   try {
     // not assigning to a variable, because it will remain unused, we just want
     // the exception here
-    store.template get<ExampleClusterCollection>("notthere");
+    store.get<ExampleClusterCollection>("notthere");
   } catch (const std::runtime_error& err) {
     if (std::string(err.what()) != "No collection \'notthere\' is present in the EventStore") {
       throw std::runtime_error("Trying to get non present collection \'notthere' should throw an exception");
@@ -108,23 +84,10 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
   }
 
   // read collection meta data
-  auto& hits = store.template get<ExampleHitCollection>("hits");
-  if constexpr (isEventStore<StoreT>) {
-    const auto& colMD = store.getCollectionMetaData(hits.getID());
-    const auto& es = colMD.template getValue<std::string>("CellIDEncodingString");
-    if (es != std::string("system:8,barrel:3,layer:6,slice:5,x:-16,y:-16")) {
-      std::cout << " meta data from collection 'hits' with id = " << hits.getID()
-                << " read CellIDEncodingString: " << es << " - expected : system:8,barrel:3,layer:6,slice:5,x:-16,y:-16"
-                << std::endl;
-      throw std::runtime_error("Couldn't read event meta data parameters 'CellIDEncodingString'");
-    }
-
-  } else {
-    // TODO: Integrate this into the frame workflow somehow
-  }
+  auto& hits = store.get<ExampleHitCollection>("hits");
 
   if (fileVersion > podio::version::Version{0, 14, 0}) {
-    auto& hitRefs = store.template get<ExampleHitCollection>("hitRefs");
+    auto& hitRefs = store.get<ExampleHitCollection>("hitRefs");
     if (hitRefs.size() != hits.size()) {
       throw std::runtime_error("hit and subset hit collection do not have the same size");
     }
@@ -133,7 +96,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     }
   }
 
-  auto& clusters = store.template get<ExampleClusterCollection>("clusters");
+  auto& clusters = store.get<ExampleClusterCollection>("clusters");
   if (clusters.isValid()) {
     auto cluster = clusters[0];
     for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i != end; ++i) {
@@ -147,7 +110,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     // Read the mcParticleRefs before reading any of the other collections that
     // are referenced to make sure that all the necessary relations are handled
     // correctly
-    auto& mcpRefs = store.template get<ExampleMCCollection>("mcParticleRefs");
+    auto& mcpRefs = store.get<ExampleMCCollection>("mcParticleRefs");
     if (!mcpRefs.isValid()) {
       throw std::runtime_error("Collection 'mcParticleRefs' should be present");
     }
@@ -169,7 +132,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     }
   }
 
-  auto& mcps = store.template get<ExampleMCCollection>("mcparticles");
+  auto& mcps = store.get<ExampleMCCollection>("mcparticles");
   if (!mcps.isValid()) {
     throw std::runtime_error("Collection 'mcparticles' should be present");
   }
@@ -237,7 +200,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
 
     // Load the subset collection first to ensure that it pulls in objects taht
     // have not been read yet
-    auto& mcpRefs = store.template get<ExampleMCCollection>("mcParticleRefs");
+    auto& mcpRefs = store.get<ExampleMCCollection>("mcParticleRefs");
     if (!mcpRefs.isValid()) {
       throw std::runtime_error("Collection 'mcParticleRefs' should be present");
     }
@@ -249,7 +212,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
       }
     }
 
-    auto& moreMCs = store.template get<ExampleMCCollection>("moreMCs");
+    auto& moreMCs = store.get<ExampleMCCollection>("moreMCs");
 
     // First check that the two mc collections that we store are the same
     if (mcps.size() != moreMCs.size()) {
@@ -282,7 +245,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
   }
 
   // std::cout << "Fetching collection 'refs'" << std::endl;
-  auto& refs = store.template get<ExampleReferencingTypeCollection>("refs");
+  auto& refs = store.get<ExampleReferencingTypeCollection>("refs");
   if (refs.isValid()) {
     auto ref = refs[0];
     for (auto cluster : ref.Clusters()) {
@@ -294,7 +257,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     throw std::runtime_error("Collection 'refs' should be present");
   }
   // std::cout << "Fetching collection 'OneRelation'" << std::endl;
-  auto& rels = store.template get<ExampleWithOneRelationCollection>("OneRelation");
+  auto& rels = store.get<ExampleWithOneRelationCollection>("OneRelation");
   if (rels.isValid()) {
     // std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
   } else {
@@ -302,7 +265,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
   }
 
   //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
-  auto& vecs = store.template get<ExampleWithVectorMemberCollection>("WithVectorMember");
+  auto& vecs = store.get<ExampleWithVectorMemberCollection>("WithVectorMember");
   if (vecs.isValid()) {
     if (vecs.size() != 2) {
       throw std::runtime_error("Collection 'WithVectorMember' should have two elements'");
@@ -329,13 +292,13 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     throw std::runtime_error("Collection 'WithVectorMember' should be present");
   }
 
-  auto& comps = store.template get<ExampleWithComponentCollection>("Component");
+  auto& comps = store.get<ExampleWithComponentCollection>("Component");
   if (comps.isValid()) {
     auto comp = comps[0];
     int a [[maybe_unused]] = comp.component().data.x + comp.component().data.z;
   }
 
-  auto& arrays = store.template get<ExampleWithArrayCollection>("arrays");
+  auto& arrays = store.get<ExampleWithArrayCollection>("arrays");
   if (arrays.isValid() && arrays.size() != 0) {
     auto array = arrays[0];
     if (array.myArray(1) != eventNum) {
@@ -351,8 +314,8 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
     throw std::runtime_error("Collection 'arrays' should be present");
   }
 
-  auto& nmspaces = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
-  auto& copies = store.template get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
+  auto& nmspaces = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
+  auto& copies = store.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
 
   auto cpytest = ex42::ExampleWithARelationCollection{};
   if (nmspaces.isValid() && copies.isValid()) {
@@ -391,7 +354,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 1}) {
-    const auto& fixedWidthInts = store.template get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
+    const auto& fixedWidthInts = store.get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
     if (not fixedWidthInts.isValid() or fixedWidthInts.size() != 3) {
       throw std::runtime_error("Collection \'fixedWidthInts\' should be present and have 3 elements");
     }
@@ -425,7 +388,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
-    auto& usrInts = store.template get<podio::UserDataCollection<uint64_t>>("userInts");
+    auto& usrInts = store.get<podio::UserDataCollection<uint64_t>>("userInts");
 
     if (usrInts.size() != (unsigned)eventNum + 1) {
       throw std::runtime_error("Could not read all userInts properly (expected: " + std::to_string(eventNum + 1) +
@@ -447,7 +410,7 @@ void processEvent(StoreT& store, int eventNum, podio::version::Version fileVersi
       }
     }
 
-    auto& usrDbl = store.template get<podio::UserDataCollection<double>>("userDoubles");
+    auto& usrDbl = store.get<podio::UserDataCollection<double>>("userDoubles");
     if (usrDbl.size() != 100) {
       throw std::runtime_error(
           "Could not read all userDoubles properly (expected: 100, actual: " + std::to_string(usrDbl.size()) + ")");
