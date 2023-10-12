@@ -32,7 +32,6 @@ namespace detail {
 
 } // namespace detail
 
-class EventStore;
 class CollectionBase;
 class CollectionIDTable;
 class GenericParameters;

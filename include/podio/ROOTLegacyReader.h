@@ -29,7 +29,6 @@ namespace detail {
   using CollectionInfo = std::tuple<std::string, bool, SchemaVersionT, size_t>;
 } // namespace detail
 
-class EventStore;
 class CollectionBase;
 class CollectionIDTable;
 class GenericParameters;
