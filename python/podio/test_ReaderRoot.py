@@ -5,6 +5,7 @@ import os
 import unittest
 
 from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin  # pylint: disable=import-error
+from podio.test_utils import LEGACY_DATA_AVAILABLE
 
 from podio.root_io import Reader, LegacyReader
 
@@ -16,6 +17,7 @@ class RootReaderTestCase(ReaderTestCaseMixin, unittest.TestCase):
     self.reader = Reader('root_io/example_frame.root')
 
 
+@unittest.skipIf(not LEGACY_DATA_AVAILABLE, "no legacy input data available")
 class RootLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
   """Test cases for the legacy root input files and reader."""
   def setUp(self):
