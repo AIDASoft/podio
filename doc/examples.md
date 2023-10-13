@@ -102,28 +102,30 @@ Passing in a size argument is optional; If no argument is passed all elements wi
 if an argument is passed only as many elements as requested will be returned.
 If the collection holds less elements than are requested, only as elements as are available will be returned.
 
-### EventStore functionality
+### `podio::Frame` container
 
-The event store contained in the package is for *educational* purposes and kept very minimal. It has two main methods:
+The `podio::Frame` is the main container for containing and grouping collections
+together. It has two main methods:
 
 ```cpp
-    /// create a new collection
+    /// Store a collection
     template<typename T>
-    T& create(const std::string& name);
+    const T& put(T&& coll, const std::string& name);
 
-    /// access a collection.
+    /// access a collection
     template<typename T>
-    const T& get(const std::string& name);
+    const& T get(const std::string& name);
 ```
 
-Please note that a `put` method for collections is not foreseen.
+Note that for `put`ting collections into the Frame an explicit `std::move` is
+necessary to highlight the change of ownership that happens in this case.
 
 ### Object Retrieval
 
 Collections can be retrieved explicitly:
 
 ```cpp
-    auto& hits = store.get<HitCollection>("hits");
+    auto& hits = frame.get<HitCollection>("hits");
     if (hits.isValid()) { ... }
 ```
 
@@ -135,51 +137,20 @@ Or implicitly when following an object reference. In both cases the access to da
 Sometimes it is necessary or useful to store additional data that is not directly foreseen in the EDM.
 This could be configuration parameters of simulation jobs, or parameter descriptions like cell-ID encoding etc. PODIO currently allows to store such meta data in terms of a `GenericParameters` class that
 holds an arbitrary number of named parameters of type `int, float, string` or vectors if these.
-Meta data can be stored and retrieved from the `EventStore` for runs, collections and events via
-the three methods:
-```cpp
-virtual GenericParameters& EventStore::getRunMetaData(int runID);
-virtual GenericParameters& EventStore::getEventMetaData();
-virtual GenericParameters& EventStore::getCollectionMetaData(int colID);
-```
-
-- example for writing event data:
-```cpp
-auto& evtMD = store.getEventMetaData() ;
-evtMD.setValue( "UserEventWeight" , (float) 100.*i ) ;
-```
-- example for reading event data:
-```cpp
-auto& evtMD = store.getEventMetaData() ;
-float evtWeight = evtMD.getFloatVal( "UserEventWeight" ) ;
-
-```
-
-- example for writing collection meta data:
-
-```cpp
-auto& hits = store.create<ExampleHitCollection>("hits");
-// ...
-auto& colMD = store.getCollectionMetaData( hits.getID() );
-colMD.setValue("CellIDEncodingString","system:8,barrel:3,layer:6,slice:5,x:-16,y:-16");
-```
-
-- example for reading collection meta data
-
-```cpp
-auto colMD = store.getCollectionMetaData( hits.getID() );
-std::string es = colMD.getStringVal("CellIDEncodingString") ;
-```
-
+Meta data can be stored and retrieved from the `Frame` via the templated `putParameter` and `getParameter` methods.
 
 #### Python Interface
 
-The class `EventStore` provides all the necessary (read) access to event files. It can be used as follows:
+The `Reader` and `Writer` classes in the `root_io` and `sio_io` submodules
+provide all the necessary functionality to read and write event files. An
+example of reading files looks like this:
+
 
 ```python
-    from EventStore import EventStore
-    store = EventStore(<list of files>)
-    for event in store:
+    from podio.root_io import Reader
+    
+    reader = Reader("one or many input files") 
+    for event in reader.get("events"):
       hits = store.get("hits")
       for hit in hits:
         # ...

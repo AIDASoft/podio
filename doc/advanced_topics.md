@@ -82,12 +82,9 @@ As explained in the section about mutability of data, thread-safety is only guar
 During the calls of `prepareForWriting` and `prepareAfterReading` on collections other operations like object creation or addition will lead to an inconsistent state.
 
 ### Not-thread-safe components
-The example event store provided with PODIO is as of writing not thread-safe. Neither is the chosen serialization.
-
-## Implementing a transient Event Class
-
-PODIO contains one example `podio::EventStore` class.
-To implement your own transient event store, the only requirement is to set the collectionID of each collection to a unique ID on creation.
+The Readers and Writers that ship with podio are assumed to run on a single
+thread only (more precisely we assume that each Reader or Writer doesn't have to
+synchronize with any other for file operations).
 
 ## Running pre-commit
 
