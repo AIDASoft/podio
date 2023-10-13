@@ -149,7 +149,7 @@ example of reading files looks like this:
 ```python
     from podio.root_io import Reader
     
-    reader = Reader("one or many input files") 
+    reader = Reader("one or many input files")
     for event in reader.get("events"):
       hits = store.get("hits")
       for hit in hits:
