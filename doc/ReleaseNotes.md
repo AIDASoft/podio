@@ -1,3 +1,26 @@
+# v00-17-01
+
+* 2023-10-12 tmadlener ([PR#505](https://github.com/AIDASoft/podio/pull/505))
+  - Bump the pylint version for CI to 2.17.7
+
+* 2023-10-11 tmadlener ([PR#502](https://github.com/AIDASoft/podio/pull/502))
+  - Add a `deleteBuffers` function that is populated at generation time to the `CollectionReadBuffers` to make it possible to dispose of unconsumed buffers. This fixes the main leaks described in #500 
+  - Make the `ROOTFrameData` clean up all unconsumed buffers at desctruction.
+  - Make sure to delete buffers that are no longer necessary in the CollectionData constructor. This fixes some more leaks described in #500
+
+* 2023-10-08 Wouter Deconinck ([PR#503](https://github.com/AIDASoft/podio/pull/503))
+  - Install podio-vis
+
+* 2023-10-04 jmcarcell ([PR#497](https://github.com/AIDASoft/podio/pull/497))
+  - Move podio_PYTHON_DIR to the top level CMakeLists so that it is set even when BUILD_TESTING is off
+
+* 2023-10-02 jmcarcell ([PR#496](https://github.com/AIDASoft/podio/pull/496))
+  - Add an operator != to fix negative comparisons since after https://github.com/AIDASoft/podio/pull/493 now `id()` returns a `podioObjectID`
+
+* 2023-09-29 tmadlener ([PR#493](https://github.com/AIDASoft/podio/pull/493))
+  - Make `[Mutable]Object::id()` return a `podio::ObjectID` instead of `unsigned`, since the latter has become useless with #412. Fixes #438 
+  - Add an `operator<<(std::ostream&)` for `podio::ObjectID`
+
 # v00-17
 
 * 2023-09-22 Juraj Smiesko ([PR#491](https://github.com/AIDASoft/podio/pull/491))
