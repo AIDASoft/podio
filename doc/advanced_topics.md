@@ -32,26 +32,14 @@ Before writing out a collection, the data need to be put into the proper structu
 
 ### Reading Back-End
 
-There are two possibilities to implement a reading-back end. In case one uses the `podio::EventStore`, one simply has to implement the `IReader` interface.
-
-If not taking advantage of this implementation, the data reader or the event store have to implement the `ICollectionProvider` interface. Reading of a collection happens then similar to:
-
-```cpp
-    // ...
-    // your creation of the collection and reading of the PODs from disk
-    // ...
-    collection->setBuffer(buffer);
-    auto refCollections = collection->referenceCollections();
-    // ...
-    // your filling of refCollections from disk
-    // ...
-    collection->setID( <collection ID read from disk> );
-    collection->prepareAfterRead();
-    // ...
-    collection->setReferences( &collectionProvider );
-```
-
-The strong assumption here is that all references are being followed up directly and no later on-demand reading is done.
+The main requirement for a reading backend is its capability of reading back all
+the necessary data from which a collection can be constructed in the form of
+`podio::CollectionReadBuffers`. From thes buffers collections can then be
+constructed. Each instance has to contain the (type erased) POD buffers (as a
+`std::vector`), the (possibly empty) vectors of `podio::ObjectID`s that contain
+the relation information as well the (possibly empty) vectors for the vector
+member buffers, which are currently stored as pairs of the type (as a
+`std::string`) and (type erased) data buffers in the form of `std::vector`s.
 
 ### Dumping JSON
 
