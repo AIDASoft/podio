@@ -78,7 +78,6 @@ endmacro()
 
 ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root v00-13-example.root legacy_test_cases)
 
-
 foreach(version IN LISTS legacy_test_versions)
   ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root ${version}-example.root legacy_test_cases)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_root ${version}-example_frame.root legacy_test_cases)
