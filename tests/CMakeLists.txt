@@ -43,8 +43,10 @@ set(legacy_test_versions
   v00-16-06
 )
 
-### Define the actual tests
-PODIO_DOWNLOAD_LEGACY_INPUTS("${legacy_test_versions}")
+include(ExternalData)
+list(APPEND ExternalData_URL_TEMPLATES
+ "https://key4hep.web.cern.ch:443/testFiles/podio/%(hash)"
+ )
 
 add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
 target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)
@@ -63,3 +65,5 @@ CREATE_PODIO_TEST(write_ascii.cpp "")
 
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
+
+ExternalData_Add_Target(legacy_test_cases)

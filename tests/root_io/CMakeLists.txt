@@ -27,7 +27,6 @@ foreach( sourcefile ${root_dependent_tests} )
 endforeach()
 
 
-
 #--- set some dependencies between the different tests to ensure input generating ones are run first
 set_property(TEST read PROPERTY DEPENDS write)
 set_property(TEST read-multiple PROPERTY DEPENDS write)
@@ -54,31 +53,37 @@ set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_time
 
 # If the variable is cached and defined now, we have inputs and can add the
 # legacy file read test
-if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
-  message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
-  add_executable(read-legacy-files-root read-legacy-files-root.cpp)
-  target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
 
-  # Add a legacy test case based on a base executable and a version for which an
-  # input file exists
-  macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
-    add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
-    set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-      # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
-      # with existing headers from other installations
-      ROOT_INCLUDE_PATH=
-    )
-  endmacro()
+message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
+add_executable(read-legacy-files-root read-legacy-files-root.cpp)
+target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
 
-  ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root example.root legacy_test_cases)
+# Add a legacy test case based on a base executable and a version for which an
+# input file exists
+macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
+  # add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
+  ExternalData_Add_Test(legacy_test_cases
+    NAME ${base_test}_${version}
+    COMMAND ${base_test} ${CMAKE_CURRENT_BINARY_DIR}/../input_files/${input_file}
+    DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
+  )
+  set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
+    LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+    # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
+    # with existing headers from other installations
+    ROOT_INCLUDE_PATH=
+  )
 
-  foreach(version IN LISTS legacy_test_versions)
-    ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root example.root legacy_test_cases)
-    ADD_PODIO_LEGACY_TEST(${version} read_frame_root example_frame.root legacy_test_cases)
-    ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root example.root legacy_test_cases)
-  endforeach()
-endif()
+endmacro()
+
+ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root v00-13-example.root legacy_test_cases)
+
+
+foreach(version IN LISTS legacy_test_versions)
+  ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root ${version}-example.root legacy_test_cases)
+  ADD_PODIO_LEGACY_TEST(${version} read_frame_root ${version}-example_frame.root legacy_test_cases)
+  ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root ${version}-example.root legacy_test_cases)
+endforeach()
 
 #--- Write via python and the ROOT backend and see if we can read it back in in
 #--- c++
