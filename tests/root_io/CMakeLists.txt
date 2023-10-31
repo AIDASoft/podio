@@ -54,14 +54,13 @@ set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_time
 # If the variable is cached and defined now, we have inputs and can add the
 # legacy file read test
 
-message(STATUS "Using test inputs stored in: "  ${PODIO_TEST_INPUT_DATA_DIR})
+message(STATUS "Using test inputs stored in: "  ${ExternalData_OBJECT_STORES})
 add_executable(read-legacy-files-root read-legacy-files-root.cpp)
 target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
 
 # Add a legacy test case based on a base executable and a version for which an
 # input file exists
 macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
-  # add_test(NAME ${base_test}_${version} COMMAND ${base_test} ${PODIO_TEST_INPUT_DATA_DIR}/${version}/${input_file})
   ExternalData_Add_Test(legacy_test_cases
     NAME ${base_test}_${version}
     COMMAND ${base_test} ${CMAKE_CURRENT_BINARY_DIR}/../input_files/${input_file}
