@@ -5,28 +5,19 @@ from .__version__ import __version__
 
 from .podio_config_reader import *  # noqa: F403, F401
 
-import ROOT  # pylint: disable=wrong-import-order
-
-# Track whether we were able to dynamially load the library that is built by
-# podio and enable certain features of the bindings only if they are actually
-# available.
-_DYNAMIC_LIBS_LOADED = False
-
-# Check if we can locate the dictionary wthout loading it as this allows us to
-# silence any ouptput. If we can find it, we can also safely load it
-if ROOT.gSystem.DynamicPathName("libpodioDict.so", True):
-  ROOT.gSystem.Load("libpodioDict.so")
+# Try to load podio, this is equivalent to trying to load libpodio.so and will
+# error if libpodio.so is not found but work if it's found
+try:
   from ROOT import podio
-
-  _DYNAMIC_LIBS_LOADED = True
-
-if _DYNAMIC_LIBS_LOADED:
+except ImportError:
+  print('Unable to load podio, make sure that libpodio.so is in LD_LIBRARY_PATH')
+else:
   from .frame import Frame
   from . import root_io, reading
 
   try:
     # We try to import the sio bindings which may fail if ROOT is not able to
-    # load the dictionary in this case they have most likely not been built and
+    # load the dictionary. In this case they have most likely not been built and
     # we just move on
     from . import sio_io
   except ImportError:
