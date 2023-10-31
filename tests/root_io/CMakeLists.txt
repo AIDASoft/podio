@@ -50,11 +50,7 @@ endif()
 add_test(NAME check_benchmark_outputs COMMAND check_benchmark_outputs write_benchmark_root.root read_benchmark_root.root)
 set_property(TEST check_benchmark_outputs PROPERTY DEPENDS read_timed write_timed)
 
-
-# If the variable is cached and defined now, we have inputs and can add the
-# legacy file read test
-
-message(STATUS "Using test inputs stored in: "  ${ExternalData_OBJECT_STORES})
+message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")
 add_executable(read-legacy-files-root read-legacy-files-root.cpp)
 target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
 
