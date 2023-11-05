@@ -23,6 +23,11 @@ else()
     )
 endif()
 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/podio_gen
+  DESTINATION ${podio_PYTHON_INSTALLDIR}
+  REGEX __pycache__ EXCLUDE
+  )
+
 #--- install templates ---------------------------------------------------------
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
   DESTINATION ${podio_PYTHON_INSTALLDIR})

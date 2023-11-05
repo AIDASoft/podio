@@ -6,7 +6,7 @@ what trips it up
 
 import unittest
 
-from podio.podio_config_reader import MemberParser, DefinitionError
+from podio_gen.podio_config_reader import MemberParser, DefinitionError
 
 
 class MemberParserTest(unittest.TestCase):

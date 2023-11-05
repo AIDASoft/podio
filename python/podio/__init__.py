@@ -3,8 +3,6 @@ import sys
 
 from .__version__ import __version__
 
-from .podio_config_reader import *  # noqa: F403, F401
-
 import ROOT  # pylint: disable=wrong-import-order
 
 # Track whether we were able to dynamially load the library that is built by
