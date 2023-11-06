@@ -25,7 +25,8 @@ endif()
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/podio_gen
   DESTINATION ${podio_PYTHON_INSTALLDIR}
-  REGEX __pycache__ EXCLUDE
+  REGEX test_.*\\.py$ EXCLUDE  # Do not install test files
+  PATTERN __pycache__ EXCLUDE  # Or pythons caches
   )
 
 #--- install templates ---------------------------------------------------------
