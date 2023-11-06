@@ -59,8 +59,7 @@ target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModel
 macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
   ExternalData_Add_Test(legacy_test_cases
     NAME ${base_test}_${version}
-    COMMAND ${base_test} ${CMAKE_CURRENT_BINARY_DIR}/../input_files/${input_file}
-    DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
+    COMMAND ${base_test} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
   )
   set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
     LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
