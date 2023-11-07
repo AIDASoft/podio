@@ -11,6 +11,7 @@ try:
   from ROOT import podio
 except ImportError:
   print('Unable to load podio, make sure that libpodio.so is in LD_LIBRARY_PATH')
+  raise
 else:
   from .frame import Frame
   from . import root_io, reading
