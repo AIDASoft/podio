@@ -12,37 +12,37 @@ try:
 except ImportError:
   print('Unable to load podio, make sure that libpodio.so is in LD_LIBRARY_PATH')
   raise
-else:
-  from .frame import Frame
-  from . import root_io, reading
 
-  try:
-    # We try to import the sio bindings which may fail if ROOT is not able to
-    # load the dictionary. In this case they have most likely not been built and
-    # we just move on
-    from . import sio_io
-  except ImportError:
-    pass
+from .frame import Frame
+from . import root_io, reading
 
-  from . import EventStore
+try:
+  # We try to import the sio bindings which may fail if ROOT is not able to
+  # load the dictionary. In this case they have most likely not been built and
+  # we just move on
+  from . import sio_io
+except ImportError:
+  pass
 
-  try:
-    # For some reason the test_utils only work at (test) runtime if they are
-    # imported with the rest of podio. Otherwise they produce a weird c++ error.
-    # This happens even if we import the *exact* same file.
-    from . import test_utils  # noqa: F401
-  except ImportError:
-    pass
+from . import EventStore
 
-  # Make sure that this module is actually usable as podio even though most of
-  # it is dynamically populated by cppyy
-  sys.modules["podio"] = podio
+try:
+  # For some reason the test_utils only work at (test) runtime if they are
+  # imported with the rest of podio. Otherwise they produce a weird c++ error.
+  # This happens even if we import the *exact* same file.
+  from . import test_utils  # noqa: F401
+except ImportError:
+  pass
 
-  __all__ = [
-      "__version__",
-      "Frame",
-      "root_io",
-      "sio_io",
-      "reading",
-      "EventStore"
-      ]
+# Make sure that this module is actually usable as podio even though most of
+# it is dynamically populated by cppyy
+sys.modules["podio"] = podio
+
+__all__ = [
+    "__version__",
+    "Frame",
+    "root_io",
+    "sio_io",
+    "reading",
+    "EventStore"
+    ]
