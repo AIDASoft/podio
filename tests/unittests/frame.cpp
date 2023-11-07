@@ -406,7 +406,23 @@ TEST_CASE("Frame destructor ASanFail") {
       frame.put(std::move(collections.first), name + "Clusters");
       frame.put(std::move(collections.second), name + "Hits");
     }
-    hitClusterMap.clear();
     frame = {};
+    hitClusterMap.clear();
   }
+}
+
+TEST_CASE("EIC-Jana2 cleanup use case", "[memory-management][492][174]") {
+  // Test case that only triggers in ASan builds if memory-management / cleanup
+  // has a bug
+  ExampleCluster* clone;
+  {
+    podio::Frame frame;
+    {
+      ExampleClusterCollection coll;
+      coll.create();
+      const ExampleClusterCollection& moved = frame.put(std::move(coll), "mycoll");
+      clone = new ExampleCluster(moved[0]);
+    }
+  }
+  delete clone;
 }
