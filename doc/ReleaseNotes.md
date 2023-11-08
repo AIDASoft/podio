@@ -1,3 +1,23 @@
+# v00-17-02
+
+* 2023-11-08 jmcarcell ([PR#511](https://github.com/AIDASoft/podio/pull/511))
+  - Decouple generation tools and files from the rest of the podio python files by creating a new folder called `podio_gen`. **This is a transparent change for users that only use the generator script.**
+    - This makes the configuration / generation times negligible again, because we don't load libraries unnecessarily any longer for the generation.
+  - Simplify the python bindings (`podio`) `__init__.py` and remove the `test_utils` from it.
+  - Move the tests for writing frames in python to the `tests` folder, where they belong and also test the SIO python writer.
+
+* 2023-11-06 jmcarcell ([PR#510](https://github.com/AIDASoft/podio/pull/510))
+  - Fix legacy tests; an extra argument was being passed and default in the .cpp file `example_frame.root` was being used which (almost) always exists (because there is a another test creating it) so it was hard to notice.
+
+* 2023-11-06 jmcarcell ([PR#509](https://github.com/AIDASoft/podio/pull/509))
+  - Add an option for using clang format and set it to off by default. It is significantly slower to run cmake with this option on.
+
+* 2023-11-02 jmcarcell ([PR#508](https://github.com/AIDASoft/podio/pull/508))
+  - Use the cmake ExternalData module to manage test data. This lets cmake take care of downloading the tests by hash so they can be version controlled. In addition, it's possible to set up a local store using `-DExternalData_OBJECT_STORES=/path/to/store` and it will download the test files there if they are not there but otherwise use them from there, so building from scratch won't download the test files again.
+
+* 2023-10-16 jmcarcell ([PR#507](https://github.com/AIDASoft/podio/pull/507))
+  - Copy .clang-format to the dumpmodel test directory and fix some tests when the build directory is not a subdirectory of the main directory. In some tests `clang-format` will try to find a `.clang-format` looking in the directories above and if it doesn't exist it will format files differently and some tests will fail.
+
 # v00-17-01
 
 * 2023-10-12 tmadlener ([PR#505](https://github.com/AIDASoft/podio/pull/505))
