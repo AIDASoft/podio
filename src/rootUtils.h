@@ -273,10 +273,10 @@ inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strin
 }
 
 /**
- * Check whether existingIds and candidateIds both contain the same collection
- * Ids / hashes. Returns false if the two vectors differ in content. Inputs can
- * have random order wrt each other, but the assumption is that all the ids are
- * unique in each vector.
+ * Check whether existingColls and candidateColls both contain the same
+ * collection names. Returns false if the two vectors differ in content. Inputs
+ * can have random order wrt each other, but the assumption is that each vector
+ * only contains unique names.
  */
 inline bool checkConsistentColls(const std::vector<std::string>& existingColls,
                                  const std::vector<std::string>& candidateColls) {
