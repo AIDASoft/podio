@@ -67,6 +67,7 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
     auto* coll = frame.getCollectionForWrite(name);
     if (!coll) {
       // Make sure all collections that we want to write are actually available
+      // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
       throw std::runtime_error("Collection '" + name + "' in category '" + category + "' is not available in Frame");
     }
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
