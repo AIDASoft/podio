@@ -44,13 +44,14 @@ private:
   DatamodelDefinitionCollector m_datamodelCollector{};
 
   struct CollectionInfo {
-    std::vector<unsigned int> id{};
+    std::vector<uint32_t> id{};
     std::vector<std::string> name{};
     std::vector<std::string> type{};
     std::vector<short> isSubsetCollection{};
     std::vector<SchemaVersionT> schemaVersion{};
     std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr};
   };
+  CollectionInfo& getCategoryInfo(const std::string& category);
 
   std::unordered_map<std::string, CollectionInfo> m_categories{};
 

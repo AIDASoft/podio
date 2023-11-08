@@ -64,25 +64,35 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
 
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
                                   const std::vector<std::string>& collsToWrite) {
+  auto& catInfo = getCategoryInfo(category);
+
+  // Use the writer as proxy to check whether this category has been initialized
+  // already and do so if not
+  const bool new_category = (catInfo.writer == nullptr);
+  if (new_category) {
+    // This is the minimal information that we need for now
+    catInfo.name = collsToWrite;
+  }
 
   std::vector<StoreCollection> collections;
-  collections.reserve(collsToWrite.size());
-  for (const auto& name : collsToWrite) {
+  collections.reserve(catInfo.name.size());
+  // Only loop over the collections that were requested in the first Frame of
+  // this category
+  for (const auto& name : catInfo.name) {
     auto* coll = frame.getCollectionForWrite(name);
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
-  if (m_categories.find(category) == m_categories.end()) {
+  if (new_category) {
+    // Now we have enough info to populate the rest
     auto model = createModels(collections);
-    m_categories[category].writer =
-        ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+    catInfo.writer = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
 
     for (const auto& [name, coll] : collections) {
-      m_categories[category].id.emplace_back(coll->getID());
-      m_categories[category].name.emplace_back(name);
-      m_categories[category].type.emplace_back(coll->getTypeName());
-      m_categories[category].isSubsetCollection.emplace_back(coll->isSubsetCollection());
-      m_categories[category].schemaVersion.emplace_back(coll->getSchemaVersion());
+      catInfo.id.emplace_back(coll->getID());
+      catInfo.type.emplace_back(coll->getTypeName());
+      catInfo.isSubsetCollection.emplace_back(coll->isSubsetCollection());
+      catInfo.schemaVersion.emplace_back(coll->getSchemaVersion());
     }
   }
 
@@ -211,6 +221,15 @@ ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) 
 
   model->Freeze();
   return model;
+}
+
+ROOTNTupleWriter::CollectionInfo& ROOTNTupleWriter::getCategoryInfo(const std::string& category) {
+  if (auto it = m_categories.find(category); it != m_categories.end()) {
+    return it->second;
+  }
+
+  auto [it, _] = m_categories.try_emplace(category, CollectionInfo{});
+  return it->second;
 }
 
 void ROOTNTupleWriter::finish() {
