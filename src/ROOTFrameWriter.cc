@@ -42,8 +42,6 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   for (const auto& name : catInfo.collsToWrite) {
     auto* coll = frame.getCollectionForWrite(name);
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
-
-    m_datamodelCollector.registerDatamodelDefinition(coll, name);
   }
 
   // We will at least have a parameters branch, even if there are no
@@ -73,6 +71,10 @@ void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<Stor
 
   // First collections
   for (auto& [name, coll] : collections) {
+    // For the first entry in each category we also record the datamodel
+    // definition
+    m_datamodelCollector.registerDatamodelDefinition(coll, name);
+
     root_utils::CollectionBranches branches;
     const auto buffers = coll->getBuffers();
     // For subset collections we only fill one references branch
