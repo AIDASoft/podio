@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "catch2/catch_template_test_macros.hpp"
 #include "catch2/catch_test_macros.hpp"
 
 // podio specific includes
@@ -26,6 +27,13 @@
   #include "podio/SIOFrameReader.h"
   #include "podio/SIOLegacyReader.h"
   #include "podio/SIOReader.h"
+#endif
+
+#ifndef PODIO_ENABLE_RNTUPLE
+  #define PODIO_ENABLE_RNTUPLE 0
+#endif
+#if PODIO_ENABLE_RNTUPLE
+  #include "podio/ROOTNTupleWriter.h"
 #endif
 
 // Test data types
@@ -1137,14 +1145,20 @@ TEST_CASE("JSON", "[json]") {
 
 #endif
 
-TEST_CASE("Consistency ROOTFrameWriter", "[basics]") {
+#if PODIO_ENABLE_RNTUPLE
+using ROOTWriterTypes = std::tuple<podio::ROOTFrameWriter, podio::ROOTNTupleWriter>;
+#else
+using ROOTWriterTypes = std::tuple<podio::ROOTFrameWriter>;
+#endif
+
+TEMPLATE_LIST_TEST_CASE("Consistent frame contents", "[basics][root]", ROOTWriterTypes) {
   podio::Frame frame;
 
   frame.put(ExampleClusterCollection(), "clusters");
   frame.put(ExampleClusterCollection(), "clusters2");
   frame.put(ExampleHitCollection(), "hits");
 
-  podio::ROOTFrameWriter writer("unittests_frame_consistency.root");
+  TestType writer("unittests_frame_consistency.root");
   writer.writeFrame(frame, "full");
 
   // Write a frame with more collections
