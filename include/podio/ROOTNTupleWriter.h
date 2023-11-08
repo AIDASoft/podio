@@ -52,9 +52,7 @@ private:
     std::vector<SchemaVersionT> schemaVersion{};
   };
 
-  std::unordered_map<std::string, CollectionInfo> m_collectionInfo{};
-
-  std::set<std::string> m_categories{};
+  std::unordered_map<std::string, CollectionInfo> m_categories{};
 
   bool m_finished{false};
 

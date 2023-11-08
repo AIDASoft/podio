@@ -72,11 +72,17 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
-  bool new_category = false;
   if (m_writers.find(category) == m_writers.end()) {
-    new_category = true;
     auto model = createModels(collections);
     m_writers[category] = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+
+    for (const auto& [name, coll] : collections) {
+      m_categories[category].id.emplace_back(coll->getID());
+      m_categories[category].name.emplace_back(name);
+      m_categories[category].type.emplace_back(coll->getTypeName());
+      m_categories[category].isSubsetCollection.emplace_back(coll->isSubsetCollection());
+      m_categories[category].schemaVersion.emplace_back(coll->getSchemaVersion());
+    }
   }
 
   auto entry = m_writers[category]->GetModel()->CreateBareEntry();
@@ -121,14 +127,6 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     // Not supported
     // entry->CaptureValueUnsafe(root_utils::paramBranchName,
     // &const_cast<podio::GenericParameters&>(frame.getParameters()));
-
-    if (new_category) {
-      m_collectionInfo[category].id.emplace_back(coll->getID());
-      m_collectionInfo[category].name.emplace_back(name);
-      m_collectionInfo[category].type.emplace_back(coll->getTypeName());
-      m_collectionInfo[category].isSubsetCollection.emplace_back(coll->isSubsetCollection());
-      m_collectionInfo[category].schemaVersion.emplace_back(coll->getSchemaVersion());
-    }
   }
 
   auto params = frame.getParameters();
@@ -138,7 +136,6 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   fillParams<std::string>(params, entry.get());
 
   m_writers[category]->Fill(*entry);
-  m_categories.insert(category);
 }
 
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
@@ -227,21 +224,21 @@ void ROOTNTupleWriter::finish() {
   *edmField = edmDefinitions;
 
   auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
-  for (auto& [c, _] : m_collectionInfo) {
+  for (auto& [c, _] : m_categories) {
     availableCategoriesField->push_back(c);
   }
 
-  for (auto& category : m_categories) {
+  for (auto& [category, collInfo] : m_categories) {
     auto idField = m_metadata->MakeField<std::vector<unsigned int>>({root_utils::idTableName(category)});
-    *idField = m_collectionInfo[category].id;
+    *idField = collInfo.id;
     auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
-    *collectionNameField = m_collectionInfo[category].name;
+    *collectionNameField = collInfo.name;
     auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collInfoName(category)});
-    *collectionTypeField = m_collectionInfo[category].type;
+    *collectionTypeField = collInfo.type;
     auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
-    *subsetCollectionField = m_collectionInfo[category].isSubsetCollection;
+    *subsetCollectionField = collInfo.isSubsetCollection;
     auto schemaVersionField = m_metadata->MakeField<std::vector<SchemaVersionT>>({"schemaVersion_" + category});
-    *schemaVersionField = m_collectionInfo[category].schemaVersion;
+    *schemaVersionField = collInfo.schemaVersion;
   }
 
   m_metadata->Freeze();
