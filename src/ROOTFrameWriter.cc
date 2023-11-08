@@ -11,6 +11,30 @@
 
 namespace podio {
 
+/**
+ * Check whether existingIds and candidateIds both contain the same collection
+ * Ids / hashes. Returns false if the two vectors differ in content. Inputs can
+ * have random order wrt each other, but the assumption is that all the ids are
+ * unique in each vector.
+ */
+bool checkConsistentColls(const std::vector<std::string>& existingColls,
+                          const std::vector<std::string>& candidateColls) {
+  if (existingColls.size() != candidateColls.size()) {
+    return false;
+  }
+
+  // Since we are guaranteed to have unique names here, we can just look for
+  // collisions brute force, which seems to be quickest approach for vector
+  // sizes we typically have here (few hundred)
+  for (const auto& id : candidateColls) {
+    if (std::find(existingColls.begin(), existingColls.end(), id) == existingColls.end()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 ROOTFrameWriter::ROOTFrameWriter(const std::string& filename) {
   m_file = std::make_unique<TFile>(filename.c_str(), "recreate");
 }
@@ -41,6 +65,10 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   collections.reserve(catInfo.collsToWrite.size());
   for (const auto& name : catInfo.collsToWrite) {
     auto* coll = frame.getCollectionForWrite(name);
+    if (!coll) {
+      // Make sure all collections that we want to write are actually available
+      throw std::runtime_error("Collection '" + name + "' in category '" + category + "' is not available in Frame");
+    }
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
@@ -50,6 +78,11 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
     initBranches(catInfo, collections, const_cast<podio::GenericParameters&>(frame.getParameters()));
 
   } else {
+    // Make sure that the category contents are consistent with the initial
+    // frame in the category
+    if (!checkConsistentColls(catInfo.collsToWrite, collsToWrite)) {
+      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content");
+    }
     resetBranches(catInfo.branches, collections, &const_cast<podio::GenericParameters&>(frame.getParameters()));
   }
 

@@ -11,8 +11,10 @@
 
 // podio specific includes
 #include "podio/EventStore.h"
+#include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/ROOTFrameReader.h"
+#include "podio/ROOTFrameWriter.h"
 #include "podio/ROOTLegacyReader.h"
 #include "podio/ROOTReader.h"
 #include "podio/podioVersion.h"
@@ -1134,3 +1136,42 @@ TEST_CASE("JSON", "[json]") {
 }
 
 #endif
+
+TEST_CASE("Consistency ROOTFrameWriter", "[basics]") {
+  podio::Frame frame;
+
+  frame.put(ExampleClusterCollection(), "clusters");
+  frame.put(ExampleClusterCollection(), "clusters2");
+  frame.put(ExampleHitCollection(), "hits");
+
+  podio::ROOTFrameWriter writer("unittests_frame_consistency.root");
+  writer.writeFrame(frame, "full");
+
+  // Write a frame with more collections
+  frame.put(ExampleHitCollection(), "hits2");
+  REQUIRE_THROWS_AS(writer.writeFrame(frame, "full"), std::runtime_error);
+
+  // Write a frame with less collections
+  podio::Frame frame2;
+  frame2.put(ExampleClusterCollection(), "clusters");
+  frame2.put(ExampleClusterCollection(), "clusters2");
+  REQUIRE_THROWS_AS(writer.writeFrame(frame2, "full"), std::runtime_error);
+
+  // Write only a subset of collections
+  const std::vector<std::string> collsToWrite = {"clusters", "hits"};
+  writer.writeFrame(frame, "subset", collsToWrite);
+
+  // Frame is missing a collection
+  REQUIRE_THROWS_AS(writer.writeFrame(frame2, "subset", collsToWrite), std::runtime_error);
+
+  // Don't throw if frame contents are different, but the subset that is written
+  // is consistent
+  const std::vector<std::string> otherCollsToWrite = {"clusters", "clusters2"};
+  writer.writeFrame(frame, "subset2", otherCollsToWrite);
+  REQUIRE_NOTHROW(writer.writeFrame(frame2, "subset2", otherCollsToWrite));
+
+  // Make sure that restricting the second frame works.
+  // See https://github.com/AIDASoft/podio/issues/382 for the original issue
+  writer.writeFrame(frame2, "full_frame2");
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "full_frame2", frame2.getAvailableCollections()));
+}
