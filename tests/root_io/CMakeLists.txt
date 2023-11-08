@@ -80,6 +80,6 @@ endforeach()
 
 #--- Write via python and the ROOT backend and see if we can read it back in in
 #--- c++
-add_test(NAME write_python_frame_root COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/write_frame_root.py)
+add_test(NAME write_python_frame_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.root)
 PODIO_SET_TEST_ENV(write_python_frame_root)
 set_property(TEST read_python_frame_root PROPERTY DEPENDS write_python_frame_root)
