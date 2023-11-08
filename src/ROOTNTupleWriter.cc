@@ -72,9 +72,10 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
-  if (m_writers.find(category) == m_writers.end()) {
+  if (m_categories.find(category) == m_categories.end()) {
     auto model = createModels(collections);
-    m_writers[category] = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+    m_categories[category].writer =
+        ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
 
     for (const auto& [name, coll] : collections) {
       m_categories[category].id.emplace_back(coll->getID());
@@ -85,7 +86,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     }
   }
 
-  auto entry = m_writers[category]->GetModel()->CreateBareEntry();
+  auto entry = m_categories[category].writer->GetModel()->CreateBareEntry();
 
   ROOT::Experimental::RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
@@ -135,7 +136,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   fillParams<double>(params, entry.get());
   fillParams<std::string>(params, entry.get());
 
-  m_writers[category]->Fill(*entry);
+  m_categories[category].writer->Fill(*entry);
 }
 
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
@@ -251,7 +252,9 @@ void ROOTNTupleWriter::finish() {
 
   // All the tuple writers must be deleted before the file so that they flush
   // unwritten output
-  m_writers.clear();
+  for (auto& [_, catInfo] : m_categories) {
+    catInfo.writer.reset();
+  }
   m_metadataWriter.reset();
 
   m_finished = true;

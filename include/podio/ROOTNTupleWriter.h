@@ -37,7 +37,6 @@ private:
   std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
 
   std::unique_ptr<ROOT::Experimental::RNTupleModel> m_metadata{};
-  std::unordered_map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleWriter>> m_writers{};
   std::unique_ptr<ROOT::Experimental::RNTupleWriter> m_metadataWriter{};
 
   std::unique_ptr<TFile> m_file{};
@@ -50,6 +49,7 @@ private:
     std::vector<std::string> type{};
     std::vector<short> isSubsetCollection{};
     std::vector<SchemaVersionT> schemaVersion{};
+    std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr};
   };
 
   std::unordered_map<std::string, CollectionInfo> m_categories{};
