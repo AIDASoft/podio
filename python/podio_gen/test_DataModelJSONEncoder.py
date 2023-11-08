@@ -3,8 +3,8 @@
 
 import unittest
 
-from podio.generator_utils import DataModelJSONEncoder
-from podio.podio_config_reader import MemberParser
+from podio_gen.generator_utils import DataModelJSONEncoder
+from podio_gen.podio_config_reader import MemberParser
 
 
 def get_member_var_json(string):

@@ -4,7 +4,7 @@
 import sys
 import argparse
 import yaml
-from podio.podio_config_reader import PodioConfigReader
+from podio_gen.podio_config_reader import PodioConfigReader
 try:
   from graphviz import Digraph
 except ImportError:

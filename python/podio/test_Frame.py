@@ -4,7 +4,7 @@
 import unittest
 
 # pylint: disable=import-error
-from test_utils import ExampleHitCollection  # noqa: E402
+from ROOT import ExampleHitCollection
 
 from podio.frame import Frame
 # using root_io as that should always be present regardless of which backends are built

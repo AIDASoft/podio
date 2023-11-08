@@ -23,6 +23,12 @@ else()
     )
 endif()
 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/podio_gen
+  DESTINATION ${podio_PYTHON_INSTALLDIR}
+  REGEX test_.*\\.py$ EXCLUDE  # Do not install test files
+  PATTERN __pycache__ EXCLUDE  # Or pythons caches
+  )
+
 #--- install templates ---------------------------------------------------------
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
   DESTINATION ${podio_PYTHON_INSTALLDIR})
@@ -30,10 +36,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
 IF (BUILD_TESTING)
   add_test( NAME pyunittest COMMAND python3 -m unittest discover -s ${PROJECT_SOURCE_DIR}/python/podio)
   PODIO_SET_TEST_ENV(pyunittest)
+  add_test( NAME pyunittest_gen COMMAND python3 -m unittest discover -s ${PROJECT_SOURCE_DIR}/python/podio_gen)
+  PODIO_SET_TEST_ENV(pyunittest_gen)
 
   set_property(TEST pyunittest PROPERTY DEPENDS write write_frame_root)
   if (TARGET write_sio)
     set_property(TEST pyunittest PROPERTY DEPENDS write_sio write_frame_sio)
   endif()
-  set_property(TEST pyunittest PROPERTY WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
+  set_tests_properties(pyunittest pyunittest_gen PROPERTIES WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
 ENDIF()
