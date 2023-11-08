@@ -80,6 +80,12 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   // this category
   for (const auto& name : catInfo.name) {
     auto* coll = frame.getCollectionForWrite(name);
+    if (!coll) {
+      // Make sure all collections that we want to write are actually available
+      // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
+      throw std::runtime_error("Collection '" + name + "' in category '" + category + "' is not available in Frame");
+    }
+
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
@@ -93,6 +99,10 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
       catInfo.type.emplace_back(coll->getTypeName());
       catInfo.isSubsetCollection.emplace_back(coll->isSubsetCollection());
       catInfo.schemaVersion.emplace_back(coll->getSchemaVersion());
+    }
+  } else {
+    if (!root_utils::checkConsistentColls(catInfo.name, collsToWrite)) {
+      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content");
     }
   }
 

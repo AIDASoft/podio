@@ -272,6 +272,30 @@ inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strin
   return strings;
 }
 
+/**
+ * Check whether existingIds and candidateIds both contain the same collection
+ * Ids / hashes. Returns false if the two vectors differ in content. Inputs can
+ * have random order wrt each other, but the assumption is that all the ids are
+ * unique in each vector.
+ */
+inline bool checkConsistentColls(const std::vector<std::string>& existingColls,
+                                 const std::vector<std::string>& candidateColls) {
+  if (existingColls.size() != candidateColls.size()) {
+    return false;
+  }
+
+  // Since we are guaranteed to have unique names here, we can just look for
+  // collisions brute force, which seems to be quickest approach for vector
+  // sizes we typically have here (few hundred)
+  for (const auto& id : candidateColls) {
+    if (std::find(existingColls.begin(), existingColls.end(), id) == existingColls.end()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 } // namespace podio::root_utils
 
 #endif
