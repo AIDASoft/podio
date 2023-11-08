@@ -2,9 +2,9 @@
 """Python module for reading sio files containing podio Frames"""
 
 from ROOT import gSystem
-ret = gSystem.Load('libpodioSioIO')  # noqa: 402
-# Return values: -1 when it doesn't exist and -2 when there is a version mismatch
-if ret < 0:
+if gSystem.DynamicPathName("libpodioSioIO.so", True):
+  gSystem.Load('libpodioSioIO')  # noqa: 402
+else:
   raise ImportError('Error when importing libpodioSioIO')
 from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
 
