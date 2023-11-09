@@ -102,7 +102,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     }
   } else {
     if (!root_utils::checkConsistentColls(catInfo.name, collsToWrite)) {
-      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content." +
+      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.name, collsToWrite));
     }
   }
