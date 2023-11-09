@@ -32,6 +32,22 @@ public:
   void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
   void finish();
 
+  /** Check whether the collsToWrite are consistent with the state of the passed
+   * category.
+   *
+   * Return two vectors of collection names. The first one contains all the
+   * names that were missing from the collsToWrite but were present in the
+   * category. The second one contains the names that are present in the
+   * collsToWrite only. If both vectors are empty the category and the passed
+   * collsToWrite are consistent.
+   *
+   * NOTE: This will only be a meaningful check if the first Frame of the passed
+   * category has already been written. Also, this check is rather expensive as
+   * it has to effectively do two set differences.
+   */
+  std::tuple<std::vector<std::string>, std::vector<std::string>>
+  checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
+
 private:
   using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
   std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);

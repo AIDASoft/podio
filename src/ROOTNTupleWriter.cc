@@ -290,4 +290,13 @@ void ROOTNTupleWriter::finish() {
   m_finished = true;
 }
 
+std::tuple<std::vector<std::string>, std::vector<std::string>>
+ROOTNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
+  if (const auto it = m_categories.find(category); it != m_categories.end()) {
+    return root_utils::getInconsistentColls(it->second.name, collsToWrite);
+  }
+
+  return {std::vector<std::string>{}, collsToWrite};
+}
+
 } // namespace podio

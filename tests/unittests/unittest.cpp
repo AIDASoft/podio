@@ -10,6 +10,7 @@
 #include "catch2/catch_template_test_macros.hpp"
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
+#include "catch2/matchers/catch_matchers_vector.hpp"
 
 // podio specific includes
 #include "podio/EventStore.h"
@@ -1193,13 +1194,44 @@ void runConsistentFrameTest(const std::string& filename) {
   REQUIRE_NOTHROW(writer.writeFrame(frame, "full_frame2", frame2.getAvailableCollections()));
 }
 
+template <typename WriterT>
+void runCheckConsistencyTest(const std::string& filename) {
+  using Catch::Matchers::UnorderedEquals;
+
+  WriterT writer(filename);
+  podio::Frame frame;
+  frame.put(ExampleClusterCollection(), "clusters");
+  frame.put(ExampleClusterCollection(), "clusters2");
+  frame.put(ExampleHitCollection(), "hits");
+  writer.writeFrame(frame, "frame");
+
+  // Cumbersome way to get the collections that are used for this category
+  const auto& [categoryColls, emptyVec] = writer.checkConsistency({}, "frame");
+  REQUIRE_THAT(categoryColls, UnorderedEquals<std::string>({"clusters", "clusters2", "hits"}));
+  REQUIRE(emptyVec.empty());
+
+  const std::vector<std::string> collsToWrite = {"clusters", "clusters2", "non-existant"};
+  const auto& [missing, superfluous] = writer.checkConsistency(collsToWrite, "frame");
+  REQUIRE_THAT(missing, UnorderedEquals<std::string>({"hits"}));
+  REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
+}
+
 TEST_CASE("ROOTFrameWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
   // The UBSAN-FAIL only happens on clang12 in CI.
   runConsistentFrameTest<podio::ROOTFrameWriter>("unittests_frame_consistency.root");
 }
 
+TEST_CASE("ROOTFrameWriter check consistency", "[basics][root]") {
+  runCheckConsistencyTest<podio::ROOTFrameWriter>("unittests_frame_check_consistency.root");
+}
+
 #if PODIO_ENABLE_RNTUPLE
 TEST_CASE("ROOTNTupleWriter consistent frame contents", "[basics][root]") {
-  runConsistentFrameTest<podio::ROOTNTupleWriter>("unittests_frame_consistency.root");
+  runConsistentFrameTest<podio::ROOTNTupleWriter>("unittests_frame_consistency_rntuple.root");
 }
+
+TEST_CASE("ROOTNTupleWriter check consistency", "[basics][root]") {
+  runCheckConsistencyTest<podio::ROOTNTupleWriter>("unittests_frame_check_consistency_rntuple.root");
+}
+
 #endif
