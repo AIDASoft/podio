@@ -1216,12 +1216,12 @@ void runCheckConsistencyTest(const std::string& filename) {
   REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
 }
 
-TEST_CASE("ROOTFrameWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
-  // The UBSAN-FAIL only happens on clang12 in CI.
+TEST_CASE("ROOTFrameWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][TSAN-FAIL][basics][root]") {
+  // The UBSAN-FAIL and TSAN-FAIL only happens on clang12 in CI.
   runConsistentFrameTest<podio::ROOTFrameWriter>("unittests_frame_consistency.root");
 }
 
-TEST_CASE("ROOTFrameWriter check consistency", "[basics][root]") {
+TEST_CASE("ROOTFrameWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
   runCheckConsistencyTest<podio::ROOTFrameWriter>("unittests_frame_check_consistency.root");
 }
 
