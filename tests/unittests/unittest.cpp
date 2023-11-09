@@ -29,9 +29,6 @@
   #include "podio/SIOReader.h"
 #endif
 
-#ifndef PODIO_ENABLE_RNTUPLE
-  #define PODIO_ENABLE_RNTUPLE 0
-#endif
 #if PODIO_ENABLE_RNTUPLE
   #include "podio/ROOTNTupleWriter.h"
 #endif

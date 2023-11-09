@@ -110,6 +110,8 @@ target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT:
 if(ENABLE_RNTUPLE)
   target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
   target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=1)
+else()
+  target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=0)
 endif()
 
 
