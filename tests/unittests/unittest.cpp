@@ -1145,20 +1145,18 @@ TEST_CASE("JSON", "[json]") {
 
 #endif
 
-#if PODIO_ENABLE_RNTUPLE
-using ROOTWriterTypes = std::tuple<podio::ROOTFrameWriter, podio::ROOTNTupleWriter>;
-#else
-using ROOTWriterTypes = std::tuple<podio::ROOTFrameWriter>;
-#endif
-
-TEMPLATE_LIST_TEST_CASE("Consistent frame contents", "[basics][root]", ROOTWriterTypes) {
+// Write a template function that can be used with different writers in order to
+// be able to tag the unittests differently. This is necessary because the
+// ROOTFrameWriter fails with ASan, but the ROOTNTuple writer doesn't
+template <typename WriterT>
+void runConsistentFrameTest(const std::string& filename) {
   podio::Frame frame;
 
   frame.put(ExampleClusterCollection(), "clusters");
   frame.put(ExampleClusterCollection(), "clusters2");
   frame.put(ExampleHitCollection(), "hits");
 
-  TestType writer("unittests_frame_consistency.root");
+  WriterT writer(filename);
   writer.writeFrame(frame, "full");
 
   // Write a frame with more collections
@@ -1189,3 +1187,14 @@ TEMPLATE_LIST_TEST_CASE("Consistent frame contents", "[basics][root]", ROOTWrite
   writer.writeFrame(frame2, "full_frame2");
   REQUIRE_NOTHROW(writer.writeFrame(frame, "full_frame2", frame2.getAvailableCollections()));
 }
+
+TEST_CASE("ROOTFrameWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
+  // The UBSAN-FAIL only happens on clang12 in CI.
+  runConsistentFrameTest<podio::ROOTFrameWriter>("unittests_frame_consistency.root");
+}
+
+#if PODIO_ENABLE_RNTUPLE
+TEST_CASE("ROOTNTupleWriter consistent frame contents", "[basics][root]") {
+  runConsistentFrameTest<podio::ROOTNTupleWriter>("unittests_frame_consistency.root");
+}
+#endif
