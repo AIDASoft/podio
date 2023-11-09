@@ -9,6 +9,7 @@
 
 #include "catch2/catch_template_test_macros.hpp"
 #include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_string.hpp"
 
 // podio specific includes
 #include "podio/EventStore.h"
@@ -1147,6 +1148,8 @@ TEST_CASE("JSON", "[json]") {
 // ROOTFrameWriter fails with ASan, but the ROOTNTuple writer doesn't
 template <typename WriterT>
 void runConsistentFrameTest(const std::string& filename) {
+  using Catch::Matchers::ContainsSubstring;
+
   podio::Frame frame;
 
   frame.put(ExampleClusterCollection(), "clusters");
@@ -1158,13 +1161,18 @@ void runConsistentFrameTest(const std::string& filename) {
 
   // Write a frame with more collections
   frame.put(ExampleHitCollection(), "hits2");
-  REQUIRE_THROWS_AS(writer.writeFrame(frame, "full"), std::runtime_error);
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "full"),
+                      ContainsSubstring("Trying to write category") &&
+                          ContainsSubstring("inconsistent collection content") &&
+                          ContainsSubstring("missing: [], superfluous: [hits2]"));
 
   // Write a frame with less collections
   podio::Frame frame2;
   frame2.put(ExampleClusterCollection(), "clusters");
   frame2.put(ExampleClusterCollection(), "clusters2");
-  REQUIRE_THROWS_AS(writer.writeFrame(frame2, "full"), std::runtime_error);
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame2, "full"),
+                      ContainsSubstring("Collection 'hits' in category") &&
+                          ContainsSubstring("not available in Frame"));
 
   // Write only a subset of collections
   const std::vector<std::string> collsToWrite = {"clusters", "hits"};

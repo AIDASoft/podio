@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cctype>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -294,6 +295,51 @@ inline bool checkConsistentColls(const std::vector<std::string>& existingColls,
   }
 
   return true;
+}
+
+/**
+ * Get the differences in the existingColls and candidateColls collection names.
+ * Returns two vectors of collection names. The first one are the collections
+ * that only exist in the existingColls, the seconde one are the names that only
+ * exist in the candidateColls.
+ */
+inline std::tuple<std::vector<std::string>, std::vector<std::string>>
+getInconsistentColls(std::vector<std::string> existingColls, std::vector<std::string> candidateColls) {
+  // Need sorted ranges for set_difference
+  std::sort(existingColls.begin(), existingColls.end());
+  std::sort(candidateColls.begin(), candidateColls.end());
+
+  std::vector<std::string> onlyInExisting{};
+  std::set_difference(existingColls.begin(), existingColls.end(), candidateColls.begin(), candidateColls.end(),
+                      std::back_inserter(onlyInExisting));
+
+  std::vector<std::string> onlyInCands{};
+  std::set_difference(candidateColls.begin(), candidateColls.end(), existingColls.begin(), existingColls.end(),
+                      std::back_inserter(onlyInCands));
+
+  return {std::move(onlyInExisting), std::move(onlyInCands)};
+}
+
+inline std::string getInconsistentCollsMsg(const std::vector<std::string>& existingColls,
+                                           const std::vector<std::string>& candidateColls) {
+  const auto& [onlyExisting, onlyCands] = getInconsistentColls(existingColls, candidateColls);
+
+  std::stringstream sstr;
+  sstr << "missing: [";
+  std::string sep = "";
+  for (const auto& name : onlyExisting) {
+    sstr << sep << name;
+    sep = ",";
+  }
+  sep = "";
+  sstr << "], superfluous: [";
+  for (const auto& name : onlyCands) {
+    sstr << sep << name;
+    sep = ",";
+  }
+  sstr << "]";
+
+  return sstr.str();
 }
 
 } // namespace podio::root_utils
