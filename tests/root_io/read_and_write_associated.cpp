@@ -29,11 +29,8 @@ void writeCollection() {
     event.putParameter("UserEventName", std::to_string(i));
 
     auto hits = ExampleHitCollection{};
-    auto hit1 = ExampleHit(0xbad, 0., 0., 0., 23. + i);
-    auto hit2 = ExampleHit(0xcaffee, 1., 0., 0., 12. + i);
-
-    hits.push_back(hit1);
-    hits.push_back(hit2);
+    auto hit1 = hits.create(0xbadULL, 0., 0., 0., 23. + i);
+    auto hit2 = hits.create(0xcaffeeULL, 1., 0., 0., 12. + i);
 
     // Clusters
     auto clusters = ExampleClusterCollection{};

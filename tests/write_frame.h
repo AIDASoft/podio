@@ -120,11 +120,8 @@ auto createMCRefCollection(const ExampleMCCollection& mcps, const ExampleMCColle
 auto createHitCollection(int i) {
   ExampleHitCollection hits;
 
-  auto hit1 = ExampleHit(0xbad, 0., 0., 0., 23. + i);
-  auto hit2 = ExampleHit(0xcaffee, 1., 0., 0., 12. + i);
-
-  hits.push_back(hit1);
-  hits.push_back(hit2);
+  auto hit1 = hits.create(0xbadULL, 0., 0., 0., 23. + i);
+  auto hit2 = hits.create(0xcaffeeULL, 1., 0., 0., 12. + i);
 
   return hits;
 }
@@ -173,8 +170,7 @@ auto createReferencingCollections(const ExampleClusterCollection& clusters) {
   auto ref = MutableExampleReferencingType();
   refs.push_back(ref);
 
-  auto ref2 = ExampleReferencingType();
-  refs2.push_back(ref2);
+  auto ref2 = refs2.create();
 
   ref.addClusters(clusters[2]);
   ref.addRefs(ref2);
@@ -194,8 +190,7 @@ auto createOneRelCollection(const ExampleClusterCollection& clusters) {
   oneRels.push_back(oneRel);
 
   // write non-filled relation
-  auto oneRelEmpty = ExampleWithOneRelation();
-  oneRels.push_back(oneRelEmpty);
+  oneRels.create();
 
   return oneRels;
 }

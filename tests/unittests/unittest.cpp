@@ -12,6 +12,7 @@
 #include "catch2/matchers/catch_matchers_vector.hpp"
 
 // podio specific includes
+#include "datamodel/MutableExampleHit.h"
 #include "podio/EventStore.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
@@ -78,9 +79,9 @@ TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
   // Make sure that the assignment operator handles the reference count
   // correctly. (Will trigger in an ASan build if it is not the case)
   // See https://github.com/AIDASoft/podio/issues/200
-  std::map<int, ExampleHit> hitMap;
+  std::map<int, MutableExampleHit> hitMap;
   for (int i = 0; i < 10; ++i) {
-    auto hit = ExampleHit(0x42ULL, i, i, i, i);
+    auto hit = MutableExampleHit(0x42ULL, i, i, i, i);
     hitMap[i] = hit;
   }
 
@@ -101,7 +102,7 @@ TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-manag
     hits.clear();
     clusters.clear();
     auto hit1 = hits.create();
-    auto hit2 = ExampleHit();
+    auto hit2 = MutableExampleHit();
     hit1.energy(double(i));
     auto cluster = clusters.create();
     cluster.addHits(hit1);
@@ -130,7 +131,8 @@ TEST_CASE("Cloning", "[basics][memory-management]") {
   auto cluster2 = cluster.clone();
   cluster.addHits(hit2);
   // check that the clone of a const object is mutable
-  auto const_hit = ExampleHit();
+  auto mutable_hit = MutableExampleHit();
+  auto const_hit = ExampleHit(mutable_hit);
   auto const_hit_clone = const_hit.clone();
   const_hit_clone.energy(30);
   REQUIRE(success);
@@ -162,7 +164,7 @@ TEST_CASE("Invalid_refs", "[LEAK-FAIL][basics][relations]") {
   auto store = podio::EventStore();
   auto& hits = store.create<ExampleHitCollection>("hits");
   auto hit1 = hits.create(0xcaffeeULL, 0., 0., 0., 0.);
-  auto hit2 = ExampleHit();
+  auto hit2 = MutableExampleHit();
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
   auto cluster = clusters.create();
   cluster.addHits(hit1);
@@ -220,7 +222,7 @@ TEST_CASE("Notebook", "[basics]") {
 
 TEST_CASE("OneToOneRelations", "[basics][relations]") {
   bool success = true;
-  auto cluster = ExampleCluster();
+  auto cluster = MutableExampleCluster();
   auto rel = MutableExampleWithOneRelation();
   rel.cluster(cluster);
   REQUIRE(success);
@@ -391,11 +393,11 @@ TEST_CASE("Extracode", "[basics][code-gen]") {
 }
 
 TEST_CASE("AssociativeContainer", "[basics]") {
-  auto clu1 = ExampleCluster();
-  auto clu2 = ExampleCluster();
-  auto clu3 = ExampleCluster();
-  auto clu4 = ExampleCluster();
-  auto clu5 = ExampleCluster();
+  auto clu1 = MutableExampleCluster();
+  auto clu2 = MutableExampleCluster();
+  auto clu3 = MutableExampleCluster();
+  auto clu4 = MutableExampleCluster();
+  auto clu5 = MutableExampleCluster();
 
   std::set<ExampleCluster> cSet;
   cSet.insert(clu1);
@@ -426,7 +428,7 @@ TEST_CASE("AssociativeContainer", "[basics]") {
 }
 
 TEST_CASE("Equality", "[basics]") {
-  auto cluster = ExampleCluster();
+  auto cluster = MutableExampleCluster();
   auto rel = MutableExampleWithOneRelation();
   rel.cluster(cluster);
   auto returned_cluster = rel.cluster();
@@ -449,7 +451,7 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
   REQUIRE(elem.comp().arr[1] == 3.4);
 
   // And obviously when initialized directly
-  auto ex = ExampleWithUserInit{};
+  auto ex = MutableExampleWithUserInit{};
   REQUIRE(ex.i16Val() == 42);
   REQUIRE(ex.floats()[0] == 3.14f);
   REQUIRE(ex.floats()[1] == 1.23f);
@@ -650,7 +652,7 @@ TEST_CASE("Cannot convert a subset collection into a normal collection", "[subse
 TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
   clusterRefs.setSubsetCollection();
-  auto cluster = ExampleCluster();
+  auto cluster = MutableExampleCluster();
 
   REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
   REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);

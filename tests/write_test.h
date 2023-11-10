@@ -92,8 +92,8 @@ void write(podio::EventStore& store, WriterT& writer) {
     auto& colMD = store.getCollectionMetaData(hits.getID());
     colMD.setValue("CellIDEncodingString", "system:8,barrel:3,layer:6,slice:5,x:-16,y:-16");
 
-    auto hit1 = ExampleHit(0xbad, 0., 0., 0., 23. + i);
-    auto hit2 = ExampleHit(0xcaffee, 1., 0., 0., 12. + i);
+    auto hit1 = MutableExampleHit(0xbad, 0., 0., 0., 23. + i);
+    auto hit2 = MutableExampleHit(0xcaffee, 1., 0., 0., 12. + i);
 
     hits.push_back(hit1);
     hits.push_back(hit2);
@@ -102,16 +102,16 @@ void write(podio::EventStore& store, WriterT& writer) {
     hitRefs.push_back(hit1);
 
     // ---- add some MC particles ----
-    auto mcp0 = ExampleMC();
-    auto mcp1 = ExampleMC();
-    auto mcp2 = ExampleMC();
-    auto mcp3 = ExampleMC();
-    auto mcp4 = ExampleMC();
-    auto mcp5 = ExampleMC();
-    auto mcp6 = ExampleMC();
-    auto mcp7 = ExampleMC();
-    auto mcp8 = ExampleMC();
-    auto mcp9 = ExampleMC();
+    auto mcp0 = MutableExampleMC();
+    auto mcp1 = MutableExampleMC();
+    auto mcp2 = MutableExampleMC();
+    auto mcp3 = MutableExampleMC();
+    auto mcp4 = MutableExampleMC();
+    auto mcp5 = MutableExampleMC();
+    auto mcp6 = MutableExampleMC();
+    auto mcp7 = MutableExampleMC();
+    auto mcp8 = MutableExampleMC();
+    auto mcp9 = MutableExampleMC();
 
     mcps.push_back(mcp0);
     mcps.push_back(mcp1);
@@ -227,7 +227,7 @@ void write(podio::EventStore& store, WriterT& writer) {
     auto ref = MutableExampleReferencingType();
     refs.push_back(ref);
 
-    auto ref2 = ExampleReferencingType();
+    auto ref2 = MutableExampleReferencingType();
     refs2.push_back(ref2);
 
     ref.addClusters(cluster);
@@ -248,7 +248,7 @@ void write(podio::EventStore& store, WriterT& writer) {
     oneRels.push_back(oneRel);
 
     // write non-filled relation
-    auto oneRelEmpty = ExampleWithOneRelation();
+    auto oneRelEmpty = MutableExampleWithOneRelation();
     oneRels.push_back(oneRelEmpty);
 
     auto vec = MutableExampleWithVectorMember();

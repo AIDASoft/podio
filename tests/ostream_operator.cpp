@@ -29,7 +29,7 @@ int main(int, char**) {
   // Non-cyclical references
   MutableExampleReferencingType ref1;
   MutableExampleReferencingType ref2;
-  ExampleReferencingType ref3;
+  MutableExampleReferencingType ref3;
 
   ref1.addRefs(ref2);
   ref2.addRefs(ref3);

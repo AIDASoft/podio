@@ -16,15 +16,15 @@ int checkHits(const ExampleHitCollection& hits) {
 
   auto hit1 = hits[0];
   if (hit1.cellID() != 0xbad || hit1.x() != 0.0 || hit1.y() != 0.0 || hit1.z() != 0.0 || hit1.energy() != 23.0) {
-    std::cerr << "Could not retrieve the correct hit[0]: (expected: " << ExampleHit(0xbad, 0.0, 0.0, 0.0, 23.0)
+    std::cerr << "Could not retrieve the correct hit[0]: (expected: " << MutableExampleHit(0xbad, 0.0, 0.0, 0.0, 23.0)
               << ", actual: " << hit1 << ")" << std::endl;
     return 1;
   }
 
   auto hit2 = hits[1];
   if (hit2.cellID() != 0xcaffee || hit2.x() != 1.0 || hit2.y() != 0.0 || hit2.z() != 0.0 || hit2.energy() != 12.0) {
-    std::cerr << "Could not retrieve the correct hit[1]: (expected: " << ExampleHit(0xcaffee, 1.0, 0.0, 0.0, 12.0)
-              << ", actual: " << hit1 << ")" << std::endl;
+    std::cerr << "Could not retrieve the correct hit[1]: (expected: "
+              << MutableExampleHit(0xcaffee, 1.0, 0.0, 0.0, 12.0) << ", actual: " << hit1 << ")" << std::endl;
     return 1;
   }
 
