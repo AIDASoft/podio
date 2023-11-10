@@ -1,3 +1,4 @@
+#include "podio/utilities/MaybeSharedPtr.h"
 {% import "macros/declarations.jinja2" as macros %}
 {% import "macros/utils.jinja2" as utils %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
@@ -12,7 +13,9 @@
 {% for include in includes %}
 {{ include }}
 {% endfor %}
-#include "podio/ObjectID.h"
+
+#include "podio/utilities/MaybeSharedPtr.h"
+
 #include <ostream>
 #include <cstddef>
 
@@ -35,7 +38,16 @@ public:
   using object_type = {{ class.bare_type }};
   using collection_type = {{ class.bare_type }}Collection;
 
-{{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
+  /// Default constructor
+  Mutable{{ class.bare_type }}();
+
+{{ macros.common_constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
+{% if Members %}
+
+  /// Constructor initializing all members
+  Mutable{{ class.bare_type }}({{ Members | map(attribute='signature') | join(', ')  }});
+{% endif %}
+
   /// conversion to const object
   operator {{ class.bare_type }}() const;
 
@@ -50,8 +62,14 @@ public:
 {{ utils.if_present(MutableExtraCode, "declaration") }}
 {{ macros.common_object_funcs(class.bare_type, prefix='Mutable') }}
 
+  /// disconnect from {{ class.bare_type }}Obj instance
+  void unlink() { m_obj = podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj>{nullptr}; }
+
 private:
-  {{ class.bare_type }}Obj* m_obj;
+  /// constructor from existing {{ class.bare_type }}Obj
+  explicit Mutable{{ class.bare_type }}(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> obj);
+
+  podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj{nullptr};
 };
 
 {{ macros.json_output(class.bare_type, prefix='Mutable') }}

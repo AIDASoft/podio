@@ -16,7 +16,14 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.constructors_destructors(class.bare_type, Members) }}
+{{ macros.common_constructors_destructors(class.bare_type, Members) }}
+
+{{ class.bare_type }}::{{ class.bare_type }}({{ class.bare_type }}Obj* obj) : m_obj(obj) {}
+
+{{ class.bare_type }} {{ class.bare_type }}::makeEmpty() {
+  return {nullptr};
+}
+
 
 {{ macros.member_getters(class, Members, use_get_syntax) }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax) }}

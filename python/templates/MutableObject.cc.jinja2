@@ -1,3 +1,4 @@
+#include "podio/utilities/MaybeSharedPtr.h"
 {% import "macros/utils.jinja2" as utils %}
 {% import "macros/implementations.jinja2" as macros %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
@@ -16,8 +17,26 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
-Mutable{{ class.bare_type }}::operator {{ class.bare_type }}() const { return {{ class.bare_type }}(m_obj); }
+{{ macros.common_constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
+
+{% with full_type = 'Mutable' + class.bare_type %}
+{{ full_type }}::{{ full_type }}() :
+  m_obj(new {{ class.bare_type }}Obj{}, podio::utils::MarkOwned) {}
+
+{% if Members %}
+{{ full_type }}::{{ full_type }}({{ Members | map(attribute='signature') | join(', ') }}) :
+  m_obj(new {{ class.bare_type }}Obj{}, podio::utils::MarkOwned) {
+{% for member in Members %}
+  m_obj->data.{{ member.name }} = {{ member.name }};
+{% endfor %}
+}
+{% endif %}
+
+{{ full_type }}::{{ full_type }}(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> obj) : m_obj(obj) {}
+
+{{ full_type }}::operator {{ class.bare_type }}() const { return {{ class.bare_type }}(m_obj.get()); }
+
+{% endwith %}
 
 {{ macros.member_getters(class, Members, use_get_syntax, prefix='Mutable') }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax, prefix='Mutable') }}

@@ -1,41 +1,12 @@
-{% macro constructors_destructors(type, members, prefix='') %}
+{% macro common_constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
-{{ full_type }}::{{ full_type }}() : m_obj(new {{ type }}Obj()) {
-  if (m_obj) m_obj->acquire();
-}
-
-{% if members %}
-{{ full_type }}::{{ full_type }}({{ members | map(attribute='signature') | join(', ') }}) : m_obj(new {{ type }}Obj()) {
-  m_obj->acquire();
-{% for member in members %}
-  m_obj->data.{{ member.name }} = {{ member.name }};
-{% endfor %}
-}
-{% endif %}
-
-{{ full_type}}::{{ full_type }}(const {{ full_type }}& other) : m_obj(other.m_obj) {
-  if (m_obj) m_obj->acquire();
-}
-
 {{  full_type }}& {{ full_type }}::operator=({{ full_type }} other) {
   swap(*this, other);
   return *this;
 }
 
-{{ full_type }}::{{ full_type }}( {{ type }}Obj* obj) : m_obj(obj) {
-  if (m_obj) {
-    m_obj->acquire();
-  }
-}
-
 Mutable{{ type }} {{ full_type }}::clone() const {
-  return {new {{ type }}Obj(*m_obj)};
-}
-
-{{ full_type }}::~{{ full_type }}() {
-  if (m_obj) {
-    m_obj->release();
-  }
+  return Mutable{{ type }}(podio::utils::MaybeSharedPtr(new {{ type }}Obj(*m_obj), podio::utils::MarkOwned));
 }
 {%- endmacro %}
 
@@ -83,7 +54,7 @@ void {{ class_type }}::{{ sub_member.setter_name(get_syntax) }}({{ sub_member.fu
 {% for relation in relations %}
 const {{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syntax) }}() const {
   if (!m_obj->m_{{ relation.name }}) {
-    return {{ relation.full_type }}(nullptr);
+    return {{ relation.full_type }}::makeEmpty();
   }
   return {{ relation.full_type }}(*(m_obj->m_{{ relation.name }}));
 }

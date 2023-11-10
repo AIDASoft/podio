@@ -89,7 +89,7 @@ namespace {
   // library actually needs linking to the core library. Otherwise it is
   // possible that the registry is not populated when the SioBlock library is
   // loaded, e.g. when using the python bindings.
-  const auto elem = {{ class.full_type }}{};
+  const auto elem = {{ class.full_type }}::makeEmpty();
 }
 
 {% endwith %}

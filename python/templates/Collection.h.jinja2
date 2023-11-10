@@ -115,7 +115,9 @@ public:
 
 
   /// Append object to the collection
-  void push_back({{class.bare_type}} object);
+  void push_back(Mutable{{class.bare_type}} object);
+  /// Append an object to the (subset) collection
+  void push_back({{ class.bare_type }} object);
 
   void prepareForWrite() const final;
   void prepareAfterRead() final;
@@ -194,7 +196,7 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
 {% endfor %}
   m_storage.createRelations(obj);
 {% endif %}
-  return Mutable{{ class.bare_type }}(obj);
+  return Mutable{{ class.bare_type }}(podio::utils::MaybeSharedPtr(obj));
 }
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
