@@ -434,6 +434,13 @@ TEST_CASE("Equality", "[basics]") {
   auto returned_cluster = rel.cluster();
   REQUIRE(cluster == returned_cluster);
   REQUIRE(returned_cluster == cluster);
+
+  auto clu = ExampleCluster::makeEmpty();
+  auto clu2 = ExampleCluster::makeEmpty();
+  // Empty handles always compare equal
+  REQUIRE(clu == clu2);
+  // They never compare equal to a non-empty handle
+  REQUIRE(!(clu == cluster));
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {
