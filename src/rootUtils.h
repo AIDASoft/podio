@@ -325,19 +325,24 @@ inline std::string getInconsistentCollsMsg(const std::vector<std::string>& exist
   const auto& [onlyExisting, onlyCands] = getInconsistentColls(existingColls, candidateColls);
 
   std::stringstream sstr;
-  sstr << "missing: [";
   std::string sep = "";
-  for (const auto& name : onlyExisting) {
-    sstr << sep << name;
-    sep = ",";
+  if (!onlyExisting.empty()) {
+    sstr << "missing: [";
+    for (const auto& name : onlyExisting) {
+      sstr << sep << name;
+      sep = ",";
+    }
+    sstr << "]";
   }
-  sep = "";
-  sstr << "], superfluous: [";
-  for (const auto& name : onlyCands) {
-    sstr << sep << name;
-    sep = ",";
+  if (!onlyCands.empty()) {
+    sstr << sep << " superfluous: [";
+    sep = "";
+    for (const auto& name : onlyCands) {
+      sstr << sep << name;
+      sep = ",";
+    }
+    sstr << "]";
   }
-  sstr << "]";
 
   return sstr.str();
 }

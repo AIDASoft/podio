@@ -1165,7 +1165,7 @@ void runConsistentFrameTest(const std::string& filename) {
   REQUIRE_THROWS_WITH(writer.writeFrame(frame, "full"),
                       ContainsSubstring("Trying to write category") &&
                           ContainsSubstring("inconsistent collection content") &&
-                          ContainsSubstring("missing: [], superfluous: [hits2]"));
+                          ContainsSubstring("superfluous: [hits2]"));
 
   // Write a frame with less collections
   podio::Frame frame2;
