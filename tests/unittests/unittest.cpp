@@ -92,6 +92,15 @@ TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
   }
 }
 
+TEST_CASE("ostream-operator", "[basics]") {
+  // Make sure that trying to print an object that is not available does not crash
+  auto hit = ExampleHit::makeEmpty();
+  REQUIRE_FALSE(hit.isAvailable());
+  std::stringstream sstr;
+  sstr << hit;
+  REQUIRE(sstr.str() == "[not available]");
+}
+
 TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-management]") {
   auto store = podio::EventStore();
   auto& hits = store.create<ExampleHitCollection>("hits");

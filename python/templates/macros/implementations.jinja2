@@ -147,6 +147,9 @@ bool {{ full_type }}::operator==(const {{ inverse_type }}& other) const {
 
 {% macro ostream_operator(type, members, single_relations, multi_relations, get_syntax) %}
 std::ostream& operator<<(std::ostream& o, const {{ type }}& value) {
+  if (!value.isAvailable()) {
+    return o << "[not available]";
+  }
   o << " id: " << value.id() << '\n';
 {% for member in members %}
 {% if member.is_array %}
