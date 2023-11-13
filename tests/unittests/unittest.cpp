@@ -507,7 +507,7 @@ TEST_CASE("const correct iterators on const collections", "[const-correctness]")
   const auto collection = ExampleHitCollection();
   // this essentially checks the whole "chain" from begin() / end() through
   // iterator operators
-  for (auto hit : collection) {
+  for (auto hit [[maybe_unused]] : collection) {
     STATIC_REQUIRE(std::is_same_v<decltype(hit), ExampleHit>); // const collection iterators should only return
                                                                // immutable objects
   }
