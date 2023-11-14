@@ -41,9 +41,12 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   collections.reserve(catInfo.collsToWrite.size());
   for (const auto& name : catInfo.collsToWrite) {
     auto* coll = frame.getCollectionForWrite(name);
+    if (!coll) {
+      // Make sure all collections that we want to write are actually available
+      // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
+      throw std::runtime_error("Collection '" + name + "' in category '" + category + "' is not available in Frame");
+    }
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
-
-    m_datamodelCollector.registerDatamodelDefinition(coll, name);
   }
 
   // We will at least have a parameters branch, even if there are no
@@ -52,6 +55,12 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
     initBranches(catInfo, collections, const_cast<podio::GenericParameters&>(frame.getParameters()));
 
   } else {
+    // Make sure that the category contents are consistent with the initial
+    // frame in the category
+    if (!root_utils::checkConsistentColls(catInfo.collsToWrite, collsToWrite)) {
+      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
+                               root_utils::getInconsistentCollsMsg(catInfo.collsToWrite, collsToWrite));
+    }
     resetBranches(catInfo.branches, collections, &const_cast<podio::GenericParameters&>(frame.getParameters()));
   }
 
@@ -73,6 +82,10 @@ void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<Stor
 
   // First collections
   for (auto& [name, coll] : collections) {
+    // For the first entry in each category we also record the datamodel
+    // definition
+    m_datamodelCollector.registerDatamodelDefinition(coll, name);
+
     root_utils::CollectionBranches branches;
     const auto buffers = coll->getBuffers();
     // For subset collections we only fill one references branch
@@ -151,6 +164,15 @@ void ROOTFrameWriter::finish() {
   m_file->Close();
 
   m_finished = true;
+}
+
+std::tuple<std::vector<std::string>, std::vector<std::string>>
+ROOTFrameWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
+  if (const auto it = m_categories.find(category); it != m_categories.end()) {
+    return root_utils::getInconsistentColls(it->second.collsToWrite, collsToWrite);
+  }
+
+  return {std::vector<std::string>{}, collsToWrite};
 }
 
 } // namespace podio

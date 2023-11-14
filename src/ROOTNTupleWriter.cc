@@ -64,22 +64,50 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
 
 void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
                                   const std::vector<std::string>& collsToWrite) {
+  auto& catInfo = getCategoryInfo(category);
+
+  // Use the writer as proxy to check whether this category has been initialized
+  // already and do so if not
+  const bool new_category = (catInfo.writer == nullptr);
+  if (new_category) {
+    // This is the minimal information that we need for now
+    catInfo.name = root_utils::sortAlphabeticaly(collsToWrite);
+  }
 
   std::vector<StoreCollection> collections;
-  collections.reserve(collsToWrite.size());
-  for (const auto& name : collsToWrite) {
+  collections.reserve(catInfo.name.size());
+  // Only loop over the collections that were requested in the first Frame of
+  // this category
+  for (const auto& name : catInfo.name) {
     auto* coll = frame.getCollectionForWrite(name);
+    if (!coll) {
+      // Make sure all collections that we want to write are actually available
+      // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
+      throw std::runtime_error("Collection '" + name + "' in category '" + category + "' is not available in Frame");
+    }
+
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
 
-  bool new_category = false;
-  if (m_writers.find(category) == m_writers.end()) {
-    new_category = true;
+  if (new_category) {
+    // Now we have enough info to populate the rest
     auto model = createModels(collections);
-    m_writers[category] = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+    catInfo.writer = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+
+    for (const auto& [name, coll] : collections) {
+      catInfo.id.emplace_back(coll->getID());
+      catInfo.type.emplace_back(coll->getTypeName());
+      catInfo.isSubsetCollection.emplace_back(coll->isSubsetCollection());
+      catInfo.schemaVersion.emplace_back(coll->getSchemaVersion());
+    }
+  } else {
+    if (!root_utils::checkConsistentColls(catInfo.name, collsToWrite)) {
+      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
+                               root_utils::getInconsistentCollsMsg(catInfo.name, collsToWrite));
+    }
   }
 
-  auto entry = m_writers[category]->GetModel()->CreateBareEntry();
+  auto entry = m_categories[category].writer->GetModel()->CreateBareEntry();
 
   ROOT::Experimental::RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
@@ -121,14 +149,6 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
     // Not supported
     // entry->CaptureValueUnsafe(root_utils::paramBranchName,
     // &const_cast<podio::GenericParameters&>(frame.getParameters()));
-
-    if (new_category) {
-      m_collectionInfo[category].id.emplace_back(coll->getID());
-      m_collectionInfo[category].name.emplace_back(name);
-      m_collectionInfo[category].type.emplace_back(coll->getTypeName());
-      m_collectionInfo[category].isSubsetCollection.emplace_back(coll->isSubsetCollection());
-      m_collectionInfo[category].schemaVersion.emplace_back(coll->getSchemaVersion());
-    }
   }
 
   auto params = frame.getParameters();
@@ -137,8 +157,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   fillParams<double>(params, entry.get());
   fillParams<std::string>(params, entry.get());
 
-  m_writers[category]->Fill(*entry);
-  m_categories.insert(category);
+  m_categories[category].writer->Fill(*entry);
 }
 
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
@@ -215,6 +234,15 @@ ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) 
   return model;
 }
 
+ROOTNTupleWriter::CollectionInfo& ROOTNTupleWriter::getCategoryInfo(const std::string& category) {
+  if (auto it = m_categories.find(category); it != m_categories.end()) {
+    return it->second;
+  }
+
+  auto [it, _] = m_categories.try_emplace(category, CollectionInfo{});
+  return it->second;
+}
+
 void ROOTNTupleWriter::finish() {
 
   auto podioVersion = podio::version::build_version;
@@ -227,21 +255,21 @@ void ROOTNTupleWriter::finish() {
   *edmField = edmDefinitions;
 
   auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
-  for (auto& [c, _] : m_collectionInfo) {
+  for (auto& [c, _] : m_categories) {
     availableCategoriesField->push_back(c);
   }
 
-  for (auto& category : m_categories) {
+  for (auto& [category, collInfo] : m_categories) {
     auto idField = m_metadata->MakeField<std::vector<unsigned int>>({root_utils::idTableName(category)});
-    *idField = m_collectionInfo[category].id;
+    *idField = collInfo.id;
     auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
-    *collectionNameField = m_collectionInfo[category].name;
+    *collectionNameField = collInfo.name;
     auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collInfoName(category)});
-    *collectionTypeField = m_collectionInfo[category].type;
+    *collectionTypeField = collInfo.type;
     auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
-    *subsetCollectionField = m_collectionInfo[category].isSubsetCollection;
+    *subsetCollectionField = collInfo.isSubsetCollection;
     auto schemaVersionField = m_metadata->MakeField<std::vector<SchemaVersionT>>({"schemaVersion_" + category});
-    *schemaVersionField = m_collectionInfo[category].schemaVersion;
+    *schemaVersionField = collInfo.schemaVersion;
   }
 
   m_metadata->Freeze();
@@ -254,10 +282,21 @@ void ROOTNTupleWriter::finish() {
 
   // All the tuple writers must be deleted before the file so that they flush
   // unwritten output
-  m_writers.clear();
+  for (auto& [_, catInfo] : m_categories) {
+    catInfo.writer.reset();
+  }
   m_metadataWriter.reset();
 
   m_finished = true;
+}
+
+std::tuple<std::vector<std::string>, std::vector<std::string>>
+ROOTNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
+  if (const auto it = m_categories.find(category); it != m_categories.end()) {
+    return root_utils::getInconsistentColls(it->second.name, collsToWrite);
+  }
+
+  return {std::vector<std::string>{}, collsToWrite};
 }
 
 } // namespace podio

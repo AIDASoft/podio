@@ -8,11 +8,15 @@
 #include <vector>
 
 #include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_string.hpp"
+#include "catch2/matchers/catch_matchers_vector.hpp"
 
 // podio specific includes
 #include "podio/EventStore.h"
+#include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/ROOTFrameReader.h"
+#include "podio/ROOTFrameWriter.h"
 #include "podio/ROOTLegacyReader.h"
 #include "podio/ROOTReader.h"
 #include "podio/podioVersion.h"
@@ -24,6 +28,10 @@
   #include "podio/SIOFrameReader.h"
   #include "podio/SIOLegacyReader.h"
   #include "podio/SIOReader.h"
+#endif
+
+#if PODIO_ENABLE_RNTUPLE
+  #include "podio/ROOTNTupleWriter.h"
 #endif
 
 // Test data types
@@ -1131,6 +1139,98 @@ TEST_CASE("JSON", "[json]") {
   for (size_t j = 0; j < 3; ++j) {
     REQUIRE(json["userData"][j] == 3.14f * j);
   }
+}
+
+#endif
+
+// Write a template function that can be used with different writers in order to
+// be able to tag the unittests differently. This is necessary because the
+// ROOTFrameWriter fails with ASan, but the ROOTNTuple writer doesn't
+template <typename WriterT>
+void runConsistentFrameTest(const std::string& filename) {
+  using Catch::Matchers::ContainsSubstring;
+
+  podio::Frame frame;
+
+  frame.put(ExampleClusterCollection(), "clusters");
+  frame.put(ExampleClusterCollection(), "clusters2");
+  frame.put(ExampleHitCollection(), "hits");
+
+  WriterT writer(filename);
+  writer.writeFrame(frame, "full");
+
+  // Write a frame with more collections
+  frame.put(ExampleHitCollection(), "hits2");
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "full"),
+                      ContainsSubstring("Trying to write category") &&
+                          ContainsSubstring("inconsistent collection content") &&
+                          ContainsSubstring("superfluous: [hits2]"));
+
+  // Write a frame with less collections
+  podio::Frame frame2;
+  frame2.put(ExampleClusterCollection(), "clusters");
+  frame2.put(ExampleClusterCollection(), "clusters2");
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame2, "full"),
+                      ContainsSubstring("Collection 'hits' in category") &&
+                          ContainsSubstring("not available in Frame"));
+
+  // Write only a subset of collections
+  const std::vector<std::string> collsToWrite = {"clusters", "hits"};
+  writer.writeFrame(frame, "subset", collsToWrite);
+
+  // Frame is missing a collection
+  REQUIRE_THROWS_AS(writer.writeFrame(frame2, "subset", collsToWrite), std::runtime_error);
+
+  // Don't throw if frame contents are different, but the subset that is written
+  // is consistent
+  const std::vector<std::string> otherCollsToWrite = {"clusters", "clusters2"};
+  writer.writeFrame(frame, "subset2", otherCollsToWrite);
+  REQUIRE_NOTHROW(writer.writeFrame(frame2, "subset2", otherCollsToWrite));
+
+  // Make sure that restricting the second frame works.
+  // See https://github.com/AIDASoft/podio/issues/382 for the original issue
+  writer.writeFrame(frame2, "full_frame2");
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "full_frame2", frame2.getAvailableCollections()));
+}
+
+template <typename WriterT>
+void runCheckConsistencyTest(const std::string& filename) {
+  using Catch::Matchers::UnorderedEquals;
+
+  WriterT writer(filename);
+  podio::Frame frame;
+  frame.put(ExampleClusterCollection(), "clusters");
+  frame.put(ExampleClusterCollection(), "clusters2");
+  frame.put(ExampleHitCollection(), "hits");
+  writer.writeFrame(frame, "frame");
+
+  // Cumbersome way to get the collections that are used for this category
+  const auto& [categoryColls, emptyVec] = writer.checkConsistency({}, "frame");
+  REQUIRE_THAT(categoryColls, UnorderedEquals<std::string>({"clusters", "clusters2", "hits"}));
+  REQUIRE(emptyVec.empty());
+
+  const std::vector<std::string> collsToWrite = {"clusters", "clusters2", "non-existant"};
+  const auto& [missing, superfluous] = writer.checkConsistency(collsToWrite, "frame");
+  REQUIRE_THAT(missing, UnorderedEquals<std::string>({"hits"}));
+  REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
+}
+
+TEST_CASE("ROOTFrameWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][THREAD-FAIL][basics][root]") {
+  // The UBSAN-FAIL and TSAN-FAIL only happens on clang12 in CI.
+  runConsistentFrameTest<podio::ROOTFrameWriter>("unittests_frame_consistency.root");
+}
+
+TEST_CASE("ROOTFrameWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
+  runCheckConsistencyTest<podio::ROOTFrameWriter>("unittests_frame_check_consistency.root");
+}
+
+#if PODIO_ENABLE_RNTUPLE
+TEST_CASE("ROOTNTupleWriter consistent frame contents", "[basics][root]") {
+  runConsistentFrameTest<podio::ROOTNTupleWriter>("unittests_frame_consistency_rntuple.root");
+}
+
+TEST_CASE("ROOTNTupleWriter check consistency", "[basics][root]") {
+  runCheckConsistencyTest<podio::ROOTNTupleWriter>("unittests_frame_check_consistency_rntuple.root");
 }
 
 #endif
