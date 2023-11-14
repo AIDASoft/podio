@@ -17,11 +17,11 @@ export {{ datatype['class'].bare_type }}Collection
 import ..{{ upstream_edm_name }}
 {% endif %}
 
-{% for component in components %}
-include("{{ component['class'].bare_type }}Struct.jl")
-{% endfor %}
-{% for datatype in datatypes %}
-include("{{ datatype['class'].bare_type }}Struct.jl")
+{% if static_arrays_import %}
+using StaticArrays
+{% endif %}
+{% for sort_include in includes %}
+include("{{ sort_include }}Struct.jl")
 {% endfor %}
 
 {% for component in components %}
@@ -47,31 +47,6 @@ function {{ component['class'].bare_type }}(
 	{% endif %}
 	{% endif %}
 {% endfor %}
-{% for relation in component['OneToManyRelations'] %}
-	{% if upstream_edm and (relation.full_type in upstream_edm.components or relation.full_type in upstream_edm.datatypes) %}
-	{{ relation.name }}::Vector{ {{ upstream_edm_name }}.{{ relation.julia_type }}Struct } = Vector{ {{ upstream_edm_name }}.{{ relation.julia_type }}Struct }(),
-	{% else %}
-	{{ relation.name }}::Vector{ {{ relation.julia_type }}Struct } = Vector{ {{ relation.julia_type }}Struct }(),
-	{% endif %}
-{% endfor %}
-{% for relation in component['OneToOneRelations'] %}
-	{% if upstream_edm and (relation.full_type in upstream_edm.components or relation.full_type in upstream_edm.datatypes) %}
-	{{ relation.name }}::Union{Nothing, {{ upstream_edm_name }}.{{ relation.julia_type }}Struct } = nothing,
-	{% else %}
-	{{ relation.name }}::Union{Nothing, {{ relation.julia_type }}Struct } = nothing,
-	{% endif %}
-{% endfor %}
-{% for member in component['VectorMembers'] %}
-	{% if member.is_builtin %}
-	{{ member.name }}::Vector{ {{ member.julia_type }} } = Vector{ {{ member.julia_type }} }([]),
-	{% else %}
-	{% if upstream_edm and (member.full_type in upstream_edm.components or member.full_type in upstream_edm.datatypes) %}
-	{{ member.name }}::Vector{ {{ upstream_edm_name }}.{{ member.julia_type }}Struct } = Vector{ {{ upstream_edm_name }}.{{ member.julia_type }}Struct }([]),
-	{% else %}
-	{{ member.name }}::Vector{ {{ member.julia_type }}Struct } = Vector{ {{ member.julia_type }}Struct }([]),
-	{% endif %}
-	{% endif %}
-{% endfor %}
 )
 	return {{ component['class'].bare_type }}Struct{{ params.julia_parameters(component['params_jl'], "Struct", upstream_edm, upstream_edm_name) }}(
 	{% for member in component['Members'] %}
@@ -80,15 +55,6 @@ function {{ component['class'].bare_type }}(
 	{% else %}
 	{{ member.name }},
 	{% endif %}
-	{% endfor %}
-	{% for relation in component['OneToManyRelations'] %}
-	{{ relation.name }},
-	{% endfor %}
-	{% for relation in component['OneToOneRelations'] %}
-	{{ relation.name }},
-	{% endfor %}
-	{% for member in component['VectorMembers'] %}
-	{{ member.name }},
 	{% endfor %}
 	)
 end

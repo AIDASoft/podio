@@ -141,6 +141,7 @@ The available fields are
 | `full_type` | The fully qualified type, corresponding to `{{ namespace }}::{{ bare_type }}`. |
 
 ### Julia code generation
+It is an experimental feature.
 Builtin types mapping in Julia
 | cpp       | julia                                                                    |
 |-------------|--------------------------------------------------------------------------------|

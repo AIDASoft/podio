@@ -29,10 +29,11 @@ REPORT_TEXT = """
   Read instructions in the README.md to run your first example!
 """
 REPORT_TEXT_JULIA = """
+  Julia Code generation is an experimental feature.
   Warning: ExtraCode and MutableExtraCode will be ignored during julia code generation.
   PODIO Data Model
   ================
-  Used {yamlfile} to create {nclasses} julia files in {installdir}/
+  Used {yamlfile} to create {nfiles} julia files in {installdir}/
   Read instructions in the README.md to run your first example!
 """
 
@@ -154,6 +155,9 @@ class ClassGenerator:
     for name, datatype in self.datamodel.datatypes.items():
       datamodel['datatypes'].append(self._process_datatype(name, datatype))
 
+    datamodel['static_arrays_import'] = self._has_static_arrays_import(datamodel['components'] + datamodel['datatypes'])
+    datamodel['includes'] = self._sort_components_and_datatypes(datamodel['components'] + datamodel['datatypes'])
+
     if self.proglang == "julia":
       self._process_parent_module(datamodel)
 
@@ -205,9 +209,9 @@ have resolvable schema evolution incompatibilities:")
     if not self.verbose:
       return
     if self.proglang == "julia":
-      nclasses = len(self.datamodel.datatypes) + len(self.datamodel.components) + 1
+      nfiles = len(self.datamodel.datatypes) + len(self.datamodel.components) + 1
       text = REPORT_TEXT_JULIA.format(yamlfile=self.yamlfile,
-                                      nclasses=nclasses,
+                                      nfiles=nfiles,
                                       installdir=self.install_dir)
     if self.proglang == "cpp":
       nclasses = 5 * len(self.datamodel.datatypes) + len(self.datamodel.components)
@@ -296,18 +300,15 @@ have resolvable schema evolution incompatibilities:")
     # original definition can be left untouched
     # pylint: disable=too-many-nested-blocks
     component = deepcopy(component)
-    includes, includes_jl = set(), set()
+    includes = set()
     includes.update(*(m.includes for m in component['Members']))
-    includes_jl.update(*(m.jl_imports for m in component['Members']))
     for member in component['Members']:
       if not (member.is_builtin or member.is_builtin_array):
         includes.add(self._build_include(member))
-        includes_jl.add(self._build_julia_include(member))
 
     includes.update(component.get("ExtraCode", {}).get("includes", "").split('\n'))
 
     component['includes'] = self._sort_includes(includes)
-    component['includes_jl'] = {'struct': sorted(includes_jl)}
     component['class'] = DataType(name)
     component['upstream_edm'] = self.upstream_edm
     component['upstream_edm_name'] = ''
@@ -421,15 +422,6 @@ have resolvable schema evolution incompatibilities:")
           self.root_schema_iorules.add(iorule)
         else:
           raise NotImplementedError(f"Schema evolution for {schema_change} not yet implemented.")
-
-  def _preprocess_for_julia(self, datatype):
-    """Do the preprocessing that is necessary for Julia code generation"""
-    includes_jl_struct = set()
-    for member in datatype['VectorMembers']:
-      if not member.is_builtin:
-        includes_jl_struct.add(self._build_julia_include(member))
-    datatype['includes_jl']['struct'].update((includes_jl_struct))
-    datatype['includes_jl']['struct'] = sorted(datatype['includes_jl']['struct'])
 
   @staticmethod
   def _get_julia_params(datatype):
@@ -571,7 +563,6 @@ have resolvable schema evolution incompatibilities:")
     data = deepcopy(definition)
     data['class'] = DataType(name)
     data['includes_data'] = self._get_member_includes(definition["Members"])
-    data['includes_jl'] = {'struct': self._get_member_includes(definition["Members"], julia=True)}
     data['params_jl'] = sorted(self._get_julia_params(data), key=lambda x: x[0])
     data['upstream_edm'] = self.upstream_edm
     data['upstream_edm_name'] = ''
@@ -580,8 +571,6 @@ have resolvable schema evolution incompatibilities:")
     self._preprocess_for_class(data)
     self._preprocess_for_obj(data)
     self._preprocess_for_collection(data)
-    self._preprocess_for_julia(data)
-
     return data
 
   def _write_edm_def_file(self):
@@ -603,25 +592,20 @@ have resolvable schema evolution incompatibilities:")
     self._write_file('DatamodelDefinition.h',
                      self._eval_template('DatamodelDefinition.h.jinja2', data))
 
-  def _get_member_includes(self, members, julia=False):
+  def _get_member_includes(self, members):
     """Process all members and gather the necessary includes"""
-    includes, includes_jl = set(), set()
+    includes = set()
     includes.update(*(m.includes for m in members))
-    includes_jl.update(*(m.jl_imports for m in members))
     for member in members:
       if member.is_array and not member.is_builtin_array:
         include_from = IncludeFrom.INTERNAL
         if self.upstream_edm and member.array_type in self.upstream_edm.components:
           include_from = IncludeFrom.EXTERNAL
         includes.add(self._build_include_for_class(member.array_bare_type, include_from))
-        includes_jl.add(self._build_julia_include_for_class(member.array_bare_type, include_from))
 
       includes.add(self._build_include(member))
-      includes_jl.add(self._build_julia_include(member))
 
-    if not julia:
-      return self._sort_includes(includes)
-    return includes_jl
+    return self._sort_includes(includes)
 
   def _write_cmake_lists_file(self):
     """Write the names of all generated header and src files into cmake lists"""
@@ -695,17 +679,64 @@ have resolvable schema evolution incompatibilities:")
     # the generated code)
     return ''
 
-  def _build_julia_include(self, member) -> str:
-    """Return the include statement for julia"""
-    return self._build_julia_include_for_class(member.bare_type, self._needs_include(member.full_type))
+  @staticmethod
+  def _sort_components_and_datatypes(data):
+    """Sorts a list of components and datatypes based on dependencies, ensuring that components and datatypes
+    with no dependencies or dependencies on built-in types come first. The function performs
+    topological sorting using Kahn's algorithm."""
+    # Create a dictionary to store dependencies
+    dependencies = {}
+    bare_types_mapping = {}
+
+    for component_data in data:
+      full_type = component_data['class'].full_type
+      bare_type = component_data['class'].bare_type
+      bare_types_mapping[full_type] = bare_type
+      dependencies[full_type] = set()
+
+      # Check dependencies in 'Members'
+      if 'Members' in component_data:
+        for member_data in component_data['Members']:
+          member_full_type = member_data.full_type
+          if not member_data.is_builtin and not member_data.is_builtin_array:
+            dependencies[full_type].add(member_full_type)
+
+      # Check dependencies in 'VectorMembers'
+      if 'VectorMembers' in component_data:
+        for vector_member_data in component_data['VectorMembers']:
+          vector_member_full_type = vector_member_data.full_type
+          if not vector_member_data.is_builtin and not vector_member_data.is_builtin_array:
+            dependencies[full_type].add(vector_member_full_type)
+
+    # Perform topological sorting using Kahn's algorithm
+    sorted_components = []
+    while dependencies:
+      ready = {component for component, deps in dependencies.items() if not deps}
+      if not ready:
+        sorted_components.extend(bare_types_mapping[component] for component in dependencies)
+        break
+
+      for component in ready:
+        del dependencies[component]
+        sorted_components.append(bare_types_mapping[component])
+
+      for deps in dependencies.values():
+        deps -= ready
+
+    # Return the Sorted Components (bare_types)
+    return sorted_components
 
   @staticmethod
-  def _build_julia_include_for_class(classname, include_from: IncludeFrom) -> str:
-    """Return the include statement for julia for this specific class"""
-    if include_from == IncludeFrom.INTERNAL:
-      # If we have an internal include all includes should be relative
-      return f'include("{classname}Struct.jl")'
-    return ''
+  def _has_static_arrays_import(data):
+    """Checks if any member within a list of components and datatypes contains the import statement
+    'using StaticArrays' in its jl_imports. Returns True if found in any member, otherwise False."""
+    for component_data in data:
+      members_data = component_data.get('Members', [])
+      for member_data in members_data:
+        jl_imports = member_data.jl_imports
+        if 'using StaticArrays' in jl_imports:
+          return True
+    return False
 
   def _sort_includes(self, includes):
     """Sort the includes in order to try to have the std includes at the bottom"""
