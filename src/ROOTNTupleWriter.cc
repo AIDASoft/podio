@@ -71,7 +71,7 @@ void ROOTNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& 
   const bool new_category = (catInfo.writer == nullptr);
   if (new_category) {
     // This is the minimal information that we need for now
-    catInfo.name = collsToWrite;
+    catInfo.name = root_utils::sortAlphabeticaly(collsToWrite);
   }
 
   std::vector<StoreCollection> collections;

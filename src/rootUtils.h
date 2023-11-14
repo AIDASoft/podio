@@ -287,9 +287,16 @@ inline bool checkConsistentColls(const std::vector<std::string>& existingColls,
 
   // Since we are guaranteed to have unique names here, we can just look for
   // collisions brute force, which seems to be quickest approach for vector
-  // sizes we typically have here (few hundred)
+  // sizes we typically have (few hundred). We can take advantage of the fact
+  // that the existingColls are ordered (alphabetically and case-insensitive),
+  // so we can do a binary_search
   for (const auto& id : candidateColls) {
-    if (std::find(existingColls.begin(), existingColls.end(), id) == existingColls.end()) {
+    if (!std::binary_search(existingColls.begin(), existingColls.end(), id, [](const auto& lhs, const auto& rhs) {
+          return lhs.size() == rhs.size() &&
+              std::lexicographical_compare(
+                     lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
+                     [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
+        })) {
       return false;
     }
   }
