@@ -40,7 +40,7 @@ using Test
 	@testset "Vector Members" begin
 
 		m1 = ExampleWithVectorMember()
-		m1.count = Float32[1,2,3,4,5]
+		m1.count = [1,2,3,4,5]
 		m1.count[5] = 6
 
 		@test m1.count[5] == 6

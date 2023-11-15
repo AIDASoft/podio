@@ -100,7 +100,7 @@ function {{ datatype['class'].bare_type }}(
 {% endfor %}
 {% for member in datatype['VectorMembers'] %}
 	{% if member.is_builtin %}
-	{{ member.name }}::Vector{ {{ member.julia_type }} } = Vector{ {{ member.julia_type }} }([]),
+	{{ member.name }}::Vector{ {{ member.name }}T } = Vector{ {{ member.julia_type }} }([]),
 	{% else %}
 	{% if upstream_edm and (member.full_type in upstream_edm.components or member.full_type in upstream_edm.datatypes) %}
 	{{ member.name }}::Vector{ {{ upstream_edm_name }}.{{ member.julia_type }}Struct } = Vector{ {{ upstream_edm_name }}.{{ member.julia_type }}Struct }([]),
@@ -109,7 +109,18 @@ function {{ datatype['class'].bare_type }}(
 	{% endif %}
 	{% endif %}
 {% endfor %}
-)
+{% set structure_start = '{' %}
+{% set structure_end = '}' %}
+) {% if datatype['VectorMembers']|selectattr('is_builtin')|list -%}
+    where {{ structure_start -}}
+{% for member in datatype['VectorMembers'] %}
+{% if member.is_builtin %}
+{{ member.name }}T<:{{ abstdatatype.classify_data_type(member.julia_type) }}{% if not loop.last %},{% endif %}
+{% endif %}
+{% endfor -%}
+{{ structure_end }}
+{% endif %}
+
 	return {{ datatype['class'].bare_type }}Struct{{ params.julia_parameters(datatype['params_jl'], "Struct", upstream_edm, upstream_edm_name) }}(
 	{% for member in datatype['Members'] %}
 	{% if member.is_builtin %}
@@ -125,7 +136,11 @@ function {{ datatype['class'].bare_type }}(
 	{{ relation.name }},
 	{% endfor %}
 	{% for member in datatype['VectorMembers'] %}
+	{% if member.is_builtin %}
+	convert(Vector{ {{ member.julia_type }} }, {{ member.name }}),
+	{% else %}
 	{{ member.name }},
+	{% endif %}
 	{% endfor %}
 	)
 end
