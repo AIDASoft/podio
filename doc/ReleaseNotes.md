@@ -1,3 +1,9 @@
+# v00-17-03
+
+* 2023-11-14 tmadlener ([PR#513](https://github.com/AIDASoft/podio/pull/513))
+  - Introduce checks in `ROOTFrameWriter::writeFrame` and `ROOTNTupleWriter::writeFrame` that ensure consistent contents for all Frames of a given category. If inconsistent contents are found an exception is thrown. Before these changes this might lead to a crash or to unreadable files. Fixes #382 
+  - Refactor `ROOTNTupleWriter` internals to have only one map that keeps track of categories instead of two maps and a set that need to be kept consistent.
+
 # v00-17-02
 
 * 2023-11-08 jmcarcell ([PR#511](https://github.com/AIDASoft/podio/pull/511))
