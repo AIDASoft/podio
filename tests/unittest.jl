@@ -1,3 +1,13 @@
+# Check if StaticArrays is available, if not, install it locally
+try
+    using StaticArrays
+catch
+    import Pkg
+    Pkg.activate(@__DIR__)
+    Pkg.add("StaticArrays")
+    using StaticArrays
+end
+
 # datamodeljulia/Datamodeljulia.jl file included inside extension_model/extensionmodeljulia/Extensionmodeljulia.jl file
 include("extension_model/extensionmodeljulia/Extensionmodeljulia.jl")
 using .Datamodeljulia
