@@ -153,20 +153,55 @@ TEST_CASE("Component", "[basics]") {
   REQUIRE(3 == info.component().data.x);
 }
 
+TEST_CASE("makeEmpty", "[basics]") {
+  auto hit = ExampleHit::makeEmpty();
+  // Any access to such a handle is a crash
+  REQUIRE_FALSE(hit.isAvailable());
+
+  hit = MutableExampleHit{};
+  REQUIRE(hit.isAvailable());
+  REQUIRE(hit.energy() == 0);
+}
+
 TEST_CASE("Cyclic", "[basics][relations][memory-management]") {
-  auto start = MutableExampleForCyclicDependency1();
-  auto isAvailable = start.ref().isAvailable();
-  REQUIRE_FALSE(isAvailable);
-  auto end = MutableExampleForCyclicDependency2();
+  auto coll1 = ExampleForCyclicDependency1Collection();
+  auto start = coll1.create();
+  REQUIRE_FALSE(start.ref().isAvailable());
+  auto coll2 = ExampleForCyclicDependency2Collection();
+  auto end = coll2.create();
   start.ref(end);
-  isAvailable = start.ref().isAvailable();
-  REQUIRE(isAvailable);
+  REQUIRE(start.ref().isAvailable());
   end.ref(start);
   REQUIRE(start == end.ref());
   auto end_eq = start.ref();
   auto start_eq = end_eq.ref();
   REQUIRE(start == start_eq);
   REQUIRE(start == start.ref().ref());
+}
+
+TEST_CASE("Cyclic w/o collection", "[LEAK-FAIL][basics][relations][memory-management]") {
+  auto start = MutableExampleForCyclicDependency1{};
+  REQUIRE_FALSE(start.ref().isAvailable());
+  auto end = MutableExampleForCyclicDependency2{};
+  start.ref(end);
+  REQUIRE(start.ref().isAvailable());
+  end.ref(start);
+  REQUIRE(start == end.ref());
+  auto end_eq = start.ref();
+  auto start_eq = end_eq.ref();
+  REQUIRE(start == start_eq);
+  REQUIRE(start == start.ref().ref());
+}
+
+TEST_CASE("Container lifetime", "[basics][memory-management]") {
+  std::vector<ExampleHit> hits;
+  {
+    MutableExampleHit hit;
+    hit.energy(3.14f);
+    hits.push_back(hit);
+  }
+  auto hit = hits[0];
+  REQUIRE(hit.energy() == 3.14f);
 }
 
 TEST_CASE("Invalid_refs", "[basics][relations]") {

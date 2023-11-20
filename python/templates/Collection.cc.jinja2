@@ -165,7 +165,7 @@ void {{ collection_type }}::push_back({{ class.bare_type }} object) {
     // This path is only possible if we arrive here from an untracked Mutable object
     throw std::invalid_argument("Object needs to be tracked by another collection in order for it to be storable in a subset collection");
   }
-  m_storage.entries.push_back(obj);
+  m_storage.entries.push_back(obj.release());
 }
 
 podio::CollectionWriteBuffers {{ collection_type }}::getBuffers() {

@@ -81,8 +81,10 @@ public:
 
   /// Get a raw pointer to the managed pointer and assume ownership.
   T* release() {
-    // From now on we only need to keep track of the control block
-    m_ctrlBlock->owned = false;
+    if (m_ctrlBlock) {
+      // From now on we only need to keep track of the control block
+      m_ctrlBlock->owned = false;
+    }
     return m_ptr;
   }
 
