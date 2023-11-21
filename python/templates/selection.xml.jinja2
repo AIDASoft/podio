@@ -30,6 +30,7 @@
 {# Additionally, in order to allow "direct" access to the user facing classes #}
 {# we have to declare them here, otherwise they cannot be easily imported #}
 {{ class_selection(class, prefix='Mutable') }}
+{{ class_selection(class) }}
 {{ class_selection(class, postfix='Collection') }}
 {% endfor %}
 
