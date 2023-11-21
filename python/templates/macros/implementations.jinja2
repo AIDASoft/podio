@@ -1,4 +1,4 @@
-{% macro common_constructors_destructors(type, members, prefix='') %}
+{% macro constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
 
 {{ full_type }}::{{ full_type }}() :

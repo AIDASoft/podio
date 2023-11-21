@@ -54,9 +54,9 @@
 {% endmacro %}
 
 
-{% macro common_constructors_destructors(type, members, prefix='') %}
+{% macro constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
-  /// Default constructor
+  /// default constructor
   {{ full_type }}();
 
 {%if members %}
@@ -82,6 +82,8 @@
 {% set full_type = prefix + type %}
   /// check whether the object is actually available
   bool isAvailable() const;
+  /// disconnect from {{ type }}Obj instance
+  void unlink() { m_obj = podio::utils::MaybeSharedPtr<{{ type }}Obj>{nullptr}; }
 
 {% set inverse_type = type if prefix else 'Mutable' + type %}
   bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }

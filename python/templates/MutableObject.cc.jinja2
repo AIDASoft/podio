@@ -1,4 +1,3 @@
-#include "podio/utilities/MaybeSharedPtr.h"
 {% import "macros/utils.jinja2" as utils %}
 {% import "macros/implementations.jinja2" as macros %}
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
@@ -17,8 +16,7 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.common_constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
-
+{{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
 Mutable{{ class.bare_type }}::operator {{ class.bare_type }}() const { return {{ class.bare_type }}(m_obj); }
 
 {{ macros.member_getters(class, Members, use_get_syntax, prefix='Mutable') }}
