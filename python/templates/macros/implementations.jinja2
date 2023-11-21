@@ -1,5 +1,18 @@
 {% macro common_constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
+
+{{ full_type }}::{{ full_type }}() :
+  m_obj(new {{ type }}Obj{}, podio::utils::MarkOwned) {}
+
+{% if members %}
+{{ full_type }}::{{ full_type }}({{ members | map(attribute='signature') | join(', ') }}) :
+  m_obj(new {{ type }}Obj{}, podio::utils::MarkOwned) {
+{% for member in members %}
+  m_obj->data.{{ member.name }} = {{ member.name }};
+{% endfor %}
+}
+{% endif %}
+
 {{  full_type }}& {{ full_type }}::operator=({{ full_type }} other) {
   swap(*this, other);
   return *this;
@@ -8,6 +21,9 @@
 Mutable{{ type }} {{ full_type }}::clone() const {
   return Mutable{{ type }}(podio::utils::MaybeSharedPtr(new {{ type }}Obj(*m_obj), podio::utils::MarkOwned));
 }
+
+{{ full_type }}::{{ full_type }}(podio::utils::MaybeSharedPtr<{{ type }}Obj> obj) : m_obj(obj) {}
+
 {%- endmacro %}
 
 

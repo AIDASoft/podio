@@ -56,6 +56,14 @@
 
 {% macro common_constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
+  /// Default constructor
+  {{ full_type }}();
+
+{%if members %}
+  /// Constructor initializing all members
+  {{ full_type }}({{ members | map(attribute='signature') | join(', ')  }});
+{% endif %}
+
   /// copy constructor
   {{  full_type }}(const {{  full_type }}& other) = default;
 

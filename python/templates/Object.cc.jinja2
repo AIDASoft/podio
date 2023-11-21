@@ -19,8 +19,6 @@
 
 {{ macros.common_constructors_destructors(class.bare_type, Members) }}
 
-{{ class.bare_type }}::{{ class.bare_type }}(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> obj) : m_obj(obj) {}
-
 {{ class.bare_type }}::{{ class.bare_type }}({{ class.bare_type }}Obj* obj) : m_obj(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj>(obj)) {}
 
 {{ class.bare_type }} {{ class.bare_type }}::makeEmpty() {

@@ -38,15 +38,7 @@ public:
   using object_type = {{ class.bare_type }};
   using collection_type = {{ class.bare_type }}Collection;
 
-  /// Default constructor
-  Mutable{{ class.bare_type }}();
-
 {{ macros.common_constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
-{% if Members %}
-
-  /// Constructor initializing all members
-  Mutable{{ class.bare_type }}({{ Members | map(attribute='signature') | join(', ')  }});
-{% endif %}
 
   /// conversion to const object
   operator {{ class.bare_type }}() const;
