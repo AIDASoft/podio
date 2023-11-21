@@ -1,18 +1,23 @@
 # Examples for Supported Interface
 
-The following snippets show the support of PODIO for the different use cases.
- The event `store` used in the examples is just an example implementation, and has to be replaced with the store used in the framework of your choice.
+The following snippets show the support of PODIO for the different use cases as
+well as some potential pitfalls. These examples are mainly concerned with how
+collections of objects and the objects themselve interact. As such they are
+framework agnostic.
 
 ### Object Ownership
 
 Every data created is either explicitly owned by collections or automatically garbage-collected. There is no need for any `new` or `delete` call on user side.
+As a general rule: **If an object has been added to a collection, the collection
+assumes ownership and if the collection goes out of scope all handles that point
+to objects in this collection are invalidated as well.**
 
 ### Object Creation and Storage
 
 Objects and collections can be created via factories, which ensure proper object ownership:
 
 ```cpp
-    auto& hits = store.create<HitCollection>("hits")
+    auto hits = HitCollection{};
     auto hit1 = hits.create(1.4,2.4,3.7,4.2);  // init with values
     auto hit2 = hits.create(); // default-construct object
     hit2.energy(42.23);
@@ -36,10 +41,10 @@ In this respect all objects behave like objects in Python.
 The library supports the creation of one-to-many relations:
 
 ```cpp
-    auto& hits = store.create<HitCollection>("hits");
+    auto hits = HitCollection{};
     auto hit1 = hits.create();
     auto hit2 = hits.create();
-    auto& clusters = store.create<ClusterCollection>("clusters");
+    auto clusters = ClusterCollection{};
     auto cluster = clusters.create();
     cluster.addHit(hit1);
     cluster.addHit(hit2);
