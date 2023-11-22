@@ -198,3 +198,39 @@ datatypes :
       - ex2::NamespaceStruct s{10, 11} // one that we happen to know works
       - double d{9.876e5} // double val
       - CompWithInit comp // To make sure that the default initializer of the component does what it should
+
+  ExampleWithInterfaceRelation:
+    Description: "Datatype that uses an interface type as one of its relations"
+    Author: "Thomas Madlener"
+    OneToOneRelations:
+      - TypeWithEnergy aSingleEnergyType // single relation
+      - ex42::AnotherTypeWithEnergy energyRelation // another single relation
+    OneToManyRelations:
+      - TypeWithEnergy manyEnergies // multiple relations
+      - ex42::AnotherTypeWithEnergy moreEnergies // multiple namespace relations
+
+  nsp::EnergyInNamespace:
+    Description: "A type with energy in a namespace"
+    Author: "Thomas Madlener"
+    Members:
+      - double energy // energy
+
+interfaces:
+  TypeWithEnergy:
+    Description: "Generic interface for all types with an energy member"
+    Author: "Thomas Madlener"
+    Types:
+      - ExampleMC
+      - ExampleCluster
+      - ExampleHit
+    Members:
+      - double energy // the energy
+
+  ex42::AnotherTypeWithEnergy:
+    Description: "Another interface type for making sure they also work in namespaces"
+    Author: "Thomas Madlener"
+    Types:
+      - ExampleHit
+      - nsp::EnergyInNamespace
+    Members:
+      - double energy // the energy

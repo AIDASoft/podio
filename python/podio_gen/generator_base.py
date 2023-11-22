@@ -73,26 +73,38 @@ class ClassGeneratorBaseMixin:
                          processed. Needs to return a (potentially) empty
                          dictionary
 
-  do_process_component(name: str, component: dict): do some language specific
-                       processing for a component populating the component
-                       dictionary further. When called only the "class" key will
-                       be populated. This function also has to to take care of
-                       filling the necessary templates!
+  do_process_component(name: str, component: dict) -> dict: do some language
+                       specific processing for a component populating the
+                       component dictionary further. When called only the
+                       "class" key will be populated. Return a dictionary or
+                       None. If None, this will not be put into the "components"
+                       list. This function also has to to take care of filling
+                       the necessary templates!
 
   do_process_datatype(name: str, datatype: dict): do some language specific
                       processing for a datatype populating the datatype
                       dictionary further. When called only the "class" key will
-                      be populated. This function also has to take care of
-                      filling the necessary templates!
+                      be populated. Return a dictionary or None. If None, this
+                      will not be put into the "datatypes" list. This function
+                      also has to take care of filling the necessary templates!
+
+  do_process_interface(name: str, interface: dict): do some language specific
+                       processing for an interface type, populating the
+                       interface dictionary further. When called only the
+                       "class" key will be populated. Return a dictionary or
+                       None. If None, this will not be put into the "interfaces"
+                       list. This function also has to take care of filling the
+                       necessary templates!
 
   post_process(datamodel: dict): do some global post processing for which all
                components and datatypes need to have been processed already.
                Gets called with the dictionary that has been created in
                pre_proces and filled during the processing. The process
-               components and datatypes are accessible via the "components" and
-               "datatypes" keys respectively.
+               components and datatypes are accessible via the "components",
+               "datatypes" and "interfaces" keys respectively.
 
   print_report(): prints a report summarizing what has been generated
+
   """
   def __init__(self, yamlfile, install_dir, package_name, verbose, dryrun, upstream_edm):
     self.yamlfile = yamlfile
@@ -128,12 +140,22 @@ class ClassGeneratorBaseMixin:
 
     datamodel['components'] = []
     datamodel['datatypes'] = []
+    datamodel['interfaces'] = []
 
     for name, component in self.datamodel.components.items():
-      datamodel["components"].append(self._process_component(name, component))
+      comp = self._process_component(name, component)
+      if comp is not None:
+        datamodel["components"].append(comp)
 
     for name, datatype in self.datamodel.datatypes.items():
-      datamodel["datatypes"].append(self._process_datatype(name, datatype))
+      datat = self._process_datatype(name, datatype)
+      if datat is not None:
+        datamodel["datatypes"].append(datat)
+
+    for name, interface in self.datamodel.interfaces.items():
+      interf = self._process_interface(name, interface)
+      if interf is not None:
+        datamodel["interfaces"].append(interf)
 
     self.post_process(datamodel)
     if self.verbose:
@@ -147,8 +169,7 @@ class ClassGeneratorBaseMixin:
     component = deepcopy(component)
     component['class'] = DataType(name)
 
-    self.do_process_component(name, component)
-    return component
+    return self.do_process_component(name, component)
 
   def _process_datatype(self, name, datatype):
     """Process a single datatype into a dictionary that can be used in jinja2
@@ -156,9 +177,15 @@ class ClassGeneratorBaseMixin:
     datatype = deepcopy(datatype)
     datatype["class"] = DataType(name)
 
-    self.do_process_datatype(name, datatype)
+    return self.do_process_datatype(name, datatype)
 
-    return datatype
+  def _process_interface(self, name, interface):
+    """Process a single interface definition into a dictionary that can be used
+    in jinja2 templates and return that"""
+    interface = deepcopy(interface)
+    interface["class"] = DataType(name)
+
+    return self.do_process_interface(name, interface)
 
   @staticmethod
   def _get_filenames_templates(template_base, name):
@@ -228,3 +255,10 @@ class ClassGeneratorBaseMixin:
     data['incfolder'] = self.incfolder
     for filename, template in self._get_filenames_templates(template_base, data['class'].bare_type):
       self._write_file(filename, self._eval_template(template, data, old_schema_data))
+
+  def _is_interface(self, classname):
+    """Check whether this is an interface type or a regular datatype"""
+    all_interfaces = self.datamodel.interfaces
+    if self.upstream_edm:
+      all_interfaces = list(self.datamodel.interfaces) + list(self.upstream_edm.interfaces)
+    return classname in all_interfaces

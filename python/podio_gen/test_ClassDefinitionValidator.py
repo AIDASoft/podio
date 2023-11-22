@@ -9,16 +9,16 @@ import unittest
 from copy import deepcopy
 
 from podio_gen.podio_config_reader import ClassDefinitionValidator, MemberVariable, DefinitionError
-from podio_gen.generator_utils import DataModel
+from podio_gen.generator_utils import DataModel, DataType
 
 
-def make_dm(components, datatypes, options=None):
+def make_dm(components, datatypes, interfaces=None, options=None):
   """Small helper function to turn things into a datamodel dict as expected by
   the validator"""
-  return DataModel(datatypes, components, options)
+  return DataModel(datatypes, components, interfaces, options)
 
 
-class ClassDefinitionValidatorTest(unittest.TestCase):
+class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
   """Unit tests for the ClassDefinitionValidator"""
   def setUp(self):
     valid_component_members = [
@@ -57,6 +57,15 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                 'implementation': 'nothing has changed',
                 'includes': '#include <something_else> this will appear in both includes!'
                 }
+            }
+        }
+
+    self.valid_interface = {
+        "InterfaceType": {
+            "Author": "Karma Chameleon",
+            "Description": "I can be many things but only one at a time",
+            "Members": valid_datatype_members,
+            "Types": [DataType("DataType")]
             }
         }
 
@@ -111,13 +120,13 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
   def test_datatype_valid_members(self):
     self._assert_no_exception(DefinitionError, '{} should not raise for a valid datatype',
-                              self.validate, make_dm({}, self.valid_datatype, self.def_opts))
+                              self.validate, make_dm({}, self.valid_datatype, options=self.def_opts))
 
     # things should still work if we add a component member
     self.valid_datatype['DataType']['Members'].append(MemberVariable(type='Component', name='comp'))
     self._assert_no_exception(DefinitionError, '{} should allow for members that are components',
                               self.validate,
-                              make_dm(self.valid_component, self.valid_datatype, self.def_opts))
+                              make_dm(self.valid_component, self.valid_datatype, options=self.def_opts))
 
     # also when we add an array of components
     self.valid_datatype['DataType']['Members'].append(MemberVariable(array_type='Component',
@@ -125,14 +134,14 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
                                                                      name='arrComp'))
     self._assert_no_exception(DefinitionError, '{} should allow for arrays of components as members',
                               self.validate,
-                              make_dm(self.valid_component, self.valid_datatype, self.def_opts))
+                              make_dm(self.valid_component, self.valid_datatype, options=self.def_opts))
 
     # pod members can be redefined if they are note exposed
     self.valid_datatype['DataType']['Members'].append(MemberVariable(type='double', name='aFloat'))
     self._assert_no_exception(DefinitionError,
                               '{} should allow for re-use of component names if the components are not exposed',
                               self.validate,
-                              make_dm(self.valid_component, self.valid_datatype, self.def_opts))
+                              make_dm(self.valid_component, self.valid_datatype, options=self.def_opts))
 
     datatype = {
         'DataTypeWithoutMembers': {
@@ -140,7 +149,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
             }
         }
     self._assert_no_exception(DefinitionError, '{} should allow for almost empty datatypes',
-                              self.validate, make_dm({}, datatype, self.def_opts))
+                              self.validate, make_dm({}, datatype, options=self.def_opts))
 
   def test_datatype_invalid_definitions(self):
     for required in ('Author', 'Description'):
@@ -288,7 +297,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
     upstream_dm = make_dm(self.valid_component, {})
 
     self._assert_no_exception(DefinitionError, '{} should allow to use upstream components in components',
-                              self.validate, make_dm(component, {}, self.def_opts), upstream_dm)
+                              self.validate, make_dm(component, {}, options=self.def_opts), upstream_dm)
 
   def test_component_invalid_upstream(self):
     """Test that a component does not pass if it is not available upstream or in the
@@ -344,7 +353,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
 
     upstream_dm = make_dm(self.valid_component, self.valid_datatype, self.def_opts)
     self._assert_no_exception(DefinitionError, '{} should allow to use to use upstream datatypes and components',
-                              self.validate, make_dm({}, datatype, self.def_opts), upstream_dm)
+                              self.validate, make_dm({}, datatype, {}, self.def_opts), upstream_dm)
 
   def test_datatype_invalid_upstream(self):
     """Test that datatypes that are not from upstream cannot be used"""
@@ -355,30 +364,98 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
             }
         }
 
-    upstream_dm = make_dm(self.valid_component, self.valid_datatype, self.def_opts)
+    upstream_dm = make_dm(self.valid_component, self.valid_datatype, {}, self.def_opts)
 
     # Check for invalid members
     dtype = deepcopy(basetype)
     dtype['DsType']['Members'] = [MemberVariable(type='InvalidType', name='foo', description='non existant upstream')]
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
+      self.validate(make_dm({}, dtype, options=self.def_opts), upstream_dm)
 
     # Check relations
     dtype = deepcopy(basetype)
     dtype['DsType']['OneToOneRelations'] = [MemberVariable(type='InvalidType', name='foo', description='invalid')]
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
+      self.validate(make_dm({}, dtype, options=self.def_opts), upstream_dm)
 
     dtype = deepcopy(basetype)
     dtype['DsType']['OneToManyRelations'] = [MemberVariable(type='InvalidType', name='foo', description='invalid')]
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
+      self.validate(make_dm({}, dtype, options=self.def_opts), upstream_dm)
 
     # vector members
     dtype = deepcopy(basetype)
     dtype['DsType']['VectorMembers'] = [MemberVariable(type='InvalidType', name='foo', description='invalid')]
     with self.assertRaises(DefinitionError):
-      self.validate(make_dm({}, dtype, self.def_opts), upstream_dm)
+      self.validate(make_dm({}, dtype, options=self.def_opts), upstream_dm)
+
+  def test_interface_valid_def(self):
+    """Make sure that a valid interface definition inside a valid datamodel passes without exceptions"""
+    self._assert_no_exception(DefinitionError, '{} should not raise for a valid interface type',
+                              self.validate, make_dm({}, self.valid_datatype, self.valid_interface), False)
+
+  def test_interface_invalid_fields(self):
+    """Make sure that interface definitions do not contain any superfluous fields"""
+    for inv_field in ['OneToManyRelations', 'VectorMembers', 'OneToOneRelations']:
+      interface = deepcopy(self.valid_interface)
+      interface['InterfaceType'][inv_field] = ['An invalid field']
+      with self.assertRaises(DefinitionError):
+        self.validate(make_dm({}, self.valid_datatype, interface), False)
+
+  def test_interface_missing_fields(self):
+    """Make sure that interfaces have all the required types when they pass validation"""
+    for req in ('Author', 'Description', 'Members', 'Types'):
+      int_type = deepcopy(self.valid_interface)
+      del int_type['InterfaceType'][req]
+      with self.assertRaises(DefinitionError):
+        self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+  def test_interface_only_defined_datatypes(self):
+    """Make sure that the interface only uses defined datatypes"""
+    int_type = deepcopy(self.valid_interface)
+    int_type['InterfaceType']['Types'].append(DataType('UndefinedType'))
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+    int_type = deepcopy(self.valid_interface)
+    int_type['InterfaceType']['Types'].append(DataType('Component'))
+
+    int_type = deepcopy(self.valid_interface)
+    int_type['InterfaceType']['Types'].append(DataType('float'))
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+  def test_interface_no_redefining_datatype(self):
+    """Make sure that there is no datatype already with the same name"""
+    int_type = {
+        'DataType': {
+            'Author': 'Copycat',
+            'Description': 'I shall not redefine datatypes as interfaces',
+            'Members': [],
+            'Types': []
+            }
+        }
+    with self.assertRaises(DefinitionError):
+      self.validate(make_dm({}, self.valid_datatype, int_type), False)
+
+  def test_datatype_uses_interface_type(self):
+    """Make sure that a data type can use a valid interface definition"""
+    datatype = deepcopy(self.valid_datatype)
+    datatype['DataType']['OneToManyRelations'] = [MemberVariable(type='InterfaceType', name='interfaceRelation')]
+    self._assert_no_exception(DefinitionError, '{} should allow to use relations to interface types',
+                              self.validate, make_dm({}, datatype, self.valid_interface), False)
+
+  def test_interface_valid_upstream(self):
+   """Make sure that we can use interface definitions from upstream models"""
+   # Create an upstream datamodel that contains the interface type
+   upstream_dm = make_dm({}, self.valid_datatype, self.valid_interface)
+
+   # Make a downstream model datatype that uses the interface from the upstream
+   # but doesn't bring along its own interface definitions
+   datatype = {'DownstreamType': deepcopy(self.valid_datatype['DataType'])}
+   datatype['DownstreamType']['OneToOneRelations'] = [MemberVariable(type='InterfaceType', name='interfaceRelation')]
+   self._assert_no_exception(DefinitionError, '{} should allow to use interface types from an upstream datamodel',
+                             self.validate, make_dm({}, datatype), upstream_dm)
 
 
 if __name__ == '__main__':

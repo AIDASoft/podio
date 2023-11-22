@@ -116,6 +116,9 @@ class DataType:
 
     return scoped_type
 
+  def _to_json(self):
+    """Return a string representation that can be parsed again"""
+    return self.full_type
 
 class MemberVariable:
   """Simple class to hold information about a member variable"""
@@ -138,6 +141,7 @@ class MemberVariable:
 
     self.includes = set()
     self.jl_imports = set()
+    self.interface_types = []  # populated in the generator script if necessary
 
     if kwargs:
       raise ValueError(f"Unused kwargs in MemberVariable: {list(kwargs.keys())}")
@@ -258,7 +262,7 @@ class MemberVariable:
 
 class DataModel:  # pylint: disable=too-few-public-methods
   """A class for holding a complete datamodel read from a configuration file"""
-  def __init__(self, datatypes=None, components=None, options=None, schema_version=None):
+  def __init__(self, datatypes=None, components=None, interfaces=None, options=None, schema_version=None):
     self.options = options or {
         # should getters / setters be prefixed with get / set?
         "getSyntax": False,
@@ -270,6 +274,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
     self.schema_version = schema_version
     self.components = components or {}
     self.datatypes = datatypes or {}
+    self.interfaces = interfaces or {}
 
   def _to_json(self):
     """Return the dictionary, so that we can easily hook this into the pythons
