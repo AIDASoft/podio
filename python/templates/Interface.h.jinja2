@@ -1,0 +1,136 @@
+{% import "macros/declarations.jinja2" as common_macros %}
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/interface.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}_H
+
+{# We only need one concrete type below for the makeEmpty static initialization. #}
+{{ include_types[0] }}
+
+#include "podio/ObjectID.h"
+
+#include <memory>
+#include <ostream>
+#include <stdexcept>
+
+{{ utils.namespace_open(class.namespace) }}
+
+{{ common_macros.class_description(class.bare_type, Description, Author) }}
+class {{ class.bare_type }} {
+
+  struct Concept {
+    virtual ~Concept() = default;
+    virtual std::unique_ptr<Concept> clone() const = 0;
+    virtual void print(std::ostream&) const = 0;
+
+    virtual podio::ObjectID getObjectID() const = 0;
+    virtual bool isAvailable() const = 0;
+    virtual void unlink() = 0;
+{{ macros.member_getters_concept(Members, use_get_syntax) }}
+    virtual const std::type_info& typeInfo() const = 0;
+    virtual bool equal(const Concept* rhs) const = 0;
+  };
+
+  template<typename ValueT>
+  struct Model final : Concept {
+    ~Model() = default;
+    Model(ValueT value) : m_value(value) {}
+
+    std::unique_ptr<Concept> clone() const final {
+      return std::make_unique<Model<ValueT>>(m_value);
+    }
+
+    void print(std::ostream& os) const final {
+      os << m_value;
+    }
+
+    void unlink() final { m_value.unlink(); }
+    bool isAvailable() const final { return m_value.isAvailable(); }
+    podio::ObjectID getObjectID() const { return m_value.getObjectID(); }
+
+    const std::type_info& typeInfo() const final { return typeid(ValueT); }
+
+    bool equal(const Concept* rhs) const final {
+      if (typeInfo() == rhs->typeInfo()) {
+        return m_value == static_cast<const Model<ValueT>*>(rhs)->m_value;
+      }
+      return false;
+    }
+
+{{ macros.member_getters_model(Members, use_get_syntax) }}
+
+    ValueT m_value{};
+  };
+
+  std::unique_ptr<Concept> m_self{nullptr};
+
+public:
+  template<typename ValueT>
+  {{ class.bare_type }}(ValueT value) :
+    m_self(std::make_unique<Model<ValueT>>(value)) {}
+
+  {{ class.bare_type }}(const {{ class.bare_type }}& other) :
+    m_self(other.m_self->clone()) {}
+  {{ class.bare_type }}& operator=(const {{ class.bare_type }}& other) {
+    {{ class.bare_type }} tmp{other};
+    std::swap(tmp.m_self, this->m_self);
+    return *this;
+  }
+
+  ~{{ class.bare_type }}() = default;
+  {{ class.bare_type }}({{ class.bare_type }}&&) = default;
+  {{ class.bare_type }}& operator=({{ class.bare_type }}&&) = default;
+
+  /// Create an empty handle
+  static {{ class.bare_type }} makeEmpty() {
+    // We simply chose the first type of the interfaced types here to initialize
+    // an empty handle
+    return {{ Types[0] }}::makeEmpty();
+  }
+
+  /// check whether the object is actually available
+  bool isAvailable() const { return m_self->isAvailable(); }
+  /// disconnect from the underlying value
+  void unlink() { m_self->unlink(); }
+
+  podio::ObjectID id() const { return getObjectID(); }
+  podio::ObjectID getObjectID() const { return m_self->getObjectID(); }
+
+  /// Check if the object currently holds a value of the requested type
+  template<typename T>
+  bool holds() const {
+    return typeid(T) == m_self->typeInfo();
+  }
+
+  /// Get the contained value as the concrete type it was put in. This will
+  /// throw a std::runtime_error if T is not the type of the currently held
+  /// value. Use holds to check beforehand if necessary  template<typename T>
+  template<typename T>
+  T getValue() const {
+    if (!holds<T>()) {
+      throw std::runtime_error("Cannot get value as object currently holds anotyer type");
+    }
+    // We can safely cast here since we check types before
+    return static_cast<Model<T>*>(m_self.get())->m_value;
+  }
+
+  bool operator==(const {{ class.bare_type }}& other) const {
+    return m_self->equal(other.m_self.get());
+  }
+  bool operator!=(const {{ class.bare_type }}& other) const {
+    return !(*this == other);
+  }
+
+{{ macros.member_getters(Members, use_get_syntax) }}
+
+  friend std::ostream& operator<<(std::ostream& os, const {{ class.bare_type }}& value) {
+    value.m_self->print(os);
+    return os;
+  }
+};
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

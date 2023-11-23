@@ -1,0 +1,48 @@
+{% macro member_getters_concept(members, get_syntax) %}
+{%for member in members %}
+    virtual const {{ member.full_type }}& {{ member.getter_name(get_syntax) }}() const = 0;
+{% if member.is_array %}
+    virtual const {{ member.array_type }}& {{ member.getter_name(get_syntax) }}(size_t i) const = 0;
+{%- endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+    virtual const {{ sub_member.full_type }}& {{ sub_member.getter_name(get_sytnax) }}() const = 0;
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endmacro %}
+
+
+{% macro member_getters_model(members, get_syntax) %}
+{%for member in members %}
+    const {{ member.full_type }}& {{ member.getter_name(get_syntax) }}() const final { return m_value.{{ member.getter_name(get_syntax) }}(); }
+{% if member.is_array %}
+    const {{ member.array_type }}& {{ member.getter_name(get_syntax) }}(size_t i) const final { return m_value.{{ member.getter_name(get_syntax) }}(i); }
+{%- endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+    const {{ sub_member.full_type }}& {{ sub_member.getter_name(get_sytnax) }}() const final { return m_value.{{ sub_member.getter_name(get_syntax) }}(); }
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endmacro %}
+
+{% macro member_getters(members, get_syntax) %}
+{%for member in members %}
+  /// Access the {{ member.docstring }}
+  const {{ member.full_type }}& {{ member.getter_name(get_syntax) }}() const { return m_self->{{ member.getter_name(get_syntax) }}(); }
+{% if member.is_array %}
+  /// Access item i of the {{ member.docstring }}
+  const {{ member.array_type }}& {{ member.getter_name(get_syntax) }}(size_t i) const { return m_self->{{ member.getter_name(get_syntax) }}(i); }
+{%- endif %}
+{% if member.sub_members %}
+{% for sub_member in member.sub_members %}
+  /// Access the member of {{ member.docstring }}
+  const {{ sub_member.full_type }}& {{ sub_member.getter_name(get_sytnax) }}() const { return m_self->{{ sub_member.getter_name(get_syntax) }}(); }
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endmacro %}

@@ -209,6 +209,7 @@ class ClassGeneratorBaseMixin:
     endings = {
         'Data': ('h',),
         'PrintInfo': ('h',),
+        'Interface': ('h',),
         'MutableStruct': ('jl',),
         'ParentModule': ('jl',),
         }.get(template_base, ('h', 'cc'))
