@@ -223,9 +223,9 @@ interfaces:
     Description: "Generic interface for all types with an energy member"
     Author: "Thomas Madlener"
     Types:
+      - ExampleHit
       - ExampleMC
       - ExampleCluster
-      - ExampleHit
     Members:
       - double energy // the energy
 
