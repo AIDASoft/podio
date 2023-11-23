@@ -29,18 +29,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_frame_root
     read_frame_root
 
-    write_sio
-    read_sio
-    read_and_write_sio
-    write_timed_sio
-    read_timed_sio
     check_benchmark_outputs_sio
-    write_frame_sio
-    read_frame_sio
-    read_frame_legacy_sio
     write_python_frame_sio
     read_python_frame_sio
-    read_and_write_frame_sio
 
     write_ascii
 
@@ -79,4 +70,24 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
   if("@USE_SANITIZER@" MATCHES "Memory(WithOrigin)?")
     list(REMOVE_ITEM CTEST_CUSTOM_TESTS_IGNORE ostream_operator)
   endif()
+
+  # There is still an (indirect) leak somewhere in the collection buffer
+  # machinery before they hit the collections.
+  # See also https://github.com/AIDASoft/podio/issues/506
+  if("@USE_SANITIZER@" MATCHES "Address")
+    set(CTEST_CUSTOM_TESTS_IGNORE
+      ${CTEST_CUSTOM_TESTS_IGNORE}
+
+      write_sio
+      read_sio
+      read_and_write_sio
+      write_timed_sio
+      read_timed_sio
+      write_frame_sio
+      read_frame_sio
+      read_frame_legacy_sio
+      read_and_write_frame_sio
+      )
+  endif()
+
 endif()
