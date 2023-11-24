@@ -183,6 +183,25 @@ class MemberVariable:
       return self.name
     return _prefix_name(self.name, "get")
 
+  def getter_return_type(self, for_array=False):
+    """Get the return type for a getter function for a variable
+
+    All types that are builtin will be returned by value, the rest will be
+    returned as const&
+
+    Args:
+        for_array (bool, optional): Whether the type should be for an indexed
+            array access
+    """
+    if for_array:
+      if self.is_builtin_array:
+        return self.array_type
+      return f"const {self.array_type}&"
+    if self.is_builtin:
+      return self.full_type
+    # everything else will just be by const referene
+    return f"const {self.full_type}&"
+
   def setter_name(self, get_syntax, is_relation=False):
     """Get the setter name of the variable"""
     if is_relation:
