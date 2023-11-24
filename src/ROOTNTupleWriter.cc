@@ -164,6 +164,10 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel>
 ROOTNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
   auto model = ROOT::Experimental::RNTupleModel::CreateBare();
   for (auto& [name, coll] : collections) {
+    // For the first entry in each category we also record the datamodel
+    // definition
+    m_datamodelCollector.registerDatamodelDefinition(coll, name);
+
     const auto collBuffers = coll->getBuffers();
 
     if (collBuffers.vecPtr) {
@@ -252,7 +256,7 @@ void ROOTNTupleWriter::finish() {
   auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
   auto edmField =
       m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
-  *edmField = edmDefinitions;
+  *edmField = std::move(edmDefinitions);
 
   auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
   for (auto& [c, _] : m_categories) {

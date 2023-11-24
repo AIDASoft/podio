@@ -87,6 +87,7 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   auto edm = edmView(0);
+  m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm));
 
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);
