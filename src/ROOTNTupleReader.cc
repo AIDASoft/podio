@@ -107,6 +107,15 @@ unsigned ROOTNTupleReader::getEntries(const std::string& name) {
   return m_totalEntries[name];
 }
 
+std::vector<std::string_view> ROOTNTupleReader::getAvailableCategories() const {
+  std::vector<std::string_view> cats;
+  cats.reserve(m_availableCategories.size());
+  for (const auto& cat : m_availableCategories) {
+    cats.emplace_back(cat);
+  }
+  return cats;
+}
+
 std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readNextEntry(const std::string& name) {
   return readEntry(name, m_entries[name]);
 }
