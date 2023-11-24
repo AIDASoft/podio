@@ -40,6 +40,6 @@ set_property(TEST check_benchmark_outputs_sio PROPERTY DEPENDS read_timed_sio wr
 
 #--- Write via python and the SIO backend and see if we can read it back in in
 #--- c++
-add_test(NAME write_python_frame_sio COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.sio)
+add_test(NAME write_python_frame_sio COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.sio sio_io.Writer)
 PODIO_SET_TEST_ENV(write_python_frame_sio)
 set_property(TEST read_python_frame_sio PROPERTY DEPENDS write_python_frame_sio)

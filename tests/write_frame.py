@@ -54,13 +54,14 @@ def create_frame():
   return frame
 
 
-def write_file(io_backend, filename):
+def write_file(writer_type, filename):
   """Write a file using the given Writer type and put one Frame into it under
   the events category
   """
+  io_backend, writer_name = writer_type.split(".")
   io_module = importlib.import_module(f"podio.{io_backend}")
 
-  writer = io_module.Writer(filename)
+  writer = getattr(io_module, writer_name)(filename)
   event = create_frame()
   writer.write_frame(event, "events")
 
@@ -70,9 +71,10 @@ if __name__ == "__main__":
 
   parser = argparse.ArgumentParser()
   parser.add_argument("outputfile", help="Output file name")
+  parser.add_argument("writer", help="The writer type to use")
 
   args = parser.parse_args()
 
   io_format = args.outputfile.split(".")[-1]
 
-  write_file(f"{io_format}_io", args.outputfile)
+  write_file(args.writer, args.outputfile)

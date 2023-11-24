@@ -77,3 +77,14 @@ class Writer(BaseWriterMixin):
         filename (str): The name of the output file
     """
     self._writer = podio.ROOTFrameWriter(filename)
+
+
+class RNTupleWriter(BaseWriterMixin):
+  """Writer class for writing podio root files"""
+  def __init__(self, filename):
+    """Create a writer for writing files
+
+    Args:
+        filename (str): The name of the output file
+    """
+    self._writer = podio.ROOTNTupleWriter(filename)
