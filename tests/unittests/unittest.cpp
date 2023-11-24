@@ -40,6 +40,10 @@
 #include "datamodel/ExampleForCyclicDependency1Collection.h"
 #include "datamodel/ExampleForCyclicDependency2Collection.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleWithArray.h"
+#include "datamodel/ExampleWithArrayComponent.h"
+#include "datamodel/ExampleWithComponent.h"
+#include "datamodel/ExampleWithFixedWidthIntegers.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithUserInitCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
@@ -355,6 +359,24 @@ TEST_CASE("Arrays") {
   REQUIRE( obj.array()[0] == 1);
 }
 */
+
+TEST_CASE("member getter return types", "[basics][code-gen]") {
+  // Check that the return types of the getter functions are as expected
+  // Builtin member types are returned by value, including fixed width integers
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleHit>().energy()), double>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithFixedWidthIntegers>().fixedU64()), std::uint64_t>);
+  // Arrays are returend by const reference
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArray>().myArray()), const std::array<int, 4>&>);
+  // But if we index into that array we get back a value
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArray>().myArray(0)), int>);
+  // Non-builtin member types are returned by const reference
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArrayComponent>().s()), const SimpleStruct&>);
+  // Accessing sub members also works as expected: builtin types by value,
+  // everything else by const reference
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArrayComponent>().x()), int>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArrayComponent>().p()), const std::array<int, 4>&>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArray>().data()), const SimpleStruct&>);
+}
 
 TEST_CASE("Extracode", "[basics][code-gen]") {
   auto ev = MutableEventInfo();
