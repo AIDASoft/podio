@@ -10,6 +10,7 @@
 {{ include_types[0] }}
 
 #include "podio/ObjectID.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #include <memory>
 #include <ostream>
@@ -69,7 +70,9 @@ class {{ class.bare_type }} {
 public:
   template<typename ValueT>
   {{ class.bare_type }}(ValueT value) :
-    m_self(std::make_unique<Model<ValueT>>(value)) {}
+    m_self(std::make_unique<Model<podio::detail::GetDefaultHandleType<ValueT>>>(value)) {
+    static_assert(podio::detail::isPodioType<ValueT>, "{{ class.bare_type }} can only be initialized with a podio type");
+  }
 
   {{ class.bare_type }}(const {{ class.bare_type }}& other) :
     m_self(other.m_self->clone()) {}

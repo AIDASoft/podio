@@ -8,6 +8,45 @@
 #include <unordered_map>
 #include <vector>
 
+#if __has_include("experimental/type_traits.h")
+  #include <experimental/type_traits>
+namespace det {
+using namespace std::experimental;
+} // namespace det
+#else
+// Implement the minimal feature set we need
+namespace det {
+namespace detail {
+  template <typename DefT, typename AlwaysVoidT, template <typename...> typename Op, typename... Args>
+  struct detector {
+    using value_t = std::false_type;
+    using type = DefT;
+  };
+
+  template <typename DefT, template <typename...> typename Op, typename... Args>
+  struct detector<DefT, std::void_t<Op<Args...>>, Op, Args...> {
+    using value_t = std::true_type;
+    using type = Op<Args...>;
+  };
+} // namespace detail
+
+struct nonesuch {
+  ~nonesuch() = delete;
+  nonesuch(const nonesuch&) = delete;
+  void operator=(const nonesuch&) = delete;
+};
+
+template <template <typename...> typename Op, typename... Args>
+using is_detected = typename detail::detector<nonesuch, void, Op, Args...>::value_t;
+
+template <template <typename...> typename Op, typename... Args>
+static constexpr bool is_detected_v = is_detected<Op, Args...>::value;
+
+template <typename DefT, template <typename...> typename Op, typename... Args>
+using detected_or = detail::detector<DefT, void, Op, Args...>;
+} // namespace det
+#endif
+
 namespace podio {
 namespace detail {
 
@@ -158,6 +197,42 @@ namespace detail {
   template <typename T>
   using GetMappedType = typename MapLikeTypeHelper<T>::mapped_type;
 
+  /**
+   * Detector for checking the existence of a mutable_type type member. Used to
+   * determine whether T is (or could be) a podio generated default (immutable)
+   * handle.
+   */
+  template <typename T>
+  using hasMutable_t = typename T::mutable_type;
+
+  /**
+   * Detector for checking the existance of an object_type type member. Used ot
+   * determine whether T is (or could be) a podio generated mutable handle.
+   */
+  template <typename T>
+  using hasObject_t = typename T::object_type;
+
+  /**
+   * Variable template for determining whether type T is a podio generated
+   * handle class.
+   *
+   * NOTE: this basically just checks the existance of the mutable_type and
+   * object_type type members, so it is rather easy to fool this check if one
+   * wanted to. However, for our purposes we mainly need it for a static_assert
+   * to have more understandable compilation error message.
+   */
+  template <typename T>
+  constexpr static bool isPodioType = det::is_detected_v<hasObject_t, T> || det::is_detected_v<hasMutable_t, T>;
+
+  /**
+   * Variable template for obtaining the default handle type from any podio
+   * generated handle type.
+   *
+   * If T is already a default handle, this will return T, if T is a mutable
+   * handle it will return T::object_type.
+   */
+  template <typename T>
+  using GetDefaultHandleType = typename det::detected_or<T, hasObject_t, T>::type;
 } // namespace detail
 
 // forward declaration to be able to use it below
