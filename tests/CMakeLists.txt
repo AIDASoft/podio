@@ -78,7 +78,8 @@ PODIO_GENERATE_DATAMODEL(extensionmodeljulia datalayout_extension.yaml ext_heade
 find_program(Julia_EXECUTABLE julia)
 if (Julia_EXECUTABLE)
   message(STATUS "Found Julia, will add the Julia tests")
-  add_test(NAME julia-unittests COMMAND julia unittest.jl)
+  set(UNITTEST_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/unittests/unittest.jl)
+  add_test(NAME julia-unittests COMMAND julia ${UNITTEST_SCRIPT_PATH})
   set_tests_properties(julia-unittests PROPERTIES
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )

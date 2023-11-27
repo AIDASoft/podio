@@ -315,9 +315,6 @@ have resolvable schema evolution incompatibilities:")
     if self.upstream_edm:
       component['upstream_edm_name'] = self.upstream_edm.options["includeSubfolder"].split("/")[-2].capitalize()
 
-    if self.proglang == "julia":
-      self._fill_templates('MutableStruct', component)
-
     if self.proglang == "cpp":
       self._fill_templates('Component', component)
       # Add potentially older schema for schema evolution
@@ -336,6 +333,8 @@ have resolvable schema evolution incompatibilities:")
         self._fill_templates('Component', component)
         self.root_schema_component_names.add(name + self.old_schema_version)
 
+    if self.proglang == "julia":
+      self._fill_templates('MutableStruct', component)
     return component
 
   @staticmethod
@@ -353,9 +352,6 @@ have resolvable schema evolution incompatibilities:")
   def _process_datatype(self, name, definition):
     """Process one datatype"""
     datatype = self._preprocess_datatype(name, definition)
-
-    if self.proglang == "julia":
-      self._fill_templates('MutableStruct', datatype)
 
     if self.proglang == "cpp":
       # ROOT schema evolution preparation
@@ -399,6 +395,8 @@ have resolvable schema evolution incompatibilities:")
       if 'SIO' in self.io_handlers:
         self._fill_templates('SIOBlock', datatype)
 
+    if self.proglang == "julia":
+      self._fill_templates('MutableStruct', datatype)
     return datatype
 
   def prepare_iorules(self):

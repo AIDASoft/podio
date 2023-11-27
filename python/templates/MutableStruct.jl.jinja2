@@ -1,5 +1,5 @@
-{% import "macros/params.jinja2" as params %}
-mutable struct {{ class.bare_type }}Struct{{ params.julia_parameters(params_jl,"T" ) }}
+{% import "macros/julia_helpers.jinja2" as julia_helpers %}
+mutable struct {{ class.bare_type }}Struct{{ julia_helpers.julia_parameters(params_jl,"T" ) }}
 {% for member in Members %}
 	{% if member.is_array %}
 	{% if not member.is_builtin_array and upstream_edm and (member.array_type in upstream_edm.components or member.array_type in upstream_edm.datatypes) %}

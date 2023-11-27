@@ -7,9 +7,8 @@ catch
     Pkg.add("StaticArrays")
     using StaticArrays
 end
-
 # datamodeljulia/Datamodeljulia.jl file included inside extension_model/extensionmodeljulia/Extensionmodeljulia.jl file
-include("extension_model/extensionmodeljulia/Extensionmodeljulia.jl")
+include("../extension_model/extensionmodeljulia/Extensionmodeljulia.jl")
 using .Datamodeljulia
 using .Extensionmodeljulia
 using Test

@@ -157,9 +157,9 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
 
   # Check if the LANG argument is specified and set the language accordingly.
   IF(ARG_LANG)
-    SET(LANGUAGE_ARG "-l=${ARG_LANG}")
+    SET(LANGUAGE_ARG "--lang=${ARG_LANG}")
   ELSE()
-    SET(LANGUAGE_ARG "-l=cpp")  # Default to C++
+    SET(LANGUAGE_ARG "--lang=cpp")  # Default to C++
   ENDIF()
 
   SET(SCHEMA_EVOLUTION_ARG "")

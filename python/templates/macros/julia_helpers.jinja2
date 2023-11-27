@@ -1,3 +1,22 @@
+{% macro classify_data_type(data_type) %}
+    {%- set type_map = {
+        'Int8': 'Integer',
+        'UInt8': 'Integer',
+        'Int16': 'Integer',
+        'UInt16': 'Integer',
+        'Int32': 'Integer',
+        'UInt32': 'Integer',
+        'Int64': 'Integer',
+        'UInt64': 'Integer',
+        'Float16': 'Real',
+        'Float32': 'Real',
+        'Float64': 'Real'
+    } -%}
+
+    {{ type_map.get(data_type, data_type) }}
+{%- endmacro -%}
+
+
 {% macro julia_parameters(params, suffix, upstream_edm=None, upstream_edm_name=None) %}
 {%- if params -%}{
 {%- set comma = joiner(',') -%}

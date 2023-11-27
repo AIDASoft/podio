@@ -1,5 +1,4 @@
-{% import "macros/params.jinja2" as params %}
-{% import "macros/abstracttypes.jinja2" as abstdatatype %}
+{% import "macros/julia_helpers.jinja2" as julia_helpers %}
 {% if upstream_edm %}
 include("{{ upstream_edm.options["includeSubfolder"] }}{{ upstream_edm_name }}.jl")
 {% endif %}
@@ -18,7 +17,14 @@ import ..{{ upstream_edm_name }}
 {% endif %}
 
 {% if static_arrays_import %}
-using StaticArrays
+try
+    using StaticArrays
+catch
+    import Pkg
+    Pkg.activate(@__DIR__)
+    Pkg.add("StaticArrays")
+    using StaticArrays
+end
 {% endif %}
 {% for sort_include in includes %}
 include("{{ sort_include }}Struct.jl")
@@ -38,7 +44,7 @@ function {{ component['class'].bare_type }}(
 	{% endif %}
 	{% endif %}
 	{% elif member.is_builtin %}
-	{{ member.name }}::{{ abstdatatype.classify_data_type(member.julia_type) }} = {{ member.julia_type }}(0),
+	{{ member.name }}::{{ julia_helpers.classify_data_type(member.julia_type) }} = {{ member.julia_type }}(0),
 	{% else %}
 	{% if upstream_edm and (member.full_type in upstream_edm.components or member.full_type in upstream_edm.datatypes) %}
 	{{ member.name }}::{{ upstream_edm_name }}.{{ member.julia_type }}Struct = {{ upstream_edm_name }}.{{ member.julia_type }}(),
@@ -48,7 +54,7 @@ function {{ component['class'].bare_type }}(
 	{% endif %}
 {% endfor %}
 )
-	return {{ component['class'].bare_type }}Struct{{ params.julia_parameters(component['params_jl'], "Struct", upstream_edm, upstream_edm_name) }}(
+	return {{ component['class'].bare_type }}Struct{{ julia_helpers.julia_parameters(component['params_jl'], "Struct", upstream_edm, upstream_edm_name) }}(
 	{% for member in component['Members'] %}
 	{% if member.is_builtin %}
 	{{ member.julia_type }}({{ member.name }}),
@@ -75,7 +81,7 @@ function {{ datatype['class'].bare_type }}(
 	{% endif %}
 	{% endif %}
 	{% elif member.is_builtin %}
-	{{ member.name }}::{{ abstdatatype.classify_data_type(member.julia_type) }} = {{ member.julia_type }}(0),
+	{{ member.name }}::{{ julia_helpers.classify_data_type(member.julia_type) }} = {{ member.julia_type }}(0),
 	{% else %}
 	{% if upstream_edm and (member.full_type in upstream_edm.components or member.full_type in upstream_edm.datatypes) %}
 	{{ member.name }}::{{ upstream_edm_name }}.{{ member.julia_type }}Struct = {{ upstream_edm_name }}.{{ member.julia_type }}(),
@@ -115,13 +121,13 @@ function {{ datatype['class'].bare_type }}(
     where {{ structure_start -}}
 {% for member in datatype['VectorMembers'] %}
 {% if member.is_builtin %}
-{{ member.name }}T<:{{ abstdatatype.classify_data_type(member.julia_type) }}{% if not loop.last %},{% endif %}
+{{ member.name }}T<:{{ julia_helpers.classify_data_type(member.julia_type) }}{% if not loop.last %},{% endif %}
 {% endif %}
 {% endfor -%}
 {{ structure_end }}
 {% endif %}
 
-	return {{ datatype['class'].bare_type }}Struct{{ params.julia_parameters(datatype['params_jl'], "Struct", upstream_edm, upstream_edm_name) }}(
+	return {{ datatype['class'].bare_type }}Struct{{ julia_helpers.julia_parameters(datatype['params_jl'], "Struct", upstream_edm, upstream_edm_name) }}(
 	{% for member in datatype['Members'] %}
 	{% if member.is_builtin %}
 	{{ member.julia_type }}({{ member.name }}),
@@ -145,7 +151,7 @@ function {{ datatype['class'].bare_type }}(
 	)
 end
 
-{{ datatype['class'].bare_type }}Collection = Vector{ {{ datatype['class'].bare_type }}Struct{{ params.julia_parameters(datatype['params_jl'], "Struct", upstream_edm, upstream_edm_name) }} }
+{{ datatype['class'].bare_type }}Collection = Vector{ {{ datatype['class'].bare_type }}Struct{{ julia_helpers.julia_parameters(datatype['params_jl'], "Struct", upstream_edm, upstream_edm_name) }} }
 
 {% endfor %}
 end
