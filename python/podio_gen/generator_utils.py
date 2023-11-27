@@ -29,13 +29,14 @@ def _prefix_name(name, prefix):
   return name
 
 
-def get_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=None):
+def get_julia_type(cpp_type, is_array=False, array_type=None, array_size=None):
   """Parse the given c++ type to a Julia type"""
   builtin_types_map = {"int": "Int32", "float": "Float32", "double": "Float64",
                        "bool": "Bool", "long": "Int64", "unsigned int": "UInt32",
                        "unsigned long": "UInt64", "char": "Char", "short": "Int16",
                        "long long": "Int64", "unsigned long long": "UInt64"}
   # is a global type as described in test_MemberParser.py #L121
+  # check for cpp_type=None as cpp_type can be None in case of array members
   if cpp_type and cpp_type.startswith("::"):
     cpp_type = cpp_type[2:]
   if cpp_type in builtin_types_map:
@@ -50,7 +51,7 @@ def get_julia_type(cpp_type=None, is_array=False, array_type=None, array_size=No
       return cpp_type
 
   else:
-    array_type = get_julia_type(cpp_type=array_type)
+    array_type = get_julia_type(array_type)
     if '::' in array_type:
       array_type = array_type.split('::')[1]
     if array_type not in builtin_types_map.values():
@@ -185,7 +186,7 @@ class MemberVariable:
     else:
       self.namespace, self.bare_type = _get_namespace_class(self.full_type)
 
-    self.julia_type = get_julia_type(cpp_type=self.bare_type, is_array=self.is_array,
+    self.julia_type = get_julia_type(self.bare_type, is_array=self.is_array,
                                      array_type=self.array_type, array_size=self.array_size)
 
   @property

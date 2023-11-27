@@ -251,6 +251,13 @@ class MemberParserTest(unittest.TestCase):
     self.assertTrue(parsed.is_builtin_array)
     self.assertEqual(parsed.julia_type, r'MVector{123, UInt64}')
 
+    parsed = parser.parse('std::array<int, 4> p [mm]', False)
+    self.assertEqual(parsed.full_type, 'std::array<int, 4>')
+    self.assertEqual(parsed.name, 'p')
+    self.assertEqual(parsed.array_type, 'int')
+    self.assertTrue(parsed.is_builtin_array)
+    self.assertEqual(parsed.julia_type, r'MVector{4, Int32}')
+
     parsed = parser.parse('unsigned long longWithReallyStupidName', False)
     self.assertEqual(parsed.full_type, 'unsigned long')
     self.assertEqual(parsed.name, 'longWithReallyStupidName')
