@@ -37,6 +37,7 @@ jobs:
           mkdir build install
           cd build
           cmake -DENABLE_SIO=ON \
+            -DENABLE_JULIA=ON \
             -DENABLE_RNTUPLE=${{ matrix.RNTUPLE }} \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=${{ matrix.CXX_STANDARD }} \

@@ -63,26 +63,33 @@ add_subdirectory(schema_evolution)
 CREATE_PODIO_TEST(ostream_operator.cpp "")
 CREATE_PODIO_TEST(write_ascii.cpp "")
 
-PODIO_GENERATE_DATAMODEL(datamodeljulia datalayout.yaml headers sources
-  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-  LANG julia
-  )
-
-PODIO_GENERATE_DATAMODEL(extensionmodeljulia datalayout_extension.yaml ext_headers ext_sources
-  UPSTREAM_EDM ../../datamodeljulia:datalayout.yaml
-  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model
-  LANG julia
-  )
-
-find_program(Julia_EXECUTABLE julia)
-if (Julia_EXECUTABLE)
-  message(STATUS "Found Julia, will add the Julia tests")
-  set(UNITTEST_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/unittests/unittest.jl)
-  add_test(NAME julia-unittests COMMAND julia ${UNITTEST_SCRIPT_PATH})
-  set_tests_properties(julia-unittests PROPERTIES
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+if (ENABLE_JULIA)
+  message(STATUS "Julia Datamodel generation is enabled.")
+  PODIO_GENERATE_DATAMODEL(datamodeljulia datalayout.yaml headers sources
+    IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+    LANG julia
     )
+
+  PODIO_GENERATE_DATAMODEL(extensionmodeljulia datalayout_extension.yaml ext_headers ext_sources
+    UPSTREAM_EDM ../../datamodeljulia:datalayout.yaml
+    IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+    OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model
+    LANG julia
+    )
+
+  find_program(Julia_EXECUTABLE julia)
+  if (Julia_EXECUTABLE)
+    message(STATUS "Found Julia, will add the Julia tests")
+    set(UNITTEST_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/unittests/unittest.jl)
+    add_test(NAME julia-unittests COMMAND julia ${UNITTEST_SCRIPT_PATH})
+    set_tests_properties(julia-unittests PROPERTIES
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      )
+  else()
+    message(WARNING "Julia not found.")
+  endif()
+else()
+  message(STATUS "Julia Datamodel generation is disabled.")
 endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
