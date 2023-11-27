@@ -119,11 +119,12 @@ public:
     return static_cast<Model<T>*>(m_self.get())->m_value;
   }
 
-  bool operator==(const {{ class.bare_type }}& other) const {
-    return m_self->equal(other.m_self.get());
+  friend bool operator==(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
+    return lhs.m_self->equal(rhs.m_self.get());
   }
-  bool operator!=(const {{ class.bare_type }}& other) const {
-    return !(*this == other);
+
+  friend bool operator!=(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
+    return !(lhs == rhs);
   }
 
 {{ macros.member_getters(Members, use_get_syntax) }}

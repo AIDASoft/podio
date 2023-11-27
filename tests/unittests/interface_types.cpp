@@ -22,9 +22,17 @@ TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
 
   // The operator== compares the underlying pointers
   REQUIRE(wrapper1 == wrapper2);
+  // The comparison operator is symmetric
+  REQUIRE(hit == wrapper1);
   // Reassgning to a different entity should make comparisons fail
   wrapper2 = ExampleHit{};
   REQUIRE(wrapper1 != wrapper2);
+
+  // Comparisons also work with Mutable types
+  MutableExampleHit mutHit{};
+  wrapper2 = mutHit;
+  REQUIRE(mutHit != wrapper1);
+  REQUIRE(wrapper2 == mutHit);
 
   // Make sure that the object id functionality work as expected. The wrapped
   // object is in no collection, so it should be the default id.
