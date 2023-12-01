@@ -87,6 +87,7 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   auto edm = edmView(0);
+  m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm));
 
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);
@@ -105,6 +106,15 @@ unsigned ROOTNTupleReader::getEntries(const std::string& name) {
                                            [](int total, auto& reader) { return total + reader->GetNEntries(); });
   }
   return m_totalEntries[name];
+}
+
+std::vector<std::string_view> ROOTNTupleReader::getAvailableCategories() const {
+  std::vector<std::string_view> cats;
+  cats.reserve(m_availableCategories.size());
+  for (const auto& cat : m_availableCategories) {
+    cats.emplace_back(cat);
+  }
+  return cats;
 }
 
 std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readNextEntry(const std::string& name) {

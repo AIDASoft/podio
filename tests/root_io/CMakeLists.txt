@@ -19,6 +19,7 @@ if(ENABLE_RNTUPLE)
       ${root_dependent_tests}
       write_rntuple.cpp
       read_rntuple.cpp
+      read_python_frame_rntuple.cpp
      )
 endif()
 set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO)
@@ -80,6 +81,13 @@ endforeach()
 
 #--- Write via python and the ROOT backend and see if we can read it back in in
 #--- c++
-add_test(NAME write_python_frame_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.root)
+add_test(NAME write_python_frame_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.root root_io.Writer)
 PODIO_SET_TEST_ENV(write_python_frame_root)
 set_property(TEST read_python_frame_root PROPERTY DEPENDS write_python_frame_root)
+
+if (ENABLE_RNTUPLE)
+  add_test(NAME write_python_frame_rntuple COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py_rntuple.root root_io.RNTupleWriter)
+  PODIO_SET_TEST_ENV(write_python_frame_rntuple)
+
+  set_property(TEST read_python_frame_rntuple PROPERTY DEPENDS write_python_frame_rntuple)
+endif()

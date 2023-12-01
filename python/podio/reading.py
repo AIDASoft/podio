@@ -23,11 +23,26 @@ except ImportError:
                      'or there is a version mismatch')
 
 
-def _is_frame_root_file(filename):
-  """Peek into the root file to determine whether this is a legacy file or not."""
+class RootFileFormat:
+  """Enum to specify the ROOT file format"""
+  TTREE = 0  # Non-legacy TTree based file
+  RNTUPLE = 1  # RNTuple based file
+  LEGACY = 2  # Legacy TTree based file
+
+
+def _determine_root_format(filename):
+  """Peek into the root file to determine which flavor we have at hand."""
   file = TFile.Open(filename)
-  # The ROOT Frame writer puts a podio_metadata TTree into the file
-  return bool(file.Get('podio_metadata'))
+
+  metadata = file.Get("podio_metadata")
+  if not metadata:
+    return RootFileFormat.LEGACY
+
+  md_class = metadata.IsA().GetName()
+  if "TTree" in md_class:
+    return RootFileFormat.TTREE
+
+  return RootFileFormat.RNTUPLE
 
 
 def get_reader(filename):
@@ -50,8 +65,12 @@ def get_reader(filename):
     return sio_io.LegacyReader(filename)
 
   if filename.endswith('.root'):
-    if _is_frame_root_file(filename):
+    root_flavor = _determine_root_format(filename)
+    if root_flavor == RootFileFormat.TTREE:
       return root_io.Reader(filename)
-    return root_io.LegacyReader(filename)
+    if root_flavor == RootFileFormat.RNTUPLE:
+      return root_io.RNTupleReader(filename)
+    if root_flavor == RootFileFormat.LEGACY:
+      return root_io.LegacyReader(filename)
 
   raise ValueError('file must end on .root or .sio')

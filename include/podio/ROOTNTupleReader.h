@@ -9,6 +9,7 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -47,12 +48,25 @@ public:
    */
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry);
 
+  /// Get the names of all the available Frame categories in the current file(s)
+  std::vector<std::string_view> getAvailableCategories() const;
+
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name);
 
   /// Get the build version of podio that has been used to write the current file
   podio::version::Version currentFileVersion() const {
     return m_fileVersion;
+  }
+
+  /// Get the datamodel definition for the given name
+  const std::string_view getDatamodelDefinition(const std::string& name) const {
+    return m_datamodelHolder.getDatamodelDefinition(name);
+  }
+
+  /// Get all names of the datamodels that ara available from this reader
+  std::vector<std::string> getAvailableDatamodels() const {
+    return m_datamodelHolder.getAvailableDatamodels();
   }
 
   void closeFile();
