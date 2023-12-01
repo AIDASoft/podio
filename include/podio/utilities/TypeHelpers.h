@@ -233,6 +233,24 @@ namespace detail {
    */
   template <typename T>
   using GetDefaultHandleType = typename det::detected_or<T, hasObject_t, T>::type;
+
+  /**
+   * Variable template for obtaining the mutable handle type from any podio
+   * generated handle type.
+   *
+   * If T is alrady a mutable handle, this will return T, if T is a default
+   * handle it will return T::mutable_type.
+   */
+  template <typename T>
+  using GetMutableHandleType = typename det::detected_or<T, hasMutable_t, T>::type;
+
+  /**
+   * Helper type alias to transform a tuple of handle types to a tuple of
+   * mutable handle types.
+   */
+  template <typename Tuple>
+  using TupleOfMutableTypes = typename ToTupleOfTemplateHelper<GetMutableHandleType, Tuple>::type;
+
 } // namespace detail
 
 // forward declaration to be able to use it below

@@ -6,8 +6,9 @@
 #ifndef {{ package_name.upper() }}_{{ class.bare_type }}_H
 #define {{ package_name.upper() }}_{{ class.bare_type }}_H
 
-{# We only need one concrete type below for the makeEmpty static initialization. #}
-{{ include_types[0] }}
+{% for include in include_types %}
+{{ include }}
+{% endfor %}
 
 #include "podio/ObjectID.h"
 #include "podio/utilities/TypeHelpers.h"
@@ -20,6 +21,21 @@
 
 {{ common_macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
+
+  /// type alias containing all the types this interface should work for.
+  using InterfacedTypes = std::tuple<{{ Types | join(", ")}}>;
+  /// type alias containing all the mutable types that can be used to initalize
+  /// this interface
+  using InterfacedMutableTypes = podio::detail::TupleOfMutableTypes<InterfacedTypes>;
+
+  /// template variable for determining whether type T is a valid interface type
+  template<typename T>
+  constexpr static bool isInterfacedType = podio::detail::isInTuple<T, InterfacedTypes>;
+
+  /// template variable for determining whether type T can be used to initialize
+  /// this interface
+  template<typename T>
+  constexpr static bool isInitializableFrom = isInterfacedType<T> || podio::detail::isInTuple<T, InterfacedMutableTypes>;
 
   struct Concept {
     virtual ~Concept() = default;
@@ -65,13 +81,13 @@ class {{ class.bare_type }} {
     ValueT m_value{};
   };
 
-  std::unique_ptr<Concept> m_self{nullptr};
+ std::unique_ptr<Concept> m_self{nullptr};
 
 public:
   template<typename ValueT>
   {{ class.bare_type }}(ValueT value) :
     m_self(std::make_unique<Model<podio::detail::GetDefaultHandleType<ValueT>>>(value)) {
-    static_assert(podio::detail::isPodioType<ValueT>, "{{ class.bare_type }} can only be initialized with a podio type");
+    static_assert(isInitializableFrom<ValueT>, "{{ class.bare_type }} can only be initialized with one of the following types (and their Mutable counter parts): {{ Types | join(", ") }}");
   }
 
   {{ class.bare_type }}(const {{ class.bare_type }}& other) :
@@ -104,6 +120,7 @@ public:
   /// Check if the object currently holds a value of the requested type
   template<typename T>
   bool isA() const {
+    static_assert(isInterfacedType<T>, "{{ class.bare_type }} can only ever be one of the following types: {{ Types | join (", ") }}");
     return typeid(T) == m_self->typeInfo();
   }
 
