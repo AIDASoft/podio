@@ -172,6 +172,11 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/podio/podioVersion.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__version__.py.in
                ${CMAKE_CURRENT_SOURCE_DIR}/python/podio/__version__.py)
+# Quality of life improvement to be able to use podio-dump --help
+# without having to import ROOT
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__version__.py.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/python/podio_version.py)
+
 
 #--- add license files ---------------------------------------------------------
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE

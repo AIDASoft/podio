@@ -23,6 +23,12 @@ else()
     )
 endif()
 
+# Quality of life improvement to be able to use podio-dump --help
+# without having to import ROOT
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/podio_version.py
+  DESTINATION ${podio_PYTHON_INSTALLDIR}
+)
+
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/podio_gen
   DESTINATION ${podio_PYTHON_INSTALLDIR}
   REGEX test_.*\\.py$ EXCLUDE  # Do not install test files

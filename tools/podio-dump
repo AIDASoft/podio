@@ -7,7 +7,7 @@ import yaml
 
 from tabulate import tabulate
 
-from podio import __version__
+from podio_version import __version__
 
 
 def print_general_info(reader, filename):
