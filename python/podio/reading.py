@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Module for general reading functionality."""
 
-from enum import IntEnum
-
 from ROOT import TFile
 
 from podio import root_io
@@ -25,7 +23,7 @@ except ImportError:
                      'or there is a version mismatch')
 
 
-class RootFileFormat(IntEnum):
+class RootFileFormat:
   """Enum to specify the ROOT file format"""
   TTREE = 0  # Non-legacy TTree based file
   RNTUPLE = 1  # RNTuple based file
