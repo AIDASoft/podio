@@ -38,7 +38,7 @@ if(BUILD_TESTING)
   endif()
 
   if (ENABLE_RNTUPLE)
-    CREATE_DUMP_TEST(podio-dump-rnutple "write_rntuple" ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root)
+    CREATE_DUMP_TEST(podio-dump-rntuple "write_rntuple" ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root)
     CREATE_DUMP_TEST(podio-dump-rntuple-detailed "write_rntuple" --detailed --category events --entries 1:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root)
   endif()
 
