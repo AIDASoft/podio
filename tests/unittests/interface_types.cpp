@@ -14,7 +14,7 @@ TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
 
   auto emptyWrapper = WrapperT::makeEmpty();
   REQUIRE_FALSE(emptyWrapper.isAvailable());
-  REQUIRE(emptyWrapper.holds<ExampleHit>());
+  REQUIRE(emptyWrapper.isA<ExampleHit>());
 
   ExampleHit hit{};
   WrapperT wrapper1 = hit;
@@ -50,14 +50,14 @@ TEST_CASE("InterfaceType from immutable", "[interface-types][basics]") {
 
   ExampleHit hit{};
   WrapperT wrapper{hit};
-  REQUIRE(wrapper.holds<ExampleHit>());
-  REQUIRE_FALSE(wrapper.holds<ExampleCluster>());
+  REQUIRE(wrapper.isA<ExampleHit>());
+  REQUIRE_FALSE(wrapper.isA<ExampleCluster>());
   REQUIRE(wrapper.getValue<ExampleHit>() == hit);
   REQUIRE(wrapper == hit);
 
   ExampleCluster cluster{};
   wrapper = cluster;
-  REQUIRE(wrapper.holds<ExampleCluster>());
+  REQUIRE(wrapper.isA<ExampleCluster>());
   REQUIRE(wrapper.getValue<ExampleCluster>() == cluster);
   REQUIRE_THROWS_AS(wrapper.getValue<ExampleHit>(), std::runtime_error);
   REQUIRE(wrapper != hit);
@@ -68,8 +68,8 @@ TEST_CASE("InterfaceType from mutable", "[interface-types][basics]") {
 
   ExampleHit hit{};
   WrapperT wrapper{hit};
-  REQUIRE(wrapper.holds<ExampleHit>());
-  REQUIRE_FALSE(wrapper.holds<ExampleCluster>());
+  REQUIRE(wrapper.isA<ExampleHit>());
+  REQUIRE_FALSE(wrapper.isA<ExampleCluster>());
   REQUIRE(wrapper.getValue<ExampleHit>() == hit);
   REQUIRE(wrapper == hit);
   // Comparison also work against the immutable classes
@@ -78,7 +78,7 @@ TEST_CASE("InterfaceType from mutable", "[interface-types][basics]") {
 
   MutableExampleCluster cluster{};
   wrapper = cluster;
-  REQUIRE(wrapper.holds<ExampleCluster>());
+  REQUIRE(wrapper.isA<ExampleCluster>());
   REQUIRE(wrapper.getValue<ExampleCluster>() == cluster);
   REQUIRE_THROWS_AS(wrapper.getValue<ExampleHit>(), std::runtime_error);
   REQUIRE(wrapper != hit);

@@ -103,7 +103,7 @@ public:
 
   /// Check if the object currently holds a value of the requested type
   template<typename T>
-  bool holds() const {
+  bool isA() const {
     return typeid(T) == m_self->typeInfo();
   }
 
@@ -112,7 +112,7 @@ public:
   /// value. Use holds to check beforehand if necessary  template<typename T>
   template<typename T>
   T getValue() const {
-    if (!holds<T>()) {
+    if (!isA<T>()) {
       throw std::runtime_error("Cannot get value as object currently holds anotyer type");
     }
     // We can safely cast here since we check types before
