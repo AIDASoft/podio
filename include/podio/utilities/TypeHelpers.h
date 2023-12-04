@@ -8,7 +8,52 @@
 #include <unordered_map>
 #include <vector>
 
+#if __has_include("experimental/type_traits.h")
+  #include <experimental/type_traits>
+  #define STL_EXPERIMENTAL_DETECT 1
+#else
+  #define STL_EXPERIMENTAL_DETECT 0
+#endif
+
 namespace podio {
+#if STL_EXPERIMENTAL_DETECT
+namespace det {
+  using namespace std::experimental;
+} // namespace det
+#else
+// Implement the minimal feature set we need
+namespace det {
+  namespace detail {
+    template <typename DefT, typename AlwaysVoidT, template <typename...> typename Op, typename... Args>
+    struct detector {
+      using value_t = std::false_type;
+      using type = DefT;
+    };
+
+    template <typename DefT, template <typename...> typename Op, typename... Args>
+    struct detector<DefT, std::void_t<Op<Args...>>, Op, Args...> {
+      using value_t = std::true_type;
+      using type = Op<Args...>;
+    };
+  } // namespace detail
+
+  struct nonesuch {
+    ~nonesuch() = delete;
+    nonesuch(const nonesuch&) = delete;
+    void operator=(const nonesuch&) = delete;
+  };
+
+  template <template <typename...> typename Op, typename... Args>
+  using is_detected = typename detail::detector<nonesuch, void, Op, Args...>::value_t;
+
+  template <template <typename...> typename Op, typename... Args>
+  static constexpr bool is_detected_v = is_detected<Op, Args...>::value;
+
+  template <typename DefT, template <typename...> typename Op, typename... Args>
+  using detected_or = detail::detector<DefT, void, Op, Args...>;
+} // namespace det
+#endif
+
 namespace detail {
 
   /**
