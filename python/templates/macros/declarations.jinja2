@@ -57,16 +57,15 @@
 {% macro constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
   /// default constructor
-  {{  full_type }}();
-{% if members %}
-  {{  full_type }}({{ members | map(attribute='signature') | join(', ')  }});
+  {{ full_type }}();
+
+{%if members %}
+  /// Constructor initializing all members
+  {{ full_type }}({{ members | map(attribute='signature') | join(', ')  }});
 {% endif %}
 
-  /// constructor from existing {{ type }}Obj
-  {{  full_type }}({{ type }}Obj* obj);
-
   /// copy constructor
-  {{  full_type }}(const {{  full_type }}& other);
+  {{  full_type }}(const {{  full_type }}& other) = default;
 
   /// copy-assignment operator
   {{  full_type }}& operator=({{ full_type }} other);
@@ -75,7 +74,7 @@
   Mutable{{ type }} clone() const;
 
   /// destructor
-  ~{{  full_type }}();
+  ~{{  full_type }}() = default;
 {% endmacro %}
 
 
@@ -84,7 +83,7 @@
   /// check whether the object is actually available
   bool isAvailable() const;
   /// disconnect from {{ type }}Obj instance
-  void unlink() { m_obj = nullptr; }
+  void unlink() { m_obj = podio::utils::MaybeSharedPtr<{{ type }}Obj>{nullptr}; }
 
 {% set inverse_type = type if prefix else 'Mutable' + type %}
   bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }

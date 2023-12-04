@@ -10,7 +10,7 @@
 {{ include }}
 {% endfor %}
 
-#include "podio/ObjBase.h"
+#include "podio/ObjectID.h"
 {% if OneToManyRelations or VectorMembers %}
 #include <vector>
 {%- endif %}
@@ -21,7 +21,7 @@
 class {{ class.bare_type }};
 
 {% with obj_type = class.bare_type + 'Obj' %}
-class {{ class.bare_type }}Obj : public podio::ObjBase {
+class {{ class.bare_type }}Obj {
 public:
   /// constructor
   {{ obj_type }}();
@@ -39,6 +39,7 @@ public:
 {% endif %}
 
 public:
+  podio::ObjectID id;
   {{ class.bare_type }}Data data;
 {% for relation in OneToOneRelations %}
   {{ relation.full_type }}* m_{{ relation.name }}{nullptr};

@@ -68,14 +68,14 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
     if (id.index != podio::ObjectID::invalid) {
       podio::CollectionBase* coll = nullptr;
       if (!collectionProvider->get(id.collectionID, coll)) {
-        m_rel_{{ relation.name }}->emplace_back(nullptr);
+        m_rel_{{ relation.name }}->emplace_back({{ relation.full_type }}::makeEmpty());
         continue;
       }
       {{ relation.full_type }}Collection* tmp_coll = static_cast<{{ relation.full_type }}Collection*>(coll);
       const auto tmp = (*tmp_coll)[id.index];
       m_rel_{{ relation.name }}->emplace_back(tmp);
     } else {
-      m_rel_{{ relation.name }}->emplace_back(nullptr);
+      m_rel_{{ relation.name }}->emplace_back({{ relation.full_type }}::makeEmpty());
     }
   }
 {% endmacro %}

@@ -5,8 +5,10 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 
+#include <map>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 TEST_CASE("Frame collections", "[frame][basics]") {
@@ -376,4 +378,51 @@ TEST_CASE("Frame double insert", "[frame][basics]") {
 
   event.put(std::move(clusters), "clusters");
   REQUIRE_THROWS_AS(event.put(std::move(other_clusters), "clusters"), std::invalid_argument);
+}
+
+TEST_CASE("Frame destructor ASanFail") {
+  std::map<std::string, std::pair<ExampleClusterCollection, ExampleHitCollection>> hitClusterMap{};
+  podio::Frame frame{};
+
+  // Introduce a scope to mimic the DD4hep structure
+  {
+    for (const auto& name : {"foo", "bar", "baz"}) {
+      auto& hitClusters = hitClusterMap[name];
+
+      for (int i = 0; i < 3; ++i) {
+        auto cluster = hitClusters.first->create();
+
+        for (int j = 0; j < 5; ++j) {
+          auto hit = hitClusters.second->create();
+          cluster.addHits(hit);
+        }
+      }
+    }
+  }
+
+  // Introduce a commit scope
+  {
+    for (auto& [name, collections] : hitClusterMap) {
+      frame.put(std::move(collections.first), name + "Clusters");
+      frame.put(std::move(collections.second), name + "Hits");
+    }
+    frame = {};
+    hitClusterMap.clear();
+  }
+}
+
+TEST_CASE("EIC-Jana2 cleanup use case", "[memory-management][492][174]") {
+  // Test case that only triggers in ASan builds if memory-management / cleanup
+  // has a bug
+  ExampleCluster* clone;
+  {
+    podio::Frame frame;
+    {
+      ExampleClusterCollection coll;
+      coll.create();
+      const ExampleClusterCollection& moved = frame.put(std::move(coll), "mycoll");
+      clone = new ExampleCluster(moved[0]);
+    }
+  }
+  delete clone;
 }

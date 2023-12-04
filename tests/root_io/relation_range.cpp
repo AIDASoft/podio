@@ -158,8 +158,8 @@ void testExampleWithVectorMember() {
 
 void testExampleReferencingType() {
   MutableExampleReferencingType ex;
-  ExampleReferencingType ex1;
-  ExampleReferencingType ex2;
+  MutableExampleReferencingType ex1;
+  MutableExampleReferencingType ex2;
 
   ex.addRefs(ex1);
   ex.addRefs(ex2);

@@ -18,6 +18,12 @@
 
 {{ macros.constructors_destructors(class.bare_type, Members) }}
 
+{{ class.bare_type }}::{{ class.bare_type }}({{ class.bare_type }}Obj* obj) : m_obj(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj>(obj)) {}
+
+{{ class.bare_type }} {{ class.bare_type }}::makeEmpty() {
+  return {nullptr};
+}
+
 {{ macros.member_getters(class, Members, use_get_syntax) }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax) }}
 {{ macros.multi_relation_handling(class, OneToManyRelations + VectorMembers, use_get_syntax) }}

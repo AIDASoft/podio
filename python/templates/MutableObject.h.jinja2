@@ -12,7 +12,9 @@
 {% for include in includes %}
 {{ include }}
 {% endfor %}
-#include "podio/ObjectID.h"
+
+#include "podio/utilities/MaybeSharedPtr.h"
+
 #include <ostream>
 #include <cstddef>
 
@@ -36,6 +38,7 @@ public:
   using collection_type = {{ class.bare_type }}Collection;
 
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
+
   /// conversion to const object
   operator {{ class.bare_type }}() const;
 
@@ -51,7 +54,10 @@ public:
 {{ macros.common_object_funcs(class.bare_type, prefix='Mutable') }}
 
 private:
-  {{ class.bare_type }}Obj* m_obj;
+  /// constructor from existing {{ class.bare_type }}Obj
+  explicit Mutable{{ class.bare_type }}(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> obj);
+
+  podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj{nullptr};
 };
 
 {{ macros.json_output(class.bare_type, prefix='Mutable') }}

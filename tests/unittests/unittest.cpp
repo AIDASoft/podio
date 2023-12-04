@@ -12,6 +12,7 @@
 #include "catch2/matchers/catch_matchers_vector.hpp"
 
 // podio specific includes
+#include "datamodel/MutableExampleHit.h"
 #include "podio/EventStore.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
@@ -78,9 +79,9 @@ TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
   // Make sure that the assignment operator handles the reference count
   // correctly. (Will trigger in an ASan build if it is not the case)
   // See https://github.com/AIDASoft/podio/issues/200
-  std::map<int, ExampleHit> hitMap;
+  std::map<int, MutableExampleHit> hitMap;
   for (int i = 0; i < 10; ++i) {
-    auto hit = ExampleHit(0x42ULL, i, i, i, i);
+    auto hit = MutableExampleHit(0x42ULL, i, i, i, i);
     hitMap[i] = hit;
   }
 
@@ -89,6 +90,15 @@ TEST_CASE("Assignment-operator ref count", "[basics][memory-management]") {
     const auto hit = hitMap[i];
     REQUIRE(hit.energy() == i);
   }
+}
+
+TEST_CASE("ostream-operator", "[basics]") {
+  // Make sure that trying to print an object that is not available does not crash
+  auto hit = ExampleHit::makeEmpty();
+  REQUIRE_FALSE(hit.isAvailable());
+  std::stringstream sstr;
+  sstr << hit;
+  REQUIRE(sstr.str() == "[not available]");
 }
 
 TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-management]") {
@@ -101,7 +111,7 @@ TEST_CASE("Clearing", "[UBSAN-FAIL][ASAN-FAIL][THREAD-FAIL][basics][memory-manag
     hits.clear();
     clusters.clear();
     auto hit1 = hits.create();
-    auto hit2 = ExampleHit();
+    auto hit2 = MutableExampleHit();
     hit1.energy(double(i));
     auto cluster = clusters.create();
     cluster.addHits(hit1);
@@ -130,7 +140,8 @@ TEST_CASE("Cloning", "[basics][memory-management]") {
   auto cluster2 = cluster.clone();
   cluster.addHits(hit2);
   // check that the clone of a const object is mutable
-  auto const_hit = ExampleHit();
+  auto mutable_hit = MutableExampleHit();
+  auto const_hit = ExampleHit(mutable_hit);
   auto const_hit_clone = const_hit.clone();
   const_hit_clone.energy(30);
   REQUIRE(success);
@@ -142,14 +153,24 @@ TEST_CASE("Component", "[basics]") {
   REQUIRE(3 == info.component().data.x);
 }
 
-TEST_CASE("Cyclic", "[LEAK-FAIL][basics][relations][memory-management]") {
-  auto start = MutableExampleForCyclicDependency1();
-  auto isAvailable = start.ref().isAvailable();
-  REQUIRE_FALSE(isAvailable);
-  auto end = MutableExampleForCyclicDependency2();
+TEST_CASE("makeEmpty", "[basics]") {
+  auto hit = ExampleHit::makeEmpty();
+  // Any access to such a handle is a crash
+  REQUIRE_FALSE(hit.isAvailable());
+
+  hit = MutableExampleHit{};
+  REQUIRE(hit.isAvailable());
+  REQUIRE(hit.energy() == 0);
+}
+
+TEST_CASE("Cyclic", "[basics][relations][memory-management]") {
+  auto coll1 = ExampleForCyclicDependency1Collection();
+  auto start = coll1.create();
+  REQUIRE_FALSE(start.ref().isAvailable());
+  auto coll2 = ExampleForCyclicDependency2Collection();
+  auto end = coll2.create();
   start.ref(end);
-  isAvailable = start.ref().isAvailable();
-  REQUIRE(isAvailable);
+  REQUIRE(start.ref().isAvailable());
   end.ref(start);
   REQUIRE(start == end.ref());
   auto end_eq = start.ref();
@@ -158,11 +179,36 @@ TEST_CASE("Cyclic", "[LEAK-FAIL][basics][relations][memory-management]") {
   REQUIRE(start == start.ref().ref());
 }
 
-TEST_CASE("Invalid_refs", "[LEAK-FAIL][basics][relations]") {
+TEST_CASE("Cyclic w/o collection", "[LEAK-FAIL][basics][relations][memory-management]") {
+  auto start = MutableExampleForCyclicDependency1{};
+  REQUIRE_FALSE(start.ref().isAvailable());
+  auto end = MutableExampleForCyclicDependency2{};
+  start.ref(end);
+  REQUIRE(start.ref().isAvailable());
+  end.ref(start);
+  REQUIRE(start == end.ref());
+  auto end_eq = start.ref();
+  auto start_eq = end_eq.ref();
+  REQUIRE(start == start_eq);
+  REQUIRE(start == start.ref().ref());
+}
+
+TEST_CASE("Container lifetime", "[basics][memory-management]") {
+  std::vector<ExampleHit> hits;
+  {
+    MutableExampleHit hit;
+    hit.energy(3.14f);
+    hits.push_back(hit);
+  }
+  auto hit = hits[0];
+  REQUIRE(hit.energy() == 3.14f);
+}
+
+TEST_CASE("Invalid_refs", "[basics][relations]") {
   auto store = podio::EventStore();
   auto& hits = store.create<ExampleHitCollection>("hits");
   auto hit1 = hits.create(0xcaffeeULL, 0., 0., 0., 0.);
-  auto hit2 = ExampleHit();
+  auto hit2 = MutableExampleHit();
   auto& clusters = store.create<ExampleClusterCollection>("clusters");
   auto cluster = clusters.create();
   cluster.addHits(hit1);
@@ -220,7 +266,7 @@ TEST_CASE("Notebook", "[basics]") {
 
 TEST_CASE("OneToOneRelations", "[basics][relations]") {
   bool success = true;
-  auto cluster = ExampleCluster();
+  auto cluster = MutableExampleCluster();
   auto rel = MutableExampleWithOneRelation();
   rel.cluster(cluster);
   REQUIRE(success);
@@ -391,11 +437,11 @@ TEST_CASE("Extracode", "[basics][code-gen]") {
 }
 
 TEST_CASE("AssociativeContainer", "[basics]") {
-  auto clu1 = ExampleCluster();
-  auto clu2 = ExampleCluster();
-  auto clu3 = ExampleCluster();
-  auto clu4 = ExampleCluster();
-  auto clu5 = ExampleCluster();
+  auto clu1 = MutableExampleCluster();
+  auto clu2 = MutableExampleCluster();
+  auto clu3 = MutableExampleCluster();
+  auto clu4 = MutableExampleCluster();
+  auto clu5 = MutableExampleCluster();
 
   std::set<ExampleCluster> cSet;
   cSet.insert(clu1);
@@ -426,12 +472,19 @@ TEST_CASE("AssociativeContainer", "[basics]") {
 }
 
 TEST_CASE("Equality", "[basics]") {
-  auto cluster = ExampleCluster();
+  auto cluster = MutableExampleCluster();
   auto rel = MutableExampleWithOneRelation();
   rel.cluster(cluster);
   auto returned_cluster = rel.cluster();
   REQUIRE(cluster == returned_cluster);
   REQUIRE(returned_cluster == cluster);
+
+  auto clu = ExampleCluster::makeEmpty();
+  auto clu2 = ExampleCluster::makeEmpty();
+  // Empty handles always compare equal
+  REQUIRE(clu == clu2);
+  // They never compare equal to a non-empty handle
+  REQUIRE(!(clu == cluster));
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {
@@ -449,7 +502,7 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
   REQUIRE(elem.comp().arr[1] == 3.4);
 
   // And obviously when initialized directly
-  auto ex = ExampleWithUserInit{};
+  auto ex = MutableExampleWithUserInit{};
   REQUIRE(ex.i16Val() == 42);
   REQUIRE(ex.floats()[0] == 3.14f);
   REQUIRE(ex.floats()[1] == 1.23f);
@@ -505,7 +558,7 @@ TEST_CASE("const correct iterators on const collections", "[const-correctness]")
   const auto collection = ExampleHitCollection();
   // this essentially checks the whole "chain" from begin() / end() through
   // iterator operators
-  for (auto hit : collection) {
+  for (auto hit [[maybe_unused]] : collection) {
     STATIC_REQUIRE(std::is_same_v<decltype(hit), ExampleHit>); // const collection iterators should only return
                                                                // immutable objects
   }
@@ -606,7 +659,7 @@ TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
   }
 }
 
-TEST_CASE("Collection iterators work with subset collections", "[LEAK-FAIL][subset-colls]") {
+TEST_CASE("Collection iterators work with subset collections", "[subset-colls]") {
   auto hits = ExampleHitCollection();
   auto hit1 = hits.create(0x42ULL, 0., 0., 0., 0.);
   auto hit2 = hits.create(0x42ULL, 1., 1., 1., 1.);
@@ -650,7 +703,7 @@ TEST_CASE("Cannot convert a subset collection into a normal collection", "[subse
 TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
   clusterRefs.setSubsetCollection();
-  auto cluster = ExampleCluster();
+  auto cluster = MutableExampleCluster();
 
   REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
   REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);

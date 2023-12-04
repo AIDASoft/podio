@@ -12,11 +12,12 @@
 {%- endfor %}
 {%- endmacro -%}
 
+#include "podio/ObjectID.h"
 
 {{ utils.namespace_open(class.namespace) }}
 {% with obj_type = class.bare_type + 'Obj' %}
 {{ obj_type }}::{{ obj_type }}() :
-{% raw %}  ObjBase{{}, 0}{% endraw %},
+  id(),
   data(){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
   m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>())
@@ -25,11 +26,11 @@
 {  }
 
 {{ obj_type }}::{{ obj_type }}(const podio::ObjectID id_, {{ class.bare_type }}Data data_) :
-  ObjBase{id_, 0}, data(data_)
+  id(id_), data(data_)
 {  }
 
 {{ obj_type }}::{{ obj_type }}(const {{ obj_type }}& other) :
-{% raw %}  ObjBase{{}, 0}{% endraw %},
+  id(),
   data(other.data){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
   m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>(*(other.m_{{ relation.name }})))
