@@ -19,7 +19,7 @@ namespace {
 /// helper function to get valid sio block names
 template <typename BasicType, typename = podio::EnableIfSupportedUserType<BasicType>>
 inline std::string sio_name() {
-  std::string s = podio::userDataTypeName<BasicType>();
+  std::string s = podio::UserDataCollection<BasicType>::dataTypeName;
   std::replace(s.begin(), s.end(), ' ', '_');
   return s;
 }
@@ -33,7 +33,8 @@ public:
   SIOBlockUserData() :
       SIOBlock(::sio_name<BasicType>(), sio::version::encode_version(UserDataCollection<BasicType>::schemaVersion, 0)) {
 
-    podio::SIOBlockFactory::instance().registerBlockForCollection(podio::userDataTypeName<BasicType>(), this);
+    podio::SIOBlockFactory::instance().registerBlockForCollection(podio::UserDataCollection<BasicType>::dataTypeName,
+                                                                  this);
   }
 
   SIOBlockUserData(const std::string& name) :
@@ -44,7 +45,7 @@ public:
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
     m_buffers =
         bufferFactory
-            .createBuffers(podio::userDataCollTypeName<BasicType>(), sio::version::major_version(version), false)
+            .createBuffers(podio::UserDataCollection<BasicType>::typeName, sio::version::major_version(version), false)
             .value();
 
     auto* dataVec = new std::vector<BasicType>();

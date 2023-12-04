@@ -39,18 +39,17 @@ using EnableIfSupportedUserType = std::enable_if_t<detail::isInTuple<T, Supporte
 
 /** helper template to provide readable type names for basic types with macro PODIO_ADD_USER_TYPE(type)
  */
-template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
-constexpr const char* userDataTypeName();
+template <typename BasicType>
+inline constexpr const char* userDataTypeName();
 
 /** Helper template to provide the fully qualified name of a UserDataCollection.
  * Implementations are populated by the PODIO_ADD_USER_TYPE macro.
  */
-template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
-constexpr const char* userDataCollTypeName();
+template <typename BasicType>
+inline constexpr const char* userDataCollTypeName();
 
 PODIO_ADD_USER_TYPE(float)
 PODIO_ADD_USER_TYPE(double)
-
 PODIO_ADD_USER_TYPE(int8_t)
 PODIO_ADD_USER_TYPE(int16_t)
 PODIO_ADD_USER_TYPE(int32_t)
