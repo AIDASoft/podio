@@ -32,6 +32,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -DENABLE_SIO=ON \
+            -DENABLE_JULIA=ON \
             -DENABLE_RNTUPLE=ON \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror "\

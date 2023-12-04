@@ -37,6 +37,7 @@ jobs:
           mkdir build install
           cd build
           cmake -DENABLE_SIO=ON \
+            -DENABLE_JULIA=ON \
             -DENABLE_RNTUPLE=${{ matrix.RNTUPLE }} \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=${{ matrix.CXX_STANDARD }} \
@@ -47,6 +48,9 @@ jobs:
           echo "::endgroup::"
           echo "::group::Build"
           ninja -k0
+          echo "::endgroup"
+          echo "::group::Julia StaticArrays Package Install"
+          julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
           echo "::group::Run tests"
           ctest --output-on-failure

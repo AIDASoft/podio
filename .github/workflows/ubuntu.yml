@@ -27,6 +27,7 @@ jobs:
           mkdir build install
           cd build
           cmake -DENABLE_SIO=${{ matrix.sio }} \
+            -DENABLE_JULIA=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
@@ -37,6 +38,9 @@ jobs:
           echo "::endgroup::"
           echo "::group::Build"
           ninja -k0
+          echo "::endgroup"
+          echo "::group::Julia StaticArrays Package Install"
+          julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
           echo "::group::Run tests"
           ctest --output-on-failure

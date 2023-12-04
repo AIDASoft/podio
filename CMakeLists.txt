@@ -70,6 +70,7 @@ option(ENABLE_SIO        "Build SIO I/O support" OFF)
 option(PODIO_RELAX_PYVER "Do not require exact python version match with ROOT" OFF)
 option(ENABLE_RNTUPLE    "Build with support for the new ROOT NTtuple format" OFF)
 option(PODIO_USE_CLANG_FORMAT "Use clang-format to format the code" OFF)
+option(ENABLE_JULIA      "Enable Julia support. When enabled, Julia datamodels will be generated, and Julia tests will run." OFF)
 
 
 #--- Declare ROOT dependency ---------------------------------------------------
