@@ -35,7 +35,6 @@ def get_julia_type(cpp_type, is_array=False, array_type=None, array_size=None):
                        "bool": "Bool", "long": "Int64", "unsigned int": "UInt32",
                        "unsigned long": "UInt64", "char": "Char", "short": "Int16",
                        "long long": "Int64", "unsigned long long": "UInt64"}
-  # is a global type as described in test_MemberParser.py #L121
   # check for cpp_type=None as cpp_type can be None in case of array members
   if cpp_type and cpp_type.startswith("::"):
     cpp_type = cpp_type[2:]
