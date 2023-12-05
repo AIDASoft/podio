@@ -290,7 +290,7 @@ auto createComponentUserDataCollection(int i) {
 
   auto val = ex2::NamespaceStruct{};
   val.x = 42;
-  val.y = 123;
+  val.y = i;
   coll.push_back(val);
 
   return coll;

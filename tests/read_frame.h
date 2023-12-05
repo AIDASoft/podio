@@ -71,11 +71,11 @@ void checkVecMemSubsetColl(const podio::Frame& event) {
   ASSERT(subsetColl[0] == origColl[0], "subset coll does not have the right contents");
 }
 
-void checkComponentUserDataColl(const podio::Frame& event) {
+void checkComponentUserDataColl(const podio::Frame& event, int i) {
   const auto& coll = event.get<podio::UserDataCollection<ex2::NamespaceStruct>>("componentUserData");
   ASSERT(coll.isValid(), "componentUserData should be present");
   ASSERT(coll.size() == 2, "componentUserData should have two elements");
-  ASSERT(coll[1].x == 42 && coll[1].y == 123, "componentUserData contents are not as expected");
+  ASSERT(coll[1].x == 42 && coll[1].y == i, "componentUserData contents are not as expected");
 }
 
 template <typename ReaderT>
@@ -133,6 +133,9 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     // As well as a test for the vector members subset category
     if (reader.currentFileVersion() >= podio::version::Version{0, 16, 99}) {
       checkVecMemSubsetColl(otherFrame);
+    }
+    if (reader.currentFileVersion() >= podio::version::Version{0, 17, 99}) {
+      checkComponentUserDataColl(otherFrame, i + 100);
     }
   }
 
