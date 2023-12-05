@@ -683,9 +683,9 @@ have resolvable schema evolution incompatibilities:")
   def _create_component_userdata_blocks(self):
     """Create the userdata block registration functionality"""
     data = {
-      'components': [DataType(c) for c in self.datamodel.components],
-      'incfolder': self.incfolder,
-    }
+        'components': [DataType(c) for c in self.datamodel.components],
+        'incfolder': self.incfolder,
+        }
     self._write_file('UserDataSIOBlock.cc', self._eval_template("UserDataSIOBlock.cc.jinja2", data))
 
   @staticmethod
