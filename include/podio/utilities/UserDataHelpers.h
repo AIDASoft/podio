@@ -8,9 +8,7 @@
 #include <type_traits>
 #include <typeinfo>
 
-namespace podio::detail
-
-{
+namespace podio::detail {
 
 /**
  * helper template to provide readable names for types used in
