@@ -1,0 +1,14 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "podio/SIOBlockUserData.h"
+
+{% for comp in components %}
+#include "{{ incfolder }}{{ comp.bare_type }}.h"
+{% endfor %}
+
+namespace {
+{% for comp in components %}
+  static podio::SIOBlockUserData<{{ comp.full_type }}> user_data_{{ comp.full_type | replace(":", "_") }}_CollectionSIOBlock;
+
+{% endfor %}
+}

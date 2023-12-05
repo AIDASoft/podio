@@ -7,6 +7,8 @@
 #include "nlohmann/json.hpp"
 #endif
 
+#include "podio/UserDataCollection.h"
+
 {{ utils.namespace_open(class.namespace) }}
 
 std::ostream& operator<<(std::ostream& o, const {{class.full_type}}& value) {
@@ -34,6 +36,18 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}& value) {
   };
 }
 #endif
+
+namespace {
+  bool register_{{ class.bare_type }}() {
+    const static auto reg = []() {
+      podio::detail::registerUserDataCollection({{ class.full_type }}{});
+      return true;
+    }();
+    return reg;
+  }
+
+  const auto registererd_{{ class.bare_type }} = register_{{ class.bare_type }}();
+}
 
 {{ utils.namespace_close(class.namespace) }}
 

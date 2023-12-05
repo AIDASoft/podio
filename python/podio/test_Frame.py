@@ -22,7 +22,7 @@ EXPECTED_COLL_NAMES = {
 # The expected collections from the extension (only present in the other_events category)
 EXPECTED_EXTENSION_COLL_NAMES = {
     "extension_Contained", "extension_ExternalComponent", "extension_ExternalRelation",
-    "VectorMemberSubsetColl"
+    "VectorMemberSubsetColl", "componentUserData"
     }
 
 # The expected parameter names in each frame

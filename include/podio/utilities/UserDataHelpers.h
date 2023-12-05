@@ -5,6 +5,7 @@
 
 #include <array>
 #include <tuple>
+#include <type_traits>
 #include <typeinfo>
 
 namespace podio {
@@ -26,6 +27,7 @@ namespace detail {
   template <typename T>
   static constexpr bool isComponent =
       podio::det::is_detected_v<hasIsComponent_t, T> && podio::det::is_detected_v<hasTypeName_t, T>;
+
 } // namespace detail
 
 } // namespace podio

@@ -1,8 +1,10 @@
 #ifndef PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 
-#include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "read_test.h"
+
+#include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/NamespaceStruct.h"
 
 #include "extension_model/ContainedTypeCollection.h"
 #include "extension_model/ExternalComponentTypeCollection.h"
@@ -67,6 +69,13 @@ void checkVecMemSubsetColl(const podio::Frame& event) {
   ASSERT(subsetColl.isSubsetCollection(), "subset collection not read back as a subset collection");
   ASSERT(subsetColl.size() == 1, "subset collection should have size 1");
   ASSERT(subsetColl[0] == origColl[0], "subset coll does not have the right contents");
+}
+
+void checkComponentUserDataColl(const podio::Frame& event) {
+  const auto& coll = event.get<podio::UserDataCollection<ex2::NamespaceStruct>>("componentUserData");
+  ASSERT(coll.isValid(), "componentUserData should be present");
+  ASSERT(coll.size() == 2, "componentUserData should have two elements");
+  ASSERT(coll[1].x == 42 && coll[1].y == 123, "componentUserData contents are not as expected");
 }
 
 template <typename ReaderT>

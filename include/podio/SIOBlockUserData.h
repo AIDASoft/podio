@@ -21,6 +21,7 @@ template <typename BasicType, typename = podio::EnableIfSupportedUserType<BasicT
 inline std::string sio_name() {
   std::string s = podio::UserDataCollection<BasicType>::dataTypeName;
   std::replace(s.begin(), s.end(), ' ', '_');
+  std::replace(s.begin(), s.end(), ':', '_');
   return s;
 }
 } // namespace

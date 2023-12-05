@@ -1,6 +1,7 @@
 #ifndef PODIO_TESTS_WRITE_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_WRITE_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/NamespaceStruct.h"
 #include "frame_test_common.h"
 
 #include "datamodel/EventInfoCollection.h"
@@ -283,6 +284,18 @@ auto createUserDataCollections(int i) {
   return retType;
 }
 
+auto createComponentUserDataCollection(int i) {
+  auto coll = podio::UserDataCollection<ex2::NamespaceStruct>{};
+  coll.push_back(ex2::NamespaceStruct{});
+
+  auto val = ex2::NamespaceStruct{};
+  val.x = 42;
+  val.y = 123;
+  coll.push_back(val);
+
+  return coll;
+}
+
 auto createNamespaceRelationCollection(int i) {
   auto retVal = std::tuple<ex42::ExampleWithNamespaceCollection, ex42::ExampleWithARelationCollection,
                            ex42::ExampleWithARelationCollection>{};
@@ -419,6 +432,8 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createExtensionContainedCollection(iFrame), "extension_Contained");
   frame.put(createExtensionExternalComponentCollection(iFrame), "extension_ExternalComponent");
   frame.put(createExtensionExternalRelationCollection(iFrame, hits, clusters), "extension_ExternalRelation");
+
+  frame.put(createComponentUserDataCollection(iFrame), "componentUserData");
 
   return frame;
 }

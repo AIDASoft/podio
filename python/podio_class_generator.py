@@ -168,6 +168,9 @@ class ClassGenerator:
         self.prepare_iorules()
         self._create_selection_xml()
 
+      if 'SIO' in self.io_handlers:
+        self._create_component_userdata_blocks()
+
       self._write_cmake_lists_file()
 
     self.print_report()
@@ -676,6 +679,14 @@ have resolvable schema evolution incompatibilities:")
     # The empty string is filtered by _sort_includes (plus it doesn't hurt in
     # the generated code)
     return ''
+
+  def _create_component_userdata_blocks(self):
+    """Create the userdata block registration functionality"""
+    data = {
+      'components': [DataType(c) for c in self.datamodel.components],
+      'incfolder': self.incfolder,
+    }
+    self._write_file('UserDataSIOBlock.cc', self._eval_template("UserDataSIOBlock.cc.jinja2", data))
 
   @staticmethod
   def _sort_components_and_datatypes(data):
