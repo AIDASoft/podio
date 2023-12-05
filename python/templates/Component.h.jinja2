@@ -39,10 +39,10 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}& value);
 
 {{ utils.namespace_close(class.namespace) }}
 
-template<> constexpr const char* podio::userDataTypeName<{{ class.full_type }}>() {
+template<> constexpr const char* podio::detail::userDataTypeName<{{ class.full_type }}>() {
   return "{{ class.full_type }}";
 }
-template<> constexpr const char* podio::userDataCollTypeName<{{ class.full_type }}>() {
+template<> constexpr const char* podio::detail::userDataCollTypeName<{{ class.full_type }}>() {
   return "podio::UserDataCollection<{{ class.full_type }}>";
 }
 

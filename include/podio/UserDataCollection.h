@@ -14,16 +14,6 @@
 #include <utility>
 #include <vector>
 
-#define PODIO_ADD_USER_TYPE(type)                                                                                      \
-  template <>                                                                                                          \
-  constexpr const char* userDataTypeName<type>() {                                                                     \
-    return #type;                                                                                                      \
-  }                                                                                                                    \
-  template <>                                                                                                          \
-  constexpr const char* userDataCollTypeName<type>() {                                                                 \
-    return "podio::UserDataCollection<" #type ">";                                                                     \
-  }
-
 namespace podio {
 
 /** tuple of basic types supported in user vector
@@ -45,31 +35,6 @@ constexpr static bool isSupportedUserDataType = detail::isInTuple<T, SupportedUs
  */
 template <typename T>
 using EnableIfSupportedUserType = std::enable_if_t<isSupportedUserDataType<T>>;
-
-/** helper template to provide readable type names for basic types with macro PODIO_ADD_USER_TYPE(type)
- */
-template <typename BasicType>
-inline constexpr const char* userDataTypeName();
-
-/** Helper template to provide the fully qualified name of a UserDataCollection.
- * Implementations are populated by the PODIO_ADD_USER_TYPE macro.
- */
-template <typename BasicType>
-inline constexpr const char* userDataCollTypeName();
-
-PODIO_ADD_USER_TYPE(float)
-PODIO_ADD_USER_TYPE(double)
-PODIO_ADD_USER_TYPE(int8_t)
-PODIO_ADD_USER_TYPE(int16_t)
-PODIO_ADD_USER_TYPE(int32_t)
-PODIO_ADD_USER_TYPE(int64_t)
-PODIO_ADD_USER_TYPE(uint8_t)
-PODIO_ADD_USER_TYPE(uint16_t)
-PODIO_ADD_USER_TYPE(uint32_t)
-PODIO_ADD_USER_TYPE(uint64_t)
-
-// don't make this macro public as it should only be used internally here...
-#undef PODIO_ADD_USER_TYPE
 
 /** Collection of basic types for additional user data not defined in the EDM.
  *  The data is stored in an std::vector<basic_type>. Supported are all basic types supported in
@@ -104,9 +69,9 @@ public:
   /// The schema version of UserDataCollections
   static constexpr SchemaVersionT schemaVersion = 1;
 
-  constexpr static auto typeName = userDataCollTypeName<BasicType>();
-  constexpr static auto valueTypeName = userDataTypeName<BasicType>();
-  constexpr static auto dataTypeName = userDataTypeName<BasicType>();
+  constexpr static auto typeName = podio::detail::userDataCollTypeName<BasicType>();
+  constexpr static auto valueTypeName = podio::detail::userDataTypeName<BasicType>();
+  constexpr static auto dataTypeName = podio::detail::userDataTypeName<BasicType>();
 
   /// prepare buffers for serialization
   void prepareForWrite() const override {
