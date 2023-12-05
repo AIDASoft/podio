@@ -71,6 +71,9 @@ fundamental types
 - fixed width integers: `intN_t` and `uintN_t`, with `N={8, 16, 32, 64}`
 - `float` and `double`
 
+Additionally, any `component` that is part of a podio generated EDM can be
+stored in a `UserDataCollection`.
+
 Trying to store different types in a `UserDataCollection` will lead to a
 compilation error. Note that the usual integer types might be the same as the
 fixed width version on some platforms. However, the equivalences of different
