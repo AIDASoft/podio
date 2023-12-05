@@ -13,8 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_102/x86_64-centos7-gcc11-opt",
-              "LCG_102/x86_64-ubuntu2004-gcc9-opt"]
+        LCG: ["LCG_104/x86_64-el9-gcc13-opt",
+              "LCG_104/x86_64-ubuntu2004-gcc9-opt",
+              "LCG_104/x86_64-el9-clang16-opt"]
     steps:
       - uses: actions/checkout@v3
         with:
