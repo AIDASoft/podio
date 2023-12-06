@@ -230,7 +230,6 @@ have resolvable schema evolution incompatibilities:")
       data['OneToOneRelations_old'] = old_schema_data['OneToOneRelations']
       data['OneToManyRelations_old'] = old_schema_data['OneToManyRelations']
       data['VectorMembers_old'] = old_schema_data['VectorMembers']
-      data['old_schema_version'] = self.old_schema_version_int
 
     return self.env.get_template(template).render(data)
 
@@ -379,6 +378,7 @@ have resolvable schema evolution incompatibilities:")
       if needs_schema_evolution:
         print(f"  Preparing explicit schema evolution for {name}")
         schema_evolution_datatype['class'].bare_type = schema_evolution_datatype['class'].bare_type + self.old_schema_version  # noqa
+        schema_evolution_datatype["old_schema_version"] =self.old_schema_version_int
         self._fill_templates('Data', schema_evolution_datatype)
         self.root_schema_datatype_names.add(name + self.old_schema_version)
         self._fill_templates('Collection', datatype, schema_evolution_datatype)
