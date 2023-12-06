@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         LCG: ["LCG_104/x86_64-el9-gcc13-opt",
-              "LCG_104/x86_64-ubuntu2004-gcc9-opt",
+              "dev4/x86_64-ubuntu2004-gcc9-opt",
               "LCG_104/x86_64-el9-clang16-opt"]
     steps:
       - uses: actions/checkout@v3
@@ -67,7 +67,6 @@ jobs:
             cmake -DCMAKE_CXX_STANDARD=17 \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
               -DUSE_EXTERNAL_CATCH2=ON \
-              -DSKIP_CATCH_DISCOVERY=ON \
               -G Ninja ..
             ninja -k0
             ctest --output-on-failure
