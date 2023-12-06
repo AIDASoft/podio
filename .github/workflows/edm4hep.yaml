@@ -28,6 +28,7 @@ jobs:
         with:
           repository: catchorg/Catch2
           path: catch2
+          ref: v3.4.0
       - uses: cvmfs-contrib/github-action-cvmfs@v3
       - uses: aidasoft/run-lcg-view@v4
         with:
