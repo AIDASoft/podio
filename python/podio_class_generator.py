@@ -38,7 +38,7 @@ REPORT_TEXT_JULIA = """
 """
 
 
-def get_clang_format():
+def has_clang_format():
   """Check if clang format is available and if so get the list of arguments to
   invoke it via subprocess.Popen"""
   try:
@@ -48,16 +48,25 @@ def get_clang_format():
     # This one doesn't raise
     out = subprocess.check_output('echo | clang-format -style=file ', stderr=subprocess.STDOUT, shell=True)
     if b'.clang-format' in out:
-      return []
-    return ["clang-format", "-style=file", "-fallback-style=llvm"]
+      return False
+    return True
   except FileNotFoundError:
     print("ERROR: Cannot find clang-format executable")
     print("       Please make sure it is in the PATH.")
-    return []
+    return False
   except subprocess.CalledProcessError:
     print('ERROR: At least one argument was not recognized by clang-format')
     print('       Most likely the version you are using is old')
-    return []
+    return False
+
+
+def clang_format_file(content, name):
+  if name.endswith(".jl"):
+    return content
+
+  clang_format = ["clang-format", "-style=file", "-fallback-style=llvm"]
+  with subprocess.Popen(clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as cfproc:
+    return cfproc.communicate(input=content.encode())[0].decode()
 
 
 def write_file_if_changed(filename, content, force_write=False):
@@ -128,7 +137,7 @@ class ClassGenerator:
     self.expose_pod_members = self.datamodel.options["exposePODMembers"]
     self.upstream_edm = upstream_edm
 
-    self.clang_format = []
+    self.formatter_func = None
     self.generated_files = []
     self.any_changes = False
 
@@ -242,9 +251,8 @@ have resolvable schema evolution incompatibilities:")
       fullname = os.path.join(self.install_dir, "src", name)
     if not self.dryrun:
       self.generated_files.append(fullname)
-      if self.clang_format and not name.endswith('jl'):
-        with subprocess.Popen(self.clang_format, stdin=subprocess.PIPE, stdout=subprocess.PIPE) as cfproc:
-          content = cfproc.communicate(input=content.encode())[0].decode()
+      if self.formatter_func:
+        content = self.formatter_func(content, fullname)
 
       changed = write_file_if_changed(fullname, content)
       self.any_changes = changed or self.any_changes
@@ -819,8 +827,8 @@ if __name__ == "__main__":
   gen = ClassGenerator(args.description, args.targetdir, args.packagename, args.iohandlers, proglang=args.lang,
                        verbose=args.verbose, dryrun=args.dryrun, upstream_edm=args.upstream_edm,
                        old_description=args.old_description, evolution_file=args.evolution_file)
-  if args.clangformat:
-    gen.clang_format = get_clang_format()
+  if args.clangformat and has_clang_format():
+    gen.formatter_func = clang_format_file
   gen.process()
 
   # pylint: enable=invalid-name
