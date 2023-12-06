@@ -94,9 +94,11 @@ def _is_fixed_width_type(type_name):
     type_name = type_name[5:]
 
   if ALL_FIXED_WIDTH_TYPES_RGX.match(type_name):
-    return (True, type_name in ALLOWED_FIXED_WIDTH_TYPES)
+    if not type_name in ALLOWED_FIXED_WIDTH_TYPES:
+      raise DefinitionError(f"{type_name} is a fixed width integer type that is not allowed")
+    return True
 
-  return (False, False)
+  return False
 
 
 class DataType:
@@ -145,34 +147,19 @@ class MemberVariable:
       self.is_builtin_array = self.array_type in BUILTIN_TYPES
       # We also have to check if this is a fixed width integer array
       if not self.is_builtin_array:
-        is_fw, valid_fw = _is_fixed_width_type(self.array_type)
-        if is_fw:
-          if not valid_fw:
-            raise DefinitionError(f'{self.full_type} is an array of a fixed width integer type that is not allowed')
+        if _is_fixed_width_type(self.array_type):
           self.is_builtin_array = True
-          if not self.array_type.startswith('std::'):
-            self.array_type = f'std::{self.array_type}'
-          self.includes.add('#include <cstdint>')
+          self.array_type = self.normalize_fw_type(self.array_type)
 
       self.full_type = rf'std::array<{self.array_type}, {self.array_size}>'
       self.includes.add('#include <array>')
       self.jl_imports.add('using StaticArrays')
 
-    self.is_builtin = self.full_type in BUILTIN_TYPES
+    is_fw_type = _is_fixed_width_type(self.full_type)
+    self.is_builtin = self.full_type in BUILTIN_TYPES or is_fw_type
 
-    # We still have to check if this type is a valid fixed width type that we
-    # also consider to be builtin types
-    if not self.is_builtin:
-      is_fw, valid_fw = _is_fixed_width_type(self.full_type)
-      if is_fw:
-        if not valid_fw:
-          raise DefinitionError(f'{self.full_type} is a fixed width integer type that is not allowed')
-
-        self.is_builtin = True
-        # "Normalize" the name by prepending it with the std namespace if necessary
-        if not self.full_type.startswith('std::'):
-          self.full_type = f'std::{self.full_type}'
-        self.includes.add('#include <cstdint>')
+    if is_fw_type:
+      self.full_type = self.normalize_fw_type(self.full_type)
 
     # Needed in case the PODs are exposed
     self.sub_members = None
@@ -251,6 +238,13 @@ class MemberVariable:
     if not get_syntax:
       return self.name
     return _prefix_name(self.name, 'set')
+
+  def normalize_fw_type(self, fw_type):
+    """Normalize the fixed width type and make sure to inclde <cstdint>"""
+    self.includes.add("#include <cstdint>")
+    if not fw_type.startswith("std::"):
+      return f"std::{fw_type}"
+    return fw_type
 
   def _to_json(self):
     """Return a string representation that can be parsed again."""
