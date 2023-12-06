@@ -174,9 +174,6 @@ class MemberVariable:
           self.full_type = f'std::{self.full_type}'
         self.includes.add('#include <cstdint>')
 
-    # For usage in constructor signatures
-    self.signature = self.full_type + ' ' + self.name
-
     # Needed in case the PODs are exposed
     self.sub_members = None
 
@@ -187,6 +184,11 @@ class MemberVariable:
 
     self.julia_type = get_julia_type(self.bare_type, is_array=self.is_array,
                                      array_type=self.array_type, array_size=self.array_size)
+
+  @property
+  def signature(self):
+    """Get the signature for this member variable to be used in function definitions"""
+    return f"{self.full_type} {self.name}"
 
   @property
   def docstring(self):
