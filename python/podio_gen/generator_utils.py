@@ -120,6 +120,7 @@ class DataType:
     """Return a string representation that can be parsed again"""
     return self.full_type
 
+
 class MemberVariable:
   """Simple class to hold information about a member variable"""
   def __init__(self, name, **kwargs):

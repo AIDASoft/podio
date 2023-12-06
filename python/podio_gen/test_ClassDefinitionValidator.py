@@ -446,16 +446,16 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
                               self.validate, make_dm({}, datatype, self.valid_interface), False)
 
   def test_interface_valid_upstream(self):
-   """Make sure that we can use interface definitions from upstream models"""
-   # Create an upstream datamodel that contains the interface type
-   upstream_dm = make_dm({}, self.valid_datatype, self.valid_interface)
+    """Make sure that we can use interface definitions from upstream models"""
+    # Create an upstream datamodel that contains the interface type
+    upstream_dm = make_dm({}, self.valid_datatype, self.valid_interface)
 
-   # Make a downstream model datatype that uses the interface from the upstream
-   # but doesn't bring along its own interface definitions
-   datatype = {'DownstreamType': deepcopy(self.valid_datatype['DataType'])}
-   datatype['DownstreamType']['OneToOneRelations'] = [MemberVariable(type='InterfaceType', name='interfaceRelation')]
-   self._assert_no_exception(DefinitionError, '{} should allow to use interface types from an upstream datamodel',
-                             self.validate, make_dm({}, datatype), upstream_dm)
+    # Make a downstream model datatype that uses the interface from the upstream
+    # but doesn't bring along its own interface definitions
+    datatype = {'DownstreamType': deepcopy(self.valid_datatype['DataType'])}
+    datatype['DownstreamType']['OneToOneRelations'] = [MemberVariable(type='InterfaceType', name='interfaceRelation')]
+    self._assert_no_exception(DefinitionError, '{} should allow to use interface types from an upstream datamodel',
+                              self.validate, make_dm({}, datatype), upstream_dm)
 
 
 if __name__ == '__main__':
