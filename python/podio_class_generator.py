@@ -94,8 +94,9 @@ if __name__ == "__main__":
                       'Source files will be put under <targetdir>/src/*.cc. '
                       'Julia files will be put under <targetdir>/<packagename>/*.jl.')
   parser.add_argument('packagename', help='Name of the package.')
-  parser.add_argument('iohandlers', choices=['ROOT', 'SIO'], nargs='+',
-                      help='The IO backend specific code that should be generated')
+  parser.add_argument('iohandlers', choices=['ROOT', 'SIO'], nargs='*',
+                      help='The IO backend specific code that should be generated',
+                      default="ROOT")
   parser.add_argument('-l', '--lang', choices=['cpp', 'julia'], default='cpp',
                       help='Specify the programming language (default: cpp)')
   parser.add_argument('-q', '--quiet', dest='verbose', action='store_false', default=True,
