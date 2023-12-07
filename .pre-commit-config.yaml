@@ -26,6 +26,10 @@ repos:
         language: system
       - id: flake8
         name: flake8
-        entry: flake8
+        entry: 'flake8 --config=.flake8'
         types: [python]
         language: system
+  - repo: https://github.com/psf/black
+    rev: 23.11.0
+    hooks:
+      - id: black
