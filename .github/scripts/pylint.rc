@@ -144,7 +144,7 @@ property-classes=abc.abstractproperty
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=120
+max-line-length=88
 
 # Regexp for a line that is allowed to be longer than the limit.
 ignore-long-lines=^\s*(# )?<?https?://\S+>?$
@@ -158,7 +158,7 @@ max-module-lines=1200
 
 # String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
 # tab).
-indent-string='  '
+indent-string='    '
 
 # Number of spaces of indent required inside a hanging  or continued line.
 indent-after-paren=4
