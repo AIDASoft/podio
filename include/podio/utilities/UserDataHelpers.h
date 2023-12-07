@@ -4,6 +4,7 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include <array>
+#include <cstdint>
 #include <tuple>
 #include <type_traits>
 #include <typeinfo>
