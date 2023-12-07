@@ -94,7 +94,7 @@ def _is_fixed_width_type(type_name):
     type_name = type_name[5:]
 
   if ALL_FIXED_WIDTH_TYPES_RGX.match(type_name):
-    if not type_name in ALLOWED_FIXED_WIDTH_TYPES:
+    if type_name not in ALLOWED_FIXED_WIDTH_TYPES:
       raise DefinitionError(f"{type_name} is a fixed width integer type that is not allowed")
     return True
 
