@@ -7,15 +7,19 @@ PODIO only makes use of rather basic Jinja2 templates, so it should in principle
 
 ## Preprocessing of yaml file
 
-The entry point for reading yaml files is the [`python/podio_config_reader.py`](/python/podio_config_reader.py).
-When reading the yaml file a basic validation is run and the data members, relations and vector members of components and datatypes are parsed into `MemberVariable` objects (defined in [`python/generator_utils.py`](/python/generator_utils.py)).
-The reader itself will be created as part of the `ClassGenerator` in [`python/podio_class_generator.py`](/python/podio_class_generator.py), which is the main entry point.
-It takes care of
+The entry point for reading yaml files is the [`python/podio_gen/podio_config_reader.py`](/python/podio_gen/podio_config_reader.py).
+When reading the yaml file a basic validation is run and the data members, relations and vector members of components and datatypes are parsed into `MemberVariable` objects (defined in [`python/podio_gen/generator_utils.py`](/python/podio_gen/generator_utils.py)).
+The main entry point to the code generation is the [`python/podio_class_generator.py`](/python/podio_class_generator.py) which takes care of instantiating the language specific code generator (either C++ or a prototype version for Julia at this point).
+The language specific generators inherit from the [`ClassGeneratorBaseMixin`](/python/podio_gen/generator_base.py) which takes care of some common initialization and provides some common functionality for code generation.
+ In the end each langauge specific generator will take care of (either by itself or through the common functionality in `ClassGeneratorBaseMixin`):
 - Configuring the Jinja2 template engine. At the moment this is mainly making the templates known to the engine.
 - The necessary preprocessing of all the datatypes and components. This includes collecting necessary include directories and forward declaration, as well as digesting `ExtraCode` snippets.
 - Putting all the necessary information into a `dict` that can be easily used in the Jinja2 templates. See [below](#available-information-in-the-templates) for what is available in the templates
 - Calling the template engine to fill the necessary templates for each datatype or component and making sure to only write to disk if the filled template actually changed. Optionally run `clang-format` on them before writing.
 - Producing a list of generated c++ files for consumption by the cmake macros of PODIO.
+
+Currently two language specific generators are available: [`CPPClassGenerator`](/python/podio_gen/cpp_generator.py) and [`JuliaClassGenerator`](/python/podio_gen/julia_generator.py).
+Note that some of the information below will only apply to either of these generators as they provide the template engine with slightly different content.
 
 ## Existing templates
 
@@ -44,18 +48,18 @@ These are stored in the [`macros`](/python/templates/macros) subfolder and are i
 ## Adding a new template
 All templates that are placed in the templates directory mentioned [above](#existing-templates) become immediately available to the template engine if it ends on `.jinja2`
 However, it is still necessary to actively fill them from the class generator.
-If the available information for the new templates is already enough and no further pre-processing is necessary, than they need to be added to `_get_filenames_templates` function in the `ClassGenerator`.
+If the available information for the new templates is already enough and no further pre-processing is necessary, than they need to be added to `_get_filenames_templates` function in the `ClassGeneratorBaseMixin`.
 The `prefix` and `postfix` dictionaries define how the template filename will be mapped to the generated files: `<prefix><template-filename><postfix>`.
 By default a `.h` and a `.cc` file will be generated, but this can be overridden by adding the template to the `endings` dictionary.
 With that in place it is now only neccessary to call `_fill_templates` with the appropriate template name and the pre processed data.
 Note that for most templates this means that they have to be filled for each datatype or component individually.
 
-If additional preprocessing is necessary, it will be necessary to also add that to the `ClassGenerator`.
+If additional preprocessing is necessary, it will be necessary to also add that to the the language specific generators.
 The main entry point to the generation is the `process` method which essentially just delegates to other methods.
 
 ## Available information in the templates
 
-The following gives an overview of the information that is available from the dictionary that is passed to the templates from the `ClassGenerator`.
+The following gives an overview of the information that is available from the dictionary that is passed to the templates from the different
 Each (top level) key in this dict is directly available as a variable in the Jinja2 templates, e.g.
 ```python
 component['includes'] = # list of includes
@@ -66,6 +70,10 @@ will become available as
 {{ include }}
 {% endfor %}
 ```
+
+**Be aware that some of the information is only available for the language
+specific generators**. The following information mostly applies to the c++ code
+generation!
 
 ### General information
 The following keys / variables are always available
