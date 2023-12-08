@@ -37,8 +37,6 @@ add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
 target_link_libraries(read_frame_legacy_root PRIVATE "${root_libs}")
 
 message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")
-add_executable(read-legacy-files-root read-legacy-files-root.cpp)
-target_link_libraries(read-legacy-files-root PRIVATE TestDataModel TestDataModelDict podio::podioRootIO)
 
 # Add a legacy test case based on a base executable and a version for which an
 # input file exists
@@ -55,10 +53,7 @@ macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
   )
 endmacro()
 
-ADD_PODIO_LEGACY_TEST(v00-13 read-legacy-files-root v00-13-example.root legacy_test_cases)
-
 foreach(version IN LISTS legacy_test_versions)
-  ADD_PODIO_LEGACY_TEST(${version} read-legacy-files-root ${version}-example.root legacy_test_cases)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_root ${version}-example_frame.root legacy_test_cases)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root ${version}-example.root legacy_test_cases)
 endforeach()
