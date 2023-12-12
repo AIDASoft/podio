@@ -18,10 +18,12 @@ class write_device;
 using version_type = uint32_t; // from sio/definitions
 } // namespace sio
 
+#if PODIO_ENABLE_RNTUPLE
 namespace podio {
 class ROOTNTupleReader;
 class ROOTNTupleWriter;
 } // namespace podio
+#endif
 
 #define DEPR_NON_TEMPLATE                                                                                              \
   [[deprecated("Non-templated access will be removed. Switch to templated access functionality")]]
@@ -150,8 +152,11 @@ public:
 
   friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
   friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
-  friend ROOTNTupleReader;
+
+#if PODIO_ENABLE_RNTUPLE
   friend ROOTNTupleWriter;
+  friend ROOTNTupleReader;
+#endif
 
   /// Get a reference to the internal map for a given type
   template <typename T>
