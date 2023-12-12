@@ -12,6 +12,7 @@
 #include "catch2/matchers/catch_matchers_vector.hpp"
 
 // podio specific includes
+#include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/ROOTFrameReader.h"
 #include "podio/ROOTFrameWriter.h"
