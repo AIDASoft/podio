@@ -13,13 +13,8 @@ function(PODIO_SET_TEST_ENV test)
       PODIO_USE_CLANG_FORMAT=${PODIO_USE_CLANG_FORMAT}
       PODIO_BASE=${PROJECT_SOURCE_DIR}
       ENABLE_SIO=${ENABLE_SIO}
+      PODIO_BUILD_BASE=${PROJECT_BINARY_DIR}
   )
-  if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
-    list(APPEND test_environment
-    PODIO_TEST_INPUT_DATA_DIR=${PODIO_TEST_INPUT_DATA_DIR}
-    )
-  endif()
-
   set_property(TEST ${test}
     PROPERTY ENVIRONMENT "${test_environment}"
   )
