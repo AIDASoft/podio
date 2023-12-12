@@ -2,9 +2,9 @@
 #include "datamodel/MutableExampleReferencingType.h"
 #include "datamodel/MutableExampleWithVectorMember.h"
 
-#include "podio/EventStore.h"
-#include "podio/ROOTReader.h"
-#include "podio/ROOTWriter.h"
+#include "podio/Frame.h"
+#include "podio/ROOTFrameReader.h"
+#include "podio/ROOTFrameWriter.h"
 
 #include <sstream>
 #include <stdexcept>
@@ -182,33 +182,28 @@ void testExampleReferencingType() {
 }
 
 void testWithIO() {
-  podio::EventStore store;
-  podio::ROOTWriter writer("relation_range_io_test.root", &store);
-
-  auto& collection = store.create<ExampleMCCollection>("mcparticles");
-  writer.registerForWrite("mcparticles");
+  podio::ROOTFrameWriter writer("relation_range_io_test.root");
 
   for (int i = 0; i < 10; ++i) {
+    auto collection = ExampleMCCollection();
     fillExampleMCCollection(collection);
     doTestExampleMC(collection);
-    writer.writeEvent();
-    store.clearCollections();
+    auto event = podio::Frame();
+    event.put(std::move(collection), "mcparticles");
+    writer.writeFrame(event, podio::Category::Event);
   }
   writer.finish();
 
-  podio::EventStore readStore;
-  podio::ROOTReader reader;
+  podio::ROOTFrameReader reader;
   reader.openFile("relation_range_io_test.root");
-  readStore.setReader(&reader);
 
   for (int i = 0; i < 10; ++i) {
-    auto& readColl = readStore.get<ExampleMCCollection>("mcparticles");
+    const auto event = podio::Frame(reader.readNextEntry(podio::Category::Event));
+    auto& readColl = event.get<ExampleMCCollection>("mcparticles");
     ASSERT_CONDITION(readColl.isValid(), "Collection 'mcparticles' should be present");
     ASSERT_EQUAL(readColl.size(), 10, "'mcparticles' should have 10 entries");
 
     doTestExampleMC(readColl);
-    readStore.clear();
-    reader.endOfEvent();
   }
 }
 
