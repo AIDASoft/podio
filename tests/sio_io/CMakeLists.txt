@@ -27,13 +27,7 @@ set_property(TEST read_python_frame_sio PROPERTY DEPENDS write_python_frame_sio)
 add_executable(read_frame_legacy_sio read_frame_legacy_sio.cpp)
 target_link_libraries(read_frame_legacy_sio PRIVATE "${sio_libs}" TestDataModel)
 
-
-set(legacy_test_versions
-  v00-16-05
-  v00-16-06
-)
-
-foreach(version IN LISTS legacy_test_versions)
+foreach(version IN LISTS sio_legacy_test_versions)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_sio ${version}-example_frame.sio)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_sio ${version}-example.sio)
 endforeach()

@@ -30,15 +30,15 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     pyunittest
 
     podio-dump-help
-    podio-dump-root-legacy
     podio-dump-root
     podio-dump-detailed-root
-    podio-dump-detailed-root-legacy
+    podio-dump-legacy_root_v00-16-06
+    podio-dump-legacy_root-detailed_v00-16-06
 
-    podio-dump-sio-legacy
     podio-dump-sio
     podio-dump-detailed-sio
-    podio-dump-detailed-sio-legacy
+    podio-dump-legacy_sio_v00-16-06
+    podio-dump-legacy_sio-detailed_v00-16-06
 
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
@@ -49,9 +49,14 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_new_data_root
   )
 
-  foreach(version in @legacy_test_versions@)
+  foreach(version in @root_legacy_test_versions@)
       list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
       list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_root_${version})
+  endforeach()
+
+  foreach(version in @sio_legacy_test_versions@)
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_sio_${version})
+      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_sio_${version})
   endforeach()
 
   # ostream_operator is working with Memory sanitizer (at least locally)

@@ -36,14 +36,7 @@ endif()
 add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
 target_link_libraries(read_frame_legacy_root PRIVATE "${root_libs}")
 
-set(legacy_test_versions
-  v00-16
-  v00-16-02
-  v00-16-05
-  v00-16-06
-)
-
-foreach(version IN LISTS legacy_test_versions)
+foreach(version IN LISTS root_legacy_test_versions)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_root ${version}-example_frame.root)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root ${version}-example.root)
 endforeach()
