@@ -28,24 +28,40 @@ if(BUILD_TESTING)
     endif()
   endfunction()
 
+  # Helper function for easily creating "tests" that simply execute podio-dump
+  # with different arguments on legacy input files. Not crashing is considered
+  # success.
+  #
+  # Args:
+  #     name        the name suffix of the test (the actual name will be assembled)
+  #     version     the legacy version of the input
+  #     input_file  the input file to use
+  function(CREATE_LEGACY_DUMP_TEST name version input_file)
+    set(_name podio-dump-legacy_${name}_${version})
+    ExternalData_Add_Test(legacy_test_cases
+      NAME ${_name}
+      COMMAND ./podio-dump ${ARGN} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
+    )
+    PODIO_SET_TEST_ENV(${_name})
+
+    set_tests_properties(${_name} PROPERTIES
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    )
+  endfunction()
+
   CREATE_DUMP_TEST(podio-dump-help _dummy_target_ --help)
   CREATE_DUMP_TEST(podio-dump-root "write_frame_root" ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
   CREATE_DUMP_TEST(podio-dump-detailed-root "write_frame_root" --detailed --category other_events --entries 2:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
 
-
-  if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
-    CREATE_DUMP_TEST(podio-dump-root-legacy "" ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.root)
-    CREATE_DUMP_TEST(podio-dump-detailed-root-legacy "" --detailed --entries 2:3 ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.root)
-  endif()
+  CREATE_LEGACY_DUMP_TEST("root" v00-16-06 v00-16-06-example.root)
+  CREATE_LEGACY_DUMP_TEST("root-detailed" v00-16-06 v00-16-06-example.root --detailed --entries 2:3)
 
   if (ENABLE_SIO)
     CREATE_DUMP_TEST(podio-dump-sio "write_frame_sio" --entries 4:7 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
     CREATE_DUMP_TEST(podio-dump-detailed-sio "write_frame_sio" --detailed --entries 9 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
 
-    if (DEFINED CACHE{PODIO_TEST_INPUT_DATA_DIR})
-      CREATE_DUMP_TEST(podio-dump-sio-legacy "" ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.sio)
-      CREATE_DUMP_TEST(podio-dump-detailed-sio-legacy "" --detailed --entries 2:3 ${PODIO_TEST_INPUT_DATA_DIR}/v00-16-06/example.sio)
-    endif()
+    CREATE_LEGACY_DUMP_TEST("sio" v00-16-06 v00-16-06-example.sio)
+    CREATE_LEGACY_DUMP_TEST("sio-detailed" v00-16-06 v00-16-06-example.sio --detailed --entries 2:3)
   endif()
 
   if (ENABLE_RNTUPLE)
