@@ -36,17 +36,26 @@ PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
 
-set(legacy_test_versions
-  v00-16
-  v00-16-02
-  v00-16-05
-  v00-16-06
-)
-
 include(ExternalData)
 list(APPEND ExternalData_URL_TEMPLATES
  "https://key4hep.web.cern.ch:443/testFiles/podio/%(hash)"
  )
+
+
+# Add a legacy test case based on a base executable and a version for which an
+# input file exists
+macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
+  ExternalData_Add_Test(legacy_test_cases
+    NAME ${base_test}_${version}
+    COMMAND ${base_test} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
+  )
+  set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
+    LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
+    # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
+    # with existing headers from other installations
+    ROOT_INCLUDE_PATH=
+  )
+endmacro()
 
 add_subdirectory(root_io)
 if (ENABLE_SIO)
@@ -91,3 +100,5 @@ endif()
 configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
 
 ExternalData_Add_Target(legacy_test_cases)
+
+message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")

@@ -20,13 +20,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if (reader.currentFileVersion() != podio::version::build_version) {
-    std::cerr << "The podio build version could not be read back correctly. "
-              << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
-              << std::endl;
-    return 1;
-  }
-
   if (reader.getEntries("events") != 2000) {
     std::cerr << "Could not read back the number of events correctly. "
               << "(expected:" << 2000 << ", actual: " << reader.getEntries("events") << ")" << std::endl;

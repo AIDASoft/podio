@@ -36,26 +36,16 @@ endif()
 add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
 target_link_libraries(read_frame_legacy_root PRIVATE "${root_libs}")
 
-message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")
-
-# Add a legacy test case based on a base executable and a version for which an
-# input file exists
-macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
-  ExternalData_Add_Test(legacy_test_cases
-    NAME ${base_test}_${version}
-    COMMAND ${base_test} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
-  )
-  set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
-    LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-    # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
-    # with existing headers from other installations
-    ROOT_INCLUDE_PATH=
-  )
-endmacro()
+set(legacy_test_versions
+  v00-16
+  v00-16-02
+  v00-16-05
+  v00-16-06
+)
 
 foreach(version IN LISTS legacy_test_versions)
-  ADD_PODIO_LEGACY_TEST(${version} read_frame_root ${version}-example_frame.root legacy_test_cases)
-  ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root ${version}-example.root legacy_test_cases)
+  ADD_PODIO_LEGACY_TEST(${version} read_frame_root ${version}-example_frame.root)
+  ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root ${version}-example.root)
 endforeach()
 
 #--- Write via python and the ROOT backend and see if we can read it back in in
