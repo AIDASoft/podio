@@ -43,12 +43,7 @@ macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
     NAME ${base_test}_${version}
     COMMAND ${base_test} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
   )
-  set_property(TEST ${base_test}_${version} PROPERTY ENVIRONMENT
-    LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$ENV{LD_LIBRARY_PATH}
-    # Clear the ROOT_INCLUDE_PATH for the tests, to avoid potential conflicts
-    # with existing headers from other installations
-    ROOT_INCLUDE_PATH=
-  )
+  PODIO_SET_TEST_ENV(${base_test}_${version})
 endmacro()
 
 set(root_legacy_test_versions
