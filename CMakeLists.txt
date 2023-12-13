@@ -191,11 +191,21 @@ add_subdirectory(src)
 SET(podio_PYTHON_DIR ${PROJECT_SOURCE_DIR}/python CACHE PATH "Path to the podio python directory")
 
 if(BUILD_TESTING)
+  include(ExternalData)
+  list(APPEND ExternalData_URL_TEMPLATES
+    "https://key4hep.web.cern.ch:443/testFiles/podio/%(hash)"
+  )
   include(cmake/podioTest.cmake)
   add_subdirectory(tests)
 endif()
 add_subdirectory(tools)
 add_subdirectory(python)
 
+
+if(BUILD_TESTING)
+  # Make sure to fetch all data, after all legacy test cases have been added
+  ExternalData_Add_Target(legacy_test_cases)
+  message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")
+endif()
 #--- add CMake infrastructure --------------------------------------------------
 include(cmake/podioCreateConfig.cmake)

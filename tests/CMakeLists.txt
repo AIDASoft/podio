@@ -36,23 +36,30 @@ PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
 
-set(legacy_test_versions
+# Add a legacy test case based on a base executable and a version for which an
+# input file exists
+macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
+  ExternalData_Add_Test(legacy_test_cases
+    NAME ${base_test}_${version}
+    COMMAND ${base_test} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
+  )
+  PODIO_SET_TEST_ENV(${base_test}_${version})
+endmacro()
+
+set(root_legacy_test_versions
   v00-16
   v00-16-02
   v00-16-05
   v00-16-06
 )
 
-include(ExternalData)
-list(APPEND ExternalData_URL_TEMPLATES
- "https://key4hep.web.cern.ch:443/testFiles/podio/%(hash)"
- )
-
-add_executable(check_benchmark_outputs check_benchmark_outputs.cpp)
-target_link_libraries(check_benchmark_outputs PRIVATE ROOT::Tree)
-
 add_subdirectory(root_io)
 if (ENABLE_SIO)
+  set(sio_legacy_test_versions
+    v00-16-05
+    v00-16-06
+  )
+
   add_subdirectory(sio_io)
 endif()
 add_subdirectory(unittests)
@@ -61,7 +68,6 @@ add_subdirectory(schema_evolution)
 
 # Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")
-CREATE_PODIO_TEST(write_ascii.cpp "")
 
 if (ENABLE_JULIA)
   message(STATUS "Julia Datamodel generation is enabled.")
@@ -93,5 +99,3 @@ endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
-
-ExternalData_Add_Target(legacy_test_cases)

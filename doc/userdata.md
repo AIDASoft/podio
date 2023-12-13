@@ -6,17 +6,18 @@ data* via the `podio::UserDataCollection`. It gives the user access to a
 the data stored in the EDM classes for each event.
 
 ## Example usage
-Creating or getting a `UserDataCollection` via the `EventStore` works the same
-as with any other collection of the EDM via the `create` or `get` functions:
+Creating or getting a `UserDataCollection` via the `Frame` works the same
+as with any other collection of the EDM via the `put` or `get` functions:
 
 ```cpp
 #include "podio/UserDataCollection.h"
 
-// Create a collection
-auto& userFloats = store.create<podio::UserDataCollection<float>>("userFloats");
+// Create a collection and put it into a Frame
+userFloats = podio::UserDataCollection<float>();
+frame.put(std::move(userFloats), "userFloats");
 
 // get a collection
-const auto& userData = store.get<podio::UserDataCollection<float>>("userFloats");
+const auto& userData = frame.get<podio::UserDataCollection<float>>("userFloats");
 ```
 
 The interface of the `UserDataCollection` is similar to a basic version of the

@@ -5,19 +5,18 @@
 
 #include <iostream>
 
-int main() {
-  auto reader = podio::SIOLegacyReader();
-  try {
-    reader.openFile("example.sio");
-  } catch (const std::runtime_error& e) {
-    std::cout << "File could not be opened, aborting." << std::endl;
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    std::cerr << "usage: read_frame_legacy_sio inputfile" << std::endl;
     return 1;
   }
 
-  if (reader.currentFileVersion() != podio::version::build_version) {
-    std::cerr << "The podio build version could not be read back correctly. "
-              << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
-              << std::endl;
+  const auto inputFile = argv[1];
+  auto reader = podio::SIOLegacyReader();
+  try {
+    reader.openFile(inputFile);
+  } catch (const std::runtime_error& e) {
+    std::cout << "File (" << inputFile << ") could not be opened, aborting." << std::endl;
     return 1;
   }
 

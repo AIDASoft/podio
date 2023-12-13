@@ -4,6 +4,7 @@
 import unittest
 
 from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin  # pylint: disable=import-error
+from podio.test_utils import get_legacy_input
 
 from podio.root_io import Reader, LegacyReader
 
@@ -19,4 +20,4 @@ class RootLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
   """Test cases for the legacy root input files and reader."""
   def setUp(self):
     """Setup a reader, reading from the example files"""
-    self.reader = LegacyReader('root_io/example.root')
+    self.reader = LegacyReader(get_legacy_input("v00-16-06-example.root"))

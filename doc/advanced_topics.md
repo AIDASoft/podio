@@ -32,26 +32,14 @@ Before writing out a collection, the data need to be put into the proper structu
 
 ### Reading Back-End
 
-There are two possibilities to implement a reading-back end. In case one uses the `podio::EventStore`, one simply has to implement the `IReader` interface.
-
-If not taking advantage of this implementation, the data reader or the event store have to implement the `ICollectionProvider` interface. Reading of a collection happens then similar to:
-
-```cpp
-    // ...
-    // your creation of the collection and reading of the PODs from disk
-    // ...
-    collection->setBuffer(buffer);
-    auto refCollections = collection->referenceCollections();
-    // ...
-    // your filling of refCollections from disk
-    // ...
-    collection->setID( <collection ID read from disk> );
-    collection->prepareAfterRead();
-    // ...
-    collection->setReferences( &collectionProvider );
-```
-
-The strong assumption here is that all references are being followed up directly and no later on-demand reading is done.
+The main requirement for a reading backend is its capability of reading back all
+the necessary data from which a collection can be constructed in the form of
+`podio::CollectionReadBuffers`. From these buffers collections can then be
+constructed. Each instance has to contain the (type erased) POD buffers (as a
+`std::vector`), the (possibly empty) vectors of `podio::ObjectID`s that contain
+the relation information as well the (possibly empty) vectors for the vector
+member buffers, which are currently stored as pairs of the type (as a
+`std::string`) and (type erased) data buffers in the form of `std::vector`s.
 
 ### Dumping JSON
 
@@ -94,12 +82,9 @@ As explained in the section about mutability of data, thread-safety is only guar
 During the calls of `prepareForWriting` and `prepareAfterReading` on collections other operations like object creation or addition will lead to an inconsistent state.
 
 ### Not-thread-safe components
-The example event store provided with PODIO is as of writing not thread-safe. Neither is the chosen serialization.
-
-## Implementing a transient Event Class
-
-PODIO contains one example `podio::EventStore` class.
-To implement your own transient event store, the only requirement is to set the collectionID of each collection to a unique ID on creation.
+The Readers and Writers that ship with podio are assumed to run on a single
+thread only (more precisely we assume that each Reader or Writer doesn't have to
+synchronize with any other for file operations).
 
 ## Running pre-commit
 

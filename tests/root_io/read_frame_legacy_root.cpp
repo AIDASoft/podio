@@ -6,25 +6,17 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-  std::string inputFile = "example.root";
-  bool assertBuildVersion = true;
-  if (argc == 2) {
-    inputFile = argv[1];
-    assertBuildVersion = false;
+  if (argc != 2) {
+    std::cerr << "usage: read_frame_legacy_frame inputfile" << std::endl;
+    return 1;
   }
 
+  const std::string inputFile = argv[1];
   auto reader = podio::ROOTLegacyReader();
   try {
     reader.openFile(inputFile);
   } catch (const std::runtime_error& e) {
-    std::cout << "File (" << inputFile << ")could not be opened, aborting." << std::endl;
-    return 1;
-  }
-
-  if (assertBuildVersion && reader.currentFileVersion() != podio::version::build_version) {
-    std::cerr << "The podio build version could not be read back correctly. "
-              << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
-              << std::endl;
+    std::cout << "File (" << inputFile << ") could not be opened, aborting." << std::endl;
     return 1;
   }
 

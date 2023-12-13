@@ -6,7 +6,7 @@ from .__version__ import __version__
 try:
   from ROOT import podio  # noqa: F401
 except ImportError:
-  print('Unable to load podio, make sure that libpodio.so is in LD_LIBRARY_PATH')
+  print("Unable to load podio, make sure that libpodio.so is in LD_LIBRARY_PATH")
   raise
 
 from .frame import Frame
@@ -20,14 +20,10 @@ try:
 except ImportError:
   pass
 
-from . import EventStore
-
-
 __all__ = [
     "__version__",
     "Frame",
     "root_io",
     "sio_io",
     "reading",
-    "EventStore"
     ]

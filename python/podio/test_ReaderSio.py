@@ -4,7 +4,7 @@
 import unittest
 
 from test_Reader import ReaderTestCaseMixin, LegacyReaderTestCaseMixin  # pylint: disable=import-error
-from test_utils import SKIP_SIO_TESTS  # pylint: disable=import-error
+from podio.test_utils import SKIP_SIO_TESTS, get_legacy_input
 
 
 @unittest.skipIf(SKIP_SIO_TESTS, "no SIO support")
@@ -22,4 +22,4 @@ class SIOLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
   def setUp(self):
     """Setup a reader, reading from the example files"""
     from podio.sio_io import LegacyReader  # pylint: disable=import-outside-toplevel
-    self.reader = LegacyReader('sio_io/example.sio')
+    self.reader = LegacyReader(get_legacy_input("v00-16-06-example.sio"))
