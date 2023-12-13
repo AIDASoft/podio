@@ -327,69 +327,10 @@ class PodioConfigReader:
     """Handle the extra code definition. Currently simply returning a copy"""
     return copy.deepcopy(definition)
 
-  @staticmethod
-  def _read_component_old_definition(definition):
-    """Read the component and put it into a similar structure as the datatypes, i.e.
-    a dict with a 'Members' and an 'ExtraCode' field for easier handling
-    afterwards
-    """
-    warning_text = """
-
-    You are using the deprecated old style of defining components:
-
-    components:
-      ExampleComponent:
-        x : int
-        ExtraCode:
-          declaration: "// some code here"
-
-    This option will be removed with version 1.0.
-    Switch to the new style of defining components (consistent with datatypes definitions):
-
-    components:
-      ExampleComponent:
-        Members:
-          - int x // an optional description here
-        ExtraCode:
-          declaration: "// some code here"
-
-    """
-    warnings.warn(warning_text, FutureWarning, stacklevel=3)
-    component = {'Members': []}
-    for name, klass in definition.items():
-      if name == 'ExtraCode':
-        component['ExtraCode'] = klass
-      else:
-        valid_type = MemberParser.type_re.match(klass)
-        valid_name = MemberParser.name_re.match(name)
-        c_style_array = re.search(r'\[.*\]', klass)
-        if valid_type and valid_name and not c_style_array:
-          array_match = MemberParser.array_re.match(klass)
-          if array_match:
-            component['Members'].append(MemberVariable(name=name, array_type=array_match.group(1),
-                                                       array_size=array_match.group(2)))
-          else:
-            component['Members'].append(MemberVariable(name=name, type=klass))
-        else:
-          raise DefinitionError(f"'{name}: {klass}' is not a valid member definition")
-
-    return component
-
   @classmethod
   def _read_component(cls, definition):
     """Read the component and put it into an easily digestible format.
-
-    Currently handles two versions of syntax:
-    - One that is different than the one used for datatypes, deprecated and
-    planned for removal with 1.0
-    - A consistent one with the syntax for datatypes, with slightly less
-    capabilities
     """
-    # Very basic check here to differentiate between old and new style component
-    # definitions
-    if "Members" not in definition:
-      return cls._read_component_old_definition(definition)
-
     component = {}
     for name, category in definition.items():
       if name == 'Members':
