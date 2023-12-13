@@ -99,5 +99,3 @@ endif()
 
 # Customize CTest to potentially disable some of the tests with known problems
 configure_file(CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake @ONLY)
-
-message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")

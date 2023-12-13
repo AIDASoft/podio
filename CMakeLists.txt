@@ -205,6 +205,7 @@ add_subdirectory(python)
 if(BUILD_TESTING)
   # Make sure to fetch all data, after all legacy test cases have been added
   ExternalData_Add_Target(legacy_test_cases)
+  message(STATUS "Test inputs will be stored in: ${ExternalData_OBJECT_STORES} if they are not already present")
 endif()
 #--- add CMake infrastructure --------------------------------------------------
 include(cmake/podioCreateConfig.cmake)
