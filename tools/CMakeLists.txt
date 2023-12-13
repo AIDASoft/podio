@@ -11,11 +11,6 @@ if(BUILD_TESTING)
   #     depends_on  the target name of the test that produces the required input file
   function(CREATE_DUMP_TEST name depends_on)
     add_test(NAME ${name} COMMAND ./podio-dump ${ARGN})
-
-    set(SIO_LD_PATH "")
-    if (ENABLE_SIO)
-      set(SIO_LD_PATH $<TARGET_FILE_DIR:SIO::sio>)
-    endif()
     PODIO_SET_TEST_ENV(${name})
 
     set_tests_properties(${name} PROPERTIES
