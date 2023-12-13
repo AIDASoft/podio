@@ -34,7 +34,7 @@ Before writing out a collection, the data need to be put into the proper structu
 
 The main requirement for a reading backend is its capability of reading back all
 the necessary data from which a collection can be constructed in the form of
-`podio::CollectionReadBuffers`. From thes buffers collections can then be
+`podio::CollectionReadBuffers`. From these buffers collections can then be
 constructed. Each instance has to contain the (type erased) POD buffers (as a
 `std::vector`), the (possibly empty) vectors of `podio::ObjectID`s that contain
 the relation information as well the (possibly empty) vectors for the vector
