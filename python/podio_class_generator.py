@@ -11,24 +11,6 @@ from podio_gen.generator_utils import DefinitionError
 from podio_gen.cpp_generator import CPPClassGenerator
 from podio_gen.julia_generator import JuliaClassGenerator
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
-
-REPORT_TEXT = """
-  PODIO Data Model
-  ================
-  Used {yamlfile} to create {nclasses} classes in {installdir}/
-  Read instructions in the README.md to run your first example!
-"""
-REPORT_TEXT_JULIA = """
-  Julia Code generation is an experimental feature.
-  Warning: ExtraCode and MutableExtraCode will be ignored during julia code generation.
-  PODIO Data Model
-  ================
-  Used {yamlfile} to create {nfiles} julia files in {installdir}/
-  Read instructions in the README.md to run your first example!
-"""
-
 
 def has_clang_format():
   """Check if clang format is available"""
