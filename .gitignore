@@ -68,7 +68,6 @@ spack*
 # Populated by cmake before build
 /include/podio/podioVersion.h
 /python/podio/__version__.py
-/doc/conf.py
 
 # Populated by doc generation
 /doc/py_api
