@@ -12,9 +12,16 @@
 #
 import os
 import sys
+import subprocess
+from pathlib import Path
+
 
 sys.path.insert(0, os.path.abspath("../python"))
 
+# are we running on readthedocs?
+on_readthedocs = os.environ.get("READTHEDOCS", False) == "True"
+
+doc_dir = Path(__file__).parent
 
 # -- Project information -----------------------------------------------------
 
@@ -65,3 +72,31 @@ html_static_path = ["_static"]
 # Make sure that the __init__ docstrings appear as part of the class
 # documentation
 autoclass_content = "both"
+
+# -- Doxygen integration with Breathe -----------------------------------------
+
+
+# -- Automatic API documentation ----------------------------------------------
+
+print(f"Executing doxygen in {doc_dir}")
+doxygen_version = subprocess.check_output(["doxygen", "--version"], encoding="utf-8")
+print(f"Doxygen version: {doxygen_version}")
+
+env = os.environ.copy()
+env["DOXYGEN_WARN_AS_ERROR"] = "NO"
+
+os.makedirs("_build/cpp", exist_ok=True)
+
+subprocess.check_call(
+    ["doxygen", "Doxyfile"], stdout=subprocess.PIPE, cwd=doc_dir, env=env
+)
+
+api_index_targetdir = doc_dir / "cpp_api/api.md"
+
+print(f"Executing breath apidoc in {doc_dir}")
+subprocess.check_call(
+    [sys.executable, "-m", "breathe.apidoc", "_build/cpp/doxygen-xml", "-o", "cpp_api"],
+    stdout=subprocess.PIPE,
+    cwd=doc_dir,
+    env=env,
+)

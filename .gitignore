@@ -73,6 +73,7 @@ spack*
 
 # Populated by doc generation
 /doc/py_api
+/doc/_build
 
 # CLion artifacts
 .idea/

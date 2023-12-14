@@ -8,12 +8,10 @@ if(DOXYGEN_FOUND AND SPHINX_FOUND)
     set(podio_VERSION ${DOXYVERSION})
   endif()
 
-  set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/doxygen)
+  set(DOXYGEN_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/doc/_build)
   file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIRECTORY}) # Doxygen doesn't create this for us
 
   set(DOXYGEN_FILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in
-                 ${DOXYGEN_FILE} @ONLY)
 
   add_custom_target(doxygen
                     ${DOXYGEN_EXECUTABLE} ${DOXYGEN_FILE}
