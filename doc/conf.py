@@ -13,6 +13,7 @@
 import os
 import sys
 import subprocess
+import shutil
 from pathlib import Path
 
 
@@ -41,20 +42,29 @@ author = "Key4hep authors"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "myst_parser",
-    "breathe",
     # auto generation of python bindings documentation from docstrings
     "sphinx.ext.napoleon",
+    "myst_parser",
+    "breathe",
 ]
 
+source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
+
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+# templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "cpp_api.rst", "py_api.rst"]
 
+# cpp as main language
+primary_domain = "cpp"
+highlight_language = "cpp"
+
+# -- Options for MyST parser -------------------------------------------------
+myst_enable_extensions = ["colon_fence", "html_image"]
+myst_heading_anchor = 3
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -63,20 +73,30 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 #
 html_theme = "sphinx_rtd_theme"
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# # Add any paths that contain custom static files (such as style sheets) here,
+# # relative to this directory. They are copied after the builtin static files,
+# # so a file named "default.css" will overwrite the builtin "default.css".
+# html_static_path tml_static_path = ["_static"]
 
+# Do not copy the source markdown / rst files to the generated documentation
+html_copy_source = False
+html_show_sourcelink = False
 
-# Make sure that the __init__ docstrings appear as part of the class
-# documentation
-autoclass_content = "both"
+html_theme_options = {
+    "collapse_navigation": False,
+    "navigation_depth": 4,
+    "prev_next_buttons_location": None,  # no navigation buttons
+}
 
 # -- Doxygen integration with Breathe -----------------------------------------
 
+breathe_projects = {"PODIO": "_build/cpp/doxygen-xml"}
+breathe_default_project = "PODIO"
+breathe_domain_by_extension = {"h": "cpp", "cc": "cpp", "ipp": "cpp"}
+breathe_default_members = ("members", "undoc-members")
 
-# -- Automatic API documentation ----------------------------------------------
+
+# -- Automatic API documentation (c++) ----------------------------------------
 
 print(f"Executing doxygen in {doc_dir}")
 doxygen_version = subprocess.check_output(["doxygen", "--version"], encoding="utf-8")
@@ -91,7 +111,7 @@ subprocess.check_call(
     ["doxygen", "Doxyfile"], stdout=subprocess.PIPE, cwd=doc_dir, env=env
 )
 
-api_index_targetdir = doc_dir / "cpp_api/api.md"
+cpp_api_index_target = doc_dir / "cpp_api/api.rst"
 
 print(f"Executing breath apidoc in {doc_dir}")
 subprocess.check_call(
@@ -100,3 +120,32 @@ subprocess.check_call(
     cwd=doc_dir,
     env=env,
 )
+
+if not cpp_api_index_target.exists():
+    shutil.copyfile(doc_dir / "cpp_api.rst", cpp_api_index_target)
+
+print("Done with c++ API doc generation")
+
+# -- Automatic API documentation (python) --------------------------------------
+
+# Make sure that the __init__ docstrings appear as part of the class
+# documentation
+autoclass_content = "both"
+
+print("Executing sphinx-apidoc for python API")
+print(f"Executing sphinx-apidoc in {doc_dir}")
+subprocess.check_call(
+    [
+        sys.executable,
+        "-m",
+        "sphinx.ext.apidoc",
+        "--force",
+        "-o",
+        "py_api",
+        "../python",
+        "*/test_*.py",  # exclude tests
+        "podio_version.py",  # exclude the convenience version wrapper
+    ]
+)
+
+print("Done with python API doc generation")
