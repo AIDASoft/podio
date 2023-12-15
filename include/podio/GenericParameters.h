@@ -25,9 +25,6 @@ class ROOTNTupleWriter;
 } // namespace podio
 #endif
 
-#define DEPR_NON_TEMPLATE                                                                                              \
-  [[deprecated("Non-templated access will be removed. Switch to templated access functionality")]]
-
 namespace podio {
 
 /// The types which are supported in the GenericParameters
@@ -170,18 +167,6 @@ public:
     } else {
       return _stringMap;
     }
-  }
-
-  DEPR_NON_TEMPLATE const auto& getStringMap() const {
-    return getMap<std::string>();
-  }
-
-  DEPR_NON_TEMPLATE const auto& getFloatMap() const {
-    return getMap<float>();
-  }
-
-  DEPR_NON_TEMPLATE const auto& getIntMap() const {
-    return getMap<int>();
   }
 
 private:
