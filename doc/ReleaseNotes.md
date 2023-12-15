@@ -1,3 +1,61 @@
+# v00-17-04
+
+* 2023-12-14 tmadlener ([PR#527](https://github.com/AIDASoft/podio/pull/527))
+  - Split the `ClassGenerator` into a base class (mixin) and two specific c++ and julia code generators that only deal with their language specific needs.
+    - Instantiate and configure the correct reader in the `podio_class_generator.py` main script depending on the desired language.
+  - Slightly cleanup the `MemberVariable` to declutter its `__init__` method a bit.
+
+* 2023-12-13 tmadlener ([PR#530](https://github.com/AIDASoft/podio/pull/530))
+  - Remove the reading of the deprecated old-style format of component definitions in the YAML files.
+
+* 2023-12-13 tmadlener ([PR#485](https://github.com/AIDASoft/podio/pull/485))
+  - **Remove the deprecated EventStore functionality as announced in #429**
+
+* 2023-12-12 tmadlener ([PR#529](https://github.com/AIDASoft/podio/pull/529))
+  - Switch the relation range tests to use Frame based I/O.
+
+* 2023-12-06 tmadlener ([PR#526](https://github.com/AIDASoft/podio/pull/526))
+  - Switch the edm4hep workflows to an LCG stack with a recent enough version of CMake. Necessary after key4hep/EDM4hep#235
+
+* 2023-12-05 jmcarcell ([PR#523](https://github.com/AIDASoft/podio/pull/523))
+  - Remove comment with file name and line number. It's very unlikely it remains up to date when either the name or the content of the files changes
+
+* 2023-12-04 jmcarcell ([PR#521](https://github.com/AIDASoft/podio/pull/521))
+  - Do not import ROOT when using `podio-dump --help`, otherwise it can take a while depending on the system only to print the help.
+
+* 2023-12-04 tmadlener ([PR#514](https://github.com/AIDASoft/podio/pull/514))
+  - Introduce the `MaybeSharedPtr` to manage the `Obj*` in the user facing handle classes.
+    - This splits the control block and the managed object into two distinct entities with potentially different lifetimes, which allows to fix #174 and #492.
+    - **This increases the size of the user facing handle classes by a factor two**, since they are now effectively two pointers instead of one, even if the control block will not be initialized in case a handle is obtained from a collection.
+  - Remove the `ObjBase` base class and make the `ObjectID` a member of the `Obj` classes.
+  - Make the user facing handle class constructors from an `Obj*` private as users will not have access to raw `Obj*` in any case.
+    - Introduce a static `makeEmpty` method for the generated classes in order to create an empty handle, which is also used internally to handle unpersisted relations.
+  - Enable more existing test cases in sanitizer workflows now that it has become possible to do so.
+
+* 2023-12-04 soumilbaldota ([PR#473](https://github.com/AIDASoft/podio/pull/473))
+  - Added Julia code generation support in the existing Python interface.
+  - Implemented a new design structure for generated Julia code.
+  - Added default parameters in constructor definitions with support for Abstract types (for builtins).
+  - Created _sort_components_and_datatypes function to perform topological sort on components and datatypes.
+  - Created _has_static_arrays_import to check for the need of using Static Arrays in the generated julia code.
+  - Added --lang (-l) programming language argument to specify the programming language for code generation, current choices: cpp and julia, default: cpp.
+  - Added --upstream-edm code generation support for julia.
+  - Added tests in the unit test suite, covering the Julia code generation of the example data models.
+  - Added documentation for julia code generation.
+  - Added ENABLE_JULIA toggle option. By default it is OFF.
+
+* 2023-12-01 jmcarcell ([PR#520](https://github.com/AIDASoft/podio/pull/520))
+  - Add an error message when there is an std::bad_function_call, which currently shows
+    a stacktrace and is quite uninformative.
+
+* 2023-12-01 tmadlener ([PR#519](https://github.com/AIDASoft/podio/pull/519))
+  - Make generated member getter functions return by value for builtin types. Keep return by const reference for all other types. Fixes #518
+
+* 2023-12-01 tmadlener ([PR#488](https://github.com/AIDASoft/podio/pull/488))
+  - Add python bindings for the RNTuple reader and writer 
+  - Make `podio-dump` understand RNTuple based files
+  - Fix missing storage of datamodel definitions for RNTuple based files
+
 # v00-17-03
 
 * 2023-11-14 tmadlener ([PR#513](https://github.com/AIDASoft/podio/pull/513))
