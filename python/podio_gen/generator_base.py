@@ -47,6 +47,7 @@ class ClassGeneratorBaseMixin:
   augment the common processing with language specifics.
 
   The following members are initialized and accessible from inheriting classes
+
   - yamlfile (the path to the yamlfile)
   - install_dir (top level directory into which the code should be generated)
   - package_name (the name of the package)
