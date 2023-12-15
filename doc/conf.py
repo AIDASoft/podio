@@ -143,8 +143,7 @@ subprocess.check_call(
         "-o",
         "py_api",
         "../python",
-        "*/test_*.py",  # exclude tests
-        "podio_version.py",  # exclude the convenience version wrapper
+        "*test_*.py",  # exclude tests
     ]
 )
 

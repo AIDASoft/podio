@@ -14,24 +14,24 @@
 #include <string>
 #include <typeindex>
 
-namespace {
-
-/// helper function to get valid sio block names
-template <typename BasicType, typename = podio::EnableIfSupportedUserType<BasicType>>
-inline std::string sio_name() {
-  std::string s = podio::userDataTypeName<BasicType>();
-  std::replace(s.begin(), s.end(), ' ', '_');
-  return s;
-}
-} // namespace
-
 namespace podio {
+namespace detail {
+
+  /// helper function to get valid sio block names
+  template <typename BasicType, typename = podio::EnableIfSupportedUserType<BasicType>>
+  inline std::string sio_name() {
+    std::string s = podio::userDataTypeName<BasicType>();
+    std::replace(s.begin(), s.end(), ' ', '_');
+    return s;
+  }
+} // namespace detail
 
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 class SIOBlockUserData : public podio::SIOBlock {
 public:
   SIOBlockUserData() :
-      SIOBlock(::sio_name<BasicType>(), sio::version::encode_version(UserDataCollection<BasicType>::schemaVersion, 0)) {
+      SIOBlock(detail::sio_name<BasicType>(),
+               sio::version::encode_version(UserDataCollection<BasicType>::schemaVersion, 0)) {
 
     podio::SIOBlockFactory::instance().registerBlockForCollection(podio::userDataTypeName<BasicType>(), this);
   }
