@@ -9,6 +9,7 @@ PODIO encourages the usage of composition, rather than inheritance.
 One of the reasons for doing so is the focus on efficiency friendly `plain-old-data`.
 For this reason, PODIO does not support inheritance within the defined data model.
 Instead, users can combine multiple `components` to build a to be used `datatype`.
+Additionally, if several datatypes should be callable through the same interface, the `interface` category can be used.
 
 To allow the datatypes to be real PODs, the data stored within the data model are constrained to be
 POD-compatible data. Those are
@@ -92,7 +93,6 @@ For describing physics quantities it is important to know their units. Thus it i
       <type> <name>{<default-value>} [<unit>] // <comment>
 ```
 
-
 ### Definition of references between objects:
 There can be one-to-one-relations and one-to-many relations being stored in a particular class. This happens either in the `OneToOneRelations` or `OneToManyRelations` section of the data definition. The definition has again the form:
 
@@ -126,6 +126,57 @@ The `includes` will be add to the header files of the generated classes.
 
 The code being provided has to use the macro `{name}` in place of the concrete name of the class.
 
+## Definition of custom interfaces
+An interface type can be defined as follows (again using an example from the example datamodel)
+
+```yaml
+    interfaces:
+      TypeWithEnergy:
+        Description: "A generic interface for types with an energy member"
+        Author: "Someone"
+        Types:
+          - ExampleHit
+          - ExampleMC
+          - ExampleCluster
+        Members:
+          - double energy // the energy
+```
+
+This definition will yield a class called `TypeWithEnergy` that has one public
+method to get the `energy`. Here the syntax for defining more accessors is
+exactly the same as it is for the `datatypes`. Additionally, it is necessary to
+define which `Types` can be used with this interface class, in this case the
+`ExampleHit`, `ExampleMC` or an `ExampleCluster`. **NOTE: `interface` types do
+not allow for mutable access to their data.** They can be used in relations
+between objects, just like normal `datatypes`.
+
+### Assigning to interface types
+
+Interface types support the same functionality as normal (immutable) datatypes.
+The main additional functionality they offer is the possibility to directly
+assign to them (if they type is supported) and to query them for the type that
+is currently being held internally.
+
+```cpp
+auto energyType = TypeWithEnergy{}; // An empty interface is possible but useless
+bool valid = energyType.isValid();  // <-- false
+
+auto hit = ExampleHit{};
+energyType = hit;     // assigning a hit to the interface type
+energyType.energy();  // <-- get's the energy from the underlying hit
+
+auto cluster = ExampleCluster{};
+energyType = cluster; // ra-assigning another object is possible
+bool same = (energyType == cluster); // <-- true (comparisons work as expected)
+
+bool isCluster = energyType.isA<ExampleCluster>(); // <-- true
+bool isHit     = energyType.isA<ExampleHit>();     // <-- false
+
+auto newCluster = energyType.getValue<ExampleCluster>(); // <-- "cast back" to original type
+
+// "Casting" only works if the types match. Otherwise there will be an exception
+auto newHit = energyType.getValue<ExampleHit>(); // <-- exception
+```
 
 ## Global options
 Some customization of the generated code is possible through flags. These flags are listed in the section `options`:
