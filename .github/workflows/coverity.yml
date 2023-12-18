@@ -19,3 +19,4 @@ jobs:
         coverity-project-token: ${{ secrets.PODIO_COVERITY_TOKEN }}
         github-pat: ${{ secrets.READ_COVERITY_IMAGE }}
         release-platform: "LCG_104/x86_64-el9-gcc13-opt"
+        coverity-container: "ghcr.io/aidasoft/coverity:el9"
