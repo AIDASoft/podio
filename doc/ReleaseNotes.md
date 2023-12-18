@@ -32,7 +32,7 @@
     - Introduce a static `makeEmpty` method for the generated classes in order to create an empty handle, which is also used internally to handle unpersisted relations.
   - Enable more existing test cases in sanitizer workflows now that it has become possible to do so.
 
-* 2023-12-04 soumilbaldota ([PR#473](https://github.com/AIDASoft/podio/pull/473))
+* 2023-12-04 Ananya Gupta ([PR#473](https://github.com/AIDASoft/podio/pull/473))
   - Added Julia code generation support in the existing Python interface.
   - Implemented a new design structure for generated Julia code.
   - Added default parameters in constructor definitions with support for Abstract types (for builtins).
