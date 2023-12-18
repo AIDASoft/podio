@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name, redefined-builtin, missing-module-docstring
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -46,7 +48,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "myst_parser",
     "breathe",
-]
+    ]
 
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 
@@ -86,7 +88,7 @@ html_theme_options = {
     "collapse_navigation": False,
     "navigation_depth": 4,
     "prev_next_buttons_location": None,  # no navigation buttons
-}
+    }
 
 # -- Doxygen integration with Breathe -----------------------------------------
 
@@ -109,7 +111,7 @@ os.makedirs("_build/cpp", exist_ok=True)
 
 subprocess.check_call(
     ["doxygen", "Doxyfile"], stdout=subprocess.PIPE, cwd=doc_dir, env=env
-)
+    )
 
 cpp_api_index_target = doc_dir / "cpp_api/api.rst"
 
@@ -119,10 +121,10 @@ subprocess.check_call(
     stdout=subprocess.PIPE,
     cwd=doc_dir,
     env=env,
-)
+    )
 
 if not cpp_api_index_target.exists():
-    shutil.copyfile(doc_dir / "cpp_api.rst", cpp_api_index_target)
+  shutil.copyfile(doc_dir / "cpp_api.rst", cpp_api_index_target)
 
 print("Done with c++ API doc generation")
 
@@ -144,7 +146,7 @@ subprocess.check_call(
         "py_api",
         "../python",
         "*test_*.py",  # exclude tests
-    ]
-)
+        ]
+    )
 
 print("Done with python API doc generation")
