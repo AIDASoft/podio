@@ -73,9 +73,10 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
       }
 {% if relation.interface_types %}
       // We need the concrete collection type to assign it to an InferenceWrapper
+{% set else = joiner("else") %}
 {% for int_type in relation.interface_types %}
-      if (auto concreteColl = dynamic_cast<{{ int_type.full_type }}Collection*>(coll)) {
-        const auto tmp = (*concreteColl)[id.index];
+      {{ else() }} if (auto {{ int_type.bare_type }}Coll = dynamic_cast<{{ int_type.full_type }}Collection*>(coll)) {
+        const auto tmp = (*{{ int_type.bare_type }}Coll)[id.index];
         m_rel_{{ relation.name }}->emplace_back(tmp);
       }
 {% endfor %}
@@ -102,9 +103,10 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
         continue;
       }
 {% if relation.interface_types %}
+{% set else = joiner("else") %}
 {% for int_type in relation.interface_types %}
-      if (auto concreteColl = dynamic_cast<{{ int_type.full_type }}Collection*>(coll)) {
-        entries[i]->m_{{ relation.name }} = new {{ relation.full_type }}((*concreteColl)[id.index]);
+      {{ else() }} if (auto {{ int_type.bare_type }}Coll = dynamic_cast<{{ int_type.full_type }}Collection*>(coll)) {
+        entries[i]->m_{{ relation.name }} = new {{ relation.full_type }}((*{{ int_type.bare_type }}Coll)[id.index]);
       }
 {% endfor %}
 {% else %}
