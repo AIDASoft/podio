@@ -24,7 +24,7 @@ int checkHits(const ExampleHitCollection& hits) {
   auto hit2 = hits[1];
   if (hit2.cellID() != 0xcaffee || hit2.x() != 1.0 || hit2.y() != 0.0 || hit2.z() != 0.0 || hit2.energy() != 12.0) {
     std::cerr << "Could not retrieve the correct hit[1]: (expected: "
-              << MutableExampleHit(0xcaffee, 1.0, 0.0, 0.0, 12.0) << ", actual: " << hit1 << ")" << std::endl;
+              << MutableExampleHit(0xcaffee, 1.0, 0.0, 0.0, 12.0) << ", actual: " << hit2 << ")" << std::endl;
     return 1;
   }
 
