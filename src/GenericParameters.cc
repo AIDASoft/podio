@@ -47,12 +47,15 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& values) {
 
 template <typename MapType>
 void printMap(const MapType& map, std::ostream& os) {
+  const auto osflags = os.flags();
   os << std::left << std::setw(30) << "Key "
      << "Value " << '\n';
   os << "--------------------------------------------------------------------------------\n";
   for (const auto& [key, value] : map) {
     os << std::left << std::setw(30) << key << value << '\n';
   }
+
+  os.flags(osflags);
 }
 
 void GenericParameters::print(std::ostream& os, bool flush) {
