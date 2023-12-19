@@ -2,3 +2,4 @@ breathe
 myst-parser
 sphinx
 sphinx_rtd_theme
+cppyy

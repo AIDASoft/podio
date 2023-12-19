@@ -20,6 +20,7 @@ from pathlib import Path
 
 
 sys.path.insert(0, os.path.abspath("../python"))
+sys.path.insert(0, os.path.abspath("./stubs"))
 
 # are we running on readthedocs?
 on_readthedocs = os.environ.get("READTHEDOCS", False) == "True"
