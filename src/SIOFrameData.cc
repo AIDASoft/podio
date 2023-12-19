@@ -95,7 +95,7 @@ void SIOFrameData::readIdTable() {
   sio::api::read_blocks(uncBuffer.span(), blocks);
 
   auto* idTableBlock = static_cast<SIOCollectionIDTableBlock*>(blocks[0].get());
-  m_idTable = std::move(*idTableBlock->getTable());
+  m_idTable = idTableBlock->getTable();
   m_typeNames = idTableBlock->getTypeNames();
   m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
 }

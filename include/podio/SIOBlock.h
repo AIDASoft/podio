@@ -116,8 +116,8 @@ public:
   void read(sio::read_device& device, sio::version_type version) override;
   void write(sio::write_device& device) override;
 
-  podio::CollectionIDTable* getTable() {
-    return new podio::CollectionIDTable(std::move(_ids), std::move(_names));
+  podio::CollectionIDTable getTable() {
+    return podio::CollectionIDTable(std::move(_ids), std::move(_names));
   }
   const std::vector<std::string>& getTypeNames() const {
     return _types;
