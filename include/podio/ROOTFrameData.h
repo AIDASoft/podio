@@ -26,7 +26,7 @@ public:
   ROOTFrameData& operator=(const ROOTFrameData&) = delete;
 
   ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params) :
-      m_buffers(std::move(buffers)), m_idTable(idTable), m_parameters(std::move(params)) {
+      m_buffers(std::move(buffers)), m_idTable(std::move(idTable)), m_parameters(std::move(params)) {
   }
 
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name) {
