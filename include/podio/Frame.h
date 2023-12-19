@@ -203,7 +203,7 @@ public:
    */
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline void putParameter(const std::string& key, T value) {
-    m_self->parameters().setValue(key, value);
+    m_self->parameters().setValue(key, std::move(value));
   }
 
   /** Add a string value to the parameters of the Frame by copying it. Dedicated

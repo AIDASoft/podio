@@ -242,7 +242,7 @@ void GenericParameters::setValue(const std::string& key, T value) {
     map.insert_or_assign(key, std::move(value));
   } else {
     // Wrap the value into a vector with exactly one entry and store that
-    std::vector<T> v = {value};
+    std::vector<T> v = {std::move(value)};
     std::lock_guard lock{mtx};
     map.insert_or_assign(key, std::move(v));
   }
