@@ -2,7 +2,7 @@
 """Module defining the Frame iterator used by the Reader interface"""
 
 # pylint: disable-next=import-error # gbl is a dynamic module from cppyy
-from cppyy.gbl import std, bad_function_call
+from cppyy.gbl import std
 from podio.frame import Frame
 
 
@@ -53,7 +53,7 @@ class FrameCategoryIterator:
 
     try:
       frame_data = self._reader.readEntry(self._category, entry)
-    except bad_function_call:
+    except std.bad_function_call:
       print('Error: Unable to read an entry of the input file. This can happen when the '
             'ROOT model dictionaries are not in LD_LIBRARY_PATH. Make sure that LD_LIBRARY_PATH '
             'points to the library folder of the installation of podio and also to the library '
