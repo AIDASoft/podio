@@ -48,6 +48,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "myst_parser",
     "breathe",
+    "sphinx_copybutton",
     ]
 
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
@@ -151,3 +152,9 @@ subprocess.check_call(
     )
 
 print("Done with python API doc generation")
+
+# -- multiversion setup -------------------------------------------------------
+mv_tag_whitelist = r'^v[0-9]{2}-[0-9]{2}(-[0-9]{2})?$'
+smv_remote_whitelist = r'^(origin)$'
+smv_branch_whitelist = r'^(master|docs-on-gh-pages)$'
+smv_released_pattern = r'^tags/.*$'
