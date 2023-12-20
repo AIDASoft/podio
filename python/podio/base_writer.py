@@ -8,7 +8,8 @@ class BaseWriterMixin:
 
   The backend specific writers inherit from here and have to initialize the
   following members:
-    - _writer: The actual writer that is able to write frames
+
+  - _writer: The actual writer that is able to write frames
   """
 
   def write_frame(self, frame, category, collections=None):
