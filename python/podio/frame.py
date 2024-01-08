@@ -110,6 +110,14 @@ class Frame:
 
     self._param_key_types = self._get_param_keys_types()
 
+  def getAvailableCollections(self):
+    """Get the currently available collection (names) from this Frame.
+
+    Returns:
+        tuple(str): The names of the available collections from this Frame.
+    """
+    return tuple(str(s) for s in self._frame.getAvailableCollections())
+
   @property
   def collections(self):
     """Get the currently available collection (names) from this Frame.
@@ -117,7 +125,7 @@ class Frame:
     Returns:
         tuple(str): The names of the available collections from this Frame.
     """
-    return tuple(str(s) for s in self._frame.getAvailableCollections())
+    return self.getAvailableCollections()
 
   def get(self, name):
     """Get a collection from the Frame by name.
