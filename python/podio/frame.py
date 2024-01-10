@@ -3,6 +3,7 @@
 
 # pylint: disable-next=import-error # gbl is a dynamic module from cppyy
 import cppyy
+import sys
 
 import ROOT
 
@@ -125,6 +126,8 @@ class Frame:
     Returns:
         tuple(str): The names of the available collections from this Frame.
     """
+    print('WARNING: collections is deprecated, use getAvailableCollections() (like in C++) instead',
+          file=sys.stderr)
     return self.getAvailableCollections()
 
   def get(self, name):
