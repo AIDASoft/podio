@@ -117,7 +117,8 @@ class FrameReadTest(unittest.TestCase):
   def test_frame_collections(self):
     """Check that all expected collections are available."""
     self.assertEqual(set(self.event.getAvailableCollections()), EXPECTED_COLL_NAMES)
-    self.assertEqual(set(self.other_event.getAvailableCollections()), EXPECTED_COLL_NAMES.union(EXPECTED_EXTENSION_COLL_NAMES))
+    self.assertEqual(set(self.other_event.getAvailableCollections()),
+                     EXPECTED_COLL_NAMES.union(EXPECTED_EXTENSION_COLL_NAMES))
 
     # Not going over all collections here, as that should all be covered by the
     # c++ test cases; Simply picking a few and doing some basic tests
