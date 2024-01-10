@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Module for the python bindings of the podio::Frame"""
 
-# pylint: disable-next=import-error # gbl is a dynamic module from cppyy
-import cppyy
 import sys
+import cppyy
 
 import ROOT
 
