@@ -48,12 +48,12 @@ class FrameTest(unittest.TestCase):
   def test_frame_put_collection(self):
     """Check that putting a collection works as expected"""
     frame = Frame()
-    self.assertEqual(frame.collections, tuple())
+    self.assertEqual(frame.getAvailableCollections(), tuple())
 
     hits = ExampleHitCollection()
     hits.create()
     hits2 = frame.put(hits, "hits_from_python")
-    self.assertEqual(frame.collections, tuple(["hits_from_python"]))
+    self.assertEqual(frame.getAvailableCollections(), tuple(["hits_from_python"]))
     # The original collection is gone at this point, and ideally just leaves an
     # empty shell
     self.assertEqual(len(hits), 0)
@@ -116,8 +116,9 @@ class FrameReadTest(unittest.TestCase):
 
   def test_frame_collections(self):
     """Check that all expected collections are available."""
-    self.assertEqual(set(self.event.collections), EXPECTED_COLL_NAMES)
-    self.assertEqual(set(self.other_event.collections), EXPECTED_COLL_NAMES.union(EXPECTED_EXTENSION_COLL_NAMES))
+    self.assertEqual(set(self.event.getAvailableCollections()), EXPECTED_COLL_NAMES)
+    self.assertEqual(set(self.other_event.getAvailableCollections()),
+                     EXPECTED_COLL_NAMES.union(EXPECTED_EXTENSION_COLL_NAMES))
 
     # Not going over all collections here, as that should all be covered by the
     # c++ test cases; Simply picking a few and doing some basic tests
