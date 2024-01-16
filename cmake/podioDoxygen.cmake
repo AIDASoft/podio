@@ -10,6 +10,7 @@ if(DOXYGEN_FOUND AND SPHINX_FOUND)
                     ${SPHINX_BUILD_EXECUTABLE} -M html
                     ${CMAKE_SOURCE_DIR}/doc ${SPHINX_OUTPUT_DIRECTORY}
                     COMMENT "Building documentation" VERBATIM
+                    DEPENDS podio::podio podio::podioRootIO
                     )
 
   install(DIRECTORY ${SPHINX_OUTPUT_DIRECTORY}/
