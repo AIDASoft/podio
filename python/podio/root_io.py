@@ -22,7 +22,10 @@ class AllWriters:
   def finish(self):
     """Finish all managed writers"""
     for writer in self.writers:
-      writer._writer.finish()
+      try:
+        writer._writer.finish()
+      except AttributeError:
+        pass
 
 _all_writers = AllWriters()
 atexit.register(_all_writers.finish)
