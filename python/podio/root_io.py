@@ -77,6 +77,7 @@ class Writer(BaseWriterMixin):
         filename (str): The name of the output file
     """
     self._writer = podio.ROOTFrameWriter(filename)
+    super().__init__()
 
 
 class RNTupleWriter(BaseWriterMixin):
@@ -88,3 +89,4 @@ class RNTupleWriter(BaseWriterMixin):
         filename (str): The name of the output file
     """
     self._writer = podio.ROOTNTupleWriter(filename)
+    super().__init__()

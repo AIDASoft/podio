@@ -56,3 +56,4 @@ class Writer(BaseWriterMixin):
         filename (str): The name of the output file
     """
     self._writer = podio.SIOFrameWriter(filename)
+    super().__init__()
