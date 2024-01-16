@@ -24,7 +24,7 @@ class AllWriters:
     """Finish all managed writers"""
     for writer in self.writers:
       try:
-        writer._writer.finish() # pylint: disable=protected-access
+        writer._writer.finish()  # pylint: disable=protected-access
       except AttributeError:
         pass
 
