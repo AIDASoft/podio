@@ -1,36 +1,12 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
-import atexit
 from ROOT import gSystem
 gSystem.Load('libpodioRootIO')  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
 from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
-
-
-class AllWriters:
-  """Class to manage all writers in the program
-     so that they can be properly finished at the end of the program
-  """
-  writers = []
-
-  def add(self, writer):
-    """Add a writer to the list of managed writers"""
-    self.writers.append(writer)
-
-  def finish(self):
-    """Finish all managed writers"""
-    for writer in self.writers:
-      try:
-        writer._writer.finish()  # pylint: disable=protected-access
-      except AttributeError:
-        pass
-
-
-_all_writers = AllWriters()
-atexit.register(_all_writers.finish)
 
 
 class Reader(BaseReaderMixin):
@@ -101,7 +77,7 @@ class Writer(BaseWriterMixin):
         filename (str): The name of the output file
     """
     self._writer = podio.ROOTFrameWriter(filename)
-    _all_writers.add(self)
+    super().__init__()
 
 
 class RNTupleWriter(BaseWriterMixin):
@@ -113,4 +89,4 @@ class RNTupleWriter(BaseWriterMixin):
         filename (str): The name of the output file
     """
     self._writer = podio.ROOTNTupleWriter(filename)
-    _all_writers.add(self)
+    super().__init__()
