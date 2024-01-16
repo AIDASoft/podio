@@ -9,6 +9,7 @@ from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
 from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
 
+
 class AllWriters:
   """Class to manage all writers in the program
      so that they can be properly finished at the end of the program
@@ -23,12 +24,14 @@ class AllWriters:
     """Finish all managed writers"""
     for writer in self.writers:
       try:
-        writer._writer.finish()
+        writer._writer.finish() # pylint: disable=protected-access
       except AttributeError:
         pass
 
+
 _all_writers = AllWriters()
 atexit.register(_all_writers.finish)
+
 
 class Reader(BaseReaderMixin):
   """Reader class for reading podio root files."""
