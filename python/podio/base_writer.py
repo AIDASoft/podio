@@ -51,4 +51,4 @@ class BaseWriterMixin:
            write. If None, all collections are written
     """
     # pylint: disable-next=protected-access
-    self._writer.writeFrame(frame._frame, category, collections or frame.collections)
+    self._writer.writeFrame(frame._frame, category, collections or frame.getAvailableCollections())
