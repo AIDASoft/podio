@@ -56,7 +56,7 @@ std::unique_ptr<SIOFrameData> SIOFrameReader::readEntry(const std::string& name,
 }
 
 std::vector<std::string_view> SIOFrameReader::getAvailableCategories() const {
-  // Filter the availalbe records from the TOC to remove records that are
+  // Filter the available records from the TOC to remove records that are
   // stored, but use reserved record names for podio meta data
   auto recordNames = m_tocRecord.getRecordNames();
   recordNames.erase(std::remove_if(recordNames.begin(), recordNames.end(),

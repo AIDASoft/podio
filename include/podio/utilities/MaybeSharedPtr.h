@@ -15,7 +15,7 @@ namespace detail {
 constexpr static auto MarkOwned [[maybe_unused]] = detail::MarkOwnedTag{};
 
 /// "Semi-smart" pointer class for pointers that at some point during their
-/// lifetime might hand over management to another entitity. E.g. Objects that
+/// lifetime might hand over management to another entity. E.g. Objects that
 /// are added to a collection will hand over the management of their Obj* to
 /// collection. In such a case two things need to be considered:
 /// - Other Objects with the same Obj* instance should not delete the managed

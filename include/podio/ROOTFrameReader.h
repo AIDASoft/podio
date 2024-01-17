@@ -96,7 +96,7 @@ public:
     return m_fileVersion;
   }
 
-  /// Get the names of all the availalable Frame categories in the current file(s)
+  /// Get the names of all the available Frame categories in the current file(s)
   std::vector<std::string_view> getAvailableCategories() const;
 
   /// Get the datamodel definition for the given name
@@ -130,7 +130,7 @@ private:
   };
 
   /**
-   * Initialze the passed CategoryInfo by setting up the necessary branches,
+   * Initialize the passed CategoryInfo by setting up the necessary branches,
    * collection infos and all necessary meta data to be able to read entries
    * with this name
    */
@@ -150,7 +150,7 @@ private:
 
   /**
    * Read the data entry specified in the passed CategoryInfo, and increase the
-   * counter aferwards. In case the requested entry is larger than the
+   * counter afterwards. In case the requested entry is larger than the
    * available number of entries, return a nullptr.
    */
   std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTFrameReader::CategoryInfo& catInfo);

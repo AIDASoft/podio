@@ -11,7 +11,7 @@ The entry point for reading yaml files is the [`python/podio_gen/podio_config_re
 When reading the yaml file a basic validation is run and the data members, relations and vector members of components and datatypes are parsed into `MemberVariable` objects (defined in [`python/podio_gen/generator_utils.py`](/python/podio_gen/generator_utils.py)).
 The main entry point to the code generation is the [`python/podio_class_generator.py`](/python/podio_class_generator.py) which takes care of instantiating the language specific code generator (either C++ or a prototype version for Julia at this point).
 The language specific generators inherit from the [`ClassGeneratorBaseMixin`](/python/podio_gen/generator_base.py) which takes care of some common initialization and provides some common functionality for code generation.
- In the end each langauge specific generator will take care of (either by itself or through the common functionality in `ClassGeneratorBaseMixin`):
+ In the end each language specific generator will take care of (either by itself or through the common functionality in `ClassGeneratorBaseMixin`):
 - Configuring the Jinja2 template engine. At the moment this is mainly making the templates known to the engine.
 - The necessary preprocessing of all the datatypes and components. This includes collecting necessary include directories and forward declaration, as well as digesting `ExtraCode` snippets.
 - Putting all the necessary information into a `dict` that can be easily used in the Jinja2 templates. See [below](#available-information-in-the-templates) for what is available in the templates
@@ -30,7 +30,7 @@ They are broadly split along the classes that are generated for each datatype or
 |---------------------------------|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
 | `Component.h.jinja2`            | Definition for each component                                                                           | `[<package>/]<component-name>.h`                                                      |
 | `Data.h.jinja2`                 | POD struct of each datatype (living in the POD layer)                                                   | `[<package>/]<datatype-name>Data.h`                                                   |
-| `Obj.{h,cc}.jinja2`             | `Obj` class for each datatype (linving in the object layer) and managing resources                      | `[<package>/]<datatype-name>Obj.h`,  `src/<datatype-name>Obj.cc`                      |
+| `Obj.{h,cc}.jinja2`             | `Obj` class for each datatype (living in the object layer) and managing resources                      | `[<package>/]<datatype-name>Obj.h`,  `src/<datatype-name>Obj.cc`                      |
 | `[Mutable]Object.{h,cc}.jinja2` | The user facing interfaces for each datatype (living in the user layer)                                 | `[<package>/][Mutable]<datatype-name>.h`, `src/[Mutable]<datatype-name>.cc`           |
 | `Collection.{h,cc}.jinja2`      | The user facing collection interface (living in the user layer)                                         | `[<package>/]<datatype-name>Collection.h`, `src/<datatype-name>Collection.cc`         |
 | `CollectionData.{h,cc}.jinja2`  | The classes managing the collection storage (not user facing!)                                          | `[<package>/]<datatype-name>CollectionData.h`, `src/<datatype-name>CollectionData.cc` |
@@ -102,7 +102,7 @@ The following keys / variables are filled for each datatype
 | `OneToManyRelations`          | The one-to-many relation members of the datatype as a list of `MemberVariable`s                                                                                    |
 | `VectorMembers`               | The vector members of the datatype as a list of `MemberVariable`s                                                                                                  |
 | `includes`                    | The include directives for the the user facing classes header files                                                                                      |
-| `includes_cc`                 | The include directives for the implemenations of the user facing classes                                                                                 |
+| `includes_cc`                 | The include directives for the implementations of the user facing classes                                                                                 |
 | `includes_data`               | The necessary include directives for the `Data` POD types                                                                                                |
 | `includes_obj`                | The include directives for the `Obj` classes headers.                                                                                                    |
 | `includes_cc_obj`             | The include directives for the implementation files of the `Obj` classes.                                                                                |
@@ -139,7 +139,7 @@ In principle all members are accessible in the templates, however, the most impo
 
 ### `DataType`
 Defined in [`python/generator_utils.py`](/python/generator_utils.py).
-This is essenitally a stripped down version of the `MemberVariable` with the major difference being that the string representation returns the fully qualified type instead.
+This is essentially a stripped down version of the `MemberVariable` with the major difference being that the string representation returns the fully qualified type instead.
 The available fields are
 
 | field       | description                                                                    |

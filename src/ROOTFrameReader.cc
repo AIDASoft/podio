@@ -114,7 +114,7 @@ podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameRead
 ROOTFrameReader::CategoryInfo& ROOTFrameReader::getCategoryInfo(const std::string& category) {
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     // Use the id table as proxy to check whether this category has been
-    // initialized alrready
+    // initialized already
     if (it->second.table == nullptr) {
       initCategory(it->second, category);
     }
@@ -165,7 +165,7 @@ void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& cat
 
   delete collInfo;
 
-  // Finaly set up the branches for the paramters
+  // Finally set up the branches for the parameters
   root_utils::CollectionBranches paramBranches{};
   paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
   catInfo.branches.push_back(paramBranches);

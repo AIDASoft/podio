@@ -63,7 +63,7 @@ nlohmann::json json{
 };
 ```
 
-Each element of the collection will be converted to a JSON object, where the keys are the same as in the datamodel definiton.
+Each element of the collection will be converted to a JSON object, where the keys are the same as in the datamodel definition.
 Components contained in the objects will similarly be similarly converted.
 
 **JSON is not foreseen as a mode for persistency, i.e. there is no plan to add the conversion from JSON to the in memory representation of the datamodel.**
@@ -168,7 +168,7 @@ datamodels and provides access to this information possible. In this context we
 refer to an *EDM* as the shared library (and the corresponding public headers)
 that have been compiled from code that has been generated from a *datamodel
 definition* in the original YAML file. In general whenever we refer to a
-*datamodel* in this context we mean the enitity as a whole, i.e. its definition
+*datamodel* in this context we mean the entity as a whole, i.e. its definition
 in a YAML file, the concrete implementation as an EDM, as well as other related
 information that is related to it.
 

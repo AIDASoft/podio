@@ -63,7 +63,7 @@ public:
     return m_fileVersion;
   }
 
-  /// Get the names of all the availalable Frame categories in the current file(s)
+  /// Get the names of all the available Frame categories in the current file(s)
   std::vector<std::string_view> getAvailableCategories() const;
 
 private:

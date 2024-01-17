@@ -12,7 +12,7 @@ def _get_namespace_class(full_type):
   DefinitionError if a nested namespace is found"""
   cnameparts = full_type.split('::')
   if len(cnameparts) > 2:
-    raise DefinitionError(f"'{full_type}' is a type with a nested namespace. not supperted, yet.")
+    raise DefinitionError(f"'{full_type}' is a type with a nested namespace. not supported, yet.")
   if len(cnameparts) == 2:
     # If in std namespace, consider that to be part of the type instead and only
     # split namespace if that is not the case
@@ -225,7 +225,7 @@ class MemberVariable:
       return f"const {self.array_type}&"
     if self.is_builtin:
       return self.full_type
-    # everything else will just be by const referene
+    # everything else will just be by const reference
     return f"const {self.full_type}&"
 
   def setter_name(self, get_syntax, is_relation=False):

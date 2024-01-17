@@ -33,7 +33,7 @@ class FrameTest(unittest.TestCase):
   """General unittests for for python bindings of the Frame"""
   def test_frame_invalid_access(self):
     """Check that the advertised exceptions are raised on invalid access."""
-    # Creat an empty Frame here
+    # Create an empty Frame here
     frame = Frame()
     with self.assertRaises(KeyError):
       _ = frame.get('NonExistantCollection')
