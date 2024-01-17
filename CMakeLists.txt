@@ -86,10 +86,18 @@ else()
 endif()
 
 # Check that root is compiled with a modern enough c++ standard
-get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
-if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES AND NOT "cxx_std_20" IN_LIST ROOT_COMPILE_FEATURES)
-  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
+if(ROOT_CXX_STANDARD VERSION_GREATER 0)
+  # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
+  if(ROOT_CXX_STANDARD VERSION_LESS 17)
+    message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
+  endif()
+else()
+  get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
+  if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES AND NOT "cxx_std_20" IN_LIST ROOT_COMPILE_FEATURES)
+    message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
+  endif()
 endif()
+
 #Check if Python version detected matches the version used to build ROOT
 SET(Python_FIND_FRAMEWORK LAST)
 IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
