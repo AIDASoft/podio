@@ -86,8 +86,9 @@ else()
 endif()
 
 # Check that root is compiled with a modern enough c++ standard
+# ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
+# before that it's an empty variable so we check if it's any number > 0
 if(ROOT_CXX_STANDARD VERSION_GREATER 0)
-  # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
   if(ROOT_CXX_STANDARD VERSION_LESS 17)
     message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
   endif()
