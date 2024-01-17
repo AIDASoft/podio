@@ -13,12 +13,12 @@ parser.add_argument('-r', '--reverse', action='store_true',
 args = parser.parse_args()
 
 if not args.reverse:
-    reader = podio.root_io.Reader(args.input_file)
-    writer = podio.root_io.RNTupleWriter(args.output_file)
+  reader = podio.root_io.Reader(args.input_file)
+  writer = podio.root_io.RNTupleWriter(args.output_file)
 else:
-    reader = podio.root_io.RNTupleReader(args.input_file)
-    writer = podio.root_io.Writer(args.output_file)
+  reader = podio.root_io.RNTupleReader(args.input_file)
+  writer = podio.root_io.Writer(args.output_file)
 
 for category in reader.categories:
-    for frame in reader.get(category):
-        writer.write_frame(frame, category)
+  for frame in reader.get(category):
+    writer.write_frame(frame, category)
