@@ -85,18 +85,24 @@ else()
   endif()
 endif()
 
-# Check that root is compiled with a modern enough c++ standard
 # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
 # before that it's an empty variable so we check if it's any number > 0
-if(ROOT_CXX_STANDARD VERSION_GREATER 0)
-  if(ROOT_CXX_STANDARD VERSION_LESS 17)
-    message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
-  endif()
-else()
+if(NOT DEFINED ROOT_CXX_STANDARD)
   get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
-  if (NOT "cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES AND NOT "cxx_std_20" IN_LIST ROOT_COMPILE_FEATURES)
-    message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
+  if("cxx_std_17" IN_LIST ROOT_COMPILE_FEATURES)
+    set(ROOT_CXX_STANDARD 17)
+  elseif("cxx_std_20" IN_LIST ROOT_COMPILE_FEATURES)
+    set(ROOT_CXX_STANDARD 20)
+  else()
+    message(FATAL_ERROR "ROOT C++ could not be detected")
   endif()
+endif()
+
+if(ROOT_CXX_STANDARD VERSION_LESS 17)
+  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
+endif()
+if(NOT ROOT_CXX_STANDARD VERSION_EQUAL CMAKE_CXX_STANDARD)
+  message(WARNING "You are trying to build podio with a different c++ standard than ROOT. C++${CMAKE_CXX_STANDARD} was required but ROOT was built with C++${ROOT_CXX_STANDARD}")
 endif()
 
 #Check if Python version detected matches the version used to build ROOT
