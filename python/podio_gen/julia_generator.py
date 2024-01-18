@@ -62,7 +62,7 @@ class JuliaClassGenerator(ClassGeneratorBaseMixin):
 
   @staticmethod
   def _get_julia_params(datatype):
-    """Get the relations as parameteric types for MutableStructs"""
+    """Get the relations as parametric types for MutableStructs"""
     params = set()
     for relation in datatype['OneToManyRelations'] + datatype['OneToOneRelations']:
       if not relation.is_builtin:

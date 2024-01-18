@@ -13,7 +13,7 @@ namespace podio {
  * parameters. These are parameters / metadata that are valid for all
  * collections of a given name in a file, e.g. CellID encoding strings. These
  * parameters are usually stored in a dedicated metadata Frame inside a file,
- * see the predefined category names in the Cateogry namespace.
+ * see the predefined category names in the Category namespace.
  *
  * @param collName the name of the collection
  * @param paramName the name of the parameter
@@ -34,7 +34,7 @@ namespace Category {
   constexpr const auto Event = "events";
   /// The run category
   constexpr const auto Run = "runs";
-  /// The metadata cateogry that is used to store a single Frame that holds data
+  /// The metadata category that is used to store a single Frame that holds data
   /// that is valid for a whole file, e.g. collection level parameters
   constexpr const auto Metadata = "metadata";
 } // namespace Category

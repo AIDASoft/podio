@@ -19,7 +19,7 @@ namespace podio {
  *
  * It is implemented as a singleton, which is populated at the time a shared
  * datamodel library is loaded. It is assumed that that happens early on in the
- * startup of an appliation, such that only a single thread will access the
+ * startup of an application, such that only a single thread will access the
  * factory instance for registering datatypes. Since the necessary creation
  * functions are part of the core datamodel library, this should be very easy to
  * achieve by simply linking to that library. Once the factory is populated it
@@ -53,7 +53,7 @@ public:
    *
    * @param collType The collection type name (e.g. from collection->getTypeName())
    * @param version The schema version the created buffers should have
-   * @param susbsetColl Should the buffers be for a subset collection or not
+   * @param subsetColl Should the buffers be for a subset collection or not
    *
    * @return CollectionReadBuffers if a creation function for this collection
    * type has been registered, otherwise an empty optional

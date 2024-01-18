@@ -2,7 +2,7 @@
 
 The following snippets show the support of PODIO for the different use cases as
 well as some potential pitfalls. These examples are mainly concerned with how
-collections of objects and the objects themselve interact. As such they are
+collections of objects and the objects themselves interact. As such they are
 framework agnostic.
 
 ### Object Ownership
@@ -66,7 +66,7 @@ or via direct accessors
     auto hit  = cluster.Hits(<aNumber>);
 ```
 
-If asking for an entry outside bounds, a std::out_of_range exception is thrown.
+If asking for an entry outside bounds, a `std::out_of_range` exception is thrown.
 
 
 ### Looping through Collections

@@ -85,7 +85,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):
       self.validate(make_dm(component, {}), False)
 
   def test_component_invalid_member(self):
-    # non-builin type
+    # non-builtin type
     component = deepcopy(self.valid_component)
     component['Component']['Members'].append(MemberVariable(type='NonBuiltinType', name='foo'))
     with self.assertRaises(DefinitionError):

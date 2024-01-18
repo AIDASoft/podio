@@ -153,7 +153,7 @@ Some customization of the generated code is possible through flags. These flags 
 
 ## Extending a datamodel / using types from an upstream datamodel
 It is possible to extend another datamodel with your own types, resp. use some datatypes or components from an upstream datamodel in your own datamodel.
-This can be useful for prototyping new datatypes or for accomodating special requirements without having to reimplement / copy a complete datamodel.
+This can be useful for prototyping new datatypes or for accommodating special requirements without having to reimplement / copy a complete datamodel.
 
 To pass an upstream datamodel to the class generator use the `--upstream-edm` option that takes the package name as well as the yaml definition file of the upstream datamodel separated by a colon (':').
 This will effectively make all components and datatypes of the upstream datamodel available to the current definition for validation and generation of the necessary includes.

@@ -55,7 +55,7 @@ class ClassGeneratorBaseMixin:
     processing without filling the contents)
   - upstream_edm (an optional upstream datamodel)
   - datamodel (the current datamodel read from the yamlfile)
-  - get_syntax (whether to use get synatx or not)
+  - get_syntax (whether to use get syntax or not)
   - incfolder (whether to create an includeSubfolder or not)
   - expose_pod_members (whether or not to expose the pod members)
   - formatter_func (an optional formatting function that is called after the

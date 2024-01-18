@@ -81,7 +81,7 @@ private:
 
 public:
   UserDataCollection() = default;
-  /// Constructor from an existing vector (wich will be moved from!)
+  /// Constructor from an existing vector (which will be moved from!)
   UserDataCollection(std::vector<BasicType>&& vec) : _vec(std::move(vec)) {
   }
   UserDataCollection(const UserDataCollection&) = delete;
@@ -166,7 +166,7 @@ public:
     return false;
   }
 
-  /// declare this collection to be a subset collectionv - no effect
+  /// declare this collection to be a subset collection - no effect
   void setSubsetCollection(bool) override {
   }
 
@@ -195,7 +195,7 @@ public:
     return DatamodelRegistry::NoDefinitionNecessary;
   }
 
-  // ----- some wrapers for std::vector and access to the complete std::vector (if really needed)
+  // ----- some wrappers for std::vector and access to the complete std::vector (if really needed)
 
   typename std::vector<BasicType>::iterator begin() {
     return _vec.begin();

@@ -289,11 +289,11 @@ class ClassDefinitionValidator:
   @classmethod
   def _fill_defaults(cls, definition):
     """Fill some of the fields with empty defaults in order to make it easier to
-    handle them afterwards and not having to check everytime whether they exist.
+    handle them afterwards and not having to check every time whether they exist.
     TODO: This is a rather ugly thing to do as it strongly couples all the
     components (reader, validation, generator) to each other. But currently the
     generator assumes that all these fields are present and would require a lot
-    of changes to accomodate to optionally get these. Trying to at least
+    of changes to accommodate to optionally get these. Trying to at least
     encapsulate this into one place here, such that it makes it easier to remove
     once the generator is more robust against missing fields
     """

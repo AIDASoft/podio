@@ -13,7 +13,7 @@ from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-po
 
 
 class Reader(BaseReaderMixin):
-  """Reader class for readion podio SIO files."""
+  """Reader class for reading podio SIO files."""
 
   def __init__(self, filename):
     """Create a reader that reads from the passed file.
@@ -28,7 +28,7 @@ class Reader(BaseReaderMixin):
 
 
 class LegacyReader(BaseReaderMixin):
-  """Reader class for reading legcy podio sio files.
+  """Reader class for reading legacy podio sio files.
 
   This reader can be used to read files that have not yet been written using the
   Frame based I/O into Frames for a more seamless transition.

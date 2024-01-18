@@ -12,7 +12,7 @@ class FrameCategoryIterator:
   """
 
   def __init__(self, reader, category):
-    """Construct the iterator from the reader and the cateogry.
+    """Construct the iterator from the reader and the category.
 
     Args:
         reader (Reader): Any podio reader offering access to Frames
@@ -22,7 +22,7 @@ class FrameCategoryIterator:
     self._category = category
 
   def __iter__(self):
-    """The trivial implementaion for the iterator protocol."""
+    """The trivial implementation for the iterator protocol."""
     return self
 
   def __next__(self):

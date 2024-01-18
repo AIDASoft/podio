@@ -149,7 +149,7 @@ class Frame:
   def put(self, collection, name):
     """Put the collection into the frame
 
-    The passed collectoin is "moved" into the Frame, i.e. it cannot be used any
+    The passed collection is "moved" into the Frame, i.e. it cannot be used any
     longer after a call to this function. This also means that only objects that
     were in the collection at the time of calling this function will be
     available afterwards.
@@ -286,7 +286,7 @@ class Frame:
     Returns:
         podio.GenericParameters: The stored generic parameters
     """
-    # Going via the not entirely inteded way here
+    # Going via the not entirely intended way here
     return self._frame.getParameters()
 
   def get_param_info(self, name):

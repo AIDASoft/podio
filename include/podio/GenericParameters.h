@@ -30,7 +30,7 @@ namespace podio {
 /// The types which are supported in the GenericParameters
 using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
 
-/// Static bool for determining if a type T is a supported GenericParamter type
+/// Static bool for determining if a type T is a supported GenericParameters type
 template <typename T>
 static constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, SupportedGenericDataTypes>;
 
@@ -41,7 +41,7 @@ using EnableIfValidGenericDataType = typename std::enable_if_t<isSupportedGeneri
 
 namespace detail {
   /// Helper struct to determine how to return different types from the
-  /// GenericParamters to avoid unnecessary copies but also to prohibit carrying
+  /// GenericParameters to avoid unnecessary copies but also to prohibit carrying
   /// around const references to ints or floats
   template <typename T>
   struct GenericDataReturnTypeHelper {
@@ -114,7 +114,7 @@ public:
     setValue<std::string>(key, std::move(value));
   }
 
-  /// Overlaod for catching initializer list setting of string vector values
+  /// Overload for catching initializer list setting of string vector values
   void setValue(const std::string& key, std::vector<std::string> values) {
     setValue<std::vector<std::string>>(key, std::move(values));
   }

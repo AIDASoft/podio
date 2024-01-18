@@ -68,6 +68,7 @@ spack*
 # Populated by cmake before build
 /include/podio/podioVersion.h
 /python/podio/__version__.py
+/python/podio_version.py
 
 # CLion artifacts
 .idea/
