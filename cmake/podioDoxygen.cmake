@@ -1,21 +1,21 @@
 find_package(Doxygen)
-if(DOXYGEN_FOUND)
-  # temporarily override the version for doxy generation (for nightly snapshots)
-  set(tmp ${podio_VERSION})
-  if(DOXYVERSION)
-    set(podio_VERSION ${DOXYVERSION})
-  endif()
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in
-                 ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/doxy-boot.js.in
-                 ${PROJECT_BINARY_DIR}/doxygen/html/doxy-boot.js)
-  add_custom_target(doc
-                    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                    COMMENT "Generating API documentation with Doxygen" VERBATIM)
+find_package(Sphinx)
 
-  install( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen DESTINATION doxygen OPTIONAL)
-  # revert version to old value
-  set(podio_VERSION ${tmp})
-  unset(tmp)
-endif(DOXYGEN_FOUND)
+if(DOXYGEN_FOUND AND SPHINX_FOUND)
+  set(SPHINX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/doc/_build)
+
+  add_custom_target(documentation
+                    COMMAND
+                    ${CMAKE_COMMAND} -E env "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/src/:$ENV{LD_LIBRARY_PATH};ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/include;"
+                    ${SPHINX_BUILD_EXECUTABLE} -M html
+                    ${CMAKE_SOURCE_DIR}/doc ${SPHINX_OUTPUT_DIRECTORY}
+                    COMMENT "Building documentation" VERBATIM
+                    DEPENDS podio::podio podio::podioRootIO
+                    )
+
+  install(DIRECTORY ${SPHINX_OUTPUT_DIRECTORY}/
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
+    OPTIONAL)
+else()
+  message(WARNING "Could not generate documentation because either Doxygen or Sphinx could not be found")
+endif()

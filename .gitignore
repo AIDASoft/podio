@@ -70,6 +70,11 @@ spack*
 /python/podio/__version__.py
 /python/podio_version.py
 
+# Populated by doc generation
+/doc/py_api
+/doc/_build
+/doc/cpp_api/
+
 # CLion artifacts
 .idea/
 cmake-build*/
