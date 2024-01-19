@@ -1,9 +1,0 @@
-<lcgdict>
-  <selection>
-    <class name="podio::ROOTFrameReader"/>
-    <class name="podio::ROOTLegacyReader"/>
-    <class name="podio::ROOTFrameWriter"/>
-    <class name="podio::ROOTNTupleReader"/>
-    <class name="podio::ROOTNTupleWriter"/>
-  </selection>
-</lcgdict>

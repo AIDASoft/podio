@@ -1,4 +1,0 @@
-# From pypi
-pyyaml
-jinja2
-tabulate
