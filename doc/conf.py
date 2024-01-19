@@ -147,14 +147,9 @@ subprocess.check_call(
         "py_api",
         "../python",
         "../*/*test_*.py",  # exclude tests
-        "../python/podio_version.py",
+        "../python/podio_version.py",  # exclude convenience module
         ]
     )
 
 print("Done with python API doc generation")
 
-# -- multiversion setup -------------------------------------------------------
-mv_tag_whitelist = r'^v[0-9]{2}-[0-9]{2}(-[0-9]{2})?$'
-smv_remote_whitelist = r'^(origin)$'
-smv_branch_whitelist = r'^(master|docs-on-gh-pages)$'
-smv_released_pattern = r'^tags/.*$'
