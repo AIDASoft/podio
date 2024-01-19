@@ -152,4 +152,3 @@ subprocess.check_call(
     )
 
 print("Done with python API doc generation")
-
