@@ -4,7 +4,6 @@ on:
   push:
     branches:
        - 'master'
-       - 'docs-on-gh-pages'
     tags:
       - v*-*
   workflow_dispatch:
