@@ -83,8 +83,8 @@ SET(root_sources
 )
 if(ENABLE_RNTUPLE)
   list(APPEND root_sources
-      ROOTNTupleReader.cc
-      ROOTNTupleWriter.cc
+      ROOTRNTupleReader.cc
+      ROOTRNTupleWriter.cc
      )
 endif()
 
@@ -95,8 +95,8 @@ SET(root_headers
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
-      ${PROJECT_SOURCE_DIR}/include/podio/ROOTNTupleReader.h
-      ${PROJECT_SOURCE_DIR}/include/podio/ROOTNTupleWriter.h
+      ${PROJECT_SOURCE_DIR}/include/podio/ROOTRNTupleReader.h
+      ${PROJECT_SOURCE_DIR}/include/podio/ROOTRNTupleWriter.h
      )
 endif()
 

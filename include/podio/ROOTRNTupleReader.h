@@ -1,5 +1,5 @@
-#ifndef PODIO_ROOTNTUPLEREADER_H
-#define PODIO_ROOTNTUPLEREADER_H
+#ifndef PODIO_ROOTRNTUPLEREADER_H
+#define PODIO_ROOTRNTUPLEREADER_H
 
 #include "podio/CollectionBranches.h"
 #include "podio/ICollectionProvider.h"
@@ -22,14 +22,14 @@ namespace podio {
 This class has the function to read available data from disk
 and to prepare collections and buffers.
 **/
-class ROOTNTupleReader {
+class ROOTRNTupleReader {
 
 public:
-  ROOTNTupleReader() = default;
-  ~ROOTNTupleReader() = default;
+  ROOTRNTupleReader() = default;
+  ~ROOTRNTupleReader() = default;
 
-  ROOTNTupleReader(const ROOTNTupleReader&) = delete;
-  ROOTNTupleReader& operator=(const ROOTNTupleReader&) = delete;
+  ROOTRNTupleReader(const ROOTRNTupleReader&) = delete;
+  ROOTRNTupleReader& operator=(const ROOTRNTupleReader&) = delete;
 
   void openFile(const std::string& filename);
   void openFiles(const std::vector<std::string>& filename);

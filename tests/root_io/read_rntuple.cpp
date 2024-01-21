@@ -1,6 +1,6 @@
-#include "podio/ROOTNTupleReader.h"
+#include "podio/ROOTRNTupleReader.h"
 #include "read_frame.h"
 
 int main() {
-  return read_frames<podio::ROOTNTupleReader>("example_rntuple.root");
+  return read_frames<podio::ROOTRNTupleReader>("example_rntuple.root");
 }

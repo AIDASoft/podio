@@ -20,8 +20,8 @@ using version_type = uint32_t; // from sio/definitions
 
 #if PODIO_ENABLE_RNTUPLE
 namespace podio {
-class ROOTNTupleReader;
-class ROOTNTupleWriter;
+class ROOTRNTupleReader;
+class ROOTRNTupleWriter;
 } // namespace podio
 #endif
 
@@ -151,8 +151,8 @@ public:
   friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
 
 #if PODIO_ENABLE_RNTUPLE
-  friend ROOTNTupleWriter;
-  friend ROOTNTupleReader;
+  friend ROOTRNTupleReader;
+  friend ROOTRNTupleWriter;
 #endif
 
   /// Get a reference to the internal map for a given type

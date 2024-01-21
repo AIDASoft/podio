@@ -1,4 +1,4 @@
-#include "podio/ROOTNTupleReader.h"
+#include "podio/ROOTRNTupleReader.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
@@ -14,7 +14,7 @@
 namespace podio {
 
 template <typename T>
-void ROOTNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
+void ROOTRNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
   auto keyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
@@ -23,7 +23,7 @@ void ROOTNTupleReader::readParams(const std::string& name, unsigned entNum, Gene
   }
 }
 
-GenericParameters ROOTNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
+GenericParameters ROOTRNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
   GenericParameters params;
 
   readParams<int>(name, entNum, params);
@@ -34,7 +34,7 @@ GenericParameters ROOTNTupleReader::readEventMetaData(const std::string& name, u
   return params;
 }
 
-bool ROOTNTupleReader::initCategory(const std::string& category) {
+bool ROOTRNTupleReader::initCategory(const std::string& category) {
   if (std::find(m_availableCategories.begin(), m_availableCategories.end(), category) == m_availableCategories.end()) {
     return false;
   }
@@ -65,11 +65,11 @@ bool ROOTNTupleReader::initCategory(const std::string& category) {
   return true;
 }
 
-void ROOTNTupleReader::openFile(const std::string& filename) {
+void ROOTRNTupleReader::openFile(const std::string& filename) {
   openFiles({filename});
 }
 
-void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
+void ROOTRNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
   for (auto& filename : filenames) {
@@ -93,7 +93,7 @@ void ROOTNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   m_availableCategories = availableCategoriesField(0);
 }
 
-unsigned ROOTNTupleReader::getEntries(const std::string& name) {
+unsigned ROOTRNTupleReader::getEntries(const std::string& name) {
   if (m_readers.find(name) == m_readers.end()) {
     for (auto& filename : m_filenames) {
       try {
@@ -108,7 +108,7 @@ unsigned ROOTNTupleReader::getEntries(const std::string& name) {
   return m_totalEntries[name];
 }
 
-std::vector<std::string_view> ROOTNTupleReader::getAvailableCategories() const {
+std::vector<std::string_view> ROOTRNTupleReader::getAvailableCategories() const {
   std::vector<std::string_view> cats;
   cats.reserve(m_availableCategories.size());
   for (const auto& cat : m_availableCategories) {
@@ -117,11 +117,11 @@ std::vector<std::string_view> ROOTNTupleReader::getAvailableCategories() const {
   return cats;
 }
 
-std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readNextEntry(const std::string& name) {
+std::unique_ptr<ROOTFrameData> ROOTRNTupleReader::readNextEntry(const std::string& name) {
   return readEntry(name, m_entries[name]);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTNTupleReader::readEntry(const std::string& category, const unsigned entNum) {
+std::unique_ptr<ROOTFrameData> ROOTRNTupleReader::readEntry(const std::string& category, const unsigned entNum) {
   if (m_totalEntries.find(category) == m_totalEntries.end()) {
     getEntries(category);
   }

@@ -1,5 +1,5 @@
-#ifndef PODIO_ROOTNTUPLEWRITER_H
-#define PODIO_ROOTNTUPLEWRITER_H
+#ifndef PODIO_ROOTRNTUPLEWRITER_H
+#define PODIO_ROOTRNTUPLEWRITER_H
 
 #include "podio/CollectionBase.h"
 #include "podio/Frame.h"
@@ -17,13 +17,13 @@
 
 namespace podio {
 
-class ROOTNTupleWriter {
+class ROOTRNTupleWriter {
 public:
-  ROOTNTupleWriter(const std::string& filename);
-  ~ROOTNTupleWriter();
+  ROOTRNTupleWriter(const std::string& filename);
+  ~ROOTRNTupleWriter();
 
-  ROOTNTupleWriter(const ROOTNTupleWriter&) = delete;
-  ROOTNTupleWriter& operator=(const ROOTNTupleWriter&) = delete;
+  ROOTRNTupleWriter(const ROOTRNTupleWriter&) = delete;
+  ROOTRNTupleWriter& operator=(const ROOTRNTupleWriter&) = delete;
 
   template <typename T>
   void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
@@ -86,4 +86,4 @@ private:
 
 } // namespace podio
 
-#endif // PODIO_ROOTNTUPLEWRITER_H
+#endif // PODIO_ROOTRNTUPLEWRITER_H
