@@ -71,6 +71,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#explicit-definition-of-methods">Explicit definition of methods</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#assigning-to-interface-types">Assigning to interface types</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#global-options">Global options</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#potential-pitfalls">Potential pitfalls</a></li>
@@ -347,6 +351,10 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_schema_evolution_1_1_map_index.html#_CPPv4N5podio15SchemaEvolution8MapIndexE"><code class="docutils literal notranslate"><span class="pre">MapIndex</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html">Struct podio::det::nonesuch</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchE"><code class="docutils literal notranslate"><span class="pre">nonesuch</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
 </ul>
@@ -368,6 +376,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1_category.html">Namespace podio::Category</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1_category.html#_CPPv4N5podio8CategoryE"><code class="docutils literal notranslate"><span class="pre">Category</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1det.html">Namespace podio::det</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3detE"><code class="docutils literal notranslate"><span class="pre">det</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1root__utils.html">Namespace podio::root_utils</a><ul>
@@ -543,7 +555,8 @@ From the user-provided data model description PODIO creates all the files necess
 <p>PODIO encourages the usage of composition, rather than inheritance.
 One of the reasons for doing so is the focus on efficiency friendly <code class="docutils literal notranslate"><span class="pre">plain-old-data</span></code>.
 For this reason, PODIO does not support inheritance within the defined data model.
-Instead, users can combine multiple <code class="docutils literal notranslate"><span class="pre">components</span></code> to build a to be used <code class="docutils literal notranslate"><span class="pre">datatype</span></code>.</p>
+Instead, users can combine multiple <code class="docutils literal notranslate"><span class="pre">components</span></code> to build a to be used <code class="docutils literal notranslate"><span class="pre">datatype</span></code>.
+Additionally, if several datatypes should be callable through the same interface, the <code class="docutils literal notranslate"><span class="pre">interface</span></code> category can be used.</p>
 <p>To allow the datatypes to be real PODs, the data stored within the data model are constrained to be
 POD-compatible data. Those are</p>
 <ol class="arabic simple">
@@ -649,6 +662,56 @@ The <code class="docutils literal notranslate"><span class="pre">includes</span>
 </pre></div>
 </div>
 <p>The code being provided has to use the macro <code class="docutils literal notranslate"><span class="pre">{name}</span></code> in place of the concrete name of the class.</p>
+</section>
+</section>
+<section id="definition-of-custom-interfaces">
+<h2>Definition of custom interfaces<a class="headerlink" href="#definition-of-custom-interfaces" title="Link to this heading"></a></h2>
+<p>An interface type can be defined as follows (again using an example from the example datamodel)</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">interfaces</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">TypeWithEnergy</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;A</span><span class="nv"> </span><span class="s">generic</span><span class="nv"> </span><span class="s">interface</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">types</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">an</span><span class="nv"> </span><span class="s">energy</span><span class="nv"> </span><span class="s">member&quot;</span>
+<span class="w">        </span><span class="nt">Author</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Someone&quot;</span>
+<span class="w">        </span><span class="nt">Types</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExampleHit</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExampleMC</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExampleCluster</span>
+<span class="w">        </span><span class="nt">Members</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">double energy // the energy</span>
+</pre></div>
+</div>
+<p>This definition will yield a class called <code class="docutils literal notranslate"><span class="pre">TypeWithEnergy</span></code> that has one public
+method to get the <code class="docutils literal notranslate"><span class="pre">energy</span></code>. Here the syntax for defining more accessors is
+exactly the same as it is for the <code class="docutils literal notranslate"><span class="pre">datatypes</span></code>. Additionally, it is necessary to
+define which <code class="docutils literal notranslate"><span class="pre">Types</span></code> can be used with this interface class, in this case the
+<code class="docutils literal notranslate"><span class="pre">ExampleHit</span></code>, <code class="docutils literal notranslate"><span class="pre">ExampleMC</span></code> or an <code class="docutils literal notranslate"><span class="pre">ExampleCluster</span></code>. <strong>NOTE: <code class="docutils literal notranslate"><span class="pre">interface</span></code> types do
+not allow for mutable access to their data.</strong> They can be used in relations
+between objects, just like normal <code class="docutils literal notranslate"><span class="pre">datatypes</span></code>.</p>
+<section id="assigning-to-interface-types">
+<h3>Assigning to interface types<a class="headerlink" href="#assigning-to-interface-types" title="Link to this heading"></a></h3>
+<p>Interface types support the same functionality as normal (immutable) datatypes.
+The main additional functionality they offer is the possibility to directly
+assign to them (if they type is supported) and to query them for the type that
+is currently being held internally.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">energyType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TypeWithEnergy</span><span class="p">{};</span><span class="w"> </span><span class="c1">// An empty interface is possible but useless</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">valid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">energyType</span><span class="p">.</span><span class="n">isValid</span><span class="p">();</span><span class="w">  </span><span class="c1">// &lt;-- false</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">hit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ExampleHit</span><span class="p">{};</span>
+<span class="n">energyType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hit</span><span class="p">;</span><span class="w">     </span><span class="c1">// assigning a hit to the interface type</span>
+<span class="n">energyType</span><span class="p">.</span><span class="n">energy</span><span class="p">();</span><span class="w">  </span><span class="c1">// &lt;-- get&#39;s the energy from the underlying hit</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ExampleCluster</span><span class="p">{};</span>
+<span class="n">energyType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cluster</span><span class="p">;</span><span class="w"> </span><span class="c1">// ra-assigning another object is possible</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">energyType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cluster</span><span class="p">);</span><span class="w"> </span><span class="c1">// &lt;-- true (comparisons work as expected)</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="n">isCluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">energyType</span><span class="p">.</span><span class="n">isA</span><span class="o">&lt;</span><span class="n">ExampleCluster</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// &lt;-- true</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">isHit</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">energyType</span><span class="p">.</span><span class="n">isA</span><span class="o">&lt;</span><span class="n">ExampleHit</span><span class="o">&gt;</span><span class="p">();</span><span class="w">     </span><span class="c1">// &lt;-- false</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">newCluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">energyType</span><span class="p">.</span><span class="n">getValue</span><span class="o">&lt;</span><span class="n">ExampleCluster</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// &lt;-- &quot;cast back&quot; to original type</span>
+
+<span class="c1">// &quot;Casting&quot; only works if the types match. Otherwise there will be an exception</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">newHit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">energyType</span><span class="p">.</span><span class="n">getValue</span><span class="o">&lt;</span><span class="n">ExampleHit</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// &lt;-- exception</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="global-options">

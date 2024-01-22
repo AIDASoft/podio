@@ -68,6 +68,10 @@
 <li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#explicit-definition-of-methods">Explicit definition of methods</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#assigning-to-interface-types">Assigning to interface types</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#global-options">Global options</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
@@ -344,6 +348,10 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_schema_evolution_1_1_map_index.html#_CPPv4N5podio15SchemaEvolution8MapIndexE"><code class="docutils literal notranslate"><span class="pre">MapIndex</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html">Struct podio::det::nonesuch</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchE"><code class="docutils literal notranslate"><span class="pre">nonesuch</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
 </ul>
@@ -365,6 +373,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1_category.html">Namespace podio::Category</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1_category.html#_CPPv4N5podio8CategoryE"><code class="docutils literal notranslate"><span class="pre">Category</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1det.html">Namespace podio::det</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3detE"><code class="docutils literal notranslate"><span class="pre">det</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1root__utils.html">Namespace podio::root_utils</a><ul>
@@ -648,10 +660,10 @@
 </li>
       <li><a href="cpp_api/file/podio_version_8h.html#c.DEFINE_COMP_OPERATOR">DEFINE_COMP_OPERATOR (C macro)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/file/_maybe_shared_ptr_8h.html#c.DEFINE_COMPARISON_OPERATOR">DEFINE_COMPARISON_OPERATOR (C macro)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.DefinitionError">DefinitionError</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.cpp_generator.CPPClassGenerator.do_process_component">do_process_component() (podio_gen.cpp_generator.CPPClassGenerator method)</a>
@@ -664,6 +676,12 @@
 
       <ul>
         <li><a href="py_api/podio_gen.html#podio_gen.julia_generator.JuliaClassGenerator.do_process_datatype">(podio_gen.julia_generator.JuliaClassGenerator method)</a>
+</li>
+      </ul></li>
+      <li><a href="py_api/podio_gen.html#podio_gen.cpp_generator.CPPClassGenerator.do_process_interface">do_process_interface() (podio_gen.cpp_generator.CPPClassGenerator method)</a>
+
+      <ul>
+        <li><a href="py_api/podio_gen.html#podio_gen.julia_generator.JuliaClassGenerator.do_process_interface">(podio_gen.julia_generator.JuliaClassGenerator method)</a>
 </li>
       </ul></li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable.docstring">docstring (podio_gen.generator_utils.MemberVariable property)</a>
@@ -1175,6 +1193,22 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistryD0Ev">podio::DatamodelRegistry::~DatamodelRegistry (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistryD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistryD0Ev">[2]</a>
 </li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4N5podio3detE">podio::det (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio3detE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3detE">[2]</a>
+</li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4I0IDpE0DpEN5podio3det11detected_orE">podio::det::detected_or (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0IDpE0DpEN5podio3det11detected_orE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4I0IDpE0DpEN5podio3det11detected_orE">[2]</a>
+</li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4IIDpE0DpEN5podio3det11is_detectedE">podio::det::is_detected (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4IIDpE0DpEN5podio3det11is_detectedE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4IIDpE0DpEN5podio3det11is_detectedE">[2]</a>
+</li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4IIDpE0DpEN5podio3det13is_detected_vE">podio::det::is_detected_v (C++ member)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4IIDpE0DpEN5podio3det13is_detected_vE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4IIDpE0DpEN5podio3det13is_detected_vE">[2]</a>
+</li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4N5podio3det8nonesuchE">podio::det::nonesuch (C++ struct)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio3det8nonesuchE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3det8nonesuchE">[2]</a>, <a href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchE">[3]</a>
+</li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4N5podio3det8nonesuch8nonesuchERK8nonesuch">podio::det::nonesuch::nonesuch (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio3det8nonesuch8nonesuchERK8nonesuch">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3det8nonesuch8nonesuchERK8nonesuch">[2]</a>, <a href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuch8nonesuchERK8nonesuch">[3]</a>
+</li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4N5podio3det8nonesuchaSERK8nonesuch">podio::det::nonesuch::operator= (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio3det8nonesuchaSERK8nonesuch">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3det8nonesuchaSERK8nonesuch">[2]</a>, <a href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchaSERK8nonesuch">[3]</a>
+</li>
+      <li><a href="cpp_api/file/_type_helpers_8h.html#_CPPv4N5podio3det8nonesuchD0Ev">podio::det::nonesuch::~nonesuch (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio3det8nonesuchD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3det8nonesuchD0Ev">[2]</a>, <a href="cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchD0Ev">[3]</a>
+</li>
       <li><a href="cpp_api/file/_frame_8h.html#_CPPv4I0EN5podio18EnableIfCollectionE">podio::EnableIfCollection (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio18EnableIfCollectionE">[1]</a>
 </li>
       <li><a href="cpp_api/file/_frame_8h.html#_CPPv4I0EN5podio24EnableIfCollectionRValueE">podio::EnableIfCollectionRValue (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio24EnableIfCollectionRValueE">[1]</a>
@@ -1597,6 +1631,8 @@
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_n_tuple_reader_8h.html#_CPPv4N5podio16ROOTNTupleReader16m_collectionInfoE">podio::ROOTNTupleReader::m_collectionInfo (C++ member)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/file/_r_o_o_t_n_tuple_reader_8h.html#_CPPv4N5podio16ROOTNTupleReader17m_datamodelHolderE">podio::ROOTNTupleReader::m_datamodelHolder (C++ member)</a>
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_n_tuple_reader_8h.html#_CPPv4N5podio16ROOTNTupleReader9m_entriesE">podio::ROOTNTupleReader::m_entries (C++ member)</a>
@@ -1605,8 +1641,6 @@
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_n_tuple_reader_8h.html#_CPPv4N5podio16ROOTNTupleReader13m_fileVersionE">podio::ROOTNTupleReader::m_fileVersion (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/file/_r_o_o_t_n_tuple_reader_8h.html#_CPPv4N5podio16ROOTNTupleReader10m_idTablesE">podio::ROOTNTupleReader::m_idTables (C++ member)</a>
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_n_tuple_reader_8h.html#_CPPv4N5podio16ROOTNTupleReader10m_metadataE">podio::ROOTNTupleReader::m_metadata (C++ member)</a>
@@ -2358,6 +2392,8 @@
       <li><a href="py_api/podio_gen.html#podio_gen.cpp_generator.replace_component_in_paths">replace_component_in_paths() (in module podio_gen.cpp_generator)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_datatype_keys">required_datatype_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
+</li>
+      <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys">required_interface_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
 </li>
       <li><a href="py_api/podio.html#podio.reading.RootFileFormat.RNTUPLE">RNTUPLE (podio.reading.RootFileFormat attribute)</a>
 </li>

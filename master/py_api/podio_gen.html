@@ -71,6 +71,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#explicit-definition-of-methods">Explicit definition of methods</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#assigning-to-interface-types">Assigning to interface types</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#global-options">Global options</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
@@ -347,6 +351,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_schema_evolution_1_1_map_index.html#_CPPv4N5podio15SchemaEvolution8MapIndexE"><code class="docutils literal notranslate"><span class="pre">MapIndex</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1det_1_1nonesuch.html">Struct podio::det::nonesuch</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchE"><code class="docutils literal notranslate"><span class="pre">nonesuch</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
 </ul>
@@ -368,6 +376,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1_category.html">Namespace podio::Category</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1_category.html#_CPPv4N5podio8CategoryE"><code class="docutils literal notranslate"><span class="pre">Category</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1det.html">Namespace podio::det</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3detE"><code class="docutils literal notranslate"><span class="pre">det</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1root__utils.html">Namespace podio::root_utils</a><ul>
@@ -560,6 +572,12 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.do_process_interface">
+<span class="sig-name descname"><span class="pre">do_process_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.do_process_interface" title="Link to this definition"></a></dt>
+<dd><p>Process an interface definition and generate the necesary code</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.post_process">
 <span class="sig-name descname"><span class="pre">post_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.post_process" title="Link to this definition"></a></dt>
 <dd><p>Do the cpp specific post processing</p>
@@ -649,21 +667,31 @@ already present in the output directory)</p></li>
 processed. Needs to return a (potentially) empty
 dictionary</p>
 </dd>
-<dt>do_process_component(name: str, component: dict): do some language specific</dt><dd><p>processing for a component populating the component
-dictionary further. When called only the “class” key will
-be populated. This function also has to to take care of
-filling the necessary templates!</p>
+<dt>do_process_component(name: str, component: dict) -&gt; dict: do some language</dt><dd><p>specific processing for a component populating the
+component dictionary further. When called only the
+“class” key will be populated. Return a dictionary or
+None. If None, this will not be put into the “components”
+list. This function also has to to take care of filling
+the necessary templates!</p>
 </dd>
 <dt>do_process_datatype(name: str, datatype: dict): do some language specific</dt><dd><p>processing for a datatype populating the datatype
 dictionary further. When called only the “class” key will
-be populated. This function also has to take care of
-filling the necessary templates!</p>
+be populated. Return a dictionary or None. If None, this
+will not be put into the “datatypes” list. This function
+also has to take care of filling the necessary templates!</p>
+</dd>
+<dt>do_process_interface(name: str, interface: dict): do some language specific</dt><dd><p>processing for an interface type, populating the
+interface dictionary further. When called only the
+“class” key will be populated. Return a dictionary or
+None. If None, this will not be put into the “interfaces”
+list. This function also has to take care of filling the
+necessary templates!</p>
 </dd>
 <dt>post_process(datamodel: dict): do some global post processing for which all</dt><dd><p>components and datatypes need to have been processed already.
 Gets called with the dictionary that has been created in
 pre_proces and filled during the processing. The process
-components and datatypes are accessible via the “components” and
-“datatypes” keys respectively.</p>
+components and datatypes are accessible via the “components”,
+“datatypes” and “interfaces” keys respectively.</p>
 </dd>
 </dl>
 <p>print_report(): prints a report summarizing what has been generated</p>
@@ -688,7 +716,7 @@ yet. Return whether the file has been written or not</p>
 <p>Module holding some generator utility functions</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="podio_gen.generator_utils.DataModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">DataModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.DataModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">DataModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.DataModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class for holding a complete datamodel read from a configuration file</p>
 </dd></dl>
@@ -834,6 +862,12 @@ array access</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.do_process_interface">
+<span class="sig-name descname"><span class="pre">do_process_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">__</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.do_process_interface" title="Link to this definition"></a></dt>
+<dd><p>Julia does not support interface types yet, so this does nothing</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.get_upstream_name">
 <span class="sig-name descname"><span class="pre">get_upstream_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.get_upstream_name" title="Link to this definition"></a></dt>
 <dd><p>Get the name of the upstream datamodel if any</p>
@@ -882,6 +916,11 @@ problems.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.required_datatype_keys">
 <span class="sig-name descname"><span class="pre">required_datatype_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Description',</span> <span class="pre">'Author')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.required_datatype_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys">
+<span class="sig-name descname"><span class="pre">required_interface_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Description',</span> <span class="pre">'Author',</span> <span class="pre">'Members',</span> <span class="pre">'Types')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
