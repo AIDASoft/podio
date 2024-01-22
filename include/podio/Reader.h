@@ -57,7 +57,7 @@ public:
     podio::version::Version currentFileVersion() const override {
       return m_reader->currentFileVersion();
     }
-    T* m_reader{nullptr};
+    std::unique_ptr<T> m_reader;
   };
 
   std::unique_ptr<ReaderConcept> m_self{nullptr};
