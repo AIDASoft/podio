@@ -3,7 +3,7 @@
 #include "podio/ROOTFrameReader.h"
 #include "podio/Reader.h"
 #ifdef PODIO_ENABLE_RNTUPLE
-  #include "podio/ROOTRNTupleReader.h"
+  #include "podio/RNTupleReader.h"
 #endif
 
 int read_frames(std::unique_ptr<podio::Reader> reader) {

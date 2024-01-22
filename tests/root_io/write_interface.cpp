@@ -54,7 +54,7 @@ int main(int, char**) {
   //   std::unique_ptr<podio::IROOTFrameWriter> frameWriterRNTuple;
   //   frameWriterRNTuple.reset(
   //       dynamic_cast<podio::IROOTFrameWriter*>(new
-  //       podio::ROOTRNTupleWriter("example_frame_rntuple_interface.root")));
+  //       podio::RNTupleWriter("example_frame_rntuple_interface.root")));
 
   //   write_frames(std::move(frameWriterRNTuple));
   // #endif
