@@ -1,4 +1,4 @@
-#include "podio/ROOTRNTupleWriter.h"
+#include "podio/RNTupleWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
@@ -15,19 +15,19 @@
 
 namespace podio {
 
-ROOTRNTupleWriter::ROOTRNTupleWriter(const std::string& filename) :
+RNTupleWriter::RNTupleWriter(const std::string& filename) :
     m_metadata(ROOT::Experimental::RNTupleModel::Create()),
     m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
 }
 
-ROOTRNTupleWriter::~ROOTRNTupleWriter() {
+RNTupleWriter::~RNTupleWriter() {
   if (!m_finished) {
     finish();
   }
 }
 
 template <typename T>
-std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> ROOTRNTupleWriter::getKeyValueVectors() {
+std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> RNTupleWriter::getKeyValueVectors() {
   if constexpr (std::is_same_v<T, int>) {
     return {m_intkeys, m_intvalues};
   } else if constexpr (std::is_same_v<T, float>) {
@@ -42,7 +42,7 @@ std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> ROOTRNTupleWr
 }
 
 template <typename T>
-void ROOTRNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry) {
+void RNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry) {
   auto [key, value] = getKeyValueVectors<T>();
   entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &key);
   entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &value);
@@ -58,12 +58,12 @@ void ROOTRNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental
   }
 }
 
-void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
+void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
-                                   const std::vector<std::string>& collsToWrite) {
+void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
+                               const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);
 
   // Use the writer as proxy to check whether this category has been initialized
@@ -161,7 +161,7 @@ void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string&
 }
 
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
-ROOTRNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
+RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
   auto model = ROOT::Experimental::RNTupleModel::CreateBare();
   for (auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel
@@ -238,7 +238,7 @@ ROOTRNTupleWriter::createModels(const std::vector<StoreCollection>& collections)
   return model;
 }
 
-ROOTRNTupleWriter::CollectionInfo& ROOTRNTupleWriter::getCategoryInfo(const std::string& category) {
+RNTupleWriter::CollectionInfo& RNTupleWriter::getCategoryInfo(const std::string& category) {
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
@@ -247,7 +247,7 @@ ROOTRNTupleWriter::CollectionInfo& ROOTRNTupleWriter::getCategoryInfo(const std:
   return it->second;
 }
 
-void ROOTRNTupleWriter::finish() {
+void RNTupleWriter::finish() {
 
   auto podioVersion = podio::version::build_version;
   auto versionField = m_metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
@@ -295,7 +295,7 @@ void ROOTRNTupleWriter::finish() {
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
-ROOTRNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
+RNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return root_utils::getInconsistentColls(it->second.name, collsToWrite);
   }

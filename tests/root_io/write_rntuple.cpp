@@ -1,6 +1,6 @@
-#include "podio/ROOTRNTupleWriter.h"
+#include "podio/RNTupleWriter.h"
 #include "write_frame.h"
 
 int main() {
-  write_frames<podio::ROOTRNTupleWriter>("example_rntuple.root");
+  write_frames<podio::RNTupleWriter>("example_rntuple.root");
 }

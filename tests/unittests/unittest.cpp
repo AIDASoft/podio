@@ -28,7 +28,7 @@
 #endif
 
 #if PODIO_ENABLE_RNTUPLE
-  #include "podio/ROOTRNTupleWriter.h"
+  #include "podio/RNTupleWriter.h"
 #endif
 
 // Test data types
@@ -1235,12 +1235,12 @@ TEST_CASE("ROOTFrameWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][
 }
 
 #if PODIO_ENABLE_RNTUPLE
-TEST_CASE("ROOTRNTupleWriter consistent frame contents", "[basics][root]") {
-  runConsistentFrameTest<podio::ROOTRNTupleWriter>("unittests_frame_consistency_rntuple.root");
+TEST_CASE("RNTupleWriter consistent frame contents", "[basics][root]") {
+  runConsistentFrameTest<podio::RNTupleWriter>("unittests_frame_consistency_rntuple.root");
 }
 
-TEST_CASE("ROOTRNTupleWriter check consistency", "[basics][root]") {
-  runCheckConsistencyTest<podio::ROOTRNTupleWriter>("unittests_frame_check_consistency_rntuple.root");
+TEST_CASE("RNTupleWriter check consistency", "[basics][root]") {
+  runCheckConsistencyTest<podio::RNTupleWriter>("unittests_frame_check_consistency_rntuple.root");
 }
 
 #endif
