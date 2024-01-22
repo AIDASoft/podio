@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-#include "podio/RNTupleWriter.h"
-========
 #include "podio/ROOTRNTupleWriter.h"
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
 #include "podio/CollectionBase.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
@@ -20,31 +16,19 @@
 
 namespace podio {
 
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-RNTupleWriter::RNTupleWriter(const std::string& filename) :
-========
 ROOTRNTupleWriter::ROOTRNTupleWriter(const std::string& filename) :
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
     m_metadata(ROOT::Experimental::RNTupleModel::Create()),
     m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
 }
 
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-RNTupleWriter::~RNTupleWriter() {
-========
 ROOTRNTupleWriter::~ROOTRNTupleWriter() {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
   if (!m_finished) {
     finish();
   }
 }
 
 template <typename T>
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> RNTupleWriter::getKeyValueVectors() {
-========
 std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> ROOTRNTupleWriter::getKeyValueVectors() {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
   if constexpr (std::is_same_v<T, int>) {
     return {m_intkeys, m_intvalues};
   } else if constexpr (std::is_same_v<T, float>) {
@@ -59,11 +43,7 @@ std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> ROOTRNTupleWr
 }
 
 template <typename T>
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-void RNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry) {
-========
 void ROOTRNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry) {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
   auto [key, value] = getKeyValueVectors<T>();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   entry->BindRawPtr(root_utils::getGPKeyName<T>(), &key);
@@ -84,21 +64,12 @@ void ROOTRNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental
   }
 }
 
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
-  writeFrame(frame, category, frame.getAvailableCollections());
-}
-
-void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
-                               const std::vector<std::string>& collsToWrite) {
-========
 void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
 void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
-                                  const std::vector<std::string>& collsToWrite) {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
+                                   const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);
 
   // Use the writer as proxy to check whether this category has been initialized
@@ -217,11 +188,7 @@ void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string&
 }
 
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
-========
 ROOTRNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
   auto model = ROOT::Experimental::RNTupleModel::CreateBare();
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
@@ -293,11 +260,7 @@ ROOTRNTupleWriter::createModels(const std::vector<StoreCollection>& collections)
   return model;
 }
 
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-RNTupleWriter::CollectionInfo& RNTupleWriter::getCategoryInfo(const std::string& category) {
-========
 ROOTRNTupleWriter::CollectionInfo& ROOTRNTupleWriter::getCategoryInfo(const std::string& category) {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
@@ -306,11 +269,7 @@ ROOTRNTupleWriter::CollectionInfo& ROOTRNTupleWriter::getCategoryInfo(const std:
   return it->second;
 }
 
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-void RNTupleWriter::finish() {
-========
 void ROOTRNTupleWriter::finish() {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
 
   auto podioVersion = podio::version::build_version;
   auto versionField = m_metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
@@ -358,11 +317,7 @@ void ROOTRNTupleWriter::finish() {
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
-<<<<<<<< HEAD:src/RNTupleWriter.cc
-RNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
-========
 ROOTRNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleWriter.cc
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return root_utils::getInconsistentColls(it->second.name, collsToWrite);
   }
