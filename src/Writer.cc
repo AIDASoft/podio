@@ -2,7 +2,7 @@
 
 #include "podio/ROOTFrameWriter.h"
 #ifdef PODIO_ENABLE_RNTUPLE
-  #include "podio/ROOTRNTupleWriter.h"
+  #include "podio/RNTupleWriter.h"
 #endif
 #ifdef PODIO_ENABLE_SIO
   #include "podio/SIOFrameWriter.h"
@@ -30,7 +30,7 @@ std::unique_ptr<Writer> makeWriter(const std::string& filename, const std::strin
   } else if (type == "rntuple") {
 #ifdef PODIO_ENABLE_RNTUPLE
     std::cout << "Calling makeWriter (rntuple)" << std::endl;
-    auto actualWriter = std::make_unique<ROOTRNTupleWriter>(filename);
+    auto actualWriter = std::make_unique<RNTupleWriter>(filename);
     writer = std::make_unique<Writer>(std::move(actualWriter));
 #else
     std::cout << "ERROR: RNTuple writer not enabled" << std::endl;

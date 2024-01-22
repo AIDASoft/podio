@@ -2,7 +2,7 @@
 
 #include "podio/ROOTFrameReader.h"
 #ifdef PODIO_ENABLE_RNTUPLE
-  #include "podio/ROOTRNTupleReader.h"
+  #include "podio/RNTupleReader.h"
 #endif
 #ifdef PODIO_ENABLE_SIO
   #include "podio/SIOFrameReader.h"
@@ -50,7 +50,7 @@ std::unique_ptr<Reader> makeReader(const std::vector<std::string>& filenames) {
     }
     if (hasRNTuple) {
 #ifdef PODIO_ENABLE_RNTUPLE
-      auto actualReader = std::make_unique<ROOTRNTupleReader>();
+      auto actualReader = std::make_unique<RNTupleReader>();
       actualReader->openFiles(filenames);
       reader = std::make_unique<Reader>(std::move(actualReader));
 #else
