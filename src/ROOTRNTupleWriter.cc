@@ -63,7 +63,7 @@ void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string&
 }
 
 void ROOTRNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
-                                  const std::vector<std::string>& collsToWrite) {
+                                   const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);
 
   // Use the writer as proxy to check whether this category has been initialized
