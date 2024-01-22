@@ -16,6 +16,7 @@ public:
                             const std::vector<std::string>& collections) = 0;
     virtual void writeEvent(const podio::Frame& frame) = 0;
     virtual void writeEvent(const podio::Frame& frame, const std::vector<std::string>& collections) = 0;
+    virtual void finish() = 0;
   };
 
   template <typename T>
@@ -38,6 +39,9 @@ public:
     void writeEvent(const podio::Frame& frame, const std::vector<std::string>& collections) override {
       return writeFrame(frame, podio::Category::Event, collections);
     }
+    void finish() override {
+      return m_writer->finish();
+    }
     std::unique_ptr<T> m_writer{nullptr};
   };
 
@@ -57,6 +61,9 @@ public:
   }
   void writeEvent(const podio::Frame& frame, const std::vector<std::string>& collections) {
     return writeFrame(frame, podio::Category::Event, collections);
+  }
+  void finish() {
+    return m_self->finish();
   }
 };
 

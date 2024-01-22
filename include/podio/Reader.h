@@ -18,6 +18,9 @@ public:
     virtual podio::Frame readEvent(size_t index) = 0;
     virtual size_t getEvents() = 0;
     virtual podio::version::Version currentFileVersion() const = 0;
+    virtual std::vector<std::string_view> getAvailableCategories() const = 0;
+    virtual const std::string_view getDatamodelDefinition(const std::string& name) const = 0;
+    virtual std::vector<std::string> getAvailableDatamodels() const = 0;
   };
 
   template <typename T>
@@ -57,6 +60,19 @@ public:
     podio::version::Version currentFileVersion() const override {
       return m_reader->currentFileVersion();
     }
+
+    std::vector<std::string_view> getAvailableCategories() const override {
+      return m_reader->getAvailableCategories();
+    }
+
+    const std::string_view getDatamodelDefinition(const std::string& name) const override {
+      return m_reader->getDatamodelDefinition(name);
+    }
+
+    std::vector<std::string> getAvailableDatamodels() const override {
+      return m_reader->getAvailableDatamodels();
+    }
+
     std::unique_ptr<T> m_reader;
   };
 
@@ -85,6 +101,15 @@ public:
   }
   podio::version::Version currentFileVersion() const {
     return m_self->currentFileVersion();
+  }
+  std::vector<std::string_view> getAvailableCategories() const {
+    return m_self->getAvailableCategories();
+  }
+  const std::string_view getDatamodelDefinition(const std::string& name) const {
+    return m_self->getDatamodelDefinition(name);
+  }
+  std::vector<std::string> getAvailableDatamodels() const {
+    return m_self->getAvailableDatamodels();
   }
 };
 
