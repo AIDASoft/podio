@@ -1,0 +1,157 @@
+{% import "macros/declarations.jinja2" as common_macros %}
+{% import "macros/utils.jinja2" as utils %}
+{% import "macros/interface.jinja2" as macros %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}_H
+
+{% for include in include_types %}
+{{ include }}
+{% endfor %}
+
+#include "podio/ObjectID.h"
+#include "podio/utilities/TypeHelpers.h"
+
+#include <memory>
+#include <ostream>
+#include <stdexcept>
+
+{{ utils.namespace_open(class.namespace) }}
+
+{{ common_macros.class_description(class.bare_type, Description, Author) }}
+class {{ class.bare_type }} {
+
+  /// type alias containing all the types this interface should work for.
+  using InterfacedTypes = std::tuple<{{ Types | join(", ")}}>;
+  /// type alias containing all the mutable types that can be used to initalize
+  /// this interface
+  using InterfacedMutableTypes = podio::detail::TupleOfMutableTypes<InterfacedTypes>;
+
+  /// template variable for determining whether type T is a valid interface type
+  template<typename T>
+  constexpr static bool isInterfacedType = podio::detail::isInTuple<T, InterfacedTypes>;
+
+  /// template variable for determining whether type T can be used to initialize
+  /// this interface
+  template<typename T>
+  constexpr static bool isInitializableFrom = isInterfacedType<T> || podio::detail::isInTuple<T, InterfacedMutableTypes>;
+
+  struct Concept {
+    virtual ~Concept() = default;
+    virtual std::unique_ptr<Concept> clone() const = 0;
+    virtual void print(std::ostream&) const = 0;
+
+    virtual podio::ObjectID getObjectID() const = 0;
+    virtual bool isAvailable() const = 0;
+    virtual void unlink() = 0;
+{{ macros.member_getters_concept(Members, use_get_syntax) }}
+    virtual const std::type_info& typeInfo() const = 0;
+    virtual bool equal(const Concept* rhs) const = 0;
+  };
+
+  template<typename ValueT>
+  struct Model final : Concept {
+    ~Model() = default;
+    Model(ValueT value) : m_value(value) {}
+
+    std::unique_ptr<Concept> clone() const final {
+      return std::make_unique<Model<ValueT>>(m_value);
+    }
+
+    void print(std::ostream& os) const final {
+      os << m_value;
+    }
+
+    void unlink() final { m_value.unlink(); }
+    bool isAvailable() const final { return m_value.isAvailable(); }
+    podio::ObjectID getObjectID() const { return m_value.getObjectID(); }
+
+    const std::type_info& typeInfo() const final { return typeid(ValueT); }
+
+    bool equal(const Concept* rhs) const final {
+      if (typeInfo() == rhs->typeInfo()) {
+        return m_value == static_cast<const Model<ValueT>*>(rhs)->m_value;
+      }
+      return false;
+    }
+
+{{ macros.member_getters_model(Members, use_get_syntax) }}
+
+    ValueT m_value{};
+  };
+
+ std::unique_ptr<Concept> m_self{nullptr};
+
+public:
+  template<typename ValueT>
+  {{ class.bare_type }}(ValueT value) :
+    m_self(std::make_unique<Model<podio::detail::GetDefaultHandleType<ValueT>>>(value)) {
+    static_assert(isInitializableFrom<ValueT>, "{{ class.bare_type }} can only be initialized with one of the following types (and their Mutable counter parts): {{ Types | join(", ") }}");
+  }
+
+  {{ class.bare_type }}(const {{ class.bare_type }}& other) :
+    m_self(other.m_self->clone()) {}
+  {{ class.bare_type }}& operator=(const {{ class.bare_type }}& other) {
+    {{ class.bare_type }} tmp{other};
+    std::swap(tmp.m_self, this->m_self);
+    return *this;
+  }
+
+  ~{{ class.bare_type }}() = default;
+  {{ class.bare_type }}({{ class.bare_type }}&&) = default;
+  {{ class.bare_type }}& operator=({{ class.bare_type }}&&) = default;
+
+  /// Create an empty handle
+  static {{ class.bare_type }} makeEmpty() {
+    // We simply chose the first type of the interfaced types here to initialize
+    // an empty handle
+    return {{ Types[0] }}::makeEmpty();
+  }
+
+  /// check whether the object is actually available
+  bool isAvailable() const { return m_self->isAvailable(); }
+  /// disconnect from the underlying value
+  void unlink() { m_self->unlink(); }
+
+  podio::ObjectID id() const { return getObjectID(); }
+  podio::ObjectID getObjectID() const { return m_self->getObjectID(); }
+
+  /// Check if the object currently holds a value of the requested type
+  template<typename T>
+  bool isA() const {
+    static_assert(isInterfacedType<T>, "{{ class.bare_type }} can only ever be one of the following types: {{ Types | join (", ") }}");
+    return typeid(T) == m_self->typeInfo();
+  }
+
+  /// Get the contained value as the concrete type it was put in. This will
+  /// throw a std::runtime_error if T is not the type of the currently held
+  /// value. Use holds to check beforehand if necessary  template<typename T>
+  template<typename T>
+  T getValue() const {
+    if (!isA<T>()) {
+      throw std::runtime_error("Cannot get value as object currently holds anotyer type");
+    }
+    // We can safely cast here since we check types before
+    return static_cast<Model<T>*>(m_self.get())->m_value;
+  }
+
+  friend bool operator==(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
+    return lhs.m_self->equal(rhs.m_self.get());
+  }
+
+  friend bool operator!=(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
+    return !(lhs == rhs);
+  }
+
+{{ macros.member_getters(Members, use_get_syntax) }}
+
+  friend std::ostream& operator<<(std::ostream& os, const {{ class.bare_type }}& value) {
+    value.m_self->print(os);
+    return os;
+  }
+};
+
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

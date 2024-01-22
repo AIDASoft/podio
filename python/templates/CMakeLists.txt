@@ -10,6 +10,7 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/Obj.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Object.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Object.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/Interface.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/MutableObject.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/MutableObject.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/selection.xml.jinja2
@@ -22,6 +23,7 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/macros/iterator.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/sioblocks.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/utils.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/macros/interface.jinja2
 
   ${CMAKE_CURRENT_LIST_DIR}/MutableStruct.jl.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/ParentModule.jl.jinja2

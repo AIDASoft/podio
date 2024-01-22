@@ -71,9 +71,20 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
         m_rel_{{ relation.name }}->emplace_back({{ relation.full_type }}::makeEmpty());
         continue;
       }
+{% if relation.interface_types %}
+      // We need the concrete collection type to assign it to an InferenceWrapper
+{% set else = joiner("else") %}
+{% for int_type in relation.interface_types %}
+      {{ else() }} if (auto {{ int_type.bare_type }}Coll = dynamic_cast<{{ int_type.full_type }}Collection*>(coll)) {
+        const auto tmp = (*{{ int_type.bare_type }}Coll)[id.index];
+        m_rel_{{ relation.name }}->emplace_back(tmp);
+      }
+{% endfor %}
+{% else %}
       {{ relation.full_type }}Collection* tmp_coll = static_cast<{{ relation.full_type }}Collection*>(coll);
       const auto tmp = (*tmp_coll)[id.index];
       m_rel_{{ relation.name }}->emplace_back(tmp);
+{% endif %}
     } else {
       m_rel_{{ relation.name }}->emplace_back({{ relation.full_type }}::makeEmpty());
     }
@@ -91,8 +102,17 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
         entries[i]->m_{{ relation.name }} = nullptr;
         continue;
       }
+{% if relation.interface_types %}
+{% set else = joiner("else") %}
+{% for int_type in relation.interface_types %}
+      {{ else() }} if (auto {{ int_type.bare_type }}Coll = dynamic_cast<{{ int_type.full_type }}Collection*>(coll)) {
+        entries[i]->m_{{ relation.name }} = new {{ relation.full_type }}((*{{ int_type.bare_type }}Coll)[id.index]);
+      }
+{% endfor %}
+{% else %}
       {{ relation.full_type }}Collection* tmp_coll = static_cast<{{ relation.full_type }}Collection*>(coll);
       entries[i]->m_{{ relation.name }} = new {{ relation.full_type }}((*tmp_coll)[id.index]);
+{% endif %}
     } else {
       entries[i]->m_{{ relation.name }} = nullptr;
     }

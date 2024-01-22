@@ -6,7 +6,7 @@ import re
 import warnings
 import yaml
 
-from podio_gen.generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES, DataModel
+from podio_gen.generator_utils import MemberVariable, DefinitionError, BUILTIN_TYPES, DataModel, DataType
 
 
 class MemberParser:
@@ -141,6 +141,13 @@ class ClassDefinitionValidator:
       "Typedefs",
       )
 
+  # The interface definitions need the normal datatype keys plus Types to which
+  # it applies and also which accessor functions to generate
+  required_interface_keys = required_datatype_keys + (
+      "Members",
+      "Types"
+      )
+
   valid_extra_code_keys = ("declaration", "implementation", "includes")
   # documented but not yet implemented
   not_yet_implemented_extra_code = ('declarationFile', 'implementationFile')
@@ -151,6 +158,7 @@ class ClassDefinitionValidator:
     cls._check_components(datamodel, upstream_edm)
     expose_pod_members = datamodel.options['exposePODMembers']
     cls._check_datatypes(datamodel, expose_pod_members, upstream_edm)
+    cls._check_interfaces(datamodel, upstream_edm)
 
   @classmethod
   def _check_comp(cls, member, components, upstream_edm):
@@ -196,6 +204,19 @@ class ClassDefinitionValidator:
       cls._check_datatype(name, definition, expose_pod_members, datamodel, upstream_edm)
 
   @classmethod
+  def _check_interfaces(cls, datamodel, upstream_edm):
+    """Check the interface definitions"""
+    all_types = list(datamodel.datatypes.keys())
+    ext_types = upstream_edm.datatypes.keys() if upstream_edm else []
+    all_types.extend(ext_types)
+
+    for name, definition in datamodel.interfaces.items():
+      if name in all_types:
+        raise DefinitionError(f"'{name}' defines an interface type with the same name as an existing datatype")
+      cls._check_interface_fields(name, definition)
+      cls._check_interface_types(name, definition, all_types)
+
+  @classmethod
   def _check_datatype(cls, classname, definition, expose_pod_members, datamodel, upstream_edm):
     """Check that a datatype only defines valid types and relations."""
     cls._check_members(classname, definition.get("Members", []), expose_pod_members, datamodel, upstream_edm)
@@ -234,9 +255,9 @@ class ClassDefinitionValidator:
   def _check_relations(cls, classname, definition, datamodel, upstream_edm):
     """Check the relations of a class."""
     def _valid_datatype(rel_type):
-      if rel_type in datamodel.datatypes:
+      if rel_type in datamodel.datatypes or rel_type in datamodel.interfaces:
         return True
-      if upstream_edm and rel_type in upstream_edm.datatypes:
+      if upstream_edm and (rel_type in upstream_edm.datatypes or rel_type in upstream_edm.interfaces):
         return True
       return False
 
@@ -285,6 +306,24 @@ class ClassDefinitionValidator:
           not_yet_impl = ''
 
         raise DefinitionError("{classname} defines invalid 'ExtraCode' categories: {invalid_keys}{not_yet_impl}")
+
+  @classmethod
+  def _check_interface_fields(cls, name, definition):
+    """Check whether the fields of an interface definition follow the required schema"""
+    for key in cls.required_interface_keys:
+      if key not in definition:
+        raise DefinitionError(f"interface '{name}' does not define '{key}' field which is required")
+
+    invalid_keys = [k for k in definition.keys() if k not in cls.required_interface_keys]
+    if invalid_keys:
+      raise DefinitionError(f"interface '{name}' defines invalid fields: {invalid_keys}")
+
+  @classmethod
+  def _check_interface_types(cls, name, definition, known_datatypes):
+    """Check whether an interface really only uses known datatypes"""
+    for wrapped_type in definition["Types"]:
+      if wrapped_type.full_type not in known_datatypes:
+        raise DefinitionError(f"interface '{name}' tries to use Type '{wrapped_type}' which is not defined anywhere")
 
   @classmethod
   def _fill_defaults(cls, definition):
@@ -360,6 +399,26 @@ class PodioConfigReader:
     return datatype
 
   @classmethod
+  def _read_interface(cls, value):
+    """Read an interface definition and put it into a more easily digestible format"""
+    interface = {}
+    for category, definition in value.items():
+      if category == "Members":
+        members = []
+        for member in definition:
+          members.append(cls.member_parser.parse(member))
+        interface["Members"] = members
+      elif category == "Types":
+        types = []
+        for typ in definition:
+          types.append(DataType(typ))
+        interface["Types"] = types
+      else:
+        interface[category] = copy.deepcopy(definition)
+
+    return interface
+
+  @classmethod
   def parse_model(cls, model_dict, package_name, upstream_edm=None):
     """Parse a model from the dictionary, e.g. read from a yaml file."""
 
@@ -382,6 +441,11 @@ class PodioConfigReader:
       for klassname, value in model_dict["datatypes"].items():
         datatypes[klassname] = cls._read_datatype(value)
 
+    interfaces = {}
+    if "interfaces" in model_dict:
+      for klassname, value in model_dict["interfaces"].items():
+        interfaces[klassname] = cls._read_interface(value)
+
     options = copy.deepcopy(cls.options)
     if "options" in model_dict:
       for option, value in model_dict["options"].items():
@@ -395,7 +459,7 @@ class PodioConfigReader:
 
     # If this doesn't raise an exception everything should in principle work out
     validator = ClassDefinitionValidator()
-    datamodel = DataModel(datatypes, components, options, schema_version)
+    datamodel = DataModel(datatypes, components, interfaces, options, schema_version)
     validator.validate(datamodel, upstream_edm)
     return datamodel
 

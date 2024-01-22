@@ -46,13 +46,25 @@ class JuliaClassGenerator(ClassGeneratorBaseMixin):
     component['upstream_edm'] = self.upstream_edm
     component['upstream_edm_name'] = self.get_upstream_name()
     self._fill_templates("MutableStruct", component)
+    return component
 
   def do_process_datatype(self, _, datatype):
     """Do the julia specific processing for a datatype"""
+    if any(self._is_interface(r.full_type) for r in datatype["OneToOneRelations"] + datatype["OneToManyRelations"]):
+      # Julia doesn't support any interfaces yet, so we have to also sort out
+      # all the datatypes that use them
+      return None
+
     datatype["params_jl"] = sorted(self._get_julia_params(datatype), key=lambda x: x[0])
     datatype["upstream_edm"] = self.upstream_edm
     datatype["upstream_edm_name"] = self.get_upstream_name()
+
     self._fill_templates("MutableStruct", datatype)
+    return datatype
+
+  def do_process_interface(self, _, __):
+    """Julia does not support interface types yet, so this does nothing"""
+    return None
 
   def get_upstream_name(self):
     """Get the name of the upstream datamodel if any"""
