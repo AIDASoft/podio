@@ -113,8 +113,8 @@ public:
   }
 };
 
-std::unique_ptr<Reader> makeReader(const std::string& filename);
-std::unique_ptr<Reader> makeReader(const std::vector<std::string>& filename);
+Reader makeReader(const std::string& filename);
+Reader makeReader(const std::vector<std::string>& filename);
 
 } // namespace podio
 

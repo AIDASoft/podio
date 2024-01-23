@@ -67,7 +67,7 @@ public:
   }
 };
 
-std::unique_ptr<Writer> makeWriter(const std::string& filename, const std::string& type = "default");
+Writer makeWriter(const std::string& filename, const std::string& type = "default");
 
 } // namespace podio
 

@@ -16,37 +16,42 @@ template <typename T>
 Writer::Writer(std::unique_ptr<T> reader) : m_self(std::make_unique<WriterModel<T>>(reader.release())) {
 }
 
-std::unique_ptr<Writer> makeWriter(const std::string& filename, const std::string& type) {
+Writer makeWriter(const std::string& filename, const std::string& type) {
 
   auto endsWith = [](const std::string& str, const std::string& suffix) {
     return str.size() >= suffix.size() && 0 == str.compare(str.size() - suffix.size(), suffix.size(), suffix);
   };
 
-  std::unique_ptr<Writer> writer;
-  if ((type == "default" && endsWith(filename, ".root")) || type == "root") {
+  auto lower = [](std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::tolower(c); });
+    return str;
+  };
+
+  if ((type == "default" && endsWith(filename, ".root")) || lower(type) == "root") {
     std::cout << "Calling makeWriter (root)" << std::endl;
     auto actualWriter = std::make_unique<ROOTFrameWriter>(filename);
-    writer = std::make_unique<Writer>(std::move(actualWriter));
-  } else if (type == "rntuple") {
+    Writer writer{std::move(actualWriter)};
+    return writer;
+  }
+  if (lower(type) == "rntuple") {
 #ifdef PODIO_ENABLE_RNTUPLE
     std::cout << "Calling makeWriter (rntuple)" << std::endl;
     auto actualWriter = std::make_unique<RNTupleWriter>(filename);
-    writer = std::make_unique<Writer>(std::move(actualWriter));
+    Writer writer{std::move(actualWriter)};
 #else
-    std::cout << "ERROR: RNTuple writer not enabled" << std::endl;
+    throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
 #endif
-  } else if ((type == "default" && endsWith(filename, ".sio")) || type == "sio") {
+  }
+  if ((type == "default" && endsWith(filename, ".sio")) || lower(type) == "sio") {
 #ifdef PODIO_ENABLE_SIO
     std::cout << "Calling makeWriter (sio)" << std::endl;
     auto actualWriter = std::make_unique<SIOFrameWriter>(filename);
-    writer = std::make_unique<Writer>(std::move(actualWriter));
+    Writer writer{std::move(actualWriter)};
 #else
-    std::cout << "ERROR: SIO writer not enabled" << std::endl;
+    throw std::runtime_error("SIO writer not available. Please recompile with SIO support.");
 #endif
-  } else {
-    std::cout << "ERROR: Unknown writer type " << type << std::endl;
   }
-  return writer;
+  throw std::runtime_error("Unknown file type");
 }
 
 } // namespace podio
