@@ -20,12 +20,12 @@ int main(int, char**) {
   auto writer = podio::makeWriter("example_frame_interface.root");
   write_frames(writer);
 
-#ifdef PODIO_ENABLE_RNTUPLE
+#if PODIO_ENABLE_RNTUPLE
   auto writerRNTuple = podio::makeWriter("example_frame_rntuple_interface.root", "rntuple");
   write_frames(writerRNTuple);
 #endif
 
-#ifdef PODIO_ENABLE_SIO
+#if PODIO_ENABLE_SIO
   auto writerSIO = podio::makeWriter("example_frame_sio_interface.sio", "sio");
   write_frames(writerSIO);
 #endif

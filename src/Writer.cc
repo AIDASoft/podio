@@ -1,10 +1,10 @@
 #include "podio/Writer.h"
 
 #include "podio/ROOTFrameWriter.h"
-#ifdef PODIO_ENABLE_RNTUPLE
+#if PODIO_ENABLE_RNTUPLE
   #include "podio/RNTupleWriter.h"
 #endif
-#ifdef PODIO_ENABLE_SIO
+#if PODIO_ENABLE_SIO
   #include "podio/SIOFrameWriter.h"
 #endif
 
@@ -33,7 +33,7 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
     return writer;
   }
   if (lower(type) == "rntuple") {
-#ifdef PODIO_ENABLE_RNTUPLE
+#if PODIO_ENABLE_RNTUPLE
     auto actualWriter = std::make_unique<RNTupleWriter>(filename);
     Writer writer{std::move(actualWriter)};
     return writer;
@@ -42,7 +42,7 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
 #endif
   }
   if ((type == "default" && endsWith(filename, ".sio")) || lower(type) == "sio") {
-#ifdef PODIO_ENABLE_SIO
+#if PODIO_ENABLE_SIO
     auto actualWriter = std::make_unique<SIOFrameWriter>(filename);
     Writer writer{std::move(actualWriter)};
     return writer;
