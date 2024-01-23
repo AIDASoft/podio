@@ -28,25 +28,24 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
   };
 
   if ((type == "default" && endsWith(filename, ".root")) || lower(type) == "root") {
-    std::cout << "Calling makeWriter (root)" << std::endl;
     auto actualWriter = std::make_unique<ROOTFrameWriter>(filename);
     Writer writer{std::move(actualWriter)};
     return writer;
   }
   if (lower(type) == "rntuple") {
 #ifdef PODIO_ENABLE_RNTUPLE
-    std::cout << "Calling makeWriter (rntuple)" << std::endl;
     auto actualWriter = std::make_unique<RNTupleWriter>(filename);
     Writer writer{std::move(actualWriter)};
+    return writer;
 #else
     throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
 #endif
   }
   if ((type == "default" && endsWith(filename, ".sio")) || lower(type) == "sio") {
 #ifdef PODIO_ENABLE_SIO
-    std::cout << "Calling makeWriter (sio)" << std::endl;
     auto actualWriter = std::make_unique<SIOFrameWriter>(filename);
     Writer writer{std::move(actualWriter)};
+    return writer;
 #else
     throw std::runtime_error("SIO writer not available. Please recompile with SIO support.");
 #endif
