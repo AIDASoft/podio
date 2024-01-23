@@ -49,7 +49,7 @@ extensions = [
     "myst_parser",
     "breathe",
     "sphinx_copybutton",
-    ]
+]
 
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 
@@ -89,7 +89,7 @@ html_theme_options = {
     "collapse_navigation": False,
     "navigation_depth": 4,
     "prev_next_buttons_location": None,  # no navigation buttons
-    }
+}
 
 # -- Doxygen integration with Breathe -----------------------------------------
 
@@ -110,9 +110,7 @@ env["DOXYGEN_WARN_AS_ERROR"] = "NO"
 
 os.makedirs("_build/cpp", exist_ok=True)
 
-subprocess.check_call(
-    ["doxygen", "Doxyfile"], stdout=subprocess.PIPE, cwd=doc_dir, env=env
-    )
+subprocess.check_call(["doxygen", "Doxyfile"], stdout=subprocess.PIPE, cwd=doc_dir, env=env)
 
 cpp_api_index_target = doc_dir / "cpp_api/api.rst"
 
@@ -122,10 +120,10 @@ subprocess.check_call(
     stdout=subprocess.PIPE,
     cwd=doc_dir,
     env=env,
-    )
+)
 
 if not cpp_api_index_target.exists():
-  shutil.copyfile(doc_dir / "cpp_api.rst", cpp_api_index_target)
+    shutil.copyfile(doc_dir / "cpp_api.rst", cpp_api_index_target)
 
 print("Done with c++ API doc generation")
 
@@ -148,7 +146,7 @@ subprocess.check_call(
         "../python",
         "../*/*test_*.py",  # exclude tests
         "../python/podio_version.py",  # exclude convenience module
-        ]
-    )
+    ]
+)
 
 print("Done with python API doc generation")

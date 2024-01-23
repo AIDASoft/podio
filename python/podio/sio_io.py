@@ -2,10 +2,11 @@
 """Python module for reading sio files containing podio Frames"""
 
 from ROOT import gSystem
+
 if gSystem.DynamicPathName("libpodioSioIO.so", True):
-  gSystem.Load('libpodioSioIO')  # noqa: 402
+    gSystem.Load("libpodioSioIO")  # noqa: 402
 else:
-  raise ImportError('Error when importing libpodioSioIO')
+    raise ImportError("Error when importing libpodioSioIO")
 from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
@@ -13,47 +14,48 @@ from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-po
 
 
 class Reader(BaseReaderMixin):
-  """Reader class for reading podio SIO files."""
+    """Reader class for reading podio SIO files."""
 
-  def __init__(self, filename):
-    """Create a reader that reads from the passed file.
+    def __init__(self, filename):
+        """Create a reader that reads from the passed file.
 
-    Args:
-        filename (str): File to open and read data from
-    """
-    self._reader = podio.SIOFrameReader()
-    self._reader.openFile(filename)
+        Args:
+            filename (str): File to open and read data from
+        """
+        self._reader = podio.SIOFrameReader()
+        self._reader.openFile(filename)
 
-    super().__init__()
+        super().__init__()
 
 
 class LegacyReader(BaseReaderMixin):
-  """Reader class for reading legacy podio sio files.
+    """Reader class for reading legacy podio sio files.
 
-  This reader can be used to read files that have not yet been written using the
-  Frame based I/O into Frames for a more seamless transition.
-  """
-
-  def __init__(self, filename):
-    """Create a reader that reads from the passed file.
-
-    Args:
-        filename (str): File to open and read data from
+    This reader can be used to read files that have not yet been written using the
+    Frame based I/O into Frames for a more seamless transition.
     """
-    self._reader = podio.SIOLegacyReader()
-    self._reader.openFile(filename)
-    self._is_legacy = True
 
-    super().__init__()
+    def __init__(self, filename):
+        """Create a reader that reads from the passed file.
+
+        Args:
+            filename (str): File to open and read data from
+        """
+        self._reader = podio.SIOLegacyReader()
+        self._reader.openFile(filename)
+        self._is_legacy = True
+
+        super().__init__()
 
 
 class Writer(BaseWriterMixin):
-  """Writer class for writing podio root files"""
-  def __init__(self, filename):
-    """Create a writer for writing files
+    """Writer class for writing podio root files"""
 
-    Args:
-        filename (str): The name of the output file
-    """
-    self._writer = podio.SIOFrameWriter(filename)
-    super().__init__()
+    def __init__(self, filename):
+        """Create a writer for writing files
+
+        Args:
+            filename (str): The name of the output file
+        """
+        self._writer = podio.SIOFrameWriter(filename)
+        super().__init__()

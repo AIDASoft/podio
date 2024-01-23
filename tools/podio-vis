@@ -1,109 +1,128 @@
 #!/usr/bin/env python3
-'''Tool to transform data model descriptions in YAML to a graph that can be visualized'''
+"""Tool to transform data model descriptions in YAML to a graph that can be visualized"""
 
 import sys
 import argparse
 import yaml
 from podio_gen.podio_config_reader import PodioConfigReader
+
 try:
-  from graphviz import Digraph
+    from graphviz import Digraph
 except ImportError:
-  print('graphviz is not installed. please run pip install graphviz')
-  sys.exit(1)
+    print("graphviz is not installed. please run pip install graphviz")
+    sys.exit(1)
 
 
 class ModelToGraphviz:
-  """Class to transform a data model description into a graphical representation"""
+    """Class to transform a data model description into a graphical representation"""
 
-  def __init__(self, yamlfile, dot, fmt, filename, graph_conf):
-    self.yamlfile = yamlfile
-    self.use_dot = dot
-    self.datamodel = PodioConfigReader.read(yamlfile, 'podio')
-    self.graph = Digraph(node_attr={'shape': 'box'})
-    self.graph.attr(rankdir='RL', size='8,5')
-    self.fmt = fmt
-    self.filename = filename
-    self.graph_conf = {}
-    self.remove = set()
-    if graph_conf:
-      with open(graph_conf, encoding='utf8') as inp:
-        self.graph_conf = yaml.safe_load(inp)
-    if 'Filter' in self.graph_conf:
-      self.remove = set(self.graph_conf['Filter'])
+    def __init__(self, yamlfile, dot, fmt, filename, graph_conf):
+        self.yamlfile = yamlfile
+        self.use_dot = dot
+        self.datamodel = PodioConfigReader.read(yamlfile, "podio")
+        self.graph = Digraph(node_attr={"shape": "box"})
+        self.graph.attr(rankdir="RL", size="8,5")
+        self.fmt = fmt
+        self.filename = filename
+        self.graph_conf = {}
+        self.remove = set()
+        if graph_conf:
+            with open(graph_conf, encoding="utf8") as inp:
+                self.graph_conf = yaml.safe_load(inp)
+        if "Filter" in self.graph_conf:
+            self.remove = set(self.graph_conf["Filter"])
 
-  def make_viz(self):
-    '''Make the graph and render it in the chosen format'''
+    def make_viz(self):
+        """Make the graph and render it in the chosen format"""
 
-    # Make the grouped nodes first
-    # It doesn't matter if they are remade latter so we don't need
-    # to check for that
-    for i, (label, group) in enumerate(self.graph_conf.items()):
-      with self.graph.subgraph(name=f'cluster{i+1}') as subgraph:
-        subgraph.attr(label=label)
-        for name in group:
-          if name in self.remove:
-            continue
-          subgraph.node(name.replace('::', '_'), label=name)
+        # Make the grouped nodes first
+        # It doesn't matter if they are remade latter so we don't need
+        # to check for that
+        for i, (label, group) in enumerate(self.graph_conf.items()):
+            with self.graph.subgraph(name=f"cluster{i+1}") as subgraph:
+                subgraph.attr(label=label)
+                for name in group:
+                    if name in self.remove:
+                        continue
+                    subgraph.node(name.replace("::", "_"), label=name)
 
-    with_association = False
-    for name, datatype in self.datamodel.datatypes.items():
-      if name in self.remove:
-        continue
-      if 'Association' in name:
-        with_association = True
-        self.graph.edge(datatype['OneToOneRelations'][0].full_type.replace('::', '_'),
-                        datatype['OneToOneRelations'][1].full_type.replace('::', '_'),
-                        label=name.replace('edm4hep::', ''), color='black', dir='both')
-        continue
+        with_association = False
+        for name, datatype in self.datamodel.datatypes.items():
+            if name in self.remove:
+                continue
+            if "Association" in name:
+                with_association = True
+                self.graph.edge(
+                    datatype["OneToOneRelations"][0].full_type.replace("::", "_"),
+                    datatype["OneToOneRelations"][1].full_type.replace("::", "_"),
+                    label=name.replace("edm4hep::", ""),
+                    color="black",
+                    dir="both",
+                )
+                continue
 
-      compatible_name = name.replace('::', '_')  # graphviz gets confused with C++ '::' and formatting strings
-      self.graph.node(compatible_name, label=name)
-      self.graph.attr('edge', color='blue')
-      for rel in datatype["OneToOneRelations"]:
-        if rel.full_type in self.remove:
-          continue
-        compatible_type = rel.full_type.replace('::', '_')
-        self.graph.edge(compatible_name, compatible_type)
-      self.graph.attr('edge', color='red')
-      for rel in datatype["OneToManyRelations"]:
-        if rel.full_type in self.remove:
-          continue
-        compatible_type = rel.full_type.replace('::', '_')
-        self.graph.edge(compatible_name, compatible_type)
+            compatible_name = name.replace(
+                "::", "_"
+            )  # graphviz gets confused with C++ '::' and formatting strings
+            self.graph.node(compatible_name, label=name)
+            self.graph.attr("edge", color="blue")
+            for rel in datatype["OneToOneRelations"]:
+                if rel.full_type in self.remove:
+                    continue
+                compatible_type = rel.full_type.replace("::", "_")
+                self.graph.edge(compatible_name, compatible_type)
+            self.graph.attr("edge", color="red")
+            for rel in datatype["OneToManyRelations"]:
+                if rel.full_type in self.remove:
+                    continue
+                compatible_type = rel.full_type.replace("::", "_")
+                self.graph.edge(compatible_name, compatible_type)
 
-    with self.graph.subgraph(name='cluster0') as subg:
-      subg.attr('node', shape='plaintext')
-      subg.node('l1', '')
-      subg.node('r1', 'One to One Relation')
-      subg.edge('l1', 'r1', color='blue')
-      subg.node('l2', '')
-      subg.node('r2', 'One to Many Relation')
-      subg.edge('l2', 'r2', color='red')
-      if with_association:
-        subg.node('r3', 'Association')
-        subg.node('l3', '')
-        subg.edge('l3', 'r3', color='black', dir='both')
+        with self.graph.subgraph(name="cluster0") as subg:
+            subg.attr("node", shape="plaintext")
+            subg.node("l1", "")
+            subg.node("r1", "One to One Relation")
+            subg.edge("l1", "r1", color="blue")
+            subg.node("l2", "")
+            subg.node("r2", "One to Many Relation")
+            subg.edge("l2", "r2", color="red")
+            if with_association:
+                subg.node("r3", "Association")
+                subg.node("l3", "")
+                subg.edge("l3", "r3", color="black", dir="both")
 
-    if self.use_dot:
-      self.graph.save()
-    else:
-      print(f'Saving file {self.filename} and {self.filename}.{self.fmt}')
-      self.graph.render(filename=self.filename, format=self.fmt)
+        if self.use_dot:
+            self.graph.save()
+        else:
+            print(f"Saving file {self.filename} and {self.filename}.{self.fmt}")
+            self.graph.render(filename=self.filename, format=self.fmt)
 
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(description='Given a description yaml file this script generates '
-                                   'a visualization in the target directory')
+    parser = argparse.ArgumentParser(
+        description="Given a description yaml file this script generates "
+        "a visualization in the target directory"
+    )
 
-  parser.add_argument('description', help='yaml file describing the datamodel')
-  parser.add_argument('-d', '--dot', action='store_true', default=False,
-                      help='just write the dot file')
-  parser.add_argument('--fmt', default='svg', help='Which format to use for saving the file')
-  parser.add_argument('--filename', default='gv', help='Which filename to use for the output')
-  parser.add_argument('--graph-conf', help='Configuration file for defining groups')
+    parser.add_argument("description", help="yaml file describing the datamodel")
+    parser.add_argument(
+        "-d",
+        "--dot",
+        action="store_true",
+        default=False,
+        help="just write the dot file",
+    )
+    parser.add_argument("--fmt", default="svg", help="Which format to use for saving the file")
+    parser.add_argument("--filename", default="gv", help="Which filename to use for the output")
+    parser.add_argument("--graph-conf", help="Configuration file for defining groups")
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  vis = ModelToGraphviz(args.description, args.dot, fmt=args.fmt,
-                        filename=args.filename, graph_conf=args.graph_conf)
-  vis.make_viz()
+    vis = ModelToGraphviz(
+        args.description,
+        args.dot,
+        fmt=args.fmt,
+        filename=args.filename,
+        graph_conf=args.graph_conf,
+    )
+    vis.make_viz()
