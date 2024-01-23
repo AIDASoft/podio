@@ -33,7 +33,7 @@ public:
     podio::Frame readNextFrame(const std::string& name) override {
       auto maybeFrame = m_reader->readNextEntry(name);
       if (maybeFrame) {
-        return std::move(maybeFrame);
+        return maybeFrame;
       }
       throw std::runtime_error("Could not read frame (reading beyond bounds?)");
     }
@@ -44,7 +44,7 @@ public:
     podio::Frame readFrame(const std::string& name, size_t index) override {
       auto maybeFrame = m_reader->readEntry(name, index);
       if (maybeFrame) {
-        return std::move(maybeFrame);
+        return maybeFrame;
       }
       throw std::runtime_error("Could not read frame (reading beyond bounds?)");
     }
