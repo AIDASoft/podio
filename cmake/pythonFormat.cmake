@@ -7,15 +7,26 @@
 file(GLOB_RECURSE ALL_PYTHON_FILES ${PROJECT_SOURCE_DIR}/*.py)
 
 # Black is rather simple because there are no options...
-add_custom_target(
-        black
-        COMMAND black
-        ${ALL_PYTHON_FILES}
-)
+find_program(BLACK_EXECUTABLE black)
+if(BLACK_EXECUTABLE)
+    add_custom_target(
+            black
+            COMMAND black
+            ${ALL_PYTHON_FILES}
+    )
+else()
+    message(WARNING "Failed to find black executable - no target to run black can be set")
+endif()
 
-add_custom_target(
+find_program(FLAKE8_EXECUTABLE flake8)
+if(FLAKE8_EXECUTABLE)
+    add_custom_target(
         flake8
         COMMAND flake8
         --config=${CMAKE_CURRENT_SOURCE_DIR}/.flake8
         ${ALL_PYTHON_FILES}
-)
+    )
+else()
+    message(WARNING "Failed to find flake8 executable - no target to run flake8 can be set")
+endif()
+
