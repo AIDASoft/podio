@@ -3,7 +3,7 @@
 # Requires black/flake8 to be available in the environment
 
 
-# Get all our Python files (submodules are excluded!)
+# Get all our Python files
 file(GLOB_RECURSE ALL_PYTHON_FILES ${PROJECT_SOURCE_DIR}/*.py)
 
 # Black is rather simple because there are no options...
