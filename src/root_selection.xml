@@ -3,7 +3,7 @@
     <class name="podio::ROOTFrameReader"/>
     <class name="podio::ROOTLegacyReader"/>
     <class name="podio::ROOTFrameWriter"/>
-    <class name="podio::ROOTNTupleReader"/>
-    <class name="podio::ROOTNTupleWriter"/>
+    <class name="podio::RNTupleReader"/>
+    <class name="podio::RNTupleWriter"/>
   </selection>
 </lcgdict>

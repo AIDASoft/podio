@@ -39,7 +39,7 @@ class RNTupleReader(BaseReaderMixin):
     if isinstance(filenames, str):
       filenames = (filenames,)
 
-    self._reader = podio.ROOTNTupleReader()
+    self._reader = podio.RNTupleReader()
     self._reader.openFiles(filenames)
 
     super().__init__()
@@ -88,5 +88,5 @@ class RNTupleWriter(BaseWriterMixin):
     Args:
         filename (str): The name of the output file
     """
-    self._writer = podio.ROOTNTupleWriter(filename)
+    self._writer = podio.RNTupleWriter(filename)
     super().__init__()

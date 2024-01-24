@@ -18,7 +18,6 @@
 
 // forward declarations
 class TClass;
-// class TChain;
 class TFile;
 class TTree;
 
