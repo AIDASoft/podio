@@ -1,10 +1,5 @@
-<<<<<<<< HEAD:include/podio/RNTupleWriter.h
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
-========
-#ifndef PODIO_ROOTRNTUPLEWRITER_H
-#define PODIO_ROOTRNTUPLEWRITER_H
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):include/podio/ROOTRNTupleWriter.h
 
 #include "podio/CollectionBase.h"
 #include "podio/Frame.h"
