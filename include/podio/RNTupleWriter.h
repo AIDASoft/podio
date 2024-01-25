@@ -1,5 +1,10 @@
+<<<<<<<< HEAD:include/podio/RNTupleWriter.h
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
+========
+#ifndef PODIO_ROOTRNTUPLEWRITER_H
+#define PODIO_ROOTRNTUPLEWRITER_H
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):include/podio/ROOTRNTupleWriter.h
 
 #include "podio/CollectionBase.h"
 #include "podio/Frame.h"
@@ -17,6 +22,7 @@
 
 namespace podio {
 
+<<<<<<<< HEAD:include/podio/RNTupleWriter.h
 class RNTupleWriter {
 public:
   RNTupleWriter(const std::string& filename);
@@ -24,6 +30,15 @@ public:
 
   RNTupleWriter(const RNTupleWriter&) = delete;
   RNTupleWriter& operator=(const RNTupleWriter&) = delete;
+========
+class ROOTRNTupleWriter {
+public:
+  ROOTRNTupleWriter(const std::string& filename);
+  ~ROOTRNTupleWriter();
+
+  ROOTRNTupleWriter(const ROOTRNTupleWriter&) = delete;
+  ROOTRNTupleWriter& operator=(const ROOTRNTupleWriter&) = delete;
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):include/podio/ROOTRNTupleWriter.h
 
   template <typename T>
   void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
@@ -86,4 +101,8 @@ private:
 
 } // namespace podio
 
+<<<<<<<< HEAD:include/podio/RNTupleWriter.h
 #endif // PODIO_RNTUPLEWRITER_H
+========
+#endif // PODIO_ROOTRNTUPLEWRITER_H
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):include/podio/ROOTRNTupleWriter.h
