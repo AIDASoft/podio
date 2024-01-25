@@ -21,10 +21,14 @@ public:
 
   template <typename T>
   struct WriterModel : public WriterConcept {
-    WriterModel(T* writer) : m_writer(writer) {
+    WriterModel(std::unique_ptr<T> writer) : m_writer(std::move(writer)) {
     }
     WriterModel(const WriterModel&) = delete;
     WriterModel& operator=(const WriterModel&) = delete;
+    WriterModel(WriterModel&&) = default;
+    WriterModel& operator=(WriterModel&&) = default;
+
+    ~WriterModel() = default;
 
     void writeFrame(const podio::Frame& frame, const std::string& category) override {
       return m_writer->writeFrame(frame, category);
@@ -48,7 +52,15 @@ public:
   std::unique_ptr<WriterConcept> m_self{nullptr};
 
   template <typename T>
-  Writer(std::unique_ptr<T>);
+  Writer(std::unique_ptr<T> reader) : m_self(std::make_unique<WriterModel<T>>(std::move(reader))) {
+  }
+
+  Writer(const Writer&) = delete;
+  Writer& operator=(const Writer&) = delete;
+  Writer(Writer&&) = default;
+  Writer& operator=(Writer&&) = default;
+
+  ~Writer() = default;
 
   void writeFrame(const podio::Frame& frame, const std::string& category) {
     return m_self->writeFrame(frame, category);

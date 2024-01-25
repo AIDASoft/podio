@@ -12,10 +12,6 @@
 
 namespace podio {
 
-template <typename T>
-Writer::Writer(std::unique_ptr<T> reader) : m_self(std::make_unique<WriterModel<T>>(reader.release())) {
-}
-
 Writer makeWriter(const std::string& filename, const std::string& type) {
 
   auto endsWith = [](const std::string& str, const std::string& suffix) {
@@ -28,24 +24,18 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
   };
 
   if ((type == "default" && endsWith(filename, ".root")) || lower(type) == "root") {
-    auto actualWriter = std::make_unique<ROOTFrameWriter>(filename);
-    Writer writer{std::move(actualWriter)};
-    return writer;
+    return Writer{std::make_unique<ROOTFrameWriter>(filename)};
   }
   if (lower(type) == "rntuple") {
 #if PODIO_ENABLE_RNTUPLE
-    auto actualWriter = std::make_unique<RNTupleWriter>(filename);
-    Writer writer{std::move(actualWriter)};
-    return writer;
+    return Writer{std::make_unique<RNTupleWriter>(filename)};
 #else
     throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
 #endif
   }
   if ((type == "default" && endsWith(filename, ".sio")) || lower(type) == "sio") {
 #if PODIO_ENABLE_SIO
-    auto actualWriter = std::make_unique<SIOFrameWriter>(filename);
-    Writer writer{std::move(actualWriter)};
-    return writer;
+    return Writer{std::make_unique<SIOFrameWriter>(filename)};
 #else
     throw std::runtime_error("SIO writer not available. Please recompile with SIO support.");
 #endif
