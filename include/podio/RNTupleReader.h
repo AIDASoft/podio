@@ -1,10 +1,5 @@
-<<<<<<<< HEAD:include/podio/RNTupleReader.h
 #ifndef PODIO_RNTUPLEREADER_H
 #define PODIO_RNTUPLEREADER_H
-========
-#ifndef PODIO_ROOTRNTUPLEREADER_H
-#define PODIO_ROOTRNTUPLEREADER_H
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):include/podio/ROOTRNTupleReader.h
 
 #include "podio/CollectionBranches.h"
 #include "podio/ICollectionProvider.h"
@@ -27,7 +22,6 @@ namespace podio {
 This class has the function to read available data from disk
 and to prepare collections and buffers.
 **/
-<<<<<<<< HEAD:include/podio/RNTupleReader.h
 class RNTupleReader {
 
 public:
@@ -36,16 +30,6 @@ public:
 
   RNTupleReader(const RNTupleReader&) = delete;
   RNTupleReader& operator=(const RNTupleReader&) = delete;
-========
-class ROOTRNTupleReader {
-
-public:
-  ROOTRNTupleReader() = default;
-  ~ROOTRNTupleReader() = default;
-
-  ROOTRNTupleReader(const ROOTRNTupleReader&) = delete;
-  ROOTRNTupleReader& operator=(const ROOTRNTupleReader&) = delete;
->>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):include/podio/ROOTRNTupleReader.h
 
   void openFile(const std::string& filename);
   void openFiles(const std::vector<std::string>& filename);
