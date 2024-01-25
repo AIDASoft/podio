@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:src/RNTupleReader.cc
 #include "podio/RNTupleReader.h"
+========
+#include "podio/ROOTRNTupleReader.h"
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
@@ -14,7 +18,11 @@
 namespace podio {
 
 template <typename T>
+<<<<<<<< HEAD:src/RNTupleReader.cc
 void RNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
+========
+void ROOTRNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
   auto keyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
@@ -23,7 +31,11 @@ void RNTupleReader::readParams(const std::string& name, unsigned entNum, Generic
   }
 }
 
+<<<<<<<< HEAD:src/RNTupleReader.cc
 GenericParameters RNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
+========
+GenericParameters ROOTRNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
   GenericParameters params;
 
   readParams<int>(name, entNum, params);
@@ -34,7 +46,11 @@ GenericParameters RNTupleReader::readEventMetaData(const std::string& name, unsi
   return params;
 }
 
+<<<<<<<< HEAD:src/RNTupleReader.cc
 bool RNTupleReader::initCategory(const std::string& category) {
+========
+bool ROOTRNTupleReader::initCategory(const std::string& category) {
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
   if (std::find(m_availableCategories.begin(), m_availableCategories.end(), category) == m_availableCategories.end()) {
     return false;
   }
@@ -65,11 +81,19 @@ bool RNTupleReader::initCategory(const std::string& category) {
   return true;
 }
 
+<<<<<<<< HEAD:src/RNTupleReader.cc
 void RNTupleReader::openFile(const std::string& filename) {
   openFiles({filename});
 }
 
 void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
+========
+void ROOTRNTupleReader::openFile(const std::string& filename) {
+  openFiles({filename});
+}
+
+void ROOTRNTupleReader::openFiles(const std::vector<std::string>& filenames) {
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
 
   m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
   for (auto& filename : filenames) {
@@ -93,7 +117,11 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   m_availableCategories = availableCategoriesField(0);
 }
 
+<<<<<<<< HEAD:src/RNTupleReader.cc
 unsigned RNTupleReader::getEntries(const std::string& name) {
+========
+unsigned ROOTRNTupleReader::getEntries(const std::string& name) {
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
   if (m_readers.find(name) == m_readers.end()) {
     for (auto& filename : m_filenames) {
       try {
@@ -108,7 +136,11 @@ unsigned RNTupleReader::getEntries(const std::string& name) {
   return m_totalEntries[name];
 }
 
+<<<<<<<< HEAD:src/RNTupleReader.cc
 std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
+========
+std::vector<std::string_view> ROOTRNTupleReader::getAvailableCategories() const {
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
   std::vector<std::string_view> cats;
   cats.reserve(m_availableCategories.size());
   for (const auto& cat : m_availableCategories) {
@@ -117,11 +149,19 @@ std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
   return cats;
 }
 
+<<<<<<<< HEAD:src/RNTupleReader.cc
 std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name) {
   return readEntry(name, m_entries[name]);
 }
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum) {
+========
+std::unique_ptr<ROOTFrameData> ROOTRNTupleReader::readNextEntry(const std::string& name) {
+  return readEntry(name, m_entries[name]);
+}
+
+std::unique_ptr<ROOTFrameData> ROOTRNTupleReader::readEntry(const std::string& category, const unsigned entNum) {
+>>>>>>>> da92408 (Change ROOTNTuple{Reader,Writer} to ROOTRNTuple{Reader,Writer}):src/ROOTRNTupleReader.cc
   if (m_totalEntries.find(category) == m_totalEntries.end()) {
     getEntries(category);
   }
