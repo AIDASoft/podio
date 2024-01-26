@@ -12,6 +12,7 @@
 #include <ROOT/RNTupleModel.hxx>
 
 #include <algorithm>
+#include <functional>
 
 namespace podio {
 
@@ -107,7 +108,10 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     }
   }
 
-  auto entry = m_categories[category].writer->GetModel()->CreateBareEntry();
+  // We use std::invoke here, because ROOT has slightly changed the semantics of
+  // this API in https://github.com/root-project/root/pull/14391
+  auto entry =
+      std::invoke(&ROOT::Experimental::RNTupleModel::CreateBareEntry, m_categories[category].writer->GetModel());
 
   ROOT::Experimental::RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
