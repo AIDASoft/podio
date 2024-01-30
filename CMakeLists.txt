@@ -224,3 +224,6 @@ if(BUILD_TESTING)
 endif()
 #--- add CMake infrastructure --------------------------------------------------
 include(cmake/podioCreateConfig.cmake)
+
+#--- code format targets -------------------------------------------------------
+include(cmake/pythonFormat.cmake)
