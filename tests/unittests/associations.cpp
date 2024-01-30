@@ -163,12 +163,6 @@ TEST_CASE("Associations templated accessors", "[associations]") {
   }
 }
 
-TEST_CASE("AssociationCollection basics", "[associations]") {
-  auto coll = TestAColl();
-
-  // TODO: basics without I/O
-}
-
 TEST_CASE("AssociationCollection constness", "[associations][static-checks][const-correctness]") {
   // Test type-aliases in AssociationCollection
   STATIC_REQUIRE(std::is_same_v<TestAColl::const_iterator, TestAIter>);
