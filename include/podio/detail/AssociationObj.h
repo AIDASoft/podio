@@ -3,36 +3,27 @@
 
 #include "podio/detail/AssociationFwd.h"
 
-#include "podio/ObjBase.h"
 #include "podio/ObjectID.h"
 
 namespace podio {
 
 template <typename FromT, typename ToT>
-class AssociationObj : public podio::ObjBase {
+class AssociationObj {
 
   friend Association<FromT, ToT>;
   friend MutableAssociation<FromT, ToT>;
 
 public:
   /// Constructor
-  AssociationObj() :
-      ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0},
-      weight(0.0f),
-      m_from(nullptr),
-      m_to(nullptr) {
+  AssociationObj() : id(), weight(0.0f), m_from(nullptr), m_to(nullptr) {
   }
 
   /// Constructor from ObjectID and weight (does not initialize relations yet!)
-  AssociationObj(const podio::ObjectID id_, float weight_) : ObjBase{id_, 0}, weight(weight_) {
+  AssociationObj(const podio::ObjectID id_, float weight_) : id(id_), weight(weight_) {
   }
 
   /// Copy constructor (deep-copy of relations)
-  AssociationObj(const AssociationObj& other) :
-      ObjBase{{podio::ObjectID::untracked, podio::ObjectID::untracked}, 0},
-      weight(other.weight),
-      m_from(nullptr),
-      m_to(nullptr) {
+  AssociationObj(const AssociationObj& other) : id(), weight(other.weight), m_from(nullptr), m_to(nullptr) {
     if (other.m_from) {
       m_from = new FromT(*other.m_from);
     }
@@ -51,6 +42,7 @@ public:
   }
 
 public:
+  podio::ObjectID id{};
   float weight{1.0f};
   FromT* m_from{nullptr};
   ToT* m_to{nullptr};

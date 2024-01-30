@@ -30,9 +30,9 @@ namespace podio {
 
 template <typename FromT, typename ToT>
 class AssociationCollection : public podio::CollectionBase {
-  static_assert(std::is_same_v<FromT, detail::GetDefT<FromT>>,
+  static_assert(std::is_same_v<FromT, detail::GetDefaultHandleType<FromT>>,
                 "Associations need to be instantiated with the default types!");
-  static_assert(std::is_same_v<ToT, detail::GetDefT<ToT>>,
+  static_assert(std::is_same_v<ToT, detail::GetDefaultHandleType<ToT>>,
                 "Associations need to be instantiated with the default types!");
 
   // convenience typedefs
@@ -91,7 +91,7 @@ public:
     return MutableAssocT(m_storage.entries.at(index));
   }
 
-  void push_back(AssocT object) {
+  void push_back(MutableAssocT object) {
     // We have to do different things here depending on whether this is a
     // subset collection or not. A normal collection cannot collect objects
     // that are already part of another collection, while a subset collection
@@ -101,25 +101,36 @@ public:
       if (obj->id.index == podio::ObjectID::untracked) {
         const auto size = m_storage.entries.size();
         obj->id = {(int)size, m_collectionID};
-        m_storage.entries.push_back(obj);
+        m_storage.entries.push_back(obj.release());
       } else {
         throw std::invalid_argument("Object already in a collection. Cannot add it to a second collection");
       }
+
     } else {
-      const auto obj = object.m_obj;
-      if (obj->id.index < 0) {
-        throw std::invalid_argument(
-            "Objects can only be stored in a subset collection if they are already elements of a collection");
-      }
-      m_storage.entries.push_back(obj);
-      // No need to handle any relations here, since this is already done by the
-      // "owning" collection
+      push_back(AssocT(object));
     }
+  }
+
+  void push_back(AssocT object) {
+    if (!m_isSubsetColl) {
+      throw std::invalid_argument("Can only add immutable objects to subset collections");
+    }
+    auto obj = object.m_obj;
+    if (obj->id.index < 0) {
+      throw std::invalid_argument(
+          "Object needs to be tracked by another collection in order for it to be storable in a subset collection");
+    }
+    m_storage.entries.push_back(obj.release());
   }
 
   /// Number of elements in the collection
   size_t size() const override {
     return m_storage.entries.size();
+  }
+
+  /// Is the collection empty
+  bool empty() const override {
+    return m_storage.entries.empty();
   }
 
   void clear() override {
@@ -156,15 +167,15 @@ public:
     return m_storage.getCollectionBuffers(m_isSubsetColl);
   }
 
-  std::string getTypeName() const override {
+  const std::string_view getTypeName() const override {
     return podio::detail::associationCollTypeName<FromT, ToT>();
   }
 
-  std::string getValueTypeName() const override {
+  const std::string_view getValueTypeName() const override {
     return podio::detail::associationSIOName<FromT, ToT>();
   }
 
-  std::string getDataTypeName() const override {
+  const std::string_view getDataTypeName() const override {
     return "float";
   }
 
@@ -250,7 +261,7 @@ private:
   bool m_isValid{false};
   mutable bool m_isPrepared{false};
   bool m_isSubsetColl{false};
-  int m_collectionID{0};
+  uint32_t m_collectionID{0};
   mutable std::unique_ptr<std::mutex> m_storageMtx{std::make_unique<std::mutex>()};
   mutable CollectionDataT m_storage{};
 };
@@ -306,6 +317,17 @@ namespace detail {
       if (buffers.data) {
         buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
       }
+    };
+
+    readBuffers.deleteBuffers = [](podio::CollectionReadBuffers& buffers) {
+      if (buffers.data) {
+        // If we have data then we are not a subset collection and we have
+        // to clean up all type erased buffers by casting them back to
+        // something that we can delete
+        delete static_cast<AssociationDataContainer*>(buffers.data);
+      }
+      delete buffers.references;
+      delete buffers.vectorMembers;
     };
 
     return readBuffers;

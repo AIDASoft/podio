@@ -42,7 +42,7 @@ public:
   ~AssociationCollectionData() = default;
 
   podio::CollectionWriteBuffers getCollectionBuffers(bool isSubsetColl) {
-    return {isSubsetColl ? nullptr : (void*)&m_data, &m_refCollections, &m_vecInfo};
+    return {isSubsetColl ? nullptr : (void*)&m_data, (void*)m_data.get(), &m_refCollections, &m_vecInfo};
   }
 
   void clear(bool isSubsetColl) {
@@ -104,18 +104,18 @@ public:
       if (obj->m_from) {
         m_refCollections[0]->emplace_back(obj->m_from->getObjectID());
       } else {
-        m_refCollections[0]->push_back({podio::ObjectID::invalid, podio::ObjectID::invalid});
+        m_refCollections[0]->push_back({podio::ObjectID::invalid, 0});
       }
 
       if (obj->m_to) {
         m_refCollections[1]->emplace_back(obj->m_to->getObjectID());
       } else {
-        m_refCollections[1]->push_back({podio::ObjectID::invalid, podio::ObjectID::invalid});
+        m_refCollections[1]->push_back({podio::ObjectID::invalid, 0});
       }
     }
   }
 
-  void prepareAfterRead(int collectionID) {
+  void prepareAfterRead(uint32_t collectionID) {
     int index = 0;
     for (const auto data : *m_data) {
       auto obj = new AssociationObj<FromT, ToT>({index++, collectionID}, data);
@@ -148,7 +148,7 @@ public:
           entries[i]->m_from = nullptr;
           continue;
         }
-        auto* tmp_coll = static_cast<detail::GetCollT<FromT>*>(coll);
+        auto* tmp_coll = static_cast<detail::GetCollectionType<FromT>*>(coll);
         entries[i]->m_from = new FromT((*tmp_coll)[id.index]);
       } else {
         entries[i]->m_from = nullptr;
@@ -163,7 +163,7 @@ public:
           entries[i]->m_to = nullptr;
           continue;
         }
-        auto* tmp_coll = static_cast<detail::GetCollT<ToT>*>(coll);
+        auto* tmp_coll = static_cast<detail::GetCollectionType<ToT>*>(coll);
         entries[i]->m_to = new ToT((*tmp_coll)[id.index]);
       } else {
         entries[i]->m_to = nullptr;
