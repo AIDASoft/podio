@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <deque>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace podio {
@@ -34,10 +35,24 @@ namespace detail {
    * @returns a type string that is a valid c++ template instantiation
    */
   template <typename FromT, typename ToT>
-  inline const std::string& associationCollTypeName() {
+  inline const std::string_view associationCollTypeName() {
     const static std::string typeName =
-        std::string("podio::AssociationCollection<") + FromT::TypeName + "," + ToT::TypeName + ">";
-    return typeName;
+        std::string("podio::AssociationCollection<") + FromT::typeName + "," + ToT::typeName + ">";
+    return std::string_view{typeName};
+  }
+
+  /**
+   * Get the value type name for an AssociationCollection
+   *
+   * @tparam FromT the From type of the association
+   * @tparam ToT the To type of the association
+   * @returns a type string that is a valid c++ template instantiation
+   */
+  template <typename FromT, typename ToT>
+  inline const std::string_view associationTypeName() {
+    const static std::string typeName =
+        std::string("podio::Association<") + FromT::typeName + "," + ToT::typeName + ">";
+    return std::string_view{typeName};
   }
 
   /**
@@ -52,7 +67,7 @@ namespace detail {
    */
   template <typename FromT, typename ToT>
   inline const std::string& associationSIOName() {
-    static auto n = std::string("ASSOCIATION_FROM_") + FromT::TypeName + "_TO_" + ToT::TypeName;
+    static auto n = std::string("ASSOCIATION_FROM_") + FromT::typeName + "_TO_" + ToT::typeName;
     std::replace(n.begin(), n.end(), ':', '_');
     return n;
   }
