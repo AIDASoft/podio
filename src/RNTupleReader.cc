@@ -7,8 +7,8 @@
 #include "podio/GenericParameters.h"
 #include "rootUtils.h"
 
-#include "TClass.h"
 #include <ROOT/RError.hxx>
+
 #include <memory>
 
 namespace podio {
@@ -141,15 +141,10 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
 
   for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
-    const auto collectionClass = TClass::GetClass(m_collectionInfo[category].type[i].c_str());
-
-    auto collection =
-        std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
-
+    const auto& collType = m_collectionInfo[category].type[i];
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    auto maybeBuffers =
-        bufferFactory.createBuffers(m_collectionInfo[category].type[i], m_collectionInfo[category].schemaVersion[i],
-                                    m_collectionInfo[category].isSubsetCollection[i]);
+    auto maybeBuffers = bufferFactory.createBuffers(collType, m_collectionInfo[category].schemaVersion[i],
+                                                    m_collectionInfo[category].isSubsetCollection[i]);
     auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
     if (!maybeBuffers) {
@@ -167,7 +162,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     } else {
       dentry->CaptureValueUnsafe(m_collectionInfo[category].name[i], collBuffers.data);
 
-      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collection->getTypeName());
+      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
       for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
         const auto relName = relVecNames.relations[j];
         auto vec = new std::vector<podio::ObjectID>;
