@@ -1,5 +1,6 @@
 #ifndef PODIO_ASSOCIATIONCOLLECTION_H
 #define PODIO_ASSOCIATIONCOLLECTION_H
+
 #include "podio/detail/AssociationCollectionImpl.h"
 
 // Preprocessor helper macros for concatenating tokens at preprocessing times
