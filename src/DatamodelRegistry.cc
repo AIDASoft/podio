@@ -75,9 +75,16 @@ const std::string& DatamodelRegistry::getDatamodelName(size_t index) const {
 }
 
 RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) const {
-  static std::vector<std::string_view> emptyVec{};
+  const static std::vector<std::string_view> emptyVec{};
   if (typeName.substr(0, 24) == "podio::UserDataCollection") {
     return {emptyVec, emptyVec};
+  }
+
+  if (typeName.substr(0, 18) == "podio::Association") {
+    static constexpr auto fromName = "from";
+    static constexpr auto toName = "to";
+    const static std::vector<std::string_view> relationNames = {fromName, toName};
+    return {relationNames, emptyVec};
   }
 
   // Strip Collection if necessary

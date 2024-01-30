@@ -49,12 +49,8 @@ public:
   static {{ class.bare_type }} makeEmpty();
 
 public:
-  // Some typedefs for the Association handling
-  using MutT = {{ class.namespace }}::Mutable{{ class.bare_type }};
-  using DefT = {{ class.namespace }}::{{ class.bare_type }};
-  using CollT = {{ class.namespace }}::{{ class.bare_type }}Collection;
 
-  static constexpr auto TypeName = "{{ class.full_type }}";
+  static constexpr auto typeName = "{{ class.full_type }}";
 
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}

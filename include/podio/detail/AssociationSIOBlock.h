@@ -20,8 +20,8 @@ public:
   AssociationSIOBlock() :
       SIOBlock(podio::detail::associationSIOName<FromT, ToT>(),
                sio::version::encode_version(AssociationCollection<FromT, ToT>::schemaVersion, 0)) {
-    podio::SIOBlockFactory::instance().registerBlockForCollection(podio::detail::associationSIOName<FromT, ToT>(),
-                                                                  this);
+    podio::SIOBlockFactory::instance().registerBlockForCollection(
+        std::string(podio::detail::associationTypeName<FromT, ToT>()), this);
   }
 
   AssociationSIOBlock(const std::string& name) :
@@ -32,7 +32,7 @@ public:
     auto& bufferFactory = podio::CollectionBufferFactory::instance();
     // TODO:
     // - Error handling of empty optional
-    auto maybeBuffers = bufferFactory.createBuffers(podio::detail::associationCollTypeName<FromT, ToT>(),
+    auto maybeBuffers = bufferFactory.createBuffers(std::string(podio::detail::associationCollTypeName<FromT, ToT>()),
                                                     sio::version::major_version(version), m_subsetColl);
     m_buffers = maybeBuffers.value();
 
