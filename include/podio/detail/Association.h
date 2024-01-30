@@ -3,6 +3,8 @@
 
 #include "podio/detail/AssociationFwd.h"
 #include "podio/detail/AssociationObj.h"
+#include "podio/utilities/MaybeSharedPtr.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -23,44 +25,32 @@ class AssociationT {
   // The typedefs in AssociationFwd.h should make sure that at this point
   // Mutable classes are stripped, i.e. the user should never be able to trigger
   // these!
-  static_assert(std::is_same_v<detail::GetDefT<FromT>, FromT>,
+  static_assert(std::is_same_v<detail::GetDefaultHandleType<FromT>, FromT>,
                 "Associations need to be instantiated with the default types!");
-  static_assert(std::is_same_v<detail::GetDefT<ToT>, ToT>,
+  static_assert(std::is_same_v<detail::GetDefaultHandleType<ToT>, ToT>,
                 "Associations need to be instantiated with the default types!");
 
   using AssociationObjT = AssociationObj<FromT, ToT>;
   friend AssociationCollection<FromT, ToT>;
   friend AssociationCollectionIteratorT<FromT, ToT, Mutable>;
+  friend AssociationT<FromT, ToT, !Mutable>;
 
 public:
-  using MutT = podio::MutableAssociation<FromT, ToT>;
-  using DefT = podio::Association<FromT, ToT>;
-  using CollT = podio::AssociationCollection<FromT, ToT>;
+  using mutable_type = podio::MutableAssociation<FromT, ToT>;
+  using value_type = podio::Association<FromT, ToT>;
+  using collection_type = podio::AssociationCollection<FromT, ToT>;
 
   /// Constructor
-  AssociationT() : m_obj(new AssociationObjT()) {
-    m_obj->acquire();
+  AssociationT() : m_obj(new AssociationObjT(), podio::utils::MarkOwned) {
   }
 
   /// Constructor with weight
-  AssociationT(float weight) : m_obj(new AssociationObjT()) {
-    m_obj->acquire();
+  AssociationT(float weight) : m_obj(new AssociationObjT(), podio::utils::MarkOwned) {
     m_obj->weight = weight;
   }
 
-  /// Constructor from existing AssociationObj
-  AssociationT(AssociationObjT* obj) : m_obj(obj) {
-    if (m_obj) {
-      m_obj->acquire();
-    }
-  }
-
   /// Copy constructor
-  AssociationT(const AssociationT& other) : m_obj(other.m_obj) {
-    if (m_obj) {
-      m_obj->acquire();
-    }
-  }
+  AssociationT(const AssociationT& other) = default;
 
   /// Assignment operator
   AssociationT& operator=(AssociationT other) {
@@ -82,12 +72,12 @@ public:
     return {new AssociationObjT(*m_obj)};
   }
 
-  /// Destructor
-  ~AssociationT() {
-    if (m_obj) {
-      m_obj->release(); // NOLINT(clang-analyzer-cplusplus.NewDelete) issue #174
-    }
+  static Association<FromT, ToT> makeEmpty() {
+    return {nullptr};
   }
+
+  /// Destructor
+  ~AssociationT() = default;
 
   /// Get the weight of the association
   float getWeight() const {
@@ -103,31 +93,33 @@ public:
   /// Access the related-from object
   FromT getFrom() const {
     if (!m_obj->m_from) {
-      return FromT(nullptr);
+      return FromT::makeEmpty();
     }
     return FromT(*(m_obj->m_from));
   }
 
   /// Set the related-from object
-  template <typename FromU, typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefT<FromU>, FromT>>>
+  template <typename FromU,
+            typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT>>>
   void setFrom(FromU value) {
     delete m_obj->m_from;
-    m_obj->m_from = new detail::GetDefT<FromU>(value);
+    m_obj->m_from = new detail::GetDefaultHandleType<FromU>(value);
   }
 
   /// Access the related-to object
   ToT getTo() const {
     if (!m_obj->m_to) {
-      return ToT(nullptr);
+      return ToT::makeEmpty();
     }
     return ToT(*(m_obj->m_to));
   }
 
   /// Set the related-to object
-  template <typename ToU, typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefT<ToU>, ToT>>>
+  template <typename ToU,
+            typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<ToU>, ToT>>>
   void setTo(ToU value) {
     delete m_obj->m_to;
-    m_obj->m_to = new detail::GetDefT<ToU>(value);
+    m_obj->m_to = new detail::GetDefaultHandleType<ToU>(value);
   }
 
   /**
@@ -198,7 +190,7 @@ public:
 
   /// disconnect from Association instance
   void unlink() {
-    m_obj = nullptr;
+    m_obj = podio::utils::MaybeSharedPtr<AssociationObjT>(nullptr);
   }
 
   /// Get the ObjectID
@@ -206,11 +198,11 @@ public:
     if (m_obj) {
       return m_obj->id;
     }
-    return podio::ObjectID{podio::ObjectID::invalid, podio::ObjectID::invalid};
+    return podio::ObjectID{};
   }
 
-  unsigned int id() const {
-    return getObjectID().collectionID * 10000000 + getObjectID().index;
+  podio::ObjectID id() const {
+    return getObjectID();
   }
 
   bool operator==(const AssociationT& other) const {
@@ -227,7 +219,13 @@ public:
   }
 
 private:
-  AssociationObjT* m_obj{nullptr};
+  /// Constructor from existing AssociationObj
+  explicit AssociationT(podio::utils::MaybeSharedPtr<AssociationObjT> obj) : m_obj(std::move(obj)) {
+  }
+  AssociationT(AssociationObjT* obj) : m_obj(podio::utils::MaybeSharedPtr<AssociationObjT>(obj)) {
+  }
+
+  podio::utils::MaybeSharedPtr<AssociationObjT> m_obj{nullptr};
 }; // namespace podio
 
 template <typename FromT, typename ToT>

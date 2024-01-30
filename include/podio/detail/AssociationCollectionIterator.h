@@ -8,6 +8,7 @@ namespace podio {
 template <typename FromT, typename ToT, bool Mutable>
 class AssociationCollectionIteratorT {
   using AssocT = AssociationT<FromT, ToT, Mutable>;
+  using AssociationObjT = AssociationObj<FromT, ToT>;
 
 public:
   AssociationCollectionIteratorT(size_t index, const AssociationObjPointerContainer<FromT, ToT>* coll) :
@@ -22,12 +23,12 @@ public:
   }
 
   AssocT operator*() {
-    m_object.m_obj = (*m_collection)[m_index];
+    m_object.m_obj = podio::utils::MaybeSharedPtr<AssociationObjT>((*m_collection)[m_index]);
     return m_object;
   }
 
   AssocT* operator->() {
-    m_object.m_obj = (*m_collection)[m_index];
+    m_object.m_obj = podio::utils::MaybeSharedPtr<AssociationObjT>((*m_collection)[m_index]);
     return &m_object;
   }
 

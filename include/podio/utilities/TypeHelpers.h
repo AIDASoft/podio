@@ -45,6 +45,9 @@ namespace det {
 
   template <typename DefT, template <typename...> typename Op, typename... Args>
   using detected_or = detail::detector<DefT, void, Op, Args...>;
+
+  template <template <typename...> typename Op, typename... Args>
+  using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
 } // namespace det
 #endif
 
@@ -178,6 +181,10 @@ namespace detail {
   template <typename T>
   using hasObject_t = typename T::object_type;
 
+  /// Detector for checking the existance of a collection_type type member.
+  template <typename T>
+  using hasCollection_t = typename T::collection_type;
+
   /// Variable template for determining whether type T is a podio generated
   /// handle class.
   ///
@@ -203,6 +210,11 @@ namespace detail {
   /// handle it will return T::mutable_type.
   template <typename T>
   using GetMutableHandleType = typename det::detected_or<T, hasMutable_t, T>::type;
+
+  /// Variable template for obtaining the collection type from any podio
+  /// generated handle type
+  template <typename T>
+  using GetCollectionType = det::detected_t<hasCollection_t, T>;
 
   /// Helper type alias to transform a tuple of handle types to a tuple of
   /// mutable handle types.

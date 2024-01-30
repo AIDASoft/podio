@@ -14,6 +14,7 @@
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 // podio specific includes
+#include "podio/AssociationCollection.h"
 #include "podio/Frame.h"
 #include "podio/UserDataCollection.h"
 #include "podio/podioVersion.h"
@@ -418,7 +419,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   // ======================= Associations ==========================
   if (fileVersion >= podio::version::Version{0, 16, 1}) {
-    auto& associations = store.template get<TestAssocCollection>("associations");
+    auto& associations = event.get<TestAssocCollection>("associations");
     if (associations.size() != nmspaces.size()) {
       throw std::runtime_error("AssociationsCollection does not have the expected size");
     }
