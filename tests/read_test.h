@@ -418,7 +418,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   // ======================= Associations ==========================
-  if (fileVersion >= podio::version::Version{0, 16, 1}) {
+  if (fileVersion >= podio::version::Version{0, 17, 99}) {
     auto& associations = event.get<TestAssocCollection>("associations");
     if (associations.size() != nmspaces.size()) {
       throw std::runtime_error("AssociationsCollection does not have the expected size");
