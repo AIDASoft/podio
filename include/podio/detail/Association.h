@@ -230,6 +230,10 @@ private:
 
 template <typename FromT, typename ToT>
 std::ostream& operator<<(std::ostream& os, const Association<FromT, ToT>& assoc) {
+  if (!assoc.isAvailable()) {
+    return os << "[not available]";
+  }
+
   return os << " id: " << assoc.id() << '\n'
             << " weight: " << assoc.getWeight() << '\n'
             << " from: " << assoc.getFrom().id() << '\n'

@@ -29,8 +29,6 @@
 
 // Define an association that is used for the I/O tests
 using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
-// Make sure the I/O parts are dynamically registered
-PODIO_DECLARE_ASSOCIATION(ExampleMC, ex42::ExampleWithARelation)
 
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
