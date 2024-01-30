@@ -5,8 +5,8 @@
 // Preprocessor helper macros for concatenating tokens at preprocessing times
 // Necessary because we use __COUNTER__ below for unique names of static
 // variables for values returned by registration function calls
-#define PP_CONCAT_IMPL(x, y) x##y
-#define PP_CONCAT(x, y) PP_CONCAT_IMPL(x, y)
+#define PODIO_PP_CONCAT_IMPL(x, y) x##y
+#define PODIO_PP_CONCAT(x, y) PODIO_PP_CONCAT_IMPL(x, y)
 
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0
@@ -21,10 +21,10 @@
    * - Registering the necessary SIOBlock with the SIOBlock factory
    */
   #define PODIO_DECLARE_ASSOCIATION(FromT, ToT)                                                                        \
-    const static auto PP_CONCAT(REGISTERED_ASSOCIATION_, __COUNTER__) =                                                \
+    const static auto PODIO_PP_CONCAT(REGISTERED_ASSOCIATION_, __COUNTER__) =                                          \
         podio::detail::registerAssociationCollection<FromT, ToT>(                                                      \
             podio::detail::associationCollTypeName<FromT, ToT>());                                                     \
-    const static auto PP_CONCAT(ASSOCIATION_SIO_BLOCK_, __COUNTER__) = podio::AssociationSIOBlock<FromT, ToT>{};
+    const static auto PODIO_PP_CONCAT(ASSOCIATION_SIO_BLOCK_, __COUNTER__) = podio::AssociationSIOBlock<FromT, ToT>{};
 #else
   /**
    * Main macro for declaring associations. Takes care of the following things:
@@ -32,7 +32,7 @@
    *   CollectionBufferFactory.
    */
   #define PODIO_DECLARE_ASSOCIATION(FromT, ToT)                                                                        \
-    const static auto PP_CONCAT(REGISTERED_ASSOCIATION_, __COUNTER__) =                                                \
+    const static auto PODIO_PP_CONCAT(REGISTERED_ASSOCIATION_, __COUNTER__) =                                          \
         podio::detail::registerAssociationCollection<FromT, ToT>(                                                      \
             podio::detail::associationCollTypeName<FromT, ToT>());
 #endif
