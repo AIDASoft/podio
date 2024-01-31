@@ -117,17 +117,17 @@ if(ENABLE_SIO)
   SET(sio_sources
     SIOBlockUserData.cc
     SIOBlock.cc
-    SIOFrameWriter.cc
-    SIOFrameReader.cc
+    SIOWriter.cc
+    SIOReader.cc
     SIOFrameData.cc
     sioUtils.h
     SIOLegacyReader.cc
     )
 
   SET(sio_headers
-    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOReader.h
     ${PROJECT_SOURCE_DIR}/include/podio/SIOLegacyReader.h
-    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameWriter.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOWriter.h
     )
 
   PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" sio_selection.xml)

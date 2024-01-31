@@ -22,7 +22,7 @@ class Reader(BaseReaderMixin):
         Args:
             filename (str): File to open and read data from
         """
-        self._reader = podio.SIOFrameReader()
+        self._reader = podio.SIOReader()
         self._reader.openFile(filename)
 
         super().__init__()
@@ -57,5 +57,5 @@ class Writer(BaseWriterMixin):
         Args:
             filename (str): The name of the output file
         """
-        self._writer = podio.SIOFrameWriter(filename)
+        self._writer = podio.SIOWriter(filename)
         super().__init__()

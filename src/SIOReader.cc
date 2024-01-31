@@ -1,4 +1,4 @@
-#include "podio/SIOFrameReader.h"
+#include "podio/SIOReader.h"
 #include "podio/SIOBlock.h"
 
 #include "sioUtils.h"
@@ -11,11 +11,11 @@
 
 namespace podio {
 
-SIOFrameReader::SIOFrameReader() {
+SIOReader::SIOReader() {
   auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
 }
 
-void SIOFrameReader::openFile(const std::string& filename) {
+void SIOReader::openFile(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
   if (!m_stream.is_open()) {
     throw std::runtime_error("File " + filename + " couldn't be opened");
@@ -27,7 +27,7 @@ void SIOFrameReader::openFile(const std::string& filename) {
   readEDMDefinitions(); // Potentially could do this lazily
 }
 
-std::unique_ptr<SIOFrameData> SIOFrameReader::readNextEntry(const std::string& name) {
+std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(const std::string& name) {
   // Skip to where the next record of this name starts in the file, based on
   // how many times we have already read this name
   //
@@ -48,14 +48,14 @@ std::unique_ptr<SIOFrameData> SIOFrameReader::readNextEntry(const std::string& n
                                         tableInfo._uncompressed_length);
 }
 
-std::unique_ptr<SIOFrameData> SIOFrameReader::readEntry(const std::string& name, const unsigned entry) {
+std::unique_ptr<SIOFrameData> SIOReader::readEntry(const std::string& name, const unsigned entry) {
   // NOTE: Will create or overwrite the entry counter
   //       All checks are done in the following function
   m_nameCtr[name] = entry;
   return readNextEntry(name);
 }
 
-std::vector<std::string_view> SIOFrameReader::getAvailableCategories() const {
+std::vector<std::string_view> SIOReader::getAvailableCategories() const {
   // Filter the available records from the TOC to remove records that are
   // stored, but use reserved record names for podio meta data
   auto recordNames = m_tocRecord.getRecordNames();
@@ -65,11 +65,11 @@ std::vector<std::string_view> SIOFrameReader::getAvailableCategories() const {
   return recordNames;
 }
 
-unsigned SIOFrameReader::getEntries(const std::string& name) const {
+unsigned SIOReader::getEntries(const std::string& name) const {
   return m_tocRecord.getNRecords(name);
 }
 
-bool SIOFrameReader::readFileTOCRecord() {
+bool SIOReader::readFileTOCRecord() {
   // Check if there is a dedicated marker at the end of the file that tells us
   // where the TOC actually starts
   m_stream.seekg(-sio_helpers::SIOTocInfoSize, std::ios_base::end);
@@ -99,7 +99,7 @@ bool SIOFrameReader::readFileTOCRecord() {
   return false;
 }
 
-void SIOFrameReader::readPodioHeader() {
+void SIOReader::readPodioHeader() {
   const auto& [buffer, _] = sio_utils::readRecord(m_stream, false, sizeof(podio::version::Version));
 
   sio::block_list blocks;
@@ -109,7 +109,7 @@ void SIOFrameReader::readPodioHeader() {
   m_fileVersion = static_cast<SIOVersionBlock*>(blocks[0].get())->version;
 }
 
-void SIOFrameReader::readEDMDefinitions() {
+void SIOReader::readEDMDefinitions() {
   const auto recordPos = m_tocRecord.getPosition(sio_helpers::SIOEDMDefinitionName);
   if (recordPos == 0) {
     // No EDM definitions found

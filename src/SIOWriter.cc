@@ -1,4 +1,4 @@
-#include "podio/SIOFrameWriter.h"
+#include "podio/SIOWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/Frame.h"
@@ -12,7 +12,7 @@
 
 namespace podio {
 
-SIOFrameWriter::SIOFrameWriter(const std::string& filename) {
+SIOWriter::SIOWriter(const std::string& filename) {
   m_stream.open(filename, std::ios::binary);
   if (!m_stream.is_open()) {
     SIO_THROW(sio::error_code::not_open, "Couldn't open output stream '" + filename + "'");
@@ -26,18 +26,18 @@ SIOFrameWriter::SIOFrameWriter(const std::string& filename) {
   sio_utils::writeRecord(blocks, "podio_header_info", m_stream, sizeof(podio::version::Version), false);
 }
 
-SIOFrameWriter::~SIOFrameWriter() {
+SIOWriter::~SIOWriter() {
   if (!m_finished) {
     finish();
   }
 }
 
-void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
+void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category,
-                                const std::vector<std::string>& collsToWrite) {
+void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& category,
+                           const std::vector<std::string>& collsToWrite) {
   std::vector<sio_utils::StoreCollection> collections;
   collections.reserve(collsToWrite.size());
   for (const auto& name : collsToWrite) {
@@ -56,7 +56,7 @@ void SIOFrameWriter::writeFrame(const podio::Frame& frame, const std::string& ca
   sio_utils::writeRecord(blocks, category, m_stream);
 }
 
-void SIOFrameWriter::finish() {
+void SIOWriter::finish() {
   auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(
       m_datamodelCollector.getDatamodelDefinitionsToWrite());
 
