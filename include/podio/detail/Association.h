@@ -69,7 +69,8 @@ public:
   template <typename FromU = FromT, typename ToU = ToT,
             typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
   MutableAssociation<FromU, ToU> clone() const {
-    return {new AssociationObjT(*m_obj)};
+    return MutableAssociation<FromU, ToU>(
+        podio::utils::MaybeSharedPtr(new AssociationObjT(*m_obj), podio::utils::MarkOwned));
   }
 
   static Association<FromT, ToT> makeEmpty() {
