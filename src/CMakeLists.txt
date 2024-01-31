@@ -90,10 +90,8 @@ endif()
 
 SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers

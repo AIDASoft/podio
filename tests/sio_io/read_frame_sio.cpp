@@ -1,7 +1,7 @@
 #include "read_frame.h"
 #include "read_frame_auxiliary.h"
 
-#include "podio/SIOFrameReader.h"
+#include "podio/SIOReader.h"
 
 int main(int argc, char* argv[]) {
   std::string inputFile = "example_frame.sio";
@@ -11,6 +11,6 @@ int main(int argc, char* argv[]) {
     assertBuildVersion = false;
   }
 
-  return read_frames<podio::SIOFrameReader>(inputFile, assertBuildVersion) +
-      test_frame_aux_info<podio::SIOFrameReader>(inputFile);
+  return read_frames<podio::SIOReader>(inputFile, assertBuildVersion) +
+      test_frame_aux_info<podio::SIOReader>(inputFile);
 }

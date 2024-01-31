@@ -22,7 +22,7 @@ class Reader(BaseReaderMixin):
         if isinstance(filenames, str):
             filenames = (filenames,)
 
-        self._reader = podio.ROOTFrameReader()
+        self._reader = podio.ROOTReader()
         self._reader.openFiles(filenames)
 
         super().__init__()
@@ -78,7 +78,7 @@ class Writer(BaseWriterMixin):
         Args:
             filename (str): The name of the output file
         """
-        self._writer = podio.ROOTFrameWriter(filename)
+        self._writer = podio.ROOTWriter(filename)
         super().__init__()
 
 

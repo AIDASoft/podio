@@ -1,8 +1,8 @@
 <lcgdict>
   <selection>
-    <class name="podio::ROOTFrameReader"/>
+    <class name="podio::ROOTReader"/>
     <class name="podio::ROOTLegacyReader"/>
-    <class name="podio::ROOTFrameWriter"/>
+    <class name="podio::ROOTWriter"/>
     <class name="podio::RNTupleReader"/>
     <class name="podio::RNTupleWriter"/>
   </selection>

@@ -1,8 +1,8 @@
 #include "write_frame.h"
 
-#include "podio/SIOFrameWriter.h"
+#include "podio/SIOWriter.h"
 
 int main(int, char**) {
-  write_frames<podio::SIOFrameWriter>("example_frame.sio");
+  write_frames<podio::SIOWriter>("example_frame.sio");
   return 0;
 }
