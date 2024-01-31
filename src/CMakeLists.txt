@@ -77,8 +77,8 @@ target_compile_options(podio PRIVATE -pthread)
 # --- Root I/O functionality and corresponding dictionary
 SET(root_sources
   rootUtils.h
-  ROOTFrameWriter.cc
-  ROOTFrameReader.cc
+  ROOTWriter.cc
+  ROOTReader.cc
   ROOTLegacyReader.cc
 )
 if(ENABLE_RNTUPLE)
@@ -89,8 +89,10 @@ if(ENABLE_RNTUPLE)
 endif()
 
 SET(root_headers
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
   )
 if(ENABLE_RNTUPLE)
