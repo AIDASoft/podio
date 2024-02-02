@@ -65,7 +65,7 @@ option(SKIP_CATCH_DISCOVERY "Skip the Catch2 test discovery" OFF)
 
 # To work around https://github.com/catchorg/Catch2/issues/2424 we need the
 # DL_PATH argument for catch_discoer_tests which requires CMake 3.22 at least
-# The whole issue can be avoied if we skip the catch test discovery and set the
+# The whole issue can be avoided if we skip the catch test discovery and set the
 # environment on our own
 if (CMAKE_VERSION VERSION_LESS 3.22)
   set(SKIP_CATCH_DISCOVERY ON)
@@ -77,7 +77,7 @@ if (USE_SANITIZER MATCHES "Memory(WithOrigin)?" OR SKIP_CATCH_DISCOVERY)
   # directly in the tests.
   if (FORCE_RUN_ALL_TESTS OR SKIP_CATCH_DISCOVERY)
     # Unfortunately Memory sanitizer seems to be really unhappy with Catch2 and
-    # it fails to succesfully launch the executable and execute any test. Here
+    # it fails to successfully launch the executable and execute any test. Here
     # we just include them in order to have them show up as failing
     add_test(NAME unittest COMMAND unittest_podio ${filter_tests})
     PODIO_SET_TEST_ENV(unittest)

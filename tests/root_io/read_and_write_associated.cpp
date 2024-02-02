@@ -12,7 +12,7 @@
 void writeCollection() {
   podio::ROOTFrameWriter writer("associations.root");
 
-  std::cout << "start writting collections...\n";
+  std::cout << "start writing collections...\n";
 
   unsigned nevents = 2;
 

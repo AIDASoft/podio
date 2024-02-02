@@ -361,7 +361,7 @@ TEST_CASE("member getter return types", "[basics][code-gen]") {
   // Builtin member types are returned by value, including fixed width integers
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleHit>().energy()), double>);
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithFixedWidthIntegers>().fixedU64()), std::uint64_t>);
-  // Arrays are returend by const reference
+  // Arrays are returned by const reference
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArray>().myArray()), const std::array<int, 4>&>);
   // But if we index into that array we get back a value
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArray>().myArray(0)), int>);
@@ -564,7 +564,7 @@ TEST_CASE("Subset collection basics", "[subset-colls]") {
 }
 
 TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
-  // Can only collect things that already live in a different colection
+  // Can only collect things that already live in a different collection
   auto clusters = ExampleClusterCollection();
   auto cluster = clusters.create();
 
@@ -582,7 +582,7 @@ TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
   // These are "true" subsets, so changes should propagate
   cluster.energy(42);
   REQUIRE(clusterRef.energy() == 42);
-  // Also in the other directon
+  // Also in the other direction
   clusterRef.energy(-42);
   REQUIRE(cluster.energy() == -42);
 
@@ -623,7 +623,7 @@ TEST_CASE("Collection iterators work with subset collections", "[subset-colls]")
   }
 }
 
-TEST_CASE("Canont convert a normal collection into a subset collection", "[subset-colls]") {
+TEST_CASE("Cannot convert a normal collection into a subset collection", "[subset-colls]") {
   auto clusterRefs = ExampleClusterCollection();
   auto cluster = clusterRefs.create();
 

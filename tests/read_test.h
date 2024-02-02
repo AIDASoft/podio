@@ -188,7 +188,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   // to be in the file
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
 
-    // Load the subset collection first to ensure that it pulls in objects taht
+    // Load the subset collection first to ensure that it pulls in objects that
     // have not been read yet
     auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
     if (!mcpRefs.isValid()) {

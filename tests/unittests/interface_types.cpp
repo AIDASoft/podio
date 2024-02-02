@@ -24,7 +24,7 @@ TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
   REQUIRE(wrapper1 == wrapper2);
   // The comparison operator is symmetric
   REQUIRE(hit == wrapper1);
-  // Reassgning to a different entity should make comparisons fail
+  // Reassigning to a different entity should make comparisons fail
   wrapper2 = ExampleHit{};
   REQUIRE(wrapper1 != wrapper2);
 
