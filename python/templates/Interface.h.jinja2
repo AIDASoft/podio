@@ -130,7 +130,7 @@ public:
   template<typename T>
   T getValue() const {
     if (!isA<T>()) {
-      throw std::runtime_error("Cannot get value as object currently holds anotyer type");
+      throw std::runtime_error("Cannot get value as object currently holds another type");
     }
     // We can safely cast here since we check types before
     return static_cast<Model<T>*>(m_self.get())->m_value;

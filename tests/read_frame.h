@@ -24,8 +24,8 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
   auto extElem = extColl[0];
   const auto& polVec = extElem.getAVector();
   ASSERT(polVec.r == iEvent * 123.f, "polVec.r value not as expected");
-  ASSERT(polVec.phi == 0.15f, "polVec.phi value not as epxected");
-  ASSERT(polVec.rho == 3.14f, "polVec.phi value not as epxected");
+  ASSERT(polVec.phi == 0.15f, "polVec.phi value not as expected");
+  ASSERT(polVec.rho == 3.14f, "polVec.phi value not as expected");
 
   const auto& extCompColl = event.get<extension::ExternalComponentTypeCollection>("extension_ExternalComponent");
   ASSERT(extCompColl.isValid(), "extension_ExternalComponent collection should be present");

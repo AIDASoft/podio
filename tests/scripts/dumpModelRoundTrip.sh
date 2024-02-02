@@ -32,7 +32,7 @@ ${PODIO_BASE}/python/podio_class_generator.py \
     ${IO_HANDLERS}
 
 # Compare to the originally generated code, that has been used to write the data
-# file. Need to diff subfolders explitly here because $PODIO_BASE/tests contains
+# file. Need to diff subfolders explicitly here because $PODIO_BASE/tests contains
 # more stuff
 DIFF_EXTRA_ARGS=""
 if [ ${ENABLE_SIO} = "OFF" ]; then

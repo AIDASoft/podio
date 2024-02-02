@@ -52,7 +52,7 @@ TEST_CASE("Frame parameters", "[frame][basics]") {
   REQUIRE(std::find(stringKeys.begin(), stringKeys.end(), "someStrings") != stringKeys.end());
 }
 
-// NOTE: Due to the extremly small tasks that are done in these tests, they will
+// NOTE: Due to the extremely small tasks that are done in these tests, they will
 // most likely succeed with a very high probability and only running with a
 // ThreadSanitizer will detect race conditions, so make sure to have that
 // enabled (-DUSE_SANITIZER=Thread) when working on these tests
@@ -123,7 +123,7 @@ auto createFrame() {
   cluster2.addHits(hits[1]);
   cluster2.addClusters(cluster);
 
-  // Create a few clustes inline and relate them to the hits from above
+  // Create a few clusters inline and relate them to the hits from above
   frame.put(std::move(clusters), "clusters");
 
   frame.putParameter("anInt", 42);
@@ -169,7 +169,7 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
       clusters.create(i * 3.14);
       frame.put(std::move(clusters), makeName("clusters", i));
 
-      // Retrieve a few collections in between and do iust a very basic testing
+      // Retrieve a few collections in between and do just a very basic testing
       auto& existingClu = frame.get<ExampleClusterCollection>("clusters");
       CHECK_INCREASE(existingClu.size() == 2, successes[i]);
       auto& existingHits = frame.get<ExampleHitCollection>("hits");
@@ -196,7 +196,7 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
 
   // Check the frame contents after all threads have finished
   for (int i = 0; i < nThreads; ++i) {
-    // Check whether the insertsions are as expected
+    // Check whether the insertions are as expected
     REQUIRE(successes[i] == 2);
 
     auto& hits = frame.get<ExampleHitCollection>(makeName("hits", i));

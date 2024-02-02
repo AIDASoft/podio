@@ -24,7 +24,7 @@ int testGetAvailableCollections(const podio::Frame& frame, const std::vector<std
     }
   }
 
-  // Get a few collections and make sure that the resutls are unchanged (apart
+  // Get a few collections and make sure that the results are unchanged (apart
   // from ordering)
   frame.get("hitRefs");
   frame.get("mcparticles");
