@@ -78,14 +78,16 @@ public:
    * given name. In case there are no more entries left for this name or in
    * case there is no data for this name, this returns a nullptr.
    */
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name);
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
+                                                      const std::vector<std::string>& collsToRead = {});
 
   /**
    * Read the specified data entry from which a Frame can be constructed for
    * the given name. In case the entry does not exist for this name or in case
    * there is no data for this name, this returns a nullptr.
    */
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry);
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
+                                                  const std::vector<std::string>& collsToRead = {});
 
   /// Returns number of entries for the given name
   unsigned getEntries(const std::string& name) const;
@@ -152,7 +154,8 @@ private:
    * counter afterwards. In case the requested entry is larger than the
    * available number of entries, return a nullptr.
    */
-  std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTFrameReader::CategoryInfo& catInfo);
+  std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTFrameReader::CategoryInfo& catInfo,
+                                                  const std::vector<std::string>& collsToRead);
 
   /**
    * Get / read the buffers at index iColl in the passed category information
