@@ -14,6 +14,7 @@
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 // podio specific includes
+#include "podio/AssociationCollection.h"
 #include "podio/Frame.h"
 #include "podio/UserDataCollection.h"
 #include "podio/podioVersion.h"
@@ -27,6 +28,9 @@
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
+
+// Define an association that is used for the I/O tests
+using TestAssocCollection = podio::AssociationCollection<ExampleMC, ex42::ExampleWithARelation>;
 
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
@@ -410,6 +414,23 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
       if (d != 42.) {
         throw std::runtime_error("Couldn't read userDoubles properly");
       }
+    }
+  }
+
+  // ======================= Associations ==========================
+  if (fileVersion >= podio::version::Version{0, 17, 99}) {
+    auto& associations = event.get<TestAssocCollection>("associations");
+    if (associations.size() != nmspaces.size()) {
+      throw std::runtime_error("AssociationsCollection does not have the expected size");
+    }
+    const auto nNameSpc = nmspaces.size();
+    int assocIndex = 0;
+    for (auto assoc : associations) {
+      if (!((assoc.getWeight() == 0.5 * assocIndex) && (assoc.getFrom() == mcps[assocIndex]) &&
+            (assoc.getTo() == nmspaces[nNameSpc - 1 - assocIndex]))) {
+        throw std::runtime_error("Association does not have expected content");
+      }
+      assocIndex++;
     }
   }
 }

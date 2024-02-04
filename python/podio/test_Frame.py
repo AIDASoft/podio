@@ -34,7 +34,9 @@ EXPECTED_COLL_NAMES = {
     "WithNamespaceRelationCopy",
     "emptyCollection",
     "emptySubsetColl",
+    "associations",
 }
+
 # The expected collections from the extension (only present in the other_events category)
 EXPECTED_EXTENSION_COLL_NAMES = {
     "extension_Contained",
