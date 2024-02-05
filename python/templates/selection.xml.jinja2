@@ -1,10 +1,11 @@
-{% macro class_selection(class, prefix='', postfix='') %}
-{%- if class.namespace %}
-        <class name="{{ class.namespace }}::{{ prefix }}{{ class.bare_type }}{{ postfix }}" ClassVersion="{{ version }}"/>
-{%- else %}
-        <class name="{{ prefix }}{{ class.bare_type }}{{ postfix }}" ClassVersion="{{ version }}"/>
-{%- endif %}
-{% endmacro %}
+{%- macro class_selection(class, prefix='', postfix='', vector=False) %}
+{% set full_name = prefix + class.bare_type + postfix %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+        <class name="{{ namespace }}{{ full_name }}" ClassVersion="{{ version }}"/>
+{% if vector %}
+        <class name="std::vector<{{ namespace }}{{ full_name }}>" ClassVersion="{{ version }}"/>
+{%- endif -%}
+{%- endmacro -%}
 
 {% macro ioread(iorule) %}
         <ioread sourceClass="{{ iorule.sourceClass }}" targetClass="{{ iorule.targetClass}}" version="[{{ iorule.version }}]" target="{{ iorule.target }}" source="{{ iorule.source }}">
@@ -24,7 +25,7 @@
 
         <!-- datatypes -->
 {% for class in datatypes %}
-{{ class_selection(class, postfix='Data') }}
+{{ class_selection(class, postfix='Data', vector=True) }}
 {# We need to also create the collections in the selection xml file. #}
 {# Otherwise the python interface does not work in gcc builds #}
 {# Additionally, in order to allow "direct" access to the user facing classes #}
