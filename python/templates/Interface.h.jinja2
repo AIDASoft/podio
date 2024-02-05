@@ -65,7 +65,7 @@ class {{ class.bare_type }} {
 
     void unlink() final { m_value.unlink(); }
     bool isAvailable() const final { return m_value.isAvailable(); }
-    podio::ObjectID getObjectID() const { return m_value.getObjectID(); }
+    podio::ObjectID getObjectID() const final { return m_value.getObjectID(); }
 
     const std::type_info& typeInfo() const final { return typeid(ValueT); }
 
