@@ -32,8 +32,11 @@
 {% if member.is_array %}
   void {{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value);
 {% endif %}
-{% if not member.is_builtin %}
+  /// Get mutable reference to {{ member.docstring }}
+  {{ member.full_type }}& {{ member.getter_name(get_syntax) }}();
+{% if get_syntax %}
   /// Get reference to {{ member.docstring }}
+  [[deprecated("use {{ member.getter_name(get_syntax) }} instead")]]
   {{ member.full_type }}& {{ member.name }}();
 {% endif %}
 {% if member.sub_members %}
