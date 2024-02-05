@@ -201,7 +201,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
     def _preprocess_for_class(self, datatype):
         """Do the preprocessing that is necessary for the classes and Mutable classes"""
         includes = set(datatype["includes_data"])
-        fwd_declarations = {}
+        fwd_declarations = defaultdict(list)
         includes_cc = set()
 
         for member in datatype["Members"]:
@@ -212,10 +212,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             if self._is_interface(relation.full_type):
                 relation.interface_types = self.datamodel.interfaces[relation.full_type]["Types"]
             if self._needs_include(relation.full_type):
-                if relation.namespace not in fwd_declarations:
-                    fwd_declarations[relation.namespace] = []
                 fwd_declarations[relation.namespace].append(relation.bare_type)
-                fwd_declarations[relation.namespace].append("Mutable" + relation.bare_type)
+                fwd_declarations[relation.namespace].append(f"Mutable{relation.bare_type}")
                 includes_cc.add(self._build_include(relation))
 
         if datatype["VectorMembers"] or datatype["OneToManyRelations"]:
