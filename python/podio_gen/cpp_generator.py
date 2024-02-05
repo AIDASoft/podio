@@ -72,10 +72,14 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.root_schema_component_names = set()
         self.root_schema_datatype_names = set()
         self.root_schema_iorules = set()
+        # a map of datatypes that are used in interfaces populated by pre_process
+        self.types_in_interfaces = {}
 
     def pre_process(self):
         """The necessary specific pre-processing for cpp code generation"""
         self._pre_process_schema_evolution()
+        self.types_in_interfaces = self._invert_interfaces()
+
         return {}
 
     def post_process(self, _):
@@ -120,6 +124,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
     def do_process_datatype(self, name, datatype):
         """Do the cpp specific processing of a datatype"""
         datatype["includes_data"] = self._get_member_includes(datatype["Members"])
+        datatype["using_interface_types"] = self.types_in_interfaces.get(name, [])
         self._preprocess_for_class(datatype)
         self._preprocess_for_obj(datatype)
         self._preprocess_for_collection(datatype)
@@ -243,6 +248,13 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             )
         except KeyError:
             pass
+
+        # Make sure that all using interface types are properly forward declared
+        # to make it possible to declare them as friends so that they can access
+        # internals more easily
+        for interface in datatype["using_interface_types"]:
+            if_type = DataType(interface)
+            fwd_declarations[if_type.namespace].append(if_type.bare_type)
 
         datatype["includes"] = self._sort_includes(includes)
         datatype["includes_cc"] = self._sort_includes(includes_cc)
@@ -378,6 +390,21 @@ have resolvable schema evolution incompatibilities:"
                 for item in root_filter(comparator.schema_changes):
                     # add whatever is relevant to our ROOT schema evolution
                     self.root_schema_dict.setdefault(item.klassname, []).append(item)
+
+    def _invert_interfaces(self):
+        """'Invert' the interfaces to have a mapping of types and their usage in
+        interfaces.
+
+        This is necessary to declare the interface types as friends of the
+        classes they wrap in order to more easily access some internals.
+        """
+        types_in_interfaces = defaultdict(list)
+        for name, interface in self.datamodel.interfaces.items():
+            print(f"preprocessing interface {name}")
+            for if_type in interface["Types"]:
+                types_in_interfaces[if_type.full_type].append(name)
+
+        return types_in_interfaces
 
     def _prepare_iorules(self):
         """Prepare the IORules to be put in the Reflex dictionary"""
