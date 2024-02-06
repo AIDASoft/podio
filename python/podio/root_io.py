@@ -3,7 +3,7 @@
 
 from ROOT import gSystem, gInterpreter
 gSystem.Load('libpodioRootIO')  # noqa: E402
-gInterpreter.LoadFile("podio/Reader.h") # noqa: E402
+gInterpreter.LoadFile("podio/Reader.h")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position # noqa: E402
@@ -25,9 +25,6 @@ class Reader(BaseReaderMixin):
         self._reader = podio.makeReader(filenames)
         # self._reader = podio.ROOTReader()
         self._reader.openFiles(filenames)
-
-        super().__init__()
-
 
         super().__init__()
 
