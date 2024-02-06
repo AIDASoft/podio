@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct podio::SIOMapBlock &mdash; PODIO  documentation</title>
+  <title>Struct podio::ROOTWriter::CategoryInfo &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct podio::SIOVersionBlock" href="structpodio_1_1_s_i_o_version_block.html" />
-    <link rel="prev" title="Struct podio::SIOFileTOCRecordBlock" href="structpodio_1_1_s_i_o_file_t_o_c_record_block.html" /> 
+    <link rel="next" title="Struct podio::RelationNames" href="structpodio_1_1_relation_names.html" />
+    <link rel="prev" title="Struct podio::ROOTReader::CategoryInfo" href="structpodio_1_1_r_o_o_t_reader_1_1_category_info.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -327,8 +327,8 @@
 <li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_r_o_o_t_reader_1_1_category_info.html#_CPPv4N5podio10ROOTReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_r_o_o_t_writer_1_1_category_info.html#_CPPv4N5podio10ROOTWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Struct podio::ROOTWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N5podio10ROOTWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="structpodio_1_1_relation_names.html">Struct podio::RelationNames</a><ul>
@@ -339,8 +339,8 @@
 <li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_s_i_o_file_t_o_c_record_block.html#_CPPv4N5podio21SIOFileTOCRecordBlockE"><code class="docutils literal notranslate"><span class="pre">SIOFileTOCRecordBlock</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Struct podio::SIOMapBlock</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4I00EN5podio11SIOMapBlockE"><code class="docutils literal notranslate"><span class="pre">SIOMapBlock</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="structpodio_1_1_s_i_o_map_block.html">Struct podio::SIOMapBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_s_i_o_map_block.html#_CPPv4I00EN5podio11SIOMapBlockE"><code class="docutils literal notranslate"><span class="pre">SIOMapBlock</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="structpodio_1_1_s_i_o_version_block.html">Struct podio::SIOVersionBlock</a><ul>
@@ -538,7 +538,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">C++ API documentation</a></li>
           <li class="breadcrumb-item"><a href="../structlist.html">Struct list</a></li>
-      <li class="breadcrumb-item active">Struct podio::SIOMapBlock</li>
+      <li class="breadcrumb-item active">Struct podio::ROOTWriter::CategoryInfo</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -547,52 +547,44 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-podio-siomapblock">
-<h1>Struct podio::SIOMapBlock<a class="headerlink" href="#struct-podio-siomapblock" title="Link to this heading"></a></h1>
+  <section id="struct-podio-rootwriter-categoryinfo">
+<h1>Struct podio::ROOTWriter::CategoryInfo<a class="headerlink" href="#struct-podio-rootwriter-categoryinfo" title="Link to this heading"></a></h1>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4I00EN5podio11SIOMapBlockE">
-<span id="_CPPv3I00EN5podio11SIOMapBlockE"></span><span id="_CPPv2I00EN5podio11SIOMapBlockE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structpodio_1_1_s_i_o_map_block"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><br /></dt>
-<dd><p>A block to serialize anything that behaves similar in iterating as a map&lt;KeyT, ValueT&gt;, e.g. </p>
-<p>vector&lt;tuple&lt;KeyT, ValueT&gt;&gt;, which is what is used internally to represent the data to be written. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock11SIOMapBlockEv">
-<span id="_CPPv3N5podio11SIOMapBlock11SIOMapBlockEv"></span><span id="_CPPv2N5podio11SIOMapBlock11SIOMapBlockEv"></span><span id="podio::SIOMapBlock::SIOMapBlock"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a1def0a6605fe1bd207fec22bd7648825"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock11SIOMapBlockERRNSt6vectorINSt5tupleI4KeyT6ValueTEEEE">
-<span id="_CPPv3N5podio11SIOMapBlock11SIOMapBlockERRNSt6vectorINSt5tupleI4KeyT6ValueTEEEE"></span><span id="_CPPv2N5podio11SIOMapBlock11SIOMapBlockERRNSt6vectorINSt5tupleI4KeyT6ValueTEEEE"></span><span id="podio::SIOMapBlock::SIOMapBlock__std::vector:std::tuple:KeyT.ValueT::RR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1aa67e4d992ad1a1bd4f4e461d532524b0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_s_i_o_block_8h.html#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::KeyT"><span class="n"><span class="pre">KeyT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../file/_s_i_o_block_8h.html#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::ValueT"><span class="n"><span class="pre">ValueT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock">
-<span id="_CPPv3N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock"></span><span id="_CPPv2N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock"></span><span id="podio::SIOMapBlock::SIOMapBlock__SIOMapBlockCR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a6451509f5ae3225c3cc3ca0640146465"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_s_i_o_block_8h.html#_CPPv4N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock" title="podio::SIOMapBlock::SIOMapBlock"><span class="n"><span class="pre">SIOMapBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlockaSERK11SIOMapBlock">
-<span id="_CPPv3N5podio11SIOMapBlockaSERK11SIOMapBlock"></span><span id="_CPPv2N5podio11SIOMapBlockaSERK11SIOMapBlock"></span><span id="podio::SIOMapBlock::assign-operator__SIOMapBlockCR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a57038e7203156338a9dc97665d53b07d"></span><a class="reference internal" href="../file/_s_i_o_block_8h.html#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock"><span class="n"><span class="pre">SIOMapBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_s_i_o_block_8h.html#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock"><span class="n"><span class="pre">SIOMapBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock4readERN3sio11read_deviceEN3sio12version_typeE">
-<span id="_CPPv3N5podio11SIOMapBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="_CPPv2N5podio11SIOMapBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="podio::SIOMapBlock::read__sio::read_deviceR.sio::version_type"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a67a1a8ce1bf67f73b0dfd9f8b328aeb0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4N3sio12version_typeE" title="sio::version_type"><span class="n"><span class="pre">version_type</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock5writeERN3sio12write_deviceE">
-<span id="_CPPv3N5podio11SIOMapBlock5writeERN3sio12write_deviceE"></span><span id="_CPPv2N5podio11SIOMapBlock5writeERN3sio12write_deviceE"></span><span id="podio::SIOMapBlock::write__sio::write_deviceR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a318962b1f75cdd11f1de5adadfa77523"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
-<dd></dd></dl>
-
-</div>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter12CategoryInfoE">
+<span id="_CPPv3N5podio10ROOTWriter12CategoryInfoE"></span><span id="_CPPv2N5podio10ROOTWriter12CategoryInfoE"></span><span id="podio::ROOTWriter::CategoryInfo"></span><span class="target" id="structpodio_1_1_r_o_o_t_writer_1_1_category_info"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CategoryInfo</span></span></span><br /></dt>
+<dd><p>Helper struct to group together all necessary state to write / process a given category. </p>
+<p>Created during the first writing of a category </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock7mapDataE">
-<span id="_CPPv3N5podio11SIOMapBlock7mapDataE"></span><span id="_CPPv2N5podio11SIOMapBlock7mapDataE"></span><span id="podio::SIOMapBlock::mapData__std::vector:std::tuple:KeyT.ValueT::"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1affbba5f7c9f752fc5622236bd986963b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_s_i_o_block_8h.html#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::KeyT"><span class="n"><span class="pre">KeyT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../file/_s_i_o_block_8h.html#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::ValueT"><span class="n"><span class="pre">ValueT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mapData</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter12CategoryInfo4treeE">
+<span id="_CPPv3N5podio10ROOTWriter12CategoryInfo4treeE"></span><span id="_CPPv2N5podio10ROOTWriter12CategoryInfo4treeE"></span><span id="podio::ROOTWriter::CategoryInfo::tree__TTreeP"></span><span class="target" id="structpodio_1_1_r_o_o_t_writer_1_1_category_info_1ab0ee4c653bcc507f6273ad25742104f3"></span><span class="n"><span class="pre">TTree</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">tree</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The TTree to which this category is written. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter12CategoryInfo8branchesE">
+<span id="_CPPv3N5podio10ROOTWriter12CategoryInfo8branchesE"></span><span id="_CPPv2N5podio10ROOTWriter12CategoryInfo8branchesE"></span><span id="podio::ROOTWriter::CategoryInfo::branches__std::vector:root_utils::CollectionBranches:"></span><span class="target" id="structpodio_1_1_r_o_o_t_writer_1_1_category_info_1af4808e52b578b49200046f3e800ab031"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_collection_branches_8h.html#_CPPv4N5podio10root_utilsE" title="podio::root_utils"><span class="n"><span class="pre">root_utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_collection_branches_8h.html#_CPPv4N5podio10root_utils18CollectionBranchesE" title="podio::root_utils::CollectionBranches"><span class="n"><span class="pre">CollectionBranches</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">branches</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The branches for this category. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter12CategoryInfo8collInfoE">
+<span id="_CPPv3N5podio10ROOTWriter12CategoryInfo8collInfoE"></span><span id="_CPPv2N5podio10ROOTWriter12CategoryInfo8collInfoE"></span><span id="podio::ROOTWriter::CategoryInfo::collInfo__std::vector:CollectionInfoT:"></span><span class="target" id="structpodio_1_1_r_o_o_t_writer_1_1_category_info_1ac8757ff8e6ab915682018c462d613daf"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_r_o_o_t_writer_8h.html#_CPPv4N5podio10ROOTWriter15CollectionInfoTE" title="podio::ROOTWriter::CollectionInfoT"><span class="n"><span class="pre">CollectionInfoT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">collInfo</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>Collection info for this category. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter12CategoryInfo7idTableE">
+<span id="_CPPv3N5podio10ROOTWriter12CategoryInfo7idTableE"></span><span id="_CPPv2N5podio10ROOTWriter12CategoryInfo7idTableE"></span><span id="podio::ROOTWriter::CategoryInfo::idTable__podio::CollectionIDTable"></span><span class="target" id="structpodio_1_1_r_o_o_t_writer_1_1_category_info_1a1fc7b5aef124c6fa4925dc9d4ff4c919"></span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_i_d_table.html#_CPPv4N5podio17CollectionIDTableE" title="podio::CollectionIDTable"><span class="n"><span class="pre">CollectionIDTable</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idTable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The collection id table for this category. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter12CategoryInfo12collsToWriteE">
+<span id="_CPPv3N5podio10ROOTWriter12CategoryInfo12collsToWriteE"></span><span id="_CPPv2N5podio10ROOTWriter12CategoryInfo12collsToWriteE"></span><span id="podio::ROOTWriter::CategoryInfo::collsToWrite__std::vector:ss:"></span><span class="target" id="structpodio_1_1_r_o_o_t_writer_1_1_category_info_1a10f2b93842eb64037f72998a262a8e55"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">collsToWrite</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The collections to write for this category. </p>
+</dd></dl>
 
 </div>
 </dd></dl>
