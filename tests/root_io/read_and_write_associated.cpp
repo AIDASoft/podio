@@ -1,6 +1,6 @@
 #include "podio/Frame.h"
-#include "podio/ROOTFrameReader.h"
-#include "podio/ROOTFrameWriter.h"
+#include "podio/ROOTReader.h"
+#include "podio/ROOTWriter.h"
 
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
@@ -10,7 +10,7 @@
 #include <string>
 
 void writeCollection() {
-  podio::ROOTFrameWriter writer("associations.root");
+  podio::ROOTWriter writer("associations.root");
 
   std::cout << "start writing collections...\n";
 
@@ -70,7 +70,7 @@ void writeCollection() {
 
 void readCollection() {
   // Start reading the input
-  auto reader = podio::ROOTFrameReader();
+  auto reader = podio::ROOTReader();
   reader.openFile("associations.root");
 
   const auto nEvents = reader.getEntries(podio::Category::Event);

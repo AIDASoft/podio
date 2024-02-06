@@ -77,8 +77,8 @@ target_compile_options(podio PRIVATE -pthread)
 # --- Root I/O functionality and corresponding dictionary
 SET(root_sources
   rootUtils.h
-  ROOTFrameWriter.cc
-  ROOTFrameReader.cc
+  ROOTWriter.cc
+  ROOTReader.cc
   ROOTLegacyReader.cc
 )
 if(ENABLE_RNTUPLE)
@@ -89,9 +89,9 @@ if(ENABLE_RNTUPLE)
 endif()
 
 SET(root_headers
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameWriter.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
@@ -115,17 +115,17 @@ if(ENABLE_SIO)
   SET(sio_sources
     SIOBlockUserData.cc
     SIOBlock.cc
-    SIOFrameWriter.cc
-    SIOFrameReader.cc
+    SIOWriter.cc
+    SIOReader.cc
     SIOFrameData.cc
     sioUtils.h
     SIOLegacyReader.cc
     )
 
   SET(sio_headers
-    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOReader.h
     ${PROJECT_SOURCE_DIR}/include/podio/SIOLegacyReader.h
-    ${PROJECT_SOURCE_DIR}/include/podio/SIOFrameWriter.h
+    ${PROJECT_SOURCE_DIR}/include/podio/SIOWriter.h
     )
 
   PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" sio_selection.xml)

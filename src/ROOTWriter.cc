@@ -1,4 +1,4 @@
-#include "podio/ROOTFrameWriter.h"
+#include "podio/ROOTWriter.h"
 #include "podio/CollectionBase.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/Frame.h"
@@ -11,22 +11,22 @@
 
 namespace podio {
 
-ROOTFrameWriter::ROOTFrameWriter(const std::string& filename) {
+ROOTWriter::ROOTWriter(const std::string& filename) {
   m_file = std::make_unique<TFile>(filename.c_str(), "recreate");
 }
 
-ROOTFrameWriter::~ROOTFrameWriter() {
+ROOTWriter::~ROOTWriter() {
   if (!m_finished) {
     finish();
   }
 }
 
-void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
+void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& category,
-                                 const std::vector<std::string>& collsToWrite) {
+void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& category,
+                            const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);
   // Use the TTree as proxy here to decide whether this category has already
   // been initialized
@@ -67,7 +67,7 @@ void ROOTFrameWriter::writeFrame(const podio::Frame& frame, const std::string& c
   catInfo.tree->Fill();
 }
 
-ROOTFrameWriter::CategoryInfo& ROOTFrameWriter::getCategoryInfo(const std::string& category) {
+ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(const std::string& category) {
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
@@ -76,8 +76,8 @@ ROOTFrameWriter::CategoryInfo& ROOTFrameWriter::getCategoryInfo(const std::strin
   return it->second;
 }
 
-void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
-                                   /*const*/ podio::GenericParameters& parameters) {
+void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
+                              /*const*/ podio::GenericParameters& parameters) {
   catInfo.branches.reserve(collections.size() + 1); // collections + parameters
 
   // First collections
@@ -128,9 +128,9 @@ void ROOTFrameWriter::initBranches(CategoryInfo& catInfo, const std::vector<Stor
   catInfo.branches.push_back(branches);
 }
 
-void ROOTFrameWriter::resetBranches(std::vector<root_utils::CollectionBranches>& branches,
-                                    const std::vector<ROOTFrameWriter::StoreCollection>& collections,
-                                    /*const*/ podio::GenericParameters* parameters) {
+void ROOTWriter::resetBranches(std::vector<root_utils::CollectionBranches>& branches,
+                               const std::vector<ROOTWriter::StoreCollection>& collections,
+                               /*const*/ podio::GenericParameters* parameters) {
   size_t iColl = 0;
   for (auto& coll : collections) {
     const auto& collBranches = branches[iColl];
@@ -141,7 +141,7 @@ void ROOTFrameWriter::resetBranches(std::vector<root_utils::CollectionBranches>&
   branches.back().data->SetAddress(&parameters);
 }
 
-void ROOTFrameWriter::finish() {
+void ROOTWriter::finish() {
   auto* metaTree = new TTree(root_utils::metaTreeName, "metadata tree for podio I/O functionality");
   metaTree->SetDirectory(m_file.get());
 
@@ -167,7 +167,7 @@ void ROOTFrameWriter::finish() {
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
-ROOTFrameWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
+ROOTWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return root_utils::getInconsistentColls(it->second.collsToWrite, collsToWrite);
   }

@@ -14,17 +14,17 @@
 // podio specific includes
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
-#include "podio/ROOTFrameReader.h"
-#include "podio/ROOTFrameWriter.h"
 #include "podio/ROOTLegacyReader.h"
+#include "podio/ROOTReader.h"
+#include "podio/ROOTWriter.h"
 #include "podio/podioVersion.h"
 
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0
 #endif
 #if PODIO_ENABLE_SIO
-  #include "podio/SIOFrameReader.h"
   #include "podio/SIOLegacyReader.h"
+  #include "podio/SIOReader.h"
 #endif
 
 #if PODIO_ENABLE_RNTUPLE
@@ -1099,7 +1099,7 @@ TEST_CASE("Missing files (ROOT readers)", "[basics]") {
   auto root_legacy_reader = podio::ROOTLegacyReader();
   REQUIRE_THROWS_AS(root_legacy_reader.openFile("NonExistentFile.root"), std::runtime_error);
 
-  auto root_frame_reader = podio::ROOTFrameReader();
+  auto root_frame_reader = podio::ROOTReader();
   REQUIRE_THROWS_AS(root_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
 }
 
@@ -1108,7 +1108,7 @@ TEST_CASE("Missing files (SIO readers)", "[basics]") {
   auto sio_legacy_reader = podio::SIOLegacyReader();
   REQUIRE_THROWS_AS(sio_legacy_reader.openFile("NonExistentFile.sio"), std::runtime_error);
 
-  auto sio_frame_reader = podio::SIOFrameReader();
+  auto sio_frame_reader = podio::SIOReader();
   REQUIRE_THROWS_AS(sio_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
 }
 #endif
@@ -1155,7 +1155,7 @@ TEST_CASE("JSON", "[json]") {
 
 // Write a template function that can be used with different writers in order to
 // be able to tag the unittests differently. This is necessary because the
-// ROOTFrameWriter fails with ASan, but the ROOTNTuple writer doesn't
+// ROOTWriter fails with ASan, but the ROOTNTuple writer doesn't
 template <typename WriterT>
 void runConsistentFrameTest(const std::string& filename) {
   using Catch::Matchers::ContainsSubstring;
@@ -1225,13 +1225,13 @@ void runCheckConsistencyTest(const std::string& filename) {
   REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
 }
 
-TEST_CASE("ROOTFrameWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][THREAD-FAIL][basics][root]") {
+TEST_CASE("ROOTWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][THREAD-FAIL][basics][root]") {
   // The UBSAN-FAIL and TSAN-FAIL only happens on clang12 in CI.
-  runConsistentFrameTest<podio::ROOTFrameWriter>("unittests_frame_consistency.root");
+  runConsistentFrameTest<podio::ROOTWriter>("unittests_frame_consistency.root");
 }
 
-TEST_CASE("ROOTFrameWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
-  runCheckConsistencyTest<podio::ROOTFrameWriter>("unittests_frame_check_consistency.root");
+TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
+  runCheckConsistencyTest<podio::ROOTWriter>("unittests_frame_check_consistency.root");
 }
 
 #if PODIO_ENABLE_RNTUPLE

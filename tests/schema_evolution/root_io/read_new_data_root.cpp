@@ -1,7 +1,7 @@
 #include "read_new_data.h"
 
-#include "podio/ROOTFrameReader.h"
+#include "podio/ROOTReader.h"
 
 int main() {
-  return read_new_data<podio::ROOTFrameReader>("example_data_old_schema.root");
+  return read_new_data<podio::ROOTReader>("example_data_old_schema.root");
 }

@@ -3,8 +3,8 @@
 #include "datamodel/MutableExampleWithVectorMember.h"
 
 #include "podio/Frame.h"
-#include "podio/ROOTFrameReader.h"
-#include "podio/ROOTFrameWriter.h"
+#include "podio/ROOTReader.h"
+#include "podio/ROOTWriter.h"
 
 #include <sstream>
 #include <stdexcept>
@@ -182,7 +182,7 @@ void testExampleReferencingType() {
 }
 
 void testWithIO() {
-  podio::ROOTFrameWriter writer("relation_range_io_test.root");
+  podio::ROOTWriter writer("relation_range_io_test.root");
 
   for (int i = 0; i < 10; ++i) {
     auto collection = ExampleMCCollection();
@@ -194,7 +194,7 @@ void testWithIO() {
   }
   writer.finish();
 
-  podio::ROOTFrameReader reader;
+  podio::ROOTReader reader;
   reader.openFile("relation_range_io_test.root");
 
   for (int i = 0; i < 10; ++i) {

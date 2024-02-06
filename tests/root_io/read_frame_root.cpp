@@ -1,7 +1,7 @@
 #include "read_frame.h"
 #include "read_frame_auxiliary.h"
 
-#include "podio/ROOTFrameReader.h"
+#include "podio/ROOTReader.h"
 
 #include <iostream>
 #include <string>
@@ -18,6 +18,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  return read_frames<podio::ROOTFrameReader>(inputFile, assertBuildVersion) +
-      test_frame_aux_info<podio::ROOTFrameReader>(inputFile);
+  return read_frames<podio::ROOTReader>(inputFile, assertBuildVersion) +
+      test_frame_aux_info<podio::ROOTReader>(inputFile);
 }

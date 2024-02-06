@@ -1,8 +1,8 @@
 #include "read_frame.h"
 
-#include "podio/ROOTFrameReader.h"
+#include "podio/ROOTReader.h"
 
-int read_frames(podio::ROOTFrameReader& reader) {
+int read_frames(podio::ROOTReader& reader) {
   if (reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "
               << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
@@ -83,7 +83,7 @@ int read_frames(podio::ROOTFrameReader& reader) {
 }
 
 int main() {
-  auto reader = podio::ROOTFrameReader();
+  auto reader = podio::ROOTReader();
   reader.openFiles({"example_frame.root", "example_frame.root"});
   return read_frames(reader);
 }

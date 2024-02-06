@@ -1,4 +1,4 @@
-#include "podio/ROOTFrameReader.h"
+#include "podio/ROOTReader.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
@@ -27,8 +27,8 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<st
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionInfoT>& collInfo);
 
-GenericParameters ROOTFrameReader::readEntryParameters(ROOTFrameReader::CategoryInfo& catInfo, bool reloadBranches,
-                                                       unsigned int localEntry) {
+GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catInfo, bool reloadBranches,
+                                                  unsigned int localEntry) {
   // Parameter branch is always the last one
   auto& paramBranches = catInfo.branches.back();
 
@@ -46,18 +46,18 @@ GenericParameters ROOTFrameReader::readEntryParameters(ROOTFrameReader::Category
   return params;
 }
 
-std::unique_ptr<ROOTFrameData> ROOTFrameReader::readNextEntry(const std::string& name) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name) {
   auto& catInfo = getCategoryInfo(name);
   return readEntry(catInfo);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(const std::string& name, const unsigned entNum) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum) {
   auto& catInfo = getCategoryInfo(name);
   catInfo.entry = entNum;
   return readEntry(catInfo);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(ROOTFrameReader::CategoryInfo& catInfo) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo) {
   if (!catInfo.chain) {
     return nullptr;
   }
@@ -86,8 +86,8 @@ std::unique_ptr<ROOTFrameData> ROOTFrameReader::readEntry(ROOTFrameReader::Categ
   return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
-podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameReader::CategoryInfo& catInfo, size_t iColl,
-                                                                   bool reloadBranches, unsigned int localEntry) {
+podio::CollectionReadBuffers ROOTReader::getCollectionBuffers(ROOTReader::CategoryInfo& catInfo, size_t iColl,
+                                                              bool reloadBranches, unsigned int localEntry) {
   const auto& name = catInfo.storedClasses[iColl].first;
   const auto& [collType, isSubsetColl, schemaVersion, index] = catInfo.storedClasses[iColl].second;
   auto& branches = catInfo.branches[index];
@@ -111,7 +111,7 @@ podio::CollectionReadBuffers ROOTFrameReader::getCollectionBuffers(ROOTFrameRead
   return collBuffers;
 }
 
-ROOTFrameReader::CategoryInfo& ROOTFrameReader::getCategoryInfo(const std::string& category) {
+ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& category) {
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     // Use the id table as proxy to check whether this category has been
     // initialized already
@@ -128,7 +128,7 @@ ROOTFrameReader::CategoryInfo& ROOTFrameReader::getCategoryInfo(const std::strin
   return invalidCategory;
 }
 
-void ROOTFrameReader::initCategory(CategoryInfo& catInfo, const std::string& category) {
+void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category) {
   catInfo.table = std::make_shared<podio::CollectionIDTable>();
   auto* table = catInfo.table.get();
   auto* tableBranch = root_utils::getBranch(m_metaChain.get(), root_utils::idTableName(category));
@@ -189,11 +189,11 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
   return brNames;
 }
 
-void ROOTFrameReader::openFile(const std::string& filename) {
+void ROOTReader::openFile(const std::string& filename) {
   openFiles({filename});
 }
 
-void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
+void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   m_metaChain = std::make_unique<TChain>(root_utils::metaTreeName);
   // NOTE: We simply assume that the meta data doesn't change throughout the
   // chain! This essentially boils down to the assumption that all files that
@@ -233,7 +233,7 @@ void ROOTFrameReader::openFiles(const std::vector<std::string>& filenames) {
   }
 }
 
-unsigned ROOTFrameReader::getEntries(const std::string& name) const {
+unsigned ROOTReader::getEntries(const std::string& name) const {
   if (auto it = m_categories.find(name); it != m_categories.end()) {
     return it->second.chain->GetEntries();
   }
@@ -241,7 +241,7 @@ unsigned ROOTFrameReader::getEntries(const std::string& name) const {
   return 0;
 }
 
-std::vector<std::string_view> ROOTFrameReader::getAvailableCategories() const {
+std::vector<std::string_view> ROOTReader::getAvailableCategories() const {
   std::vector<std::string_view> cats;
   cats.reserve(m_categories.size());
   for (const auto& [cat, _] : m_categories) {
