@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v00-17-04 &mdash; PODIO  documentation</title>
+  <title>v00-99 &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -534,7 +534,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">v00-17-04</li>
+      <li class="breadcrumb-item active">v00-99</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -543,7 +543,125 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="v00-17-04">
+  <section id="v00-99">
+<h1>v00-99<a class="headerlink" href="#v00-99" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2024-02-06 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/554">PR#554</a>)</p>
+<ul>
+<li><p>Bring back <code class="docutils literal notranslate"><span class="pre">vector&lt;Data&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">vector&lt;Component&gt;</span></code> into the dictionaries to allow for better interoperability with RNTuple.</p>
+<ul>
+<li><p>See <a class="reference external" href="https://github.com/AIDASoft/podio/issues/464">#464</a> for some related discussion.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2024-02-06 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/552">PR#552</a>)</p>
+<ul>
+<li><p>Introduce an <code class="docutils literal notranslate"><span class="pre">operator&lt;</span></code> to the interface types to make it possible to use them in STL containers that require that (e.g. <code class="docutils literal notranslate"><span class="pre">std::map</span></code> and <code class="docutils literal notranslate"><span class="pre">std::set</span></code>).</p></li>
+</ul>
+</li>
+<li><p>2024-02-06 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/549">PR#549</a>)</p>
+<ul>
+<li><p>Rename <code class="docutils literal notranslate"><span class="pre">{ROOT,SIO}Frame{Reader,Writer}</span></code> to <code class="docutils literal notranslate"><span class="pre">{ROOT,SIO}{Reader,Writer}</span></code> since these names are now no longer taken by the deprecated <code class="docutils literal notranslate"><span class="pre">EventStore</span></code> based ones and Frame based I/O is the default now.</p>
+<ul>
+<li><p>Keep the old names around as deprecated aliases to not break everything immediately. But <strong>plan to remove the aliases for v1.0</strong>.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2024-02-02 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/550">PR#550</a>)</p>
+<ul>
+<li><p>Fixed typos in tests and interface template</p></li>
+</ul>
+</li>
+<li><p>2024-01-30 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/548">PR#548</a>)</p>
+<ul>
+<li><p>Remove an unnecessary usage of the <code class="docutils literal notranslate"><span class="pre">TClass</span></code> machinery inside the <code class="docutils literal notranslate"><span class="pre">RNTupleReader</span></code> as all the necessary information is also available from metadata that we carry around in any case.</p></li>
+</ul>
+</li>
+<li><p>2024-01-30 Graeme A Stewart (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/544">PR#544</a>)
+Add CMake targets for running  black and flake8 on Python source files</p></li>
+<li><p>2024-01-30 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/528">PR#528</a>)</p>
+<ul>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">black</span></code> to format all python source files</p></li>
+<li><p>Add a pre-commit hook for running black in CI</p></li>
+</ul>
+</li>
+<li><p>2024-01-25 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/541">PR#541</a>)</p>
+<ul>
+<li><p>Add tool to transform between TTrees and RNTuples</p></li>
+</ul>
+</li>
+<li><p>2024-01-24 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/543">PR#543</a>)</p>
+<ul>
+<li><p>Change ROOTNTuple{Reader,Writer} to RNTuple{Reader,Writer}</p></li>
+</ul>
+</li>
+<li><p>2024-01-22 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/516">PR#516</a>)</p>
+<ul>
+<li><p>Add a new category of types that can be generated by podio: <code class="docutils literal notranslate"><span class="pre">interfaces</span></code>. These can be used to provide a type that can be initialized from several other datatypes and offers some common functionality. These interface types can be used in <code class="docutils literal notranslate"><span class="pre">OneToOneRelation</span></code>s and in <code class="docutils literal notranslate"><span class="pre">OneToManyRelation</span></code>s.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">interfaces</span></code> need to provide a list of types which they interface. Other types cannot be used with them.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2024-01-18 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/542">PR#542</a>)</p>
+<ul>
+<li><p>Fixed typos in documentation and comments, updated .gitignore</p></li>
+</ul>
+</li>
+<li><p>2024-01-18 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/540">PR#540</a>)</p>
+<ul>
+<li><p>Add a check for the C++ standard using <code class="docutils literal notranslate"><span class="pre">ROOT_CXX_STANDARD</span></code> that was introduced yesterday in ROOT (https://github.com/root-project/root/commit/d487a42b311c5d0c7544031e3071a388c488c429)</p></li>
+</ul>
+</li>
+<li><p>2024-01-16 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/539">PR#539</a>)</p>
+<ul>
+<li><p>Fix crash when a writer is in the global namespace by adding a class that will manage all the writers and finish them before exiting</p></li>
+</ul>
+</li>
+<li><p>2024-01-16 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/538">PR#538</a>)</p>
+<ul>
+<li><p>Use getAvailableCollections() instead of the deprecated .collections</p></li>
+</ul>
+</li>
+<li><p>2024-01-12 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/536">PR#536</a>)</p>
+<ul>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">getAvailableCollections</span></code> method in python that does the same thing as in C++</p></li>
+</ul>
+</li>
+<li><p>2023-12-19 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/535">PR#535</a>)</p>
+<ul>
+<li><p>Implement the suggestions from coverity to move in places where it is easily possible.</p></li>
+<li><p>Fix a small resource leak in SIO.</p></li>
+<li><p>Fix a small copy-paste error in test output (only triggered in case test fails)</p></li>
+<li><p>Restore ostream state after altering it for formatting.</p></li>
+</ul>
+</li>
+<li><p>2023-12-19 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/534">PR#534</a>)</p>
+<ul>
+<li><p>Update the coverity workflow to use EL9</p></li>
+</ul>
+</li>
+<li><p>2023-12-18 Andre Sailer (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/533">PR#533</a>)</p>
+<ul>
+<li><p>rootUtils: include sstream, fixes build on macOS 12 / 13</p></li>
+</ul>
+</li>
+<li><p>2023-12-18 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/532">PR#532</a>)</p>
+<ul>
+<li><p>Remove some benchmark utilities that became unused with the removal of the <code class="docutils literal notranslate"><span class="pre">TimedReader</span></code> and <code class="docutils literal notranslate"><span class="pre">TimedWriter</span></code> classes in #485</p></li>
+</ul>
+</li>
+<li><p>2023-12-15 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/531">PR#531</a>)</p>
+<ul>
+<li><p>Remove the last few deprecated accessors from <code class="docutils literal notranslate"><span class="pre">GenericParameters</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v00-17-04">
 <h1>v00-17-04<a class="headerlink" href="#v00-17-04" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>2023-12-14 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/527">PR#527</a>)</p>
