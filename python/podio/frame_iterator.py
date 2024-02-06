@@ -3,8 +3,8 @@
 
 # pylint: disable-next=import-error # gbl is a dynamic module from cppyy
 from cppyy.gbl import std
-from podio.frame import Frame
 import cppyy
+from podio.frame import Frame
 
 
 class FrameCategoryIterator:
@@ -32,8 +32,8 @@ class FrameCategoryIterator:
           frame_data = self._reader.readNextFrame(self._category)
       except AttributeError:
           frame_data = self._reader.readNextEntry(self._category)
-      except std.runtime_error:
-          raise StopIteration
+      except std.runtime_error as error:
+        raise StopIteration from error
       if frame_data:
           return Frame(std.move(frame_data))
 
@@ -64,10 +64,19 @@ class FrameCategoryIterator:
             raise IndexError('Unable to read frame, you might be trying to read beyond bounds or a '
                            'non-existent category')
 
-        if frame_data:
-            if isinstance(frame_data, cppyy.gbl.podio.ROOTFrameData):
-              return Frame(std.move(frame_data))
-            return Frame(frame_data)
+        try:
+            frame_data = self._reader.readFrame(self._category, entry)
+        except AttributeError:
+            frame_data = self._reader.readEntry(self._category, entry)
+        except std.bad_function_call:
+            print('Error: Unable to read an entry of the input file. This can happen when the '
+                  'ROOT model dictionaries are not in LD_LIBRARY_PATH. Make sure that LD_LIBRARY_PATH '
+                  'points to the library folder of the installation of podio and also to the library '
+                  'folder with your data model\n')
+            raise
+        except std.runtime_error as error:
+            raise IndexError('Unable to read frame, you might be trying to read beyond bounds or a '
+                             'non-existent category') from error
 
         if entry < 0:
             # If we are below 0 now, we do not have enough entries to serve the request
