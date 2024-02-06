@@ -48,6 +48,7 @@ class {{ class.bare_type }} {
 {{ macros.member_getters_concept(Members, use_get_syntax) }}
     virtual const std::type_info& typeInfo() const = 0;
     virtual bool equal(const Concept* rhs) const = 0;
+    virtual const void* objAddress() const = 0;
   };
 
   template<typename ValueT>
@@ -65,7 +66,7 @@ class {{ class.bare_type }} {
 
     void unlink() final { m_value.unlink(); }
     bool isAvailable() const final { return m_value.isAvailable(); }
-    podio::ObjectID getObjectID() const { return m_value.getObjectID(); }
+    podio::ObjectID getObjectID() const final { return m_value.getObjectID(); }
 
     const std::type_info& typeInfo() const final { return typeid(ValueT); }
 
@@ -74,6 +75,10 @@ class {{ class.bare_type }} {
         return m_value == static_cast<const Model<ValueT>*>(rhs)->m_value;
       }
       return false;
+    }
+
+    const void* objAddress() const final {
+      return m_value.m_obj.get();
     }
 
 {{ macros.member_getters_model(Members, use_get_syntax) }}
@@ -142,6 +147,10 @@ public:
 
   friend bool operator!=(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
     return !(lhs == rhs);
+  }
+
+  friend bool operator<(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
+    return lhs.m_self->objAddress() < rhs.m_self->objAddress();
   }
 
 {{ macros.member_getters(Members, use_get_syntax) }}

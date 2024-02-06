@@ -34,6 +34,9 @@ class {{ class.bare_type }} {
   friend class {{ class.bare_type }}Collection;
   friend class {{ class.full_type }}CollectionData;
   friend class {{ class.bare_type }}CollectionIterator;
+{% for interface in using_interface_types %}
+  friend class {{ interface }};
+{% endfor %}
 
 public:
   using mutable_type = Mutable{{ class.bare_type }};

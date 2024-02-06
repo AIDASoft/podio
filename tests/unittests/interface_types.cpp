@@ -7,6 +7,8 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/TypeWithEnergy.h"
+
+#include <map>
 #include <stdexcept>
 
 TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
@@ -43,6 +45,25 @@ TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
   hitColl.setID(42);
   wrapper1 = hitColl.create();
   REQUIRE(wrapper1.id() == podio::ObjectID{0, 42});
+}
+
+TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics]") {
+  // Make sure that interface types can be used with STL map and set
+  std::map<TypeWithEnergy, int> counterMap{};
+
+  auto empty = TypeWithEnergy::makeEmpty();
+  counterMap[empty]++;
+
+  ExampleHit hit{};
+  auto wrapper = TypeWithEnergy{hit};
+  counterMap[wrapper]++;
+
+  // No way this implicit conversion could ever lead to a subtle bug ;)
+  counterMap[hit]++;
+
+  REQUIRE(counterMap[empty] == 1);
+  REQUIRE(counterMap[hit] == 2);
+  REQUIRE(counterMap[wrapper] == 2);
 }
 
 TEST_CASE("InterfaceType from immutable", "[interface-types][basics]") {
