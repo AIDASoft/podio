@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Module for the python bindings of the podio::Frame"""
 
-import warnings
 import cppyy
 
 import ROOT
