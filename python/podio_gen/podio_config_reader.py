@@ -499,20 +499,12 @@ class PodioConfigReader:
     def parse_model(cls, model_dict, package_name, upstream_edm=None):
         """Parse a model from the dictionary, e.g. read from a yaml file."""
 
-        if "schema_version" in model_dict:
-            schema_version = model_dict["schema_version"]
-            if int(schema_version) <= 0:
-                raise DefinitionError(
-                    f"schema_version has to be larger than 0 (is {schema_version})"
-                )
-        else:
-            warnings.warn(
-                "Please provide a schema_version entry. It will become mandatory. "
-                "Setting it to 1 as default",
-                FutureWarning,
-                stacklevel=3,
-            )
-            schema_version = 1
+        schema_version = model_dict.get("schema_version", None)
+        if not schema_version:
+            raise DefinitionError("Please provide a 'schema_version' in your definintion")
+
+        if int(schema_version) <= 0:
+            raise DefinitionError(f"schema_version has to be larger than 0 (is {schema_version})")
 
         components = {}
         if "components" in model_dict:
