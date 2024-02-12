@@ -24,6 +24,11 @@ In addition, PODIO supports the storage of one-to-one and one-to-many relations 
 In the following the syntax for defining a given data model is explained.
 A later section contains more details about the code being created from this.
 
+## Mandatory fields
+A datamodel definition has only one mandatory field: `schema_version`. This
+defines the current version of the datamodel schema and allows to do schema
+evolution. All other fields described below are in principle optional.
+
 ## Definition of custom components
 A component is just a flat struct containing data. it can be defined via:
 
