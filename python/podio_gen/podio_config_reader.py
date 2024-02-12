@@ -505,8 +505,10 @@ class PodioConfigReader:
                     f"schema_version has to be larger than 0 (is {schema_version})"
                 )
         except KeyError:
+            # pylint: disable-next=raise-missing-from
             raise DefinitionError("Please provide a 'schema_version' in your definintion")
         except ValueError:
+            # pylint: disable-next=raise-missing-from
             raise DefinitionError(
                 f"schema_version has to be convertible to int (is {model_dict['schema_version']})"
             )
