@@ -259,14 +259,6 @@ public:
 
   // Interfaces for writing below
   // TODO: Hide this from the public interface somehow?
-
-  /**
-   * Get the GenericParameters for writing
-   */
-  [[deprecated("use getParameters instead")]] const podio::GenericParameters& getGenericParametersForWrite() const {
-    return m_self->parameters();
-  }
-
   /**
    * Get a collection for writing (in a prepared and "ready-to-write" state)
    */
