@@ -3,7 +3,6 @@
 
 import copy
 import re
-import warnings
 import yaml
 
 from podio_gen.generator_utils import (
