@@ -119,20 +119,6 @@ class Frame:
         """
         return tuple(str(s) for s in self._frame.getAvailableCollections())
 
-    @property
-    def collections(self):
-        """Get the currently available collection (names) from this Frame.
-
-        Returns:
-            tuple(str): The names of the available collections from this Frame.
-        """
-        warnings.warn(
-            "WARNING: collections is deprecated, use getAvailableCollections()"
-            " (like in C++) instead",
-            FutureWarning,
-        )
-        return self.getAvailableCollections()
-
     def get(self, name):
         """Get a collection from the Frame by name.
 
