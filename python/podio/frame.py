@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Module for the python bindings of the podio::Frame"""
 
-import warnings
 import cppyy
 
 import ROOT
@@ -118,20 +117,6 @@ class Frame:
             tuple(str): The names of the available collections from this Frame.
         """
         return tuple(str(s) for s in self._frame.getAvailableCollections())
-
-    @property
-    def collections(self):
-        """Get the currently available collection (names) from this Frame.
-
-        Returns:
-            tuple(str): The names of the available collections from this Frame.
-        """
-        warnings.warn(
-            "WARNING: collections is deprecated, use getAvailableCollections()"
-            " (like in C++) instead",
-            FutureWarning,
-        )
-        return self.getAvailableCollections()
 
     def get(self, name):
         """Get a collection from the Frame by name.
