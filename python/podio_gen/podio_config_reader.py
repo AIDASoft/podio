@@ -3,7 +3,6 @@
 
 import copy
 import re
-import warnings
 import yaml
 
 from podio_gen.generator_utils import (
@@ -499,20 +498,20 @@ class PodioConfigReader:
     def parse_model(cls, model_dict, package_name, upstream_edm=None):
         """Parse a model from the dictionary, e.g. read from a yaml file."""
 
-        if "schema_version" in model_dict:
-            schema_version = model_dict["schema_version"]
-            if int(schema_version) <= 0:
+        try:
+            schema_version = int(model_dict["schema_version"])
+            if schema_version <= 0:
                 raise DefinitionError(
                     f"schema_version has to be larger than 0 (is {schema_version})"
                 )
-        else:
-            warnings.warn(
-                "Please provide a schema_version entry. It will become mandatory. "
-                "Setting it to 1 as default",
-                FutureWarning,
-                stacklevel=3,
+        except KeyError:
+            # pylint: disable-next=raise-missing-from
+            raise DefinitionError("Please provide a 'schema_version' in your definintion")
+        except ValueError:
+            # pylint: disable-next=raise-missing-from
+            raise DefinitionError(
+                f"schema_version has to be convertible to int (is {model_dict['schema_version']})"
             )
-            schema_version = 1
 
         components = {}
         if "components" in model_dict:
