@@ -4,7 +4,7 @@
 #include "podio/SIOReader.h"
 
 namespace podio {
-using SIOFrameReader [[deprecated("Will be removed in v1.0 switch podio::SIOReader")]] = podio::SIOReader;
+using SIOFrameReader [[deprecated("Will be removed in v1.0, switch to podio::SIOReader")]] = podio::SIOReader;
 }
 
 #endif // PODIO_SIOFRAMEREADER_H
