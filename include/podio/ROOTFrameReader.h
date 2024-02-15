@@ -4,7 +4,7 @@
 #include "podio/ROOTReader.h"
 
 namespace podio {
-using ROOTFrameReader [[deprecated("Will be removed in v1.0 switch podio::ROOTReader")]] = podio::ROOTReader;
+using ROOTFrameReader [[deprecated("Will be removed in v1.0, switch to podio::ROOTReader")]] = podio::ROOTReader;
 }
 
 #endif // PODIO_ROOTFRAMEREADER_H
