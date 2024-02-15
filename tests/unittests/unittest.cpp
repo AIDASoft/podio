@@ -44,6 +44,8 @@
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithUserInitCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/MutableExampleCluster.h"
+#include "datamodel/MutableExampleWithArray.h"
 #include "datamodel/MutableExampleWithComponent.h"
 #include "podio/UserDataCollection.h"
 
@@ -356,7 +358,7 @@ TEST_CASE("Arrays") {
 }
 */
 
-TEST_CASE("member getter return types", "[basics][code-gen]") {
+TEST_CASE("member getter return types", "[basics][code-gen][const-correctness]") {
   // Check that the return types of the getter functions are as expected
   // Builtin member types are returned by value, including fixed width integers
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleHit>().energy()), double>);
@@ -372,6 +374,13 @@ TEST_CASE("member getter return types", "[basics][code-gen]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArrayComponent>().x()), int>);
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArrayComponent>().p()), const std::array<int, 4>&>);
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleWithArray>().data()), const SimpleStruct&>);
+
+  // Mutable types also give access to mutable references
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<MutableExampleCluster>().energy()), double&>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<MutableExampleWithArray>().data()), SimpleStruct&>);
+  // However if they are const the usual rules apply
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const MutableExampleCluster>().energy()), double>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const MutableExampleWithArray>().data()), const SimpleStruct&>);
 }
 
 TEST_CASE("Extracode", "[basics][code-gen]") {

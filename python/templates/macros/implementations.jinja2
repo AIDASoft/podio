@@ -50,8 +50,9 @@ void {{ class_type }}::{{ member.setter_name(get_syntax) }}({{ member.full_type 
 {% if member.is_array %}
 void {{ class_type }}::{{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value) { m_obj->data.{{ member.name }}.at(i) = value; }
 {% endif %}
-{% if not member.is_builtin %}
-{{ member.full_type }}& {{ class_type }}::{{ member.name }}() { return m_obj->data.{{ member.name }}; }
+{{ member.full_type }}& {{ class_type }}::{{ member.getter_name(get_syntax) }}() { return m_obj->data.{{ member.name }}; }
+{% if get_syntax %}
+{{ member.full_type }}& {{ class_type }}::{{ member.name }}() {  return m_obj->data.{{ member.name }}; }
 {% endif %}
 {% if member.sub_members %}
 {% for sub_member in member.sub_members %}
