@@ -89,6 +89,9 @@
   bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }
   bool operator==(const {{ inverse_type }}& other) const;
 
+  bool operator!=(const {{ full_type }}& other) const { return !(*this == other); }
+  bool operator!=(const {{ inverse_type }}& other) const { return !(*this == other); }
+
   // less comparison operator, so that objects can be e.g. stored in sets.
   bool operator<(const {{ full_type }}& other) const { return m_obj < other.m_obj; }
 
