@@ -201,7 +201,8 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   // Reading all files is done to check that all file exists
   for (const auto& filename : filenames) {
     if (!m_metaChain->Add(filename.c_str(), -1)) {
-      throw std::runtime_error("File " + filename + " couldn't be found");
+      throw std::runtime_error("File " + filename + " couldn't be found or the \"" + root_utils::metaTreeName +
+                               "\" tree couldn't be read.");
     }
   }
 
