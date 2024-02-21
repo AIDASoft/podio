@@ -29,7 +29,7 @@ jobs:
         #     sanitizer: MemoryWithOrigin
     steps:
       - uses: actions/checkout@v3
-      - uses: cvmfs-contrib/github-action-cvmfs@v3
+      - uses: cvmfs-contrib/github-action-cvmfs@v4
       - uses: aidasoft/run-lcg-view@v4
         with:
           release-platform: LCG_102/x86_64-centos7-${{ matrix.compiler }}-opt
