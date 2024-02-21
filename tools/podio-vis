@@ -5,6 +5,7 @@ import os
 import sys
 import argparse
 import yaml
+from podio_gen.generator_utils import DefinitionError
 from podio_gen.podio_config_reader import PodioConfigReader
 
 try:
@@ -13,6 +14,7 @@ except ImportError:
     print("graphviz is not installed. please run pip install graphviz")
     sys.exit(1)
 
+
 def read_upstream_edm(name_path):
     """Read an upstream EDM yaml definition file to make the types that are defined
     in that available to the current EDM"""
@@ -20,18 +22,23 @@ def read_upstream_edm(name_path):
         return None
 
     try:
-        name, path = name_path.split(':')
+        name, path = name_path.split(":")
     except ValueError as err:
-        raise argparse.ArgumentTypeError('upstream-edm argument needs to be the upstream package '
-                                         'name and the upstream edm yaml file separated by a colon') from err
+        raise argparse.ArgumentTypeError(
+            "upstream-edm argument needs to be the upstream package "
+            "name and the upstream edm yaml file separated by a colon"
+        ) from err
 
     if not os.path.isfile(path):
-        raise argparse.ArgumentTypeError(f'{path} needs to be an EDM yaml file')
+        raise argparse.ArgumentTypeError(f"{path} needs to be an EDM yaml file")
 
     try:
         return PodioConfigReader.read(path, name)
     except DefinitionError as err:
-        raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition') from err
+        raise argparse.ArgumentTypeError(
+            f"{path} does not contain a valid datamodel definition"
+        ) from err
+
 
 class ModelToGraphviz:
     """Class to transform a data model description into a graphical representation"""
@@ -136,9 +143,13 @@ if __name__ == "__main__":
     parser.add_argument("--fmt", default="svg", help="Which format to use for saving the file")
     parser.add_argument("--filename", default="gv", help="Which filename to use for the output")
     parser.add_argument("--graph-conf", help="Configuration file for defining groups")
-    parser.add_argument("--upstream-edm", default=None, type=read_upstream_edm,
-                        help="Make datatypes of this upstream EDM available to the current"
-                        " EDM. Format is '<upstream-name>:<upstream.yaml>'. ")
+    parser.add_argument(
+        "--upstream-edm",
+        default=None,
+        type=read_upstream_edm,
+        help="Make datatypes of this upstream EDM available to the current"
+        " EDM. Format is '<upstream-name>:<upstream.yaml>'. ",
+    )
 
     args = parser.parse_args()
 
