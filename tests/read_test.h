@@ -150,16 +150,16 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   auto d2 = p.daughters(2);
   auto d3 = p.daughters(3);
 
-  if (!(d0 == mcps[2])) {
+  if (d0 != mcps[2]) {
     throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 ");
   }
-  if (!(d1 == mcps[3])) {
+  if (d1 != mcps[3]) {
     throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 ");
   }
-  if (!(d2 == mcps[4])) {
+  if (d2 != mcps[4]) {
     throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 ");
   }
-  if (!(d3 == mcps[5])) {
+  if (d3 != mcps[5]) {
     throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 ");
   }
 
@@ -171,16 +171,16 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   d2 = p.daughters(2);
   d3 = p.daughters(3);
 
-  if (!(d0 == mcps[6])) {
+  if (d0 != mcps[6]) {
     throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 ");
   }
-  if (!(d1 == mcps[7])) {
+  if (d1 != mcps[7]) {
     throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 ");
   }
-  if (!(d2 == mcps[8])) {
+  if (d2 != mcps[8]) {
     throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 ");
   }
-  if (!(d3 == mcps[9])) {
+  if (d3 != mcps[9]) {
     throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 ");
   }
 
@@ -222,12 +222,12 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
     for (size_t i = 0; i < mcpRefs.size(); ++i) {
       if (i < 5) { // The first elements point into the mcps collection
-        if (!(mcpRefs[i] == mcps[2 * i + 1])) {
+        if (mcpRefs[i] != mcps[2 * i + 1]) {
           throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
         }
       } else { // The second half points into the moreMCs collection
         const int index = (i - 5) * 2;
-        if (!(mcpRefs[i] == moreMCs[index])) {
+        if (mcpRefs[i] != moreMCs[index]) {
           throw std::runtime_error("MCParticle reference does not point to the correct MCParticle");
         }
       }
@@ -325,7 +325,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
         if (nmsp.number() != cpy.number()) {
           throw std::runtime_error("Copied item has differing member.");
         }
-        if (!(nmsp.ref().getObjectID() == cpy.ref().getObjectID())) {
+        if (nmsp.ref().getObjectID() != cpy.ref().getObjectID()) {
           throw std::runtime_error("Copied item has wrong OneToOne references.");
         }
       }
@@ -334,7 +334,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
         if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
           throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
         }
-        if (!(it->getObjectID() == cpy_it->getObjectID())) {
+        if (it->getObjectID() != cpy_it->getObjectID()) {
           throw std::runtime_error("Copied item has wrong OneToMany references.");
         }
       }

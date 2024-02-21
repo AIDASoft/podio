@@ -443,7 +443,7 @@ TEST_CASE("Equality", "[basics]") {
   // Empty handles always compare equal
   REQUIRE(clu == clu2);
   // They never compare equal to a non-empty handle
-  REQUIRE(!(clu == cluster));
+  REQUIRE(clu != cluster);
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {
