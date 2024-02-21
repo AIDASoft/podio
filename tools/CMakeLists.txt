@@ -4,6 +4,36 @@ if(ENABLE_RNTUPLE)
   install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-ttree-to-rntuple DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
+# Add a very basic test of podio-vis
+if(BUILD_TESTING)
+  # Helper function for easily creating "tests" that simply execute podio-vis
+  # with different arguments. Not crashing is considered success.
+  #
+  # Args:
+  #     name        the name of the test
+  #     depends_on  the target name of the test that produces the required input file
+  function(CREATE_VIS_TEST name depends_on)
+    add_test(NAME ${name} COMMAND ./podio-vis ${ARGN})
+    PODIO_SET_TEST_ENV(${name})
+
+    set_tests_properties(${name} PROPERTIES
+       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+       )
+    if (depends_on)
+      set_tests_properties(${name} PROPERTIES
+        DEPENDS ${depends_on}
+        )
+    endif()
+  endfunction()
+
+  CREATE_VIS_TEST(podio-vis-help _dummy_target_
+    --help)
+  CREATE_VIS_TEST(podio-vis-datamodel datamodel
+    --dot ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml)
+  CREATE_VIS_TEST(podio-vis-datamodel-extension extension_model
+    --dot --upstream-edm datamodel:${PROJECT_SOURCE_DIR}/tests/datalayout.yaml ${PROJECT_SOURCE_DIR}/tests/datalayout_extension.yaml)
+endif()
+
 # Add a very basic tests here to make sure that podio-dump at least runs
 if(BUILD_TESTING)
   # Helper function for easily creating "tests" that simply execute podio-dump

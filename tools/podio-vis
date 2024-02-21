@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tool to transform data model descriptions in YAML to a graph that can be visualized"""
 
+import os
 import sys
 import argparse
 import yaml
@@ -12,14 +13,33 @@ except ImportError:
     print("graphviz is not installed. please run pip install graphviz")
     sys.exit(1)
 
+def read_upstream_edm(name_path):
+    """Read an upstream EDM yaml definition file to make the types that are defined
+    in that available to the current EDM"""
+    if name_path is None:
+        return None
+
+    try:
+        name, path = name_path.split(':')
+    except ValueError as err:
+        raise argparse.ArgumentTypeError('upstream-edm argument needs to be the upstream package '
+                                         'name and the upstream edm yaml file separated by a colon') from err
+
+    if not os.path.isfile(path):
+        raise argparse.ArgumentTypeError(f'{path} needs to be an EDM yaml file')
+
+    try:
+        return PodioConfigReader.read(path, name)
+    except DefinitionError as err:
+        raise argparse.ArgumentTypeError(f'{path} does not contain a valid datamodel definition') from err
 
 class ModelToGraphviz:
     """Class to transform a data model description into a graphical representation"""
 
-    def __init__(self, yamlfile, dot, fmt, filename, graph_conf):
+    def __init__(self, yamlfile, name, dot, fmt, filename, graph_conf, upstream_edm=None):
         self.yamlfile = yamlfile
         self.use_dot = dot
-        self.datamodel = PodioConfigReader.read(yamlfile, "podio")
+        self.datamodel = PodioConfigReader.read(yamlfile, name, upstream_edm)
         self.graph = Digraph(node_attr={"shape": "box"})
         self.graph.attr(rankdir="RL", size="8,5")
         self.fmt = fmt
@@ -105,6 +125,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("description", help="yaml file describing the datamodel")
+    parser.add_argument("-n", "--name", default="edm4hep", help="datamodel name")
     parser.add_argument(
         "-d",
         "--dot",
@@ -115,14 +136,19 @@ if __name__ == "__main__":
     parser.add_argument("--fmt", default="svg", help="Which format to use for saving the file")
     parser.add_argument("--filename", default="gv", help="Which filename to use for the output")
     parser.add_argument("--graph-conf", help="Configuration file for defining groups")
+    parser.add_argument("--upstream-edm", default=None, type=read_upstream_edm,
+                        help="Make datatypes of this upstream EDM available to the current"
+                        " EDM. Format is '<upstream-name>:<upstream.yaml>'. ")
 
     args = parser.parse_args()
 
     vis = ModelToGraphviz(
         args.description,
+        args.name,
         args.dot,
         fmt=args.fmt,
         filename=args.filename,
         graph_conf=args.graph_conf,
+        upstream_edm=args.upstream_edm,
     )
     vis.make_viz()
