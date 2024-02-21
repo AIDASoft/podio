@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """Tool to transform data model descriptions in YAML to a graph that can be visualized"""
 
-import os
 import sys
 import argparse
 import yaml
 from podio_class_generator import read_upstream_edm
-from podio_gen.generator_utils import DefinitionError
 from podio_gen.podio_config_reader import PodioConfigReader
 
 try:
