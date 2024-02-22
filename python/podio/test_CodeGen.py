@@ -3,13 +3,7 @@
 
 import unittest
 import ROOT
-
-res = ROOT.gSystem.Load("libTestDataModel.so")
-if res < 0:
-    raise RuntimeError("Failed to load libTestDataModel.so")
-
-from ROOT import MutableExampleMC  # pylint: disable=wrong-import-position # noqa: E402
-from ROOT import ExampleMCCollection  # pylint: disable=wrong-import-position # noqa: E402
+from ROOT import ExampleMCCollection, MutableExampleMC
 
 
 class ObjectConversionsTest(unittest.TestCase):
@@ -37,7 +31,3 @@ class OneToManyRelationsTest(unittest.TestCase):
         self.assertEqual(len(daughter_particle.parents()), 0)
         daughter_particle.addparents(parent_particle)
         self.assertEqual(len(daughter_particle.parents()), 1)
-
-
-if __name__ == "__main__":
-    unittest.main()
