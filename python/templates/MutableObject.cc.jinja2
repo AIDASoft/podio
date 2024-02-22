@@ -17,7 +17,6 @@
 {{ utils.namespace_open(class.namespace) }}
 
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
-Mutable{{ class.bare_type }}::operator {{ class.bare_type }}() const { return {{ class.bare_type }}(m_obj); }
 
 {{ macros.member_getters(class, Members, use_get_syntax, prefix='Mutable') }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax, prefix='Mutable') }}
