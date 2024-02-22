@@ -94,3 +94,7 @@ else()
         PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
   )
 endif()
+
+add_test(NAME unittest.py COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/unittests.py)
+PODIO_SET_TEST_ENV(unittest.py)
+set_tests_properties(unittest.py PROPERTIES WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
