@@ -17,19 +17,19 @@ jobs:
               "dev4/x86_64-ubuntu2004-gcc9-opt",
               "LCG_104/x86_64-el9-clang16-opt"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: podio
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: key4hep/EDM4hep
           path: edm4hep
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: catchorg/Catch2
           path: catch2
           ref: v3.4.0
-      - uses: cvmfs-contrib/github-action-cvmfs@v3
+      - uses: cvmfs-contrib/github-action-cvmfs@v4
       - uses: aidasoft/run-lcg-view@v4
         with:
           release-platform: ${{ matrix.LCG }}
