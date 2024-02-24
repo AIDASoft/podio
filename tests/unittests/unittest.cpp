@@ -156,7 +156,7 @@ TEST_CASE("Container lifetime", "[basics][memory-management]") {
   {
     MutableExampleHit hit;
     hit.energy(3.14f);
-    hits.push_back(hit);
+    hits.push_back(hit); // NOLINT(modernize-use-emplace)
   }
   auto hit = hits[0];
   REQUIRE(hit.energy() == 3.14f);

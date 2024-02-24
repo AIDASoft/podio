@@ -39,9 +39,6 @@ public:
 
 {{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
 
-  /// conversion to const object
-  operator {{ class.bare_type }}() const;
-
 public:
 
 {{ macros.member_getters(Members, use_get_syntax) }}

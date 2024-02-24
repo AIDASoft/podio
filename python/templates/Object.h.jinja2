@@ -43,6 +43,8 @@ public:
   using collection_type = {{ class.bare_type }}Collection;
 
 {{ macros.constructors_destructors(class.bare_type, Members) }}
+  /// converting constructor from mutable object
+  {{ class.bare_type }}(const Mutable{{ class.bare_type }}& other);
 
   static {{ class.bare_type }} makeEmpty();
 
