@@ -27,11 +27,8 @@ def print_general_info(reader, filename):
     )
     print()
     print("Frame categories in this file:")
-    print(f'{"Name":<20} {"Entries":<10}')
-    print("-" * 31)
-    for category in reader.categories:
-        print(f"{category:<20} {len(reader.get(category)):<10}")
-    print()
+    cats = [(c, len(reader.get(c))) for c in reader.categories]
+    print(tabulate(cats, headers=["Name", "Entries"]))
 
 
 def print_frame_detailed(frame):
