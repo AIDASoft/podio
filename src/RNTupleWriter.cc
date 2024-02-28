@@ -7,12 +7,13 @@
 #include "rootUtils.h"
 
 #include "TFile.h"
+
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <ROOT/RVersion.hxx>
 
 #include <algorithm>
-#include <functional>
 
 namespace podio {
 
@@ -45,8 +46,13 @@ std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> RNTupleWriter
 template <typename T>
 void RNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry) {
   auto [key, value] = getKeyValueVectors<T>();
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+  entry->BindRawPtr(root_utils::getGPKeyName<T>(), &key);
+  entry->BindRawPtr(root_utils::getGPValueName<T>(), &value);
+#else
   entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &key);
   entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &value);
+#endif
 
   key.clear();
   key.reserve(params.getMap<T>().size());
@@ -108,10 +114,11 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     }
   }
 
-  // We use std::invoke here, because ROOT has slightly changed the semantics of
-  // this API in https://github.com/root-project/root/pull/14391
-  auto entry =
-      std::invoke(&ROOT::Experimental::RNTupleModel::CreateBareEntry, m_categories[category].writer->GetModel());
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+  auto entry = m_categories[category].writer->GetModel().CreateBareEntry();
+#else
+  auto entry = m_categories[category].writer->GetModel()->CreateBareEntry();
+#endif
 
   ROOT::Experimental::RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
@@ -119,13 +126,22 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   for (const auto& [name, coll] : collections) {
     auto collBuffers = coll->getBuffers();
     if (collBuffers.vecPtr) {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+      entry->BindRawPtr(name, (void*)collBuffers.vecPtr);
+#else
       entry->CaptureValueUnsafe(name, (void*)collBuffers.vecPtr);
+#endif
     }
 
     if (coll->isSubsetCollection()) {
       auto& refColl = (*collBuffers.references)[0];
       const auto brName = root_utils::subsetBranch(name);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+      entry->BindRawPtr(brName, refColl.get());
+#else
       entry->CaptureValueUnsafe(brName, refColl.get());
+#endif
+
     } else {
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
@@ -133,7 +149,11 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
         int i = 0;
         for (auto& c : (*refColls)) {
           const auto brName = root_utils::refBranch(name, relVecNames.relations[i]);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+          entry->BindRawPtr(brName, c.get());
+#else
           entry->CaptureValueUnsafe(brName, c.get());
+#endif
           ++i;
         }
       }
@@ -144,7 +164,11 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
           const auto typeName = "vector<" + type + ">";
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
           auto ptr = *(std::vector<int>**)vec;
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+          entry->BindRawPtr(brName, ptr);
+#else
           entry->CaptureValueUnsafe(brName, ptr);
+#endif
           ++i;
         }
       }
@@ -167,6 +191,13 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
 RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
   auto model = ROOT::Experimental::RNTupleModel::CreateBare();
+
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+  using ROOT::Experimental::RFieldBase;
+#else
+  using ROOT::Experimental::Detail::RFieldBase;
+#endif
+
   for (auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel
     // definition
@@ -176,14 +207,14 @@ RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
 
     if (collBuffers.vecPtr) {
       auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
-      auto field = ROOT::Experimental::Detail::RFieldBase::Create(name, collClassName).Unwrap();
+      auto field = RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
 
     if (coll->isSubsetCollection()) {
       const auto brName = root_utils::subsetBranch(name);
       auto collClassName = "vector<podio::ObjectID>";
-      auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
+      auto field = RFieldBase::Create(brName, collClassName).Unwrap();
       model->AddField(std::move(field));
     } else {
 
@@ -193,7 +224,7 @@ RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
         for (auto& c [[maybe_unused]] : (*refColls)) {
           const auto brName = root_utils::refBranch(name, relVecNames.relations[i]);
           auto collClassName = "vector<podio::ObjectID>";
-          auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, collClassName).Unwrap();
+          auto field = RFieldBase::Create(brName, collClassName).Unwrap();
           model->AddField(std::move(field));
           ++i;
         }
@@ -204,7 +235,7 @@ RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
         for (auto& [type, vec] : (*vminfo)) {
           const auto typeName = "vector<" + type + ">";
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
-          auto field = ROOT::Experimental::Detail::RFieldBase::Create(brName, typeName).Unwrap();
+          auto field = RFieldBase::Create(brName, typeName).Unwrap();
           model->AddField(std::move(field));
           ++i;
         }
@@ -216,27 +247,15 @@ RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
   // so we have to split them manually
   // model->MakeField<podio::GenericParameters>(root_utils::paramBranchName);
 
-  model->AddField(
-      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intKeyName, "std::vector<std::string>>").Unwrap());
-  model->AddField(
-      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatKeyName, "std::vector<std::string>>").Unwrap());
-  model->AddField(
-      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleKeyName, "std::vector<std::string>>").Unwrap());
-  model->AddField(
-      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::intKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::floatKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::doubleKeyName, "std::vector<std::string>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::stringKeyName, "std::vector<std::string>>").Unwrap());
 
-  model->AddField(
-      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::intValueName, "std::vector<std::vector<int>>")
-          .Unwrap());
-  model->AddField(
-      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::floatValueName, "std::vector<std::vector<float>>")
-          .Unwrap());
-  model->AddField(
-      ROOT::Experimental::Detail::RFieldBase::Create(root_utils::doubleValueName, "std::vector<std::vector<double>>")
-          .Unwrap());
-  model->AddField(ROOT::Experimental::Detail::RFieldBase::Create(root_utils::stringValueName,
-                                                                 "std::vector<std::vector<std::string>>")
-                      .Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::intValueName, "std::vector<std::vector<int>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::floatValueName, "std::vector<std::vector<float>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::doubleValueName, "std::vector<std::vector<double>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::stringValueName, "std::vector<std::vector<std::string>>").Unwrap());
 
   model->Freeze();
   return model;
