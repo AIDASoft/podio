@@ -1,9 +1,8 @@
 #ifndef PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 #define PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 
+#include "podio/CollectionBranches.h"
 #include "podio/CollectionIDTable.h"
-#include "podio/GenericParameters.h"
-#include "podio/utilities/RootHelpers.h"
 
 #include "TBranch.h"
 #include "TTree.h"
@@ -76,35 +75,6 @@ constexpr auto getGPValueName() {
     return doubleValueName;
   } else if constexpr (std::is_same<T, std::string>::value) {
     return stringValueName;
-  } else {
-    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
-  }
-}
-
-/// Small helper struct to get info on the offsets of the branches holding
-/// GenericParameter keys and values for a given parameter type
-struct GPBranchOffsets {
-  int keys{-1};
-  int values{-1};
-};
-
-/// The number of branches that we create on top of the collection branches per
-/// category
-constexpr auto nParamBranches = std::tuple_size_v<podio::SupportedGenericDataTypes> * 2;
-
-/// Get the branch offsets for a given parameter type. In this case it is
-/// assumed that the integer branches start immediately after the branche for
-/// the collections
-template <typename T>
-constexpr auto getGPBranchOffsets() {
-  if constexpr (std::is_same_v<T, int>) {
-    return GPBranchOffsets{1, 2};
-  } else if constexpr (std::is_same_v<T, float>) {
-    return GPBranchOffsets{3, 4};
-  } else if constexpr (std::is_same_v<T, double>) {
-    return GPBranchOffsets{5, 6};
-  } else if constexpr (std::is_same_v<T, std::string>) {
-    return GPBranchOffsets{7, 8};
   } else {
     static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
   }
@@ -229,6 +199,13 @@ inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionB
   }
 }
 
+// A collection of additional information that describes the collection: the
+// collectionID, the collection (data) type, whether it is a subset
+// collection, and its schema version
+using CollectionInfoT = std::tuple<uint32_t, std::string, bool, unsigned int>;
+// for backwards compatibility
+using CollectionInfoWithoutSchemaT = std::tuple<int, std::string, bool>;
+
 inline void readBranchesData(const CollectionBranches& branches, Long64_t entry) {
   // Read all data
   if (branches.data) {
@@ -252,7 +229,7 @@ inline void readBranchesData(const CollectionBranches& branches, Long64_t entry)
  * collections
  */
 inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable const& idTable) {
-  std::vector<CollectionWriteInfoT> collInfo;
+  std::vector<CollectionInfoT> collInfo;
 
   for (size_t iColl = 0; iColl < idTable.names().size(); ++iColl) {
     const auto collID = idTable.ids()[iColl];

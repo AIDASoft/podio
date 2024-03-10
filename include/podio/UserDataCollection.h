@@ -7,9 +7,8 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
-#include <map>
-#include <string>
-#include <typeindex>
+#include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
