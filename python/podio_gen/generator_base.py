@@ -247,7 +247,7 @@ class ClassGeneratorBaseMixin:
         if not self.dryrun:
             self.generated_files.append(fullname)
             if self.formatter_func is not None:
-                content = self.formatter_func(content, fullname)
+                content = self.formatter_func(content, fullname)  # pylint: disable=not-callable
 
             changed = write_file_if_changed(fullname, content)
             self.any_changes = changed or self.any_changes
