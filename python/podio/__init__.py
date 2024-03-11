@@ -1,4 +1,5 @@
 """Python module for the podio EDM toolkit and its utilities"""
+
 from .__version__ import __version__
 
 # Try to load podio, this is equivalent to trying to load libpodio.so and will
