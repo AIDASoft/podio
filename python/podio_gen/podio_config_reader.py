@@ -1,6 +1,5 @@
 """Datamodel yaml configuration file reading and validation utilities."""
 
-
 import copy
 import re
 import yaml
