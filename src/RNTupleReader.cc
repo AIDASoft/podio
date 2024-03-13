@@ -8,7 +8,6 @@
 #include "rootUtils.h"
 
 #include <ROOT/RError.hxx>
-#include <ROOT/RVersion.hxx>
 
 #include <memory>
 
