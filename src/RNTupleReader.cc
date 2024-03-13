@@ -139,7 +139,11 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
 
   ROOTFrameData::BufferMap buffers;
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
-  auto dentry = m_readers[category][0]->GetModel().CreateBareEntry();
+  // We need to create a non-bare entry here, because the entries for the
+  // parameters are not explicitly (re)set and we need them default initialized.
+  // In principle we would only need a bare entry for the collection data, since
+  // we set all the fields there in any case.
+  auto dentry = m_readers[category][0]->GetModel().CreateEntry();
 #else
   auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
 #endif
