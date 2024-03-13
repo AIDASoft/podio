@@ -202,7 +202,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     buffers.emplace(m_collectionInfo[category].name[i], std::move(collBuffers));
   }
 
-  m_readers[category][0]->LoadEntry(entNum);
+  m_readers[category][0]->LoadEntry(entNum, *dentry);
 
   auto parameters = readEventMetaData(category, entNum);
 
