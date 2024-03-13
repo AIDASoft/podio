@@ -11,7 +11,6 @@
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
-#include <ROOT/RVersion.hxx>
 
 #include <algorithm>
 
