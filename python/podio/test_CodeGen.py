@@ -39,4 +39,13 @@ class OneToManyRelationsTest(unittest.TestCase):
         self.assertEqual(len(daughter_particle.parents()), 1)
 
 
+class CollectionSubscriptTest(unittest.TestCase):
+    """Collection subscript test"""
 
+    def test_bound_check(self):
+        collection = nsp.EnergyInNamespaceCollection()
+        _ = collection.create()
+        self.assertEqual(len(collection), 1)
+        with self.assertRaises(IndexError):
+            _ = collection[20]
+        _ = collection[0]
