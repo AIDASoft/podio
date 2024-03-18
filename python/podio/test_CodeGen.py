@@ -4,6 +4,12 @@
 import unittest
 import ROOT
 from ROOT import ExampleMCCollection, MutableExampleMC
+from ROOT import nsp
+from pythonizations import load_pythonizations  # pylint: disable=import-error
+
+# load all available pythonizations to the classes in a namespace
+# loading pythonizations changes the state of cppyy backend shared by all the tests in a process
+load_pythonizations("nsp")
 
 
 class ObjectConversionsTest(unittest.TestCase):
@@ -31,3 +37,6 @@ class OneToManyRelationsTest(unittest.TestCase):
         self.assertEqual(len(daughter_particle.parents()), 0)
         daughter_particle.addparents(parent_particle)
         self.assertEqual(len(daughter_particle.parents()), 1)
+
+
+
