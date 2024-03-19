@@ -575,7 +575,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.do_process_interface">
 <span class="sig-name descname"><span class="pre">do_process_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.do_process_interface" title="Link to this definition"></a></dt>
-<dd><p>Process an interface definition and generate the necesary code</p>
+<dd><p>Process an interface definition and generate the necessary code</p>
 </dd></dl>
 
 <dl class="py method">
@@ -637,7 +637,7 @@
 <p>Base class for code generation providing common functionality and
 orchestration</p>
 <p>The base class takes care of initializing the common state that is necessary
-for code generation for the different languages. It reads and valiadates the
+for code generation for the different languages. It reads and validates the
 datamodel and sets up the jinja2 environment. Furthermore it provides the
 functionality for filling templates and it also does the loop over all the
 components and datatypes in the datamodel offering hooks (see below) to
@@ -690,7 +690,7 @@ necessary templates!</p>
 </dd>
 <dt>post_process(datamodel: dict): do some global post processing for which all</dt><dd><p>components and datatypes need to have been processed already.
 Gets called with the dictionary that has been created in
-pre_proces and filled during the processing. The process
+pre_process and filled during the processing. The process
 components and datatypes are accessible via the “components”,
 “datatypes” and “interfaces” keys respectively.</p>
 </dd>
@@ -818,7 +818,7 @@ array access</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.normalize_fw_type">
 <span class="sig-name descname"><span class="pre">normalize_fw_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.normalize_fw_type" title="Link to this definition"></a></dt>
-<dd><p>Normalize the fixed width type and make sure to inclde &lt;cstdint&gt;</p>
+<dd><p>Normalize the fixed width type and make sure to include &lt;cstdint&gt;</p>
 </dd></dl>
 
 <dl class="py method">
