@@ -5,9 +5,9 @@
 class ReaderTestCaseMixin:
     """Common unittests for readers.
 
-    Inheriting actual test cases have to inhert from this and unittest.TestCase.
+    Inheriting actual test cases have to inherit from this and unittest.TestCase.
     All test cases assume that the files are produced with the tests/write_frame.h
-    functionaltiy. The following members have to be setup and initialized by the
+    functionality. The following members have to be setup and initialized by the
     inheriting test cases:
     - reader: a podio reader
     """
@@ -75,7 +75,7 @@ class LegacyReaderTestCaseMixin:
     """Common test cases for the legacy readers python bindings.
 
     These tests assume that input files are produced with the write_test.h header
-    and that inheriting test cases inherit from unittes.TestCase as well.
+    and that inheriting test cases inherit from unittest.TestCase as well.
     Additionally they have to have an initialized reader as a member.
 
     NOTE: Since the legacy readers also use the BaseReaderMixin, many of the

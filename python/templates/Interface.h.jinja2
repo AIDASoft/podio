@@ -24,7 +24,7 @@ class {{ class.bare_type }} {
 
   /// type alias containing all the types this interface should work for.
   using InterfacedTypes = std::tuple<{{ Types | join(", ")}}>;
-  /// type alias containing all the mutable types that can be used to initalize
+  /// type alias containing all the mutable types that can be used to initialize
   /// this interface
   using InterfacedMutableTypes = podio::detail::TupleOfMutableTypes<InterfacedTypes>;
 

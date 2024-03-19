@@ -35,7 +35,7 @@ class MemberParser:
     name_str = r"([a-zA-Z_]+\w*)"
     name_re = re.compile(name_str)
 
-    # Units are given in square brakets
+    # Units are given in square brackets
     unit_str = r"(?:\[([a-zA-Z_*\/]+\w*)\])?"
     unit_re = re.compile(unit_str)
 
@@ -326,7 +326,7 @@ class ClassDefinitionValidator:
         for relation in one_relations:
             if not _valid_datatype(relation.full_type):
                 raise DefinitionError(
-                    f"'{classname}' declares an inalid single-relation to '{relation.full_type}'"
+                    f"'{classname}' declares an invalid single-relation to '{relation.full_type}'"
                 )
 
         vector_members = definition.get("VectorMembers", [])
@@ -505,7 +505,7 @@ class PodioConfigReader:
                 )
         except KeyError:
             # pylint: disable-next=raise-missing-from
-            raise DefinitionError("Please provide a 'schema_version' in your definintion")
+            raise DefinitionError("Please provide a 'schema_version' in your definition")
         except ValueError:
             # pylint: disable-next=raise-missing-from
             raise DefinitionError(

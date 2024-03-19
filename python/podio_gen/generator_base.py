@@ -40,7 +40,7 @@ class ClassGeneratorBaseMixin:
     orchestration
 
     The base class takes care of initializing the common state that is necessary
-    for code generation for the different languages. It reads and valiadates the
+    for code generation for the different languages. It reads and validates the
     datamodel and sets up the jinja2 environment. Furthermore it provides the
     functionality for filling templates and it also does the loop over all the
     components and datatypes in the datamodel offering hooks (see below) to
@@ -99,7 +99,7 @@ class ClassGeneratorBaseMixin:
     post_process(datamodel: dict): do some global post processing for which all
                  components and datatypes need to have been processed already.
                  Gets called with the dictionary that has been created in
-                 pre_proces and filled during the processing. The process
+                 pre_process and filled during the processing. The process
                  components and datatypes are accessible via the "components",
                  "datatypes" and "interfaces" keys respectively.
 
