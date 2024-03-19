@@ -238,7 +238,7 @@ namespace detail {
    * Variable template for obtaining the mutable handle type from any podio
    * generated handle type.
    *
-   * If T is alrady a mutable handle, this will return T, if T is a default
+   * If T is already a mutable handle, this will return T, if T is a default
    * handle it will return T::mutable_type.
    */
   template <typename T>

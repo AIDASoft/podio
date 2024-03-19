@@ -556,7 +556,7 @@ have resolvable schema evolution incompatibilities:"
         return IncludeFrom.NOWHERE
 
     def _build_include(self, member):
-        """Return the include statment for the passed member."""
+        """Return the include statement for the passed member."""
         return self._build_include_for_class(
             member.bare_type, self._needs_include(member.full_type)
         )

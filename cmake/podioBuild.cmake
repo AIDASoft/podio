@@ -27,7 +27,7 @@ macro(podio_set_rpath)
     if("${isSystemDir}" STREQUAL "-1")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIBDIR}")
     endif("${isSystemDir}" STREQUAL "-1")
-    # Make sure to actualy set RPATH and not RUNPATH by disabling the new dtags
+    # Make sure to actually set RPATH and not RUNPATH by disabling the new dtags
     # explicitly. Set executable and shared library linker flags for this
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--disable-new-dtags")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
@@ -145,7 +145,7 @@ macro(ADD_SANITIZER_FLAGS)
       message(FATAL_ERROR "Unsupported value for USE_SANITIZER: ${USE_SANITIZER}")
     endif()
 
-    # Set a few more flags if we have succesfully configured a sanitizer
+    # Set a few more flags if we have successfully configured a sanitizer
     # For nicer stack-traces in the output
     add_compile_options("-fno-omit-frame-pointer")
     # append_flag( CMAKE_CXX_FLAGS CMAKE_C_FLAGS)

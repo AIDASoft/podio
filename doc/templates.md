@@ -51,7 +51,7 @@ However, it is still necessary to actively fill them from the class generator.
 If the available information for the new templates is already enough and no further pre-processing is necessary, than they need to be added to `_get_filenames_templates` function in the `ClassGeneratorBaseMixin`.
 The `prefix` and `postfix` dictionaries define how the template filename will be mapped to the generated files: `<prefix><template-filename><postfix>`.
 By default a `.h` and a `.cc` file will be generated, but this can be overridden by adding the template to the `endings` dictionary.
-With that in place it is now only neccessary to call `_fill_templates` with the appropriate template name and the pre processed data.
+With that in place it is now only necessary to call `_fill_templates` with the appropriate template name and the pre processed data.
 Note that for most templates this means that they have to be filled for each datatype or component individually.
 
 If additional preprocessing is necessary, it will be necessary to also add that to the the language specific generators.

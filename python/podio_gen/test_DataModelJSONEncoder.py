@@ -74,6 +74,6 @@ class DataModelJSONEncoderTest(unittest.TestCase):
             r"AType type // a very special type",
             r"nsp::Type nspT // a namespaced type",
             r"nsp::Type nspT{with init} // an initialized namespaced type",
-            r"ArbitratyType arbT{42} // an initialized type",
+            r"ArbitraryType arbT{42} // an initialized type",
         ):
             self.assertEqual(get_member_var_json(mdef), mdef)

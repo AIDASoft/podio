@@ -197,7 +197,7 @@ namespace {
 // {% endif %}
 #}
 
-// The usual trick with an IIFE and a static variable inside a funtion and then
+// The usual trick with an IIFE and a static variable inside a function and then
 // making sure to call that function during shared library loading
 bool registerCollection() {
   const static auto reg = []() {
@@ -205,8 +205,8 @@ bool registerCollection() {
     factory.registerCreationFunc("{{ class.full_type }}Collection", {{ package_name }}::meta::schemaVersion, createBuffers);
 
     // Make the SchemaEvolution aware of the current version by
-    // registering a no-op function for this and all preceeding versions
-    // will be overriden whenever an explicit action is required
+    // registering a no-op function for this and all preceding versions
+    // will be overridden whenever an explicit action is required
     for (unsigned int schemaVersion=1; schemaVersion< {{ package_name }}::meta::schemaVersion+1; ++schemaVersion) {
       podio::SchemaEvolution::mutInstance().registerEvolutionFunc(
         "{{ class.full_type }}Collection",

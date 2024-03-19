@@ -35,7 +35,7 @@ class MemberParser:
     name_str = r"([a-zA-Z_]+\w*)"
     name_re = re.compile(name_str)
 
-    # Units are given in square brakets
+    # Units are given in square brackets
     unit_str = r"(?:\[([a-zA-Z_*\/]+\w*)\])?"
     unit_re = re.compile(unit_str)
 
