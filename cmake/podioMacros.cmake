@@ -195,7 +195,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     endif()
   endif()
 
-  # Make sure that we re run the generation process everytime either the
+  # Make sure that we re run the generation process every time either the
   # templates or the yaml file changes.
   include(${podio_PYTHON_DIR}/templates/CMakeLists.txt)
   set_property(
@@ -211,7 +211,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   )
 
   message(STATUS "Creating '${datamodel}' datamodel")
-  # we need to boostrap the data model, so this has to be executed in the cmake run
+  # we need to bootstrap the data model, so this has to be executed in the cmake run
   execute_process(
     COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${OLD_DESCRIPTION_ARG} ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

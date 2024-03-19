@@ -181,7 +181,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
         )
         self._assert_no_exception(
             DefinitionError,
-            "{} should allow for re-use of component names if the components are not exposed",
+            "{} should allow for reuse of component names if the components are not exposed",
             self.validate,
             make_dm(self.valid_component, self.valid_datatype, options=self.def_opts),
         )

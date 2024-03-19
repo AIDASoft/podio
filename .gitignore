@@ -61,6 +61,7 @@ spack*
 /compile_commands.json
 .vscode
 /.cache/
+.venv
 
 # Generated files
 *podio_generated_files.cmake

@@ -67,7 +67,7 @@ class DataModelJSONEncoderTest(unittest.TestCase):
     def test_encode_with_description(self):
         """Test that encoding definitions that contain a description works"""
         for mdef in (
-            r"int i // an unitialized int",
+            r"int i // an uninitialized int",
             r"std::uint32_t ui{42} // an initialized unsigned int",
             r"std::array<float, 3> fs // a float array",
             r"std::array<nsp::T, 32> tA{1, 2, 3} // an initialized array of namespaced types",

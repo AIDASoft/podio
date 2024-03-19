@@ -168,7 +168,7 @@ bool valid = energyType.isValid();  // <-- false
 
 auto hit = ExampleHit{};
 energyType = hit;     // assigning a hit to the interface type
-energyType.energy();  // <-- get's the energy from the underlying hit
+energyType.energy();  // <-- get the energy from the underlying hit
 
 auto cluster = ExampleCluster{};
 energyType = cluster; // ra-assigning another object is possible

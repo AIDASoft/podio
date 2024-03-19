@@ -16,7 +16,7 @@ SET( ${PROJECT_NAME}_VERSION  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME
 # Provides install directory variables as defined for GNU software
 include(GNUInstallDirs)
 
-# Define a default build type can be overriden by passing
+# Define a default build type can be overridden by passing
 # ``-DCMAKE_BUILD_TYPE=<type>`` when invoking CMake
 if(NOT CMAKE_CONFIGURATION_TYPES)
   if(NOT CMAKE_BUILD_TYPE)

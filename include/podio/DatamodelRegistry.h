@@ -82,7 +82,7 @@ public:
   const std::string_view getDatamodelDefinition(std::string_view name) const;
 
   /**
-   * Get the defintion (in JSON format) of the datamodel wth the given index.
+   * Get the definition (in JSON format) of the datamodel with the given index.
    *
    * If no datamodel is found under the given index, an empty datamodel
    * definition, i.e. an empty JSON object ("{}"), is returned.

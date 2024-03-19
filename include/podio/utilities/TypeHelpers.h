@@ -206,7 +206,7 @@ namespace detail {
   using hasMutable_t = typename T::mutable_type;
 
   /**
-   * Detector for checking the existance of an object_type type member. Used ot
+   * Detector for checking the existance of an object_type type member. Used to
    * determine whether T is (or could be) a podio generated mutable handle.
    */
   template <typename T>

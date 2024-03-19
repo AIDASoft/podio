@@ -278,7 +278,7 @@ class MemberVariable:
         return _prefix_name(self.name, "set")
 
     def normalize_fw_type(self, fw_type):
-        """Normalize the fixed width type and make sure to inclde <cstdint>"""
+        """Normalize the fixed width type and make sure to include <cstdint>"""
         self.includes.add("#include <cstdint>")
         if not fw_type.startswith("std::"):
             return f"std::{fw_type}"

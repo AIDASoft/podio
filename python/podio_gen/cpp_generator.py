@@ -184,7 +184,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         return datatype
 
     def do_process_interface(self, _, interface):
-        """Process an interface definition and generate the necesary code"""
+        """Process an interface definition and generate the necessary code"""
         interface["include_types"] = [self._build_include(t) for t in interface["Types"]]
 
         self._fill_templates("Interface", interface)
@@ -584,7 +584,7 @@ have resolvable schema evolution incompatibilities:"
                 i for i in includes if self.upstream_edm.options["includeSubfolder"] in i
             )
 
-        # Are ther includes that fulfill more than one of the above conditions? Are
+        # Are their includes that fulfill more than one of the above conditions? Are
         # there includes that fulfill none?
 
         return package_includes + upstream_includes + podio_includes + stl_includes
