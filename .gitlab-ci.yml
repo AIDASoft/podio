@@ -26,13 +26,14 @@ generate-docs:
     - export PATH=/root/.local/bin:$PATH
     - export PYTHONPATH=/root/.local/lib/python3.10/site-packages:$PYTHONPATH
     - python3 -m pip install -r doc/requirements.txt
-    - cmake -B build . --install-prefix=$(pwd)/install -GNinja -DENABLE_SIO=ON -DENABLE_RNTUPLE=ON -DBUILD_TESTING=OFF -DCMAKE_CXX_STANDARD=20
-    - cmake --build build --target install
-    - export PYTHONPATH=$(pwd)/install/python:$PYTHONPATH
-    - export LD_LIBRARY_PATH=$(pwd)/install/lib*/:$LD_LIBRARY_PATH
-    - export ROOT_INCLUDE_PATH=$(pwd)/install/include
-    - ls include/podio
-    - sphinx-build -M html doc doc_output
+    - cmake -B build . --install-prefix=$(pwd)/install -GNinja -DENABLE_SIO=ON -DENABLE_RNTUPLE=ON -DBUILD_TESTING=OFF -DCMAKE_CXX_STANDARD=20 -DCREATE_DOC=ON
+    - cmake --build build --target documentation
+    # - cmake --build build --target install
+    # - export PYTHONPATH=$(pwd)/install/python:$PYTHONPATH
+    # - export LD_LIBRARY_PATH=$(pwd)/install/lib*/:$LD_LIBRARY_PATH
+    # - export ROOT_INCLUDE_PATH=$(pwd)/install/include
+    # - ls include/podio
+    # - sphinx-build -M html doc doc_output
 
   # make the build folder (which includes the generated html) accessible to the next step by declaring it
   # as an artifact
