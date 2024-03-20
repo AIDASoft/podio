@@ -7,11 +7,13 @@
 # https://key4hep.web.cern.ch/podio/
 
 
-# -- Run Doxygen ------------------------------
-# Doxygen is set up in CMake, so need to load all
-# dependencies to run it. This step requires a runner
-# that can build edm4hep and run doxygen. The easiest way to
-# ensure this is require cvmfs access on the runner and take the
+# -- Run the document generation ------------------------------
+#
+# We are going through the cmake infrastructure here. It is equivalent to
+# running sphinx-build manually as it is done in the github actions workflow
+# run it.
+# This step requires a runner that can build podio and run doxygen. The
+# easiest way to ensure this is require cvmfs access on the runner and take the
 # software from there.
 generate-docs:
   # need a runner with cvmfs installed. On the CERN gitlab instance,
@@ -20,26 +22,19 @@ generate-docs:
     - k8s-cvmfs
   image: registry.cern.ch/ghcr.io/key4hep/key4hep-images/alma9:latest
   script:
-    # use a setup that provides all dependencies - if the dependencies change,
-    # this needs to be updated
+    # use the nightlies and install some dependencies on top of them
     - source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
     - export PATH=/root/.local/bin:$PATH
     - export PYTHONPATH=/root/.local/lib/python3.10/site-packages:$PYTHONPATH
     - python3 -m pip install -r doc/requirements.txt
     - cmake -B build . --install-prefix=$(pwd)/install -GNinja -DENABLE_SIO=ON -DENABLE_RNTUPLE=ON -DBUILD_TESTING=OFF -DCMAKE_CXX_STANDARD=20 -DCREATE_DOC=ON
     - cmake --build build --target documentation
-    # - cmake --build build --target install
-    # - export PYTHONPATH=$(pwd)/install/python:$PYTHONPATH
-    # - export LD_LIBRARY_PATH=$(pwd)/install/lib*/:$LD_LIBRARY_PATH
-    # - export ROOT_INCLUDE_PATH=$(pwd)/install/include
-    # - ls include/podio
-    # - sphinx-build -M html doc doc_output
 
-  # make the build folder (which includes the generated html) accessible to the next step by declaring it
+  # make the generated html available to the next step by declaring them as an artifact
   # as an artifact
   artifacts:
     paths:
-      - doc_output/html
+      - build/doc/_build/html
     expire_in: 1 week
 
 
@@ -52,10 +47,10 @@ generate-docs:
 # EOS_ACCOUNT_USERNAME: xxx
 # EOS_PATH: /eos/project/k/key4hep/www/key4hep/podio
 # METHOD: rsync
-# are set in the repository https://gitlab.cern.ch/key4hep/edm4hep,
-# which mirrors https://github.com/key4hep/edm4hep
+# are set in the repository https://gitlab.cern.ch/key4hep/podio,
+# which mirrors https://github.com/AIDASoft/podio
 # In particular, the service account key4hep is used to write
-# to the eos space /eos/project/k/key4hep/www/edm4hep
+# to the eos space /eos/project/k/key4hep/www/key4hep/podio
 # Other accounts which are part of the e-groups
 # cernbox-project-key4hep-{readers|writers} may be used.
 # The eos path and website are configured using https://webeos.cern.ch/
@@ -64,7 +59,6 @@ deployment:
   only:
     refs:
       - master
-      - gitlab-doc # for testing
   # need the doxygen artifacts for this step
   dependencies:
     - generate-docs
