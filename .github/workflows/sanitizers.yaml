@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: [gcc11, clang12]
+        compiler: [gcc13, clang16]
         # Since Leak is usually part of Address, we do not run it separately in
         # CI. Keeping Address and Undefined separate for easier debugging
         sanitizer: [Thread,
@@ -32,7 +32,7 @@ jobs:
       - uses: cvmfs-contrib/github-action-cvmfs@v4
       - uses: aidasoft/run-lcg-view@v4
         with:
-          release-platform: LCG_102/x86_64-centos7-${{ matrix.compiler }}-opt
+          release-platform: LCG_105/x86_64-el9-${{ matrix.compiler }}-opt
           run: |
             echo "::group::Run CMake"
             mkdir build
