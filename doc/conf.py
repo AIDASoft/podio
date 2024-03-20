@@ -21,9 +21,6 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.abspath("../python"))
 
-# are we running on readthedocs?
-on_readthedocs = os.environ.get("READTHEDOCS", False) == "True"
-
 doc_dir = Path(__file__).parent
 
 # -- Project information -----------------------------------------------------
@@ -98,7 +95,6 @@ breathe_default_project = "PODIO"
 breathe_domain_by_extension = {"h": "cpp", "cc": "cpp", "ipp": "cpp"}
 breathe_default_members = ("members", "undoc-members")
 
-
 # -- Automatic API documentation (c++) ----------------------------------------
 
 print(f"Executing doxygen in {doc_dir}")
@@ -110,14 +106,18 @@ env["DOXYGEN_WARN_AS_ERROR"] = "NO"
 
 os.makedirs("_build/cpp", exist_ok=True)
 
-subprocess.check_call(["doxygen", "Doxyfile"], stdout=subprocess.PIPE, cwd=doc_dir, env=env)
+doxygen_output = subprocess.check_output(
+    ["doxygen", "Doxyfile"], cwd=doc_dir, env=env, encoding="utf-8"
+)
+print(doxygen_output)
 
 cpp_api_index_target = doc_dir / "cpp_api/api.rst"
 
-print(f"Executing breath apidoc in {doc_dir}")
+print(f"Executing breathe apidoc in {doc_dir}")
 subprocess.check_call(
     [sys.executable, "-m", "breathe.apidoc", "_build/cpp/doxygen-xml", "-o", "cpp_api"],
     stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
     cwd=doc_dir,
     env=env,
 )
