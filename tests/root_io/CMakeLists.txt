@@ -6,6 +6,8 @@ set(root_dependent_tests
   read_python_frame_root.cpp
   read_frame_root_multiple.cpp
   read_and_write_frame_root.cpp
+  write_interface.cpp
+  read_interface.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -19,6 +21,8 @@ set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO)
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
+
+set_property(TEST read_interface PROPERTY DEPENDS write_interface)
 
 set_tests_properties(
   read_frame_root
