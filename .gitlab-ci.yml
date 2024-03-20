@@ -31,6 +31,7 @@ generate-docs:
     - export PYTHONPATH=$(pwd)/install/python:$PYTHONPATH
     - export LD_LIBRARY_PATH=$(pwd)/install/lib*/:$LD_LIBRARY_PATH
     - export ROOT_INCLUDE_PATH=$(pwd)/install/include
+    - ls include/podio
     - sphinx-build -M html doc doc_output
 
   # make the build folder (which includes the generated html) accessible to the next step by declaring it

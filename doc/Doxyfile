@@ -980,8 +980,6 @@ FILE_PATTERNS          = *.c \
                          *.cxx \
                          *.cpp \
                          *.c++ \
-                         *.inl \
-                         *.icpp \
                          *.icc \
                          *.h \
                          *.hh \
