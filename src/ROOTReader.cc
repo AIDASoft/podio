@@ -10,8 +10,6 @@
 // ROOT specific includes
 #include "TChain.h"
 #include "TClass.h"
-#include "TFile.h"
-#include "TTree.h"
 #include "TTreeCache.h"
 
 #include <stdexcept>
