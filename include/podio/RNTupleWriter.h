@@ -10,6 +10,10 @@
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <RVersion.h>
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+  #include <ROOT/RNTupleWriter.hxx>
+#endif
 
 #include <string>
 #include <unordered_map>
