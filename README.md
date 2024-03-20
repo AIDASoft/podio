@@ -102,40 +102,14 @@ To see a list of options, do this in the build-directory:
 
     cmake -LH ..
 
-## Running
+## Running tests
 
-The examples are for creating a file "example.root",
+After compilation you can run unit tests as well as some integration level tests
+that check the full I/O circle via
 
-    tests/write
+    ctest --output-on-failure
 
-and reading it again in C++,
-
-    tests/read
-
-It is also possible to read the file again using the
-[`tests/read.py`](tests/read.py) script. Make sure to have run `init.sh`
-and `env.sh` first. Additionally you have to make `ROOT` aware of
-`libTestDataModel.so` to be able to read in the data types defined there. There
-are two ways to do that. First it is possible to add the directory to the
-`LD_LIBRARY_PATH`
-
-    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/tests
-
-Secondly it is also possible to explicitly load the library via `ROOT` in the
-script by adding the following lines *after* the imports from `__future__`
-
-```python
-import os
-BUILD_PATH = os.getcwd()
-
-import ROOT
-ROOT.gSystem.Load(os.path.join(BUILD_PATH, 'tests/libTestDataModel.so'))
-```
-
-Either of the two versions allows you to now read the `example.root` file again
-using
-
-     python ../tests/read.py
+These tests also create some example files and read them back.
 
 ## Installing using SPACK
 
@@ -164,10 +138,6 @@ The generation script has the following additional options:
 - `--dryrun` (`-d`): Only run the generation logic and validate yaml, do not write files to disk
 - `--lang` (`-l`): Specify the programming language (default: cpp), choices: cpp, julia
 
-## Running tests
-After compilation you can run rudimentary tests with
-
-    make test
 
 ## Running workflows
 To run workflows manually (for example, when working on your own fork) go to
