@@ -36,25 +36,23 @@ template <typename T>
 using EnableIfRValue = typename std::enable_if_t<!std ::is_lvalue_reference_v<T>>;
 
 namespace detail {
-  /** The minimal interface for raw data types
-   */
+  /// The minimal interface for raw data types
   struct EmptyFrameData {
     podio::CollectionIDTable getIDTable() const {
       return {};
     }
 
+    /// Try to get the buffers for a collection
     std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string&) {
       return std::nullopt;
     }
 
-    /** Get the still available, i.e. yet unpacked, collections from the raw data
-     */
+    /// Get the **still available**, i.e. yet unpacked, collections from the raw data
     std::vector<std::string> getAvailableCollections() const {
       return {};
     }
 
-    /** Get the parameters that are stored in the raw data
-     */
+    /// Get the parameters that are stored in the raw data
     std::unique_ptr<podio::GenericParameters> getParameters() {
       return std::make_unique<podio::GenericParameters>();
     }
@@ -66,14 +64,14 @@ std::optional<podio::CollectionReadBuffers> unpack(FrameDataT* data, const std::
   return data->getCollectionBuffers(name);
 }
 
-/**
- * Frame class that serves as a container of collection and meta data.
- */
+/// The Frame is a generalized (event) data container that aggregates all
+/// relevent data.
+///
+/// It is possible to store collections as well as parameters / meta data in a
+/// Frame and all I/O facilities of podio operate on Frames.
 class Frame {
-  /**
-   * Internal abstract interface for the type-erased implementation of the Frame
-   * class
-   */
+  /// Internal abstract interface for the type-erased implementation of the
+  /// Frame class
   struct FrameConcept {
     virtual ~FrameConcept() = default;
     virtual const podio::CollectionBase* get(const std::string& name) const = 0;
@@ -88,10 +86,8 @@ class Frame {
     virtual podio::CollectionIDTable getIDTable() const = 0;
   };
 
-  /**
-   * The interface implementation of the abstract FrameConcept that is necessary
-   * for a type-erased implementation of the Frame class
-   */
+  /// The interface implementation of the abstract FrameConcept that is
+  /// necessary for a type-erased implementation of the Frame class
   template <typename FrameDataT>
   struct FrameModel final : FrameConcept, public ICollectionProvider {
 
@@ -102,24 +98,20 @@ class Frame {
     FrameModel(FrameModel&&) = default;
     FrameModel& operator=(FrameModel&&) = default;
 
-    /** Try and get the collection from the internal storage and return a
-     * pointer to it if found. Otherwise return a nullptr
-     */
+    /// Try and get the collection from the internal storage and return a
+    /// pointer to it if found. Otherwise return a nullptr
     const podio::CollectionBase* get(const std::string& name) const final;
 
-    /** Try and place the collection into the internal storage and return a
-     * pointer to it. If a collection already exists or insertion fails, return
-     * a nullptr
-     */
+    /// Try and place the collection into the internal storage and return a
+    /// pointer to it. If a collection already exists or insertion fails, return
+    /// a nullptr
     const podio::CollectionBase* put(std::unique_ptr<CollectionBase> coll, const std::string& name) final;
 
-    /** Get a reference to the internally used GenericParameters
-     */
+    /// Get a reference to the internally used GenericParameters
     podio::GenericParameters& parameters() override {
       return *m_parameters;
     }
-    /** Get a const reference to the internally used GenericParameters
-     */
+    /// Get a const reference to the internally used GenericParameters
     const podio::GenericParameters& parameters() const override {
       return *m_parameters;
     };
@@ -151,117 +143,182 @@ class Frame {
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
 
 public:
-  /** Empty Frame constructor
-   */
+  /// Empty Frame constructor
   Frame();
 
-  /** Frame constructor from (almost) arbitrary raw data
-   */
+  /// Frame constructor from (almost) arbitrary raw data.
+  ///
+  /// @tparam FrameDataT Arbitrary data container that provides access to the
+  ///                    collection buffers as well as the metadata, when
+  ///                    requested by the Frame.
   template <typename FrameDataT>
   Frame(std::unique_ptr<FrameDataT>);
 
-  /** Frame constructor from (almost) arbitrary raw data.
-   *
-   * This r-value overload is mainly present for enabling the python bindings,
-   * where cppyy seems to strip the std::unique_ptr somewhere in the process
-   */
+  /// Frame constructor from (almost) arbitrary raw data.
+  ///
+  /// This r-value overload is mainly present for enabling the python bindings,
+  /// where cppyy seems to strip the std::unique_ptr somewhere in the process
+  ///
+  /// @tparam FrameDataT Arbitrary data container that provides access to the
+  ///                    collection buffers as well as the metadata, when
+  ///                    requested by the Frame.
   template <typename FrameDataT, typename = EnableIfRValue<FrameDataT>>
   Frame(FrameDataT&&);
 
-  // The frame is a non-copyable type
+  /// A Frame is move-only
   Frame(const Frame&) = delete;
+  /// A Frame is move-only
   Frame& operator=(const Frame&) = delete;
 
+  /// Frame move constructor
   Frame(Frame&&) = default;
+
+  /// Frame move assignment operator
   Frame& operator=(Frame&&) = default;
 
-  /** Frame destructor */
+  /// Frame destructor
   ~Frame() = default;
 
-  /** Get a collection from the Frame
-   */
+  /// Get a collection from the Frame by name.
+  ///
+  /// @tparam CollT The type of the desired collection
+  /// @param  name  The name of the collection
+  ///
+  /// @returns      A const reference to the collection if it is available or to
+  ///               an empty (static) collection
   template <typename CollT, typename = EnableIfCollection<CollT>>
   const CollT& get(const std::string& name) const;
 
-  /** Get a collection from the Frame. This is the pointer-to-base version for
-   * type-erased access (e.g. python interface)
-   */
+  /// Get a collection pointer from the Frame by name.
+  ///
+  /// This is a type-erased version that is also used by the python bindings.
+  ///
+  /// @returns A const pointer to a collection if it is available or a nullptr
+  ///          if it is not
   const podio::CollectionBase* get(const std::string& name) const;
 
-  /** (Destructively) move a collection into the Frame and get a const reference
-   * back for further use
-   */
+  /// (Destructively) move a collection into the Frame and get a reference to
+  /// the inserted collection back for further use.
+  ///
+  /// The collection that is passed into the Frame has to be moved into it
+  /// explicitly and the moved-from collection will be in the typical *valid but
+  /// undefined state* in c++.
+  ///
+  /// @tparam CollT The type of the collection
+  /// @param  coll  An rvalue reference to the collection to put into the Frame.
+  /// @param  name  The name under which this collection should be stored in the
+  ///               Frame
+  ///
+  /// @returns      A const reference to the collection that has just been
+  ///               inserted
   template <typename CollT, typename = EnableIfCollectionRValue<CollT>>
   const CollT& put(CollT&& coll, const std::string& name);
 
-  /** Move a collection into the Frame handing over ownership to the Frame
-   */
+  /// (Destructively) move a collection into the Frame.
+  ///
+  /// @param coll The collection that should be moved into the Frame
+  /// @param name The name under which this collection should be stored in the
+  ///             Frame
   void put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name);
 
-  /** Add a value to the parameters of the Frame (if the type is supported).
-   * Copy the value into the internal store
-   */
+  /// Add a value to the parameters of the Frame (if the type is supported).
+  ///
+  /// @tparam T    The type of the parameter. Has to be one of the types that
+  ///              is supported by GenericParameters
+  /// @param key   The name under which this parameter should be stored
+  /// @param value The value of the parameter. A copy will be put into the Frame
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline void putParameter(const std::string& key, T value) {
     m_self->parameters().setValue(key, std::move(value));
   }
 
-  /** Add a string value to the parameters of the Frame by copying it. Dedicated
-   * overload for enabling the on-the-fly conversion on the string literals.
-   */
+  /// Add a string value to the parameters of the Frame.
+  ///
+  /// This is a dedicated overload for enabling on-the-fly conversion from
+  /// string literals.
+  ///
+  /// @param key   The name under which this parameter should be stored
+  /// @param value The value of the parameter. A copy will be put into the Frame
   inline void putParameter(const std::string& key, std::string value) {
     putParameter<std::string>(key, std::move(value));
   }
 
-  /** Add a vector of strings to the parameters of the Frame (via copy).
-   * Dedicated overload for enabling on-the-fly conversions of initializer_list
-   * of string literals.
-   */
+  /// Add a vector of strings value the parameters of the Frame.
+  ///
+  /// This is a dedicated overload for enabling on-the-fly conversion from
+  /// an initializer_list of string literals
+  ///
+  /// @param key   The name under which this parameter should be stored
+  /// @param value The value of the parameter. A copy will be put into the Frame
   inline void putParameter(const std::string& key, std::vector<std::string> values) {
     putParameter<std::vector<std::string>>(key, std::move(values));
   }
 
-  /** Add a vector of values into the parameters of the Frame. Overload for
-   * catching on-the-fly conversions of initializer_lists of values.
-   */
+  /// Add a vector of values to the parameters of the Frame (if the type is
+  /// supported).
+  ///
+  /// This is a dedicated overload for enabling on-the-fly conversions of
+  /// initializer_list of values
+  ///
+  /// @tparam T    The type of the parameter. Has to be one of the types that
+  ///              is supported by GenericParameters
+  /// @param key   The name under which this parameter should be stored
+  /// @param value The value of the parameter. A copy will be put into the Frame
   template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
   inline void putParameter(const std::string& key, std::initializer_list<T>&& values) {
     putParameter<std::vector<T>>(key, std::move(values));
   }
 
-  /** Retrieve parameters via key from the internal store. Return type will
-   * either by a const reference or a value depending on the desired type.
-   */
+  /// Retrieve parameters via key from the internal store.
+  ///
+  /// The return type will either by a const reference or a value depending on
+  /// the desired type. See podio::GenericParameters for more details.
+  ///
+  /// @tparam T  The desired type of the parameter (can also be std::vector<T>)
+  /// @param key The key under which the value is stored
+  ///
+  /// @returns   The value of the parameter or an empty default value
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline podio::GenericDataReturnType<T> getParameter(const std::string& key) const {
     return m_self->parameters().getValue<T>(key);
   }
 
-  /** Get all parameters that are stored in this Frame
-   */
+  /// Retrieve all parameters stored in this Frame.
+  ///
+  /// This is mainly intended for I/O purposes and we encourage to use the Frame
+  /// functionality of getParameters or getParameterKeys in general.
+  ///
+  /// @returns The internally used GenericParameters
   inline const podio::GenericParameters& getParameters() const {
     return m_self->parameters();
   }
 
-  /** Get the keys of all stored parameters for a given type
-   */
+  /// Get the keys of all stored parameters for a given type
+  ///
+  /// @tparam T The desired parameter type
+  ///
+  /// @returns  A vector of keys for this parameter type
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline std::vector<std::string> getParameterKeys() const {
     return m_self->parameters().getKeys<T>();
   }
 
-  /** Get all **currently** available collections (including potentially
-   * unpacked ones from raw data)
-   */
+  /// Get all **currently** available collection names.
+  ///
+  /// @returns The names of all collections, including the ones that might still
+  ///          need unpacking from the internal FrameData
   std::vector<std::string> getAvailableCollections() const {
     return m_self->availableCollections();
   }
 
   // Interfaces for writing below
-  // TODO: Hide this from the public interface somehow?
-  /**
-   * Get a collection for writing (in a prepared and "ready-to-write" state)
-   */
+
+  /// Get a collection for writing.
+  ///
+  /// NOTE: This method is intended for I/O purposes only and should not be used
+  /// in other code.
+  ///
+  /// @returns The collection pointer in a prepared and "ready-to-write" state
   const podio::CollectionBase* getCollectionForWrite(const std::string& name) const {
     const auto* coll = m_self->get(name);
     if (coll) {
@@ -271,6 +328,12 @@ public:
     return coll;
   }
 
+  /// Get the internal CollectionIDTable for writing.
+  ///
+  /// NOTE: This method is intended for I/O purposes only and should not be used
+  /// in other code.
+  ///
+  /// @returns A copy of the internal collection id table
   podio::CollectionIDTable getCollectionIDTableForWrite() const {
     return m_self->getIDTable();
   }
