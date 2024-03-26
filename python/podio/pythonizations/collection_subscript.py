@@ -14,14 +14,10 @@ class CollectionSubscriptPythonizer(Pythonizer):
     @classmethod
     def callback(cls, class_, name):
         def get_item(self, i):
-            if i >= len(self):
-                raise IndexError("collection index out of range")
-            return getitem_raw(self, i)
+            try:
+                return self.at(i)
+            except cppyy.gbl.std.out_of_range as exc:
+                raise IndexError("collection index out of range") from exc
 
-        if (
-            issubclass(class_, cppyy.gbl.podio.CollectionBase)
-            and hasattr(class_, "__getitem__")
-            and hasattr(class_, "__len__")
-        ):
-            getitem_raw = class_.__getitem__
+        if issubclass(class_, cppyy.gbl.podio.CollectionBase) and hasattr(class_, "at"):
             class_.__getitem__ = get_item
