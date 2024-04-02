@@ -20,7 +20,7 @@ namespace podio {
 /// The RNTupleWriter writes podio files into ROOT files using the new RNTuple
 /// format.
 ///
-/// Each category get's its own RNTuple. Additionally, there is a podio_metadata
+/// Each category gets its own RNTuple. Additionally, there is a podio_metadata
 /// RNTuple that contains metadata that is necessary for interpreting the files
 /// for reading.
 ///

@@ -65,7 +65,7 @@ std::optional<podio::CollectionReadBuffers> unpack(FrameDataT* data, const std::
 }
 
 /// The Frame is a generalized (event) data container that aggregates all
-/// relevent data.
+/// relevant data.
 ///
 /// It is possible to store collections as well as parameters / meta data in a
 /// Frame and all I/O facilities of podio operate on Frames.

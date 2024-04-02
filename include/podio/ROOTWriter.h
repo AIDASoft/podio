@@ -23,7 +23,7 @@ class GenericParameters;
 
 /// The ROOTWriter writes podio files into ROOT files using TTrees.
 ///
-/// Each category get's its own TTree. Additionally, there is a podio_metadata
+/// Each category gets its own TTree. Additionally, there is a podio_metadata
 /// TTree that contains metadata that is necessary for interpreting the files
 /// for reading.
 ///
