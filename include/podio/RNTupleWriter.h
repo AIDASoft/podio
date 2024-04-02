@@ -25,8 +25,6 @@ public:
   RNTupleWriter(const RNTupleWriter&) = delete;
   RNTupleWriter& operator=(const RNTupleWriter&) = delete;
 
-  template <typename T>
-  void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
 
   void writeFrame(const podio::Frame& frame, const std::string& category);
   void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
@@ -49,6 +47,9 @@ public:
   checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
 
 private:
+  template <typename T>
+  void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
+
   using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
   std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
 
