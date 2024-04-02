@@ -34,57 +34,82 @@ class CollectionIDTable;
 class GenericParameters;
 struct CollectionReadBuffers;
 
-/**
- * A root reader for reading legacy podio root files that have been written
- * using the legacy, non Frame based I/O model. This reader grants Frame based
- * access to those files, by mimicking the Frame I/O functionality and the
- * interfaces of those readers.
- *
- * NOTE: Since there was only one category ("events") for those legacy podio
- * files this reader will really only work if you try to read that category, and
- * will simply return no data if you try to read anything else.
- */
+/// A root reader for reading legacy podio root files that have been written
+/// using the legacy, non Frame based I/O model. This reader grants Frame based
+/// access to those files, by mimicking the Frame I/O functionality and the
+/// interfaces of those readers.
+///
+/// NOTE: Since there was only one category ("events") for those legacy podio
+/// files this reader will really only work if you try to read that category, and
+/// will simply return no data if you try to read anything else.
 class ROOTLegacyReader {
 
 public:
+  /// Create a SIOLegacyReader
   ROOTLegacyReader() = default;
+  /// Destructor
   ~ROOTLegacyReader() = default;
 
-  // non-copyable
+  /// The SIOLegacyReader is not copy-able
   ROOTLegacyReader(const ROOTLegacyReader&) = delete;
+  /// The SIOLegacyReader is not copy-able
   ROOTLegacyReader& operator=(const ROOTLegacyReader&) = delete;
 
+  /// Open a single file for reading.
+  ///
+  /// @param filename The name of the input file
   void openFile(const std::string& filename);
 
-  void openFiles(const std::vector<std::string>& filenames);
+  /// Open multiple files for reading and then treat them as if they are one file
+  ///
+  /// NOTE: All of the files are assumed to have the same structure. Specifically
+  /// this means:
+  /// - The same categories are available from all files
+  /// - The collections that are contained in the individual categories are the
+  ///   same across all files
+  ///
+  /// This usually boils down to "the files have been written with the same
+  /// settings", e.g. they are outputs of a batched process.
+  ///
+  /// @param filenames The filenames of all input files that should be read
+  void openFiles(const std::vector<std::string>& filename);
 
-  /**
-   * Read the next data entry from which a Frame can be constructed. In case
-   * there are no more entries left, this returns a nullptr.
-   *
-   * NOTE: the category name has to be "events" in this case, as only that
-   * category is available for legacy files.
-   */
+  /// Read the next data entry from which a Frame can be constructed.
+  ///
+  /// NOTE: the category name has to be "events" in this case, as only that
+  /// category is available for legacy files.
+  ///
+  /// @returns FrameData from which a podio::Frame can be constructed if there
+  ///          are still entries left to read. Otherwise a nullptr
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string&);
 
-  /**
-   * Read the specified data entry from which a Frame can be constructed In case
-   * the entry does not exist, this returns a nullptr.
-   *
-   * NOTE: the category name has to be "events" in this case, as only that
-   * category is available for legacy files.
-   */
+  /// Read the desired data entry from which a Frame can be constructed.
+  ///
+  /// NOTE: the category name has to be "events" in this case, as only that
+  /// category is available for legacy files.
+  ///
+  /// @returns FrameData from which a podio::Frame can be constructed if the
+  ///          desired entry exists. Otherwise a nullptr
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string&, const unsigned entry);
 
-  /// Returns number of entries for a given category
-  unsigned getEntries(const std::string&) const;
+  /// Get the number of entries for the given name
+  ///
+  /// @param name The name of the category
+  ///
+  /// @returns The number of entries that are available for the category
+  unsigned getEntries(const std::string& name) const;
 
-  /// Get the build version of podio that has been used to write the current file
+  /// Get the build version of podio that has been used to write the current
+  /// file
+  ///
+  /// @returns The podio build version
   podio::version::Version currentFileVersion() const {
     return m_fileVersion;
   }
 
-  /// Get the names of all the available Frame categories in the current file(s)
+  /// Get the names of all the available Frame categories in the current file(s).
+  ///
+  /// @returns The names of the available categores from the file
   std::vector<std::string_view> getAvailableCategories() const;
 
 private:
