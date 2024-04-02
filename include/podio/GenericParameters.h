@@ -66,16 +66,14 @@ namespace detail {
 template <typename T>
 using GenericDataReturnType = typename detail::GenericDataReturnTypeHelper<T>::type;
 
-/** GenericParameters objects allow to store generic named parameters of type
- *  int, float and string or vectors of these types.
- *  They can be used  to store (user) meta data that is
- *  run, event or collection dependent.
- *  (based on lcio::LCParameters)
- *
- * @author F. Gaede, DESY
- * @date Apr 2020
- */
-
+/// GenericParameters objects allow to store generic named parameters of type
+///  int, float and string or vectors of these types.
+///  They can be used  to store (user) meta data that is
+///  run, event or collection dependent.
+///  (based on lcio::LCParameters)
+///
+/// @author F. Gaede, DESY
+/// @date Apr 2020
 class GenericParameters {
 public:
   template <typename T>

@@ -5,10 +5,8 @@
 #include <vector>
 
 namespace podio {
-/**
- * A simple helper class that allows to return related objects in a way that
- * makes it possible to use the return type in a range-based for loop.
- */
+/// A simple helper class that allows to return related objects in a way that
+/// makes it possible to use the return type in a range-based for loop.
 template <typename ReferenceType>
 class RelationRange {
 public:

@@ -16,11 +16,9 @@
 #include <vector>
 
 namespace podio {
-/**
- * The Frame data container for the SIO backend. It is constructed from the
- * compressed sio::buffers that is read from file and does all the necessary
- * unpacking and decompressing internally after construction.
- */
+/// The Frame data container for the SIO backend. It is constructed from the
+/// compressed sio::buffers that is read from file and does all the necessary
+/// unpacking and decompressing internally after construction.
 class SIOFrameData {
 
 public:
@@ -33,12 +31,10 @@ public:
   SIOFrameData(SIOFrameData&&) = default;
   SIOFrameData& operator=(SIOFrameData&&) = default;
 
-  /**
-   * Constructor from the collBuffers containing the collection data and a
-   * tableBuffer containing the necessary information for unpacking the
-   * collections. The two size parameters denote the uncompressed size of the
-   * respective buffers.
-   */
+  /// Constructor from the collBuffers containing the collection data and a
+  /// tableBuffer containing the necessary information for unpacking the
+  /// collections. The two size parameters denote the uncompressed size of the
+  /// respective buffers.
   SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize) :
       m_recBuffer(std::move(collBuffers)),
       m_tableBuffer(std::move(tableBuffer)),
