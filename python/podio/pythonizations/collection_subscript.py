@@ -19,5 +19,5 @@ class CollectionSubscriptPythonizer(Pythonizer):
             except cppyy.gbl.std.out_of_range:
                 raise IndexError("collection index out of range") from None
 
-        if issubclass(class_, cppyy.gbl.podio.CollectionBase) and hasattr(class_, "at"):
+        if issubclass(class_, cppyy.gbl.podio.CollectionBase):
             class_.__getitem__ = get_item
