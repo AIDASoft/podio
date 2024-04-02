@@ -69,8 +69,6 @@ public:
     return m_datamodelHolder.getAvailableDatamodels();
   }
 
-  void closeFile();
-
 private:
   /**
    * Initialize the given category by filling the maps with metadata information
