@@ -71,7 +71,7 @@ public:
   /// "settings", e.g. they are outputs of a batched process.
   ///
   /// @param filenames The filenames of all input files that should be read
-  void openFiles(const std::vector<std::string>& filename);
+  void openFiles(const std::vector<std::string>& filenames);
 
   /// Read the next data entry from which a Frame can be constructed.
   ///

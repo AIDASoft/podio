@@ -62,7 +62,7 @@ public:
 
   /// Open the passed file for reading.
   ///
-  /// @parame filename The path to the file to read from
+  /// @param filename The path to the file to read from
   void openFile(const std::string& filename);
 
   /// Get the build version of podio that has been used to write the current

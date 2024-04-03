@@ -248,8 +248,8 @@ public:
   /// This is a dedicated overload for enabling on-the-fly conversion from
   /// an initializer_list of string literals
   ///
-  /// @param key   The name under which this parameter should be stored
-  /// @param value The value of the parameter. A copy will be put into the Frame
+  /// @param key    The name under which this parameter should be stored
+  /// @param values The values of the parameter. A copy will be put into the Frame
   inline void putParameter(const std::string& key, std::vector<std::string> values) {
     putParameter<std::vector<std::string>>(key, std::move(values));
   }
@@ -262,8 +262,8 @@ public:
   ///
   /// @tparam T    The type of the parameter. Has to be one of the types that
   ///              is supported by GenericParameters
-  /// @param key   The name under which this parameter should be stored
-  /// @param value The value of the parameter. A copy will be put into the Frame
+  /// @param key    The name under which this parameter should be stored
+  /// @param values The values of the parameter. A copy will be put into the Frame
   template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
   inline void putParameter(const std::string& key, std::initializer_list<T>&& values) {
     putParameter<std::vector<T>>(key, std::move(values));
