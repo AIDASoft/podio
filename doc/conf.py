@@ -146,7 +146,11 @@ subprocess.check_call(
         "../python",
         "../*/*test_*.py",  # exclude tests
         "../python/podio_version.py",  # exclude convenience module
-    ]
+    ],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    env=env,
+    cwd=doc_dir,
 )
 
 print("Done with python API doc generation")
