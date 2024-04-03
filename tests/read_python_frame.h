@@ -87,6 +87,7 @@ int checkParameters(const podio::Frame& frame) {
   if (realFloats.size() != 3 || realFloats[0] != 1.23f || realFloats[1] != 4.56f || realFloats[2] != 7.89f) {
     std::cerr << "Parameter more_real_floats was not stored as correctly (expected [1.23, 4.56, 7.89], actual"
               << realFloats << ")" << std::endl;
+    return 1;
   }
 
   return 0;

@@ -249,7 +249,7 @@ class Frame:
                 raise ValueError(f"Cannot put a parameter of type {type_name} into a Frame")
 
             par_type = vec_types[0]
-            if isinstance(value[0], float):
+            if as_type is None and isinstance(value[0], float):
                 # Always store floats as doubles from the python side
                 par_type = par_type.replace("float", "double")
 
