@@ -46,14 +46,13 @@ public:
 
   /// Open multiple files for reading and then treat them as if they are one file
   ///
-  /// NOTE: All of the files are assumed to have the same structure. Specifically
+  /// \note All of the files are assumed to have the same structure. Specifically
   /// this means:
   /// - The same categories are available from all files
   /// - The collections that are contained in the individual categories are the
   ///   same across all files
-  ///
-  /// This usually boils down to "the files have been written with the same
-  /// settings", e.g. they are outputs of a batched process.
+  /// - This usually boils down to "the files have been written with the same
+  ///   "settings", e.g. they are outputs of a batched process.
   ///
   /// @param filenames The filenames of all input files that should be read
   void openFiles(const std::vector<std::string>& filename);

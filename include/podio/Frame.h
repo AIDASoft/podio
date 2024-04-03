@@ -315,7 +315,7 @@ public:
 
   /// Get a collection for writing.
   ///
-  /// NOTE: This method is intended for I/O purposes only and should not be used
+  /// \note This method is intended for I/O purposes only and should not be used
   /// in other code.
   ///
   /// @returns The collection pointer in a prepared and "ready-to-write" state
@@ -330,7 +330,7 @@ public:
 
   /// Get the internal CollectionIDTable for writing.
   ///
-  /// NOTE: This method is intended for I/O purposes only and should not be used
+  /// \note This method is intended for I/O purposes only and should not be used
   /// in other code.
   ///
   /// @returns A copy of the internal collection id table

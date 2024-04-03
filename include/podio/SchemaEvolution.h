@@ -83,7 +83,7 @@ public:
   /// @param collType The fully qualified collection type
   ///
   /// @returns CollectionReadBuffers that have been evolved to the current
-  /// version. NOTE that these could also be the input buffers.
+  /// version. \note that these could also be the unchanged input buffers.
   podio::CollectionReadBuffers evolveBuffers(const podio::CollectionReadBuffers& oldBuffers, SchemaVersionT fromVersion,
                                              const std::string& collType) const;
 

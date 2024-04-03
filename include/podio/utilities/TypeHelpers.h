@@ -68,7 +68,7 @@ namespace detail {
   /// std::tuple<int, float> -> std::tuple<std::vector<int>, std::vector<float>>
   /// if the passed template is std::vector
   ///
-  /// NOTE: making the template template parameter to Template variadic because
+  /// \note making the template template parameter to Template variadic because
   /// clang will not be satisfied otherwise if we use it with, e.g. std::vector.
   /// This will also make root dictionary generation fail. GCC works without this
   /// small workaround and is standard compliant in this case, whereas clang is
@@ -141,7 +141,7 @@ namespace detail {
   /// Helper struct to homogenize the (type) access for things that behave like
   /// maps, e.g. vectors of pairs (and obviously maps).
   ///
-  /// NOTE: This is not SFINAE friendly.
+  /// \note This is not SFINAE friendly.
   template <typename T, typename IsMap = std::bool_constant<isMap<T>>,
             typename IsVector = std::bool_constant<isVector<T> && (std::tuple_size<typename T::value_type>() == 2)>>
   struct MapLikeTypeHelper {};
@@ -181,7 +181,7 @@ namespace detail {
   /// Variable template for determining whether type T is a podio generated
   /// handle class.
   ///
-  /// NOTE: this basically just checks the existence of the mutable_type and
+  /// \note this basically just checks the existence of the mutable_type and
   /// object_type type members, so it is rather easy to fool this check if one
   /// wanted to. However, for our purposes we mainly need it for a static_assert
   /// to have more understandable compilation error message.

@@ -29,7 +29,7 @@ class RNTupleWriter {
 public:
   /// Create a RNTupleWriter to write to a file.
   ///
-  /// NOTE: Existing files will be overwritten without warning.
+  /// \note Existing files will be overwritten without warning.
   ///
   /// @param filename The path to the file that will be created.
   RNTupleWriter(const std::string& filename);
@@ -48,7 +48,8 @@ public:
   /// Store the given frame with the given category.
   ///
   /// This stores all available collections from the Frame.
-  /// NOTE: The contents of the first Frame that is written in this way
+  ///
+  /// \note The contents of the first Frame that is written in this way
   /// determines the contents that will be written for all subsequent Frames.
   ///
   /// @param frame    The Frame to store
@@ -58,7 +59,8 @@ public:
   /// Store the given Frame with the given category.
   ///
   /// This stores only the desired collections and not the complete frame.
-  /// NOTE: The contents of the first Frame that is written in this way
+  ///
+  /// \note The contents of the first Frame that is written in this way
   /// determines the contents that will be written for all subsequent Frames.
   ///
   /// @param frame        The Frame to store
@@ -70,14 +72,14 @@ public:
   /// Write the current file, including all the necessary metadata to read it
   /// again.
   ///
-  /// NOTE: The destructor will also call this, so letting a RNTupleWriter go out
+  /// \note The destructor will also call this, so letting a RNTupleWriter go out
   /// of scope is also a viable way to write a readable file
   void finish();
 
   /// Check whether the collsToWrite are consistent with the state of the passed
   /// category.
   ///
-  /// NOTE: This will only be a meaningful check if the first Frame of the passed
+  /// \note This will only be a meaningful check if the first Frame of the passed
   /// category has already been written. Also, this check is rather expensive as
   /// it has to effectively do two set differences.
   ///

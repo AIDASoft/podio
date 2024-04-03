@@ -26,7 +26,7 @@ class SIOWriter {
 public:
   /// Create a SIOWriter to write to a file.
   ///
-  /// NOTE: Existing files will be overwritten without warning.
+  /// \note Existing files will be overwritten without warning.
   ///
   /// @param filename The path to the file that will be created.
   SIOWriter(const std::string& filename);
@@ -66,7 +66,7 @@ public:
   /// Write the current file, including all the necessary metadata to read it
   /// again.
   ///
-  /// NOTE: The destructor will also call this, so letting a SIOWriter go out
+  /// \note The destructor will also call this, so letting a SIOWriter go out
   /// of scope is also a viable way to write a readable file
   void finish();
 
