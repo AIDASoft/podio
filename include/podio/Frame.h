@@ -177,6 +177,10 @@ public:
   Frame& operator=(Frame&&) = default;
 
   /// Frame destructor
+  ///
+  /// \note Since the Frame owns all the collections that have been put into it,
+  /// or that can be obtained from it, this invalidates all references to these
+  /// collections.
   ~Frame() = default;
 
   /// Get a collection from the Frame by name.
