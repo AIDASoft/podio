@@ -108,7 +108,7 @@ public:
 
   /// Get the names of all the available Frame categories in the current file(s).
   ///
-  /// @returns The names of the available categores from the file
+  /// @returns The names of the available categories from the file
   std::vector<std::string_view> getAvailableCategories() const;
 
   /// Get the datamodel definition for the given name

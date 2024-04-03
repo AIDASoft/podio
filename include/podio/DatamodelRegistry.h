@@ -97,7 +97,7 @@ public:
   /// @returns The name of the datamodel
   const std::string& getDatamodelName(size_t index) const;
 
-  /// Register a datamodel return the index in the registry.
+  /// Register a datamodel and return its index in the registry.
   ///
   /// This is the hook that is called during dynamic loading of an EDM to
   /// register information for this EDM. If an EDM has already been registered

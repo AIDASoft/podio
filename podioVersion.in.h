@@ -33,9 +33,9 @@
 
 namespace podio::version {
 
-/// Version class consisting of 3 16 bit unsigned integers to hold the major,
+/// Version class consisting of three 16 bit unsigned integers to hold the major,
 /// minor and patch version. Provides constexpr comparison operators that allow
-/// to use this class in constexpr-if clauses.
+/// one to use this class in constexpr-if clauses.
 struct Version {
   uint16_t major{0};
   uint16_t minor{0};

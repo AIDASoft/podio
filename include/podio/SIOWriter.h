@@ -33,8 +33,7 @@ public:
 
   /// SIOWriter destructor
   ///
-  /// This also takes care of writing all the necessary metadata in order to be
-  /// able to read files back again.
+  /// This also takes care of writing all the necessary metadata to read files back again.
   ~SIOWriter();
 
   /// The SIOWriter is not copy-able

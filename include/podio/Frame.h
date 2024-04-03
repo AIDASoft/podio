@@ -271,7 +271,7 @@ public:
 
   /// Retrieve parameters via key from the internal store.
   ///
-  /// The return type will either by a const reference or a value depending on
+  /// The return type will either be a const reference or a value depending on
   /// the desired type. See podio::GenericParameters for more details.
   ///
   /// @tparam T  The desired type of the parameter (can also be std::vector<T>)
@@ -305,7 +305,7 @@ public:
 
   /// Get all **currently** available collection names.
   ///
-  /// @returns The names of all collections, including the ones that might still
+  /// @returns The names of all collections, including those that might still
   ///          need unpacking from the internal FrameData
   std::vector<std::string> getAvailableCollections() const {
     return m_self->availableCollections();

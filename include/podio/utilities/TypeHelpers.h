@@ -173,7 +173,7 @@ namespace detail {
   template <typename T>
   using hasMutable_t = typename T::mutable_type;
 
-  /// Detector for checking the existance of an object_type type member. Used to
+  /// Detector for checking the existence of an object_type type member. Used to
   /// determine whether T is (or could be) a podio generated mutable handle.
   template <typename T>
   using hasObject_t = typename T::object_type;
@@ -181,7 +181,7 @@ namespace detail {
   /// Variable template for determining whether type T is a podio generated
   /// handle class.
   ///
-  /// NOTE: this basically just checks the existance of the mutable_type and
+  /// NOTE: this basically just checks the existence of the mutable_type and
   /// object_type type members, so it is rather easy to fool this check if one
   /// wanted to. However, for our purposes we mainly need it for a static_assert
   /// to have more understandable compilation error message.

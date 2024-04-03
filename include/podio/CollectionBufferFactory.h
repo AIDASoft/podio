@@ -11,7 +11,7 @@
 
 namespace podio {
 
-/// The CollectionBufferFactory allows to create buffers of known datatypes,
+/// The CollectionBufferFactory allows one to create buffers of known datatypes,
 /// which can then be populated by e.g. readers. In order to support schema
 /// evolution, the buffers have a version and this factory will also require a
 /// schema version to create buffers.
