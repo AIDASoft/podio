@@ -138,7 +138,15 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   m_entries[category] = entNum + 1;
 
   ROOTFrameData::BufferMap buffers;
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+  // We need to create a non-bare entry here, because the entries for the
+  // parameters are not explicitly (re)set and we need them default initialized.
+  // In principle we would only need a bare entry for the collection data, since
+  // we set all the fields there in any case.
+  auto dentry = m_readers[category][0]->GetModel().CreateEntry();
+#else
   auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
+#endif
 
   for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
     const auto& collType = m_collectionInfo[category].type[i];
@@ -157,31 +165,47 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     if (m_collectionInfo[category].isSubsetCollection[i]) {
       auto brName = root_utils::subsetBranch(m_collectionInfo[category].name[i]);
       auto vec = new std::vector<podio::ObjectID>;
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+      dentry->BindRawPtr(brName, vec);
+#else
       dentry->CaptureValueUnsafe(brName, vec);
+#endif
       collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
     } else {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+      dentry->BindRawPtr(m_collectionInfo[category].name[i], collBuffers.data);
+#else
       dentry->CaptureValueUnsafe(m_collectionInfo[category].name[i], collBuffers.data);
+#endif
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
       for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
         const auto relName = relVecNames.relations[j];
         auto vec = new std::vector<podio::ObjectID>;
         const auto brName = root_utils::refBranch(m_collectionInfo[category].name[i], relName);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+        dentry->BindRawPtr(brName, vec);
+#else
         dentry->CaptureValueUnsafe(brName, vec);
+#endif
         collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
       }
 
       for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
         const auto vecName = relVecNames.vectorMembers[j];
         const auto brName = root_utils::vecBranch(m_collectionInfo[category].name[i], vecName);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
+        dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
+#else
         dentry->CaptureValueUnsafe(brName, collBuffers.vectorMembers->at(j).second);
+#endif
       }
     }
 
     buffers.emplace(m_collectionInfo[category].name[i], std::move(collBuffers));
   }
 
-  m_readers[category][0]->LoadEntry(entNum);
+  m_readers[category][0]->LoadEntry(entNum, *dentry);
 
   auto parameters = readEventMetaData(category, entNum);
 
