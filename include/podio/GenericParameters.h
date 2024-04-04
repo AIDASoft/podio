@@ -87,7 +87,7 @@ public:
   GenericParameters();
 
   /// GenericParameters are copyable
-  /// \note This is currently mainly done to keep the ROOT I/O happy, because
+  /// @note This is currently mainly done to keep the ROOT I/O happy, because
   /// that needs a copy constructor
   GenericParameters(const GenericParameters&);
   GenericParameters& operator=(const GenericParameters&) = delete;

@@ -32,7 +32,7 @@ class ROOTWriter {
 public:
   /// Create a ROOTWriter to write to a file.
   ///
-  /// \note Existing files will be overwritten without warning.
+  /// @note Existing files will be overwritten without warning.
   ///
   /// @param filename The path to the file that will be created.
   ROOTWriter(const std::string& filename);
@@ -51,7 +51,7 @@ public:
   ///
   /// This stores all available collections from the Frame.
   ///
-  /// \note The contents of the first Frame that is written in this way
+  /// @note The contents of the first Frame that is written in this way
   /// determines the contents that will be written for all subsequent Frames.
   ///
   /// @param frame    The Frame to store
@@ -62,7 +62,7 @@ public:
   ///
   /// This stores only the desired collections and not the complete frame.
   ///
-  /// \note The contents of the first Frame that is written in this way
+  /// @note The contents of the first Frame that is written in this way
   /// determines the contents that will be written for all subsequent Frames.
   ///
   /// @param frame        The Frame to store
@@ -74,14 +74,14 @@ public:
   /// Write the current file, including all the necessary metadata to read it
   /// again.
   ///
-  /// \note The destructor will also call this, so letting a ROOTWriter go out
+  /// @note The destructor will also call this, so letting a ROOTWriter go out
   /// of scope is also a viable way to write a readable file
   void finish();
 
   /// Check whether the collsToWrite are consistent with the state of the passed
   /// category.
   ///
-  /// \note This will only be a meaningful check if the first Frame of the passed
+  /// @note This will only be a meaningful check if the first Frame of the passed
   /// category has already been written. Also, this check is rather expensive as
   /// it has to effectively do two set differences.
   ///
@@ -103,7 +103,7 @@ private:
   using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
 
   // collectionID, collectionType, subsetCollection
-  // \note same as in rootUtils.h private header!
+  // @note same as in rootUtils.h private header!
   using CollectionInfoT = std::tuple<uint32_t, std::string, bool, unsigned int>;
 
   /// Helper struct to group together all necessary state to write / process a

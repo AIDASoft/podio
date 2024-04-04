@@ -178,7 +178,7 @@ public:
 
   /// Frame destructor
   ///
-  /// \note Since the Frame owns all the collections that have been put into it,
+  /// @note Since the Frame owns all the collections that have been put into it,
   /// or that can be obtained from it, this invalidates all references to these
   /// collections.
   ~Frame() = default;
@@ -319,7 +319,7 @@ public:
 
   /// Get a collection for writing.
   ///
-  /// \note This method is intended for I/O purposes only and should not be used
+  /// @note This method is intended for I/O purposes only and should not be used
   /// in other code.
   ///
   /// @returns The collection pointer in a prepared and "ready-to-write" state
@@ -334,7 +334,7 @@ public:
 
   /// Get the internal CollectionIDTable for writing.
   ///
-  /// \note This method is intended for I/O purposes only and should not be used
+  /// @note This method is intended for I/O purposes only and should not be used
   /// in other code.
   ///
   /// @returns A copy of the internal collection id table

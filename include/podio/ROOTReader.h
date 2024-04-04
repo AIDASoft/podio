@@ -61,7 +61,7 @@ public:
 
   /// Open multiple files for reading and then treat them as if they are one file
   ///
-  /// \note All of the files are assumed to have the same structure. Specifically
+  /// @note All of the files are assumed to have the same structure. Specifically
   /// this means:
   /// - The same categories are available from all files
   /// - The collections that are contained in the individual categories are the

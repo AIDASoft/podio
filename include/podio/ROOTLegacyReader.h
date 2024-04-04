@@ -39,7 +39,7 @@ struct CollectionReadBuffers;
 /// access to those files, by mimicking the Frame I/O functionality and the
 /// interfaces of those readers.
 ///
-/// \note Since there was only one category ("events") for those legacy podio
+/// @note Since there was only one category ("events") for those legacy podio
 /// files this reader will really only work if you try to read that category, and
 /// will simply return no data if you try to read anything else.
 class ROOTLegacyReader {
@@ -62,7 +62,7 @@ public:
 
   /// Open multiple files for reading and then treat them as if they are one file
   ///
-  /// \note All of the files are assumed to have the same structure. Specifically
+  /// @note All of the files are assumed to have the same structure. Specifically
   /// this means:
   /// - The collections that are contained in the individual event are always the
   ///   same
@@ -75,7 +75,7 @@ public:
 
   /// Read the next data entry from which a Frame can be constructed.
   ///
-  /// \note the category name has to be "events" in this case, as only that
+  /// @note the category name has to be "events" in this case, as only that
   /// category is available for legacy files.
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if there
@@ -84,7 +84,7 @@ public:
 
   /// Read the desired data entry from which a Frame can be constructed.
   ///
-  /// \note the category name has to be "events" in this case, as only that
+  /// @note the category name has to be "events" in this case, as only that
   /// category is available for legacy files.
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
