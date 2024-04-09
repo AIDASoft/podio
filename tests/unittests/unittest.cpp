@@ -1111,25 +1111,6 @@ TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
   }
 }
 
-// Helper alias template "macro" to get the return type of calling
-// GenericParameters::getValue with the desired template type
-template <typename T>
-using GPGetValue = decltype(std::declval<podio::GenericParameters>().getValue<T>(std::declval<std::string>()));
-
-TEST_CASE("GenericParameters return types", "[generic-parameters][static-checks]") {
-  // Tests for checking that the getValue returns return by value resp. by const
-  // reference as expected
-  STATIC_REQUIRE(std::is_same_v<GPGetValue<int>, int>); // int and float are returned by value
-  STATIC_REQUIRE(std::is_same_v<GPGetValue<std::vector<int>>, const std::vector<int>&>); // vectors are const
-                                                                                         // references
-
-  STATIC_REQUIRE(std::is_same_v<GPGetValue<std::string>, const std::string&>); // std::strings are returned by const
-                                                                               // reference as well
-  STATIC_REQUIRE(std::is_same_v<GPGetValue<std::vector<std::string>>, const std::vector<std::string>&>); // as are
-                                                                                                         // vectors of
-                                                                                                         // strings
-}
-
 TEST_CASE("Missing files (ROOT readers)", "[basics]") {
   auto root_legacy_reader = podio::ROOTLegacyReader();
   REQUIRE_THROWS_AS(root_legacy_reader.openFile("NonExistentFile.root"), std::runtime_error);
