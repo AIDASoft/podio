@@ -1007,35 +1007,35 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   // Check that GenericParameters work as intended
   auto gp = podio::GenericParameters{};
 
-  gp.setValue("anInt", 42);
-  REQUIRE(gp.getValue<int>("anInt") == 42);
+  gp.set("anInt", 42);
+  REQUIRE(*gp.get<int>("anInt") == 42);
   // Make sure that resetting a value with the same key works
-  gp.setValue("anInt", -42);
-  REQUIRE(gp.getValue<int>("anInt") == -42);
+  gp.set("anInt", -42);
+  REQUIRE(*gp.get<int>("anInt") == -42);
 
   // Make sure that passing a string literal is converted to a string on the fly
-  gp.setValue("aString", "const char initialized");
-  REQUIRE(gp.getValue<std::string>("aString") == "const char initialized");
+  gp.set("aString", "const char initialized");
+  REQUIRE(*gp.get<std::string>("aString") == "const char initialized");
 
-  gp.setValue("aStringVec", {"init", "from", "const", "chars"});
-  const auto& stringVec = gp.getValue<std::vector<std::string>>("aStringVec");
+  gp.set("aStringVec", {"init", "from", "const", "chars"});
+  const auto stringVec = gp.get<std::vector<std::string>>("aStringVec").value();
   REQUIRE(stringVec.size() == 4);
   REQUIRE(stringVec[0] == "init");
   REQUIRE(stringVec[3] == "chars");
 
   // Check that storing double values works
-  gp.setValue("double", 1.234);
-  gp.setValue("manyDoubles", {1.23, 4.56, 7.89});
-  REQUIRE(gp.getValue<double>("double") == 1.234);
-  const auto& storedDoubles = gp.getValue<std::vector<double>>("manyDoubles");
+  gp.set("double", 1.234);
+  gp.set("manyDoubles", {1.23, 4.56, 7.89});
+  REQUIRE(gp.get<double>("double") == 1.234);
+  const auto storedDoubles = gp.get<std::vector<double>>("manyDoubles").value();
   REQUIRE(storedDoubles.size() == 3);
   REQUIRE(storedDoubles[0] == 1.23);
   REQUIRE(storedDoubles[1] == 4.56);
   REQUIRE(storedDoubles[2] == 7.89);
 
   // Check that passing an initializer_list creates the vector on the fly
-  gp.setValue("manyInts", {1, 2, 3, 4});
-  const auto& ints = gp.getValue<std::vector<int>>("manyInts");
+  gp.set("manyInts", {1, 2, 3, 4});
+  const auto ints = gp.get<std::vector<int>>("manyInts").value();
   REQUIRE(ints.size() == 4);
   for (int i = 0; i < 4; ++i) {
     REQUIRE(ints[i] == i + 1);
@@ -1043,72 +1043,71 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
 
   auto floats = std::vector<float>{3.14f, 2.718f};
   // This stores a copy of the current value
-  gp.setValue("someFloats", floats);
+  gp.set("someFloats", floats);
   // Hence, modifying the original vector will not be reflected
   floats.push_back(42.f);
   REQUIRE(floats.size() == 3);
 
-  const auto& storedFloats = gp.getValue<std::vector<float>>("someFloats");
+  const auto storedFloats = gp.get<std::vector<float>>("someFloats").value();
   REQUIRE(storedFloats.size() == 2);
   REQUIRE(storedFloats[0] == 3.14f);
   REQUIRE(storedFloats[1] == 2.718f);
 
   // We can at this point reset this to a single value with the same key even if
   // it has been a vector before
-  gp.setValue("someFloats", 12.34f);
-  REQUIRE(gp.getValue<float>("someFloats") == 12.34f);
+  gp.set("someFloats", 12.34f);
+  REQUIRE(*gp.get<float>("someFloats") == 12.34f);
 
-  // Missing values return the default initialized ones
-  REQUIRE(gp.getValue<int>("MissingValue") == int{});
-  REQUIRE(gp.getValue<float>("MissingValue") == float{});
-  REQUIRE(gp.getValue<std::string>("MissingValue") == std::string{}); // NOLINT(readability-container-size-empty): We
-                                                                      // want the explicit comparison here
+  // Missing values return an empty optional
+  REQUIRE_FALSE(gp.get<int>("Missing"));
+  REQUIRE_FALSE(gp.get<float>("Missing"));
+  REQUIRE_FALSE(gp.get<std::string>("Missing"));
 
   // Same for vectors
-  REQUIRE(gp.getValue<std::vector<int>>("MissingValue").empty());
-  REQUIRE(gp.getValue<std::vector<float>>("MissingValue").empty());
-  REQUIRE(gp.getValue<std::vector<std::string>>("MissingValue").empty());
+  REQUIRE_FALSE(gp.get<std::vector<int>>("Missing"));
+  REQUIRE_FALSE(gp.get<std::vector<float>>("Missing"));
+  REQUIRE_FALSE(gp.get<std::vector<std::string>>("Missing"));
 }
 
 TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
   // Tests for making sure that generic parameters can be moved / copied correctly
   auto originalParams = podio::GenericParameters{};
-  originalParams.setValue("int", 42);
-  originalParams.setValue("ints", {1, 2});
-  originalParams.setValue("float", 3.14f);
-  originalParams.setValue("double", 2 * 3.14);
-  originalParams.setValue("strings", {"one", "two", "three"});
+  originalParams.set("int", 42);
+  originalParams.set("ints", {1, 2});
+  originalParams.set("float", 3.14f);
+  originalParams.set("double", 2 * 3.14);
+  originalParams.set("strings", {"one", "two", "three"});
 
   SECTION("Copy constructor") {
     auto copiedParams = originalParams;
-    REQUIRE(copiedParams.getValue<int>("int") == 42);
-    REQUIRE(copiedParams.getValue<std::vector<int>>("ints")[1] == 2);
-    REQUIRE(copiedParams.getValue<float>("float") == 3.14f);
-    REQUIRE(copiedParams.getValue<double>("double") == 2 * 3.14);
-    REQUIRE(copiedParams.getValue<std::vector<std::string>>("strings")[0] == "one");
+    REQUIRE(*copiedParams.get<int>("int") == 42);
+    REQUIRE(copiedParams.get<std::vector<int>>("ints").value()[1] == 2);
+    REQUIRE(*copiedParams.get<float>("float") == 3.14f);
+    REQUIRE(*copiedParams.get<double>("double") == 2 * 3.14);
+    REQUIRE(copiedParams.get<std::vector<std::string>>("strings").value()[0] == "one");
 
     // Make sure these are truly independent copies now
-    copiedParams.setValue("anotherDouble", 1.2345);
-    REQUIRE(originalParams.getValue<double>("anotherDouble") == double{});
+    copiedParams.set("anotherDouble", 1.2345);
+    REQUIRE_FALSE(originalParams.get<double>("anotherDouble"));
   }
 
   SECTION("Move constructor") {
     auto copiedParams = std::move(originalParams);
-    REQUIRE(copiedParams.getValue<int>("int") == 42);
-    REQUIRE(copiedParams.getValue<std::vector<int>>("ints")[1] == 2);
-    REQUIRE(copiedParams.getValue<float>("float") == 3.14f);
-    REQUIRE(copiedParams.getValue<double>("double") == 2 * 3.14);
-    REQUIRE(copiedParams.getValue<std::vector<std::string>>("strings")[0] == "one");
+    REQUIRE(copiedParams.get<int>("int") == 42);
+    REQUIRE(copiedParams.get<std::vector<int>>("ints").value()[1] == 2);
+    REQUIRE(copiedParams.get<float>("float") == 3.14f);
+    REQUIRE(copiedParams.get<double>("double") == 2 * 3.14);
+    REQUIRE(copiedParams.get<std::vector<std::string>>("strings").value()[0] == "one");
   }
 
   SECTION("Move assignment") {
     auto copiedParams = podio::GenericParameters{};
     copiedParams = std::move(originalParams);
-    REQUIRE(copiedParams.getValue<int>("int") == 42);
-    REQUIRE(copiedParams.getValue<std::vector<int>>("ints")[1] == 2);
-    REQUIRE(copiedParams.getValue<float>("float") == 3.14f);
-    REQUIRE(copiedParams.getValue<double>("double") == 2 * 3.14);
-    REQUIRE(copiedParams.getValue<std::vector<std::string>>("strings")[0] == "one");
+    REQUIRE(copiedParams.get<int>("int") == 42);
+    REQUIRE(copiedParams.get<std::vector<int>>("ints").value()[1] == 2);
+    REQUIRE(copiedParams.get<float>("float") == 3.14f);
+    REQUIRE(copiedParams.get<double>("double") == 2 * 3.14);
+    REQUIRE(copiedParams.get<std::vector<std::string>>("strings").value()[0] == "one");
   }
 }
 
