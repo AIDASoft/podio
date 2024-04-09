@@ -93,9 +93,7 @@ protected:
   podio::CollectionReadBuffers m_buffers{};
 };
 
-/**
- * A dedicated block for handling the I/O of the CollectionIDTable
- */
+/// A dedicated block for handling the I/O of the CollectionIDTable
 class SIOCollectionIDTableBlock : public sio::block {
 public:
   SIOCollectionIDTableBlock() : sio::block("CollectionIDs", sio::version::encode_version(0, 4)) {
@@ -152,9 +150,7 @@ struct SIOVersionBlock : public sio::block {
   podio::version::Version version{};
 };
 
-/**
- * A block for handling the EventMeta data
- */
+/// A block for handling the EventMeta data
 class SIOEventMetaDataBlock : public sio::block {
 public:
   SIOEventMetaDataBlock() : sio::block("EventMetaData", sio::version::encode_version(0, 2)) {
@@ -169,11 +165,9 @@ public:
   podio::GenericParameters* metadata{nullptr};
 };
 
-/**
- * A block to serialize anything that behaves similar in iterating as a
- * map<KeyT, ValueT>, e.g. vector<tuple<KeyT, ValueT>>, which is what is used
- * internally to represent the data to be written.
- */
+/// A block to serialize anything that behaves similar in iterating as a
+/// map<KeyT, ValueT>, e.g. vector<tuple<KeyT, ValueT>>, which is what is used
+/// internally to represent the data to be written.
 template <typename KeyT, typename ValueT>
 struct SIOMapBlock : public sio::block {
   SIOMapBlock() : sio::block("SIOMapBlock", sio::version::encode_version(0, 1)) {
@@ -195,9 +189,7 @@ struct SIOMapBlock : public sio::block {
   std::vector<std::tuple<KeyT, ValueT>> mapData{};
 };
 
-/**
- * A block for handling the run and collection meta data
- */
+/// A block for handling the run and collection meta data
 class SIONumberedMetaDataBlock : public sio::block {
 public:
   SIONumberedMetaDataBlock(const std::string& name) : sio::block(name, sio::version::encode_version(0, 2)) {
@@ -244,15 +236,11 @@ private:
   /// Status code for loading shared SIOBlocks libraries
   enum class LoadStatus : short { Success = 0, AlreadyLoaded = 1, Error = 2 };
 
-  /**
-   * Load a library with the given name via dlopen
-   */
+  /// Load a library with the given name via dlopen
   LoadStatus loadLib(const std::string& libname);
 
-  /**
-   * Get all files that are found on LD_LIBRARY_PATH and that have "SioBlocks"
-   * in their name together with the directory they are in
-   */
+  /// Get all files that are found on LD_LIBRARY_PATH and that have "SioBlocks"
+  /// in their name together with the directory they are in
   static std::vector<std::tuple<std::string, std::string>> getLibNames();
 
   std::map<std::string, void*> _loadedLibs{};
@@ -287,15 +275,13 @@ public:
 
   size_t getNRecords(const std::string& name) const;
 
-  /** Get the position of the iEntry-th record with the given name. If no entry
-   * with the given name is recorded, return 0. Note there is no internal check
-   * on whether the given name actually has iEntry records. Use getNRecords to
-   * check for that if necessary.
-   */
+  /// Get the position of the iEntry-th record with the given name. If no entry
+  /// with the given name is recorded, return 0. Note there is no internal check
+  /// on whether the given name actually has iEntry records. Use getNRecords to
+  /// check for that if necessary.
   PositionType getPosition(const std::string& name, unsigned iEntry = 0) const;
 
-  /** Get all the record names that are stored in this TOC record
-   */
+  /// Get all the record names that are stored in this TOC record
   std::vector<std::string_view> getRecordNames() const;
 
 private:

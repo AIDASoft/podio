@@ -149,7 +149,10 @@ class Frame:
 
         Returns:
             podio.CollectionBase: The reference to the collection that has been put
-                into the Frame. NOTE: That mutating this collection is not allowed.
+                into the Frame.
+
+        Note:
+           Mutating the returned collection is not allowed.
 
         Raises:
             ValueError: If collection is not actually a podio.CollectionBase
@@ -274,8 +277,9 @@ class Frame:
     def get_parameters(self):
         """Get the complete podio::GenericParameters object stored in this Frame.
 
-        NOTE: This is mainly intended for dumping things, for actually obtaining
-        parameters please use get_parameter
+        Note:
+            This is mainly intended for dumping things, for actually obtaining
+            parameters please use get_parameter
 
         Returns:
             podio.GenericParameters: The stored generic parameters
