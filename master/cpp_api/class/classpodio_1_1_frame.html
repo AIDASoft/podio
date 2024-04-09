@@ -553,7 +553,8 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5FrameE">
 <span id="_CPPv3N5podio5FrameE"></span><span id="_CPPv2N5podio5FrameE"></span><span id="podio::Frame"></span><span class="target" id="classpodio_1_1_frame"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Frame</span></span></span><a class="headerlink" href="#_CPPv4N5podio5FrameE" title="Link to this definition"></a><br /></dt>
-<dd><p>Frame class that serves as a container of collection and meta data. </p>
+<dd><p>The Frame is a generalized (event) data container that aggregates all relevant data. </p>
+<p>It is possible to store collections as well as parameters / meta data in a Frame and all I/O facilities of podio operate on Frames. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -566,129 +567,272 @@
 <dt class="sig sig-object cpp" id="_CPPv4I0EN5podio5Frame5FrameENSt10unique_ptrI10FrameDataTEE">
 <span id="_CPPv3I0EN5podio5Frame5FrameENSt10unique_ptrI10FrameDataTEE"></span><span id="_CPPv2I0EN5podio5Frame5FrameENSt10unique_ptrI10FrameDataTEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FrameDataT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1a307f8698f914c2467bc8f553450ad950"></span><span class="sig-name descname"><span class="n"><span class="pre">Frame</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN5podio5Frame5FrameENSt10unique_ptrI10FrameDataTEE" title="podio::Frame::Frame::FrameDataT"><span class="n"><span class="pre">FrameDataT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5podio5Frame5FrameENSt10unique_ptrI10FrameDataTEE" title="Link to this definition"></a><br /></dt>
 <dd><p>Frame constructor from (almost) arbitrary raw data. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FrameDataT</strong> – Arbitrary data container that provides access to the collection buffers as well as the metadata, when requested by the Frame. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN5podio5Frame5FrameERR10FrameDataT">
 <span id="_CPPv3I00EN5podio5Frame5FrameERR10FrameDataT"></span><span id="_CPPv2I00EN5podio5Frame5FrameERR10FrameDataT"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FrameDataT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_frame_8h.html#_CPPv4I0EN5podio14EnableIfRValueE" title="podio::EnableIfRValue"><span class="n"><span class="pre">EnableIfRValue</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame5FrameERR10FrameDataT" title="podio::Frame::Frame::FrameDataT"><span class="n"><span class="pre">FrameDataT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1a9ab8be340394fbbec7d2ad80b01389b0"></span><span class="sig-name descname"><span class="n"><span class="pre">Frame</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame5FrameERR10FrameDataT" title="podio::Frame::Frame::FrameDataT"><span class="n"><span class="pre">FrameDataT</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio5Frame5FrameERR10FrameDataT" title="Link to this definition"></a><br /></dt>
 <dd><p>Frame constructor from (almost) arbitrary raw data. </p>
-<p>This r-value overload is mainly present for enabling the python bindings, where cppyy seems to strip the std::unique_ptr somewhere in the process </p>
+<p>This r-value overload is mainly present for enabling the python bindings, where cppyy seems to strip the std::unique_ptr somewhere in the process</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FrameDataT</strong> – Arbitrary data container that provides access to the collection buffers as well as the metadata, when requested by the Frame. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5Frame5FrameERK5Frame">
 <span id="_CPPv3N5podio5Frame5FrameERK5Frame"></span><span id="_CPPv2N5podio5Frame5FrameERK5Frame"></span><span id="podio::Frame::Frame__FrameCR"></span><span class="target" id="classpodio_1_1_frame_1a63fe82796073911c251e82a90bf6a1e3"></span><span class="sig-name descname"><span class="n"><span class="pre">Frame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio5Frame5FrameERK5Frame" title="podio::Frame::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio5Frame5FrameERK5Frame" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>A Frame is move-only. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5FrameaSERK5Frame">
 <span id="_CPPv3N5podio5FrameaSERK5Frame"></span><span id="_CPPv2N5podio5FrameaSERK5Frame"></span><span id="podio::Frame::assign-operator__FrameCR"></span><span class="target" id="classpodio_1_1_frame_1a32e1243b2bbeb0624b46b25e547d5728"></span><a class="reference internal" href="#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio5FrameaSERK5Frame" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>A Frame is move-only. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5Frame5FrameERR5Frame">
 <span id="_CPPv3N5podio5Frame5FrameERR5Frame"></span><span id="_CPPv2N5podio5Frame5FrameERR5Frame"></span><span id="podio::Frame::Frame__FrameRR"></span><span class="target" id="classpodio_1_1_frame_1a758c740da76e6882f1a0a4163e037b07"></span><span class="sig-name descname"><span class="n"><span class="pre">Frame</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5podio5Frame5FrameERR5Frame" title="podio::Frame::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N5podio5Frame5FrameERR5Frame" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Frame move constructor. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5FrameaSERR5Frame">
 <span id="_CPPv3N5podio5FrameaSERR5Frame"></span><span id="_CPPv2N5podio5FrameaSERR5Frame"></span><span id="podio::Frame::assign-operator__FrameRR"></span><span class="target" id="classpodio_1_1_frame_1a49c0d974120be4d64f2b35aade7f1090"></span><a class="reference internal" href="#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N5podio5FrameaSERR5Frame" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Frame move assignment operator. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5FrameD0Ev">
 <span id="_CPPv3N5podio5FrameD0Ev"></span><span id="_CPPv2N5podio5FrameD0Ev"></span><span id="podio::Frame::~Frame"></span><span class="target" id="classpodio_1_1_frame_1aed8100cbd0091f5bf1af4e25154ac516"></span><span class="sig-name descname"><span class="n"><span class="pre">~Frame</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N5podio5FrameD0Ev" title="Link to this definition"></a><br /></dt>
 <dd><p>Frame destructor. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since the Frame owns all the collections that have been put into it, or that can be obtained from it, this invalidates all references to these collections. </p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00ENK5podio5Frame3getERK5CollTRKNSt6stringE">
 <span id="_CPPv3I00ENK5podio5Frame3getERKNSt6stringE"></span><span id="_CPPv2I00ENK5podio5Frame3getERKNSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_frame_8h.html#_CPPv4I0EN5podio18EnableIfCollectionE" title="podio::EnableIfCollection"><span class="n"><span class="pre">EnableIfCollection</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00ENK5podio5Frame3getERK5CollTRKNSt6stringE" title="podio::Frame::get::CollT"><span class="n"><span class="pre">CollT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1a18f8f3a9c9c62adbc861091409c52f94"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00ENK5podio5Frame3getERK5CollTRKNSt6stringE" title="podio::Frame::get::CollT"><span class="n"><span class="pre">CollT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I00ENK5podio5Frame3getERK5CollTRKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Get a collection from the Frame. </p>
+<dd><p>Get a collection from the Frame by name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CollT</strong> – The type of the desired collection </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>name</strong> – The name of the collection</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A const reference to the collection if it is available or to an empty (static) collection </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio5Frame3getERKNSt6stringE">
 <span id="_CPPv3NK5podio5Frame3getERKNSt6stringE"></span><span id="_CPPv2NK5podio5Frame3getERKNSt6stringE"></span><span id="podio::Frame::get__ssCRC"></span><span class="target" id="classpodio_1_1_frame_1acbcb42e35f76bdf05c84d2a1470f37cc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio5Frame3getERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Get a collection from the Frame. </p>
-<p>This is the pointer-to-base version for type-erased access (e.g. python interface) </p>
+<dd><p>Get a collection pointer from the Frame by name. </p>
+<p>This is a type-erased version that is also used by the python bindings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A const pointer to a collection if it is available or a nullptr if it is not </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN5podio5Frame3putERK5CollTRR5CollTRKNSt6stringE">
 <span id="_CPPv3I00EN5podio5Frame3putERR5CollTRKNSt6stringE"></span><span id="_CPPv2I00EN5podio5Frame3putERR5CollTRKNSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_frame_8h.html#_CPPv4I0EN5podio24EnableIfCollectionRValueE" title="podio::EnableIfCollectionRValue"><span class="n"><span class="pre">EnableIfCollectionRValue</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame3putERK5CollTRR5CollTRKNSt6stringE" title="podio::Frame::put::CollT"><span class="n"><span class="pre">CollT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1a1b107420d9f596c95e7cf181fd0faead"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame3putERK5CollTRR5CollTRKNSt6stringE" title="podio::Frame::put::CollT"><span class="n"><span class="pre">CollT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame3putERK5CollTRR5CollTRKNSt6stringE" title="podio::Frame::put::CollT"><span class="n"><span class="pre">CollT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">coll</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio5Frame3putERK5CollTRR5CollTRKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>(Destructively) move a collection into the Frame and get a const reference back for further use </p>
+<dd><p>(Destructively) move a collection into the Frame and get a reference to the inserted collection back for further use. </p>
+<p>The collection that is passed into the Frame has to be moved into it explicitly and the moved-from collection will be in the typical <em>valid but undefined state</em> in c++.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CollT</strong> – The type of the collection </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>coll</strong> – An rvalue reference to the collection to put into the Frame. </p></li>
+<li><p><strong>name</strong> – The name under which this collection should be stored in the Frame</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A const reference to the collection that has just been inserted </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5Frame3putENSt10unique_ptrIN5podio14CollectionBaseEEERKNSt6stringE">
 <span id="_CPPv3N5podio5Frame3putENSt10unique_ptrIN5podio14CollectionBaseEEERKNSt6stringE"></span><span id="_CPPv2N5podio5Frame3putENSt10unique_ptrIN5podio14CollectionBaseEEERKNSt6stringE"></span><span id="podio::Frame::put__std::unique_ptr:podio::CollectionBase:.ssCR"></span><span class="target" id="classpodio_1_1_frame_1a786f5d466c1b7e86a43e1c10f34765d0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">put</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coll</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio5Frame3putENSt10unique_ptrIN5podio14CollectionBaseEEERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Move a collection into the Frame handing over ownership to the Frame. </p>
+<dd><p>(Destructively) move a collection into the Frame. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coll</strong> – The collection that should be moved into the Frame </p></li>
+<li><p><strong>name</strong> – The name under which this collection should be stored in the Frame </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringE1T">
 <span id="_CPPv3I00EN5podio5Frame12putParameterERKNSt6stringE1T"></span><span id="_CPPv2I00EN5podio5Frame12putParameterERKNSt6stringE1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4I0EN5podio28EnableIfValidGenericDataTypeE" title="podio::EnableIfValidGenericDataType"><span class="n"><span class="pre">EnableIfValidGenericDataType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringE1T" title="podio::Frame::putParameter::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1af576dcd59ea5700def44041db7009703"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">putParameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">key</span></span>, <a class="reference internal" href="#_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringE1T" title="podio::Frame::putParameter::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringE1T" title="Link to this definition"></a><br /></dt>
 <dd><p>Add a value to the parameters of the Frame (if the type is supported). </p>
-<p>Copy the value into the internal store </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type of the parameter. Has to be one of the types that is supported by GenericParameters </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>key</strong> – The name under which this parameter should be stored </p></li>
+<li><p><strong>value</strong> – The value of the parameter. A copy will be put into the Frame </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5Frame12putParameterERKNSt6stringENSt6stringE">
 <span id="_CPPv3N5podio5Frame12putParameterERKNSt6stringENSt6stringE"></span><span id="_CPPv2N5podio5Frame12putParameterERKNSt6stringENSt6stringE"></span><span id="podio::Frame::putParameter__ssCR.ss"></span><span class="target" id="classpodio_1_1_frame_1a88a47f65439216a0376e7f4b85235a6e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">putParameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio5Frame12putParameterERKNSt6stringENSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Add a string value to the parameters of the Frame by copying it. </p>
-<p>Dedicated overload for enabling the on-the-fly conversion on the string literals. </p>
+<dd><p>Add a string value to the parameters of the Frame. </p>
+<p>This is a dedicated overload for enabling on-the-fly conversion from string literals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The name under which this parameter should be stored </p></li>
+<li><p><strong>value</strong> – The value of the parameter. A copy will be put into the Frame </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5Frame12putParameterERKNSt6stringENSt6vectorINSt6stringEEE">
 <span id="_CPPv3N5podio5Frame12putParameterERKNSt6stringENSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio5Frame12putParameterERKNSt6stringENSt6vectorINSt6stringEEE"></span><span id="podio::Frame::putParameter__ssCR.std::vector:ss:"></span><span class="target" id="classpodio_1_1_frame_1adbe1651067f8f32945a16f4e278aa1f9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">putParameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio5Frame12putParameterERKNSt6stringENSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Add a vector of strings to the parameters of the Frame (via copy). </p>
-<p>Dedicated overload for enabling on-the-fly conversions of initializer_list of string literals. </p>
+<dd><p>Add a vector of strings value the parameters of the Frame. </p>
+<p>This is a dedicated overload for enabling on-the-fly conversion from an initializer_list of string literals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The name under which this parameter should be stored </p></li>
+<li><p><strong>values</strong> – The values of the parameter. A copy will be put into the Frame </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringERRNSt16initializer_listI1TEE">
 <span id="_CPPv3I00EN5podio5Frame12putParameterERKNSt6stringERRNSt16initializer_listI1TEE"></span><span id="_CPPv2I00EN5podio5Frame12putParameterERKNSt6stringERRNSt16initializer_listI1TEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_if_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">isInTuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringERRNSt16initializer_listI1TEE" title="podio::Frame::putParameter::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4N5podio25SupportedGenericDataTypesE" title="podio::SupportedGenericDataTypes"><span class="n"><span class="pre">SupportedGenericDataTypes</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1aacc77bb7d75432aa5e8052525bd2b04c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">putParameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringERRNSt16initializer_listI1TEE" title="podio::Frame::putParameter::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio5Frame12putParameterEvRKNSt6stringERRNSt16initializer_listI1TEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Add a vector of values into the parameters of the Frame. </p>
-<p>Overload for catching on-the-fly conversions of initializer_lists of values. </p>
+<dd><p>Add a vector of values to the parameters of the Frame (if the type is supported). </p>
+<p>This is a dedicated overload for enabling on-the-fly conversions of initializer_list of values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The type of the parameter. Has to be one of the types that is supported by GenericParameters </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>key</strong> – The name under which this parameter should be stored </p></li>
+<li><p><strong>values</strong> – The values of the parameter. A copy will be put into the Frame </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00ENK5podio5Frame12getParameterEN5podio21GenericDataReturnTypeI1TEERKNSt6stringE">
 <span id="_CPPv3I00ENK5podio5Frame12getParameterERKNSt6stringE"></span><span id="_CPPv2I00ENK5podio5Frame12getParameterERKNSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4I0EN5podio28EnableIfValidGenericDataTypeE" title="podio::EnableIfValidGenericDataType"><span class="n"><span class="pre">EnableIfValidGenericDataType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00ENK5podio5Frame12getParameterEN5podio21GenericDataReturnTypeI1TEERKNSt6stringE" title="podio::Frame::getParameter::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1aea9ddcc635f57f8348690bd850d4995d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4I0EN5podio21GenericDataReturnTypeE" title="podio::GenericDataReturnType"><span class="n"><span class="pre">GenericDataReturnType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00ENK5podio5Frame12getParameterEN5podio21GenericDataReturnTypeI1TEERKNSt6stringE" title="podio::Frame::getParameter::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getParameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I00ENK5podio5Frame12getParameterEN5podio21GenericDataReturnTypeI1TEERKNSt6stringE" title="Link to this definition"></a><br /></dt>
 <dd><p>Retrieve parameters via key from the internal store. </p>
-<p>Return type will either by a const reference or a value depending on the desired type. </p>
+<p>The return type will either be a const reference or a value depending on the desired type. See podio::GenericParameters for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The desired type of the parameter (can also be std::vector&lt;T&gt;) </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>key</strong> – The key under which the value is stored</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The value of the parameter or an empty default value </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio5Frame13getParametersEv">
 <span id="_CPPv3NK5podio5Frame13getParametersEv"></span><span id="_CPPv2NK5podio5Frame13getParametersEv"></span><span id="podio::Frame::getParametersC"></span><span class="target" id="classpodio_1_1_frame_1abdafe187df2182995e1c5c005264b485"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE" title="podio::GenericParameters"><span class="n"><span class="pre">GenericParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio5Frame13getParametersEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get all parameters that are stored in this Frame. </p>
+<dd><p>Retrieve all parameters stored in this Frame. </p>
+<p>This is mainly intended for I/O purposes and we encourage to use the Frame functionality of getParameters or getParameterKeys in general.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The internally used GenericParameters </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00ENK5podio5Frame16getParameterKeysENSt6vectorINSt6stringEEEv">
 <span id="_CPPv3I00ENK5podio5Frame16getParameterKeysEv"></span><span id="_CPPv2I00ENK5podio5Frame16getParameterKeysEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4I0EN5podio28EnableIfValidGenericDataTypeE" title="podio::EnableIfValidGenericDataType"><span class="n"><span class="pre">EnableIfValidGenericDataType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00ENK5podio5Frame16getParameterKeysENSt6vectorINSt6stringEEEv" title="podio::Frame::getParameterKeys::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_frame_1a63a3c12c249e6a756b976f2967a0cc83"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getParameterKeys</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I00ENK5podio5Frame16getParameterKeysENSt6vectorINSt6stringEEEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Get the keys of all stored parameters for a given type. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The desired parameter type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A vector of keys for this parameter type </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio5Frame23getAvailableCollectionsEv">
 <span id="_CPPv3NK5podio5Frame23getAvailableCollectionsEv"></span><span id="_CPPv2NK5podio5Frame23getAvailableCollectionsEv"></span><span id="podio::Frame::getAvailableCollectionsC"></span><span class="target" id="classpodio_1_1_frame_1a6dc4fa4c0282943dfe525c21683c781a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableCollections</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio5Frame23getAvailableCollectionsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get all <strong>currently</strong> available collections (including potentially unpacked ones from raw data) </p>
+<dd><p>Get all <strong>currently</strong> available collection names. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The names of all collections, including those that might still need unpacking from the internal FrameData </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio5Frame21getCollectionForWriteERKNSt6stringE">
 <span id="_CPPv3NK5podio5Frame21getCollectionForWriteERKNSt6stringE"></span><span id="_CPPv2NK5podio5Frame21getCollectionForWriteERKNSt6stringE"></span><span id="podio::Frame::getCollectionForWrite__ssCRC"></span><span class="target" id="classpodio_1_1_frame_1af5b50574e56c2f1c21fabb91bb3d1de5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getCollectionForWrite</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio5Frame21getCollectionForWriteERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Get a collection for writing (in a prepared and “ready-to-write” state) </p>
+<dd><p>Get a collection for writing. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is intended for I/O purposes only and should not be used in other code.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The collection pointer in a prepared and “ready-to-write” state </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio5Frame28getCollectionIDTableForWriteEv">
 <span id="_CPPv3NK5podio5Frame28getCollectionIDTableForWriteEv"></span><span id="_CPPv2NK5podio5Frame28getCollectionIDTableForWriteEv"></span><span id="podio::Frame::getCollectionIDTableForWriteC"></span><span class="target" id="classpodio_1_1_frame_1a5a1ff5819c053e1251ca2ce61ffd108d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_collection_i_d_table.html#_CPPv4N5podio17CollectionIDTableE" title="podio::CollectionIDTable"><span class="n"><span class="pre">CollectionIDTable</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getCollectionIDTableForWrite</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio5Frame28getCollectionIDTableForWriteEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Get the internal CollectionIDTable for writing. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is intended for I/O purposes only and should not be used in other code.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A copy of the internal collection id table </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>

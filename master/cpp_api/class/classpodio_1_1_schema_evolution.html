@@ -609,6 +609,10 @@
 <span id="_CPPv3NK5podio15SchemaEvolution13evolveBuffersERKN5podio21CollectionReadBuffersE14SchemaVersionTRKNSt6stringE"></span><span id="_CPPv2NK5podio15SchemaEvolution13evolveBuffersERKN5podio21CollectionReadBuffersE14SchemaVersionTRKNSt6stringE"></span><span id="podio::SchemaEvolution::evolveBuffers__podio::CollectionReadBuffersCR.SchemaVersionT.ssCRC"></span><span class="target" id="classpodio_1_1_schema_evolution_1a950c5d44e3875fb1a49c8bf9897a421a"></span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_collection_buffers_8h.html#_CPPv4N5podio21CollectionReadBuffersE" title="podio::CollectionReadBuffers"><span class="n"><span class="pre">CollectionReadBuffers</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">evolveBuffers</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/_collection_buffers_8h.html#_CPPv4N5podio21CollectionReadBuffersE" title="podio::CollectionReadBuffers"><span class="n"><span class="pre">CollectionReadBuffers</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">oldBuffers</span></span>, <a class="reference internal" href="../file/_schema_evolution_8h.html#_CPPv4N5podio14SchemaVersionTE" title="podio::SchemaVersionT"><span class="n"><span class="pre">SchemaVersionT</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fromVersion</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collType</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio15SchemaEvolution13evolveBuffersERKN5podio21CollectionReadBuffersE14SchemaVersionTRKNSt6stringE" title="Link to this definition"></a><br /></dt>
 <dd><p>Evolve the passed in buffers to the current version of the datatype that can be constructed from them. </p>
 <p>Internally this will first check if the schema version of the buffers is already the current one and in that case immediately return the passed in buffers again as they do not need schema evolution. If that is not the case it will look up the correct evolution function for the passed in version and call that on the passed in buffers.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>that these could also be the unchanged input buffers. </p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -618,7 +622,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>CollectionReadBuffers that have been evolved to the current version. NOTE that these could also be the input buffers. </p>
+<dd class="field-even"><p>CollectionReadBuffers that have been evolved to the current version. </p>
 </dd>
 </dl>
 </dd></dl>

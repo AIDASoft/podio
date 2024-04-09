@@ -554,54 +554,113 @@
 <span id="_CPPv3N5podio13RNTupleWriterE"></span><span id="_CPPv2N5podio13RNTupleWriterE"></span><span id="podio::RNTupleWriter"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriter</span></span></span><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;podio/RNTupleWriter.h&gt;</em></div>
+<p>The RNTupleWriter writes podio files into ROOT files using the new RNTuple format. </p>
+<p>Each category gets its own RNTuple. Additionally, there is a podio_metadata RNTuple that contains metadata that is necessary for interpreting the files for reading.</p>
+<p>Files written with the RNTupleWriter can be read with the RNTupleReader. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE">
 <span id="_CPPv3N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE"></span><span id="_CPPv2N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE"></span><span id="podio::RNTupleWriter::RNTupleWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a387b4f5fd2e5ce4478dcae5f9879bceb"></span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Create a RNTupleWriter to write to a file. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Existing files will be overwritten without warning.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> – The path to the file that will be created. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriterD0Ev">
 <span id="_CPPv3N5podio13RNTupleWriterD0Ev"></span><span id="_CPPv2N5podio13RNTupleWriterD0Ev"></span><span id="podio::RNTupleWriter::~RNTupleWriter"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1ac29aeae0d58900b870841dcb63ec6a01"></span><span class="sig-name descname"><span class="n"><span class="pre">~RNTupleWriter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>RNTupleWriter destructor. </p>
+<p>This also takes care of writing all the necessary metadata in order to be able to read files back again. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter13RNTupleWriterERK13RNTupleWriter">
 <span id="_CPPv3N5podio13RNTupleWriter13RNTupleWriterERK13RNTupleWriter"></span><span id="_CPPv2N5podio13RNTupleWriter13RNTupleWriterERK13RNTupleWriter"></span><span id="podio::RNTupleWriter::RNTupleWriter__RNTupleWriterCR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a9b37b67db715375fe450dcbb5dc9a7a5"></span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_r_n_tuple_writer.html#_CPPv4N5podio13RNTupleWriter13RNTupleWriterERK13RNTupleWriter" title="podio::RNTupleWriter::RNTupleWriter"><span class="n"><span class="pre">RNTupleWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>The RNTupleWriter is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriteraSERK13RNTupleWriter">
 <span id="_CPPv3N5podio13RNTupleWriteraSERK13RNTupleWriter"></span><span id="_CPPv2N5podio13RNTupleWriteraSERK13RNTupleWriter"></span><span id="podio::RNTupleWriter::assign-operator__RNTupleWriterCR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a8b0b003882ae077313bc4149de95ba11"></span><a class="reference internal" href="../class/classpodio_1_1_r_n_tuple_writer.html#_CPPv4N5podio13RNTupleWriterE" title="podio::RNTupleWriter"><span class="n"><span class="pre">RNTupleWriter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_r_n_tuple_writer.html#_CPPv4N5podio13RNTupleWriterE" title="podio::RNTupleWriter"><span class="n"><span class="pre">RNTupleWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio13RNTupleWriter10fillParamsEvR17GenericParametersPN4ROOT12Experimental6REntryE">
-<span id="_CPPv3I0EN5podio13RNTupleWriter10fillParamsER17GenericParametersPN4ROOT12Experimental6REntryE"></span><span id="_CPPv2I0EN5podio13RNTupleWriter10fillParamsER17GenericParametersPN4ROOT12Experimental6REntryE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_r_n_tuple_writer_1ad45aa46918db4f37319c05c73aea5ef6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fillParams</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE" title="podio::GenericParameters"><span class="n"><span class="pre">GenericParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">ROOT</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Experimental</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">REntry</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entry</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>The RNTupleWriter is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter10writeFrameERKN5podio5FrameERKNSt6stringE">
 <span id="_CPPv3N5podio13RNTupleWriter10writeFrameERKN5podio5FrameERKNSt6stringE"></span><span id="_CPPv2N5podio13RNTupleWriter10writeFrameERKN5podio5FrameERKNSt6stringE"></span><span id="podio::RNTupleWriter::writeFrame__podio::FrameCR.ssCR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a5e932b11df160e5a2d32dc16a220270f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Store the given frame with the given category. </p>
+<p>This stores all available collections from the Frame.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The contents of the first Frame that is written in this way determines the contents that will be written for all subsequent Frames.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – The Frame to store </p></li>
+<li><p><strong>category</strong> – The category name under which this Frame should be stored </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE">
 <span id="_CPPv3N5podio13RNTupleWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio13RNTupleWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE"></span><span id="podio::RNTupleWriter::writeFrame__podio::FrameCR.ssCR.std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a65d04d477a5db735b2748d16803a8836"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToWrite</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Store the given Frame with the given category. </p>
+<p>This stores only the desired collections and not the complete frame.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The contents of the first Frame that is written in this way determines the contents that will be written for all subsequent Frames.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – The Frame to store </p></li>
+<li><p><strong>category</strong> – The category name under which this Frame should be stored </p></li>
+<li><p><strong>collsToWrite</strong> – The collection names that should be written </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter6finishEv">
 <span id="_CPPv3N5podio13RNTupleWriter6finishEv"></span><span id="_CPPv2N5podio13RNTupleWriter6finishEv"></span><span id="podio::RNTupleWriter::finish"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a7fd55a46e7360926797177efd6ed5ff8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">finish</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Write the current file, including all the necessary metadata to read it again. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The destructor will also call this, so letting a RNTupleWriter go out of scope is also a viable way to write a readable file </p>
+</div>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio13RNTupleWriter16checkConsistencyERKNSt6vectorINSt6stringEEERKNSt6stringE">
 <span id="_CPPv3NK5podio13RNTupleWriter16checkConsistencyERKNSt6vectorINSt6stringEEERKNSt6stringE"></span><span id="_CPPv2NK5podio13RNTupleWriter16checkConsistencyERKNSt6vectorINSt6stringEEERKNSt6stringE"></span><span id="podio::RNTupleWriter::checkConsistency__std::vector:ss:CR.ssCRC"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a1f53d85b4c63251ba050d2243c8d4532"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">checkConsistency</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToWrite</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Check whether the collsToWrite are consistent with the state of the passed category. </p>
-<p>Return two vectors of collection names. The first one contains all the names that were missing from the collsToWrite but were present in the category. The second one contains the names that are present in the collsToWrite only. If both vectors are empty the category and the passed collsToWrite are consistent.</p>
-<p>NOTE: This will only be a meaningful check if the first Frame of the passed category has already been written. Also, this check is rather expensive as it has to effectively do two set differences. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This will only be a meaningful check if the first Frame of the passed category has already been written. Also, this check is rather expensive as it has to effectively do two set differences.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>collsToWrite</strong> – The collection names that should be checked for consistency </p></li>
+<li><p><strong>category</strong> – The category name for which consistency should be checked</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>two vectors of collection names. The first one contains all the names that were missing from the collsToWrite but were present in the category. The second one contains the names that are present in the collsToWrite only. If both vectors are empty the category and the passed collsToWrite are consistent. </p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -615,6 +674,11 @@
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio13RNTupleWriter10fillParamsEvR17GenericParametersPN4ROOT12Experimental6REntryE">
+<span id="_CPPv3I0EN5podio13RNTupleWriter10fillParamsER17GenericParametersPN4ROOT12Experimental6REntryE"></span><span id="_CPPv2I0EN5podio13RNTupleWriter10fillParamsER17GenericParametersPN4ROOT12Experimental6REntryE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_r_n_tuple_writer_1ad45aa46918db4f37319c05c73aea5ef6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fillParams</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE" title="podio::GenericParameters"><span class="n"><span class="pre">GenericParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span>, <span class="n"><span class="pre">ROOT</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Experimental</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">REntry</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5podio13RNTupleWriter10fillParamsEvR17GenericParametersPN4ROOT12Experimental6REntryE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter12createModelsERKNSt6vectorI15StoreCollectionEE">
 <span id="_CPPv3N5podio13RNTupleWriter12createModelsERKNSt6vectorI15StoreCollectionEE"></span><span id="_CPPv2N5podio13RNTupleWriter12createModelsERKNSt6vectorI15StoreCollectionEE"></span><span id="podio::RNTupleWriter::createModels__std::vector:StoreCollection:CR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a182ad92d2570348f70e52ae9d7cd5ab5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">ROOT</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Experimental</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">RNTupleModel</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createModels</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5podio13RNTupleWriter15StoreCollectionE" title="podio::RNTupleWriter::StoreCollection"><span class="n"><span class="pre">StoreCollection</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collections</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio13RNTupleWriter12createModelsERKNSt6vectorI15StoreCollectionEE" title="Link to this definition"></a><br /></dt>

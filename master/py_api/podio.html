@@ -820,8 +820,11 @@ one parameter with a given name, this argument is ignored</p></li>
 <dt class="sig sig-object py" id="podio.frame.Frame.get_parameters">
 <span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.frame.Frame.get_parameters" title="Link to this definition"></a></dt>
 <dd><p>Get the complete podio::GenericParameters object stored in this Frame.</p>
-<p>NOTE: This is mainly intended for dumping things, for actually obtaining
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is mainly intended for dumping things, for actually obtaining
 parameters please use get_parameter</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The stored generic parameters</p>
@@ -863,7 +866,7 @@ available afterwards.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>The reference to the collection that has been put</dt><dd><p>into the Frame. NOTE: That mutating this collection is not allowed.</p>
+<dt>The reference to the collection that has been put</dt><dd><p>into the Frame.</p>
 </dd>
 </dl>
 </p>
@@ -871,8 +874,14 @@ available afterwards.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>podio.CollectionBase</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If collection is not actually a podio.CollectionBase</p>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Mutating the returned collection is not allowed.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If collection is not actually a podio.CollectionBase</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1201,8 +1210,11 @@ one parameter with a given name, this argument is ignored</p></li>
 <dt class="sig sig-object py" id="podio.Frame.get_parameters">
 <span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.Frame.get_parameters" title="Link to this definition"></a></dt>
 <dd><p>Get the complete podio::GenericParameters object stored in this Frame.</p>
-<p>NOTE: This is mainly intended for dumping things, for actually obtaining
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is mainly intended for dumping things, for actually obtaining
 parameters please use get_parameter</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The stored generic parameters</p>
@@ -1244,7 +1256,7 @@ available afterwards.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>The reference to the collection that has been put</dt><dd><p>into the Frame. NOTE: That mutating this collection is not allowed.</p>
+<dt>The reference to the collection that has been put</dt><dd><p>into the Frame.</p>
 </dd>
 </dl>
 </p>
@@ -1252,8 +1264,14 @@ available afterwards.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>podio.CollectionBase</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If collection is not actually a podio.CollectionBase</p>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Mutating the returned collection is not allowed.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If collection is not actually a podio.CollectionBase</p>
 </dd>
 </dl>
 </dd></dl>

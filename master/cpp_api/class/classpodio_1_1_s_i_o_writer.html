@@ -553,44 +553,85 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriterE">
 <span id="_CPPv3N5podio9SIOWriterE"></span><span id="_CPPv2N5podio9SIOWriterE"></span><span id="podio::SIOWriter"></span><span class="target" id="classpodio_1_1_s_i_o_writer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOWriter</span></span></span><a class="headerlink" href="#_CPPv4N5podio9SIOWriterE" title="Link to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>The SIOWriter writes podio files into SIO files. </p>
+<p>Each Frame is stored into an SIO record which are written in the order in which Frames are written. As part of the metadata a table of content record is written which is used in the reader to more quickly access the different records.</p>
+<p>Files written with the SIOWriter can be read with the SIOReader </p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriter9SIOWriterERKNSt6stringE">
 <span id="_CPPv3N5podio9SIOWriter9SIOWriterERKNSt6stringE"></span><span id="_CPPv2N5podio9SIOWriter9SIOWriterERKNSt6stringE"></span><span id="podio::SIOWriter::SIOWriter__ssCR"></span><span class="target" id="classpodio_1_1_s_i_o_writer_1a98ae1a7734dc21d857513b4867fc1143"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio9SIOWriter9SIOWriterERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Create a SIOWriter to write to a file. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Existing files will be overwritten without warning.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> – The path to the file that will be created. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriterD0Ev">
 <span id="_CPPv3N5podio9SIOWriterD0Ev"></span><span id="_CPPv2N5podio9SIOWriterD0Ev"></span><span id="podio::SIOWriter::~SIOWriter"></span><span class="target" id="classpodio_1_1_s_i_o_writer_1a50316e779761f2f4632ccb0087a16d0a"></span><span class="sig-name descname"><span class="n"><span class="pre">~SIOWriter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio9SIOWriterD0Ev" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>SIOWriter destructor. </p>
+<p>This also takes care of writing all the necessary metadata to read files back again. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriter9SIOWriterERK9SIOWriter">
 <span id="_CPPv3N5podio9SIOWriter9SIOWriterERK9SIOWriter"></span><span id="_CPPv2N5podio9SIOWriter9SIOWriterERK9SIOWriter"></span><span id="podio::SIOWriter::SIOWriter__SIOWriterCR"></span><span class="target" id="classpodio_1_1_s_i_o_writer_1abf4b2ac155547cbfaf375b1a7dd5d443"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio9SIOWriter9SIOWriterERK9SIOWriter" title="podio::SIOWriter::SIOWriter"><span class="n"><span class="pre">SIOWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio9SIOWriter9SIOWriterERK9SIOWriter" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>The SIOWriter is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriteraSERK9SIOWriter">
 <span id="_CPPv3N5podio9SIOWriteraSERK9SIOWriter"></span><span id="_CPPv2N5podio9SIOWriteraSERK9SIOWriter"></span><span id="podio::SIOWriter::assign-operator__SIOWriterCR"></span><span class="target" id="classpodio_1_1_s_i_o_writer_1ab42169ef754f11cb787d5b5ea8f028fb"></span><a class="reference internal" href="#_CPPv4N5podio9SIOWriterE" title="podio::SIOWriter"><span class="n"><span class="pre">SIOWriter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio9SIOWriterE" title="podio::SIOWriter"><span class="n"><span class="pre">SIOWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio9SIOWriteraSERK9SIOWriter" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>The SIOWriter is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringE">
 <span id="_CPPv3N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringE"></span><span id="_CPPv2N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringE"></span><span id="podio::SIOWriter::writeFrame__podio::FrameCR.ssCR"></span><span class="target" id="classpodio_1_1_s_i_o_writer_1ab57b25ce39540f3ed90fb96bcd1b2f6b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Write the given Frame with the given category. </p>
+<dd><p>Store the given frame with the given category. </p>
+<p>This stores all available collections from the Frame. Frames of the same category can be independent of each other, i.e. they can have different collection contents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – The Frame to store </p></li>
+<li><p><strong>category</strong> – The category name under which this Frame should be stored </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE">
 <span id="_CPPv3N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE"></span><span id="podio::SIOWriter::writeFrame__podio::FrameCR.ssCR.std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_s_i_o_writer_1a63d98ee5744f7681116ca745273d6b85"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToWrite</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio9SIOWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Write the given Frame with the given category only storing the collections that are desired via collsToWrite. </p>
+<dd><p>Store the given Frame with the given category. </p>
+<p>This stores only the desired collections and not the complete frame. Frames of the same category can be independent of each other, i.e. they can have different collection contents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – The Frame to store </p></li>
+<li><p><strong>category</strong> – The category name under which this Frame should be stored </p></li>
+<li><p><strong>collsToWrite</strong> – The collection names that should be written </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio9SIOWriter6finishEv">
 <span id="_CPPv3N5podio9SIOWriter6finishEv"></span><span id="_CPPv2N5podio9SIOWriter6finishEv"></span><span id="podio::SIOWriter::finish"></span><span class="target" id="classpodio_1_1_s_i_o_writer_1abc944c48052700edbba734940e6a1c73"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">finish</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio9SIOWriter6finishEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Write the current file, including all the necessary metadata to read it again. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The destructor will also call this, so letting a SIOWriter go out of scope is also a viable way to write a readable file </p>
+</div>
+</dd></dl>
 
 </div>
 </dd></dl>

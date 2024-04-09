@@ -555,65 +555,112 @@
 <span id="_CPPv3N5podio15SIOLegacyReaderE"></span><span id="_CPPv2N5podio15SIOLegacyReaderE"></span><span id="podio::SIOLegacyReader"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOLegacyReader</span></span></span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReaderE" title="Link to this definition"></a><br /></dt>
 <dd><p>A SIO reader for reading legacy podio .sio files that have been written using the legacy, non Frame based I/O model. </p>
 <p>This reader grants Frame based access to those files, by mimicking Frame I/O functionality and the interfaces of those readers.</p>
-<p>NOTE: Since there was only one category (“events”) for those legacy podio files this reader will really only work if you try to read that category, and will simply return no data if you try to read anything else. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since there was only one category (“events”) for those legacy podio files this reader will really only work if you try to read that category, and will simply return no data if you try to read anything else. </p>
+</div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOLegacyReader15SIOLegacyReaderEv">
 <span id="_CPPv3N5podio15SIOLegacyReader15SIOLegacyReaderEv"></span><span id="_CPPv2N5podio15SIOLegacyReader15SIOLegacyReaderEv"></span><span id="podio::SIOLegacyReader::SIOLegacyReader"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1a65373144b1a340db1ec14a5ad9d41af3"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOLegacyReader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReader15SIOLegacyReaderEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Create a SIOLegacyReader. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOLegacyReaderD0Ev">
 <span id="_CPPv3N5podio15SIOLegacyReaderD0Ev"></span><span id="_CPPv2N5podio15SIOLegacyReaderD0Ev"></span><span id="podio::SIOLegacyReader::~SIOLegacyReader"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1a5cd7e1c41411d000d37a86f8b8a10f4f"></span><span class="sig-name descname"><span class="n"><span class="pre">~SIOLegacyReader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReaderD0Ev" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Destructor. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOLegacyReader15SIOLegacyReaderERK15SIOLegacyReader">
 <span id="_CPPv3N5podio15SIOLegacyReader15SIOLegacyReaderERK15SIOLegacyReader"></span><span id="_CPPv2N5podio15SIOLegacyReader15SIOLegacyReaderERK15SIOLegacyReader"></span><span id="podio::SIOLegacyReader::SIOLegacyReader__SIOLegacyReaderCR"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1a8728180be19c1c785074f41fa720805f"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOLegacyReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio15SIOLegacyReader15SIOLegacyReaderERK15SIOLegacyReader" title="podio::SIOLegacyReader::SIOLegacyReader"><span class="n"><span class="pre">SIOLegacyReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReader15SIOLegacyReaderERK15SIOLegacyReader" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>The SIOLegacyReader is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOLegacyReaderaSERK15SIOLegacyReader">
 <span id="_CPPv3N5podio15SIOLegacyReaderaSERK15SIOLegacyReader"></span><span id="_CPPv2N5podio15SIOLegacyReaderaSERK15SIOLegacyReader"></span><span id="podio::SIOLegacyReader::assign-operator__SIOLegacyReaderCR"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1ab206d830fac9e2355ee7cd8b63a0d930"></span><a class="reference internal" href="#_CPPv4N5podio15SIOLegacyReaderE" title="podio::SIOLegacyReader"><span class="n"><span class="pre">SIOLegacyReader</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio15SIOLegacyReaderE" title="podio::SIOLegacyReader"><span class="n"><span class="pre">SIOLegacyReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReaderaSERK15SIOLegacyReader" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>The SIOLegacyReader is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOLegacyReader13readNextEntryERKNSt6stringE">
 <span id="_CPPv3N5podio15SIOLegacyReader13readNextEntryERKNSt6stringE"></span><span id="_CPPv2N5podio15SIOLegacyReader13readNextEntryERKNSt6stringE"></span><span id="podio::SIOLegacyReader::readNextEntry__ssCR"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1a5336f3b9197be1cea1ca8a5c769363f0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_s_i_o_frame_data.html#_CPPv4N5podio12SIOFrameDataE" title="podio::SIOFrameData"><span class="n"><span class="pre">SIOFrameData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readNextEntry</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReader13readNextEntryERKNSt6stringE" title="Link to this definition"></a><br /></dt>
 <dd><p>Read the next data entry from which a Frame can be constructed. </p>
 <p>In case there are no more entries left, this returns a nullptr.</p>
-<p>NOTE: the category name has to be “events” in this case, as only that category is available for legacy files. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the category name has to be “events” in this case, as only that category is available for legacy files.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>FrameData from which a podio::Frame can be constructed if there are still entries left to read. Otherwise a nullptr </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOLegacyReader9readEntryERKNSt6stringEKj">
 <span id="_CPPv3N5podio15SIOLegacyReader9readEntryERKNSt6stringEKj"></span><span id="_CPPv2N5podio15SIOLegacyReader9readEntryERKNSt6stringEKj"></span><span id="podio::SIOLegacyReader::readEntry__ssCR.unsignedC"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1a121c86009120a55bcbe58fac59ce2e9a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_s_i_o_frame_data.html#_CPPv4N5podio12SIOFrameDataE" title="podio::SIOFrameData"><span class="n"><span class="pre">SIOFrameData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readEntry</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&amp;</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReader9readEntryERKNSt6stringEKj" title="Link to this definition"></a><br /></dt>
-<dd><p>Read the specified data entry from which a Frame can be constructed In case the entry does not exist, this returns a nullptr. </p>
-<p>NOTE: the category name has to be “events” in this case, as only that category is available for legacy files. </p>
+<dd><p>Read the desired data entry from which a Frame can be constructed. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the category name has to be “events” in this case, as only that category is available for legacy files.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>FrameData from which a podio::Frame can be constructed if the desired entry exists. Otherwise a nullptr </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio15SIOLegacyReader10getEntriesERKNSt6stringE">
 <span id="_CPPv3NK5podio15SIOLegacyReader10getEntriesERKNSt6stringE"></span><span id="_CPPv2NK5podio15SIOLegacyReader10getEntriesERKNSt6stringE"></span><span id="podio::SIOLegacyReader::getEntries__ssCRC"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1a2a914ff0692db50ea9d8c2db58893fb9"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getEntries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio15SIOLegacyReader10getEntriesERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the number of. </p>
+<dd><p>Get the number of entries for the given name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the category</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of entries that are available for the category </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOLegacyReader8openFileERKNSt6stringE">
 <span id="_CPPv3N5podio15SIOLegacyReader8openFileERKNSt6stringE"></span><span id="_CPPv2N5podio15SIOLegacyReader8openFileERKNSt6stringE"></span><span id="podio::SIOLegacyReader::openFile__ssCR"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1add77791bdd87388829e347e07d01e617"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">openFile</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio15SIOLegacyReader8openFileERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Open a single file for reading. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> – The name of the input file </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio15SIOLegacyReader18currentFileVersionEv">
 <span id="_CPPv3NK5podio15SIOLegacyReader18currentFileVersionEv"></span><span id="_CPPv2NK5podio15SIOLegacyReader18currentFileVersionEv"></span><span id="podio::SIOLegacyReader::currentFileVersionC"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1ad27238b6d92bdaddae039a53b6efacab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/podio_version_8h.html#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../file/podio_version_8h.html#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">currentFileVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio15SIOLegacyReader18currentFileVersionEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Get the build version of podio that has been used to write the current file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The podio build version </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio15SIOLegacyReader22getAvailableCategoriesEv">
 <span id="_CPPv3NK5podio15SIOLegacyReader22getAvailableCategoriesEv"></span><span id="_CPPv2NK5podio15SIOLegacyReader22getAvailableCategoriesEv"></span><span id="podio::SIOLegacyReader::getAvailableCategoriesC"></span><span class="target" id="classpodio_1_1_s_i_o_legacy_reader_1af0fea308507bdaa35e43a939ac95c2a9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableCategories</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio15SIOLegacyReader22getAvailableCategoriesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get the names of all the available Frame categories in the current file(s) </p>
+<dd><p>Get the names of all the available Frame categories in the current file(s). </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The names of the available categores from the file </p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

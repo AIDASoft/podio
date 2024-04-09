@@ -554,28 +554,33 @@
 <span id="_CPPv3N5podio10ROOTReaderE"></span><span id="_CPPv2N5podio10ROOTReaderE"></span><span id="podio::ROOTReader"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROOTReader</span></span></span><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;podio/ROOTReader.h&gt;</em></div>
-<p>This class has the function to read available data from disk and to prepare collections and buffers. </p>
+<p>This class has the function to read available data from disk in ROOTs TTree format. </p>
+<p>The ROOTReader provides the data as ROOTFrameData from which a podio::Frame can be constructed. It can be used to read files written by the ROOTWriter. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader10ROOTReaderEv">
 <span id="_CPPv3N5podio10ROOTReader10ROOTReaderEv"></span><span id="_CPPv2N5podio10ROOTReader10ROOTReaderEv"></span><span id="podio::ROOTReader::ROOTReader"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a25713e7e5b68cb3a50e1c4516362a75a"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTReader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>Create a ROOTReader. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReaderD0Ev">
 <span id="_CPPv3N5podio10ROOTReaderD0Ev"></span><span id="_CPPv2N5podio10ROOTReaderD0Ev"></span><span id="podio::ROOTReader::~ROOTReader"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a991e70ddceb465d73aacb0bc5d94329c"></span><span class="sig-name descname"><span class="n"><span class="pre">~ROOTReader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>Destructor. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader10ROOTReaderERK10ROOTReader">
 <span id="_CPPv3N5podio10ROOTReader10ROOTReaderERK10ROOTReader"></span><span id="_CPPv2N5podio10ROOTReader10ROOTReaderERK10ROOTReader"></span><span id="podio::ROOTReader::ROOTReader__ROOTReaderCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a6c6a519477a90e6444506fc8a1f652cf"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4N5podio10ROOTReader10ROOTReaderERK10ROOTReader" title="podio::ROOTReader::ROOTReader"><span class="n"><span class="pre">ROOTReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>The ROOTReader is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReaderaSERK10ROOTReader">
 <span id="_CPPv3N5podio10ROOTReaderaSERK10ROOTReader"></span><span id="_CPPv2N5podio10ROOTReaderaSERK10ROOTReader"></span><span id="podio::ROOTReader::assign-operator__ROOTReaderCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a92f2dae86e0cb45d180042c83690d49b"></span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4N5podio10ROOTReaderE" title="podio::ROOTReader"><span class="n"><span class="pre">ROOTReader</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4N5podio10ROOTReaderE" title="podio::ROOTReader"><span class="n"><span class="pre">ROOTReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>The ROOTReader is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader8openFileERKNSt6stringE">
@@ -592,14 +597,17 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader9openFilesERKNSt6vectorINSt6stringEEE">
 <span id="_CPPv3N5podio10ROOTReader9openFilesERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio10ROOTReader9openFilesERKNSt6vectorINSt6stringEEE"></span><span id="podio::ROOTReader::openFiles__std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a95e75b1d02c0535536b6e28fb499edd6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">openFiles</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filenames</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Open multiple files for reading and then treat them as if they are one file. </p>
-<p>NOTE: All of the files are assumed to have the same structure. Specifically this means:<ul class="simple">
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All of the files are assumed to have the same structure. Specifically this means:<ul class="simple">
 <li><p>The same categories are available from all files</p></li>
 <li><p>The collections that are contained in the individual categories are the same across all files</p></li>
+<li><p><p>This usually boils down to “the files have been written with the same</p>
+<p>”settings”, e.g. they are outputs of a batched process.</p>
+</p></li>
 </ul>
 </p>
-<p><p>This usually boils down to “the files have been written with the same</p>
-<p>settings”, e.g. they are outputs of a batched process.</p>
-</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filenames</strong> – The filenames of all input files that should be read </p>
@@ -610,45 +618,93 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader13readNextEntryERKNSt6stringE">
 <span id="_CPPv3N5podio10ROOTReader13readNextEntryERKNSt6stringE"></span><span id="_CPPv2N5podio10ROOTReader13readNextEntryERKNSt6stringE"></span><span id="podio::ROOTReader::readNextEntry__ssCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a10b7beaab96b951c3343ddb5c846f258"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataE" title="podio::ROOTFrameData"><span class="n"><span class="pre">ROOTFrameData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readNextEntry</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Read the next data entry from which a Frame can be constructed for the given name. </p>
-<p>In case there are no more entries left for this name or in case there is no data for this name, this returns a nullptr. </p>
+<dd><p>Read the next data entry for a given category. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The category name for which to read the next entry</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FrameData from which a podio::Frame can be constructed if the category exists and if there are still entries left to read. Otherwise a nullptr </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader9readEntryERKNSt6stringEKj">
 <span id="_CPPv3N5podio10ROOTReader9readEntryERKNSt6stringEKj"></span><span id="_CPPv2N5podio10ROOTReader9readEntryERKNSt6stringEKj"></span><span id="podio::ROOTReader::readEntry__ssCR.unsignedC"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a135ef6372a3c08a73517daf4d399b5fb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataE" title="podio::ROOTFrameData"><span class="n"><span class="pre">ROOTFrameData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readEntry</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Read the specified data entry from which a Frame can be constructed for the given name. </p>
-<p>In case the entry does not exist for this name or in case there is no data for this name, this returns a nullptr. </p>
+<dd><p>Read the desired data entry for a given category. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The category name for which to read the next entry </p></li>
+<li><p><strong>entry</strong> – The entry number to read</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FrameData from which a podio::Frame can be constructed if the category and the desired entry exist. Otherwise a nullptr </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio10ROOTReader10getEntriesERKNSt6stringE">
 <span id="_CPPv3NK5podio10ROOTReader10getEntriesERKNSt6stringE"></span><span id="_CPPv2NK5podio10ROOTReader10getEntriesERKNSt6stringE"></span><span id="podio::ROOTReader::getEntries__ssCRC"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a1c9d14c54e96c85eaeca6a45dd716e1d"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getEntries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Returns number of entries for the given name. </p>
+<dd><p>Get the number of entries for the given name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the category</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of entries that are available for the category </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio10ROOTReader18currentFileVersionEv">
 <span id="_CPPv3NK5podio10ROOTReader18currentFileVersionEv"></span><span id="_CPPv2NK5podio10ROOTReader18currentFileVersionEv"></span><span id="podio::ROOTReader::currentFileVersionC"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a211404de8f87c1bad97564e9bb77975c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">currentFileVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Get the build version of podio that has been used to write the current file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The podio build version </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio10ROOTReader22getAvailableCategoriesEv">
 <span id="_CPPv3NK5podio10ROOTReader22getAvailableCategoriesEv"></span><span id="_CPPv2NK5podio10ROOTReader22getAvailableCategoriesEv"></span><span id="podio::ROOTReader::getAvailableCategoriesC"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a098ce4e7b2fe41a25e0ca45467ccc726"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableCategories</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Get the names of all the available Frame categories in the current file(s) </p>
+<dd><p>Get the names of all the available Frame categories in the current file(s). </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The names of the available categories from the file </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio10ROOTReader22getDatamodelDefinitionERKNSt6stringE">
 <span id="_CPPv3NK5podio10ROOTReader22getDatamodelDefinitionERKNSt6stringE"></span><span id="_CPPv2NK5podio10ROOTReader22getDatamodelDefinitionERKNSt6stringE"></span><span id="podio::ROOTReader::getDatamodelDefinition__ssCRC"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1aaecb0d1e14929eeafad0d086754befd6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDatamodelDefinition</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Get the datamodel definition for the given name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the datamodel</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The high level definition of the datamodel in JSON format </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio10ROOTReader22getAvailableDatamodelsEv">
 <span id="_CPPv3NK5podio10ROOTReader22getAvailableDatamodelsEv"></span><span id="_CPPv2NK5podio10ROOTReader22getAvailableDatamodelsEv"></span><span id="podio::ROOTReader::getAvailableDatamodelsC"></span><span class="target" id="classpodio_1_1_r_o_o_t_reader_1a5bbb1e8f2ccbfb5612e809d11edd7c2c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableDatamodels</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
-<dd><p>Get all names of the datamodels that ara available from this reader. </p>
+<dd><p>Get all names of the datamodels that are available from this reader. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The names of the datamodels </p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

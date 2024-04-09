@@ -554,56 +554,113 @@
 <span id="_CPPv3N5podio10ROOTWriterE"></span><span id="_CPPv2N5podio10ROOTWriterE"></span><span id="podio::ROOTWriter"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;podio/ROOTWriter.h&gt;</em></div>
+<p>The ROOTWriter writes podio files into ROOT files using TTrees. </p>
+<p>Each category gets its own TTree. Additionally, there is a podio_metadata TTree that contains metadata that is necessary for interpreting the files for reading.</p>
+<p>Files written with the ROOTWriter can be read with the ROOTReader. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringE">
 <span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="podio::ROOTWriter::ROOTWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1acb04b1b78b2465b07a5c3b51a13c8fd1"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>Create a ROOTWriter to write to a file. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Existing files will be overwritten without warning.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> – The path to the file that will be created. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriterD0Ev">
 <span id="_CPPv3N5podio10ROOTWriterD0Ev"></span><span id="_CPPv2N5podio10ROOTWriterD0Ev"></span><span id="podio::ROOTWriter::~ROOTWriter"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a725b17898f4c9211172c90979df8095a"></span><span class="sig-name descname"><span class="n"><span class="pre">~ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dd><p>ROOTWriter destructor. </p>
+<p>This also takes care of writing all the necessary metadata to read files back again. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10ROOTWriterERK10ROOTWriter">
 <span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERK10ROOTWriter"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERK10ROOTWriter"></span><span id="podio::ROOTWriter::ROOTWriter__ROOTWriterCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a37391d5fb571323ad4ce85fdbdf19b9b"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_writer.html#_CPPv4N5podio10ROOTWriter10ROOTWriterERK10ROOTWriter" title="podio::ROOTWriter::ROOTWriter"><span class="n"><span class="pre">ROOTWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>The ROOTWriter is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriteraSERK10ROOTWriter">
 <span id="_CPPv3N5podio10ROOTWriteraSERK10ROOTWriter"></span><span id="_CPPv2N5podio10ROOTWriteraSERK10ROOTWriter"></span><span id="podio::ROOTWriter::assign-operator__ROOTWriterCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a313d1e9a7932bdfbfa41c803f7ff9c83"></span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_writer.html#_CPPv4N5podio10ROOTWriterE" title="podio::ROOTWriter"><span class="n"><span class="pre">ROOTWriter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_writer.html#_CPPv4N5podio10ROOTWriterE" title="podio::ROOTWriter"><span class="n"><span class="pre">ROOTWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
-<dd></dd></dl>
+<dd><p>The ROOTWriter is not copy-able. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10writeFrameERKN5podio5FrameERKNSt6stringE">
 <span id="_CPPv3N5podio10ROOTWriter10writeFrameERKN5podio5FrameERKNSt6stringE"></span><span id="_CPPv2N5podio10ROOTWriter10writeFrameERKN5podio5FrameERKNSt6stringE"></span><span id="podio::ROOTWriter::writeFrame__podio::FrameCR.ssCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a15a2047dc2d561909c9c4ad349f905cb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Store the given frame with the given category. </p>
-<p>Store all available collections from the Frame.</p>
-<p>NOTE: The contents of the first Frame that is written in this way determines the contents that will be written for all subsequent Frames. </p>
+<p>This stores all available collections from the Frame.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The contents of the first Frame that is written in this way determines the contents that will be written for all subsequent Frames.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – The Frame to store </p></li>
+<li><p><strong>category</strong> – The category name under which this Frame should be stored </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE">
 <span id="_CPPv3N5podio10ROOTWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio10ROOTWriter10writeFrameERKN5podio5FrameERKNSt6stringERKNSt6vectorINSt6stringEEE"></span><span id="podio::ROOTWriter::writeFrame__podio::FrameCR.ssCR.std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a504ddd17617f2b8f2362005968735f49"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToWrite</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Store the given Frame with the given category. </p>
-<p>Store only the collections that are passed.</p>
-<p>NOTE: The contents of the first Frame that is written in this way determines the contents that will be written for all subsequent Frames. </p>
+<p>This stores only the desired collections and not the complete frame.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The contents of the first Frame that is written in this way determines the contents that will be written for all subsequent Frames.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> – The Frame to store </p></li>
+<li><p><strong>category</strong> – The category name under which this Frame should be stored </p></li>
+<li><p><strong>collsToWrite</strong> – The collection names that should be written </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter6finishEv">
 <span id="_CPPv3N5podio10ROOTWriter6finishEv"></span><span id="_CPPv2N5podio10ROOTWriter6finishEv"></span><span id="podio::ROOTWriter::finish"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1ad337ba928f37e5cdc232f8aa9c37c6d7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">finish</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Write the current file, including all the necessary metadata to read it again. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The destructor will also call this, so letting a ROOTWriter go out of scope is also a viable way to write a readable file </p>
+</div>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio10ROOTWriter16checkConsistencyERKNSt6vectorINSt6stringEEERKNSt6stringE">
 <span id="_CPPv3NK5podio10ROOTWriter16checkConsistencyERKNSt6vectorINSt6stringEEERKNSt6stringE"></span><span id="_CPPv2NK5podio10ROOTWriter16checkConsistencyERKNSt6vectorINSt6stringEEERKNSt6stringE"></span><span id="podio::ROOTWriter::checkConsistency__std::vector:ss:CR.ssCRC"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a31c6ac7ffddba0d4d54e16161a1b319f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">checkConsistency</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToWrite</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">category</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
 <dd><p>Check whether the collsToWrite are consistent with the state of the passed category. </p>
-<p>Return two vectors of collection names. The first one contains all the names that were missing from the collsToWrite but were present in the category. The second one contains the names that are present in the collsToWrite only. If both vectors are empty the category and the passed collsToWrite are consistent.</p>
-<p>NOTE: This will only be a meaningful check if the first Frame of the passed category has already been written. Also, this check is rather expensive as it has to effectively do two set differences. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This will only be a meaningful check if the first Frame of the passed category has already been written. Also, this check is rather expensive as it has to effectively do two set differences.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>collsToWrite</strong> – The collection names that should be checked for consistency </p></li>
+<li><p><strong>category</strong> – The category name for which consistency should be checked</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>two vectors of collection names. The first one contains all the names that were missing from the collsToWrite but were present in the category. The second one contains the names that are present in the collsToWrite only. If both vectors are empty the category and the passed collsToWrite are consistent. </p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

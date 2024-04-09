@@ -606,7 +606,10 @@
 <p>If no datamodel with the given name can be found, an empty datamodel definition, i.e. an empty JSON object (“{}”), is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> – The name of the datamodel </p>
+<dd class="field-odd"><p><strong>name</strong> – The name of the datamodel</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The high level definition of the datamodel in JSON format </p>
 </dd>
 </dl>
 </dd></dl>
@@ -618,7 +621,10 @@
 <p>If no datamodel is found under the given index, an empty datamodel definition, i.e. an empty JSON object (“{}”), is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>index</strong> – The datamodel definition index that can be obtained from each collection </p>
+<dd class="field-odd"><p><strong>index</strong> – The datamodel definition index that can be obtained from each collection</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The high level definition of the datamodel in JSON format </p>
 </dd>
 </dl>
 </dd></dl>
@@ -630,7 +636,10 @@
 <p>If no datamodel is found under the given index, an empty string is returned</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>index</strong> – The datamodel definition index that can be obtained from each collection </p>
+<dd class="field-odd"><p><strong>index</strong> – The datamodel definition index that can be obtained from each collection</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The name of the datamodel </p>
 </dd>
 </dl>
 </dd></dl>
@@ -638,15 +647,18 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE">
 <span id="_CPPv3N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE"></span><span id="_CPPv2N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE"></span><span id="podio::DatamodelRegistry::registerDatamodel__ss.std::string_view.podio::RelationNameMappingCR"></span><span class="target" id="classpodio_1_1_datamodel_registry_1a48d84cdd5ae32e8e4470a35c22323bb6"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">registerDatamodel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">definition</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio19RelationNameMappingE" title="podio::RelationNameMapping"><span class="n"><span class="pre">RelationNameMapping</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">relationNames</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Register a datamodel return the index in the registry. </p>
+<dd><p>Register a datamodel and return its index in the registry. </p>
 <p>This is the hook that is called during dynamic loading of an EDM to register information for this EDM. If an EDM has already been registered under this name, than the index to the existing EDM in the registry will be returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – The name of the EDM that should be registered </p></li>
 <li><p><strong>definition</strong> – The datamodel definition from which this EDM has been generated in JSON format </p></li>
-<li><p><strong>relationNames</strong> – the names of the relations and vector members for all datatypes that are defined for this EDM </p></li>
+<li><p><strong>relationNames</strong> – the names of the relations and vector members for all datatypes that are defined for this EDM</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The index of this datamodel in the registry </p>
 </dd>
 </dl>
 </dd></dl>
