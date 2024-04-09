@@ -158,7 +158,7 @@ void {{ collection_type }}::push_back(Mutable{{ class.bare_type }} object) {
 
 void {{ collection_type }}::push_back({{ class.bare_type }} object) {
   if (!m_isSubsetColl) {
-    throw std::invalid_argument("Can only add immutable objects to subset collections");
+    throw std::invalid_argument("Immutable objects can only be added to subset collections");
   }
   auto obj = object.m_obj;
   if (obj->id.index < 0) {
