@@ -131,34 +131,14 @@ private:
    * reading from a TTree / TChain (i.e. collection infos, branches, ...)
    */
   struct CategoryInfo {
-    // /// constructor from chain for more convenient map insertion
-    // CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
-    // }
+    /// constructor from chain for more convenient map insertion
     CategoryInfo() : chain("unused"){}
 
-    // The copy constructor and assignment operators must be explicitly defined 
-    // to handle the tree pointer which may be pointing to an internal member
-    // (chain) or to an external object.
+    // The copy constructor and assignment operators are explicitly deleted 
+    // here since TChain has these declared private and therefore inaccessible.
     CategoryInfo(const podio::ROOTReader::CategoryInfo&) = delete;
     CategoryInfo& operator=(const podio::ROOTReader::CategoryInfo&) = delete;
-    // CategoryInfo(const podio::ROOTReader::CategoryInfo& other)
-    //     : chain(other.chain),
-    //       tree(other.tree),
-    //       entry(other.entry),
-    //       storedClasses(other.storedClasses),
-    //       branches(other.branches),
-    //       table(other.table){}
-    // CategoryInfo& operator=(const podio::ROOTReader::CategoryInfo& other){
-    //   chain         = other.chain;
-    //   tree          = other.tree;
-    //   entry         = other.entry;
-    //   storedClasses = other.storedClasses;
-    //   branches      = other.branches;
-    //   table         = other.table;
-    // }
 
-
-    // std::unique_ptr<TChain> chain{nullptr};                                      ///< The TChain with the data
     TChain chain;                                                                ///< The TChain with the data (if reading from files)
     TTree *tree = {nullptr};                                                     ///< The TTree with the data (use this, not chain!)
     unsigned entry{0};                                                           ///< The next entry to read

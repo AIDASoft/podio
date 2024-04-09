@@ -129,9 +129,8 @@ ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& categor
     return it->second;
   }
 
-  // Use a nullptr TChain to signify an invalid category request
+  // Create empty CategoryInfo to signify an invalid category request
   // TODO: Warn / log
-  // static auto invalidCategory = CategoryInfo{nullptr};
   static auto invalidCategory = CategoryInfo();
 
   return invalidCategory;
@@ -222,7 +221,6 @@ void ROOTReader::openFile(const std::string& filename) {
 }
 
 void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
-  // m_metaChain = std::make_unique<TChain>(root_utils::metaTreeName);
   m_metaChain.SetName(root_utils::metaTreeName);
   // NOTE: We simply assume that the meta data doesn't change throughout the
   // chain! This essentially boils down to the assumption that all files that
@@ -236,34 +234,18 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   }
 
   // Make m_metaTree point to m_metaChain. It is done this way in order
-  // to support cases when a memory-resident TTree is used which cannot
-  // be part of a TChain. 
+  // to support both cases when files are used or a memory-resident TTree
+  // is used which cannot be part of a TChain. 
   m_metaTree = &m_metaChain;
 
   // Read in version and data model info 
   readMetaData();
-  // podio::version::Version* versionPtr{nullptr};
-  // if (auto* versionBranch = root_utils::getBranch(m_metaTree, root_utils::versionBranchName)) {
-  //   versionBranch->SetAddress(&versionPtr);
-  //   versionBranch->GetEntry(0);
-  // }
-  // m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
-  // delete versionPtr;
-
-  // if (auto* edmDefBranch = root_utils::getBranch(m_metaTree, root_utils::edmDefBranchName)) {
-  //   auto* datamodelDefs = new DatamodelDefinitionHolder::MapType{};
-  //   edmDefBranch->SetAddress(&datamodelDefs);
-  //   edmDefBranch->GetEntry(0);
-  //   m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
-  //   delete datamodelDefs;
-  // }
 
   // Do some work up front for setting up categories and setup all the chains
   // and record the available categories. The rest of the setup follows on
   // demand when the category is first read
   m_availCategories = ::podio::getAvailableCategories(m_metaTree);
   for (const auto& cat : m_availCategories) {
-    // auto [it, _] = m_categories.try_emplace(cat, std::make_unique<TChain>(cat.c_str()));
     auto [it, _] = m_categories.try_emplace(cat);
     it->second.chain.SetName(cat.c_str());
     for (const auto& fn : filenames) {
@@ -279,21 +261,6 @@ void ROOTReader::openTDirectory(TDirectory *dir) {
 
   // Read in version and data model info 
   readMetaData();
-  // podio::version::Version* versionPtr{nullptr};
-  // if (auto* versionBranch = root_utils::getBranch(m_metaTree, root_utils::versionBranchName)) {
-  //   versionBranch->SetAddress(&versionPtr);
-  //   versionBranch->GetEntry(0);
-  // }
-  // m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
-  // delete versionPtr;
-
-  // if (auto* edmDefBranch = root_utils::getBranch(m_metaTree, root_utils::edmDefBranchName)) {
-  //   auto* datamodelDefs = new DatamodelDefinitionHolder::MapType{};
-  //   edmDefBranch->SetAddress(&datamodelDefs);
-  //   edmDefBranch->GetEntry(0);
-  //   m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
-  //   delete datamodelDefs;
-  // }
 
   // Do some work up front for setting up categories and setup all the chains
   // and record the available categories. The rest of the setup follows on
