@@ -192,7 +192,9 @@ class Frame:
         """
 
         def _get_param_value(par_type, name):
-            par_value = self._frame.getParameter[par_type](name)
+            # We can safely assume that getting the value here works, because
+            # only valid keys will end up here
+            par_value = self._frame.getParameter[par_type](name).value()
             if len(par_value) == 1:
                 return par_value[0]
             return list(deepcopy(par_value))

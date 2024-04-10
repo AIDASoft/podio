@@ -56,34 +56,34 @@ std::ostream& operator<<(std::ostream& o, const std::vector<T>& vec) {
 }
 
 int checkParameters(const podio::Frame& frame) {
-  const auto iVal = frame.getParameter<int>("an_int");
+  const auto iVal = frame.getParameter<int>("an_int").value();
   if (iVal != 42) {
     std::cerr << "Parameter an_int was not stored correctly (expected 42, actual " << iVal << ")" << std::endl;
     return 1;
   }
 
-  const auto& dVal = frame.getParameter<std::vector<double>>("some_floats");
+  const auto dVal = frame.getParameter<std::vector<double>>("some_floats").value();
   if (dVal.size() != 3 || dVal[0] != 1.23 || dVal[1] != 7.89 || dVal[2] != 3.14) {
     std::cerr << "Parameter some_floats was not stored correctly (expected [1.23, 7.89, 3.14], actual " << dVal << ")"
               << std::endl;
     return 1;
   }
 
-  const auto& strVal = frame.getParameter<std::vector<std ::string>>("greetings");
+  const auto strVal = frame.getParameter<std::vector<std ::string>>("greetings").value();
   if (strVal.size() != 2 || strVal[0] != "from" || strVal[1] != "python") {
     std::cerr << "Parameter greetings was not stored correctly (expected [from, python], actual " << strVal << ")"
               << std::endl;
     return 1;
   }
 
-  const auto realFloat = frame.getParameter<float>("real_float");
+  const auto realFloat = frame.getParameter<float>("real_float").value_or(-1.f);
   if (realFloat != 3.14f) {
     std::cerr << "Parameter real_float was not stored correctly (expected 3.14, actual " << realFloat << ")"
               << std::endl;
     return 1;
   }
 
-  const auto& realFloats = frame.getParameter<std::vector<float>>("more_real_floats");
+  const auto realFloats = frame.getParameter<std::vector<float>>("more_real_floats").value();
   if (realFloats.size() != 3 || realFloats[0] != 1.23f || realFloats[1] != 4.56f || realFloats[2] != 7.89f) {
     std::cerr << "Parameter more_real_floats was not stored as correctly (expected [1.23, 4.56, 7.89], actual"
               << realFloats << ")" << std::endl;

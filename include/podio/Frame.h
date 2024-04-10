@@ -284,10 +284,10 @@ public:
   /// @tparam T  The desired type of the parameter (can also be std::vector<T>)
   /// @param key The key under which the value is stored
   ///
-  /// @returns   The value of the parameter or an empty default value
+  /// @returns   An optional holding the value if it was present
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline auto getParameter(const std::string& key) const {
-    return m_self->parameters().get<T>(key).value_or(T{});
+    return m_self->parameters().get<T>(key);
   }
 
   /// Retrieve all parameters stored in this Frame.
