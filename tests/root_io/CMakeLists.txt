@@ -5,6 +5,7 @@ set(root_dependent_tests
   write_frame_root.cpp
   read_python_frame_root.cpp
   read_frame_root_multiple.cpp
+  read_frame_root_tdirectory.cpp
   read_and_write_frame_root.cpp
   )
 if(ENABLE_RNTUPLE)
@@ -23,6 +24,7 @@ endforeach()
 set_tests_properties(
   read_frame_root
   read_frame_root_multiple
+  read_frame_root_tdirectory
   read_and_write_frame_root
 
   PROPERTIES
