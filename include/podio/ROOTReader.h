@@ -36,41 +36,40 @@ class CollectionIDTable;
 class GenericParameters;
 struct CollectionReadBuffers;
 
-/**
- * This class has the function to read available data from disk
- * and to prepare collections and buffers.
- **/
+/// This class has the function to read available data from disk in ROOTs TTree
+/// format.
+///
+/// The ROOTReader provides the data as ROOTFrameData from which a podio::Frame
+/// can be constructed. It can be used to read files written by the ROOTWriter.
 class ROOTReader {
 
 public:
+  /// Create a ROOTReader
   ROOTReader() = default;
+  /// Destructor
   ~ROOTReader() = default;
 
-  // non-copyable
+  /// The ROOTReader is not copy-able
   ROOTReader(const ROOTReader&) = delete;
+  /// The ROOTReader is not copy-able
   ROOTReader& operator=(const ROOTReader&) = delete;
 
-  /**
-   * Open a single file for reading.
-   *
-   * @param filename The name of the input file
-   */
+  /// Open a single file for reading.
+  ///
+  /// @param filename The name of the input file
   void openFile(const std::string& filename);
 
-  /**
-   * Open multiple files for reading and then treat them as if they are one file
-   *
-   * NOTE: All of the files are assumed to have the same structure. Specifically
-   * this means:
-   * - The same categories are available from all files
-   * - The collections that are contained in the individual categories are the
-   *   same across all files
-   *
-   * This usually boils down to "the files have been written with the same
-   * settings", e.g. they are outputs of a batched process.
-   *
-   * @param filenames The filenames of all input files that should be read
-   */
+  /// Open multiple files for reading and then treat them as if they are one file
+  ///
+  /// @note All of the files are assumed to have the same structure. Specifically
+  /// this means:
+  /// - The same categories are available from all files
+  /// - The collections that are contained in the individual categories are the
+  ///   same across all files
+  /// - This usually boils down to "the files have been written with the same
+  ///   "settings", e.g. they are outputs of a batched process.
+  ///
+  /// @param filenames The filenames of all input files that should be read
   void openFiles(const std::vector<std::string>& filenames);
   
   /**
@@ -84,37 +83,56 @@ public:
    */
    void openTDirectory(TDirectory *dir);
 
-  /**
-   * Read the next data entry from which a Frame can be constructed for the
-   * given name. In case there are no more entries left for this name or in
-   * case there is no data for this name, this returns a nullptr.
-   */
+  /// Read the next data entry for a given category.
+  ///
+  /// @param name The category name for which to read the next entry
+  ///
+  /// @returns FrameData from which a podio::Frame can be constructed if the
+  ///          category exists and if there are still entries left to read.
+  ///          Otherwise a nullptr
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name);
 
-  /**
-   * Read the specified data entry from which a Frame can be constructed for
-   * the given name. In case the entry does not exist for this name or in case
-   * there is no data for this name, this returns a nullptr.
-   */
+  /// Read the desired data entry for a given category.
+  ///
+  /// @param name  The category name for which to read the next entry
+  /// @param entry The entry number to read
+  ///
+  /// @returns FrameData from which a podio::Frame can be constructed if the
+  ///          category and the desired entry exist. Otherwise a nullptr
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry);
 
-  /// Returns number of entries for the given name
+  /// Get the number of entries for the given name
+  ///
+  /// @param name The name of the category
+  ///
+  /// @returns The number of entries that are available for the category
   unsigned getEntries(const std::string& name) const;
 
-  /// Get the build version of podio that has been used to write the current file
+  /// Get the build version of podio that has been used to write the current
+  /// file
+  ///
+  /// @returns The podio build version
   podio::version::Version currentFileVersion() const {
     return m_fileVersion;
   }
 
-  /// Get the names of all the available Frame categories in the current file(s)
+  /// Get the names of all the available Frame categories in the current file(s).
+  ///
+  /// @returns The names of the available categories from the file
   std::vector<std::string_view> getAvailableCategories() const;
 
   /// Get the datamodel definition for the given name
+  ///
+  /// @param name The name of the datamodel
+  ///
+  /// @returns The high level definition of the datamodel in JSON format
   const std::string_view getDatamodelDefinition(const std::string& name) const {
     return m_datamodelHolder.getDatamodelDefinition(name);
   }
 
-  /// Get all names of the datamodels that ara available from this reader
+  /// Get all names of the datamodels that are available from this reader
+  ///
+  /// @returns The names of the datamodels
   std::vector<std::string> getAvailableDatamodels() const {
     return m_datamodelHolder.getAvailableDatamodels();
   }
@@ -123,13 +141,11 @@ private:
 
   void readMetaData();
 
-  /**
-   * Helper struct to group together all the necessary state to read / process a
-   * given category. A "category" in this case describes all frames with the
-   * same name which are constrained by the ROOT file structure that we use to
-   * have the same contents. It encapsulates all state that is necessary for
-   * reading from a TTree / TChain (i.e. collection infos, branches, ...)
-   */
+  /// Helper struct to group together all the necessary state to read / process
+  /// a given category. A "category" in this case describes all frames with the
+  /// same name which are constrained by the ROOT file structure that we use to
+  /// have the same contents. It encapsulates all state that is necessary for
+  /// reading from a TTree / TChain (i.e. collection infos, branches, ...)
   struct CategoryInfo {
     /// constructor from chain for more convenient map insertion
     CategoryInfo() : chain("unused"){}
@@ -148,35 +164,25 @@ private:
     std::shared_ptr<CollectionIDTable> table{nullptr}; ///< The collection ID table for this category
   };
 
-  /**
-   * Initialize the passed CategoryInfo by setting up the necessary branches,
-   * collection infos and all necessary meta data to be able to read entries
-   * with this name
-   */
+  /// Initialize the passed CategoryInfo by setting up the necessary branches,
+  /// collection infos and all necessary meta data to be able to read entries
+  /// with this name
   void initCategory(CategoryInfo& catInfo, const std::string& name);
 
-  /**
-   * Get the category information for the given name. In case there is no TTree
-   * with contents for the given name this will return a CategoryInfo with an
-   * uninitialized chain (nullptr) member
-   */
+  /// Get the category information for the given name. In case there is no TTree
+  /// with contents for the given name this will return a CategoryInfo with an
+  /// uninitialized chain (nullptr) member
   CategoryInfo& getCategoryInfo(const std::string& name);
 
-  /**
-   * Read the parameters for the entry specified in the passed CategoryInfo
-   */
+  /// Read the parameters for the entry specified in the passed CategoryInfo
   GenericParameters readEntryParameters(CategoryInfo& catInfo, bool reloadBranches, unsigned int localEntry);
 
-  /**
-   * Read the data entry specified in the passed CategoryInfo, and increase the
-   * counter afterwards. In case the requested entry is larger than the
-   * available number of entries, return a nullptr.
-   */
+  /// Read the data entry specified in the passed CategoryInfo, and increase the
+  /// counter afterwards. In case the requested entry is larger than the
+  /// available number of entries, return a nullptr.
   std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTReader::CategoryInfo& catInfo);
 
-  /**
-   * Get / read the buffers at index iColl in the passed category information
-   */
+  /// Get / read the buffers at index iColl in the passed category information
   podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl, bool reloadBranches,
                                                     unsigned int localEntry);
 

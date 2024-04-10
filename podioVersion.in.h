@@ -33,11 +33,9 @@
 
 namespace podio::version {
 
-/**
- * Version class consisting of 3 16 bit unsigned integers to hold the major,
- * minor and patch version. Provides constexpr comparison operators that allow
- * to use this class in constexpr-if clauses.
- */
+/// Version class consisting of three 16 bit unsigned integers to hold the major,
+/// minor and patch version. Provides constexpr comparison operators that allow
+/// one to use this class in constexpr-if clauses.
 struct Version {
   uint16_t major{0};
   uint16_t minor{0};
@@ -75,14 +73,10 @@ inline std::ostream& operator<<(std::ostream& os, const Version& v) {
   return os << v.major << "." << v.minor << "." << v.patch;
 }
 
-/**
- * The current build version
- */
+/// The current build version
 static constexpr Version build_version{podio_VERSION_MAJOR, podio_VERSION_MINOR, podio_VERSION_PATCH};
 
-/**
- * Decode a version from a 64 bit unsigned
- */
+/// Decode a version from a 64 bit unsigned
 static constexpr Version decode_version(unsigned long version) noexcept {
   return Version{(uint16_t)PODIO_MAJOR_VERSION(version), (uint16_t)PODIO_MINOR_VERSION(version),
                  (uint16_t)PODIO_PATCH_VERSION(version)};

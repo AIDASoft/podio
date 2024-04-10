@@ -21,10 +21,8 @@ using UVecPtr = std::unique_ptr<std::vector<T>>;
 using CollRefCollection = std::vector<UVecPtr<podio::ObjectID>>;
 using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
 
-/**
- * Simple helper struct that bundles all the potentially necessary buffers that
- * are necessary to represent a collection for I/O purposes.
- */
+/// Simple helper struct that bundles all the potentially necessary buffers that
+/// are necessary to represent a collection for I/O purposes.
 struct CollectionWriteBuffers {
   void* data{nullptr};
   void* vecPtr{nullptr};

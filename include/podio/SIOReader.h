@@ -17,49 +17,79 @@ namespace podio {
 
 class CollectionIDTable;
 
+/// The SIOReader can be used to read files that have been written with the SIO
+/// backend.
+///
+/// The SIOReader provides the data as SIOFrameData from which a podio::Frame
+/// can be constructed. It can be used to read files written by the SIOWriter.
 class SIOReader {
 
 public:
+  /// Create an SIOReader
   SIOReader();
+  /// SIOReader destructor
   ~SIOReader() = default;
 
-  // non copyable
+  /// The SIOReader is not copy-able
   SIOReader(const SIOReader&) = delete;
+  /// The SIOReader is not copy-able
   SIOReader& operator=(const SIOReader&) = delete;
 
-  /**
-   * Read the next data entry from which a Frame can be constructed for the
-   * given name. In case there are no more entries left for this name or in
-   * case there is no data for this name, this returns a nullptr.
-   */
+  /// Read the next data entry for a given category.
+  ///
+  /// @param name The category name for which to read the next entry
+  ///
+  /// @returns FrameData from which a podio::Frame can be constructed if the
+  ///          category exists and if there are still entries left to read.
+  ///          Otherwise a nullptr
   std::unique_ptr<podio::SIOFrameData> readNextEntry(const std::string& name);
 
-  /**
-   * Read the specified data entry from which a Frame can be constructed for
-   * the given name. In case the entry does not exist for this name or in
-   * case there is no data for this name, this returns a nullptr.
-   */
+  /// Read the desired data entry for a given category.
+  ///
+  /// @param name  The category name for which to read the next entry
+  /// @param entry The entry number to read
+  ///
+  /// @returns FrameData from which a podio::Frame can be constructed if the
+  ///          category and the desired entry exist. Otherwise a nullptr
   std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name, const unsigned entry);
 
-  /// Returns number of entries for the given name
+  /// Get the number of entries for the given name
+  ///
+  /// @param name The name of the category
+  ///
+  /// @returns The number of entries that are available for the category
   unsigned getEntries(const std::string& name) const;
 
+  /// Open the passed file for reading.
+  ///
+  /// @param filename The path to the file to read from
   void openFile(const std::string& filename);
 
-  /// Get the build version of podio that has been used to write the current file
+  /// Get the build version of podio that has been used to write the current
+  /// file
+  ///
+  /// @returns The podio build version
   podio::version::Version currentFileVersion() const {
     return m_fileVersion;
   }
 
-  /// Get the names of all the available Frame categories in the current file(s)
+  /// Get the names of all the available Frame categories in the current file.
+  ///
+  /// @returns The names of the available categores from the file
   std::vector<std::string_view> getAvailableCategories() const;
 
   /// Get the datamodel definition for the given name
+  ///
+  /// @param name The name of the datamodel
+  ///
+  /// @returns The high level definition of the datamodel in JSON format
   const std::string_view getDatamodelDefinition(const std::string& name) const {
     return m_datamodelHolder.getDatamodelDefinition(name);
   }
 
-  /// Get all names of the datamodels that ara available from this reader
+  /// Get all names of the datamodels that are available from this reader
+  ///
+  /// @returns The names of the datamodels
   std::vector<std::string> getAvailableDatamodels() const {
     return m_datamodelHolder.getAvailableDatamodels();
   }

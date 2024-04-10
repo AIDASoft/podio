@@ -25,26 +25,22 @@
 
 namespace podio {
 
-/** tuple of basic types supported in user vector
- */
+/// tuple of basic types supported in user vector
 using SupportedUserDataTypes =
     std::tuple<float, double, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t>;
 
-/**
- * Alias template to be used to enable template specializations only for the types listed in the
- * SupportedUserDataTypes list
- */
+/// Alias template to be used to enable template specializations only for the types listed in the
+/// SupportedUserDataTypes list
 template <typename T>
 using EnableIfSupportedUserType = std::enable_if_t<detail::isInTuple<T, SupportedUserDataTypes>>;
 
-/** helper template to provide readable type names for basic types with macro PODIO_ADD_USER_TYPE(type)
- */
+/// helper template to provide readable type names for basic types with macro
+/// PODIO_ADD_USER_TYPE(type)
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 constexpr const char* userDataTypeName();
 
-/** Helper template to provide the fully qualified name of a UserDataCollection.
- * Implementations are populated by the PODIO_ADD_USER_TYPE macro.
- */
+/// Helper template to provide the fully qualified name of a UserDataCollection.
+/// Implementations are populated by the PODIO_ADD_USER_TYPE macro.
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 constexpr const char* userDataCollTypeName();
 
@@ -60,12 +56,13 @@ PODIO_ADD_USER_TYPE(uint16_t)
 PODIO_ADD_USER_TYPE(uint32_t)
 PODIO_ADD_USER_TYPE(uint64_t)
 
-/** Collection of basic types for additional user data not defined in the EDM.
- *  The data is stored in an std::vector<basic_type>. Supported are all basic types supported in
- *  PODIO, i.e. float, double and 8-64 bit fixed size signed and unsigned integers - @see SupportedUserDataTypes.
- *  @author F.Gaede, DESY
- *  @date Sep 2021
- */
+/// Collection of basic types for additional user data not defined in the EDM.
+/// The data is stored in an std::vector<basic_type>. Supported are all basic
+/// types supported in PODIO, i.e. float, double and 8-64 bit fixed size signed
+/// and unsigned integers - @see SupportedUserDataTypes.
+///
+/// @author F.Gaede, DESY
+/// @date Sep 2021
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
 class UserDataCollection : public CollectionBase {
 
