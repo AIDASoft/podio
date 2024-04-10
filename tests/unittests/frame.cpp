@@ -239,7 +239,7 @@ void checkFrame(const podio::Frame& frame) {
   REQUIRE(clusters[1].Clusters()[0] == clusters[0]);
 
   REQUIRE(frame.getParameter<int>("anInt") == 42);
-  auto& floats = frame.getParameter<std::vector<float>>("someFloats");
+  auto floats = frame.getParameter<std::vector<float>>("someFloats");
   REQUIRE(floats.size() == 3);
   REQUIRE(floats[0] == 1.23f);
   REQUIRE(floats[1] == 2.34f);

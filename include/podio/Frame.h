@@ -236,7 +236,7 @@ public:
   /// @param value The value of the parameter. A copy will be put into the Frame
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline void putParameter(const std::string& key, T value) {
-    m_self->parameters().setValue(key, std::move(value));
+    m_self->parameters().set(key, std::move(value));
   }
 
   /// Add a string value to the parameters of the Frame.
@@ -286,8 +286,8 @@ public:
   ///
   /// @returns   The value of the parameter or an empty default value
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
-  inline podio::GenericDataReturnType<T> getParameter(const std::string& key) const {
-    return m_self->parameters().getValue<T>(key);
+  inline auto getParameter(const std::string& key) const {
+    return m_self->parameters().get<T>(key).value_or(T{});
   }
 
   /// Retrieve all parameters stored in this Frame.
