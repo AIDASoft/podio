@@ -40,35 +40,6 @@ static constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, Su
 template <typename T>
 using EnableIfValidGenericDataType = typename std::enable_if_t<isSupportedGenericDataType<T>>;
 
-namespace detail {
-  /// Helper struct to determine how to return different types from the
-  /// GenericParameters to avoid unnecessary copies but also to make it possible
-  /// do distinguish between set and unset
-  template <typename T>
-  struct GenericDataReturnTypeHelper {
-    using type = T;
-  };
-
-  /// Specialization for std::string. Those will always be returned by const ref
-  template <>
-  struct GenericDataReturnTypeHelper<std::string> {
-    using type = const std::string&;
-  };
-
-  /// Specialization for std::vector. Those will always be returned by const ref
-  template <typename T>
-  struct GenericDataReturnTypeHelper<std::vector<T>> {
-    using type = const std::vector<T>&;
-  };
-} // namespace detail
-
-/// Alias template for determining the appropriate return type for the passed in
-/// type
-
-template <typename T>
-using GenericDataReturnType [[deprecated("GenericParameters will return by optional soon")]] =
-    typename detail::GenericDataReturnTypeHelper<T>::type;
-
 /// GenericParameters objects allow one to store generic named parameters of type
 ///  int, float and string or vectors of these types.
 ///  They can be used  to store (user) meta data that is
