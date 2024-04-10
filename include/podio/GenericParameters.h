@@ -104,33 +104,6 @@ public:
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   std::optional<T> get(const std::string& key) const;
 
-  /// Get the value that is stored under the given key, by const reference or by
-  /// value depending on the desired type
-  template <typename T, typename = EnableIfValidGenericDataType<T>>
-  [[deprecated("Use 'get' instead")]] GenericDataReturnType<T> getValue(const std::string&) const;
-
-  /// Store (a copy of) the passed value under the given key
-  template <typename T, typename = EnableIfValidGenericDataType<T>>
-  [[deprecated("Use 'set' instead")]] void setValue(const std::string& key, T value) {
-    set(key, value);
-  }
-
-  /// Overload for catching const char* setting for string values
-  [[deprecated("Use 'set' instead")]] void setValue(const std::string& key, std::string value) {
-    set<std::string>(key, std::move(value));
-  }
-
-  /// Overload for catching initializer list setting of string vector values
-  [[deprecated("Use 'set' instead")]] void setValue(const std::string& key, std::vector<std::string> values) {
-    set<std::vector<std::string>>(key, std::move(values));
-  }
-
-  /// Overload for catching initializer list setting for vector values
-  template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
-  void setValue(const std::string& key, std::initializer_list<T>&& values) {
-    set<std::vector<T>>(key, std::move(values));
-  }
-
   /// Store (a copy of) the passed value under the given key
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   void set(const std::string& key, T value);
@@ -246,28 +219,6 @@ std::optional<T> GenericParameters::get(const std::string& key) const {
   const auto it = map.find(key);
   if (it == map.end()) {
     return std::nullopt;
-  }
-
-  // We have to check whether the return type is a vector or a single value
-  if constexpr (detail::isVector<T>) {
-    return it->second;
-  } else {
-    const auto& iv = it->second;
-    return iv[0];
-  }
-}
-
-template <typename T, typename>
-GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) const {
-  const auto& map = getMap<T>();
-  auto& mtx = getMutex<T>();
-  std::lock_guard lock{mtx};
-  const auto it = map.find(key);
-  // If there is no entry to the key, we just return an empty default
-  // TODO: make this case detectable from the outside
-  if (it == map.end()) {
-    static const auto empty = T{};
-    return empty;
   }
 
   // We have to check whether the return type is a vector or a single value
