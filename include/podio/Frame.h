@@ -150,7 +150,10 @@ public:
   ///
   /// @tparam FrameDataT Arbitrary data container that provides access to the
   ///                    collection buffers as well as the metadata, when
-  ///                    requested by the Frame.
+  ///                    requested by the Frame. The unique_ptr has to be checked
+  ///                    for validity before calling this construtor.
+  ///
+  /// @throws std::invalid_argument if the passed pointer is a nullptr.
   template <typename FrameDataT>
   Frame(std::unique_ptr<FrameDataT>);
 
@@ -391,11 +394,15 @@ const CollT& Frame::put(CollT&& coll, const std::string& name) {
 
 template <typename FrameDataT>
 Frame::FrameModel<FrameDataT>::FrameModel(std::unique_ptr<FrameDataT> data) :
-    m_mapMtx(std::make_unique<std::mutex>()),
-    m_data(std::move(data)),
-    m_dataMtx(std::make_unique<std::mutex>()),
-    m_idTable(std::move(m_data->getIDTable())),
-    m_parameters(std::move(m_data->getParameters())) {
+    m_mapMtx(std::make_unique<std::mutex>()), m_dataMtx(std::make_unique<std::mutex>()) {
+  if (!data) {
+    throw std::invalid_argument(
+        "FrameData is a nullptr. If you are reading from a file it may be corrupted or you may reading beyond the end "
+        "of the file, please check the validity of the data before creating a Frame.");
+  }
+  m_data = std::move(data);
+  m_idTable = std::move(m_data->getIDTable());
+  m_parameters = std::move(m_data->getParameters());
 }
 
 template <typename FrameDataT>
