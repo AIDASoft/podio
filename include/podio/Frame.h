@@ -318,6 +318,26 @@ public:
     return m_self->availableCollections();
   }
 
+  /// Get the name of the passed collection
+  ///
+  /// @param coll The collection for which the name should be obtained
+  ///
+  /// @returns The name of the collection or an empty optional if this
+  ///          collection is not known to the Frame
+  inline std::optional<std::string> getName(const podio::CollectionBase& coll) const {
+    return getName(coll.getID());
+  }
+
+  /// Get the name for the passed collectionID
+  ///
+  /// @param collectionID The collection ID of the collection for which the name
+  ///                     should be obtained
+  /// @returns The name of the collection or an empty optional if this
+  ///          collectionID is not known to the Frame
+  inline std::optional<std::string> getName(const uint32_t collectionID) const {
+    return m_self->getIDTable().name(collectionID);
+  }
+
   // Interfaces for writing below
 
   /// Get a collection for writing.

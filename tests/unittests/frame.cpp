@@ -413,6 +413,15 @@ TEST_CASE("Frame destructor ASanFail") {
   }
 }
 
+TEST_CASE("Frame getName", "[frame][basics]") {
+  const auto frame = createFrame();
+
+  const auto& hits = frame.get<ExampleHitCollection>("hits");
+  REQUIRE(frame.getName(hits).value() == "hits");
+
+  REQUIRE_FALSE(frame.getName(0xfffffff).has_value());
+}
+
 TEST_CASE("EIC-Jana2 cleanup use case", "[memory-management][492][174]") {
   // Test case that only triggers in ASan builds if memory-management / cleanup
   // has a bug
