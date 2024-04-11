@@ -569,7 +569,10 @@
 <dd><p>Frame constructor from (almost) arbitrary raw data. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>FrameDataT</strong> – Arbitrary data container that provides access to the collection buffers as well as the metadata, when requested by the Frame. </p>
+<dd class="field-odd"><p><strong>FrameDataT</strong> – Arbitrary data container that provides access to the collection buffers as well as the metadata, when requested by the Frame. The unique_ptr has to be checked for validity before calling this construtor.</p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – if the passed pointer is a nullptr. </p>
 </dd>
 </dl>
 </dd></dl>
