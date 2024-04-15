@@ -59,7 +59,6 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
   ASSERT(structs[0].y == 0, "struct value not as expected");
   ASSERT(structs[1].y == iEvent, "struct value not as expected");
   ASSERT(structs[2].y == 2 * iEvent, "struct value not as expected");
-
 }
 
 void checkVecMemSubsetColl(const podio::Frame& event) {

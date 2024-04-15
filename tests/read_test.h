@@ -119,7 +119,6 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
       throw std::runtime_error("cloned cluster should have a hit with cellID 421");
     }
 
-
   } else {
     throw std::runtime_error("Collection 'clusters' should be present");
   }
