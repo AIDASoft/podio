@@ -1,4 +1,4 @@
-{% macro constructors_destructors(type, members, prefix='') %}
+{% macro constructors_destructors(type, members, multi_relations=[], prefix='') %}
 {% set full_type = prefix + type %}
 
 {{ full_type }}::{{ full_type }}() :
@@ -20,6 +20,13 @@
 
 Mutable{{ type }} {{ full_type }}::clone() const {
   auto tmp = Mutable{{ type }}(podio::utils::MaybeSharedPtr(new {{ type }}Obj(*m_obj), podio::utils::MarkOwned));
+{% for relation in multi_relations %}
+  if (m_obj->data.{{ relation.name }}_end != m_obj->m_{{ relation.name }}->size()) {
+    tmp.m_obj->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>(m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_begin, m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_end);
+    tmp.m_obj->data.{{ relation.name }}_begin = 0;
+    tmp.m_obj->data.{{ relation.name }}_end = tmp.m_obj->m_{{ relation.name }}->size();
+  }
+{% endfor %}
   return tmp;
 }
 
@@ -100,11 +107,6 @@ void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.full_t
 {% for relation in relations %}
 {% if with_adder %}
 void {{ class_type }}::{{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.full_type }} component) {
-  if (m_obj->data.{{ relation.name }}_end != m_obj->m_{{ relation.name }}->size()) {
-    m_obj->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>(m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_begin, m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_end);
-    m_obj->data.{{ relation.name }}_begin = 0;
-    m_obj->data.{{ relation.name }}_end = m_obj->m_{{ relation.name }}->size();
-  }
   m_obj->m_{{ relation.name }}->push_back(component);
   m_obj->data.{{ relation.name }}_end++;
 }
