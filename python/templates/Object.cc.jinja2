@@ -16,7 +16,7 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.constructors_destructors(class.bare_type, Members) }}
+{{ macros.constructors_destructors(class.bare_type, Members, OneToManyRelations) }}
 
 {{ class.bare_type }}::{{ class.bare_type }}(const Mutable{{ class.bare_type }}& other): {{ class.bare_type }}(other.m_obj) {}
 

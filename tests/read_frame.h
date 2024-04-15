@@ -59,6 +59,15 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
   ASSERT(structs[0].y == 0, "struct value not as expected");
   ASSERT(structs[1].y == iEvent, "struct value not as expected");
   ASSERT(structs[2].y == 2 * iEvent, "struct value not as expected");
+
+  auto ncluster = clusters[0].clone();
+  ASSERT(ncluster.Hits().size() == 1, "cluster should have 1 hit");
+
+  auto hit = ExampleHit(420, {}, {}, {}, {});
+  ncluster.addHits(hit);
+  ASSERT(ncluster.Hits().size() == 2, "cluster should have 2 hits");
+  ASSERT(ncluster.Hits(1).cellID() == 420, "cellID should be 420");
+
 }
 
 void checkVecMemSubsetColl(const podio::Frame& event) {
