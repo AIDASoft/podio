@@ -1234,6 +1234,45 @@ void runCheckConsistencyTest(const std::string& filename) {
   REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
 }
 
+TEST_CASE("Relations after cloning", "[relations]") {
+  auto [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
+  auto frame = podio::Frame();
+  frame.put(std::move(hitColl), "hits");
+  frame.put(std::move(clusterColl), "clusters");
+  frame.put(std::move(vecMemColl), "vectors");
+  auto writer = podio::ROOTWriter("unittest_relations_after_cloning.root");
+  writer.writeFrame(frame, podio::Category::Event);
+  writer.finish();
+  auto reader = podio::ROOTReader();
+  reader.openFile("unittest_relations_after_cloning.root");
+  auto readFrame = podio::Frame(reader.readNextEntry(podio::Category::Event));
+
+  auto& clusters = readFrame.get<ExampleClusterCollection>("clusters");
+
+  auto nCluster = clusters[0].clone();
+  REQUIRE(nCluster.Hits().size() == 1);
+
+  auto hit = ExampleHit(420, {}, {}, {}, {});
+  nCluster.addHits(hit);
+  REQUIRE(nCluster.Hits().size() == 2);
+  REQUIRE(nCluster.Hits()[1].cellID() == 420);
+
+  auto nCluster2 = nCluster.clone();
+  REQUIRE(nCluster2.Hits().size() == 2);
+  auto anotherHit = ExampleHit(421, {}, {}, {}, {});
+  nCluster2.addHits(anotherHit);
+  REQUIRE(nCluster2.Hits().size() == 3);
+  REQUIRE(nCluster2.Hits()[2].cellID() == 421);
+
+  auto& vectors = readFrame.get<ExampleWithVectorMemberCollection>("vectors");
+  auto nvec = vectors[0].clone();
+  REQUIRE(nvec.count().size() == 2);
+  nvec.addcount(420);
+  REQUIRE(nvec.count().size() == 3);
+  REQUIRE(nvec.count()[2] == 420);
+
+}
+
 TEST_CASE("ROOTWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][THREAD-FAIL][basics][root]") {
   // The UBSAN-FAIL and TSAN-FAIL only happens on clang12 in CI.
   runConsistentFrameTest<podio::ROOTWriter>("unittests_frame_consistency.root");
