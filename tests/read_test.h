@@ -92,16 +92,34 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i != end; ++i) {
       std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
     }
-    auto ncluster = clusters[0].clone();
-    if (ncluster.Hits().size() != 1) {
+    auto nCluster = clusters[0].clone();
+    if (nCluster.Hits().size() != 1) {
       throw std::runtime_error("cluster should have 1 hit");
     }
 
     auto hit = ExampleHit(420, {}, {}, {}, {});
-    ncluster.addHits(hit);
-    if (ncluster.Hits().size() != 2) {
+    nCluster.addHits(hit);
+    if (nCluster.Hits().size() != 2) {
       throw std::runtime_error("cluster should have 2 hits");
     }
+    if (nCluster.Hits()[1].cellID() != 420) {
+      throw std::runtime_error("cluster should have a hit with cellID 420");
+    }
+
+    auto nCluster2 = nCluster.clone();
+    if (nCluster2.Hits().size() != 2) {
+      throw std::runtime_error("cloned cluster should have 2 hits");
+    }
+    auto anotherHit = ExampleHit(421, {}, {}, {}, {});
+    nCluster2.addHits(anotherHit);
+    if (nCluster2.Hits().size() != 3) {
+      throw std::runtime_error("cloned cluster should have 3 hits");
+    }
+    if (nCluster2.Hits()[2].cellID() != 421) {
+      throw std::runtime_error("cloned cluster should have a hit with cellID 421");
+    }
+
+
   } else {
     throw std::runtime_error("Collection 'clusters' should be present");
   }

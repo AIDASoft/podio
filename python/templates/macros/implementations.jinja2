@@ -23,6 +23,8 @@ Mutable{{ type }} {{ full_type }}::clone() const {
 {% for relation in multi_relations %}
   if (m_obj->data.{{ relation.name }}_end != m_obj->m_{{ relation.name }}->size()) {
     tmp.m_obj->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>(m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_begin, m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_end);
+    tmp.m_obj->data.{{ relation.name }}_begin = 0;
+    tmp.m_obj->data.{{ relation.name }}_end = tmp.m_obj->m_{{ relation.name }}->size();
   }
 {% endfor %}
   return tmp;
