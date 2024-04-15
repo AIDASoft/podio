@@ -1285,7 +1285,6 @@ TEST_CASE("Relations after cloning", "[ASAN-FAIL][UBSAN-FAIL][relations]") {
   nEmptyCluster.addHits(anotherHit);
   REQUIRE(nEmptyCluster.Hits().size() == 2);
   REQUIRE(nEmptyCluster.Hits()[1].cellID() == 421);
-
 }
 
 TEST_CASE("ROOTWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][THREAD-FAIL][basics][root]") {
