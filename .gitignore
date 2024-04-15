@@ -62,6 +62,7 @@ spack*
 .vscode
 /.cache/
 .venv
+/.projectile
 
 # Generated files
 *podio_generated_files.cmake
@@ -79,3 +80,6 @@ spack*
 # CLion artifacts
 .idea/
 cmake-build*/
+
+# Created by tests
+/tools/Digraph.gv
