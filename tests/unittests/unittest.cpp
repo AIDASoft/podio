@@ -1234,12 +1234,17 @@ void runCheckConsistencyTest(const std::string& filename) {
   REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
 }
 
-TEST_CASE("Relations after cloning", "[relations]") {
+TEST_CASE("Relations after cloning", "[ASAN-FAIL][UBSAN-FAIL][relations]") {
   auto [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
   auto frame = podio::Frame();
   frame.put(std::move(hitColl), "hits");
   frame.put(std::move(clusterColl), "clusters");
   frame.put(std::move(vecMemColl), "vectors");
+  // Empty relations
+  auto emptyColl = ExampleClusterCollection();
+  emptyColl.create();
+  emptyColl.create();
+  frame.put(std::move(emptyColl), "emptyClusters");
   auto writer = podio::ROOTWriter("unittest_relations_after_cloning.root");
   writer.writeFrame(frame, podio::Category::Event);
   writer.finish();
@@ -1265,11 +1270,21 @@ TEST_CASE("Relations after cloning", "[relations]") {
   REQUIRE(nCluster2.Hits()[2].cellID() == 421);
 
   auto& vectors = readFrame.get<ExampleWithVectorMemberCollection>("vectors");
-  auto nvec = vectors[0].clone();
-  REQUIRE(nvec.count().size() == 2);
-  nvec.addcount(420);
-  REQUIRE(nvec.count().size() == 3);
-  REQUIRE(nvec.count()[2] == 420);
+  auto nVec = vectors[0].clone();
+  REQUIRE(nVec.count().size() == 2);
+  nVec.addcount(420);
+  REQUIRE(nVec.count().size() == 3);
+  REQUIRE(nVec.count()[2] == 420);
+
+  auto& emptyClusters = readFrame.get<ExampleClusterCollection>("emptyClusters");
+  auto nEmptyCluster = emptyClusters[0].clone();
+  REQUIRE(nEmptyCluster.Hits().empty());
+  nEmptyCluster.addHits(hit);
+  REQUIRE(nEmptyCluster.Hits().size() == 1);
+  REQUIRE(nEmptyCluster.Hits()[0].cellID() == 420);
+  nEmptyCluster.addHits(anotherHit);
+  REQUIRE(nEmptyCluster.Hits().size() == 2);
+  REQUIRE(nEmptyCluster.Hits()[1].cellID() == 421);
 
 }
 
