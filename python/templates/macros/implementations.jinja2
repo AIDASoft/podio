@@ -1,4 +1,4 @@
-{% macro constructors_destructors(type, members, relations=[], prefix='') %}
+{% macro constructors_destructors(type, members, multi_relations=[], prefix='') %}
 {% set full_type = prefix + type %}
 
 {{ full_type }}::{{ full_type }}() :
@@ -20,7 +20,7 @@
 
 Mutable{{ type }} {{ full_type }}::clone() const {
   auto tmp = Mutable{{ type }}(podio::utils::MaybeSharedPtr(new {{ type }}Obj(*m_obj), podio::utils::MarkOwned));
-{% for relation in relations %}
+{% for relation in multi_relations %}
   if (m_obj->data.{{ relation.name }}_end != m_obj->m_{{ relation.name }}->size()) {
     tmp.m_obj->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>(m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_begin, m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_end);
   }

@@ -92,6 +92,16 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i != end; ++i) {
       std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
     }
+    auto ncluster = clusters[0].clone();
+    if (ncluster.Hits().size() != 1) {
+      throw std::runtime_error("cluster should have 1 hit");
+    }
+
+    auto hit = ExampleHit(420, {}, {}, {}, {});
+    ncluster.addHits(hit);
+    if (ncluster.Hits().size() != 2) {
+      throw std::runtime_error("cluster should have 2 hits");
+    }
   } else {
     throw std::runtime_error("Collection 'clusters' should be present");
   }
@@ -277,6 +287,23 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
       for (auto c = item.count_begin(), end = item.count_end(); c != end; ++c) {
         std::cout << "  Counter value " << (*c) << std::endl;
       }
+    }
+
+    auto nvec = vecs[0].clone();
+    if (nvec.count().size() != 2) {
+      throw std::runtime_error(
+          "cloned element of 'WithVectorMember' collection should have two elements in its 'count' "
+          "vector");
+    }
+    nvec.addcount(420);
+    if (nvec.count().size() != 3) {
+      throw std::runtime_error("cloned element of 'WithVectorMember' collection should have three elements in its "
+                               "'count' vector");
+    }
+    if (nvec.count(2) != 420) {
+      throw std::runtime_error(
+          "cloned element of 'WithVectorMember' collection should have the value 420 in its 'count' "
+          "vector");
     }
   } else {
     throw std::runtime_error("Collection 'WithVectorMember' should be present");
