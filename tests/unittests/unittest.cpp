@@ -28,6 +28,7 @@
 #endif
 
 #if PODIO_ENABLE_RNTUPLE
+  #include "podio/RNTupleReader.h"
   #include "podio/RNTupleWriter.h"
 #endif
 
@@ -1234,7 +1235,8 @@ void runCheckConsistencyTest(const std::string& filename) {
   REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
 }
 
-TEST_CASE("Relations after cloning", "[ASAN-FAIL][UBSAN-FAIL][relations]") {
+template <typename ReaderT, typename WriterT>
+void runRelationAfterCloneCheck(const std::string& filename = "unittest_relations_after_cloning.root") {
   auto [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
   auto frame = podio::Frame();
   frame.put(std::move(hitColl), "hits");
@@ -1245,11 +1247,11 @@ TEST_CASE("Relations after cloning", "[ASAN-FAIL][UBSAN-FAIL][relations]") {
   emptyColl.create();
   emptyColl.create();
   frame.put(std::move(emptyColl), "emptyClusters");
-  auto writer = podio::ROOTWriter("unittest_relations_after_cloning.root");
+  auto writer = WriterT(filename);
   writer.writeFrame(frame, podio::Category::Event);
   writer.finish();
-  auto reader = podio::ROOTReader();
-  reader.openFile("unittest_relations_after_cloning.root");
+  auto reader = ReaderT();
+  reader.openFile(filename);
   auto readFrame = podio::Frame(reader.readNextEntry(podio::Category::Event));
 
   auto& clusters = readFrame.get<ExampleClusterCollection>("clusters");
@@ -1287,6 +1289,10 @@ TEST_CASE("Relations after cloning", "[ASAN-FAIL][UBSAN-FAIL][relations]") {
   REQUIRE(nEmptyCluster.Hits()[1].cellID() == 421);
 }
 
+TEST_CASE("Relations after cloning with TTrees", "[ASAN-FAIL][UBSAN-FAIL][relations]") {
+  runRelationAfterCloneCheck<podio::ROOTReader, podio::ROOTWriter>("unittests_relations_after_cloning.root");
+}
+
 TEST_CASE("ROOTWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][THREAD-FAIL][basics][root]") {
   // The UBSAN-FAIL and TSAN-FAIL only happens on clang12 in CI.
   runConsistentFrameTest<podio::ROOTWriter>("unittests_frame_consistency.root");
@@ -1297,6 +1303,12 @@ TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]
 }
 
 #if PODIO_ENABLE_RNTUPLE
+
+TEST_CASE("Relations after cloning with RNTuple", "[relations]") {
+  runRelationAfterCloneCheck<podio::RNTupleReader, podio::RNTupleWriter>(
+      "unittests_relations_after_cloning_rntuple.root");
+}
+
 TEST_CASE("RNTupleWriter consistent frame contents", "[basics][root]") {
   runConsistentFrameTest<podio::RNTupleWriter>("unittests_frame_consistency_rntuple.root");
 }
