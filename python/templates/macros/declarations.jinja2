@@ -128,7 +128,7 @@
 {% macro multi_relation_handling(relations, get_syntax, with_adder=False) %}
 {% for relation in relations %}
 {% if with_adder %}
-  void {{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.full_type }});
+  void {{ relation.setter_name(get_syntax, is_relation=True) }}(const {{ relation.full_type }}&);
 {% endif %}
   std::size_t {{ relation.name }}_size() const;
   {{ relation.full_type }} {{ relation.getter_name(get_syntax) }}(std::size_t) const;
