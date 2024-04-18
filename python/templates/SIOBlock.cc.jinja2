@@ -42,7 +42,16 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type version
 {% if VectorMembers %}
   if (not m_subsetColl) {
 {% for member in VectorMembers %}
-    m_buffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>());
+    bool found = false;
+    for (const auto& [first, second] : *m_buffers.vectorMembers) {
+      if (first == "{{ member.full_type }}") {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      m_buffers.vectorMembers->emplace_back("{{ member.full_type }}", new std::vector<{{ member.full_type }}>());
+    }
 {% endfor %}
     //---- read vector members
     auto* vecMemInfo = m_buffers.vectorMembers;
