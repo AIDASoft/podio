@@ -90,7 +90,8 @@ else()
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
       PROPERTIES
         ENVIRONMENT
+        PODIO_SIOBLOCK_PATH=${PROJECT_BINARY_DIR}/tests
+        ENVIRONMENT
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-        PODIO_SIOBLOCK_PATH=${CMAKE_CURRENT_BINARY_DIR}
   )
 endif()
