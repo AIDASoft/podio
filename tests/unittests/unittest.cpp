@@ -25,6 +25,7 @@
 #if PODIO_ENABLE_SIO
   #include "podio/SIOLegacyReader.h"
   #include "podio/SIOReader.h"
+  #include "podio/SIOWriter.h"
 #endif
 
 #if PODIO_ENABLE_RNTUPLE
@@ -1315,6 +1316,14 @@ TEST_CASE("RNTupleWriter consistent frame contents", "[basics][root]") {
 
 TEST_CASE("RNTupleWriter check consistency", "[basics][root]") {
   runCheckConsistencyTest<podio::RNTupleWriter>("unittests_frame_check_consistency_rntuple.root");
+}
+
+#endif
+
+#if PODIO_ENABLE_SIO
+
+TEST_CASE("Relations after cloning with SIO", "[relations]") {
+  runRelationAfterCloneCheck<podio::SIOReader, podio::SIOWriter>("unittests_relations_after_cloning.sio");
 }
 
 #endif
