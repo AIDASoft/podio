@@ -19,17 +19,22 @@
 }
 
 Mutable{{ type }} {{ full_type }}::clone() const {
-  auto tmp = Mutable{{ type }}(podio::utils::MaybeSharedPtr(new {{ type }}Obj(*m_obj), podio::utils::MarkOwned));
+{% if prefix %}
+  return Mutable{{ type }}(podio::utils::MaybeSharedPtr(new {{ type }}Obj(*m_obj), podio::utils::MarkOwned));
+{% else %}
+  auto tmp = new {{ type }}Obj();
+  tmp->id = podio::ObjectID();
+  tmp->data = m_obj->data;
 {% for relation in multi_relations %}
   // If the current object has been read from a file, then the object may only have a slice of the relation vector
   // so this slice has to be copied in case we want to modify it
-  if (m_obj->data.{{ relation.name }}_end - m_obj->data.{{ relation.name }}_begin != m_obj->m_{{ relation.name }}->size()) {
-    tmp.m_obj->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>(m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_begin, m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_end);
-    tmp.m_obj->data.{{ relation.name }}_begin = 0;
-    tmp.m_obj->data.{{ relation.name }}_end = tmp.m_obj->m_{{ relation.name }}->size();
-  }
+  delete tmp->m_{{ relation.name }};
+  tmp->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>(m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_begin, m_obj->m_{{ relation.name }}->begin() + m_obj->data.{{ relation.name }}_end);
+  tmp->data.{{ relation.name }}_begin = 0;
+  tmp->data.{{ relation.name }}_end = tmp->m_{{ relation.name }}->size();
 {% endfor %}
-  return tmp;
+  return Mutable{{ type }}(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
+{% endif %}
 }
 
 {{ full_type }}::{{ full_type }}(podio::utils::MaybeSharedPtr<{{ type }}Obj> obj) : m_obj(std::move(obj)) {}
@@ -108,7 +113,7 @@ void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.full_t
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
 {% if with_adder %}
-void {{ class_type }}::{{ relation.setter_name(get_syntax, is_relation=True) }}({{ relation.full_type }} component) {
+void {{ class_type }}::{{ relation.setter_name(get_syntax, is_relation=True) }}(const {{ relation.full_type }}& component) {
   m_obj->m_{{ relation.name }}->push_back(component);
   m_obj->data.{{ relation.name }}_end++;
 }
