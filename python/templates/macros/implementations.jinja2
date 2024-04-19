@@ -28,6 +28,7 @@ Mutable{{ type }} {{ full_type }}::clone() const {
 {% for relation in multi_relations %}
   // If the current object has been read from a file, then the object may only have a slice of the relation vector
   // so this slice has to be copied in case we want to modify it
+  tmp->m_{{ relation.name }}->reserve(m_obj->m_{{ relation.name }}->size());
   for (size_t i = m_obj->data.{{ relation.name }}_begin; i < m_obj->data.{{ relation.name }}_end; i++) {
     tmp->m_{{ relation.name }}->push_back((*m_obj->m_{{ relation.name }})[i]);
   }
