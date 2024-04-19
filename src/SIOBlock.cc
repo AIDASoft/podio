@@ -165,6 +165,11 @@ std::vector<std::tuple<std::string, std::string>> SIOBlockLibraryLoader::getLibN
         libs.emplace_back(std::move(filename), dir);
       }
     }
+    if (std::getenv("PODIO_SIOBLOCK_PATH") && libs.empty()) {
+      throw std::runtime_error(
+          "No SIOBlocks libraries found in PODIO_SIOBLOCK_PATH. Please set PODIO_SIOBLOCK_PATH to the directory "
+          "containing the SIOBlocks libraries or unset it to fallback to LD_LIBRARY_PATH.");
+    }
   }
 
   return libs;
