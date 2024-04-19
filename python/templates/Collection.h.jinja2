@@ -115,9 +115,9 @@ public:
 
 
   /// Append object to the collection
-  void push_back(Mutable{{class.bare_type}} object);
+  void push_back(const Mutable{{class.bare_type}}& object);
   /// Append an object to the (subset) collection
-  void push_back({{ class.bare_type }} object);
+  void push_back(const {{ class.bare_type }}& object);
 
   void prepareForWrite() const final;
   void prepareAfterRead() final;

@@ -133,7 +133,7 @@ bool {{ collection_type }}::setReferences(const podio::ICollectionProvider* coll
   return m_storage.setReferences(collectionProvider, m_isSubsetColl);
 }
 
-void {{ collection_type }}::push_back(Mutable{{ class.bare_type }} object) {
+void {{ collection_type }}::push_back(const Mutable{{ class.bare_type }}& object) {
   // We have to do different things here depending on whether this is a
   // subset collection or not. A normal collection cannot collect objects
   // that are already part of another collection, while a subset collection
@@ -156,7 +156,7 @@ void {{ collection_type }}::push_back(Mutable{{ class.bare_type }} object) {
   }
 }
 
-void {{ collection_type }}::push_back({{ class.bare_type }} object) {
+void {{ collection_type }}::push_back(const {{ class.bare_type }}& object) {
   if (!m_isSubsetColl) {
     throw std::invalid_argument("Immutable objects can only be added to subset collections");
   }
