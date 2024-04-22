@@ -30,7 +30,8 @@ public:
     podio::Frame readNextFrame(const std::string& name) override {
       auto maybeFrame = m_reader->readNextEntry(name);
       if (maybeFrame) {
-        return maybeFrame;
+        // std::move seems to be needed by clang 12
+        return std::move(maybeFrame);
       }
       throw std::runtime_error("Could not read frame (reading beyond bounds?)");
     }
