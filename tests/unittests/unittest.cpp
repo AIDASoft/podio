@@ -1290,7 +1290,7 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   REQUIRE(nEmptyCluster.Hits()[1].cellID() == 421);
 }
 
-TEST_CASE("Relations after cloning with TTrees", "[ASAN-FAIL][UBSAN-FAIL][relations]") {
+TEST_CASE("Relations after cloning with TTrees", "[ASAN-FAIL][UBSAN-FAIL][relations][basics]") {
   runRelationAfterCloneCheck<podio::ROOTReader, podio::ROOTWriter>("unittests_relations_after_cloning.root");
 }
 
@@ -1305,7 +1305,7 @@ TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]
 
 #if PODIO_ENABLE_RNTUPLE
 
-TEST_CASE("Relations after cloning with RNTuple", "[relations]") {
+TEST_CASE("Relations after cloning with RNTuple", "[relations][basics]") {
   runRelationAfterCloneCheck<podio::RNTupleReader, podio::RNTupleWriter>(
       "unittests_relations_after_cloning_rntuple.root");
 }
@@ -1322,7 +1322,7 @@ TEST_CASE("RNTupleWriter check consistency", "[basics][root]") {
 
 #if PODIO_ENABLE_SIO
 
-TEST_CASE("Relations after cloning with SIO", "[relations]") {
+TEST_CASE("Relations after cloning with SIO", "[relations][basics]") {
   runRelationAfterCloneCheck<podio::SIOReader, podio::SIOWriter>("unittests_relations_after_cloning.sio");
 }
 
