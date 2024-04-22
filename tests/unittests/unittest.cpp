@@ -1,12 +1,12 @@
 // STL
 #include <cstdint>
+#include <filesystem>
 #include <map>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
 #include <type_traits>
 #include <vector>
-#include <filesystem>
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
@@ -1296,7 +1296,9 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   newHitCollection.push_back(anotherHit);
 
   // Test cloned objects after writing and reading
-  auto newName = std::filesystem::path(filename).replace_extension("_cloned" + std::filesystem::path(filename).extension().string()).string();
+  auto newName = std::filesystem::path(filename)
+                     .replace_extension("_cloned" + std::filesystem::path(filename).extension().string())
+                     .string();
   auto newWriter = WriterT(newName);
   auto newFrame = podio::Frame();
   newFrame.put(std::move(newClusterCollection), "emptyClusters");
@@ -1320,7 +1322,6 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   nEmptyCluster.addHits(newAnotherHit);
   REQUIRE(nEmptyCluster.Hits().size() == 4);
   REQUIRE(nEmptyCluster.Hits()[3].cellID() == 423);
-
 }
 
 TEST_CASE("Relations after cloning with TTrees", "[ASAN-FAIL][UBSAN-FAIL][relations][basics]") {
