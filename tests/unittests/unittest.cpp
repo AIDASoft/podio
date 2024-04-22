@@ -6,6 +6,7 @@
 #include <thread>
 #include <type_traits>
 #include <vector>
+#include <filesystem>
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
@@ -1260,14 +1261,14 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   auto nCluster = clusters[0].clone();
   REQUIRE(nCluster.Hits().size() == 1);
 
-  auto hit = ExampleHit(420, {}, {}, {}, {});
+  auto hit = MutableExampleHit(420, {}, {}, {}, {});
   nCluster.addHits(hit);
   REQUIRE(nCluster.Hits().size() == 2);
   REQUIRE(nCluster.Hits()[1].cellID() == 420);
 
   auto nCluster2 = nCluster.clone();
   REQUIRE(nCluster2.Hits().size() == 2);
-  auto anotherHit = ExampleHit(421, {}, {}, {}, {});
+  auto anotherHit = MutableExampleHit(421, {}, {}, {}, {});
   nCluster2.addHits(anotherHit);
   REQUIRE(nCluster2.Hits().size() == 3);
   REQUIRE(nCluster2.Hits()[2].cellID() == 421);
@@ -1279,6 +1280,8 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   REQUIRE(nVec.count().size() == 3);
   REQUIRE(nVec.count()[2] == 420);
 
+  auto newClusterCollection = ExampleClusterCollection();
+  auto newHitCollection = ExampleHitCollection();
   auto& emptyClusters = readFrame.get<ExampleClusterCollection>("emptyClusters");
   auto nEmptyCluster = emptyClusters[0].clone();
   REQUIRE(nEmptyCluster.Hits().empty());
@@ -1288,6 +1291,36 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   nEmptyCluster.addHits(anotherHit);
   REQUIRE(nEmptyCluster.Hits().size() == 2);
   REQUIRE(nEmptyCluster.Hits()[1].cellID() == 421);
+  newClusterCollection.push_back(nEmptyCluster);
+  newHitCollection.push_back(hit);
+  newHitCollection.push_back(anotherHit);
+
+  // Test cloned objects after writing and reading
+  auto newName = std::filesystem::path(filename).replace_extension("_cloned" + std::filesystem::path(filename).extension().string()).string();
+  auto newWriter = WriterT(newName);
+  auto newFrame = podio::Frame();
+  newFrame.put(std::move(newClusterCollection), "emptyClusters");
+  newFrame.put(std::move(newHitCollection), "hits");
+  newWriter.writeFrame(newFrame, podio::Category::Event);
+  newWriter.finish();
+  auto newReader = ReaderT();
+  newReader.openFile(newName);
+  auto afterCloneFrame = podio::Frame(newReader.readNextEntry(podio::Category::Event));
+
+  auto& newEmptyClusters = afterCloneFrame.get<ExampleClusterCollection>("emptyClusters");
+  auto oneHitCluster = newEmptyClusters[0].clone();
+  auto newHit = ExampleHit(422, 0., 0., 0., 0.);
+  auto newAnotherHit = ExampleHit(423, 0., 0., 0., 0.);
+  REQUIRE(nEmptyCluster.Hits().size() == 2);
+  REQUIRE(nEmptyCluster.Hits()[0].cellID() == 420);
+  REQUIRE(nEmptyCluster.Hits()[1].cellID() == 421);
+  nEmptyCluster.addHits(newHit);
+  REQUIRE(nEmptyCluster.Hits().size() == 3);
+  REQUIRE(nEmptyCluster.Hits()[2].cellID() == 422);
+  nEmptyCluster.addHits(newAnotherHit);
+  REQUIRE(nEmptyCluster.Hits().size() == 4);
+  REQUIRE(nEmptyCluster.Hits()[3].cellID() == 423);
+
 }
 
 TEST_CASE("Relations after cloning with TTrees", "[ASAN-FAIL][UBSAN-FAIL][relations][basics]") {
