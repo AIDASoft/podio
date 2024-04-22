@@ -1,6 +1,6 @@
 #include "podio/Writer.h"
 
-#include "podio/ROOTFrameWriter.h"
+#include "podio/ROOTWriter.h"
 #if PODIO_ENABLE_RNTUPLE
   #include "podio/RNTupleWriter.h"
 #endif
@@ -24,7 +24,7 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
   };
 
   if ((type == "default" && endsWith(filename, ".root")) || lower(type) == "root") {
-    return Writer{std::make_unique<ROOTFrameWriter>(filename)};
+    return Writer{std::make_unique<ROOTWriter>(filename)};
   }
   if (lower(type) == "rntuple") {
 #if PODIO_ENABLE_RNTUPLE
