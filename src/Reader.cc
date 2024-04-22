@@ -32,14 +32,12 @@ Reader makeReader(const std::vector<std::string>& filenames) {
   }
 
   if (suffix == "root") {
-    // Check only the first file for RNTuples
     TFile* file = TFile::Open(filenames[0].c_str());
     bool hasRNTuple = false;
 
     for (auto key : *file->GetListOfKeys()) {
       auto tkey = dynamic_cast<TKey*>(key);
 
-      // if (tkey && tkey->GetClassName() == "ROOT::Experimental::RNTuple") {
       if (tkey && std::string(tkey->GetClassName()) == "ROOT::Experimental::RNTuple") {
         hasRNTuple = true;
         break;

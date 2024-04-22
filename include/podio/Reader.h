@@ -14,9 +14,6 @@ public:
     virtual podio::Frame readNextFrame(const std::string& name) = 0;
     virtual podio::Frame readFrame(const std::string& name, size_t index) = 0;
     virtual size_t getEntries(const std::string& name) = 0;
-    virtual podio::Frame readNextEvent() = 0;
-    virtual podio::Frame readEvent(size_t index) = 0;
-    virtual size_t getEvents() = 0;
     virtual podio::version::Version currentFileVersion() const = 0;
     virtual std::vector<std::string_view> getAvailableCategories() const = 0;
     virtual const std::string_view getDatamodelDefinition(const std::string& name) const = 0;
@@ -37,9 +34,6 @@ public:
       }
       throw std::runtime_error("Could not read frame (reading beyond bounds?)");
     }
-    podio::Frame readNextEvent() override {
-      return readNextFrame(podio::Category::Event);
-    }
 
     podio::Frame readFrame(const std::string& name, size_t index) override {
       auto maybeFrame = m_reader->readEntry(name, index);
@@ -48,14 +42,8 @@ public:
       }
       throw std::runtime_error("Could not read frame (reading beyond bounds?)");
     }
-    podio::Frame readEvent(size_t index) override {
-      return readFrame(podio::Category::Event, index);
-    }
     size_t getEntries(const std::string& name) override {
       return m_reader->getEntries(name);
-    }
-    size_t getEvents() override {
-      return getEntries(podio::Category::Event);
     }
     podio::version::Version currentFileVersion() const override {
       return m_reader->currentFileVersion();
