@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
-from ROOT import gSystem, gInterpreter
-gSystem.Load('libpodioRootIO')  # noqa: E402
-gInterpreter.LoadFile("podio/Reader.h")  # noqa: E402
+from ROOT import gSystem
+
+gSystem.Load("libpodioRootIO")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position # noqa: E402
@@ -22,8 +22,7 @@ class Reader(BaseReaderMixin):
         if isinstance(filenames, str):
             filenames = (filenames,)
 
-        self._reader = podio.makeReader(filenames)
-        # self._reader = podio.ROOTReader()
+        self._reader = podio.ROOTReader()
         self._reader.openFiles(filenames)
 
         super().__init__()
@@ -79,9 +78,8 @@ class Writer(BaseWriterMixin):
         Args:
             filename (str): The name of the output file
         """
-        self._writer = podio.makeWriter(filename)
+        self._writer = podio.ROOTWriter(filename)
         super().__init__()
-
 
 
 class RNTupleWriter(BaseWriterMixin):

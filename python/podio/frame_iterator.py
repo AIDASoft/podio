@@ -3,7 +3,6 @@
 
 # pylint: disable-next=import-error # gbl is a dynamic module from cppyy
 from cppyy.gbl import std
-import cppyy
 from podio.frame import Frame
 
 
@@ -27,15 +26,12 @@ class FrameCategoryIterator:
         return self
 
     def __next__(self):
-      """Get the next available Frame or stop."""
-      try:
-          frame_data = self._reader.readNextFrame(self._category)
-      except AttributeError:
-          frame_data = self._reader.readNextEntry(self._category)
-      except std.runtime_error as error:
-        raise StopIteration from error
-      if frame_data:
-          return Frame(std.move(frame_data))
+        """Get the next available Frame or stop."""
+        frame_data = self._reader.readNextEntry(self._category)
+        if frame_data:
+            return Frame(std.move(frame_data))
+
+        raise StopIteration
 
     def __len__(self):
         """Get the number of available Frames for the passed category."""
@@ -50,33 +46,6 @@ class FrameCategoryIterator:
         # Handle python negative indexing to start from the end
         if entry < 0:
             entry = self._reader.getEntries(self._category) + entry
-        try:
-            frame_data = self._reader.readFrame(self._category, entry)
-        except AttributeError:
-            frame_data = self._reader.readEntry(self._category, entry)
-        except std.bad_function_call:
-            print('Error: Unable to read an entry of the input file. This can happen when the '
-                  'ROOT model dictionaries are not in LD_LIBRARY_PATH. Make sure that LD_LIBRARY_PATH '
-                  'points to the library folder of the installation of podio and also to the library '
-                  'folder with your data model\n')
-            raise
-        except std.runtime_error:
-            raise IndexError('Unable to read frame, you might be trying to read beyond bounds or a '
-                           'non-existent category')
-
-        try:
-            frame_data = self._reader.readFrame(self._category, entry)
-        except AttributeError:
-            frame_data = self._reader.readEntry(self._category, entry)
-        except std.bad_function_call:
-            print('Error: Unable to read an entry of the input file. This can happen when the '
-                  'ROOT model dictionaries are not in LD_LIBRARY_PATH. Make sure that LD_LIBRARY_PATH '
-                  'points to the library folder of the installation of podio and also to the library '
-                  'folder with your data model\n')
-            raise
-        except std.runtime_error as error:
-            raise IndexError('Unable to read frame, you might be trying to read beyond bounds or a '
-                             'non-existent category') from error
 
         if entry < 0:
             # If we are below 0 now, we do not have enough entries to serve the request
