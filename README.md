@@ -11,6 +11,7 @@
  - [Data Model Syntax](./doc/datamodel_syntax.md)
  - [Examples](./doc/examples.md)
  - [Advanced Topics](./doc/advanced_topics.md)
+ - [Python Interface](./doc/python.md)
  - [Contributing](./doc/contributing.md)
 
 <!-- Browse the API documentation created with Doxygen at -->
