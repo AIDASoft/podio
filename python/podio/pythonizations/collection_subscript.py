@@ -12,12 +12,15 @@ class CollectionSubscriptPythonizer(Pythonizer):
         return 50
 
     @classmethod
-    def callback(cls, class_, name):
+    def filter(cls, class_, name):
+        return issubclass(class_, cppyy.gbl.podio.CollectionBase)
+
+    @classmethod
+    def modify(cls, class_, name):
         def get_item(self, i):
             try:
                 return self.at(i)
             except cppyy.gbl.std.out_of_range:
                 raise IndexError("collection index out of range") from None
 
-        if issubclass(class_, cppyy.gbl.podio.CollectionBase):
-            class_.__getitem__ = get_item
+        class_.__getitem__ = get_item
