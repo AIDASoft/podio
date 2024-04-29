@@ -19,6 +19,7 @@ tests/unittests/Manifest.toml
 # Data Files
 *.root
 *.dat
+*.sio
 
 # Spack build folders
 spack*
