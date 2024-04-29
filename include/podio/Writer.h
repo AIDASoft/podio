@@ -20,7 +20,7 @@ public:
   };
 
   template <typename T>
-  struct WriterModel : public WriterConcept {
+  struct WriterModel final : public WriterConcept {
     WriterModel(std::unique_ptr<T> writer) : m_writer(std::move(writer)) {
     }
     WriterModel(const WriterModel&) = delete;

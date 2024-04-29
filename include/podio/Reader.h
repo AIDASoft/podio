@@ -21,7 +21,7 @@ public:
   };
 
   template <typename T>
-  struct ReaderModel : public ReaderConcept {
+  struct ReaderModel final : public ReaderConcept {
     ReaderModel(T* reader) : m_reader(reader) {
     }
     ReaderModel(const ReaderModel&) = delete;
@@ -32,7 +32,7 @@ public:
       if (maybeFrame) {
         return maybeFrame;
       }
-      throw std::runtime_error("Could not read frame (reading beyond bounds?)");
+      throw std::runtime_error("Failed reading category " + name + " (reading beyond bounds?)");
     }
 
     podio::Frame readFrame(const std::string& name, size_t index) override {
@@ -40,7 +40,7 @@ public:
       if (maybeFrame) {
         return maybeFrame;
       }
-      throw std::runtime_error("Could not read frame (reading beyond bounds?)");
+      throw std::runtime_error("Failed reading category " + name + " at frame " + std::to_string(index) + " (reading beyond bounds?)");
     }
     size_t getEntries(const std::string& name) override {
       return m_reader->getEntries(name);

@@ -5,7 +5,7 @@
   #include "podio/RNTupleWriter.h"
 #endif
 #if PODIO_ENABLE_SIO
-  #include "podio/SIOFrameWriter.h"
+  #include "podio/SIOWriter.h"
 #endif
 
 #include <memory>
@@ -35,12 +35,12 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
   }
   if ((type == "default" && endsWith(filename, ".sio")) || lower(type) == "sio") {
 #if PODIO_ENABLE_SIO
-    return Writer{std::make_unique<SIOFrameWriter>(filename)};
+    return Writer{std::make_unique<SIOWriter>(filename)};
 #else
     throw std::runtime_error("SIO writer not available. Please recompile with SIO support.");
 #endif
   }
-  throw std::runtime_error("Unknown file type");
+  throw std::runtime_error("Unknown file type for file " + filename + " with type " + type);
 }
 
 } // namespace podio

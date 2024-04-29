@@ -5,7 +5,7 @@
   #include "podio/RNTupleReader.h"
 #endif
 #if PODIO_ENABLE_SIO
-  #include "podio/SIOFrameReader.h"
+  #include "podio/SIOReader.h"
 #endif
 
 #include "TFile.h"
@@ -60,8 +60,8 @@ Reader makeReader(const std::vector<std::string>& filenames) {
     }
   } else if (suffix == "sio") {
 #if PODIO_ENABLE_SIO
-    auto actualReader = std::make_unique<SIOFrameReader>();
-    actualReader->openFiles(filenames);
+    auto actualReader = std::make_unique<SIOReader>();
+    actualReader->openFile(filenames[0]);
     Reader reader{std::move(actualReader)};
     return reader;
 #else
