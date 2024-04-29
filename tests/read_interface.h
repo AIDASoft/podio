@@ -1,10 +1,6 @@
 #include "read_frame.h"
 
-#include "podio/ROOTFrameReader.h"
 #include "podio/Reader.h"
-#if PODIO_ENABLE_RNTUPLE
-  #include "podio/RNTupleReader.h"
-#endif
 
 int read_frames(podio::Reader& reader) {
 
@@ -81,30 +77,6 @@ int read_frames(podio::Reader& reader) {
     //   return 1;
     // }
   }
-
-  return 0;
-}
-
-int main(int, char**) {
-
-  auto reader = podio::makeReader("example_frame_interface.root");
-  if (read_frames(reader)) {
-    return 1;
-  }
-
-#if PODIO_ENABLE_RNTUPLE
-  auto readerRNTuple = podio::makeReader("example_frame_rntuple_interface.root");
-  if (read_frames(readerRNTuple)) {
-    return 1;
-  }
-#endif
-
-#if PODIO_ENABLE_SIO
-  auto readerSIO = podio::makeReader("example_frame_sio_interface.sio");
-  if (read_frames(readerSIO)) {
-    return 1;
-  }
-#endif
 
   return 0;
 }

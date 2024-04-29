@@ -3,8 +3,10 @@ set(sio_dependent_tests
   write_frame_sio.cpp
   read_and_write_frame_sio.cpp
   read_python_frame_sio.cpp
+  write_interface_sio.cpp
+  read_interface_sio.cpp
 )
-set(sio_libs podio::podioSioIO)
+set(sio_libs podio::podioSioIO podio::podioIO)
 foreach( sourcefile ${sio_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
 endforeach()
@@ -17,6 +19,8 @@ set_tests_properties(
     DEPENDS
     write_frame_sio
 )
+
+set_property(TEST read_interface_sio PROPERTY DEPENDS write_interface_sio)
 
 #--- Write via python and the SIO backend and see if we can read it back in in
 #--- c++
