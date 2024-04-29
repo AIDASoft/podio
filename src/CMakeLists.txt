@@ -145,12 +145,8 @@ set(io_sources
 
 PODIO_ADD_LIB_AND_DICT(podioIO "${core_headers}" "${io_sources}" io_selection.xml)
 target_link_libraries(podioIO PUBLIC podio::podio podio::podioRootIO)
-if(ENABLE_RNTUPLE)
-  target_compile_definitions(podioIO PUBLIC PODIO_ENABLE_RNTUPLE=1)
-endif()
 if(ENABLE_SIO)
   target_link_libraries(podioIO PUBLIC podio::podioSioIO)
-  target_compile_definitions(podioIO PUBLIC PODIO_ENABLE_SIO=1)
 endif()
 
 # --- Install everything
