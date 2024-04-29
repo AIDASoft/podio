@@ -1,3 +1,6 @@
+#ifndef PODIO_TESTS_READ_INTERFACE_H // NOLINT(llvm-header-guard): folder structure not suitable
+#define PODIO_TESTS_READ_INTERFACE_H // NOLINT(llvm-header-guard): folder structure not suitable
+
 #include "read_frame.h"
 
 #include "podio/Reader.h"
@@ -80,3 +83,5 @@ int read_frames(podio::Reader& reader) {
 
   return 0;
 }
+
+#endif // PODIO_TESTS_READ_INTERFACE_H
