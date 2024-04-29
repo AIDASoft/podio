@@ -40,7 +40,8 @@ public:
       if (maybeFrame) {
         return maybeFrame;
       }
-      throw std::runtime_error("Failed reading category " + name + " at frame " + std::to_string(index) + " (reading beyond bounds?)");
+      throw std::runtime_error("Failed reading category " + name + " at frame " + std::to_string(index) +
+                               " (reading beyond bounds?)");
     }
     size_t getEntries(const std::string& name) override {
       return m_reader->getEntries(name);
