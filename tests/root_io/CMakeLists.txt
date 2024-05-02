@@ -15,6 +15,8 @@ if(ENABLE_RNTUPLE)
       write_rntuple.cpp
       read_rntuple.cpp
       read_python_frame_rntuple.cpp
+      write_interface_rntuple.cpp
+      read_interface_rntuple.cpp
      )
 endif()
 set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO podio::podioIO)
@@ -35,6 +37,7 @@ set_tests_properties(
 
 if(ENABLE_RNTUPLE)
   set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
+  set_property(TEST read_interface_rntuple PROPERTY DEPENDS write_interface_rntuple)
 endif()
 
 add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
