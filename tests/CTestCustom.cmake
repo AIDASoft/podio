@@ -19,6 +19,10 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_python_frame_root
     read_and_write_frame_root
 
+    write_python_frame_rntuple
+    read_python_frame_rntuple
+    read_and_write_frame_rntuple
+
     write_frame_root
     read_frame_root
 
@@ -34,6 +38,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     podio-dump-detailed-root
     podio-dump-legacy_root_v00-16-06
     podio-dump-legacy_root-detailed_v00-16-06
+    podio-dump-rntuple
+    podio-dump-detailed-rntuple
 
     podio-dump-sio
     podio-dump-detailed-sio
@@ -42,6 +48,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
+    datamodel_def_store_roundtrip_rntuple
+    datamodel_def_store_roundtrip_rntuple_extension
     datamodel_def_store_roundtrip_sio
     datamodel_def_store_roundtrip_sio_extension
 
