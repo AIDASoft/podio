@@ -18,8 +18,8 @@ jobs:
         CXX_STANDARD: [20]
         RNTUPLE: [ON]
         include:
-          - LCG: "dev4/x86_64-centos7-gcc11-opt"
-            CXX_STANDARD: 17
+          - LCG: "dev4/x86_64-el9-gcc13-opt"
+            CXX_STANDARD: 20
           - LCG: "LCG_102/x86_64-centos7-clang12-opt"
             RNTUPLE: OFF
             CXX_STANDARD: 17
