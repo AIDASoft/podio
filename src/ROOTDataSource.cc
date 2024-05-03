@@ -20,18 +20,18 @@ bool loadROOTDataSource() {
 }
 
 namespace podio {
-  /**
-   * \brief Construct the podio::ROOTDataSource from the provided file.
-   */
+  ///
+  /// @brief Construct the podio::ROOTDataSource from the provided file.
+  ///
   ROOTDataSource::ROOTDataSource(const std::string& filePath,
                          int nEvents) : m_nSlots{1} {
     m_filePathList.emplace_back(filePath);
     SetupInput(nEvents);
   }
 
-  /**
-   * \brief Construct the podio::ROOTDataSource from the provided file list.
-   */
+  ///
+  /// @brief Construct the podio::ROOTDataSource from the provided file list.
+  ///
   ROOTDataSource::ROOTDataSource(
       const std::vector<std::string>& filePathList,
       int nEvents) : m_nSlots{1},
@@ -39,9 +39,9 @@ namespace podio {
     SetupInput(nEvents);
   }
 
-  /**
-   * \brief Setup input for the podio::ROOTDataSource.
-   */
+  ///
+  /// @brief Setup input for the podio::ROOTDataSource.
+  ///
   void ROOTDataSource::SetupInput(int nEvents) {
     // std::cout << "podio::ROOTDataSource: Constructing the source ..." << std::endl;
 
@@ -51,7 +51,7 @@ namespace podio {
 
     for (const auto& filePath : m_filePathList) {
       // Check if file exists
-      // Warning: file can be coming from web or eos
+      // TODO: file can be coming from web or eos
       // if (!std::filesystem::exists(filePath)) {
       //   throw std::runtime_error("podio::ROOTDataSource: Provided file \""
       //                            + filePath + "\" does not exist!");
@@ -116,9 +116,9 @@ namespace podio {
   }
 
 
-  /**
-   * \brief Inform the podio::ROOTDataSource of the desired level of parallelism.
-   */
+  ///
+  /// @brief Inform the podio::ROOTDataSource of the desired level of parallelism.
+  ///
   void
   ROOTDataSource::SetNSlots(unsigned int nSlots) {
     // std::cout << "podio::ROOTDataSource: Setting num. of slots to: " << nSlots
@@ -158,19 +158,19 @@ namespace podio {
   }
 
 
-  /**
-   * \brief Inform podio::ROOTDataSource that an event-loop is about to start.
-   */
+  ///
+  /// @brief Inform podio::ROOTDataSource that an event-loop is about to start.
+  ///
   void
   ROOTDataSource::Initialize() {
     // std::cout << "podio::ROOTDataSource: Initializing the source ..." << std::endl;
   }
 
 
-  /**
-   * \brief Retrieve from podio::ROOTDataSource a set of ranges of entries that can be
-   *        processed concurrently.
-   */
+  ///
+  /// @brief Retrieve from podio::ROOTDataSource a set of ranges of entries that can be
+  ///        processed concurrently.
+  ///
   std::vector<std::pair<ULong64_t, ULong64_t>>
   ROOTDataSource::GetEntryRanges() {
     // std::cout << "podio::ROOTDataSource: Getting entry ranges ..." << std::endl;
@@ -217,10 +217,10 @@ namespace podio {
   }
 
 
-  /**
-   * \brief Inform podio::ROOTDataSource that a certain thread is about to start working
-   *        on a certain range of entries.
-   */
+  ///
+  /// @brief Inform podio::ROOTDataSource that a certain thread is about to start working
+  ///        on a certain range of entries.
+  ///
   void
   ROOTDataSource::InitSlot([[maybe_unused]] unsigned int slot,
                        [[maybe_unused]] ULong64_t firstEntry) {
@@ -229,10 +229,10 @@ namespace podio {
   }
 
 
-  /**
-   * \brief Inform podio::ROOTDataSource that a certain thread is about to start working
-   *        on a certain entry.
-   */
+  ///
+  /// @brief Inform podio::ROOTDataSource that a certain thread is about to start working
+  ///        on a certain entry.
+  ///
   bool
   ROOTDataSource::SetEntry(unsigned int slot, ULong64_t entry) {
     // std::cout << "podio::ROOTDataSource: In slot: " << slot << ", setting entry: "
@@ -258,39 +258,41 @@ namespace podio {
   }
 
 
-  /**
-   * \brief Inform podio::ROOTDataSource that a certain thread finished working on a
-   *        certain range of entries.
-   */
+  ///
+  /// @brief Inform podio::ROOTDataSource that a certain thread finished working on a
+  ///        certain range of entries.
+  ///
   void
   ROOTDataSource::FinalizeSlot([[maybe_unused]] unsigned int slot) {
-    // std::cout << "podio::ROOTDataSource: Finalizing slot: " << slot << std::endl;
-    // std::cout << "Reader: " << &m_podioReaderRefs[slot].get() << std::endl;
+    /*
+    std::cout << "podio::ROOTDataSource: Finalizing slot: " << slot << std::endl;
+    std::cout << "Reader: " << &m_podioReaderRefs[slot].get() << std::endl;
 
-    // for (auto& collectionIndex: m_activeCollections) {
-    //   std::cout << "CollName: " << m_columnNames.at(collectionIndex) << "\n";
-    //   std::cout << "Address: " << m_Collections[collectionIndex][slot] << "\n";
-    //   if (m_Collections[collectionIndex][slot]->isValid()) {
-    //     std::cout << "Collection valid\n";
-    //   }
-    //   std::cout << "Coll size: " << m_Collections[collectionIndex][slot]->size() << "\n";
-    // }
+    for (auto& collectionIndex: m_activeCollections) {
+      std::cout << "CollName: " << m_columnNames.at(collectionIndex) << "\n";
+      std::cout << "Address: " << m_Collections[collectionIndex][slot] << "\n";
+      if (m_Collections[collectionIndex][slot]->isValid()) {
+        std::cout << "Collection valid\n";
+      }
+      std::cout << "Coll size: " << m_Collections[collectionIndex][slot]->size() << "\n";
+    }
+    */
   }
 
 
-  /**
-   * \brief Inform podio::ROOTDataSource that an event-loop finished.
-   */
+  ///
+  /// @brief Inform podio::ROOTDataSource that an event-loop finished.
+  ///
   void
   ROOTDataSource::Finalize() {
     // std::cout << "podio::ROOTDataSource: Finalizing ..." << std::endl;
   }
 
 
-  /**
-   * \brief Type-erased vector of pointers to pointers to column values --- one
-   *        per slot 
-   */
+  ///
+  /// @brief Type-erased vector of pointers to pointers to column values --- one
+  ///        per slot 
+  ///
   Record_t
   ROOTDataSource::GetColumnReadersImpl(
       std::string_view columnName,
@@ -322,11 +324,13 @@ namespace podio {
 
     Record_t columnReaders(m_nSlots);
     for (size_t slotIndex = 0; slotIndex < m_nSlots; ++slotIndex) {
-      // std::cout << "               Column index: " << columnIndex << "\n";
-      // std::cout << "               Slot index: " << slotIndex << "\n";
-      // std::cout << "               Address: "
-      //         << &m_Collections[columnIndex][slotIndex]
-      //         << std::endl;
+      /*
+      std::cout << "               Column index: " << columnIndex << "\n";
+      std::cout << "               Slot index: " << slotIndex << "\n";
+      std::cout << "               Address: "
+                << &m_Collections[columnIndex][slotIndex]
+                << std::endl;
+      */
       columnReaders[slotIndex] = (void*) &m_Collections[columnIndex][slotIndex];
     }
 
@@ -334,9 +338,9 @@ namespace podio {
   }
 
 
-  /**
-   * \brief Returns a reference to the collection of the dataset's column names 
-   */
+  ///
+  /// @brief Returns a reference to the collection of the dataset's column names 
+  ///
   const std::vector<std::string>&
   ROOTDataSource::GetColumnNames() const {
     // std::cout << "podio::ROOTDataSource: Looking for column names" << std::endl;
@@ -344,9 +348,9 @@ namespace podio {
     return m_columnNames;
   }
 
-  /**
-   * \brief Checks if the dataset has a certain column.
-   */
+  ///
+  /// @brief Checks if the dataset has a certain column.
+  ///
   bool
   ROOTDataSource::HasColumn(std::string_view columnName) const {
     // std::cout << "podio::ROOTDataSource: Looking for column: " << columnName
@@ -362,9 +366,9 @@ namespace podio {
   }
 
 
-  /**
-   * \brief Type of a column as a string. Required for JITting.
-   */
+  ///
+  /// @brief Type of a column as a string. Required for JITting.
+  ///
   std::string
   ROOTDataSource::GetTypeName(std::string_view columnName) const {
     // std::cout << "podio::ROOTDataSource: Looking for type name of column: "
@@ -383,6 +387,13 @@ namespace podio {
     return "float";
   }
 
+  ///
+  /// @brief Create RDataFrame from multiple Podio files.
+  ///
+  /// @param[in] filePathList  List of file paths from which the RDataFrame
+  ///                          will be created.
+  /// @return                  RDataFrame created from input file list.
+  ///
   ROOT::RDataFrame
   CreateDataFrame(const std::vector<std::string>& filePathList) {
     ROOT::RDataFrame rdf(std::make_unique<ROOTDataSource>(filePathList));
@@ -390,6 +401,12 @@ namespace podio {
     return rdf;
   }
 
+  ///
+  /// @brief Create RDataFrame from a Podio file.
+  ///
+  /// @param[in] filePath  File path from which the RDataFrame will be created.
+  /// @return              RDataFrame created from input file list.
+  ///
   ROOT::RDataFrame
   CreateDataFrame(const std::string& filePath) {
     std::vector<std::string> filePathList;
