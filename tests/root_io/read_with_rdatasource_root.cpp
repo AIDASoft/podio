@@ -1,24 +1,21 @@
 #include "read_frame.h"
 #include "read_frame_auxiliary.h"
 
-#include "podio/ROOTDataSource.h"
 #include "datamodel/ExampleClusterCollection.h"
+#include "podio/ROOTDataSource.h"
 
 #include <iostream>
 #include <string>
 
-
-ROOT::VecOps::RVec<float>
-getEnergy(const ExampleClusterCollection& inColl) {
+ROOT::VecOps::RVec<float> getEnergy(const ExampleClusterCollection& inColl) {
   ROOT::VecOps::RVec<double> result;
 
-  for (const auto& cluster: inColl) {
+  for (const auto& cluster : inColl) {
     result.push_back(cluster.energy());
   }
 
   return result;
 }
-
 
 int main(int argc, const char* argv[]) {
   std::string inputFile = "example_frame.root";
@@ -34,8 +31,7 @@ int main(int argc, const char* argv[]) {
   dframe.Describe().Print();
   std::cout << std::endl;
 
-  auto cluterEnergy = dframe.Define("cluster_energy", getEnergy, {"clusters"})
-                            .Histo1D("cluster_energy");
+  auto cluterEnergy = dframe.Define("cluster_energy", getEnergy, {"clusters"}).Histo1D("cluster_energy");
   cluterEnergy->Print();
 
   return EXIT_SUCCESS;
