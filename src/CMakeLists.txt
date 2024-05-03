@@ -82,6 +82,7 @@ SET(root_sources
   ROOTLegacyReader.cc
   ROOTFrameData.cc
   RootHelpers.cc
+  ROOTDataSource.cc
 )
 if(ENABLE_RNTUPLE)
   list(APPEND root_sources
@@ -96,6 +97,7 @@ SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTDataSource.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
@@ -105,7 +107,12 @@ if(ENABLE_RNTUPLE)
 endif()
 
 PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" root_selection.xml)
-target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree ROOT::ROOTVecOps)
+target_link_libraries(podioRootIO PUBLIC podio::podio
+                                         ROOT::Core
+                                         ROOT::RIO
+                                         ROOT::Tree
+                                         ROOT::ROOTVecOps
+                                         ROOT::ROOTDataFrame)
 if(ENABLE_RNTUPLE)
   target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
   target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=1)

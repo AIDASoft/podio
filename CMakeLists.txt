@@ -77,7 +77,7 @@ option(ENABLE_JULIA      "Enable Julia support. When enabled, Julia datamodels w
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 if(NOT ENABLE_RNTUPLE)
-  find_package(ROOT REQUIRED COMPONENTS RIO Tree)
+  find_package(ROOT REQUIRED COMPONENTS RIO Tree ROOTDataFrame)
 else()
   find_package(ROOT REQUIRED COMPONENTS RIO Tree ROOTNTuple)
   if(${ROOT_VERSION} VERSION_LESS 6.28.02)
