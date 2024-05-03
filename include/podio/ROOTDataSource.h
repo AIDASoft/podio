@@ -96,21 +96,8 @@ namespace podio {
     return readers;
   }
 
-  /**
-   * @brief Create RDataFrame from multiple Podio files.
-   *
-   * @param[in] filePathList  List of file paths from which the RDataFrame
-   *                          will be created.
-   * @return                  RDataFrame created from input file list.
-   */
   ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList);
 
-  /**
-   * @brief Create RDataFrame from a Podio file.
-   *
-   * @param[in] filePath  File path from which the RDataFrame will be created.
-   * @return              RDataFrame created from input file list.
-   */
   ROOT::RDataFrame CreateDataFrame(const std::string& filePath);
 }
 

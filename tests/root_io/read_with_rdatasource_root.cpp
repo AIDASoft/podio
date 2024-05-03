@@ -36,7 +36,6 @@ int main(int argc, const char* argv[]) {
 
   auto cluterEnergy = dframe.Define("cluster_energy", getEnergy, {"clusters"})
                             .Histo1D("cluster_energy");
-
   cluterEnergy->Print();
 
   return EXIT_SUCCESS;
