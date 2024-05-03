@@ -22,7 +22,7 @@ public:
 
   template <typename T>
   struct ReaderModel final : public ReaderConcept {
-    ReaderModel(T* reader) : m_reader(reader) {
+    ReaderModel(std::unique_ptr<T> reader) : m_reader(std::move(reader)) {
     }
     ReaderModel(const ReaderModel&) = delete;
     ReaderModel& operator=(const ReaderModel&) = delete;

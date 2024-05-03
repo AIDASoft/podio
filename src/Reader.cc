@@ -15,7 +15,7 @@
 namespace podio {
 
 template <typename T>
-Reader::Reader(std::unique_ptr<T> reader) : m_self(std::make_unique<ReaderModel<T>>(reader.release())) {
+Reader::Reader(std::unique_ptr<T> reader) : m_self(std::make_unique<ReaderModel<T>>(std::move(reader))) {
 }
 
 Reader makeReader(const std::string& filename) {
