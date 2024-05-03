@@ -8,6 +8,7 @@ set(root_dependent_tests
   read_and_write_frame_root.cpp
   write_interface_root.cpp
   read_interface_root.cpp
+  read_with_rdatasource_root.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
