@@ -127,7 +127,7 @@ void ROOTDataSource::SetNSlots(unsigned int nSlots) {
   }
 
   for (size_t i = 0; i < m_nSlots; ++i) {
-    m_frames.emplace_back(std::make_unique<podio::Frame>(podio::Frame(m_podioReaders[i]->readEntry("events", 0))));
+    m_frames.emplace_back(std::make_unique<podio::Frame>(podio::Frame{}));
   }
 }
 
