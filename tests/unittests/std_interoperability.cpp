@@ -315,10 +315,10 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
         STATIC_REQUIRE_FALSE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
 
         // *r
-        FAIL();
+        FAIL("Not yet implemented");
 
         // ++r
-        FAIL();
+        FAIL("Not yet implemented");
       }
 
       // EqualityComparable
@@ -328,16 +328,16 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
       STATIC_REQUIRE(traits::has_inequality_comparator_v<iterator>);
 
       // *i
-      FAIL();
+      FAIL("Not yet implemented");
 
       // i->m
-      FAIL();
+      FAIL("Not yet implemented");
 
       // ++r
-      FAIL();
+      FAIL("Not yet implemented");
 
       // (void)r++
-      FAIL();
+      FAIL("Not yet implemented");
 
       //*r++
       STATIC_REQUIRE_FALSE(traits::has_value_type_v<std::iterator_traits<iterator>>);
@@ -350,16 +350,16 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   }
 
   // multipass guarantee
-  FAIL();
+  FAIL("Not yet implemented");
 
   // i++
-  FAIL();
+  FAIL("Not yet implemented");
 
   // *i++
-  FAIL();
+  FAIL("Not yet implemented");
 }
 
 TEST_CASE("Collection and std::algorithms", "[collection][container][algorithm][std]") {
   auto a = CollectionType();
-  FAIL();
+  FAIL("Not yet implemented");
 }
