@@ -77,6 +77,12 @@ private:
   VectorMembersInfo m_vecmem_info{};
 
 public:
+  using value_type = typename decltype(_vec)::value_type;
+  using const_iterator = typename decltype(_vec)::const_iterator;
+  using iterator = typename decltype(_vec)::iterator;
+  using difference_type = typename decltype(_vec)::difference_type;
+  using size_type = typename decltype(_vec)::size_type;
+
   UserDataCollection() = default;
   /// Constructor from an existing vector (which will be moved from!)
   UserDataCollection(std::vector<BasicType>&& vec) : _vec(std::move(vec)) {
@@ -131,6 +137,11 @@ public:
   /// number of elements in the collection
   size_t size() const override {
     return _vec.size();
+  }
+
+  /// maximal number of elements in the collection
+  size_t max_size() const override {
+    return _vec.max_size();
   }
 
   /// Is the collection empty
@@ -205,6 +216,12 @@ public:
   }
   typename std::vector<BasicType>::const_iterator end() const {
     return _vec.end();
+  }
+  typename std::vector<BasicType>::const_iterator cbegin() const {
+    return _vec.cbegin();
+  }
+  typename std::vector<BasicType>::const_iterator cend() const {
+    return _vec.cend();
   }
 
   typename std::vector<BasicType>::reference operator[](size_t idx) {
