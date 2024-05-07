@@ -13,8 +13,8 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `const_reference` | `const T&` | | ❌ no | not defined |
 | `iterator` | Iterator whose value type is `T` | *LegacyForwardIterator* convertible to `const_iterator` | ❌ no | not *LegacyForwardIterator*, not convertible to `const_iterator`|
 | `const_iterator` | Constant iterator whose value type is `T` | *LegacyForwardIterator* | ❌ no | value type is mutable component type, not *LegacyForwardIterator*
-| `difference_type`| Signed integer | Must be the same as `iterator_traits::difference_type` for `iterator` and `const_iterator` | ❌ no | not defined |
-| `size_type` | Unsigned integer | Large enough to represent all positive values of difference_type| ❌ no | not defined |
+| `difference_type`| Signed integer | Must be the same as `iterator_traits::difference_type` for `iterator` and `const_iterator` | ❌ no | `iterator_traits::difference_type` is not valid |
+| `size_type` | Unsigned integer | Large enough to represent all positive values of difference_type| ✔️ yes |  |
 
 ### Member functions and operators
 
@@ -28,12 +28,12 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `a.~C()` | `void` | Destroys all elements of `a` and frees all memory|  ✔️ yes |
 | `a.begin()` | `(const_)iterator` | Iterator to the first element of `a` |  ✔️ yes |
 | `a.end()` | `(const_)iterator` | Iterator to one past the last element of `a` | ✔️ yes |
-| `a.cbegin()` | `const_iterator` | `const_cast<const C&>(a).begin()` | ❌ no | not defined |
-| `a.cend()` | `const_iterator` | `const_cast<const C&>(a).end()`|  ❌ no | not defined |
+| `a.cbegin()` | `const_iterator` | `const_cast<const C&>(a).begin()` | ✔️ yes |
+| `a.cend()` | `const_iterator` | `const_cast<const C&>(a).end()`|  ✔️ yes |
 | `a == b` | Convertible to `bool` | `std::equal(a.begin(), a.end(), b.begin(), b.end())`| ❌ no | not defined |
 | `a != b` | Convertible to `bool` | `!(a == b)` | ❌ no | not defined |
-| `a.swap()` | `void` | Exchanges the values of `a` and `b` | ❌ no | not defined |
+| `a.swap(b)` | `void` | Exchanges the values of `a` and `b` | ❌ no | not defined |
 | `swap(a,b)` | `void` | `a.swap(b)`| ❌ no | not defined |
 | `a.size()` | `size_type` | `std::distance(a.begin(), a.end())` | ✔️ yes |
-| `a.max_size()` | `size_type` | `b.size()` where b is the largest possible container | ❌ no | not defined |
+| `a.max_size()` | `size_type` | `b.size()` where b is the largest possible container | ✔️ yes | not defined |
 | `a.empty()` | Convertible to `bool` | `a.begin() == a.end()` | ✔️ yes |
