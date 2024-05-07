@@ -14,18 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         LCG: ["dev3/x86_64-el9-clang16-opt",
-              "dev4/x86_64-el9-clang16-opt"]
-        CXX_STANDARD: [20]
-        RNTUPLE: [ON]
-        include:
-          - LCG: "dev4/x86_64-el9-gcc13-opt"
-            CXX_STANDARD: 20
-          - LCG: "LCG_102/x86_64-centos7-clang12-opt"
-            RNTUPLE: OFF
-            CXX_STANDARD: 17
-          - LCG: "LCG_102/x86_64-centos8-gcc11-opt"
-            RNTUPLE: OFF
-            CXX_STANDARD: 17
+              "dev4/x86_64-el9-clang16-opt",
+              "dev4/x86_64-el9-gcc13-opt",
+              "LCG_105/x86_64-el9-clang16-opt",
+              "LCG_105/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -38,9 +30,9 @@ jobs:
           cd build
           cmake -DENABLE_SIO=ON \
             -DENABLE_JULIA=ON \
-            -DENABLE_RNTUPLE=${{ matrix.RNTUPLE }} \
+            -DENABLE_RNTUPLE=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
-            -DCMAKE_CXX_STANDARD=${{ matrix.CXX_STANDARD }} \
+            -DCMAKE_CXX_STANDARD=20 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=OFF \
             -DPODIO_USE_CLANG_FORMAT=AUTO \
