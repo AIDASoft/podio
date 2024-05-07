@@ -20,11 +20,11 @@ jobs:
         include:
           - LCG: "dev4/x86_64-el9-gcc13-opt"
             CXX_STANDARD: 20
-          - LCG: "LCG_102/x86_64-centos7-clang12-opt"
-            RNTUPLE: OFF
+          - LCG: "LCG_105/x86_64-el9-clang16-opt"
+            RNTUPLE: ON
             CXX_STANDARD: 17
-          - LCG: "LCG_102/x86_64-centos8-gcc11-opt"
-            RNTUPLE: OFF
+          - LCG: "LCG_105/x86_64-el9-gcc13-opt"
+            RNTUPLE: ON
             CXX_STANDARD: 17
     steps:
     - uses: actions/checkout@v4
