@@ -1,4 +1,4 @@
-execute_process(COMMAND "''${Python_EXECUTABLE}"
+execute_process(COMMAND "${Python_EXECUTABLE}"
   -c "import sysconfig;print(sysconfig.get_path(\"purelib\", vars={\"base\": \".\"}))"
   OUTPUT_VARIABLE podio_PYTHON_INSTALLDIR OUTPUT_STRIP_TRAILING_WHITESPACE
   )
