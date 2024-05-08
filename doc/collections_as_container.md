@@ -38,7 +38,7 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `a.max_size()` | `size_type` | `b.size()` where b is the largest possible container | ✔️ yes | |
 | `a.empty()` | Convertible to `bool` | Same as `a.begin() == a.end()` | ✔️ yes |
 
-## Collection iterators as a *Iterator*
+## Collection iterators as an *Iterator*
 
 ### Iterator summary
 
@@ -52,8 +52,8 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*CopyConstructible*](https://en.cppreference.com/w/cpp/named_req/CopyConstructible) | ❌ no / ❌ no | Move constructor not defined, copy constructor not defined |
-| [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ❌ no / ❌ no | Move assignment not defined, copy assignment not defined |
+| [*CopyConstructible*](https://en.cppreference.com/w/cpp/named_req/CopyConstructible) | ❌ no / ❌ no | Move constructor and copy constructor not defined |
+| [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ❌ no / ❌ no | Move assignment and copy assignment not defined |
 | [*Destructible*](https://en.cppreference.com/w/cpp/named_req/Destructible) | ✔️ yes / ✔️ yes | |
 | [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ✔️ yes / ✔️ yes | |
 | `std::iterator_traits::value_type` (Until C++20 ) | ❌ no / ❌ no | Not defined |
@@ -81,7 +81,7 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `i->m` | | Same as `(*i).m` | ✔️ yes / ✔️ yes | |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
 | `(void)r++` | | Same as `(void)++r` | ❌ no / ❌ no | Postfix not defined |
-| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Postfix not defined, `value_type` not defined |
+| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Postfix and `value_type` not defined |
 
 ### LegacyForwardIterator
 
@@ -89,14 +89,26 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 |-------------|-------------------------------------------|---------|
 | [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
 | [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Default initialization no defined |
-| If mutable iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` not defined, `value_type` not defined |
+| If mutable iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` and `value_type` not defined |
 | Multipass guarantee | ❌ no / ❌ no | |
 | Singular iterators | ❌ no / ❌ no | |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
 | `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Postfix not defined |
-| `*i++` | `reference` | | ❌ no / ❌ no | Postfix not defined, `reference` not defined|
+| `*i++` | `reference` | | ❌ no / ❌ no | Postfix and `reference` not defined|
+
+## Collection as AllocatorAwareContainer
+
+The C++ standard specifies [AllocatorAwareContainer](https://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer) for containers that can use other allocators beside the default allocator.
+
+PODIO collections don't provide customization point for allocators and use only the default allocator. Therefore they are not *AllocatorAwareContainers*.
+
+### AllocatorAwareContainer types
+
+| Name |  Requirements | Fulfilled by Collection? | Comment |
+|------|--------------|--------------------------|---------|
+| `allocator_type`  | `allocator_type::value_type` same as `value_type` | ❌ no | `allocator_type` not defined |
 
 ## Collection iterators and standard iterator adapters
 

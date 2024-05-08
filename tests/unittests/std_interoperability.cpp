@@ -206,7 +206,7 @@ template <typename T>
 inline constexpr bool has_postfix_v = has_postfix<T>::value;
 } // namespace traits
 
-TEST_CASE("Collection types", "[collection][container][types][std]") {
+TEST_CASE("Collection container types", "[collection][container][types][std]") {
 
   // value_type
   STATIC_REQUIRE(traits::has_value_type_v<CollectionType>);
@@ -256,7 +256,7 @@ TEST_CASE("Collection types", "[collection][container][types][std]") {
                  std::numeric_limits<CollectionType::difference_type>::max());
 }
 
-TEST_CASE("Collection members", "[collection][container][members][std]") {
+TEST_CASE("Collection container members", "[collection][container][members][std]") {
   // C()
   STATIC_REQUIRE(std::is_default_constructible_v<CollectionType>);
   REQUIRE(CollectionType().empty() == true);
@@ -325,6 +325,11 @@ TEST_CASE("Collection members", "[collection][container][members][std]") {
   STATIC_REQUIRE(traits::has_empty_v<CollectionType>);
   STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<CollectionType>().empty()), bool>);
 }
+
+TEST_CASE("Collection AllocatorAwareContainer types", "[collection][container][types][std]") {
+  REQUIREMENT_NOT_MET(traits::has_allocator_type_v<CollectionType>);
+}
+// TODO add tests for AllocatorAwareContainer statements and expressions
 
 TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   using iterator = CollectionType::iterator;
