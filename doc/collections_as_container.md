@@ -11,9 +11,9 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `value_type` | `T` | *[Erasable](https://en.cppreference.com/w/cpp/named_req/Erasable)* | ✔️ yes | Defined as immutable component type |
 | `reference` | `T&` |  | ❌ no | Not defined |
 | `const_reference` | `const T&` | | ❌ no | Not defined |
-| `iterator` | Iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) convertible to `const_iterator` | ❌ no | `iterator` doesn't have `value_type`, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator)), not convertible to `const_iterator`|
-| `const_iterator` | Constant iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no | `const_iterator` doesn't have `value_type`, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator))
-| `difference_type`| Signed integer | Must be the same as `std::iterator_traits::difference_type` for `iterator` and `const_iterator` | ❌ no | `std::iterator_traits::difference_type` doesn't exist |
+| `iterator` | Iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) convertible to `const_iterator` | ❌ no | `iterator::value_type` not defined, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator)), not convertible to `const_iterator`|
+| `const_iterator` | Constant iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no | `const_iterator::value_type` not defined, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator))
+| `difference_type`| Signed integer | Must be the same as `std::iterator_traits::difference_type` for `iterator` and `const_iterator` | ❌ no | `std::iterator_traits::difference_type` not defined |
 | `size_type` | Unsigned integer | Large enough to represent all positive values of `difference_type` | ✔️ yes |  |
 
 ### Container member functions and operators
@@ -33,7 +33,7 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `a == b` | Convertible to `bool` | Same as `std::equal(a.begin(), a.end(), b.begin(), b.end())`| ❌ no | Not defined |
 | `a != b` | Convertible to `bool` | Same as `!(a == b)` | ❌ no | Not defined |
 | `a.swap(b)` | `void` | Exchanges the values of `a` and `b` | ❌ no | Not defined |
-| `swap(a,b)` | `void` | Same as `a.swap(b)`| ❌ no | Not defined |
+| `swap(a,b)` | `void` | Same as `a.swap(b)` | ✔️ yes | `a.swap(b)` not defined |
 | `a.size()` | `size_type` | Same as `std::distance(a.begin(), a.end())` | ✔️ yes |
 | `a.max_size()` | `size_type` | `b.size()` where b is the largest possible container | ✔️ yes | |
 | `a.empty()` | Convertible to `bool` | Same as `a.begin() == a.end()` | ✔️ yes |
@@ -52,51 +52,51 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*CopyConstructible*](https://en.cppreference.com/w/cpp/named_req/CopyConstructible) | ❌ no / ❌ no | |
-| [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ❌ no / ❌ no | |
+| [*CopyConstructible*](https://en.cppreference.com/w/cpp/named_req/CopyConstructible) | ❌ no / ❌ no | Move constructor not defined, copy constructor not defined |
+| [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ❌ no / ❌ no | Move assignment not defined, copy assignment not defined |
 | [*Destructible*](https://en.cppreference.com/w/cpp/named_req/Destructible) | ✔️ yes / ✔️ yes | |
 | [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ✔️ yes / ✔️ yes | |
-| `std::iterator_traits::value_type` (Until C++20 ) | ❌ no / ❌ no | |
-| `std::iterator_traits::difference_type` | ❌ no / ❌ no | |
-| `std::iterator_traits::reference` | ❌ no / ❌ no | |
-| `std::iterator_traits::pointer` | ❌ no / ❌ no | |
-| `std::iterator_traits::iterator_category` | ❌ no / ❌ no | |
+| `std::iterator_traits::value_type` (Until C++20 ) | ❌ no / ❌ no | Not defined |
+| `std::iterator_traits::difference_type` | ❌ no / ❌ no | Not defined |
+| `std::iterator_traits::reference` | ❌ no / ❌ no | Not defined |
+| `std::iterator_traits::pointer` | ❌ no / ❌ no | Not defined |
+| `std::iterator_traits::iterator_category` | ❌ no / ❌ no | Not defined |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `*r` | Unspecified | Dereferenceable | ❌ no / ❌ no | |
-| `++r` | `It&` | Incrementable | ❌ no / ❌ no | |
+| `*r` | Unspecified | Dereferenceable | ✔️ yes / ✔️ yes | |
+| `++r` | `It&` | Incrementable | ✔️ yes / ✔️ yes | |
 
 ### LegacyInputIterator
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*LegacyIterator*](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no / ❌ no | |
+| [*LegacyIterator*](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no / ❌ no | [See above](#legacyiterator) |
 | [*EqualityComparable*](https://en.cppreference.com/w/cpp/named_req/EqualityComparable) | ✔️ yes / ✔️ yes | |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `i != j` | Convertible to `bool` | Same as `!(i==j)` | ❌ no / ❌ no | |
-| `*i` | Reference, convertible to `value_type` | | ❌ no / ❌ no | |
-| `i->m` | | Same as `(*i).m` | ❌ no / ❌ no | |
-| `++r` | `It&` | | ❌ no / ❌ no | |
-| `(void)r++` | | Same as `(void)++r` | ❌ no / ❌ no | |
-| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | |
+| `i != j` | Convertible to `bool` | Same as `!(i==j)` | ✔️ yes / ✔️ yes | |
+| `*i` | `reference`, convertible to `value_type` | | ❌ no / ❌ no | `reference` and `value_type` not defined |
+| `i->m` | | Same as `(*i).m` | ✔️ yes / ✔️ yes | |
+| `++r` | `It&` | | ✔️ yes / ✔️ yes | |
+| `(void)r++` | | Same as `(void)++r` | ❌ no / ❌ no | Postfix not defined |
+| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Postfix not defined, `value_type` not defined |
 
 ### LegacyForwardIterator
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | |
-| [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | |
-| If immutable `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | |
+| [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
+| [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Default initialization no defined |
+| If mutable iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` not defined, `value_type` not defined |
 | Multipass guarantee | ❌ no / ❌ no | |
 | Singular iterators | ❌ no / ❌ no | |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | |
-| `*i++` | `reference` | | ❌ no / ❌ no | |
+| `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Postfix not defined |
+| `*i++` | `reference` | | ❌ no / ❌ no | Postfix not defined, `reference` not defined|
 
 ## Collection iterators and standard iterator adapters
 

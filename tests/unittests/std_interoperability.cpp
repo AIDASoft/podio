@@ -9,6 +9,10 @@
   #include <concepts>
 #endif
 
+// Some of the tests check . If the check annotated with 'REQUIREMENT_NOT_MET' fails, update documentation
+// 'doc/collection_as_container.md'
+#define REQUIREMENT_NOT_MET(...) STATIC_REQUIRE_FALSE(__VA_ARGS__)
+
 using CollectionType = ExampleHitCollection;
 
 namespace traits {
@@ -184,6 +188,22 @@ template <class T>
 struct has_empty<T, std::void_t<decltype(std::declval<T>().empty())>> : std::true_type {};
 template <typename T>
 inline constexpr bool has_empty_v = has_empty<T>::value;
+
+// T::operator++() (prefix)
+template <class, class = void>
+struct has_prefix : std::false_type {};
+template <class T>
+struct has_prefix<T, std::void_t<decltype(++std::declval<T>())>> : std::true_type {};
+template <typename T>
+inline constexpr bool has_prefix_v = has_prefix<T>::value;
+
+// T::operator++(int) (postfix)
+template <class, class = void>
+struct has_postfix : std::false_type {};
+template <class T>
+struct has_postfix<T, std::void_t<decltype(std::declval<T>()++)>> : std::true_type {};
+template <typename T>
+inline constexpr bool has_postfix_v = has_postfix<T>::value;
 } // namespace traits
 
 TEST_CASE("Collection types", "[collection][container][types][std]") {
@@ -191,38 +211,40 @@ TEST_CASE("Collection types", "[collection][container][types][std]") {
   // value_type
   STATIC_REQUIRE(traits::has_value_type_v<CollectionType>);
   // Erasable -allocator aware - mutually exclusive with  Erasable -allocator not aware
-  STATIC_REQUIRE_FALSE(traits::has_allocator_type_v<CollectionType>);
+  REQUIREMENT_NOT_MET(traits::has_allocator_type_v<CollectionType>);
   // add check for `std::allocator_traits<A>::destroy(m, p);` expression here
   // STATIC_REQUIRE(...)
   // Erasable -allocator not aware - mutually exclusive // Erasable -allocator aware
   STATIC_REQUIRE(traits::is_erasable_allocator_unaware_v<CollectionType>);
 
   // reference
-  STATIC_REQUIRE_FALSE(traits::has_reference_v<CollectionType>);
+  REQUIREMENT_NOT_MET(traits::has_reference_v<CollectionType>);
   // STATIC_REQUIRE(std::is_same_v<CollectionType::reference, std::add_lvalue_reference_t<CollectionType::value_type>>);
 
   // const_reference
-  STATIC_REQUIRE_FALSE(traits::has_const_reference_v<CollectionType>);
+  REQUIREMENT_NOT_MET(traits::has_const_reference_v<CollectionType>); // The check will fail once the support is added.
+                                                                      // In that case replace it with STATIC_REQUIRE,
+                                                                      // uncomment checks immediately below, and update
+                                                                      // documentation
   // STATIC_REQUIRE(std::is_same_v<CollectionType::const_reference,
   //                               std::add_const_t<std::add_lvalue_reference_t<CollectionType::value_type>>>);
 
   // iterator
   STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
-  STATIC_REQUIRE_FALSE(std::is_convertible_v<CollectionType::iterator, CollectionType::const_iterator>);
+  REQUIREMENT_NOT_MET(std::is_convertible_v<CollectionType::iterator, CollectionType::const_iterator>);
 
   // const_iterator
   STATIC_REQUIRE(traits::has_const_iterator_v<CollectionType>);
 
   // difference_type
   STATIC_REQUIRE(traits::has_difference_type_v<CollectionType>);
-
   STATIC_REQUIRE(std::is_signed_v<CollectionType::difference_type>);
   STATIC_REQUIRE(std::is_integral_v<CollectionType::difference_type>);
-  STATIC_REQUIRE_FALSE(traits::has_difference_type_v<std::iterator_traits<CollectionType::iterator>>);
+  REQUIREMENT_NOT_MET(traits::has_difference_type_v<std::iterator_traits<CollectionType::iterator>>);
   // STATIC_REQUIRE(
   //     std::is_same_v<CollectionType::difference_type,
   //     std::iterator_traits<CollectionType::iterator>::difference_type>);
-  STATIC_REQUIRE_FALSE(traits::has_difference_type_v<std::iterator_traits<CollectionType::const_iterator>>);
+  REQUIREMENT_NOT_MET(traits::has_difference_type_v<std::iterator_traits<CollectionType::const_iterator>>);
   // STATIC_REQUIRE(std::is_same_v<CollectionType::difference_type,
   //                               std::iterator_traits<CollectionType::const_iterator>::difference_type>);
 
@@ -240,13 +262,13 @@ TEST_CASE("Collection members", "[collection][container][members][std]") {
   REQUIRE(CollectionType().empty() == true);
 
   // C(a)
-  STATIC_REQUIRE_FALSE(std::is_copy_constructible_v<CollectionType>);
+  REQUIREMENT_NOT_MET(std::is_copy_constructible_v<CollectionType>);
 
   // C(rv)
   STATIC_REQUIRE(std::is_move_constructible_v<CollectionType>);
 
   // a = b
-  STATIC_REQUIRE_FALSE(std::is_copy_assignable_v<CollectionType>);
+  REQUIREMENT_NOT_MET(std::is_copy_assignable_v<CollectionType>);
 
   // a = rv
   STATIC_REQUIRE(std::is_move_assignable_v<CollectionType>);
@@ -274,17 +296,17 @@ TEST_CASE("Collection members", "[collection][container][members][std]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<CollectionType>().cend()), CollectionType::const_iterator>);
 
   // a == b
-  STATIC_REQUIRE_FALSE(traits::has_equality_comparator_v<CollectionType>);
+  REQUIREMENT_NOT_MET(traits::has_equality_comparator_v<CollectionType>);
   // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<CollectionType>()==std::declval<CollectionType>()),
   // bool>);
 
   // a != b
-  STATIC_REQUIRE_FALSE(traits::has_inequality_comparator_v<CollectionType>);
+  REQUIREMENT_NOT_MET(traits::has_inequality_comparator_v<CollectionType>);
   // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<CollectionType>()!=std::declval<CollectionType>()),
   // bool>);
 
   // a.swap(b)
-  STATIC_REQUIRE_FALSE(traits::has_swap_v<CollectionType>);
+  REQUIREMENT_NOT_MET(traits::has_swap_v<CollectionType>);
   // STATIC_REQUIRE(
   //     std::is_same_v<decltype(std::declval<CollectionType>().swap(std::declval<CollectionType>())), void>);
 
@@ -307,45 +329,56 @@ TEST_CASE("Collection members", "[collection][container][members][std]") {
 TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   using iterator = CollectionType::iterator;
   using const_iterator = CollectionType::const_iterator;
-#if (__cplusplus >= 202002L)
-  STATIC_REQUIRE_FALSE(std::forward_iterator<iterator>);
-  STATIC_REQUIRE_FALSE(std::forward_iterator<const_iterator>);
-#endif
 
   SECTION("LegacyForwardIterator") {
+#if (__cplusplus >= 202002L)
+    REQUIREMENT_NOT_MET(std::forward_iterator<iterator>);
+    REQUIREMENT_NOT_MET(std::forward_iterator<const_iterator>);
+#endif
 
     SECTION("LegacyInputIterator") {
+#if (__cplusplus >= 202002L)
+      REQUIREMENT_NOT_MET(std::input_iterator<iterator>);
+      REQUIREMENT_NOT_MET(std::input_iterator<const_iterator>);
+#endif
+
       SECTION("LegacyIterator") {
+#if (__cplusplus >= 202002L)
+        REQUIREMENT_NOT_MET(std::input_or_output_iterator<iterator>);
+        REQUIREMENT_NOT_MET(std::input_or_output_iterator<const_iterator>);
+#endif
         // CopyConstructible
-        STATIC_REQUIRE_FALSE(std::is_move_constructible_v<iterator> && std::is_copy_constructible_v<iterator>);
+        REQUIREMENT_NOT_MET(std::is_move_constructible_v<iterator>);
+        REQUIREMENT_NOT_MET(std::is_copy_constructible_v<iterator>);
 
         // CopyAssignable
-        STATIC_REQUIRE_FALSE(std::is_move_assignable_v<iterator> && std::is_copy_assignable_v<iterator>);
+        REQUIREMENT_NOT_MET(std::is_move_assignable_v<iterator>);
+        REQUIREMENT_NOT_MET(std::is_copy_assignable_v<iterator>);
 
         // Destructible
         STATIC_REQUIRE(std::is_nothrow_destructible_v<iterator>);
 
         // Swappable
-        STATIC_REQUIRE_FALSE(std::is_swappable_v<iterator>);
+        REQUIREMENT_NOT_MET(std::is_swappable_v<iterator>);
 
 #if (__cplusplus < 202002L)
         // std::iterator_traits<It>::value_type
-        STATIC_REQUIRE_FALSE(traits::has_value_type_v<std::iterator_traits<iterator>>);
+        REQUIREMENT_NOT_MET(traits::has_value_type_v<std::iterator_traits<iterator>>);
 #endif
         // std::iterator_traits<It>::difference_type
-        STATIC_REQUIRE_FALSE(traits::has_difference_type_v<std::iterator_traits<iterator>>);
+        REQUIREMENT_NOT_MET(traits::has_difference_type_v<std::iterator_traits<iterator>>);
         // std::iterator_traits<It>::reference
-        STATIC_REQUIRE_FALSE(traits::has_reference_v<std::iterator_traits<iterator>>);
+        REQUIREMENT_NOT_MET(traits::has_reference_v<std::iterator_traits<iterator>>);
         // std::iterator_traits<It>::pointer
-        STATIC_REQUIRE_FALSE(traits::has_pointer_v<std::iterator_traits<iterator>>);
+        REQUIREMENT_NOT_MET(traits::has_pointer_v<std::iterator_traits<iterator>>);
         // std::iterator_traits<It>::iterator_category
-        STATIC_REQUIRE_FALSE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
-
+        REQUIREMENT_NOT_MET(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
         // *r
-        FAIL("Not yet implemented");
-
+        STATIC_REQUIRE(!std::is_same_v<void, decltype(*std::declval<CollectionType::iterator>())>);
         // ++r
-        FAIL("Not yet implemented");
+        STATIC_REQUIRE(traits::has_prefix_v<iterator>);
+        STATIC_REQUIRE(std::is_same_v<decltype(++std::declval<CollectionType::iterator>()),
+                                      std::add_lvalue_reference_t<CollectionType::iterator>>);
       }
 
       // EqualityComparable
@@ -353,40 +386,80 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
 
       // i != j
       STATIC_REQUIRE(traits::has_inequality_comparator_v<iterator>);
+      STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator>() != std::declval<iterator>()), bool>);
 
       // *i
-      FAIL("Not yet implemented");
+      REQUIREMENT_NOT_MET(traits::has_reference_v<iterator>);
+      // STATIC_REQUIRE(!std::is_same_v<std::iterator_traits<iterator>::reference,
+      // decltype(*std::declval<CollectionType::iterator>())>);
+      REQUIREMENT_NOT_MET(traits::has_value_type_v<iterator>);
+      // STATIC_REQUIRE(!std::is_convertible_v<decltype(*std::declval<CollectionType::iterator>()),
+      // std::iterator_traits<iterator>::value_type>);
 
       // i->m
-      FAIL("Not yet implemented");
+      STATIC_REQUIRE(
+          std::is_same_v<decltype(std::declval<iterator>()->energy()), decltype((*std::declval<iterator>()).energy())>);
 
       // ++r
-      FAIL("Not yet implemented");
+      STATIC_REQUIRE(traits::has_prefix_v<iterator>);
+      STATIC_REQUIRE(std::is_same_v<decltype(++std::declval<CollectionType::iterator>()),
+                                    std::add_lvalue_reference_t<CollectionType::iterator>>);
 
       // (void)r++
-      FAIL("Not yet implemented");
+      REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
+      STATIC_REQUIRE(traits::has_prefix_v<iterator>);
+      REQUIREMENT_NOT_MET(traits::has_value_type_v<std::iterator_traits<iterator>>);
+      // STATIC_REQUIRE(std::is_same_v<decltype((void)++std::declval<iterator>()),
+      // decltype((void)std::declval<iterator>()++)>);
 
       //*r++
-      STATIC_REQUIRE_FALSE(traits::has_value_type_v<std::iterator_traits<iterator>>);
+      REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
+      REQUIREMENT_NOT_MET(traits::has_value_type_v<std::iterator_traits<iterator>>);
       // STATIC_REQUIRE(std::is_convertible_v < decltype(*std::declval<iterator>()++),
       //                std::iterator_traits<iterator>::value_type >>);
     }
 
+    // Mutable iterator: reference same as value_type& or value_type&&
+    REQUIREMENT_NOT_MET(traits::has_reference_v<iterator>);
+    REQUIREMENT_NOT_MET(traits::has_value_type_v<iterator>);
+    // STATIC_REQUIRE(std::is_same_v<std::iterator_traits<iterator>::reference,
+    //                               std::add_lvalue_reference_t<std::iterator_traits<iterator>::value_type>> ||
+    //                std::is_same_v<std::iterator_traits<iterator>::reference,
+    //                               std::add_rvalue_reference_t<std::iterator_traits<iterator>::value_type>>);
+
+    // Immutable iterator: reference same as const value_type& or const value_type&&
+    REQUIREMENT_NOT_MET(traits::has_reference_v<const_iterator>);
+    REQUIREMENT_NOT_MET(traits::has_value_type_v<const_iterator>);
+    // STATIC_REQUIRE(std::is_same_v<std::iterator_traits<const_iterator>::reference,
+    //                               std::add_const_t<std::add_lvalue_reference_t<std::iterator_traits<const_iterator>::value_type>>>
+    //                               ||
+    //                std::is_same_v<std::iterator_traits<const_iterator>::reference,
+    //                               std::add_const_t<std::add_rvalue_reference_t<std::iterator_traits<const_iterator>::value_type>>>);
+
     // DefaultConstructible
-    STATIC_REQUIRE_FALSE(std::is_default_constructible_v<iterator>);
+    REQUIREMENT_NOT_MET(std::is_default_constructible_v<iterator>);
   }
 
-  // multipass guarantee
+  // Multipass guarantee
+  FAIL("Not yet implemented");
+
+  // Singular iterators
   FAIL("Not yet implemented");
 
   // i++
-  FAIL("Not yet implemented");
+  REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
+  // STATIC_REQUIRE(std::is_same_v<decltype(std::declval<CollectionType::iterator>()++), CollectionType::iterator>);
 
   // *i++
-  FAIL("Not yet implemented");
+  REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
+  REQUIREMENT_NOT_MET(traits::has_reference_v<std::iterator_traits<iterator>>);
+  // STATIC_REQUIRE(std::is_same_v < decltype(*std::declval<iterator>()++),
+  //                 std::iterator_traits<iterator>::reference >>);
 }
 
 TEST_CASE("Collection and std::algorithms", "[collection][container][algorithm][std]") {
   auto a = CollectionType();
   FAIL("Not yet implemented");
 }
+
+#undef REQUIREMENT_NOT_MET
