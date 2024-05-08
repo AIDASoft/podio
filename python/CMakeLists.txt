@@ -1,4 +1,7 @@
-SET(podio_PYTHON_INSTALLDIR python)
+execute_process(COMMAND "''${Python_EXECUTABLE}"
+  -c "import sysconfig;print(sysconfig.get_path(\"purelib\", vars={\"base\": \".\"}))"
+  OUTPUT_VARIABLE podio_PYTHON_INSTALLDIR OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 SET(podio_PYTHON_INSTALLDIR ${podio_PYTHON_INSTALLDIR} PARENT_SCOPE)
 
 set(to_install
