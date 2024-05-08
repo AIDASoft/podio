@@ -88,10 +88,10 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
 | [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
-| [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Default initialization no defined |
+| [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Value initialization not defined |
 | If mutable iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` and `value_type` not defined |
 | Multipass guarantee | ❌ no / ❌ no | |
-| Singular iterators | ❌ no / ❌ no | |
+| Singular iterators | ❌ no / ❌ no | Value initialization not defined |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|

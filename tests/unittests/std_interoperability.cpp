@@ -449,7 +449,13 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   FAIL("Not yet implemented");
 
   // Singular iterators
-  FAIL("Not yet implemented");
+  STATIC_REQUIRE(traits::has_equality_comparator_v<iterator>);
+  REQUIREMENT_NOT_MET(std::is_default_constructible_v<iterator>);
+  //{
+  //  CollectionType some_collection{};
+  //  REQUIRE(iterator{} == some_collection.end());
+  //  REQUIRE(iterator{} == iterator{});
+  //}
 
   // i++
   REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
