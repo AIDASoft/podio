@@ -2,6 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <type_traits>
 
 #if __cplusplus >= 202002L
@@ -75,6 +76,26 @@ template <typename T>
 struct has_pointer<T, std::void_t<typename T::pointer>> : std::true_type {};
 template <typename T>
 inline constexpr bool has_pointer_v = has_pointer<T>::value;
+
+// typename T::allocator_type
+template <typename T, typename = void>
+struct has_allocator_type : std::false_type {};
+template <typename T>
+struct has_allocator_type<T, std::void_t<typename T::allocator_type>> : std::true_type {};
+template <typename T>
+inline constexpr bool has_allocator_type_v = has_allocator_type<T>::value;
+
+// is_erasable_allocator_unaware
+template <class, class = void>
+struct is_erasable_allocator_unaware : std::false_type {};
+template <class T>
+struct is_erasable_allocator_unaware<
+    T,
+    std::void_t<decltype(std::allocator_traits<std::allocator<typename T::value_type>>::destroy(
+        std::declval<std::add_lvalue_reference_t<std::allocator<typename T::value_type>>>(),
+        std::declval<std::add_pointer_t<typename T::value_type>>()))>> : std::true_type {};
+template <typename T>
+inline constexpr bool is_erasable_allocator_unaware_v = is_erasable_allocator_unaware<T>::value;
 
 // typename T::iterator_category
 template <typename T, typename = void>
@@ -169,6 +190,12 @@ TEST_CASE("Collection types", "[collection][container][types][std]") {
 
   // value_type
   STATIC_REQUIRE(traits::has_value_type_v<CollectionType>);
+  // Erasable -allocator aware - mutually exclusive with  Erasable -allocator not aware
+  STATIC_REQUIRE_FALSE(traits::has_allocator_type_v<CollectionType>);
+  // add check for `std::allocator_traits<A>::destroy(m, p);` expression here
+  // STATIC_REQUIRE(...)
+  // Erasable -allocator not aware - mutually exclusive // Erasable -allocator aware
+  STATIC_REQUIRE(traits::is_erasable_allocator_unaware_v<CollectionType>);
 
   // reference
   STATIC_REQUIRE_FALSE(traits::has_reference_v<CollectionType>);
@@ -207,7 +234,7 @@ TEST_CASE("Collection types", "[collection][container][types][std]") {
                  std::numeric_limits<CollectionType::difference_type>::max());
 }
 
-TEST_CASE("Collection members", "[collection][container][types][std]") {
+TEST_CASE("Collection members", "[collection][container][members][std]") {
   // C()
   STATIC_REQUIRE(std::is_default_constructible_v<CollectionType>);
   REQUIRE(CollectionType().empty() == true);
@@ -296,7 +323,7 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
         STATIC_REQUIRE_FALSE(std::is_move_assignable_v<iterator> && std::is_copy_assignable_v<iterator>);
 
         // Destructible
-        STATIC_REQUIRE(std::is_destructible_v<iterator>);
+        STATIC_REQUIRE(std::is_nothrow_destructible_v<iterator>);
 
         // Swappable
         STATIC_REQUIRE_FALSE(std::is_swappable_v<iterator>);
