@@ -6,8 +6,6 @@
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleWriteOptions.hxx>
-#include <format>
-#include <map>
 #include <stdexcept>
 
 #include "TFile.h"
