@@ -110,6 +110,10 @@ PODIO collections don't provide customization point for allocators and use only 
 |------|--------------|--------------------------|---------|
 | `allocator_type`  | `allocator_type::value_type` same as `value_type` | ❌ no | `allocator_type` not defined |
 
+### AllocatorAwareContainer expression and statements
+
+The PODIO Collections currently are not checked against expression and statements requirements for *AllocatorAwareContainer*.
+
 ## Collection iterators and standard iterator adapters
 
 ## Collection and standard algorithms
