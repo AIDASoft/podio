@@ -76,7 +76,7 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `i != j` | Convertible to `bool` | Same as `!(i==j)` | ✔️ yes / ✔️ yes | |
+| `i != j` |  Contextually convertible to `bool` | Same as `!(i==j)` | ✔️ yes / ✔️ yes | |
 | `*i` | `reference`, convertible to `value_type` | | ❌ no / ❌ no | `reference` and `value_type` not defined |
 | `i->m` | | Same as `(*i).m` | ✔️ yes / ✔️ yes | |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
@@ -90,8 +90,8 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
 | [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Value initialization not defined |
 | If mutable iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` and `value_type` not defined |
-| Multipass guarantee | ❌ no / ❌ no | |
-| Singular iterators | ❌ no / ❌ no | Value initialization not defined |
+| [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | Copy constructor not defined |
+| [Singular iterators](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | Value initialization not defined |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|

@@ -299,6 +299,11 @@ TEST_CASE("Collection container members", "[collection][container][members][std]
   REQUIREMENT_NOT_MET(traits::has_equality_comparator_v<CollectionType>);
   // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<CollectionType>()==std::declval<CollectionType>()),
   // bool>);
+  // value_type is EqualityComparable
+  STATIC_REQUIRE(traits::has_equality_comparator_v<CollectionType::value_type>);
+  STATIC_REQUIRE(
+      std::is_convertible_v<
+          decltype(std::declval<CollectionType::value_type>() != std::declval<CollectionType::value_type>()), bool>);
 
   // a != b
   REQUIREMENT_NOT_MET(traits::has_inequality_comparator_v<CollectionType>);
@@ -388,10 +393,11 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
 
       // EqualityComparable
       STATIC_REQUIRE(traits::has_equality_comparator_v<iterator>);
+      STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator>() != std::declval<iterator>()), bool>);
 
       // i != j
       STATIC_REQUIRE(traits::has_inequality_comparator_v<iterator>);
-      STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator>() != std::declval<iterator>()), bool>);
+      STATIC_REQUIRE(std::is_constructible_v<bool, decltype(std::declval<iterator>() != std::declval<iterator>())>);
 
       // *i
       REQUIREMENT_NOT_MET(traits::has_reference_v<iterator>);
@@ -446,7 +452,23 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   }
 
   // Multipass guarantee
-  FAIL("Not yet implemented");
+  {
+    CollectionType coll;
+    for (int i = 0; i < 3; ++i) {
+      coll.create();
+    }
+    auto a = coll.begin();
+    auto b = coll.begin();
+    REQUIRE(a == b);
+    REQUIRE(*a == *b);
+    REQUIRE(++a == ++b);
+    REQUIRE(*a == *b);
+    REQUIREMENT_NOT_MET(std::is_copy_constructible_v<iterator>);
+    // auto a_copy = a;
+    // ++a_copy;
+    // REQUIRE(a == b);
+    // REQUIRE(*a == *b);
+  }
 
   // Singular iterators
   STATIC_REQUIRE(traits::has_equality_comparator_v<iterator>);
