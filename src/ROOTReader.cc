@@ -3,12 +3,12 @@
 #include <TBranch.h>
 #include <TObjArray.h>
 #include <TObject.h>
-#include <stdexcept>
-#include <unordered_map>
 #include <algorithm>
 #include <compare>
 #include <functional>
 #include <optional>
+#include <stdexcept>
+#include <unordered_map>
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"

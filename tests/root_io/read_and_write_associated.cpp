@@ -1,21 +1,21 @@
 #include <iostream>
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "podio/Frame.h"
-#include "podio/ROOTReader.h"
-#include "podio/ROOTWriter.h"
 #include "datamodel/EventInfoCollection.h"
-#include "datamodel/ExampleClusterCollection.h"
-#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleCluster.h"
+#include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHit.h"
+#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableEventInfo.h"
 #include "datamodel/MutableExampleCluster.h"
 #include "datamodel/MutableExampleHit.h"
+#include "podio/Frame.h"
 #include "podio/FrameCategories.h"
+#include "podio/ROOTReader.h"
+#include "podio/ROOTWriter.h"
 #include "podio/RelationRange.h"
 
 void writeCollection() {

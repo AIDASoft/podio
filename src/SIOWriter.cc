@@ -1,15 +1,15 @@
 #include "podio/SIOWriter.h"
 
+#include <memory>
 #include <sio/exception.h>
 #include <stdint.h>
-#include <memory>
 #include <string>
 #include <utility>
 
 #include "podio/Frame.h"
 #include "podio/SIOBlock.h"
-#include "sioUtils.h"
 #include "podio/podioVersion.h"
+#include "sioUtils.h"
 
 namespace podio {
 

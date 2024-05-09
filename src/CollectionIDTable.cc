@@ -1,10 +1,10 @@
 // podio specific includes
 #include "podio/CollectionIDTable.h"
 
-#include <stddef.h>
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <stddef.h>
 #include <utility>
 
 #include "MurmurHash3.h"

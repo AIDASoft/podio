@@ -2,13 +2,13 @@
 #include <stdexcept>
 
 #include "catch2/catch_test_macros.hpp"
-#include "podio/ObjectID.h"
-#include "datamodel/ExampleHitCollection.h"
-#include "datamodel/TypeWithEnergy.h"
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleHit.h"
+#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleCluster.h"
 #include "datamodel/MutableExampleHit.h"
+#include "datamodel/TypeWithEnergy.h"
+#include "podio/ObjectID.h"
 
 TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
   using WrapperT = TypeWithEnergy;

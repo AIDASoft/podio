@@ -1,13 +1,13 @@
 #ifndef PODIO_SIOLEGACYREADER_H
 #define PODIO_SIOLEGACYREADER_H
 
-#include <sio/definitions.h>
-#include <sio/buffer.h>
+#include <fstream>
 #include <memory>
+#include <sio/buffer.h>
+#include <sio/definitions.h>
+#include <string>
 #include <string_view>
 #include <vector>
-#include <fstream>
-#include <string>
 
 #include "podio/SIOBlock.h"
 #include "podio/SIOFrameData.h"

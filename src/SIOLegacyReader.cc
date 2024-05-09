@@ -4,8 +4,8 @@
 #include <sio/compression/zlib.h>
 #include <sio/definitions.h>
 #include <sio/exception.h>
-#include <stdint.h>
 #include <stdexcept>
+#include <stdint.h>
 #include <utility>
 
 #include "podio/SIOBlock.h"

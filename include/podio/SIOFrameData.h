@@ -1,15 +1,15 @@
 #ifndef PODIO_SIOFRAMEDATA_H
 #define PODIO_SIOFRAMEDATA_H
 
-#include <sio/buffer.h>
-#include <sio/definitions.h>
+#include <cstddef>
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <sio/buffer.h>
+#include <sio/definitions.h>
 #include <string>
-#include <vector>
-#include <cstddef>
 #include <utility>
+#include <vector>
 
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"

@@ -1,14 +1,14 @@
 #ifndef PODIO_USERDATACOLLECTION_H
 #define PODIO_USERDATACOLLECTION_H
 
+#include <iostream>
 #include <stddef.h>
 #include <stdint.h>
 #include <string_view>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
-#include <iostream>
-#include <tuple>
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
@@ -18,7 +18,7 @@
 
 namespace podio {
 class ICollectionProvider;
-}  // namespace podio
+} // namespace podio
 
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \

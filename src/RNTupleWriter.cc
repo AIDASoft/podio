@@ -1,24 +1,24 @@
 #include "podio/RNTupleWriter.h"
 
-#include <ROOT/RField.hxx>
-#include <ROOT/RNTuple.hxx>
-#include <ROOT/RNTupleModel.hxx>
 #include <Compression.h>
 #include <ROOT/REntry.hxx>
 #include <ROOT/RError.hxx>
+#include <ROOT/RField.hxx>
+#include <ROOT/RNTuple.hxx>
+#include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleOptions.hxx>
 #include <format>
 #include <map>
 #include <stdexcept>
 
+#include "TFile.h"
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
+#include "podio/Frame.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "rootUtils.h"
-#include "TFile.h"
-#include "podio/CollectionBuffers.h"
-#include "podio/Frame.h"
 
 namespace podio {
 class GenericParameters;

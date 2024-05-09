@@ -1,26 +1,26 @@
 #ifndef PODIO_SIOBLOCK_H
 #define PODIO_SIOBLOCK_H
 
+#include <functional>
+#include <map>
+#include <memory>
 #include <podio/CollectionBase.h>
 #include <podio/CollectionIDTable.h>
 #include <podio/GenericParameters.h>
 #include <podio/podioVersion.h>
 #include <podio/utilities/TypeHelpers.h>
 #include <sio/block.h>
+#include <sio/definitions.h>
 #include <sio/io_device.h>
 #include <sio/version.h>
-#include <sio/definitions.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <map>
-#include <memory>
 #include <string>
 #include <string_view>
 #include <tuple>
-#include <vector>
-#include <functional>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "podio/CollectionBuffers.h"
 

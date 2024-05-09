@@ -1,17 +1,17 @@
 #include "podio/RNTupleReader.h"
 
-#include <ROOT/RError.hxx>
-#include <stddef.h>
-#include <stdint.h>
 #include <ROOT/REntry.hxx>
+#include <ROOT/RError.hxx>
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleView.hxx>
-#include <memory>
 #include <algorithm>
 #include <format>
 #include <iostream>
+#include <memory>
 #include <numeric>
 #include <optional>
+#include <stddef.h>
+#include <stdint.h>
 #include <tuple>
 #include <utility>
 
@@ -20,8 +20,8 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
-#include "rootUtils.h"
 #include "podio/ObjectID.h"
+#include "rootUtils.h"
 
 namespace podio {
 

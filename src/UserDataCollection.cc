@@ -1,10 +1,10 @@
 #include "podio/UserDataCollection.h"
 
-#include <tuple>
-#include <vector>
 #include <memory>
 #include <ostream>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"

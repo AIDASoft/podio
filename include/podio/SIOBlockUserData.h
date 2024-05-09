@@ -1,11 +1,11 @@
 #ifndef PODIO_SIOBLOCKUSERDATA_H
 #define PODIO_SIOBLOCKUSERDATA_H
 
+#include <algorithm>
 #include <sio/api.h>
+#include <sio/definitions.h>
 #include <sio/io_device.h>
 #include <sio/version.h>
-#include <sio/definitions.h>
-#include <algorithm>
 #include <string>
 #include <typeindex>
 #include <vector>

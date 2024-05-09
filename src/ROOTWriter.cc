@@ -2,18 +2,18 @@
 
 #include <TBranch.h>
 #include <TFile.h>
-#include <stddef.h>
 #include <optional>
+#include <stddef.h>
 #include <stdexcept>
 
+#include "TTree.h"
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
 #include "rootUtils.h"
-#include "TTree.h"
-#include "podio/CollectionBuffers.h"
 
 namespace podio {
 

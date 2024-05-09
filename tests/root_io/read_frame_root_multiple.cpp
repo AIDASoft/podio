@@ -1,13 +1,13 @@
-#include <stddef.h>
 #include <iostream>
 #include <memory>
+#include <stddef.h>
 #include <string>
 #include <vector>
 
-#include "read_frame.h"
-#include "podio/ROOTReader.h"
 #include "podio/Frame.h"
+#include "podio/ROOTReader.h"
 #include "podio/podioVersion.h"
+#include "read_frame.h"
 #include "read_test.h"
 
 int read_frames(podio::ROOTReader& reader) {

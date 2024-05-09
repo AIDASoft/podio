@@ -1,36 +1,30 @@
 // STL
-#include <stddef.h>
+#include <array>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <compare>
+#include <cstdint>
+#include <filesystem>
+#include <iostream>
+#include <map>
+#include <memory>
 #include <nlohmann/detail/iterators/iter_impl.hpp>
 #include <nlohmann/detail/json_ref.hpp>
 #include <nlohmann/json_fwd.hpp>
-#include <cstdint>
-#include <filesystem>
-#include <map>
-#include <sstream>
-#include <stdexcept>
-#include <thread>
-#include <type_traits>
-#include <vector>
-#include <array>
-#include <compare>
-#include <iostream>
-#include <memory>
 #include <set>
+#include <sstream>
+#include <stddef.h>
+#include <stdexcept>
 #include <string>
+#include <thread>
 #include <tuple>
+#include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
 #include "catch2/matchers/catch_matchers_vector.hpp"
 // podio specific includes
-#include "podio/Frame.h"
-#include "podio/GenericParameters.h"
-#include "podio/ROOTLegacyReader.h"
-#include "podio/ROOTReader.h"
-#include "podio/ROOTWriter.h"
-#include "podio/podioVersion.h"
 #include "datamodel/CompWithInit.h"
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterData.h"
@@ -50,9 +44,15 @@
 #include "datamodel/NotSoSimpleStruct.h"
 #include "datamodel/SimpleStruct.h"
 #include "podio/CollectionBuffers.h"
+#include "podio/Frame.h"
 #include "podio/FrameCategories.h"
+#include "podio/GenericParameters.h"
 #include "podio/ObjectID.h"
+#include "podio/ROOTLegacyReader.h"
+#include "podio/ROOTReader.h"
+#include "podio/ROOTWriter.h"
 #include "podio/RelationRange.h"
+#include "podio/podioVersion.h"
 
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0

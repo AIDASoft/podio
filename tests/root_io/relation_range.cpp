@@ -1,21 +1,21 @@
-#include <stddef.h>
+#include <iostream>
 #include <sstream>
+#include <stddef.h>
 #include <stdexcept>
 #include <string>
-#include <vector>
-#include <iostream>
 #include <utility>
+#include <vector>
 
+#include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleMCCollection.h"
+#include "datamodel/ExampleReferencingType.h"
+#include "datamodel/MutableExampleMC.h"
 #include "datamodel/MutableExampleReferencingType.h"
 #include "datamodel/MutableExampleWithVectorMember.h"
 #include "podio/Frame.h"
+#include "podio/FrameCategories.h"
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
-#include "datamodel/ExampleMC.h"
-#include "datamodel/ExampleReferencingType.h"
-#include "datamodel/MutableExampleMC.h"
-#include "podio/FrameCategories.h"
 #include "podio/RelationRange.h"
 
 #define LOCATION()                                                                                                     \

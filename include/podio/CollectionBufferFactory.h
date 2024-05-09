@@ -3,9 +3,9 @@
 
 #include <functional>
 #include <optional>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
 #include "podio/CollectionBuffers.h"
 #include "podio/SchemaEvolution.h"

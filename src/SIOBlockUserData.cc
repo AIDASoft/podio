@@ -1,7 +1,7 @@
 #include "podio/SIOBlockUserData.h"
 
-#include <stdint.h>
 #include <ostream>
+#include <stdint.h>
 
 namespace podio {
 
