@@ -5,7 +5,6 @@
 #include <ROOT/RError.hxx>
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTupleModel.hxx>
-#include <ROOT/RNTupleWriteOptions.hxx>
 #include <stdexcept>
 
 #include "TFile.h"
