@@ -47,6 +47,7 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | [LegacyIterator](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no ([see below](#legacyiterator)) | ❌ no ([see below](#legacyiterator)) |
 | [LegacyInputIterator](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no ([see below](#legacyinputiterator)) | ❌ no ([see below](#legacyinputiterator)) |
 | [LegacyForwardIterator](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no ([see below](#legacyforwarditerator)) | ❌ no ([see below](#legacyforwarditerator)) |
+| [LegacyOutputIterator](https://en.cppreference.com/w/cpp/named_req/OutputIterator) | ❌ no ([see below](#legacyoutputiterator)) | ❌ no ([see below](#legacyoutputiterator)) |
 
 ### LegacyIterator
 
@@ -97,6 +98,20 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 |------------|-------------|-----------|-------------------------------------------|---------|
 | `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Post-increment not defined |
 | `*i++` | `reference` | | ❌ no / ❌ no | Post-increment and `reference` not defined|
+
+### LegacyOutputIterator
+
+| Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
+|-------------|-------------------------------------------|---------|
+| [*LegacyIterator*](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no / ❌ no | [See above](#legacyiterator) |
+| Is pointer type or class type | ✔️ yes / ✔️ yes | |
+
+| Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
+|------------|-------------|-----------|-------------------------------------------|---------|
+| `*r = o` | | | ❌ no / ❌ no | |
+| `++r` | `It&` | | ✔️ yes / ✔️ yes  | |
+| `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ❌ no / ❌ no | Post-increment not defined |
+| `*r++ = o` | | Same as `*r = o; ++r;`| ✔️ yes / ❌ no | |
 
 ## Collection as AllocatorAwareContainer
 

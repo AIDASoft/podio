@@ -488,6 +488,37 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   REQUIREMENT_NOT_MET(traits::has_reference_v<std::iterator_traits<iterator>>);
   // STATIC_REQUIRE(std::is_same_v < decltype(*std::declval<iterator>()++),
   //                 std::iterator_traits<iterator>::reference >>);
+
+  SECTION("LegacyOutputIterator") {
+#if (__cplusplus >= 202002L)
+    REQUIREMENT_NOT_MET(std::output_iterator<iterator, CollectionType::value_type>);
+    REQUIREMENT_NOT_MET(std::output_iterator<const_iterator, CollectionType::value_type>);
+#endif
+
+    // is class type or pointer type
+    STATIC_REQUIRE(std::is_pointer_v<iterator> || std::is_class_v<iterator>);
+    STATIC_REQUIRE(std::is_pointer_v<const_iterator> || std::is_class_v<const_iterator>);
+
+    // *r = o
+    FAIL("Not implemented yet");
+
+    // ++r
+    STATIC_REQUIRE(traits::has_preincrement_v<iterator>);
+    STATIC_REQUIRE(std::is_same_v<decltype(++std::declval<iterator>()), std::add_lvalue_reference_t<iterator>>);
+
+    // r++
+    REQUIREMENT_NOT_MET(traits::has_postincrement_v<iterator>);
+    // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator>()++),
+    // std::add_const_t<std::add_lvalue_reference_t<iterator>>>);
+
+    //*r++ =o
+    FAIL("Not implemented yet");
+  }
+}
+
+TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
+  auto a = CollectionType();
+  FAIL("Not yet implemented");
 }
 
 TEST_CASE("Collection and std::algorithms", "[collection][container][algorithm][std]") {
