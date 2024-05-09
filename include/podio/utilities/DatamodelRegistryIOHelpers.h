@@ -1,13 +1,13 @@
 #ifndef PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 #define PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 
-#include <stddef.h>
 #include <set>
+#include <stddef.h>
 #include <string>
-#include <tuple>
-#include <vector>
 #include <string_view>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "podio/CollectionBase.h"
 #include "podio/DatamodelRegistry.h"

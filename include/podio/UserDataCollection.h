@@ -1,9 +1,9 @@
 #ifndef PODIO_USERDATACOLLECTION_H
 #define PODIO_USERDATACOLLECTION_H
 
+#include <iostream>
 #include <stddef.h>
 #include <stdint.h>
-#include <iostream>
 #include <string_view>
 #include <tuple>
 #include <type_traits>
