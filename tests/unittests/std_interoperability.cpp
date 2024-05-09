@@ -189,21 +189,21 @@ struct has_empty<T, std::void_t<decltype(std::declval<T>().empty())>> : std::tru
 template <typename T>
 inline constexpr bool has_empty_v = has_empty<T>::value;
 
-// T::operator++() (prefix)
+// T::operator++() (preincrement)
 template <class, class = void>
-struct has_prefix : std::false_type {};
+struct has_preincrement : std::false_type {};
 template <class T>
-struct has_prefix<T, std::void_t<decltype(++std::declval<T>())>> : std::true_type {};
+struct has_preincrement<T, std::void_t<decltype(++std::declval<T>())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_prefix_v = has_prefix<T>::value;
+inline constexpr bool has_preincrement_v = has_preincrement<T>::value;
 
-// T::operator++(int) (postfix)
+// T::operator++(int) (postincrement)
 template <class, class = void>
-struct has_postfix : std::false_type {};
+struct has_postincrement : std::false_type {};
 template <class T>
-struct has_postfix<T, std::void_t<decltype(std::declval<T>()++)>> : std::true_type {};
+struct has_postincrement<T, std::void_t<decltype(std::declval<T>()++)>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_postfix_v = has_postfix<T>::value;
+inline constexpr bool has_postincrement_v = has_postincrement<T>::value;
 } // namespace traits
 
 TEST_CASE("Collection container types", "[collection][container][types][std]") {
@@ -381,7 +381,7 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
         // *r
         STATIC_REQUIRE(!std::is_same_v<void, decltype(*std::declval<CollectionType::iterator>())>);
         // ++r
-        STATIC_REQUIRE(traits::has_prefix_v<iterator>);
+        STATIC_REQUIRE(traits::has_preincrement_v<iterator>);
         STATIC_REQUIRE(std::is_same_v<decltype(++std::declval<CollectionType::iterator>()),
                                       std::add_lvalue_reference_t<CollectionType::iterator>>);
       }
@@ -406,19 +406,19 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
           std::is_same_v<decltype(std::declval<iterator>()->energy()), decltype((*std::declval<iterator>()).energy())>);
 
       // ++r
-      STATIC_REQUIRE(traits::has_prefix_v<iterator>);
+      STATIC_REQUIRE(traits::has_preincrement_v<iterator>);
       STATIC_REQUIRE(std::is_same_v<decltype(++std::declval<CollectionType::iterator>()),
                                     std::add_lvalue_reference_t<CollectionType::iterator>>);
 
       // (void)r++
-      REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
-      STATIC_REQUIRE(traits::has_prefix_v<iterator>);
+      REQUIREMENT_NOT_MET(traits::has_postincrement_v<iterator>);
+      STATIC_REQUIRE(traits::has_preincrement_v<iterator>);
       REQUIREMENT_NOT_MET(traits::has_value_type_v<std::iterator_traits<iterator>>);
       // STATIC_REQUIRE(std::is_same_v<decltype((void)++std::declval<iterator>()),
       // decltype((void)std::declval<iterator>()++)>);
 
       //*r++
-      REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
+      REQUIREMENT_NOT_MET(traits::has_postincrement_v<iterator>);
       REQUIREMENT_NOT_MET(traits::has_value_type_v<std::iterator_traits<iterator>>);
       // STATIC_REQUIRE(std::is_convertible_v < decltype(*std::declval<iterator>()++),
       //                std::iterator_traits<iterator>::value_type >>);
@@ -458,11 +458,11 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   //}
 
   // i++
-  REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
+  REQUIREMENT_NOT_MET(traits::has_postincrement_v<iterator>);
   // STATIC_REQUIRE(std::is_same_v<decltype(std::declval<CollectionType::iterator>()++), CollectionType::iterator>);
 
   // *i++
-  REQUIREMENT_NOT_MET(traits::has_postfix_v<iterator>);
+  REQUIREMENT_NOT_MET(traits::has_postincrement_v<iterator>);
   REQUIREMENT_NOT_MET(traits::has_reference_v<std::iterator_traits<iterator>>);
   // STATIC_REQUIRE(std::is_same_v < decltype(*std::declval<iterator>()++),
   //                 std::iterator_traits<iterator>::reference >>);

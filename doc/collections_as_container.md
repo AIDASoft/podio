@@ -80,8 +80,8 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `*i` | `reference`, convertible to `value_type` | | ❌ no / ❌ no | `reference` and `value_type` not defined |
 | `i->m` | | Same as `(*i).m` | ✔️ yes / ✔️ yes | |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
-| `(void)r++` | | Same as `(void)++r` | ❌ no / ❌ no | Postfix not defined |
-| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Postfix and `value_type` not defined |
+| `(void)r++` | | Same as `(void)++r` | ❌ no / ❌ no | Post-increment not defined |
+| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Post-increment and `value_type` not defined |
 
 ### LegacyForwardIterator
 
@@ -95,8 +95,8 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Postfix not defined |
-| `*i++` | `reference` | | ❌ no / ❌ no | Postfix and `reference` not defined|
+| `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Post-increment not defined |
+| `*i++` | `reference` | | ❌ no / ❌ no | Post-increment and `reference` not defined|
 
 ## Collection as AllocatorAwareContainer
 
