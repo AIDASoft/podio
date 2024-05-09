@@ -1,4 +1,5 @@
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/MutableExampleHit.h"
 #include <catch2/catch_test_macros.hpp>
 #include <iterator>
 #include <limits>
@@ -204,6 +205,25 @@ template <class T>
 struct has_postincrement<T, std::void_t<decltype(std::declval<T>()++)>> : std::true_type {};
 template <typename T>
 inline constexpr bool has_postincrement_v = has_postincrement<T>::value;
+
+// *It = val
+template <class, class, class = void>
+struct has_dereference_assignment : std::false_type {};
+template <class T, class Value>
+struct has_dereference_assignment<T, Value, std::void_t<decltype(*std::declval<T>() = std::declval<Value>())>>
+    : std::true_type {};
+template <typename T, typename Value>
+inline constexpr bool has_dereference_assignment_v = has_dereference_assignment<T, Value>::value;
+
+// *It++ = val
+template <class, class, class = void>
+struct has_dereference_assignment_increment : std::false_type {};
+template <class T, class Value>
+struct has_dereference_assignment_increment<T, Value,
+                                            std::void_t<decltype(*std::declval<T>()++ = std::declval<Value>())>>
+    : std::true_type {};
+template <typename T, typename Value>
+inline constexpr bool has_dereference_assignment_increment_v = has_dereference_assignment_increment<T, Value>::value;
 } // namespace traits
 
 TEST_CASE("Collection container types", "[collection][container][types][std]") {
@@ -485,7 +505,8 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
     STATIC_REQUIRE(std::is_pointer_v<const_iterator> || std::is_class_v<const_iterator>);
 
     // *r = o
-    FAIL("Not implemented yet");
+    REQUIREMENT_NOT_MET(traits::has_dereference_assignment_v<iterator, CollectionType::value_type>);
+    STATIC_REQUIRE(traits::has_dereference_assignment_v<iterator, CollectionType::value_type::mutable_type>);
 
     // ++r
     STATIC_REQUIRE(traits::has_preincrement_v<iterator>);
@@ -497,7 +518,9 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
     // std::add_const_t<std::add_lvalue_reference_t<iterator>>>);
 
     //*r++ =o
-    FAIL("Not implemented yet");
+    REQUIREMENT_NOT_MET(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type>);
+    REQUIREMENT_NOT_MET(
+        traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type::mutable_type>);
   }
 }
 
@@ -535,11 +558,6 @@ TEST_CASE("Collection and iterator concepts") {
 }
 
 TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
-  auto a = CollectionType();
-  FAIL("Not yet implemented");
-}
-
-TEST_CASE("Collection and std::algorithms", "[collection][container][algorithm][std]") {
   auto a = CollectionType();
   FAIL("Not yet implemented");
 }
