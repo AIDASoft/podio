@@ -4,8 +4,8 @@
 #include <ROOT/REntry.hxx>
 #include <ROOT/RError.hxx>
 #include <ROOT/RField.hxx>
-#include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <ROOT/RNTupleWriteOptions.hxx>
 #include <format>
 #include <map>
 #include <stdexcept>
