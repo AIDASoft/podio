@@ -42,12 +42,26 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 
 ### Iterator summary
 
-| Named requirement | Collection::`iterator`| Collection::`const_iterator`|
+| Named requirement | `iterator` | `const_iterator` |
 |-------------------|-----------------------|-----------------------------|
 | [LegacyIterator](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no ([see below](#legacyiterator)) | ❌ no ([see below](#legacyiterator)) |
 | [LegacyInputIterator](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no ([see below](#legacyinputiterator)) | ❌ no ([see below](#legacyinputiterator)) |
 | [LegacyForwardIterator](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no ([see below](#legacyforwarditerator)) | ❌ no ([see below](#legacyforwarditerator)) |
 | [LegacyOutputIterator](https://en.cppreference.com/w/cpp/named_req/OutputIterator) | ❌ no ([see below](#legacyoutputiterator)) | ❌ no ([see below](#legacyoutputiterator)) |
+
+| Concept | `iterator` | `const_iterator` |
+|---------|------------------------|------------------------------|
+| `std::indirectly_readable` | ❌ no | ❌ no |
+| `std::indirectly_writable` | ❌ no | ❌ no |
+| `std::weakly_incrementable` | ❌ no | ❌ no |
+| `std::incrementable` | ❌ no | ❌ no |
+| `std::input_or_output_iterator` | ❌ no | ❌ no |
+| `std::input_iterator` | ❌ no | ❌ no |
+| `std::output_iterator` | ❌ no | ❌ no |
+| `std::forward_iterator` | ❌ no | ❌ no |
+| `std::bidirectional_iterator` | ❌ no | ❌ no |
+| `std::random_access_iterator` | ❌ no | ❌ no |
+| `std::contiguous_iterator` | ❌ no | ❌ no |
 
 ### LegacyIterator
 
@@ -65,8 +79,8 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `*r` | Unspecified | Dereferenceable | ✔️ yes / ✔️ yes | |
-| `++r` | `It&` | Incrementable | ✔️ yes / ✔️ yes | |
+| `*r` | Unspecified | | ✔️ yes / ✔️ yes | |
+| `++r` | `It&` | | ✔️ yes / ✔️ yes | |
 
 ### LegacyInputIterator
 

@@ -341,22 +341,11 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   using const_iterator = CollectionType::const_iterator;
 
   SECTION("LegacyForwardIterator") {
-#if (__cplusplus >= 202002L)
-    REQUIREMENT_NOT_MET(std::forward_iterator<iterator>);
-    REQUIREMENT_NOT_MET(std::forward_iterator<const_iterator>);
-#endif
 
     SECTION("LegacyInputIterator") {
-#if (__cplusplus >= 202002L)
-      REQUIREMENT_NOT_MET(std::input_iterator<iterator>);
-      REQUIREMENT_NOT_MET(std::input_iterator<const_iterator>);
-#endif
 
       SECTION("LegacyIterator") {
-#if (__cplusplus >= 202002L)
-        REQUIREMENT_NOT_MET(std::input_or_output_iterator<iterator>);
-        REQUIREMENT_NOT_MET(std::input_or_output_iterator<const_iterator>);
-#endif
+
         // CopyConstructible
         REQUIREMENT_NOT_MET(std::is_move_constructible_v<iterator>);
         REQUIREMENT_NOT_MET(std::is_copy_constructible_v<iterator>);
@@ -490,10 +479,6 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
   //                 std::iterator_traits<iterator>::reference >>);
 
   SECTION("LegacyOutputIterator") {
-#if (__cplusplus >= 202002L)
-    REQUIREMENT_NOT_MET(std::output_iterator<iterator, CollectionType::value_type>);
-    REQUIREMENT_NOT_MET(std::output_iterator<const_iterator, CollectionType::value_type>);
-#endif
 
     // is class type or pointer type
     STATIC_REQUIRE(std::is_pointer_v<iterator> || std::is_class_v<iterator>);
@@ -514,6 +499,39 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
     //*r++ =o
     FAIL("Not implemented yet");
   }
+}
+
+TEST_CASE("Collection and iterator concepts") {
+#if (__cplusplus >= 202002L)
+  SECTION("Iterator") {
+    using iterator = CollectionType::iterator;
+    REQUIREMENT_NOT_MET(std::indirectly_readable<iterator>);
+    REQUIREMENT_NOT_MET(std::indirectly_writable<iterator, CollectionType::value_type>);
+    REQUIREMENT_NOT_MET(std::weakly_incrementable<iterator>);
+    REQUIREMENT_NOT_MET(std::incrementable<iterator>);
+    REQUIREMENT_NOT_MET(std::input_or_output_iterator<iterator>);
+    REQUIREMENT_NOT_MET(std::input_iterator<iterator>);
+    REQUIREMENT_NOT_MET(std::output_iterator<iterator, CollectionType::value_type>);
+    REQUIREMENT_NOT_MET(std::forward_iterator<iterator>);
+    REQUIREMENT_NOT_MET(std::bidirectional_iterator<iterator>);
+    REQUIREMENT_NOT_MET(std::random_access_iterator<iterator>);
+    REQUIREMENT_NOT_MET(std::contiguous_iterator<iterator>);
+  }
+  SECTION("Const iterator") {
+    using const_iterator = CollectionType::const_iterator;
+    REQUIREMENT_NOT_MET(std::indirectly_readable<const_iterator>);
+    REQUIREMENT_NOT_MET(std::indirectly_writable<const_iterator, CollectionType::value_type>);
+    REQUIREMENT_NOT_MET(std::weakly_incrementable<const_iterator>);
+    REQUIREMENT_NOT_MET(std::incrementable<const_iterator>);
+    REQUIREMENT_NOT_MET(std::input_or_output_iterator<const_iterator>);
+    REQUIREMENT_NOT_MET(std::input_iterator<const_iterator>);
+    REQUIREMENT_NOT_MET(std::output_iterator<const_iterator, CollectionType::value_type>);
+    REQUIREMENT_NOT_MET(std::forward_iterator<const_iterator>);
+    REQUIREMENT_NOT_MET(std::bidirectional_iterator<const_iterator>);
+    REQUIREMENT_NOT_MET(std::random_access_iterator<const_iterator>);
+    REQUIREMENT_NOT_MET(std::contiguous_iterator<const_iterator>);
+  }
+#endif
 }
 
 TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
