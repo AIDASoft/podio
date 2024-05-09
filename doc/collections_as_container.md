@@ -148,12 +148,12 @@ The PODIO Collections currently are not checked against expression and statement
 | Adaptor | Compatible with Collection? | Comment |
 |---------|-----------------------------|---------|
 | `std::reverse_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyBidirectionalIterator* or `std::bidirectional_iterator` |
-| `std::back_insert_iterator` | ❌ no | |
+| `std::back_insert_iterator` | ❗ attention | Compatible only with subcollections, otherwise throws `std::invalid_argument` |
 | `std::front_insert_iterator` | ❌ no | `push_front` not defined |
 | `std::insert_iterator` | ❌ no | `insert` not defined |
 | `std::const_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
 | `std::move_iterator` | ❌ no | Move from collection conflicts collection elements ownership semantic |
-| `std::counted_iterator` | ✔️ yes | |
+| `std::counted_iterator` |  ❌ no | `iterator` and `const_iterator` not `std::input_or_output_iterator`
 
 
 ## Collection and standard algorithms

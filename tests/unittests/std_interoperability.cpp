@@ -4,6 +4,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <stdexcept>
 #include <type_traits>
 
 #if __cplusplus >= 202002L
@@ -517,7 +518,7 @@ TEST_CASE("Collection iterators", "[collection][container][interator][std]") {
     // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator>()++),
     // std::add_const_t<std::add_lvalue_reference_t<iterator>>>);
 
-    //*r++ =o
+    // *r++ = o
     REQUIREMENT_NOT_MET(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type>);
     REQUIREMENT_NOT_MET(
         traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type::mutable_type>);
@@ -558,8 +559,20 @@ TEST_CASE("Collection and iterator concepts") {
 }
 
 TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
-  auto a = CollectionType();
-  FAIL("Not yet implemented");
+  auto coll = CollectionType();
+  SECTION("Back inserter") {
+    auto it = std::back_inserter(coll);
+    // insert immutable to not-subcollection
+    REQUIRE_THROWS_AS(it = CollectionType::value_type{}, std::invalid_argument);
+    // insert mutable (implicit cast to immutable) to not-subcollection
+    REQUIRE_THROWS_AS(it = CollectionType::value_type::mutable_type{}, std::invalid_argument);
+    auto subColl = CollectionType{};
+    subColl.setSubsetCollection(true);
+    auto subIt = std::back_inserter(subColl);
+    auto val = coll.create();
+    // insert immutable to subcollection
+    REQUIRE_NOTHROW(subIt = val);
+  }
 }
 
 #undef REQUIREMENT_NOT_MET
