@@ -129,7 +129,18 @@ PODIO collections don't provide customization point for allocators and use only 
 
 The PODIO Collections currently are not checked against expression and statements requirements for *AllocatorAwareContainer*.
 
-## Collection iterators and standard iterator adapters
+## Collection iterators and standard iterator adaptors
+
+| Adaptor | Compatible with Collection? | Comment |
+|---------|-----------------------------|---------|
+| `std::reverse_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyBidirectionalIterator* or `std::bidirectional_iterator` |
+| `std::back_insert_iterator` | ❌ no | |
+| `std::front_insert_iterator` | ❌ no | `push_front` not defined |
+| `std::insert_iterator` | ❌ no | `insert` not defined |
+| `std::const_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
+| `std::move_iterator` | ❌ no | Move from collection conflicts collection elements ownership semantic |
+| `std::counted_iterator` | ✔️ yes | |
+
 
 ## Collection and standard algorithms
 
@@ -137,41 +148,147 @@ The PODIO Collections currently are not checked against expression and statement
 
 | Algorithm | Compatible with Collection? | Comment |
 | ----------|-----------------------------|---------|
-| `all_of`            | | |
-| `any_of`            | | |
-| `none_of`           | | |
-| `for_each`          | | |
-| `for_each_n`        | | |
-| `count`             | | |
-| `count_if`          | | |
-| `mismatch`          | | |
-| `find`              | | |
-| `find_if`           | | |
-| `find_if_not`       | | |
-| `find_end`          | | |
-| `find_first_of`     | | |
-| `adjacent_find`     | | |
-| `search`            | | |
-| `search_n`          | | |
+| `std::all_of`            | | |
+| `std::any_of`            | | |
+| `std::none_of`           | | |
+| `std::for_each`          | | |
+| `std::for_each_n`        | | |
+| `std::count`             | | |
+| `std::count_if`          | | |
+| `std::mismatch`          | | |
+| `std::find`              | | |
+| `std::find_if`           | | |
+| `std::find_if_not`       | | |
+| `std::find_end`          | | |
+| `std::find_first_of`     | | |
+| `std::adjacent_find`     | | |
+| `std::search`            | | |
+| `std::search_n`          | | |
 
 ### Modifying sequence operations
 
-### Partitioning operations
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::copy`                 |                             |         |
+| `std::copy_if`              |                             |         |
+| `std::copy_n`               |                             |         |
+| `std::copy_backward`        |                             |         |
+| `std::move`                 |                             |         |
+| `std::move_backward`        |                             |         |
+| `std::fill`                 |                             |         |
+| `std::fill_n`               |                             |         |
+| `std::transform`            |                             |         |
+| `std::generate`             |                             |         |
+| `std::generate_n`           |                             |         |
+| `std::remove`               |                             |         |
+| `std::remove_if`            |                             |         |
+| `std::remove_copy`          |                             |         |
+| `std::remove_copy_if`       |                             |         |
+| `std::replace`              |                             |         |
+| `std::replace_if`           |                             |         |
+| `std::replace_copy`         |                             |         |
+| `std::replace_copy_if`      |                             |         |
+| `std::swap`                 |                             |         |
+| `std::swap_ranges`          |                             |         |
+| `std::iter_swap`            |                             |         |
+| `std::reverse`              |                             |         |
+| `std::reverse_copy`         |                             |         |
+| `std::rotate`               |                             |         |
+| `std::rotate_copy`          |                             |         |
+| `std::shift_left`           |                             |         |
+| `std::shift_right`          |                             |         |
+| `std::random_shuffle`       |                             |         |
+| `std::shuffle`              |                             |         |
+| `std::sample`               |                             |         |
+| `std::unique`               |                             |         |
+| `std::unique_copy`          |                             |         |
 
-### Sorting operations
+### Partitioning Operations
 
-### Binary search operations (on sorted ranges)
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::is_partitioned`       |                             |         |
+| `std::partition`            |                             |         |
+| `std::partition_copy`       |                             |         |
+| `std::stable_partition`     |                             |         |
+| `std::partition_point`      |                             |         |
 
-### Other operations on sorted ranges
+### Sorting Operations
 
-### Set operations (on sorted ranges)
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::is_sorted`            |                             |         |
+| `std::is_sorted_until`      |                             |         |
+| `std::sort`                 |                             |         |
+| `std::partial_sort`         |                             |         |
+| `std::partial_sort_copy`    |                             |         |
+| `std::stable_sort`          |                             |         |
+| `std::nth_element`          |                             |         |
 
-### Heap operations
+### Binary Search Operations (on Sorted Ranges)
 
-### Minimum/maximum operations
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::lower_bound`          |                             |         |
+| `std::upper_bound`          |                             |         |
+| `std::binary_search`        |                             |         |
+| `std::equal_range`          |                             |         |
+
+### Other Operations on Sorted Ranges
+
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::merge`                 |                             |         |
+| `std::inplace_merge`         |                             |         |
+
+### Set Operations (on Sorted Ranges)
+
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::includes`              |                             |         |
+| `std::set_difference`        |                             |         |
+| `std::set_intersection`      |                             |         |
+| `std::set_symmetric_difference` |                          |         |
+| `std::set_union`             |                             |         |
+
+### Heap Operations
+
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::is_heap`               |                             |         |
+| `std::is_heap_until`         |                             |         |
+| `std::make_heap`             |                             |         |
+| `std::push_heap`             |                             |         |
+| `std::pop_heap`              |                             |         |
+| `std::sort_heap`             |                             |         |
+
+### Minimum/Maximum Operations
+
+| Algorithm            | Compatible with Collection? | Comment |
+|----------------------|-----------------------------|---------|
+| `std::max`                   |                             |         |
+| `std::max_element`           |                             |         |
+| `std::min`                   |                             |         |
+| `std::min_element`           |                             |         |
+| `std::minmax`                |                             |         |
+| `std::minmax_element`        |                             |         |
+| `std::clamp`                 |                             |         |
+
 
 ### Comparison operations
 
+| Algorithm | Compatible with Collection? | Comment |
+| ----------|-----------------------------|---------|
+| `std::equal`                             | | |
+| `std::lexicographical_compare`           | | |
+| `std::lexicographical_compare_three_way` | | |
+
 ### Permutation operations
+
+| Algorithm | Compatible with Collection? | Comment |
+| ----------|-----------------------------|---------|
+| `std::is_permutation`    | | |
+| `std::next_permutation ` | | |
+| `std::prev_permutation`  | | |
 
 ## Standard ranges
