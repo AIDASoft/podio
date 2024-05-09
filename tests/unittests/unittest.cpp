@@ -2,6 +2,7 @@
 #include <array>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <compare>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
@@ -12,7 +13,6 @@
 #include <nlohmann/json_fwd.hpp>
 #include <set>
 #include <sstream>
-#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <thread>

@@ -1,6 +1,6 @@
+#include <cstddef>
 #include <iostream>
 #include <memory>
-#include <cstddef>
 #include <stdexcept>
 
 #include "podio/Frame.h"
