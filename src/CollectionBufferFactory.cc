@@ -1,6 +1,6 @@
 #include "podio/CollectionBufferFactory.h"
 
-#include <stddef.h>
+#include <cstddef>
 #include <utility>
 
 #include "podio/CollectionBuffers.h"

@@ -2,8 +2,8 @@
 
 #include <TBranch.h>
 #include <TFile.h>
+#include <cstddef>
 #include <optional>
-#include <stddef.h>
 #include <stdexcept>
 
 #include "TTree.h"

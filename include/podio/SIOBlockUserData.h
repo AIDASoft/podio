@@ -1,11 +1,11 @@
 #ifndef PODIO_SIOBLOCKUSERDATA_H
 #define PODIO_SIOBLOCKUSERDATA_H
 
-#include <algorithm>
 #include <sio/api.h>
 #include <sio/definitions.h>
 #include <sio/io_device.h>
 #include <sio/version.h>
+#include <algorithm>
 #include <string>
 #include <typeindex>
 #include <vector>
@@ -14,6 +14,7 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/SIOBlock.h"
 #include "podio/UserDataCollection.h"
+#include "podio/GenericParameters.h"
 
 namespace podio {
 namespace detail {

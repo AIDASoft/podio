@@ -2,9 +2,9 @@
 #include "podio/CollectionIDTable.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <iterator>
-#include <stddef.h>
 #include <utility>
 
 #include "MurmurHash3.h"

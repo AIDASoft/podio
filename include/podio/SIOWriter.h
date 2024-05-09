@@ -1,8 +1,8 @@
 #ifndef PODIO_SIOWRITER_H
 #define PODIO_SIOWRITER_H
 
-#include <fstream>
 #include <sio/definitions.h>
+#include <fstream>
 #include <string>
 #include <utility>
 #include <vector>

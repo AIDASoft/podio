@@ -1,9 +1,6 @@
 #ifndef PODIO_SIOBLOCK_H
 #define PODIO_SIOBLOCK_H
 
-#include <functional>
-#include <map>
-#include <memory>
 #include <podio/CollectionBase.h>
 #include <podio/CollectionIDTable.h>
 #include <podio/GenericParameters.h>
@@ -13,8 +10,11 @@
 #include <sio/definitions.h>
 #include <sio/io_device.h>
 #include <sio/version.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <map>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <tuple>

@@ -1,10 +1,10 @@
 #include <TBranch.h>
 #include <compare>
+#include <cstddef>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <optional>
-#include <stddef.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>

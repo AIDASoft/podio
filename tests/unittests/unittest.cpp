@@ -12,7 +12,7 @@
 #include <nlohmann/json_fwd.hpp>
 #include <set>
 #include <sstream>
-#include <stddef.h>
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <thread>

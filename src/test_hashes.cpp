@@ -4,8 +4,8 @@
 #include <iostream>
 #include <iterator>
 #include <map>
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <tuple>
 #include <utility>
