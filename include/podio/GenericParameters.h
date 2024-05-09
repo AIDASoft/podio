@@ -3,14 +3,14 @@
 #define PODIO_GENERICPARAMETERS_H 1
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
 #include <map>
 #include <memory>
 #include <mutex>
-#include <cstddef>
-#include <cstdint>
 #include <string>
 #include <tuple>
 #include <type_traits>
