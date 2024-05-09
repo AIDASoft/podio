@@ -4,7 +4,6 @@
 #include <TObjArray.h>
 #include <TObject.h>
 #include <algorithm>
-#include <compare>
 #include <functional>
 #include <optional>
 #include <stdexcept>

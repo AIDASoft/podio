@@ -1,5 +1,4 @@
 #include <TBranch.h>
-#include <compare>
 #include <cstddef>
 #include <functional>
 #include <iostream>
