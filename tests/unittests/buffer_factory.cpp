@@ -5,6 +5,7 @@
 
 #include "catch2/catch_test_macros.hpp"
 #include "datamodel/DatamodelDefinition.h"
+#include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollectionData.h"
 #include "datamodel/ExampleClusterData.h"
 #include "datamodel/ExampleHitCollectionData.h"
