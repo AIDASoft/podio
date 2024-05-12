@@ -25,15 +25,13 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
 
   if ((type == "default" && endsWith(filename, ".root")) || lower(type) == "root") {
     return Writer{std::make_unique<ROOTWriter>(filename)};
-  }
-  if (lower(type) == "rntuple") {
+  } else if (lower(type) == "rntuple") {
 #if PODIO_ENABLE_RNTUPLE
     return Writer{std::make_unique<RNTupleWriter>(filename)};
 #else
     throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
 #endif
-  }
-  if ((type == "default" && endsWith(filename, ".sio")) || lower(type) == "sio") {
+  } else if (endsWith(filename, ".sio")) {
 #if PODIO_ENABLE_SIO
     return Writer{std::make_unique<SIOWriter>(filename)};
 #else
