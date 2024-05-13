@@ -1,4 +1,5 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include <algorithm>
 #include <iterator>
 
 namespace podio {
