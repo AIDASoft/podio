@@ -127,7 +127,7 @@ class ClassGeneratorBaseMixin:
             lstrip_blocks=True,
             trim_blocks=True,
         )
-
+        self.env.globals["embed_file"] = self._embed_file
         self.get_syntax = self.datamodel.options["getSyntax"]
         self.incfolder = self.datamodel.options["includeSubfolder"]
         self.expose_pod_members = self.datamodel.options["exposePODMembers"]
@@ -136,6 +136,13 @@ class ClassGeneratorBaseMixin:
         self.formatter_func = None
         self.generated_files = []
         self.any_changes = False
+
+    def _embed_file(self, filename):
+        """Get file contents for embedding in jinja generated code"""
+        if not os.path.isabs(filename):
+            parent_path = os.path.dirname(self.yamlfile)
+            filename = os.path.join(parent_path, filename)
+        return open(filename, encoding="utf-8").read()
 
     def process(self):
         """Run the actual generation"""

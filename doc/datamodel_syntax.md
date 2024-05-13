@@ -119,14 +119,14 @@ The `includes` will be add to the header files of the generated classes.
       includes: <newline separated list of strings (optional)>
       declaration: <string>
       implementation : <string>
-      declarationFile: <string> (to be implemented!)
-      implementationFile: <string> (to be implemented!)
+      declarationFile: <string>
+      implementationFile: <string>
     MutableExtraCode:
       includes: <newline separated list of strings (optional)>
       declaration: <string>
       implementation : <string>
-      declarationFile: <string> (to be implemented!)
-      implementationFile: <string> (to be implemented!)
+      declarationFile: <string>
+      implementationFile: <string>
 ```
 
 The code being provided has to use the macro `{name}` in place of the concrete name of the class.

@@ -171,9 +171,15 @@ class ClassDefinitionValidator:
     # it applies and also which accessor functions to generate
     required_interface_keys = required_datatype_keys + ("Members", "Types")
 
-    valid_extra_code_keys = ("declaration", "implementation", "includes")
+    valid_extra_code_keys = (
+        "declaration",
+        "implementation",
+        "includes",
+        "declarationFile",
+        "implementationFile",
+    )
     # documented but not yet implemented
-    not_yet_implemented_extra_code = ("declarationFile", "implementationFile")
+    not_yet_implemented_extra_code = ()
 
     @classmethod
     def validate(cls, datamodel, upstream_edm=None):
@@ -205,10 +211,10 @@ class ClassDefinitionValidator:
 
             if "ExtraCode" in component:
                 for key in component["ExtraCode"]:
-                    if key not in ("declaration", "includes"):
+                    if key not in ("declaration", "declarationFile", "includes"):
                         raise DefinitionError(
                             f"'{key}' field found in 'ExtraCode' of component '{name}'."
-                            " Only 'declaration' and 'includes' are allowed here"
+                            "Only 'declaration', 'declarationFile' and 'includes' are allowed here"
                         )
 
             for member in component["Members"]:

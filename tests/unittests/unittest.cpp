@@ -43,6 +43,7 @@
 #include "datamodel/ExampleWithArray.h"
 #include "datamodel/ExampleWithArrayComponent.h"
 #include "datamodel/ExampleWithComponent.h"
+#include "datamodel/ExampleWithExternalExtraCode.h"
 #include "datamodel/ExampleWithFixedWidthIntegers.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithUserInitCollection.h"
@@ -50,6 +51,8 @@
 #include "datamodel/MutableExampleCluster.h"
 #include "datamodel/MutableExampleWithArray.h"
 #include "datamodel/MutableExampleWithComponent.h"
+#include "datamodel/MutableExampleWithExternalExtraCode.h"
+
 #include "podio/UserDataCollection.h"
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
@@ -396,6 +399,19 @@ TEST_CASE("Extracode", "[basics][code-gen]") {
   REQUIRE(simple.x == 1);
   REQUIRE(simple.y == 2);
   REQUIRE(simple.z == 3);
+}
+
+TEST_CASE("ExtraCode declarationFile and implementationFile", "[basics][code-gen]") {
+  MutableExampleWithExternalExtraCode mutable_example;
+  mutable_example.number(0);
+  REQUIRE(mutable_example.add(2) == 2);
+  REQUIRE(mutable_example.add_inplace(1) == 1);
+  REQUIRE(mutable_example.gt(-1));
+  REQUIRE(mutable_example.lt(100));
+  auto example = static_cast<ExampleWithExternalExtraCode>(mutable_example);
+  REQUIRE(example.add(1) == 2);
+  REQUIRE(example.gt(0));
+  REQUIRE(example.lt(100));
 }
 
 TEST_CASE("AssociativeContainer", "[basics]") {
