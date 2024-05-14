@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; PODIO  documentation</title>
+  <title>Python interface for data models &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -23,7 +23,9 @@
         <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="C++ API documentation" href="cpp_api/api.html" />
+    <link rel="prev" title="Changing / creating new templates" href="templates.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,7 +47,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="doc.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc.html#quick-start">Quick-start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="design.html">Design and Implementation Details</a><ul>
@@ -165,10 +167,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="python.html">Python interface for data models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="python.html#pythonizations">Pythonizations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="python.html#developing-new-pythonizations">Developing new pythonizations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="python.html#considerations">Considerations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python interface for data models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pythonizations">Pythonizations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#developing-new-pythonizations">Developing new pythonizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#considerations">Considerations</a></li>
 </ul>
 </li>
 </ul>
@@ -547,7 +549,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="breadcrumb-item active">Python interface for data models</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -556,20 +558,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <p>\begin{titlepage}
-\begin{center}</p>
-<p>\vspace*{2.5cm}</p>
-<p>\huge
-PODIO - the POD I/O Library\
-Design Document v1.0</p>
-<p>\vspace{0.5cm}</p>
-<p>\normalsize
-30.6.2016</p>
-<p>\vspace{1cm}</p>
-<p>Benedikt Hegner (CERN)\
-Frank Gaede (DESY)</p>
-<p>\end{center}
-\end{titlepage}</p>
+  <section id="python-interface-for-data-models">
+<h1>Python interface for data models<a class="headerlink" href="#python-interface-for-data-models" title="Link to this heading"></a></h1>
+<p>Podio provides support for a Python interface for the generated data models. The <a class="reference internal" href="design.html"><span class="std std-doc">design choice</span></a> to create Python interface resembling the C++ interface is achieved by generating Python bindings from the C++ interface using
+<a class="reference external" href="https://cppyy.readthedocs.io/en/latest/index.html">cppyy</a>. To make pyROOT aware of the bindings, the cppyy functionality bundled with ROOT can be used.</p>
+<p>It’s important to note that cppyy loads the bindings and presents them lazily at runtime to the Python interpreter, rather than writing Python interface files. Consequently, the Python bindings have a runtime dependencies on ROOT, cppyy and the data model’s C++ interface.</p>
+<p>To load the Python bindings from a generated C++ model dictionary, first make sure the model’s library and headers can be found in <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">ROOT_INCLUDE_HEADERS</span></code> respectively, then:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ROOT</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">gSystem</span><span class="o">.</span><span class="n">Load</span><span class="p">(</span><span class="s1">&#39;libGeneratedModelDict.so&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">res</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Failed to load libGeneratedModelDict.so&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For reference usage, see the <a class="reference external" href="https://github.com/key4hep/EDM4hep/blob/main/python/edm4hep/__init__.py">Python module of EDM4hep</a>.</p>
+<section id="pythonizations">
+<h2>Pythonizations<a class="headerlink" href="#pythonizations" title="Link to this heading"></a></h2>
+<p>Python as a language uses different constructions and conventions than C++, perfectly fine C++ code translated one to one to Python could be clunky by Python’s standard. cppyy offers a mechanism called <a class="reference external" href="https://cppyy.readthedocs.io/en/latest/pythonizations.html">pythonizations</a> to make the resulting bindings more pythonic. Some basic pythonizations are included automatically (for instance <code class="docutils literal notranslate"><span class="pre">operator[]</span></code> is translated to <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>) but others can be specified by a user.</p>
+<p>Podio comes with its own set of pythonizations useful for the data models generated with it. To apply all the provided pythonizations to a <code class="docutils literal notranslate"><span class="pre">model_namespace</span></code> namespace:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">podio.pythonizations</span> <span class="kn">import</span> <span class="n">load_pythonizations</span>
+
+<span class="n">load_pythonizations</span><span class="p">(</span><span class="s2">&quot;model_namespace&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If only specific pythonizations should be applied:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span>  <span class="nn">podio.pythonizations</span> <span class="kn">import</span> <span class="n">collection_subscript</span> <span class="c1"># specific pythonization</span>
+
+<span class="n">collection_subscript</span><span class="o">.</span><span class="n">CollectionSubscriptPythonizer</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;model_namespace&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="developing-new-pythonizations">
+<h3>Developing new pythonizations<a class="headerlink" href="#developing-new-pythonizations" title="Link to this heading"></a></h3>
+<p>To be discovered by <code class="docutils literal notranslate"><span class="pre">load_pythonizations</span></code>, any new pythonization should be placed in <code class="docutils literal notranslate"><span class="pre">podio.pythonizations</span></code> and be derived from the abstract class <code class="docutils literal notranslate"><span class="pre">podio.pythonizations.utils.pythonizer.Pythonizer</span></code>.</p>
+<p>A pythonization class should implement the following three class methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">priority</span></code>: The <code class="docutils literal notranslate"><span class="pre">load_pythonizations</span></code> function applies the pythonizations in increasing order of their <code class="docutils literal notranslate"><span class="pre">priority</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code>: A predicate to filter out classes to which given pythonization should be applied. See the <a class="reference external" href="https://cppyy.readthedocs.io/en/latest/pythonizations.html#python-callbacks">cppyy documentation</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">modify</span></code>: Applying the modifications to the pythonized classes.</p></li>
+</ul>
+</section>
+<section id="considerations">
+<h3>Considerations<a class="headerlink" href="#considerations" title="Link to this heading"></a></h3>
+<p>The cppyy pythonizations come with some considerations:</p>
+<ul class="simple">
+<li><p>The general cppyy idea to lazily load only things that are needed applies only partially to the pythonizations. For instance, a pythonization modifying the <code class="docutils literal notranslate"><span class="pre">collection[]</span></code> will be applied the first time a class of <code class="docutils literal notranslate"><span class="pre">collection</span></code> is used, regardless if <code class="docutils literal notranslate"><span class="pre">collection[]</span></code> is actually used.</p></li>
+<li><p>Each pythonization is applied to all the entities in a namespace and relies on a conditional mechanism (<code class="docutils literal notranslate"><span class="pre">filter</span></code> method) inside the pythonizations to select entities they modify. With a large number of pythonizations, the overheads will add up and slow down the usage of any class from a pythonized namespace.</p></li>
+<li><p>The cppyy bindings hooking to the C++ routines are characterized by high performance compared to ordinary Python code. The pythonizations are written in Python and are executed at ordinary Python code speed.</p></li>
+</ul>
+</section>
+</section>
+</section>
 
 
            </div>

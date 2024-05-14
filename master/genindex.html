@@ -164,6 +164,14 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python interface for data models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#pythonizations">Pythonizations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python.html#developing-new-pythonizations">Developing new pythonizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#considerations">Considerations</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cpp_api/api.html">C++ API documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cpp_api/classlist.html">Class list</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -406,6 +414,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="py_api/modules.html">python</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="py_api/podio.html">podio package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio.pythonizations.html">podio.pythonizations package</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
@@ -625,6 +637,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_base.ClassGeneratorBaseMixin">ClassGeneratorBaseMixin (class in podio_gen.generator_base)</a>
 </li>
+      <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer">CollectionSubscriptPythonizer (class in podio.pythonizations.collection_subscript)</a>
+</li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.MemberParser.comment_str">comment_str (podio_gen.podio_config_reader.MemberParser attribute)</a>
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.compare">compare() (podio_schema_evolution.DataModelComparator method)</a>
@@ -701,16 +715,22 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.filter">filter() (podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer class method)</a>
+
+      <ul>
+        <li><a href="py_api/podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer.filter">(podio.pythonizations.utils.pythonizer.Pythonizer class method)</a>
+</li>
+      </ul></li>
       <li><a href="py_api/podio.html#podio.base_writer.AllWriters.finish">finish() (podio.base_writer.AllWriters method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio.html#podio.Frame">Frame (class in podio)</a>
 
       <ul>
         <li><a href="py_api/podio.html#podio.frame.Frame">(class in podio.frame)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio.html#podio.frame_iterator.FrameCategoryIterator">FrameCategoryIterator (class in podio.frame_iterator)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.MemberParser.full_array_re">full_array_re (podio_gen.podio_config_reader.MemberParser attribute)</a>
@@ -813,14 +833,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio.html#podio.reading.RootFileFormat.LEGACY">LEGACY (podio.reading.RootFileFormat attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio.html#podio.root_io.LegacyReader">LegacyReader (class in podio.root_io)</a>
 
       <ul>
         <li><a href="py_api/podio.html#podio.sio_io.LegacyReader">(class in podio.sio_io)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.load_pythonizations">load_pythonizations() (in module podio.pythonizations)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -835,6 +857,12 @@
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable">MemberVariable (class in podio_gen.generator_utils)</a>
 </li>
+      <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.modify">modify() (podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer class method)</a>
+
+      <ul>
+        <li><a href="py_api/podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer.modify">(podio.pythonizations.utils.pythonizer.Pythonizer class method)</a>
+</li>
+      </ul></li>
       <li>
     module
 
@@ -848,6 +876,14 @@
         <li><a href="py_api/podio.html#module-podio.frame">podio.frame</a>
 </li>
         <li><a href="py_api/podio.html#module-podio.frame_iterator">podio.frame_iterator</a>
+</li>
+        <li><a href="py_api/podio.pythonizations.html#module-podio.pythonizations">podio.pythonizations</a>
+</li>
+        <li><a href="py_api/podio.pythonizations.html#module-podio.pythonizations.collection_subscript">podio.pythonizations.collection_subscript</a>
+</li>
+        <li><a href="py_api/podio.pythonizations.utils.html#module-podio.pythonizations.utils">podio.pythonizations.utils</a>
+</li>
+        <li><a href="py_api/podio.pythonizations.utils.html#module-podio.pythonizations.utils.pythonizer">podio.pythonizations.utils.pythonizer</a>
 </li>
         <li><a href="py_api/podio.html#module-podio.reading">podio.reading</a>
 </li>
@@ -951,6 +987,34 @@
 
       <ul>
         <li><a href="py_api/podio.html#module-podio.frame_iterator">module</a>
+</li>
+      </ul></li>
+      <li>
+    podio.pythonizations
+
+      <ul>
+        <li><a href="py_api/podio.pythonizations.html#module-podio.pythonizations">module</a>
+</li>
+      </ul></li>
+      <li>
+    podio.pythonizations.collection_subscript
+
+      <ul>
+        <li><a href="py_api/podio.pythonizations.html#module-podio.pythonizations.collection_subscript">module</a>
+</li>
+      </ul></li>
+      <li>
+    podio.pythonizations.utils
+
+      <ul>
+        <li><a href="py_api/podio.pythonizations.utils.html#module-podio.pythonizations.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    podio.pythonizations.utils.pythonizer
+
+      <ul>
+        <li><a href="py_api/podio.pythonizations.utils.html#module-podio.pythonizations.utils.pythonizer">module</a>
 </li>
       </ul></li>
       <li>
@@ -1624,12 +1688,12 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReader13readNextEntryERKNSt6stringE">podio::ROOTLegacyReader::readNextEntry (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader13readNextEntryERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReader13readNextEntryERKNSt6stringE">[2]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReader16ROOTLegacyReaderERK16ROOTLegacyReader">podio::ROOTLegacyReader::ROOTLegacyReader (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReader16ROOTLegacyReaderEv">[1]</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader16ROOTLegacyReaderERK16ROOTLegacyReader">[2]</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader16ROOTLegacyReaderEv">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReader16ROOTLegacyReaderERK16ROOTLegacyReader">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReader16ROOTLegacyReaderEv">[5]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReaderD0Ev">podio::ROOTLegacyReader::~ROOTLegacyReader (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReaderD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReaderD0Ev">[2]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4N5podio10ROOTReaderE">podio::ROOTReader (C++ class)</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4N5podio10ROOTReaderE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio10ROOTReaderE">[2]</a>
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4N5podio10ROOTReader12CategoryInfoE">podio::ROOTReader::CategoryInfo (C++ struct)</a>, <a href="cpp_api/struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info.html#_CPPv4N5podio10ROOTReader12CategoryInfoE">[1]</a>
@@ -2348,6 +2412,12 @@
         <li><a href="py_api/podio_gen.html#podio_gen.julia_generator.JuliaClassGenerator.print_report">(podio_gen.julia_generator.JuliaClassGenerator method)</a>
 </li>
       </ul></li>
+      <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.priority">priority() (podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer class method)</a>
+
+      <ul>
+        <li><a href="py_api/podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer.priority">(podio.pythonizations.utils.pythonizer.Pythonizer class method)</a>
+</li>
+      </ul></li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_base.ClassGeneratorBaseMixin.process">process() (podio_gen.generator_base.ClassGeneratorBaseMixin method)</a>
 </li>
       <li><a href="py_api/podio.html#podio.Frame.put">put() (podio.Frame method)</a>
@@ -2362,6 +2432,8 @@
         <li><a href="py_api/podio.html#podio.frame.Frame.put_parameter">(podio.frame.Frame method)</a>
 </li>
       </ul></li>
+      <li><a href="py_api/podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer">Pythonizer (class in podio.pythonizations.utils.pythonizer)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2384,6 +2456,8 @@
         <li><a href="py_api/podio.html#podio.sio_io.Reader">(class in podio.sio_io)</a>
 </li>
       </ul></li>
+      <li><a href="py_api/podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer.register">register() (podio.pythonizations.utils.pythonizer.Pythonizer class method)</a>
+</li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RenamedDataType">RenamedDataType (class in podio_schema_evolution)</a>
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RenamedMember">RenamedMember (class in podio_schema_evolution)</a>
