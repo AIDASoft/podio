@@ -17,5 +17,6 @@ Welcome to PODIO's documentation!
    userdata.md
    advanced_topics.md
    templates.md
+   python.md
    cpp_api/api
    py_api/modules
