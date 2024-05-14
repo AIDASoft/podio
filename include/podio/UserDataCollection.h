@@ -77,11 +77,11 @@ private:
   VectorMembersInfo m_vecmem_info{};
 
 public:
-  using value_type = typename decltype(_vec)::value_type;
-  using const_iterator = typename decltype(_vec)::const_iterator;
-  using iterator = typename decltype(_vec)::iterator;
-  using difference_type = typename decltype(_vec)::difference_type;
-  using size_type = typename decltype(_vec)::size_type;
+  using value_type = typename std::vector<BasicType>::value_type;
+  using const_iterator = typename std::vector<BasicType>::const_iterator;
+  using iterator = typename std::vector<BasicType>::iterator;
+  using difference_type = typename std::vector<BasicType>::difference_type;
+  using size_type = typename std::vector<BasicType>::size_type;
 
   UserDataCollection() = default;
   /// Constructor from an existing vector (which will be moved from!)
