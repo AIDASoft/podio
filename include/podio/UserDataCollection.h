@@ -205,22 +205,22 @@ public:
 
   // ----- some wrappers for std::vector and access to the complete std::vector (if really needed)
 
-  typename std::vector<BasicType>::iterator begin() {
+  iterator begin() {
     return _vec.begin();
   }
-  typename std::vector<BasicType>::iterator end() {
+  iterator end() {
     return _vec.end();
   }
-  typename std::vector<BasicType>::const_iterator begin() const {
+  const_iterator begin() const {
     return _vec.begin();
   }
-  typename std::vector<BasicType>::const_iterator end() const {
+  const_iterator end() const {
     return _vec.end();
   }
-  typename std::vector<BasicType>::const_iterator cbegin() const {
+  const_iterator cbegin() const {
     return _vec.cbegin();
   }
-  typename std::vector<BasicType>::const_iterator cend() const {
+  const_iterator cend() const {
     return _vec.cend();
   }
 
