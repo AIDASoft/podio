@@ -404,14 +404,14 @@ TEST_CASE("Extracode", "[basics][code-gen]") {
 
 TEST_CASE("ExtraCode declarationFile and implementationFile", "[basics][code-gen]") {
   auto mutable_number = MutableExampleWithExternalExtraCode();
-  mutable_number.number(0);
+  REQUIRE(mutable_number.reset() == 0);
   REQUIRE(mutable_number.add(2) == 2);
   REQUIRE(mutable_number.add_inplace(1) == 1);
   REQUIRE(mutable_number.gt(-1));
   REQUIRE(mutable_number.lt(100));
   ExampleWithExternalExtraCode number = mutable_number;
   REQUIRE(number.add(1) == 2);
-  REQUIRE(number.gt(0));
+  REQUIRE(number.gt(-1));
   REQUIRE(number.lt(100));
 }
 
