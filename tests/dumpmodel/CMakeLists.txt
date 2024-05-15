@@ -1,6 +1,10 @@
 # Copy the main .clang-format to here so that the tests can always find it
 configure_file(${PROJECT_SOURCE_DIR}/.clang-format ${CMAKE_CURRENT_BINARY_DIR}/.clang-format COPYONLY)
 
+# copy extra code declarations and implementations files since their paths are defined relative to the yaml file
+file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/../extra_code
+                 ${CMAKE_CURRENT_BINARY_DIR}/../root_io/extra_code COPY_ON_ERROR SYMBOLIC)
+
 # Add tests for storing and retrieving the EDM definitions into the produced
 # files
 add_test(NAME datamodel_def_store_roundtrip_root COMMAND ${PROJECT_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
@@ -30,6 +34,10 @@ set_tests_properties(
 
 set(sio_roundtrip_tests "")
 if (ENABLE_SIO)
+  # copy extra code declarations and implementations files since their paths are defined relative to the yaml file
+  file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/../extra_code
+                   ${CMAKE_CURRENT_BINARY_DIR}/../sio_io/extra_code COPY_ON_ERROR SYMBOLIC)
+
   add_test(NAME datamodel_def_store_roundtrip_sio COMMAND ${PROJECT_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
     ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio
     datamodel
