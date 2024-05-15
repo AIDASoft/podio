@@ -419,7 +419,7 @@ TEST_CASE("ExtraCode declarationFile in component", "[basics][code-gen]") {
   auto value = StructWithExtraCode();
   value.x = 1;
   REQUIRE(value.negate() == -1);
-  REQUIRE(value.reset() == 0 );
+  REQUIRE(value.reset() == 0);
 }
 
 TEST_CASE("AssociativeContainer", "[basics]") {
