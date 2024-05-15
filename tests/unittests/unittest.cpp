@@ -52,6 +52,7 @@
 #include "datamodel/MutableExampleWithArray.h"
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/MutableExampleWithExternalExtraCode.h"
+#include "datamodel/StructWithExtraCode.h"
 
 #include "podio/UserDataCollection.h"
 
@@ -402,16 +403,23 @@ TEST_CASE("Extracode", "[basics][code-gen]") {
 }
 
 TEST_CASE("ExtraCode declarationFile and implementationFile", "[basics][code-gen]") {
-  MutableExampleWithExternalExtraCode mutable_example;
-  mutable_example.number(0);
-  REQUIRE(mutable_example.add(2) == 2);
-  REQUIRE(mutable_example.add_inplace(1) == 1);
-  REQUIRE(mutable_example.gt(-1));
-  REQUIRE(mutable_example.lt(100));
-  auto example = static_cast<ExampleWithExternalExtraCode>(mutable_example);
-  REQUIRE(example.add(1) == 2);
-  REQUIRE(example.gt(0));
-  REQUIRE(example.lt(100));
+  auto mutable_number = MutableExampleWithExternalExtraCode();
+  mutable_number.number(0);
+  REQUIRE(mutable_number.add(2) == 2);
+  REQUIRE(mutable_number.add_inplace(1) == 1);
+  REQUIRE(mutable_number.gt(-1));
+  REQUIRE(mutable_number.lt(100));
+  ExampleWithExternalExtraCode number = mutable_number;
+  REQUIRE(number.add(1) == 2);
+  REQUIRE(number.gt(0));
+  REQUIRE(number.lt(100));
+}
+
+TEST_CASE("ExtraCode declarationFile in component", "[basics][code-gen]") {
+  auto value = StructWithExtraCode();
+  value.x = 1;
+  REQUIRE(value.negate() == -1);
+  REQUIRE(value.reset() == 0 );
 }
 
 TEST_CASE("AssociativeContainer", "[basics]") {

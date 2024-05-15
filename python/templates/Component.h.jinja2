@@ -23,6 +23,7 @@ public:
 {% endfor %}
 
 {{ utils.if_present(ExtraCode, "declaration") }}
+{{ utils.if_present_embed(ExtraCode, "declarationFile") }}
 };
 
 std::ostream& operator<<(std::ostream& o, const {{class.full_type}}& value);

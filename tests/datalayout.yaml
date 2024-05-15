@@ -53,6 +53,15 @@ components :
       - int i{42} // is there even another value to initialize ints to?
       - std::array<double, 10> arr {1.2, 3.4} // half initialized double array
 
+  StructWithExtraCode:
+    Members:
+      - int x
+    ExtraCode:
+      declaration: "
+        int negate() { x = -x; return x; }\n
+      "
+      declarationFile: "extra_code/component_declarations.cc"
+
 datatypes :
 
   EventInfo:
