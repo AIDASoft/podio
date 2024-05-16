@@ -13,11 +13,13 @@
 #include <string>
 #include <vector>
 
+#if PODIO_ENABLE_SIO
 namespace sio {
 class read_device;
 class write_device;
 using version_type = uint32_t; // from sio/definitions
 } // namespace sio
+#endif
 
 #if PODIO_ENABLE_RNTUPLE
 namespace podio {
@@ -127,6 +129,21 @@ public:
   friend RNTupleWriter;
 #endif
 
+private:
+  /// Get a reference to the internal map for a given type
+  template <typename T>
+  MapType<detail::GetVectorType<T>>& getMap() {
+    if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
+      return _intMap;
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
+      return _floatMap;
+    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
+      return _doubleMap;
+    } else {
+      return _stringMap;
+    }
+  }
+
   /// Get a reference to the internal map for a given type
   template <typename T>
   const MapType<detail::GetVectorType<T>>& getMap() const {
@@ -141,22 +158,6 @@ public:
     }
   }
 
-private:
-  /// Get a reference to the internal map for a given type (necessary for SIO)
-  template <typename T>
-  MapType<detail::GetVectorType<T>>& getMap() {
-    if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
-      return _intMap;
-    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
-      return _floatMap;
-    } else if constexpr (std::is_same_v<detail::GetVectorType<T>, double>) {
-      return _doubleMap;
-    } else {
-      return _stringMap;
-    }
-  }
-
-private:
   /// Get the mutex that guards the map for the given type
   template <typename T>
   std::mutex& getMutex() const {
