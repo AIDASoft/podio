@@ -278,13 +278,10 @@ public:
 
   /// Retrieve parameters via key from the internal store.
   ///
-  /// The return type will either be a const reference or a value depending on
-  /// the desired type. See podio::GenericParameters for more details.
-  ///
   /// @tparam T  The desired type of the parameter (can also be std::vector<T>)
   /// @param key The key under which the value is stored
   ///
-  /// @returns   An optional holding the value if it was present
+  /// @returns   An optional holding the value if it is present
   template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline auto getParameter(const std::string& key) const {
     return m_self->parameters().get<T>(key);
@@ -293,7 +290,7 @@ public:
   /// Retrieve all parameters stored in this Frame.
   ///
   /// This is mainly intended for I/O purposes and we encourage to use the Frame
-  /// functionality of getParameters or getParameterKeys in general.
+  /// functionality of getParameter or getParameterKeys in general.
   ///
   /// @returns The internally used GenericParameters
   inline const podio::GenericParameters& getParameters() const {
