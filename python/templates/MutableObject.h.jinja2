@@ -47,9 +47,7 @@ public:
 {{ macros.single_relation_setters(OneToOneRelations, use_get_syntax) }}
 {{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax, with_adder=True) }}
 {{ utils.if_present(ExtraCode, "declaration") }}
-{{ utils.if_present_embed(ExtraCode, "declarationFile") }}
 {{ utils.if_present(MutableExtraCode, "declaration") }}
-{{ utils.if_present_embed(MutableExtraCode, "declarationFile") }}
 {{ macros.common_object_funcs(class.bare_type, prefix='Mutable') }}
 
 private:

@@ -17,21 +17,6 @@ namespace {{ nsp }} {
 {% endif %}
 {%- endmacro %}
 
-{% macro if_present_embed(content, field) %}
-{% if content and content[field] %}
-// embedded file {{ content[field] }}
-{{ embed_file(content[field]) }}
-// end of embedded file
-{% endif %}
-{%- endmacro %}
-
-{% macro if_present_embed_with_replacement(content, field, old, new) %}
-{% if content and content[field] %}
-// embedded file {{ content[field] }}
-{{ embed_file(content[field]) | replace(old, new) }}
-// end of embedded file
-{% endif %}
-{%- endmacro %}
 
 {% macro if_present_with_replacement(content, field, old, new) %}
 {% if content and content[field] %}

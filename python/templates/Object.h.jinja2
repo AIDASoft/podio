@@ -54,7 +54,6 @@ public:
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}
 {{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax) }}
 {{ utils.if_present(ExtraCode, "declaration") }}
-{{ utils.if_present_embed(ExtraCode, "declarationFile") }}
 {{ macros.common_object_funcs(class.bare_type) }}
 
 private:
