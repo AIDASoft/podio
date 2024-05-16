@@ -129,10 +129,9 @@ public:
   friend RNTupleWriter;
 #endif
 
-private:
   /// Get a reference to the internal map for a given type
   template <typename T>
-  MapType<detail::GetVectorType<T>>& getMap() {
+  const MapType<detail::GetVectorType<T>>& getMap() const {
     if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
       return _intMap;
     } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
@@ -144,9 +143,10 @@ private:
     }
   }
 
+private:
   /// Get a reference to the internal map for a given type
   template <typename T>
-  const MapType<detail::GetVectorType<T>>& getMap() const {
+  MapType<detail::GetVectorType<T>>& getMap() {
     if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
       return _intMap;
     } else if constexpr (std::is_same_v<detail::GetVectorType<T>, float>) {
