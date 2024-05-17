@@ -130,13 +130,14 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 #      SCHEMA_EVOLUTION     OPTIONAL: The path to the yaml file declaring the necessary schema evolution
 #      LANG                 OPTIONAL: The programming language choice
 #                           Default is cpp
+#      DEPENDS              OPTIONAL: List of files to be added as configure dependencies of the datamodel
 # )
 #
 # Note that the create_${datamodel} target will always be called, but if the YAML_FILE has not changed
 # this is essentially a no-op, and should not cause re-compilation.
 #---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "OLD_DESCRIPTION;OUTPUT_FOLDER;UPSTREAM_EDM;SCHEMA_EVOLUTION" "IO_BACKEND_HANDLERS;LANG" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OLD_DESCRIPTION;OUTPUT_FOLDER;UPSTREAM_EDM;SCHEMA_EVOLUTION" "IO_BACKEND_HANDLERS;LANG;DEPENDS" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
@@ -208,6 +209,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     ${podio_PYTHON_DIR}/podio_gen/generator_base.py
     ${podio_PYTHON_DIR}/podio_gen/cpp_generator.py
     ${podio_PYTHON_DIR}/podio_gen/julia_generator.py
+    ${ARG_DEPENDS}
   )
 
   message(STATUS "Creating '${datamodel}' datamodel")
