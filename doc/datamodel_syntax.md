@@ -129,7 +129,7 @@ The `includes` will be add to the header files of the generated classes.
       implementationFile: <string>
 ```
 
-The code being provided has to use the macro `{name}` in place of the concrete name of the class.
+The code being provided has to use the macro `{name}` in place of the concrete name of the class. The paths to the files given in `declarationFile` and `implementationFile` should be either absolute or relative to the datamodel yaml file.
 
 ## Definition of custom interfaces
 An interface type can be defined as follows (again using an example from the example datamodel)
