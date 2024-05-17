@@ -179,8 +179,6 @@ class ClassDefinitionValidator:
         "declarationFile",
         "implementationFile",
     )
-    # documented but not yet implemented
-    not_yet_implemented_extra_code = ()
 
     @classmethod
     def validate(cls, datamodel, upstream_edm=None):
@@ -214,7 +212,7 @@ class ClassDefinitionValidator:
                 for key in component["ExtraCode"]:
                     if key not in ("declaration", "declarationFile", "includes"):
                         raise DefinitionError(
-                            f"'{key}' field found in 'ExtraCode' of component '{name}'."
+                            f"'{key}' field found in 'ExtraCode' of component '{name}'. "
                             "Only 'declaration', 'declarationFile' and 'includes' are allowed here"
                         )
 
@@ -374,15 +372,8 @@ class ClassDefinitionValidator:
             extracode = definition["ExtraCode"]
             invalid_keys = [k for k in extracode if k not in cls.valid_extra_code_keys]
             if invalid_keys:
-                not_yet_impl = [k for k in invalid_keys if k in cls.not_yet_implemented_extra_code]
-                if not_yet_impl:
-                    not_yet_impl = f" (not yet implemented: {not_yet_impl})"
-                else:
-                    not_yet_impl = ""
-
                 raise DefinitionError(
-                    f"{classname} defines invalid 'ExtraCode' categories: "
-                    f"{invalid_keys}{not_yet_impl}"
+                    f"{classname} defines invalid 'ExtraCode' categories: " f"{invalid_keys}"
                 )
 
     @classmethod
