@@ -53,7 +53,18 @@ def _determine_supported_parameter_types():
 
 
 if _FRAME_HEADER_AVAILABLE:
-    SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
+    try:
+        SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
+    except AttributeError:
+        # On macOS there is an issue that makes the template machinery not work
+        # so we just hard code the map here in case we hit that issue. See
+        # https://github.com/root-project/root/issues/14232
+        SUPPORTED_PARAMETER_TYPES = (
+            ("int", "int"),
+            ("float", "float"),
+            ("std::string", "str"),
+            ("double", "float"),
+        )
 
 
 def _get_cpp_types(type_str):
