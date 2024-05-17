@@ -2,7 +2,7 @@ execute_process(COMMAND "${Python_EXECUTABLE}"
   -c "import sysconfig;print(sysconfig.get_path(\"purelib\", vars={\"base\": \".\"}))"
   OUTPUT_VARIABLE podio_PYTHON_INSTALLDIR OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-SET(podio_PYTHON_INSTALLDIR ${podio_PYTHON_INSTALLDIR} PARENT_SCOPE)
+SET(podio_PYTHON_INSTALLDIR ${CMAKE_INSTALL_LIBDIR}/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/podio PARENT_SCOPE)
 
 set(to_install
   podio_class_generator.py
