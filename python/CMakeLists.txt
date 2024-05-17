@@ -1,5 +1,5 @@
-set(podio_PYTHON_INSTALLDIR ${CMAKE_INSTALL_LIBDIR}/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/ PARENT_SCOPE)
-message(A ${podio_PYTHON_INSTALLDIR})
+set(podio_PYTHON_INSTALLDIR ${CMAKE_INSTALL_LIBDIR}/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/)
+set(podio_PYTHON_INSTALLDIR ${podio_PYTHON_INSTALLDIR} PARENT_SCOPE)
 
 set(to_install
   podio_class_generator.py
