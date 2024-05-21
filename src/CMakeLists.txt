@@ -68,8 +68,6 @@ SET(core_headers
   ${PROJECT_SOURCE_DIR}/include/podio/DatamodelRegistry.h
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   ${PROJECT_SOURCE_DIR}/include/podio/GenericParameters.h
-  ${PROJECT_SOURCE_DIR}/include/podio/Reader.h
-  ${PROJECT_SOURCE_DIR}/include/podio/Writer.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
@@ -143,7 +141,12 @@ set(io_sources
   Reader.cc
   )
 
-PODIO_ADD_LIB_AND_DICT(podioIO "${core_headers}" "${io_sources}" io_selection.xml)
+set(io_headers
+  ${PROJECT_SOURCE_DIR}/include/podio/Writer.h
+  ${PROJECT_SOURCE_DIR}/include/podio/Reader.h
+  )
+
+PODIO_ADD_LIB_AND_DICT(podioIO "${io_headers}" "${io_sources}" io_selection.xml)
 target_link_libraries(podioIO PUBLIC podio::podio podio::podioRootIO)
 if(ENABLE_SIO)
   target_link_libraries(podioIO PUBLIC podio::podioSioIO)
@@ -167,6 +170,8 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
   ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/podioIODictDict.rootmap
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodioIODict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 if (ENABLE_SIO)
