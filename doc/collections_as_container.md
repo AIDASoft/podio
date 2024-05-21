@@ -140,7 +140,7 @@ The C++ specifies a set of named requirements for iterators. Starting with C++20
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `*r = o` | | | ✔️ yes / ❌ no | `iterator` defines assigning `value_type::mutable_type`, `const_iterator` doesn't define assignment |
+| `*r = o` | | | ❌ no / ❌ no | Assignment doesn't modify objects inside collection |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes  | |
 | `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ❌ no / ❌ no | Post-increment not defined |
 | `*r++ = o` | | Same as `*r = o; ++r;`| ❌ no / ❌ no | Post-increment not defined |
