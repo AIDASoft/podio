@@ -38,7 +38,25 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `a.max_size()` | `size_type` | `b.size()` where b is the largest possible container | ✔️ yes | |
 | `a.empty()` | Convertible to `bool` | Same as `a.begin() == a.end()` | ✔️ yes |
 
+## Collection as an *AllocatorAwareContainer*
+
+The C++ standard specifies [AllocatorAwareContainer](https://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer) for containers that can use other allocators beside the default allocator.
+
+PODIO collections don't provide customization point for allocators and use only the default allocator. Therefore they are not *AllocatorAwareContainers*.
+
+### AllocatorAwareContainer types
+
+| Name |  Requirements | Fulfilled by Collection? | Comment |
+|------|--------------|--------------------------|---------|
+| `allocator_type`  | `allocator_type::value_type` same as `value_type` | ❌ no | `allocator_type` not defined |
+
+### *AllocatorAwareContainer* expression and statements
+
+The PODIO Collections currently are not checked against expression and statements requirements for *AllocatorAwareContainer*.
+
 ## Collection iterators as an *Iterator*
+
+The C++ specifies a set of named requirements for iterators. Starting with C++20 the standard specifies also iterator concepts. The requirements imposed by the concepts and named requirements are similar but not identical.
 
 ### Iterator summary
 
@@ -127,28 +145,12 @@ The PODIO `Collection`s are move-only classes with emphasis on the distinction b
 | `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ❌ no / ❌ no | Post-increment not defined |
 | `*r++ = o` | | Same as `*r = o; ++r;`| ❌ no / ❌ no | Post-increment not defined |
 
-## Collection as AllocatorAwareContainer
-
-The C++ standard specifies [AllocatorAwareContainer](https://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer) for containers that can use other allocators beside the default allocator.
-
-PODIO collections don't provide customization point for allocators and use only the default allocator. Therefore they are not *AllocatorAwareContainers*.
-
-### AllocatorAwareContainer types
-
-| Name |  Requirements | Fulfilled by Collection? | Comment |
-|------|--------------|--------------------------|---------|
-| `allocator_type`  | `allocator_type::value_type` same as `value_type` | ❌ no | `allocator_type` not defined |
-
-### AllocatorAwareContainer expression and statements
-
-The PODIO Collections currently are not checked against expression and statements requirements for *AllocatorAwareContainer*.
-
 ## Collection iterators and standard iterator adaptors
 
 | Adaptor | Compatible with Collection? | Comment |
 |---------|-----------------------------|---------|
 | `std::reverse_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyBidirectionalIterator* or `std::bidirectional_iterator` |
-| `std::back_insert_iterator` | ❗ attention | Compatible only with subcollections, otherwise throws `std::invalid_argument` |
+| `std::back_insert_iterator` | ❗ attention | Compatible only with SubsetCollections, otherwise throws `std::invalid_argument` |
 | `std::front_insert_iterator` | ❌ no | `push_front` not defined |
 | `std::insert_iterator` | ❌ no | `insert` not defined |
 | `std::const_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
