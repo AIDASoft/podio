@@ -40,16 +40,11 @@ if(NOT Catch2_FOUND)
 endif()
 
 find_package(Threads REQUIRED)
-add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp)
+add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp)
 target_link_libraries(unittest_podio PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 if (ENABLE_SIO)
   target_link_libraries(unittest_podio PRIVATE podio::podioSioIO)
 endif()
-
-add_executable(interoperability_test std_interoperability.cpp)
-target_link_libraries(interoperability_test PUBLIC TestDataModel PRIVATE Catch2::Catch2WithMain)
-# target_compile_definitions(interoperability_test PUBLIC "CATCH_CONFIG_RUNTIME_STATIC_REQUIRE")
- target_compile_features(interoperability_test PUBLIC cxx_std_20)
 
 # The unittests can easily be filtered and they are labelled so we can put together a
 # list of labels that we want to ignore
@@ -89,5 +84,4 @@ else()
         ENVIRONMENT
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
   )
-  catch_discover_tests(interoperability_test)
 endif()
