@@ -68,6 +68,8 @@ SET(core_headers
   ${PROJECT_SOURCE_DIR}/include/podio/DatamodelRegistry.h
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   ${PROJECT_SOURCE_DIR}/include/podio/GenericParameters.h
+  ${PROJECT_SOURCE_DIR}/include/podio/Reader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/Writer.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
@@ -92,8 +94,6 @@ SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
-  ${PROJECT_SOURCE_DIR}/include/podio/Reader.h
-  ${PROJECT_SOURCE_DIR}/include/podio/Writer.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
@@ -150,7 +150,7 @@ if(ENABLE_SIO)
 endif()
 
 # --- Install everything
-install(TARGETS podio podioDict podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
+install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
