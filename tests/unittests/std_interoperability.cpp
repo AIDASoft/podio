@@ -430,7 +430,7 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
         DOCUMENTED_STATIC_FAILURE(std::is_swappable_v<const_iterator>);
 
 #if (__cplusplus < 202002L)
-        // std::iterator_traits<It>::value_type
+        // std::iterator_traits<It>::value_type (required prior to C++20)
         // iterator
         DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<std::iterator_traits<iterator>>);
         // const_iterator
@@ -462,9 +462,9 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
         // *r
         // iterator
-        STATIC_REQUIRE(!std::is_same_v<void, decltype(*std::declval<iterator>())>);
+        STATIC_REQUIRE_FALSE(std::is_same_v<void, decltype(*std::declval<iterator>())>);
         // const_iterator
-        STATIC_REQUIRE(!std::is_same_v<void, decltype(*std::declval<const_iterator>())>);
+        STATIC_REQUIRE_FALSE(std::is_same_v<void, decltype(*std::declval<const_iterator>())>);
 
         // ++r
         // iterator
@@ -485,7 +485,7 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       STATIC_REQUIRE(
           std::is_convertible_v<decltype(std::declval<const_iterator>() != std::declval<const_iterator>()), bool>);
 
-      // i != j
+      // i != j (contextually convertible)
       // iterator
       STATIC_REQUIRE(traits::has_inequality_comparator_v<iterator>);
       STATIC_REQUIRE(std::is_constructible_v<bool, decltype(std::declval<iterator>() != std::declval<iterator>())>);
@@ -497,17 +497,17 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       // *i
       // iterator
       DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<iterator>);
-      // STATIC_REQUIRE(!std::is_same_v<std::iterator_traits<iterator>::reference,
+      // STATIC_REQUIRE(std::is_same_v<std::iterator_traits<iterator>::reference,
       // decltype(*std::declval<iterator>())>);
       DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<iterator>);
-      // STATIC_REQUIRE(!std::is_convertible_v<decltype(*std::declval<iterator>()),
+      // STATIC_REQUIRE(std::is_convertible_v<decltype(*std::declval<iterator>()),
       // std::iterator_traits<iterator>::value_type>);
       // const_iterator
       DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<const_iterator>);
-      // STATIC_REQUIRE(!std::is_same_v<std::iterator_traits<const_iterator>::reference,
+      // STATIC_REQUIRE(std::is_same_v<std::iterator_traits<const_iterator>::reference,
       // decltype(*std::declval<const_iterator>())>);
       DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<const_iterator>);
-      // STATIC_REQUIRE(!std::is_convertible_v<decltype(*std::declval<const_iterator>()),
+      // STATIC_REQUIRE(std::is_convertible_v<decltype(*std::declval<const_iterator>()),
       // std::iterator_traits<const_iterator>::value_type>);
 
       // i->m
