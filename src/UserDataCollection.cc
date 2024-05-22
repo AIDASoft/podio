@@ -1,7 +1,6 @@
 #include "podio/UserDataCollection.h"
 
 #include <memory>
-#include <ostream>
 #include <tuple>
 #include <utility>
 #include <vector>

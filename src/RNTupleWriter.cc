@@ -6,7 +6,6 @@
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
-#include <ROOT/RNTupleOptions.hxx>
 #include <format>
 #include <map>
 #include <stdexcept>
