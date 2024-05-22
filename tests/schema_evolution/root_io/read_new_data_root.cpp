@@ -1,5 +1,6 @@
-#include "read_new_data.h"
+#include <memory>
 
+#include "read_new_data.h"
 #include "podio/ROOTReader.h"
 
 int main() {

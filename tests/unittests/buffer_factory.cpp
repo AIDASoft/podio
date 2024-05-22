@@ -1,12 +1,18 @@
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
+
 #include "datamodel/ExampleHitCollectionData.h"
 #include "podio/CollectionBufferFactory.h"
-
 #include "datamodel/DatamodelDefinition.h"
-#include "datamodel/ExampleClusterCollection.h"
-#include "datamodel/ExampleHitCollection.h"
-#include "datamodel/ExampleWithVectorMemberCollection.h"
-
 #include "catch2/catch_test_macros.hpp"
+#include "datamodel/ExampleClusterCollectionData.h"
+#include "datamodel/ExampleClusterData.h"
+#include "datamodel/ExampleHitData.h"
+#include "datamodel/ExampleWithVectorMemberCollectionData.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/ObjectID.h"
 
 TEST_CASE("createBuffers", "[internals][memory-management]") {
   const auto& factory = podio::CollectionBufferFactory::instance();

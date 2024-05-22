@@ -1,6 +1,14 @@
-#include "read_frame.h"
+#include <stddef.h>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
+#include "read_frame.h"
 #include "podio/ROOTReader.h"
+#include "podio/Frame.h"
+#include "podio/podioVersion.h"
+#include "read_test.h"
 
 int read_frames(podio::ROOTReader& reader) {
   if (reader.currentFileVersion() != podio::version::build_version) {

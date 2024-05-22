@@ -1,13 +1,15 @@
 #include "podio/SIOReader.h"
-#include "podio/SIOBlock.h"
-
-#include "sioUtils.h"
 
 #include <sio/api.h>
 #include <sio/definitions.h>
-
+#include <sio/buffer.h>
+#include <stdint.h>
 #include <algorithm>
 #include <utility>
+#include <stdexcept>
+
+#include "podio/SIOBlock.h"
+#include "sioUtils.h"
 
 namespace podio {
 

@@ -1,6 +1,7 @@
+#include <string>
+
 #include "read_frame.h"
 #include "read_frame_auxiliary.h"
-
 #include "podio/SIOReader.h"
 
 int main(int argc, char* argv[]) {

@@ -1,9 +1,11 @@
-#include "read_test.h"
+#include <stddef.h>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
 
+#include "read_test.h"
 #include "podio/Frame.h"
 #include "podio/SIOLegacyReader.h"
-
-#include <iostream>
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {

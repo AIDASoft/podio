@@ -2,8 +2,8 @@
 #ifndef PODIO_GENERICPARAMETERS_H
 #define PODIO_GENERICPARAMETERS_H 1
 
-#include "podio/utilities/TypeHelpers.h"
-
+#include <stddef.h>
+#include <stdint.h>
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -13,11 +13,19 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <initializer_list>
+#include <iterator>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+
+#include "podio/utilities/TypeHelpers.h"
 
 #if PODIO_ENABLE_SIO
 namespace sio {
 class read_device;
 class write_device;
+
 using version_type = uint32_t; // from sio/definitions
 } // namespace sio
 #endif

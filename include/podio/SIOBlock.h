@@ -6,19 +6,26 @@
 #include <podio/GenericParameters.h>
 #include <podio/podioVersion.h>
 #include <podio/utilities/TypeHelpers.h>
-
 #include <sio/block.h>
 #include <sio/io_device.h>
 #include <sio/version.h>
-
+#include <sio/definitions.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <map>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <vector>
+#include <functional>
+#include <unordered_map>
+#include <utility>
+
+#include "podio/CollectionBuffers.h"
 
 namespace podio {
+class GenericParameters;
 
 template <typename devT, typename PODData>
 void handlePODDataSIO(devT& device, PODData* data, size_t size) {

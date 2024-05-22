@@ -1,10 +1,14 @@
 #include "podio/UserDataCollection.h"
-#include "podio/CollectionBufferFactory.h"
-#include "podio/CollectionBuffers.h"
-#include "podio/SchemaEvolution.h"
 
 #include <tuple>
 #include <vector>
+#include <memory>
+#include <ostream>
+#include <utility>
+
+#include "podio/CollectionBufferFactory.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/SchemaEvolution.h"
 
 namespace podio {
 

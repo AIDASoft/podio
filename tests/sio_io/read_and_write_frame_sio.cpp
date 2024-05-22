@@ -1,5 +1,6 @@
-#include "read_and_write_frame.h"
+#include <memory>
 
+#include "read_and_write_frame.h"
 #include "podio/SIOReader.h"
 #include "podio/SIOWriter.h"
 

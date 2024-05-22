@@ -1,4 +1,8 @@
 #include "podio/CollectionBufferFactory.h"
+
+#include <stddef.h>
+#include <utility>
+
 #include "podio/CollectionBuffers.h"
 
 namespace podio {

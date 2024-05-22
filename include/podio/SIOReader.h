@@ -1,17 +1,18 @@
 #ifndef PODIO_SIOREADER_H
 #define PODIO_SIOREADER_H
 
-#include "podio/SIOBlock.h"
-#include "podio/SIOFrameData.h"
-#include "podio/podioVersion.h"
-#include "podio/utilities/DatamodelRegistryIOHelpers.h"
-
 #include <sio/definitions.h>
-
 #include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <fstream>
+#include <vector>
+
+#include "podio/SIOBlock.h"
+#include "podio/SIOFrameData.h"
+#include "podio/podioVersion.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 namespace podio {
 

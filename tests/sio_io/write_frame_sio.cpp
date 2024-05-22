@@ -1,5 +1,6 @@
-#include "write_frame.h"
+#include <memory>
 
+#include "write_frame.h"
 #include "podio/SIOWriter.h"
 
 int main(int, char**) {

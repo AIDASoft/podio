@@ -1,13 +1,22 @@
+#include <iostream>
+#include <string>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
 #include "podio/Frame.h"
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
-
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
-
-#include <iostream>
-#include <string>
+#include "datamodel/ExampleCluster.h"
+#include "datamodel/ExampleHit.h"
+#include "datamodel/MutableEventInfo.h"
+#include "datamodel/MutableExampleCluster.h"
+#include "datamodel/MutableExampleHit.h"
+#include "podio/FrameCategories.h"
+#include "podio/RelationRange.h"
 
 void writeCollection() {
   podio::ROOTWriter writer("associations.root");

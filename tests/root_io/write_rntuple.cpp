@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "podio/RNTupleWriter.h"
 #include "write_frame.h"
 

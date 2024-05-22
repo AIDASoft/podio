@@ -1,4 +1,9 @@
 // STL
+#include <stddef.h>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <nlohmann/detail/iterators/iter_impl.hpp>
+#include <nlohmann/detail/json_ref.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <cstdint>
 #include <filesystem>
 #include <map>
@@ -7,11 +12,18 @@
 #include <thread>
 #include <type_traits>
 #include <vector>
+#include <array>
+#include <compare>
+#include <iostream>
+#include <memory>
+#include <set>
+#include <string>
+#include <tuple>
+#include <utility>
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
 #include "catch2/matchers/catch_matchers_vector.hpp"
-
 // podio specific includes
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
@@ -19,6 +31,28 @@
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 #include "podio/podioVersion.h"
+#include "datamodel/CompWithInit.h"
+#include "datamodel/ExampleCluster.h"
+#include "datamodel/ExampleClusterData.h"
+#include "datamodel/ExampleForCyclicDependency1.h"
+#include "datamodel/ExampleForCyclicDependency2.h"
+#include "datamodel/ExampleHit.h"
+#include "datamodel/ExampleHitData.h"
+#include "datamodel/ExampleWithVectorMember.h"
+#include "datamodel/MutableEventInfo.h"
+#include "datamodel/MutableExampleForCyclicDependency1.h"
+#include "datamodel/MutableExampleForCyclicDependency2.h"
+#include "datamodel/MutableExampleHit.h"
+#include "datamodel/MutableExampleWithOneRelation.h"
+#include "datamodel/MutableExampleWithUserInit.h"
+#include "datamodel/MutableExampleWithVectorMember.h"
+#include "datamodel/NamespaceStruct.h"
+#include "datamodel/NotSoSimpleStruct.h"
+#include "datamodel/SimpleStruct.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/FrameCategories.h"
+#include "podio/ObjectID.h"
+#include "podio/RelationRange.h"
 
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0
@@ -42,8 +76,6 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithArray.h"
 #include "datamodel/ExampleWithArrayComponent.h"
-#include "datamodel/ExampleWithComponent.h"
-#include "datamodel/ExampleWithExternalExtraCode.h"
 #include "datamodel/ExampleWithFixedWidthIntegers.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithUserInitCollection.h"
@@ -55,6 +87,8 @@
 #include "datamodel/StructWithExtraCode.h"
 
 #include "podio/UserDataCollection.h"
+
+class ExampleWithOneRelationData;
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto coll = EventInfoCollection();
@@ -793,9 +827,6 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
     }
   }
 }
-
-template <typename>
-struct TD;
 
 TEST_CASE("Move-only collections", "[collections][move-semantics]") {
   // Setup a few collections that will be used throughout below

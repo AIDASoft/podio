@@ -1,5 +1,5 @@
-#include "MurmurHash3.h"
-
+#include <stddef.h>
+#include <stdint.h>
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -9,6 +9,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <tuple>
+
+#include "MurmurHash3.h"
 
 auto readCollNames(const std::string& fileName) {
   std::vector<std::string> collNames{};

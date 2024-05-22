@@ -1,19 +1,20 @@
 #ifndef PODIO_SIOFRAMEDATA_H
 #define PODIO_SIOFRAMEDATA_H
 
-#include "podio/CollectionBuffers.h"
-#include "podio/CollectionIDTable.h"
-#include "podio/GenericParameters.h"
-#include "podio/SIOBlock.h"
-
 #include <sio/buffer.h>
 #include <sio/definitions.h>
-
 #include <memory>
 #include <numeric>
 #include <optional>
 #include <string>
 #include <vector>
+#include <cstddef>
+#include <utility>
+
+#include "podio/CollectionBuffers.h"
+#include "podio/CollectionIDTable.h"
+#include "podio/GenericParameters.h"
+#include "podio/SIOBlock.h"
 
 namespace podio {
 /// The Frame data container for the SIO backend. It is constructed from the

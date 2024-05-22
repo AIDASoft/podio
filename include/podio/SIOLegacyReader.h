@@ -1,15 +1,17 @@
 #ifndef PODIO_SIOLEGACYREADER_H
 #define PODIO_SIOLEGACYREADER_H
 
-#include "podio/SIOBlock.h"
-#include "podio/SIOFrameData.h"
-#include "podio/podioVersion.h"
-
 #include <sio/definitions.h>
-
+#include <sio/buffer.h>
 #include <memory>
 #include <string_view>
 #include <vector>
+#include <fstream>
+#include <string>
+
+#include "podio/SIOBlock.h"
+#include "podio/SIOFrameData.h"
+#include "podio/podioVersion.h"
 
 namespace podio {
 

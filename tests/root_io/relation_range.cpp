@@ -1,15 +1,22 @@
-#include "datamodel/ExampleMCCollection.h"
-#include "datamodel/MutableExampleReferencingType.h"
-#include "datamodel/MutableExampleWithVectorMember.h"
-
-#include "podio/Frame.h"
-#include "podio/ROOTReader.h"
-#include "podio/ROOTWriter.h"
-
+#include <stddef.h>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <utility>
+
+#include "datamodel/ExampleMCCollection.h"
+#include "datamodel/MutableExampleReferencingType.h"
+#include "datamodel/MutableExampleWithVectorMember.h"
+#include "podio/Frame.h"
+#include "podio/ROOTReader.h"
+#include "podio/ROOTWriter.h"
+#include "datamodel/ExampleMC.h"
+#include "datamodel/ExampleReferencingType.h"
+#include "datamodel/MutableExampleMC.h"
+#include "podio/FrameCategories.h"
+#include "podio/RelationRange.h"
 
 #define LOCATION()                                                                                                     \
   std::string(__FILE__) + std::string(":") + std::to_string(__LINE__) + std::string(" in ") +                          \

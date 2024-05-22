@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "podio/RNTupleReader.h"
 #include "read_frame.h"
 

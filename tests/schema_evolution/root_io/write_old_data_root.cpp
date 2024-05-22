@@ -1,5 +1,6 @@
-#include "schema_evolution/write_old_data.h"
+#include <memory>
 
+#include "schema_evolution/write_old_data.h"
 #include "podio/ROOTWriter.h"
 
 int main() {

@@ -1,6 +1,7 @@
 #ifndef PODIO_SCHEMAEVOLUTION_H
 #define PODIO_SCHEMAEVOLUTION_H
 
+#include <stddef.h>
 #include <cstdint>
 #include <functional>
 #include <string>
