@@ -721,7 +721,6 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // TODO add runtime check for assignment validity like in '*r = o' case
 
   } // end of LegacyOutputIterator
-
 }
 
 TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
