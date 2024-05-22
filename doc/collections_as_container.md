@@ -2,7 +2,7 @@
 
 Comparison of the PODIO `Collection`s with a C++ named requirement [*Container*](https://en.cppreference.com/w/cpp/named_req/Container).
 
-The PODIO `Collection`s are move-only classes with emphasis on the distinction between mutable and immutable access to the elements.
+The PODIO `Collection`s interface was designed to remind the standard *Container* interface, in particular `std::vector`. The perfect compliance with the *Container* is not achieved as the `Collection`s are concerned with additional semantics such as mutable/immutable element access, associations and relations, and IO which are not part of *Container*.
 
 ### Container Types
 
@@ -140,7 +140,7 @@ The C++ specifies a set of named requirements for iterators. Starting with C++20
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `*r = o` | | | ❌ no / ❌ no | Assignment doesn't modify objects inside collection |
+| `*r = o` | | | ❗ attention / ❗ attention | Defined but an assignment doesn't modify objects inside collection |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes  | |
 | `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ❌ no / ❌ no | Post-increment not defined |
 | `*r++ = o` | | Same as `*r = o; ++r;`| ❌ no / ❌ no | Post-increment not defined |
