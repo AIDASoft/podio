@@ -135,8 +135,25 @@ if(ENABLE_SIO)
   LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
 endif()
 
+# --- IO
+set(io_sources
+  Writer.cc
+  Reader.cc
+  )
+
+set(io_headers
+  ${PROJECT_SOURCE_DIR}/include/podio/Writer.h
+  ${PROJECT_SOURCE_DIR}/include/podio/Reader.h
+  )
+
+PODIO_ADD_LIB_AND_DICT(podioIO "${io_headers}" "${io_sources}" io_selection.xml)
+target_link_libraries(podioIO PUBLIC podio::podio podio::podioRootIO)
+if(ENABLE_SIO)
+  target_link_libraries(podioIO PUBLIC podio::podioSioIO)
+endif()
+
 # --- Install everything
-install(TARGETS podio podioDict podioRootIO podioRootIODict ${INSTALL_LIBRARIES}
+install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO ${INSTALL_LIBRARIES}
   EXPORT podioTargets
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
@@ -153,6 +170,8 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
   ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
+  ${CMAKE_CURRENT_BINARY_DIR}/podioIODictDict.rootmap
+  ${CMAKE_CURRENT_BINARY_DIR}/libpodioIODict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 if (ENABLE_SIO)

@@ -22,6 +22,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_frame_root
     read_frame_root
 
+    write_interface_root
+    read_interface_root
+
     write_python_frame_sio
     read_python_frame_sio
 
@@ -71,13 +74,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
 
-      write_sio
       read_sio
       read_and_write_sio
       write_timed_sio
       read_timed_sio
-      write_frame_sio
       read_frame_sio
+      read_interface_sio
       read_frame_legacy_sio
       read_and_write_frame_sio
       )
