@@ -1,3 +1,13 @@
+#include "podio/Frame.h"
+
+#include "catch2/catch_test_macros.hpp"
+#include "datamodel/ExampleCluster.h"
+#include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleHit.h"
+#include "datamodel/ExampleHitCollection.h"
+#include "datamodel/MutableExampleCluster.h"
+#include "podio/RelationRange.h"
+
 #include <algorithm>
 #include <array>
 #include <initializer_list>
@@ -8,15 +18,6 @@
 #include <thread>
 #include <utility>
 #include <vector>
-
-#include "catch2/catch_test_macros.hpp"
-#include "datamodel/ExampleCluster.h"
-#include "datamodel/ExampleClusterCollection.h"
-#include "datamodel/ExampleHit.h"
-#include "datamodel/ExampleHitCollection.h"
-#include "datamodel/MutableExampleCluster.h"
-#include "podio/Frame.h"
-#include "podio/RelationRange.h"
 
 TEST_CASE("Frame collections", "[frame][basics]") {
   auto event = podio::Frame();

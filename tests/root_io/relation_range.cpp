@@ -1,11 +1,3 @@
-#include <cstddef>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
-
 #include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleReferencingType.h"
@@ -17,6 +9,14 @@
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 #include "podio/RelationRange.h"
+
+#include <cstddef>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 #define LOCATION()                                                                                                     \
   std::string(__FILE__) + std::string(":") + std::to_string(__LINE__) + std::string(" in ") +                          \

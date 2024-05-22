@@ -1,14 +1,15 @@
 #include "podio/SIOFrameData.h"
 
-#include <algorithm>
-#include <iterator>
+#include "podio/SIOBlock.h"
+#include "sio/buffer.h"
+#include "sio/definitions.h"
+
 #include <sio/api.h>
 #include <sio/block.h>
 #include <sio/compression/zlib.h>
 
-#include "podio/SIOBlock.h"
-#include "sio/buffer.h"
-#include "sio/definitions.h"
+#include <algorithm>
+#include <iterator>
 
 namespace podio {
 std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(const std::string& name) {

@@ -1,14 +1,15 @@
 #ifndef PODIO_SIOWRITER_H
 #define PODIO_SIOWRITER_H
 
-#include <fstream>
+#include "podio/SIOBlock.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
+
 #include <sio/definitions.h>
+
+#include <fstream>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "podio/SIOBlock.h"
-#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 namespace podio {
 

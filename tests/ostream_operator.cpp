@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "datamodel/ExampleForCyclicDependency1.h"
 #include "datamodel/ExampleForCyclicDependency1Collection.h"
 #include "datamodel/ExampleForCyclicDependency2.h"
@@ -12,6 +10,8 @@
 #include "datamodel/MutableExampleForCyclicDependency2.h"
 #include "datamodel/MutableExampleMC.h"
 #include "datamodel/MutableExampleReferencingType.h"
+
+#include <iostream>
 
 // When using CTest for unit testing it is enough for this test to eventually
 // segfault

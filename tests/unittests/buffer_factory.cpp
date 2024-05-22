@@ -1,8 +1,3 @@
-#include <memory>
-#include <optional>
-#include <utility>
-#include <vector>
-
 #include "catch2/catch_test_macros.hpp"
 #include "datamodel/DatamodelDefinition.h"
 #include "datamodel/ExampleCluster.h"
@@ -14,6 +9,11 @@
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/ObjectID.h"
+
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
 TEST_CASE("createBuffers", "[internals][memory-management]") {
   const auto& factory = podio::CollectionBufferFactory::instance();

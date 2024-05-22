@@ -1,6 +1,14 @@
 // STL
-#include <array>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_string.hpp"
+#include "catch2/matchers/catch_matchers_vector.hpp"
+
 #include <catch2/matchers/catch_matchers.hpp>
+#include <nlohmann/detail/iterators/iter_impl.hpp>
+#include <nlohmann/detail/json_ref.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+#include <array>
 #include <compare>
 #include <cstddef>
 #include <cstdint>
@@ -8,9 +16,6 @@
 #include <iostream>
 #include <map>
 #include <memory>
-#include <nlohmann/detail/iterators/iter_impl.hpp>
-#include <nlohmann/detail/json_ref.hpp>
-#include <nlohmann/json_fwd.hpp>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -20,10 +25,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "catch2/catch_test_macros.hpp"
-#include "catch2/matchers/catch_matchers_string.hpp"
-#include "catch2/matchers/catch_matchers_vector.hpp"
 // podio specific includes
 #include "datamodel/CompWithInit.h"
 #include "datamodel/ExampleCluster.h"

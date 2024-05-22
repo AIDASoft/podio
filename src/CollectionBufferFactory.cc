@@ -1,9 +1,9 @@
 #include "podio/CollectionBufferFactory.h"
 
+#include "podio/CollectionBuffers.h"
+
 #include <cstddef>
 #include <utility>
-
-#include "podio/CollectionBuffers.h"
 
 namespace podio {
 CollectionBufferFactory& CollectionBufferFactory::mutInstance() {

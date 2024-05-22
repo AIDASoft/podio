@@ -1,13 +1,13 @@
 // podio specific includes
 #include "podio/CollectionIDTable.h"
 
+#include "MurmurHash3.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <iterator>
 #include <utility>
-
-#include "MurmurHash3.h"
 
 namespace podio {
 

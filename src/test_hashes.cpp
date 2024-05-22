@@ -1,3 +1,5 @@
+#include "MurmurHash3.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -10,8 +12,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
-#include "MurmurHash3.h"
 
 auto readCollNames(const std::string& fileName) {
   std::vector<std::string> collNames{};

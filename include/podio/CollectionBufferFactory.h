@@ -1,14 +1,14 @@
 #ifndef PODIO_COLLECTIONBUFFERFACTORY_H
 #define PODIO_COLLECTIONBUFFERFACTORY_H
 
+#include "podio/CollectionBuffers.h"
+#include "podio/SchemaEvolution.h"
+
 #include <functional>
 #include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include "podio/CollectionBuffers.h"
-#include "podio/SchemaEvolution.h"
 
 namespace podio {
 

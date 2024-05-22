@@ -1,8 +1,8 @@
-#include <string>
-
 #include "podio/SIOReader.h"
 #include "read_frame.h"
 #include "read_frame_auxiliary.h"
+
+#include <string>
 
 int main(int argc, char* argv[]) {
   std::string inputFile = "example_frame.sio";

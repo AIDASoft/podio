@@ -1,3 +1,8 @@
+#include "podio/CollectionBufferFactory.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/ROOTFrameData.h"
+#include "rootUtils.h"
+
 #include <TBranch.h>
 #include <cstddef>
 #include <functional>
@@ -10,11 +15,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
-#include "podio/CollectionBufferFactory.h"
-#include "podio/CollectionBuffers.h"
-#include "podio/ROOTFrameData.h"
-#include "rootUtils.h"
 // podio specific includes
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"

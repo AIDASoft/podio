@@ -1,11 +1,5 @@
 #include "podio/ROOTWriter.h"
 
-#include <TBranch.h>
-#include <TFile.h>
-#include <cstddef>
-#include <optional>
-#include <stdexcept>
-
 #include "TTree.h"
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
@@ -14,6 +8,12 @@
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
 #include "rootUtils.h"
+
+#include <TBranch.h>
+#include <TFile.h>
+#include <cstddef>
+#include <optional>
+#include <stdexcept>
 
 namespace podio {
 

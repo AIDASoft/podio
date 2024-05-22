@@ -1,6 +1,12 @@
 #ifndef PODIO_USERDATACOLLECTION_H
 #define PODIO_USERDATACOLLECTION_H
 
+#include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/DatamodelRegistry.h"
+#include "podio/SchemaEvolution.h"
+#include "podio/utilities/TypeHelpers.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -9,12 +15,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "podio/CollectionBase.h"
-#include "podio/CollectionBuffers.h"
-#include "podio/DatamodelRegistry.h"
-#include "podio/SchemaEvolution.h"
-#include "podio/utilities/TypeHelpers.h"
 
 namespace podio {
 class ICollectionProvider;

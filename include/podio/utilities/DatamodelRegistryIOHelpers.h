@@ -1,6 +1,8 @@
 #ifndef PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 #define PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 
+#include "podio/CollectionBase.h"
+
 #include <cstddef>
 #include <set>
 #include <string>
@@ -8,8 +10,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
-#include "podio/CollectionBase.h"
 
 namespace podio {
 class CollectionBase;

@@ -1,16 +1,17 @@
 #include "podio/SIOLegacyReader.h"
 
-#include <cstdint>
+#include "podio/SIOBlock.h"
+#include "sio/buffer.h"
+#include "sioUtils.h"
+
 #include <sio/api.h>
 #include <sio/compression/zlib.h>
 #include <sio/definitions.h>
 #include <sio/exception.h>
+
+#include <cstdint>
 #include <stdexcept>
 #include <utility>
-
-#include "podio/SIOBlock.h"
-#include "sio/buffer.h"
-#include "sioUtils.h"
 
 namespace podio {
 

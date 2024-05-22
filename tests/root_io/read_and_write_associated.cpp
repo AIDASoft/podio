@@ -1,9 +1,3 @@
-#include <iostream>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
-
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollection.h"
@@ -17,6 +11,12 @@
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 #include "podio/RelationRange.h"
+
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 void writeCollection() {
   podio::ROOTWriter writer("associations.root");

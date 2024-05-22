@@ -2,6 +2,8 @@
 #ifndef PODIO_GENERICPARAMETERS_H
 #define PODIO_GENERICPARAMETERS_H 1
 
+#include "podio/utilities/TypeHelpers.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -16,8 +18,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "podio/utilities/TypeHelpers.h"
 
 namespace sio {
 class read_device;
