@@ -86,7 +86,6 @@
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/MutableExampleWithExternalExtraCode.h"
 #include "datamodel/StructWithExtraCode.h"
-
 #include "podio/UserDataCollection.h"
 
 class ExampleWithOneRelationData;
