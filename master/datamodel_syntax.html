@@ -694,17 +694,17 @@ The <code class="docutils literal notranslate"><span class="pre">includes</span>
 <span class="w">      </span><span class="nt">includes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;newline separated list of strings (optional)&gt;</span>
 <span class="w">      </span><span class="nt">declaration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
 <span class="w">      </span><span class="nt">implementation </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
-<span class="w">      </span><span class="nt">declarationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt; (to be implemented!)</span>
-<span class="w">      </span><span class="nt">implementationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt; (to be implemented!)</span>
+<span class="w">      </span><span class="nt">declarationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
+<span class="w">      </span><span class="nt">implementationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
 <span class="w">    </span><span class="nt">MutableExtraCode</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">includes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;newline separated list of strings (optional)&gt;</span>
 <span class="w">      </span><span class="nt">declaration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
 <span class="w">      </span><span class="nt">implementation </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
-<span class="w">      </span><span class="nt">declarationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt; (to be implemented!)</span>
-<span class="w">      </span><span class="nt">implementationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt; (to be implemented!)</span>
+<span class="w">      </span><span class="nt">declarationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
+<span class="w">      </span><span class="nt">implementationFile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;string&gt;</span>
 </pre></div>
 </div>
-<p>The code being provided has to use the macro <code class="docutils literal notranslate"><span class="pre">{name}</span></code> in place of the concrete name of the class.</p>
+<p>The code being provided has to use the macro <code class="docutils literal notranslate"><span class="pre">{name}</span></code> in place of the concrete name of the class. The paths to the files given in <code class="docutils literal notranslate"><span class="pre">declarationFile</span></code> and <code class="docutils literal notranslate"><span class="pre">implementationFile</span></code> should be either absolute or relative to the datamodel yaml file. The cmake users are encouraged to specify these file via the <code class="docutils literal notranslate"><span class="pre">DEPENDS</span></code> option of <code class="docutils literal notranslate"><span class="pre">PODIO_GENERATE_DATAMODEL</span></code> to add the files as configuration dependency of the datamodel and cause the datamodel re-generation when they change.</p>
 </section>
 </section>
 <section id="definition-of-custom-interfaces">
