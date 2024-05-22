@@ -5,9 +5,17 @@ foreach( _conf ${CMAKE_CONFIGURATION_TYPES} )
   set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conf} ${CMAKE_CURRENT_BINARY_DIR} )
 endforeach()
 
+# files used in ExtraCode directives
+set(extra_code extra_code/component_declarations.cc
+  extra_code/declarations.cc
+  extra_code/implementations.cc
+  extra_code/mutable_declarations.cc
+  extra_code/mutable_implementations.cc
+)
+
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
-  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-  )
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS} DEPENDS ${extra_code}
+)
 
 # Use the cmake building blocks to add the different parts (conditionally)
 PODIO_ADD_DATAMODEL_CORE_LIB(TestDataModel "${headers}" "${sources}")

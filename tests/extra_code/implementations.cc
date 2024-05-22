@@ -1,0 +1,1 @@
+bool {name}::lt(int i) const { return number() < i; }

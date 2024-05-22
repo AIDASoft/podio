@@ -11,12 +11,12 @@ repos:
         name: clang-tidy
         entry: clang-tidy -warnings-as-errors='*,-clang-diagnostic-deprecated-declarations' -p compile_commands.json
         types: [c++]
-        exclude: (tests/(datamodel|src)/.*(h|cc)|podioVersion.in.h|SIOFrame.*h)
+        exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)|podioVersion.in.h|SIOFrame.*h)
         language: system
       - id: clang-format
         name: clang-format
         entry: .github/scripts/clang-format-hook
-        exclude: (tests/(datamodel|src)/.*(h|cc)$|podioVersion.in.h)
+        exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)$|podioVersion.in.h)
         types: [c++]
         language: system
       - id: pylint

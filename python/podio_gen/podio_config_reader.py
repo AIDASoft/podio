@@ -2,6 +2,7 @@
 
 import copy
 import re
+import os
 import yaml
 
 from podio_gen.generator_utils import (
@@ -171,9 +172,13 @@ class ClassDefinitionValidator:
     # it applies and also which accessor functions to generate
     required_interface_keys = required_datatype_keys + ("Members", "Types")
 
-    valid_extra_code_keys = ("declaration", "implementation", "includes")
-    # documented but not yet implemented
-    not_yet_implemented_extra_code = ("declarationFile", "implementationFile")
+    valid_extra_code_keys = (
+        "declaration",
+        "implementation",
+        "includes",
+        "declarationFile",
+        "implementationFile",
+    )
 
     @classmethod
     def validate(cls, datamodel, upstream_edm=None):
@@ -205,10 +210,10 @@ class ClassDefinitionValidator:
 
             if "ExtraCode" in component:
                 for key in component["ExtraCode"]:
-                    if key not in ("declaration", "includes"):
+                    if key not in ("declaration", "declarationFile", "includes"):
                         raise DefinitionError(
-                            f"'{key}' field found in 'ExtraCode' of component '{name}'."
-                            " Only 'declaration' and 'includes' are allowed here"
+                            f"'{key}' field found in 'ExtraCode' of component '{name}'. "
+                            "Only 'declaration', 'declarationFile' and 'includes' are allowed here"
                         )
 
             for member in component["Members"]:
@@ -367,15 +372,8 @@ class ClassDefinitionValidator:
             extracode = definition["ExtraCode"]
             invalid_keys = [k for k in extracode if k not in cls.valid_extra_code_keys]
             if invalid_keys:
-                not_yet_impl = [k for k in invalid_keys if k in cls.not_yet_implemented_extra_code]
-                if not_yet_impl:
-                    not_yet_impl = f" (not yet implemented: {not_yet_impl})"
-                else:
-                    not_yet_impl = ""
-
                 raise DefinitionError(
-                    f"{classname} defines invalid 'ExtraCode' categories: "
-                    f"{invalid_keys}{not_yet_impl}"
+                    f"{classname} defines invalid 'ExtraCode' categories: " f"{invalid_keys}"
                 )
 
     @classmethod
@@ -442,8 +440,20 @@ class PodioConfigReader:
         """Handle the extra code definition. Currently simply returning a copy"""
         return copy.deepcopy(definition)
 
+    @staticmethod
+    def _expand_extracode(definitions, parent_path, directive):
+        """Expand extra code directives by including files from 'File' directives
+        Relative paths to files are extended with parent_path. Mutates definitions"""
+        if directive + "File" in definitions.keys():
+            filename = definitions.pop(directive + "File")
+            if not os.path.isabs(filename):
+                filename = os.path.join(parent_path, filename)
+            with open(filename, "r", encoding="utf-8") as stream:
+                contents = stream.read()
+            definitions[directive] = definitions.get(directive, "") + "\n" + contents
+
     @classmethod
-    def _read_component(cls, definition):
+    def _read_component(cls, definition, parent_path):
         """Read the component and put it into an easily digestible format."""
         component = {}
         for name, category in definition.items():
@@ -452,13 +462,17 @@ class PodioConfigReader:
                 for member in definition[name]:
                     # for components we do not require a description in the members
                     component["Members"].append(cls.member_parser.parse(member, False))
+            elif name == "ExtraCode":
+                extra_code = copy.deepcopy(category)
+                cls._expand_extracode(extra_code, parent_path, "declaration")
+                component[name] = extra_code
             else:
                 component[name] = copy.deepcopy(category)
 
         return component
 
     @classmethod
-    def _read_datatype(cls, value):
+    def _read_datatype(cls, value, parent_path):
         """Read the datatype and put it into an easily digestible format"""
         datatype = {}
         for category, definition in value.items():
@@ -468,6 +482,11 @@ class PodioConfigReader:
                 for member in definition:
                     members.append(cls.member_parser.parse(member))
                 datatype[category] = members
+            elif category in ("ExtraCode", "MutableExtraCode"):
+                extra_code = copy.deepcopy(definition)
+                cls._expand_extracode(extra_code, parent_path, "implementation")
+                cls._expand_extracode(extra_code, parent_path, "declaration")
+                datatype[category] = extra_code
             else:
                 datatype[category] = copy.deepcopy(definition)
 
@@ -494,7 +513,7 @@ class PodioConfigReader:
         return interface
 
     @classmethod
-    def parse_model(cls, model_dict, package_name, upstream_edm=None):
+    def parse_model(cls, model_dict, package_name, upstream_edm=None, parent_path=None):
         """Parse a model from the dictionary, e.g. read from a yaml file."""
 
         try:
@@ -515,12 +534,12 @@ class PodioConfigReader:
         components = {}
         if "components" in model_dict:
             for klassname, value in model_dict["components"].items():
-                components[klassname] = cls._read_component(value)
+                components[klassname] = cls._read_component(value, parent_path)
 
         datatypes = {}
         if "datatypes" in model_dict:
             for klassname, value in model_dict["datatypes"].items():
-                datatypes[klassname] = cls._read_datatype(value)
+                datatypes[klassname] = cls._read_datatype(value, parent_path)
 
         interfaces = {}
         if "interfaces" in model_dict:
@@ -549,5 +568,6 @@ class PodioConfigReader:
         """Read the datamodel definition from the yamlfile."""
         with open(yamlfile, "r", encoding="utf-8") as stream:
             content = yaml.load(stream, yaml.SafeLoader)
+        parent_path = os.path.dirname(yamlfile)
 
-        return cls.parse_model(content, package_name, upstream_edm)
+        return cls.parse_model(content, package_name, upstream_edm, parent_path)

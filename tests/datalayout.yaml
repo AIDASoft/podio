@@ -53,6 +53,15 @@ components :
       - int i{42} // is there even another value to initialize ints to?
       - std::array<double, 10> arr {1.2, 3.4} // half initialized double array
 
+  StructWithExtraCode:
+    Members:
+      - int x
+    ExtraCode:
+      declaration: "
+        int negate() { x = -x; return x; }\n
+      "
+      declarationFile: "extra_code/component_declarations.cc"
+
 datatypes :
 
   EventInfo:
@@ -208,6 +217,26 @@ datatypes :
     OneToManyRelations:
       - TypeWithEnergy manyEnergies // multiple relations
       - ex42::AnotherTypeWithEnergy moreEnergies // multiple namespace relations
+
+  ExampleWithExternalExtraCode:
+    Description: "Type showing usage of 'declaration', 'implementation', 'declarationFile' and 'implementationFile' directives'"
+    Author: "Mateusz Jakub Fila"
+    Members:
+      - int number // a number
+    ExtraCode:
+      declaration:
+        "int add(int i) const;"
+      declarationFile: "extra_code/declarations.cc"
+      implementation:
+        "int {name}::add(int i) const { return number() + i; }"
+      implementationFile: "extra_code/implementations.cc"
+    MutableExtraCode:
+      declaration:
+        int add_inplace(int i);
+      declarationFile: "extra_code/mutable_declarations.cc"
+      implementation:
+        int {name}::add_inplace(int i) { return number() += i; }
+      implementationFile: "extra_code/mutable_implementations.cc"
 
   nsp::EnergyInNamespace:
     Description: "A type with energy in a namespace"

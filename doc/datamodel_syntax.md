@@ -119,17 +119,17 @@ The `includes` will be add to the header files of the generated classes.
       includes: <newline separated list of strings (optional)>
       declaration: <string>
       implementation : <string>
-      declarationFile: <string> (to be implemented!)
-      implementationFile: <string> (to be implemented!)
+      declarationFile: <string>
+      implementationFile: <string>
     MutableExtraCode:
       includes: <newline separated list of strings (optional)>
       declaration: <string>
       implementation : <string>
-      declarationFile: <string> (to be implemented!)
-      implementationFile: <string> (to be implemented!)
+      declarationFile: <string>
+      implementationFile: <string>
 ```
 
-The code being provided has to use the macro `{name}` in place of the concrete name of the class.
+The code being provided has to use the macro `{name}` in place of the concrete name of the class. The paths to the files given in `declarationFile` and `implementationFile` should be either absolute or relative to the datamodel yaml file. The cmake users are encouraged to specify these file via the `DEPENDS` option of `PODIO_GENERATE_DATAMODEL` to add the files as configuration dependency of the datamodel and cause the datamodel re-generation when they change.
 
 ## Definition of custom interfaces
 An interface type can be defined as follows (again using an example from the example datamodel)
