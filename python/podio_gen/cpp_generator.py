@@ -89,6 +89,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             self._prepare_iorules()
             self._create_selection_xml()
         self._write_cmake_lists_file()
+        self._write_all_collections_header()
 
     def do_process_component(self, name, component):
         """Handle everything cpp specific after the common processing of a component"""
@@ -483,6 +484,22 @@ have resolvable schema evolution incompatibilities:"
             f"{self.install_dir}/podio_generated_files.cmake",
             "\n".join(full_contents),
             self.any_changes,
+        )
+
+    def _write_all_collections_header(self):
+        """Write a header file that includes all collection headers"""
+
+        collection_files = (
+            os.path.basename(f)
+            for f in self.generated_files
+            if f.endswith("Collection.h") and "Mutable" not in f
+        )
+        self._write_file(
+            os.path.join(self.install_dir, self.package_name, "AllCollections.h"),
+            self._eval_template(
+                "AllCollections.h.jinja2",
+                {"includes": collection_files, "incfolder": self.incfolder},
+            ),
         )
 
     def _write_edm_def_file(self):
