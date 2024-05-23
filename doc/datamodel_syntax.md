@@ -177,10 +177,10 @@ bool same = (energyType == cluster); // <-- true (comparisons work as expected)
 bool isCluster = energyType.isA<ExampleCluster>(); // <-- true
 bool isHit     = energyType.isA<ExampleHit>();     // <-- false
 
-auto newCluster = energyType.getValue<ExampleCluster>(); // <-- "cast back" to original type
+auto newCluster = energyType.as<ExampleCluster>(); // <-- "cast back" to original type
 
 // "Casting" only works if the types match. Otherwise there will be an exception
-auto newHit = energyType.getValue<ExampleHit>(); // <-- exception
+auto newHit = energyType.as<ExampleHit>(); // <-- exception
 ```
 
 ## Global options
