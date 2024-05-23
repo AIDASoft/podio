@@ -1,7 +1,4 @@
-int {
-  name
-}
-::reset() {
+int {name}::reset() {
   number() = 0;
   return number();
 }

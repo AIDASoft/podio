@@ -1,6 +1,1 @@
-bool {
-  name
-}
-::lt(int i) const {
-  return number() < i;
-}
+bool {name}::lt(int i) const { return number() < i; }
