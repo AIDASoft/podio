@@ -88,7 +88,7 @@ The C++ specifies a set of named requirements for iterators. Starting with C++20
 | [*CopyConstructible*](https://en.cppreference.com/w/cpp/named_req/CopyConstructible) | ❌ no / ❌ no | Move constructor and copy constructor not defined |
 | [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ❌ no / ❌ no | Move assignment and copy assignment not defined |
 | [*Destructible*](https://en.cppreference.com/w/cpp/named_req/Destructible) | ✔️ yes / ✔️ yes | |
-| [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ✔️ yes / ✔️ yes | |
+| [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ❌ no / ❌ no | |
 | `std::iterator_traits::value_type` (Until C++20 ) | ❌ no / ❌ no | Not defined |
 | `std::iterator_traits::difference_type` | ❌ no / ❌ no | Not defined |
 | `std::iterator_traits::reference` | ❌ no / ❌ no | Not defined |
