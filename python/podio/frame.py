@@ -2,6 +2,7 @@
 """Module for the python bindings of the podio::Frame"""
 
 import cppyy
+from copy import deepcopy
 
 import ROOT
 
@@ -106,6 +107,37 @@ class Frame:
         if collection == self._coll_nullptr:
             raise KeyError(f"Collection '{name}' is not available")
         return collection
+
+    def getName(self, token):
+        """Get the name of the collection from the Frame
+
+        Args:
+            token (podio.CollectionBase | int | podio.ObjectID | podio generated
+                datatype): Something that that can be used to get the name of a
+                collection. Can either be the collection itself, a collectionID
+                or an object ID of an element of a collection
+
+        Returns:
+            str: The name of the collection inside the frame
+
+        Raises:
+            KeyError: If no collection can be found in the frame
+
+        """
+        maybeName = self._frame.getName(token)
+        if maybeName.has_value():
+            return deepcopy(maybeName.value())
+
+        def _get_id(tok):
+            if isinstance(tok, int):
+                return f"{tok:0>8x}"
+            if _is_collection_base(token):
+                return _get_id(tok.getID())
+            if isinstance(tok, podio.ObjectID):
+                return f"({tok.collectionID:0>8x}: {tok.index})"
+            return _get_id(tok.id())
+
+        raise KeyError(f"No collection name can be found in Frame for {_get_id(token)}")
 
     def put(self, collection, name):
         """Put the collection into the frame

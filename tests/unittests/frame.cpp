@@ -418,6 +418,7 @@ TEST_CASE("Frame getName", "[frame][basics]") {
 
   const auto& hits = frame.get<ExampleHitCollection>("hits");
   REQUIRE(frame.getName(hits).value() == "hits");
+  REQUIRE(frame.getName(hits[0]).value() == "hits");
 
   REQUIRE_FALSE(frame.getName(0xfffffff).has_value());
 }

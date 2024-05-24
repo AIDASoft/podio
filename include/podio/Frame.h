@@ -338,6 +338,28 @@ public:
     return m_self->getIDTable().name(collectionID);
   }
 
+  /// Get the name of the collection for the passed object ID
+  ///
+  /// @param objId The objectID of an element of a collection for which the name
+  ///              should be obtained
+  /// @returns The name of the collection or an empty optional if this
+  ///          objectID is not known to the Frame
+  inline std::optional<std::string> getName(const podio::ObjectID& objId) const {
+    return getName(objId.collectionID);
+  }
+
+  /// Get the name of the collection to which this element belongs
+  ///
+  /// @tparam ElemT A datatype of a podio generated datamodel
+  /// @param elem The element of a collection for which the name should be
+  ///             obtained
+  /// @returns The name of the collection or an empty optional if this
+  ///          element is not known to the Frame
+  template <typename ElemT, typename = std::enable_if_t<detail::isPodioType<ElemT>>>
+  inline std::optional<std::string> getName(const ElemT& elem) const {
+    return getName(elem.id().collectionID);
+  }
+
   // Interfaces for writing below
 
   /// Get a collection for writing.
