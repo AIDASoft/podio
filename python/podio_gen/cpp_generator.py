@@ -489,13 +489,11 @@ have resolvable schema evolution incompatibilities:"
     def _write_all_collections_header(self):
         """Write a header file that includes all collection headers"""
 
-        collection_files = (
-            os.path.basename(f)
-            for f in self.generated_files
-            if f.endswith("Collection.h") and "Mutable" not in f
-        )
+        collection_files = (x.split("::")[-1] + "Collection.h" for x in self.datamodel.datatypes)
         self._write_file(
-            os.path.join(self.install_dir, self.package_name, "AllCollections.h"),
+            os.path.join(
+                self.install_dir, self.package_name, f"All{self.package_name}Collections.h"
+            ),
             self._eval_template(
                 "AllCollections.h.jinja2",
                 {"includes": collection_files, "incfolder": self.incfolder},
