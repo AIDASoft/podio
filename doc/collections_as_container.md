@@ -129,7 +129,7 @@ The C++ specifies a set of named requirements for iterators. Starting with C++20
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
 | `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Post-increment not defined |
-| `*i++` | `reference` | | ❌ no / ❌ no | Post-increment and `reference` not defined|
+| `*i++` | `reference` | | ❌ no / ❌ no | Post-increment and `reference` not defined |
 
 ### LegacyOutputIterator
 

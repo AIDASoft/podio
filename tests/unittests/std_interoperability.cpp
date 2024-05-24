@@ -534,15 +534,13 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
       // (void)r++
       // iterator
-      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
       STATIC_REQUIRE(traits::has_preincrement_v<iterator>);
-      DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<std::iterator_traits<iterator>>);
+      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
       // STATIC_REQUIRE(std::is_same_v<decltype((void)++std::declval<iterator>()),
       // decltype((void)std::declval<iterator>()++)>);
       // const_iterator
-      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
       STATIC_REQUIRE(traits::has_preincrement_v<const_iterator>);
-      DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<std::iterator_traits<const_iterator>>);
+      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
       // STATIC_REQUIRE(std::is_same_v<decltype((void)++std::declval<const_iterator>()),
       // decltype((void)std::declval<const_iterator>()++)>);
 
