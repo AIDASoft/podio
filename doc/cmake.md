@@ -6,7 +6,7 @@ For a package developer tutorial on CMake, please have a look [here])https://hsf
 ## Generate the C++ code
 After a proper `find_package(PODIO)`, the C++ code of the new data model `NewDM` can be created and compiled via
 
-```
+```cmake
 # generate the c++ code from the yaml definition
 PODIO_GENERATE_DATAMODEL(newdm newdm.yaml headers sources)
 
