@@ -115,17 +115,20 @@ private:
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 
-  struct CollectionInfo {
-    std::vector<uint32_t> id{};
-    std::vector<std::string> name{};
-    std::vector<std::string> type{};
-    std::vector<short> isSubsetCollection{};
-    std::vector<SchemaVersionT> schemaVersion{};
-    std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr};
-  };
-  CollectionInfo& getCategoryInfo(const std::string& category);
+  /// Helper struct to group all the necessary information for one category.
+  struct CategoryInfo {
+    std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
 
-  std::unordered_map<std::string, CollectionInfo> m_categories{};
+    // The following are assumed to run in parallel!
+    std::vector<uint32_t> ids{};                  ///< The ids of all collections
+    std::vector<std::string> names{};             ///< The names of all collections
+    std::vector<std::string> types{};             ///< The types of all collections
+    std::vector<short> subsetCollections{};       ///< The flags identifying the subcollections
+    std::vector<SchemaVersionT> schemaVersions{}; ///< The schema versions of all collections
+  };
+  CategoryInfo& getCategoryInfo(const std::string& category);
+
+  std::unordered_map<std::string, CategoryInfo> m_categories{};
 
   bool m_finished{false};
 

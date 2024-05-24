@@ -77,14 +77,14 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   const bool new_category = (catInfo.writer == nullptr);
   if (new_category) {
     // This is the minimal information that we need for now
-    catInfo.name = root_utils::sortAlphabeticaly(collsToWrite);
+    catInfo.names = root_utils::sortAlphabeticaly(collsToWrite);
   }
 
   std::vector<root_utils::StoreCollection> collections;
-  collections.reserve(catInfo.name.size());
+  collections.reserve(catInfo.names.size());
   // Only loop over the collections that were requested in the first Frame of
   // this category
-  for (const auto& name : catInfo.name) {
+  for (const auto& name : catInfo.names) {
     auto* coll = frame.getCollectionForWrite(name);
     if (!coll) {
       // Make sure all collections that we want to write are actually available
@@ -101,15 +101,15 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     catInfo.writer = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
 
     for (const auto& [name, coll] : collections) {
-      catInfo.id.emplace_back(coll->getID());
-      catInfo.type.emplace_back(coll->getTypeName());
-      catInfo.isSubsetCollection.emplace_back(coll->isSubsetCollection());
-      catInfo.schemaVersion.emplace_back(coll->getSchemaVersion());
+      catInfo.ids.emplace_back(coll->getID());
+      catInfo.types.emplace_back(coll->getTypeName());
+      catInfo.subsetCollections.emplace_back(coll->isSubsetCollection());
+      catInfo.schemaVersions.emplace_back(coll->getSchemaVersion());
     }
   } else {
-    if (!root_utils::checkConsistentColls(catInfo.name, collsToWrite)) {
+    if (!root_utils::checkConsistentColls(catInfo.names, collsToWrite)) {
       throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
-                               root_utils::getInconsistentCollsMsg(catInfo.name, collsToWrite));
+                               root_utils::getInconsistentCollsMsg(catInfo.names, collsToWrite));
     }
   }
 
@@ -260,12 +260,12 @@ RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& coll
   return model;
 }
 
-RNTupleWriter::CollectionInfo& RNTupleWriter::getCategoryInfo(const std::string& category) {
+RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(const std::string& category) {
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
 
-  auto [it, _] = m_categories.try_emplace(category, CollectionInfo{});
+  auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
   return it->second;
 }
 
@@ -287,15 +287,15 @@ void RNTupleWriter::finish() {
 
   for (auto& [category, collInfo] : m_categories) {
     auto idField = m_metadata->MakeField<std::vector<unsigned int>>({root_utils::idTableName(category)});
-    *idField = collInfo.id;
+    *idField = collInfo.ids;
     auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
-    *collectionNameField = collInfo.name;
+    *collectionNameField = collInfo.names;
     auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collInfoName(category)});
-    *collectionTypeField = collInfo.type;
+    *collectionTypeField = collInfo.types;
     auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
-    *subsetCollectionField = collInfo.isSubsetCollection;
+    *subsetCollectionField = collInfo.subsetCollections;
     auto schemaVersionField = m_metadata->MakeField<std::vector<SchemaVersionT>>({"schemaVersion_" + category});
-    *schemaVersionField = collInfo.schemaVersion;
+    *schemaVersionField = collInfo.schemaVersions;
   }
 
   m_metadata->Freeze();
@@ -319,7 +319,7 @@ void RNTupleWriter::finish() {
 std::tuple<std::vector<std::string>, std::vector<std::string>>
 RNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
-    return root_utils::getInconsistentColls(it->second.name, collsToWrite);
+    return root_utils::getInconsistentColls(it->second.names, collsToWrite);
   }
 
   return {std::vector<std::string>{}, collsToWrite};
