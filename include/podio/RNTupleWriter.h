@@ -108,13 +108,6 @@ private:
   std::unique_ptr<ROOT::Experimental::RNTupleModel>
   createModels(const std::vector<root_utils::StoreCollection>& collections);
 
-  std::unique_ptr<ROOT::Experimental::RNTupleModel> m_metadata{};
-  std::unique_ptr<ROOT::Experimental::RNTupleWriter> m_metadataWriter{};
-
-  std::unique_ptr<TFile> m_file{};
-
-  DatamodelDefinitionCollector m_datamodelCollector{};
-
   /// Helper struct to group all the necessary information for one category.
   struct CategoryInfo {
     std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
@@ -127,6 +120,10 @@ private:
     std::vector<SchemaVersionT> schemaVersions{}; ///< The schema versions of all collections
   };
   CategoryInfo& getCategoryInfo(const std::string& category);
+
+  std::unique_ptr<TFile> m_file{};
+
+  DatamodelDefinitionCollector m_datamodelCollector{};
 
   std::unordered_map<std::string, CategoryInfo> m_categories{};
 

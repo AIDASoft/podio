@@ -17,7 +17,6 @@
 namespace podio {
 
 RNTupleWriter::RNTupleWriter(const std::string& filename) :
-    m_metadata(ROOT::Experimental::RNTupleModel::Create()),
     m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
 }
 
@@ -270,39 +269,39 @@ RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(const std::string& c
 }
 
 void RNTupleWriter::finish() {
+  auto metadata = ROOT::Experimental::RNTupleModel::Create();
 
   auto podioVersion = podio::version::build_version;
-  auto versionField = m_metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
+  auto versionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
   *versionField = {podioVersion.major, podioVersion.minor, podioVersion.patch};
 
   auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
-  auto edmField =
-      m_metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  auto edmField = metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   *edmField = std::move(edmDefinitions);
 
-  auto availableCategoriesField = m_metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
+  auto availableCategoriesField = metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
   for (auto& [c, _] : m_categories) {
     availableCategoriesField->push_back(c);
   }
 
   for (auto& [category, collInfo] : m_categories) {
-    auto idField = m_metadata->MakeField<std::vector<unsigned int>>({root_utils::idTableName(category)});
+    auto idField = metadata->MakeField<std::vector<unsigned int>>({root_utils::idTableName(category)});
     *idField = collInfo.ids;
-    auto collectionNameField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
+    auto collectionNameField = metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
     *collectionNameField = collInfo.names;
-    auto collectionTypeField = m_metadata->MakeField<std::vector<std::string>>({root_utils::collInfoName(category)});
+    auto collectionTypeField = metadata->MakeField<std::vector<std::string>>({root_utils::collInfoName(category)});
     *collectionTypeField = collInfo.types;
-    auto subsetCollectionField = m_metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
+    auto subsetCollectionField = metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
     *subsetCollectionField = collInfo.subsetCollections;
-    auto schemaVersionField = m_metadata->MakeField<std::vector<SchemaVersionT>>({"schemaVersion_" + category});
+    auto schemaVersionField = metadata->MakeField<std::vector<SchemaVersionT>>({"schemaVersion_" + category});
     *schemaVersionField = collInfo.schemaVersions;
   }
 
-  m_metadata->Freeze();
-  m_metadataWriter =
-      ROOT::Experimental::RNTupleWriter::Append(std::move(m_metadata), root_utils::metaTreeName, *m_file, {});
+  metadata->Freeze();
+  auto metadataWriter =
+      ROOT::Experimental::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
 
-  m_metadataWriter->Fill();
+  metadataWriter->Fill();
 
   m_file->Write();
 
@@ -311,7 +310,7 @@ void RNTupleWriter::finish() {
   for (auto& [_, catInfo] : m_categories) {
     catInfo.writer.reset();
   }
-  m_metadataWriter.reset();
+  metadataWriter.reset();
 
   m_finished = true;
 }
