@@ -496,7 +496,11 @@ have resolvable schema evolution incompatibilities:"
             ),
             self._eval_template(
                 "AllCollections.h.jinja2",
-                {"includes": collection_files, "incfolder": self.incfolder},
+                {
+                    "includes": collection_files,
+                    "incfolder": self.incfolder,
+                    "package_name": self.package_name,
+                },
             ),
         )
 

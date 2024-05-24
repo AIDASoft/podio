@@ -1,5 +1,10 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
+#ifndef All{{ package_name }}Collections_H
+#define All{{ package_name }}Collections_H
+
 {% for name in includes %}
 #include "{{ incfolder }}{{ name }}"
 {% endfor %}
+
+#endif // All{{ package_name }}Collections_H
