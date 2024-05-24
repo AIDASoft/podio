@@ -1,8 +1,6 @@
 #ifndef PODIO_RNTUPLEREADER_H
 #define PODIO_RNTUPLEREADER_H
 
-#include "podio/CollectionBranches.h"
-#include "podio/ICollectionProvider.h"
 #include "podio/ROOTFrameData.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"

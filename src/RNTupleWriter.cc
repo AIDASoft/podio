@@ -80,7 +80,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     catInfo.name = root_utils::sortAlphabeticaly(collsToWrite);
   }
 
-  std::vector<StoreCollection> collections;
+  std::vector<root_utils::StoreCollection> collections;
   collections.reserve(catInfo.name.size());
   // Only loop over the collections that were requested in the first Frame of
   // this category
@@ -188,7 +188,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
 }
 
 std::unique_ptr<ROOT::Experimental::RNTupleModel>
-RNTupleWriter::createModels(const std::vector<StoreCollection>& collections) {
+RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& collections) {
   auto model = ROOT::Experimental::RNTupleModel::CreateBare();
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)

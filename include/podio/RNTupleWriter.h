@@ -1,11 +1,11 @@
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
 
-#include "podio/CollectionBase.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/RootHelpers.h"
 
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
@@ -105,8 +105,8 @@ private:
   template <typename T>
   void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
 
-  using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
-  std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
+  std::unique_ptr<ROOT::Experimental::RNTupleModel>
+  createModels(const std::vector<root_utils::StoreCollection>& collections);
 
   std::unique_ptr<ROOT::Experimental::RNTupleModel> m_metadata{};
   std::unique_ptr<ROOT::Experimental::RNTupleWriter> m_metadataWriter{};
