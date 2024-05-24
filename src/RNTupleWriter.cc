@@ -27,40 +27,33 @@ RNTupleWriter::~RNTupleWriter() {
 }
 
 template <typename T>
-std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> RNTupleWriter::getKeyValueVectors() {
+root_utils::ParamStorage<T>& RNTupleWriter::getParamStorage(CategoryInfo& catInfo) {
   if constexpr (std::is_same_v<T, int>) {
-    return {m_intkeys, m_intvalues};
+    return catInfo.intParams;
   } else if constexpr (std::is_same_v<T, float>) {
-    return {m_floatkeys, m_floatvalues};
+    return catInfo.floatParams;
   } else if constexpr (std::is_same_v<T, double>) {
-    return {m_doublekeys, m_doublevalues};
+    return catInfo.doubleParams;
   } else if constexpr (std::is_same_v<T, std::string>) {
-    return {m_stringkeys, m_stringvalues};
+    return catInfo.stringParams;
   } else {
     throw std::runtime_error("Unknown type");
   }
 }
 
 template <typename T>
-void RNTupleWriter::fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry) {
-  auto [key, value] = getKeyValueVectors<T>();
+void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo,
+                               ROOT::Experimental::REntry* entry) {
+  auto& [keys, values] = getParamStorage<T>(catInfo);
+  keys = params.getKeys<T>();
+  values = params.getValues<T>();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
-  entry->BindRawPtr(root_utils::getGPKeyName<T>(), &key);
-  entry->BindRawPtr(root_utils::getGPValueName<T>(), &value);
+  entry->BindRawPtr(root_utils::getGPKeyName<T>(), &keys);
+  entry->BindRawPtr(root_utils::getGPValueName<T>(), &values);
 #else
-  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &key);
-  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &value);
+  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &keys);
+  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &values);
 #endif
-
-  key.clear();
-  key.reserve(params.getMap<T>().size());
-  value.clear();
-  value.reserve(params.getMap<T>().size());
-
-  for (auto& [kk, vv] : params.getMap<T>()) {
-    key.emplace_back(kk);
-    value.emplace_back(vv);
-  }
 }
 
 void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -178,10 +171,10 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   }
 
   auto params = frame.getParameters();
-  fillParams<int>(params, entry.get());
-  fillParams<float>(params, entry.get());
-  fillParams<double>(params, entry.get());
-  fillParams<std::string>(params, entry.get());
+  fillParams<int>(params, catInfo, entry.get());
+  fillParams<float>(params, catInfo, entry.get());
+  fillParams<double>(params, catInfo, entry.get());
+  fillParams<std::string>(params, catInfo, entry.get());
 
   m_categories[category].writer->Fill(*entry);
 }

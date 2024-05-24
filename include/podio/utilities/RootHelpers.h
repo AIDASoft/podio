@@ -33,6 +33,11 @@ namespace root_utils {
     std::vector<std::string> vecNames{}; ///< The names of the vector member branches
   };
 
+  /// Pair of keys and values for one type of the ones that can be stored in
+  /// GenericParameters
+  template <typename T>
+  using ParamStorage = std::tuple<std::vector<std::string>, std::vector<std::vector<T>>>;
+
 } // namespace root_utils
 } // namespace podio
 

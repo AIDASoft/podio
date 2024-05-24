@@ -102,9 +102,6 @@ public:
   checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
 
 private:
-  template <typename T>
-  void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
-
   std::unique_ptr<ROOT::Experimental::RNTupleModel>
   createModels(const std::vector<root_utils::StoreCollection>& collections);
 
@@ -118,8 +115,21 @@ private:
     std::vector<std::string> types{};             ///< The types of all collections
     std::vector<short> subsetCollections{};       ///< The flags identifying the subcollections
     std::vector<SchemaVersionT> schemaVersions{}; ///< The schema versions of all collections
+
+    // Storage for the keys & values of all the parameters of this category
+    // (resp. at least the current entry)
+    root_utils::ParamStorage<int> intParams{};
+    root_utils::ParamStorage<float> floatParams{};
+    root_utils::ParamStorage<double> doubleParams{};
+    root_utils::ParamStorage<std::string> stringParams{};
   };
   CategoryInfo& getCategoryInfo(const std::string& category);
+
+  template <typename T>
+  void fillParams(const GenericParameters& params, CategoryInfo& catInfo, ROOT::Experimental::REntry* entry);
+
+  template <typename T>
+  root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
   std::unique_ptr<TFile> m_file{};
 
@@ -128,16 +138,6 @@ private:
   std::unordered_map<std::string, CategoryInfo> m_categories{};
 
   bool m_finished{false};
-
-  std::vector<std::string> m_intkeys{}, m_floatkeys{}, m_doublekeys{}, m_stringkeys{};
-
-  std::vector<std::vector<int>> m_intvalues{};
-  std::vector<std::vector<float>> m_floatvalues{};
-  std::vector<std::vector<double>> m_doublevalues{};
-  std::vector<std::vector<std::string>> m_stringvalues{};
-
-  template <typename T>
-  std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> getKeyValueVectors();
 };
 
 } // namespace podio
