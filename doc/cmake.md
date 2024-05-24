@@ -8,7 +8,7 @@ After a proper `find_package(PODIO)`, the C++ code of the new data model `NewDM`
 
 ```
 # generate the c++ code from the yaml definition
-PODIO_GENERATE_DATAMODEL(newdm newdm.yaml headers sources IO_BACKEND_HANDLERS)
+PODIO_GENERATE_DATAMODEL(newdm newdm.yaml headers sources)
 
 # compile the core data model shared library (no I/O)
 PODIO_ADD_DATAMODEL_CORE_LIB(newdm "${headers}" "${sources}")
