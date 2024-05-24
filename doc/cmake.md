@@ -4,7 +4,7 @@ PODIO exposes multiple CMake macros to enable the building of data model librari
 For a package developer tutorial on CMake, please have a look [here])https://hsf-training.github.io/hsf-training-cmake-webpage/). PODIO follows the same conventions used therein.
 
 ## Generate the C++ code
-After a proper `find_package(PODIO)`, the C++ code of the new data model `NewDM` can be created and compiled via 
+After a proper `find_package(PODIO)`, the C++ code of the new data model `NewDM` can be created and compiled via
 
 ```
 # generate the c++ code from the yaml definition
