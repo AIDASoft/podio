@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -104,6 +105,10 @@ public:
   /// Get all available keys for a given type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   std::vector<std::string> getKeys() const;
+
+  /// Get all the available values for a given type
+  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  std::vector<std::vector<T>> getValues() const;
 
   /// erase all elements
   void clear() {
@@ -243,5 +248,18 @@ std::vector<std::string> GenericParameters::getKeys() const {
   return keys;
 }
 
+template <typename T, typename>
+std::vector<std::vector<T>> GenericParameters::getValues() const {
+  std::vector<std::vector<T>> values;
+  const auto& map = getMap<T>();
+  values.reserve(map.size());
+
+  {
+    auto& mtx = getMutex<T>();
+    std::lock_guard lock{mtx};
+    std::transform(map.begin(), map.end(), std::back_inserter(values), [](const auto& pair) { return pair.second; });
+  }
+  return values;
+}
 } // namespace podio
 #endif
