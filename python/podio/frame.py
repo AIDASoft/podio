@@ -2,7 +2,6 @@
 """Module for the python bindings of the podio::Frame"""
 
 import cppyy
-from copy import deepcopy
 
 import ROOT
 
@@ -126,7 +125,7 @@ class Frame:
         """
         maybeName = self._frame.getName(token)
         if maybeName.has_value():
-            return deepcopy(maybeName.value())
+            return maybeName.value()
 
         def _get_id(tok):
             if isinstance(tok, int):
