@@ -565,7 +565,7 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       // STATIC_REQUIRE(std::is_same_v<decltype((void)++std::declval<const_iterator&>()),
       //                               decltype((void)std::declval<const_iterator&>()++)>);
 
-      //*r++
+      // *r++
       // iterator
       STATIC_REQUIRE(traits::has_indirection_v<iterator>);
       DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
@@ -585,7 +585,7 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       // STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
       // const_iterator
       DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
-      // STATIC_REQUIRE(std::is_base_of_v<std::std::input_iterator_tag,
+      // STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag,
       // std::iterator_traits<const_iterator>::iterator_category>);
 
     } // end of LegacyInputIterator
@@ -692,7 +692,8 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
     DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<std::iterator_traits<iterator>>);
     // STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<iterator&>()++),
-    // std::iterator_traits<iterator>::reference>); const_iterator
+    // std::iterator_traits<iterator>::reference>);
+    // const_iterator
     STATIC_REQUIRE(traits::has_indirection_v<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<std::iterator_traits<const_iterator>>);
@@ -758,7 +759,7 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
     // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator&>()++), const iterator&>);
-    //  const_iterator
+    // const_iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
     // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<const_iterator&>()++), const const_iterator&>);
 
