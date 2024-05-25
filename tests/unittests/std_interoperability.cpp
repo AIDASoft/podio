@@ -579,6 +579,15 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       // STATIC_REQUIRE(std::is_convertible_v<decltype(*std::declval<const_iterator&>()++),
       //                                      std::iterator_traits<const_iterator>::value_type>);
 
+      // iterator_category - not strictly necessary but advised
+      // iterator
+      DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
+      // STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+      // const_iterator
+      DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
+      // STATIC_REQUIRE(std::is_base_of_v<std::std::input_iterator_tag,
+      // std::iterator_traits<const_iterator>::iterator_category>);
+
     } // end of LegacyInputIterator
 
     // Mutable iterator: reference same as value_type& or value_type&&
@@ -672,6 +681,15 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     //     std::is_same_v<decltype(*std::declval<const_iterator&>()++),
     //     std::iterator_traits<const_iterator>::reference>);
 
+    // iterator_category - not strictly necessary but advised
+    // iterator
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
+    // STATIC_REQUIRE(std::is_base_of_v<std::forward_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+    // const_iterator
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
+    // STATIC_REQUIRE(std::is_base_of_v<std::forward_iterator_tag,
+    // std::iterator_traits<const_iterator>::iterator_category>);
+
   } // end of LegacyForwardIterator
 
   SECTION("LegacyOutputIterator") {
@@ -737,6 +755,20 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     DOCUMENTED_STATIC_FAILURE(
         traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type::mutable_type>);
     // TODO add runtime check for assignment validity like in '*r = o' case
+
+    // iterator_category - not strictly necessary but advised
+    // Derived either from:
+    // - std::output_iterator_tag
+    // - std::forward_iterator_tag (for mutable LegacyForwardIterators)
+    // iterator
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
+    // STATIC_REQUIRE(std::is_base_of_v<std::output_iterator_tag, std::iterator_traits<iterator>::iterator_category> ||
+    //                std::is_base_of_v<std::forward_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+    // const_iterator
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
+    // STATIC_REQUIRE(std::is_base_of_v<std::output_iterator_tag, std::iterator_traits<iterator>::iterator_category> ||
+    //                    std::is_base_of_v<std::forward_iterator_tag,
+    //                    std::iterator_traits<iterator>::iterator_category>);
 
   } // end of LegacyOutputIterator
 }
