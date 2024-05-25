@@ -19,6 +19,8 @@
 #define DOCUMENTED_FAILURE(...) REQUIRE_FALSE(__VA_ARGS__)
 
 using CollectionType = ExampleHitCollection;
+using iterator = CollectionType::iterator;
+using const_iterator = CollectionType::const_iterator;
 
 namespace traits {
 
@@ -244,6 +246,34 @@ struct has_dereference_assignment_increment<T, Value,
     : std::true_type {};
 template <typename T, typename Value>
 inline constexpr bool has_dereference_assignment_increment_v = has_dereference_assignment_increment<T, Value>::value;
+
+// T::push_back(Value)
+template <typename, typename, typename = void>
+struct has_push_back : std::false_type {};
+template <typename T, typename Value>
+struct has_push_back<T, Value, std::void_t<decltype(std::declval<T>().push_back(std::declval<Value>()))>>
+    : std::true_type {};
+template <typename T, typename Value>
+inline constexpr bool has_push_back_v = has_push_back<T, Value>::value;
+
+// T::push_front(Value)
+template <typename, typename, typename = void>
+struct has_push_front : std::false_type {};
+template <typename T, typename Value>
+struct has_push_front<T, Value, std::void_t<decltype(std::declval<T>().push_front(std::declval<Value>()))>>
+    : std::true_type {};
+template <typename T, typename Value>
+inline constexpr bool has_push_front_v = has_push_front<T, Value>::value;
+
+// T::insert(Value)
+template <typename, typename, typename, typename = void>
+struct has_insert : std::false_type {};
+template <typename T, typename Iter, typename Value>
+struct has_insert<T, Iter, Value,
+                  std::void_t<decltype(std::declval<T>().insert(std::declval<Iter>(), std::declval<Value>()))>>
+    : std::true_type {};
+template <typename T, typename Iter, typename Value>
+inline constexpr bool has_insert_v = has_insert<T, Iter, Value>::value;
 } // namespace traits
 
 TEST_CASE("Collection container types", "[collection][container][types][std]") {
@@ -376,7 +406,6 @@ TEST_CASE("Collection AllocatorAwareContainer types", "[collection][container][t
 TEST_CASE("Collection and iterator concepts") {
 #if (__cplusplus >= 202002L)
   SECTION("Iterator") {
-    using iterator = CollectionType::iterator;
     DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<iterator, CollectionType::value_type>);
     DOCUMENTED_STATIC_FAILURE(std::weakly_incrementable<iterator>);
@@ -390,7 +419,6 @@ TEST_CASE("Collection and iterator concepts") {
     DOCUMENTED_STATIC_FAILURE(std::contiguous_iterator<iterator>);
   }
   SECTION("Const_iterator") {
-    using const_iterator = CollectionType::const_iterator;
     DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<const_iterator, CollectionType::value_type>);
     DOCUMENTED_STATIC_FAILURE(std::weakly_incrementable<const_iterator>);
@@ -407,8 +435,6 @@ TEST_CASE("Collection and iterator concepts") {
 }
 
 TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
-  using iterator = CollectionType::iterator;
-  using const_iterator = CollectionType::const_iterator;
   // the checks are duplicated for iterator and const_iterator as expectations on them are slightly different
 
   // nested sections as the requirements make a hierarchy
@@ -795,8 +821,33 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
 TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
   auto coll = CollectionType();
-
+  SECTION("Reverse iterator") {
+    // iterator
+    STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
+    // STATIC_REQUIRE(
+    //    std::is_base_of_v<std::bidirectional_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+#if (__cplusplus >= 202002L)
+    DOCUMENTED_STATIC_FAILURE(std::bidirectional_iterator<iterator>);
+#endif
+    // const_iterator
+    STATIC_REQUIRE(traits::has_const_iterator_v<CollectionType>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
+    // STATIC_REQUIRE(
+    //    std::is_base_of_v<std::bidirectional_iterator_tag, std::iterator_traits<const_iterator>::iterator_category>);
+#if (__cplusplus >= 202002L)
+    DOCUMENTED_STATIC_FAILURE(std::bidirectional_iterator<iterator>);
+#endif
+    // TODO add runtime checks here
+  }
   SECTION("Back inserter") {
+    DOCUMENTED_STATIC_FAILURE(traits::has_const_reference_v<CollectionType>);
+    // STATIC_REQUIRE(traits::has_push_back_v<CollectionType, CollectionType::const_reference>);
+
+    STATIC_REQUIRE(traits::has_value_type_v<CollectionType>);
+    STATIC_REQUIRE(traits::has_push_back_v<CollectionType, const CollectionType::value_type&>);
+    STATIC_REQUIRE(traits::has_push_back_v<CollectionType, CollectionType::value_type&&>);
+
     auto it = std::back_inserter(coll);
     // insert immutable to not-SubsetCollection
     REQUIRE_THROWS_AS(it = CollectionType::value_type{}, std::invalid_argument);
@@ -806,9 +857,51 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     subColl.setSubsetCollection(true);
     auto subIt = std::back_inserter(subColl);
     auto val = coll.create();
+    val.cellID(42);
     // insert immutable to SubsetCollection
     REQUIRE_NOTHROW(subIt = val);
+    REQUIRE(subColl.begin()->cellID() == 42);
   }
+
+  SECTION("Front inserter") {
+    DOCUMENTED_STATIC_FAILURE(traits::has_const_reference_v<CollectionType>);
+    // STATIC_REQUIRE(traits::has_push_front_v<CollectionType, CollectionType::const_reference>);
+
+    STATIC_REQUIRE(traits::has_value_type_v<CollectionType>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_push_front_v<CollectionType, const CollectionType::value_type&>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_push_front_v<CollectionType, CollectionType::value_type&&>);
+    // TODO add runtime checks here
+  }
+
+  SECTION("Inserter") {
+    STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_const_reference_v<CollectionType>);
+    // STATIC_REQUIRE(
+    //     traits::has_insert_v<CollectionType, CollectionType::iterator, CollectionType::const_reference>);
+
+    STATIC_REQUIRE(traits::has_value_type_v<CollectionType>);
+    DOCUMENTED_STATIC_FAILURE(
+        traits::has_insert_v<CollectionType, CollectionType::iterator, const CollectionType::value_type&>);
+    DOCUMENTED_STATIC_FAILURE(
+        traits::has_insert_v<CollectionType, CollectionType::iterator, CollectionType::value_type&&>);
+    // TODO add runtime checks here
+  }
+
+  SECTION("Const iterator") {
+    // C++23 required
+    DOCUMENTED_STATIC_FAILURE((__cplusplus >= 202302L));
+  }
+
+#if (__cplusplus >= 202002L)
+  SECTION("Counted iterator") {
+    // iterator
+    DOCUMENTED_STATIC_FAILURE(std::input_or_output_iterator<iterator>);
+    // TODO add runtime checks
+    // const_iterator
+    DOCUMENTED_STATIC_FAILURE(std::input_or_output_iterator<const_iterator>);
+    // TODO add runtime checks
+  }
+#endif
 }
 
 #undef DOCUMENTED_STATIC_FAILURE
