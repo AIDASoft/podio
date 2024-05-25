@@ -66,6 +66,9 @@ The C++ specifies a set of named requirements for iterators. Starting with C++20
 | [LegacyInputIterator](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no ([see below](#legacyinputiterator)) | ❌ no ([see below](#legacyinputiterator)) |
 | [LegacyForwardIterator](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no ([see below](#legacyforwarditerator)) | ❌ no ([see below](#legacyforwarditerator)) |
 | [LegacyOutputIterator](https://en.cppreference.com/w/cpp/named_req/OutputIterator) | ❌ no ([see below](#legacyoutputiterator)) | ❌ no ([see below](#legacyoutputiterator)) |
+| [LegacyBidirectionalIterator](https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator) | ❌ no | ❌ no |
+| [LegacyRandomAccessIterator](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator) | ❌ no | ❌ no |
+| [LegacyContiguousIterator](https://en.cppreference.com/w/cpp/named_req/ContiguousIterator) | ❌ no | ❌ no |
 
 | Concept | `iterator` | `const_iterator` |
 |---------|------------------------|------------------------------|
