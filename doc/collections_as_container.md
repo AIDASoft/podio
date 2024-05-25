@@ -155,7 +155,7 @@ The C++ specifies a set of named requirements for iterators. Starting with C++20
 | `std::insert_iterator` | ❌ no | `insert` not defined |
 | `std::const_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
 | `std::move_iterator` | ❌ no | Move from collection conflicts collection elements ownership semantic |
-| `std::counted_iterator` |  ❌ no | `iterator` and `const_iterator` not `std::input_or_output_iterator`
+| `std::counted_iterator` |  ❌ no | `iterator` and `const_iterator` not `std::input_or_output_iterator` |
 
 
 ## Collection and standard algorithms
