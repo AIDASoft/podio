@@ -590,14 +590,33 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
     } // end of LegacyInputIterator
 
-    // Mutable iterator: reference same as value_type& or value_type&&
+    // Mutable LegacyForwardIterator (LegacyForwardIterator that is also LegacyOutputIterator):
+    // - reference same as value_type& or value_type&&
+    // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<iterator>);
     DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<iterator>);
     // STATIC_REQUIRE(
     //     std::is_same_v<std::iterator_traits<iterator>::reference, std::iterator_traits<iterator>::value_type&> ||
     //     std::is_same_v<std::iterator_traits<iterator>::reference, std::iterator_traits<iterator>::value_type&&>);
+    // const_iterator
+    DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<const_iterator>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<const_iterator>);
+    // STATIC_REQUIRE(
+    //     std::is_same_v<std::iterator_traits<const_iterator>::reference,
+    //     std::iterator_traits<const_iterator>::value_type&> ||
+    //     std::is_same_v<std::iterator_traits<const_iterator>::reference,
+    //     std::iterator_traits<const_iterator>::value_type&&>);
 
-    // Immutable iterator: reference same as const value_type& or const value_type&&
+    // (Immutable) iterator:
+    // - reference same as const value_type& or const value_type&&
+    // iterator
+    DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<iterator>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<iterator>);
+    // STATIC_REQUIRE(std::is_same_v<std::iterator_traits<iterator>::reference,
+    //                               const std::iterator_traits<iterator>::value_type&> ||
+    //                std::is_same_v<std::iterator_traits<iterator>::reference,
+    //                               const std::iterator_traits<iterator>::value_type&&>);
+    // const_iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_reference_v<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(traits::has_value_type_v<const_iterator>);
     // STATIC_REQUIRE(std::is_same_v<std::iterator_traits<const_iterator>::reference,
