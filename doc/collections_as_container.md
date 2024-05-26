@@ -166,8 +166,8 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 
 ## Collection and standard algorithms
 
-Most of the standard algorithms require the iterators to be at least *InputIterator*. The iterators of PODIO collection don't fulfil this requirement, therefore they are not compatible with standard algorithms according to specification. In practice some algorithms may still compile with the collections depending on a implementation of a given algorithm.
+Most of the standard algorithms require the iterators to be at least *InputIterator*. The iterators of PODIO collection don't fulfil this requirement, therefore they are not compatible with standard algorithms according to the specification. In practice some algorithms may still compile with the collections depending on an implementation of a given algorithm.
 
 ## Standard range algorithms
 
-The standard range algorithm use constrains to operate at least on `std::input_iterator`s and `std::ranges::input_range`s. The iterators of PODIO collection don't model these concepts, therefore can't be use with standard range algorithms.
+The standard range algorithm use constrains to operate at least on `std::input_iterator`s and `std::ranges::input_range`s. The iterators of PODIO collection don't model these concepts, therefore can't be used with standard range algorithms.
