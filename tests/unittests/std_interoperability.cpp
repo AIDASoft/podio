@@ -892,6 +892,27 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     DOCUMENTED_STATIC_FAILURE((__cplusplus >= 202302L));
   }
 
+  SECTION("Move iterator") {
+    // iterator
+    STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
+    // STATIC_REQUIRE(
+    //    std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+#if (__cplusplus >= 202002L)
+    DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
+#endif
+    // TODO add more checks here
+    // const_iterator
+    STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
+    // STATIC_REQUIRE(
+    //    std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+#if (__cplusplus >= 202002L)
+    DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
+#endif
+    // TODO add more checks here
+  }
+
 #if (__cplusplus >= 202002L)
   SECTION("Counted iterator") {
     // iterator

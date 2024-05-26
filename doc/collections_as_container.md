@@ -160,7 +160,7 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `std::front_insert_iterator` | ❌ no | `push_front` not defined |
 | `std::insert_iterator` | ❌ no | `insert` not defined |
 | `std::const_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
-| `std::move_iterator` | ❌ no | Move from collection conflicts collection elements ownership semantic |
+| `std::move_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
 | `std::counted_iterator` |  ❌ no | `iterator` and `const_iterator` not `std::input_or_output_iterator` |
 
 
