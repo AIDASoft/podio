@@ -6,10 +6,10 @@ For a package developer tutorial on CMake, please have a look [here])https://hsf
 ## Exported CMake functions and macros
 The file [cmake/podioMacros.cmake](https://github.com/AIDASoft/podio/blob/master/cmake/podioMacros.cmake) provides the following functions for external use:
 
-  1. PODIO_GENERATE_DATAMODEL - generate the data model from provided yaml file
-  2. PODIO_ADD_DATAMODEL_CORE_LIB - compile the generated data model
-  3. PODIO_ADD_ROOT_IO_DICT - configure ROOT I/O backend and interface to Python
-  4. PODIO_ADD_SIO_IO_BLOCKS - configure SIO backend
+  1. `PODIO_GENERATE_DATAMODEL` - generate the data model from provided yaml file
+  2. `PODIO_ADD_DATAMODEL_CORE_LIB` - compile the generated data model
+  3. `PODIO_ADD_ROOT_IO_DICT` - configure ROOT I/O backend and interface to Python
+  4. `PODIO_ADD_SIO_IO_BLOCKS` - configure SIO backend
 
 Their exact parameters and functionality are documented in the file mentioned above. Below a few examples.
 
