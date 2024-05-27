@@ -1399,12 +1399,21 @@ void testCloneEmptyRelations() {
   std::cout << newColl[1].Hits().size() << '\n';
   REQUIRE(newColl[0].Hits().empty());
   REQUIRE(newColl[1].Hits().empty());
+  newColl[0].addHits(ExampleHit());
+  REQUIRE(newColl[0].Hits().size() == 1);
+  newColl[0].addHits(ExampleHit());
+  REQUIRE(newColl[0].Hits().size() == 2);
 
   auto immCluster = ExampleCluster(coll.at(0));
   auto immCluster2 = ExampleCluster(coll.at(1));
-  REQUIRE(immCluster.clone(true).Hits().empty());
-  REQUIRE(immCluster2.clone(true).Hits().empty());
-
+  auto clonedImmCluster = immCluster.clone(true);
+  auto clonedImmCluster2 = immCluster2.clone(true);
+  REQUIRE(clonedImmCluster.Hits().empty());
+  REQUIRE(clonedImmCluster2.Hits().empty());
+  clonedImmCluster.addHits(ExampleHit());
+  REQUIRE(clonedImmCluster.Hits().size() == 1);
+  clonedImmCluster.addHits(ExampleHit());
+  REQUIRE(clonedImmCluster.Hits().size() == 2);
 }
 
 TEST_CASE("Clone empty relations", "[relations][basics]") {
