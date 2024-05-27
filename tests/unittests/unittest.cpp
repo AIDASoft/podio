@@ -1415,8 +1415,6 @@ void runRelationAfterCloneEqualCheck() {
   REQUIRE(newColl[0].daughters()[0] != newColl[0]);
   REQUIRE(newColl[0].daughters()[1] != newColl[1]);
   REQUIRE(newColl[1].parents()[0] != newColl[1]);
-
-
 }
 
 TEST_CASE("Relations after cloning with equal check", "[relations][basics]") {
