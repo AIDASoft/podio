@@ -16,7 +16,7 @@
 
 {{ utils.namespace_open(class.namespace) }}
 
-{{ macros.constructors_destructors(class.bare_type, Members, prefix='Mutable') }}
+{{ macros.constructors_destructors(class.bare_type, Members, multi_relations=OneToManyRelations + VectorMembers, prefix='Mutable') }}
 
 {{ macros.member_getters(class, Members, use_get_syntax, prefix='Mutable') }}
 {{ macros.single_relation_getters(class, OneToOneRelations, use_get_syntax, prefix='Mutable') }}

@@ -74,7 +74,7 @@
   {{  full_type }}& operator=({{ full_type }} other);
 
   /// create a mutable deep-copy of the object with identical relations
-  Mutable{{ type }} clone() const;
+  Mutable{{ type }} clone(bool emptyRelations=false) const;
 
   /// destructor
   ~{{  full_type }}() = default;

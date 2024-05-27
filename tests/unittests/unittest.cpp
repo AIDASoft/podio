@@ -1385,3 +1385,28 @@ TEST_CASE("Relations after cloning with SIO", "[relations][basics]") {
 }
 
 #endif
+
+void testCloneEmptyRelations() {
+  auto coll = ExampleClusterCollection();
+  coll.create();
+  coll.create();
+  coll[0].addHits(ExampleHit());
+  coll[0].addHits(ExampleHit());
+  auto newColl = ExampleClusterCollection();
+  newColl.push_back(coll.at(0).clone(true));
+  newColl.push_back(coll.at(1).clone(true));
+  std::cout << newColl[0].Hits().size() << '\n';
+  std::cout << newColl[1].Hits().size() << '\n';
+  REQUIRE(newColl[0].Hits().empty());
+  REQUIRE(newColl[1].Hits().empty());
+
+  auto immCluster = ExampleCluster(coll.at(0));
+  auto immCluster2 = ExampleCluster(coll.at(1));
+  REQUIRE(immCluster.clone(true).Hits().empty());
+  REQUIRE(immCluster2.clone(true).Hits().empty());
+
+}
+
+TEST_CASE("Clone empty relations", "[relations][basics]") {
+  testCloneEmptyRelations();
+}
