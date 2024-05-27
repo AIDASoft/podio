@@ -39,7 +39,7 @@ PODIO_ADD_DATAMODEL_CORE_LIB(newdm "${headers}" "${sources}")
 PODIO_ADD_ROOT_IO_DICT(newdmDict newmdm "${headers}" src/selection.xml)
 
 # compile the SIOBlocks shared library for the SIO backend
-PODIO_ADD_SIO_IO_BLOCKS(edm4hep "${headers}" "${sources}")
+PODIO_ADD_SIO_IO_BLOCKS(newdm "${headers}" "${sources}")
 ```
 
 For a complete example, please have a look at [EDM4hep](https://github.com/key4hep/EDM4hep/blob/main/edm4hep/CMakeLists.txt)
