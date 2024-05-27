@@ -151,14 +151,6 @@ void swap(MaybeSharedPtr<T>& a, MaybeSharedPtr<T>& b) {
   template <typename U>                                                                                                \
   bool operator op(const MaybeSharedPtr<U>& lhs, const MaybeSharedPtr<U>& rhs) {                                       \
     return lhs.m_ptr op rhs.m_ptr;                                                                                     \
-  }                                                                                                                    \
-  template <typename U>                                                                                                \
-  bool operator op(const MaybeSharedPtr<U>& lhs, const U* rhs) {                                                       \
-    return lhs.m_ptr op rhs;                                                                                           \
-  }                                                                                                                    \
-  template <typename U>                                                                                                \
-  bool operator op(const U* lhs, const MaybeSharedPtr<U>& rhs) {                                                       \
-    return lhs op rhs.m_ptr;                                                                                           \
   }
 
 DEFINE_COMPARISON_OPERATOR(==)
