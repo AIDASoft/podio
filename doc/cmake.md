@@ -1,7 +1,7 @@
 # Building a new data model library with CMake
 
 PODIO exposes multiple CMake macros to enable the building of data model libraries.
-For a package developer tutorial on CMake, please have a look [here])https://hsf-training.github.io/hsf-training-cmake-webpage/). PODIO follows the same conventions used therein.
+For a package developer tutorial on CMake, please have a look [here](https://hsf-training.github.io/hsf-training-cmake-webpage/). PODIO follows the same conventions used therein.
 
 ## Exported CMake functions and macros
 The file [cmake/podioMacros.cmake](https://github.com/AIDASoft/podio/blob/master/cmake/podioMacros.cmake) provides the following functions for external use:
