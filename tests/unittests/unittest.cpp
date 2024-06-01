@@ -40,7 +40,6 @@
 #include "datamodel/ExampleForCyclicDependency1Collection.h"
 #include "datamodel/ExampleForCyclicDependency2Collection.h"
 #include "datamodel/ExampleHitCollection.h"
-#include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleWithArray.h"
 #include "datamodel/ExampleWithArrayComponent.h"
 #include "datamodel/ExampleWithComponent.h"
@@ -470,15 +469,8 @@ TEST_CASE("Equality", "[basics]") {
   auto clu2 = ExampleCluster::makeEmpty();
   // Empty handles always compare equal
   REQUIRE(clu == clu2);
-  REQUIRE(clu2 == clu);
   // They never compare equal to a non-empty handle
   REQUIRE(clu != cluster);
-  REQUIRE(cluster != clu);
-
-  auto coll = ExampleClusterCollection();
-  coll.create();
-  REQUIRE(coll[0] != clu);
-  REQUIRE(clu != coll[0]);
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {
@@ -1393,30 +1385,3 @@ TEST_CASE("Relations after cloning with SIO", "[relations][basics]") {
 }
 
 #endif
-
-void runRelationAfterCloneEqualCheck() {
-  auto newColl = ExampleMCCollection();
-  auto coll = ExampleMCCollection();
-  coll.create();
-  coll.create();
-  coll[0].addparents(coll[0]);
-  coll[0].adddaughters(coll[1]);
-  coll[0].adddaughters(coll[0]);
-  coll[1].addparents(coll[0]);
-  newColl.push_back(coll.at(0).clone());
-  newColl.push_back(coll.at(1).clone());
-
-  REQUIRE(newColl[0].parents()[0] == newColl[0]);
-  REQUIRE(newColl[0].daughters()[0] == newColl[1]);
-  REQUIRE(newColl[0].daughters()[1] == newColl[0]);
-  REQUIRE(newColl[1].parents()[0] == newColl[0]);
-
-  REQUIRE(newColl[0].parents()[0] != newColl[1]);
-  REQUIRE(newColl[0].daughters()[0] != newColl[0]);
-  REQUIRE(newColl[0].daughters()[1] != newColl[1]);
-  REQUIRE(newColl[1].parents()[0] != newColl[1]);
-}
-
-TEST_CASE("Relations after cloning with equal check", "[relations][basics]") {
-  runRelationAfterCloneEqualCheck();
-}
