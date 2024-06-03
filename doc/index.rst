@@ -18,5 +18,6 @@ Welcome to PODIO's documentation!
    advanced_topics.md
    templates.md
    python.md
+   collections_as_container.md
    cpp_api/api
    py_api/modules
