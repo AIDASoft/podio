@@ -105,41 +105,15 @@ if(NOT ROOT_CXX_STANDARD VERSION_EQUAL CMAKE_CXX_STANDARD)
   message(WARNING "You are trying to build podio with a different c++ standard than ROOT. C++${CMAKE_CXX_STANDARD} was required but ROOT was built with C++${ROOT_CXX_STANDARD}")
 endif()
 
-#Check if Python version detected matches the version used to build ROOT
-SET(Python_FIND_FRAMEWORK LAST)
-IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
-  # some cmake versions don't include python patch level in PYTHON_VERSION
-  IF(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0 AND CMAKE_VERSION VERSION_LESS_EQUAL 3.17.2)
-    string(REGEX MATCH [23]\.[0-9]+ REQUIRE_PYTHON_VERSION ${ROOT_PYTHON_VERSION})
-  ELSE()
-    SET(REQUIRE_PYTHON_VERSION ${ROOT_PYTHON_VERSION})
-  ENDIF()
-  message( STATUS "Python version used for building ROOT ${ROOT_PYTHON_VERSION}" )
-  message( STATUS "Required python version ${REQUIRE_PYTHON_VERSION}")
-
-  if(NOT PODIO_RELAX_PYVER)
-    find_package(Python ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development Interpreter)
-  else()
-    find_package(Python ${REQUIRE_PYTHON_VERSION} REQUIRED COMPONENTS Development Interpreter)
-    string(REPLACE "." ";" _root_pyver_tuple ${REQUIRE_PYTHON_VERSION})
-    list(GET _root_pyver_tuple 0 _root_pyver_major)
-    list(GET _root_pyver_tuple 1 _root_pyver_minor)
-    if(NOT "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}" VERSION_EQUAL "${_root_pyver_major}.${_root_pyver_minor}")
-      message(FATAL_ERROR "There is a mismatch between the major and minor versions in Python"
-        " (found ${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}) and ROOT, compiled with "
-        "Python ${_root_pyver_major}.${_root_pyver_minor}")
-    endif()
-  endif()
-else()
-  find_package(Python COMPONENTS Development Interpreter)
-endif()
-
 # ROOT only sets usage requirements from 6.14, so for
 # earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
 if(ROOT_VERSION VERSION_LESS 6.14)
   set_property(TARGET ROOT::Core APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
 endif()
 list(APPEND PODIO_IO_HANDLERS ROOT)
+
+# python setup (including python package discovery and install dir)
+podio_python_setup()
 
 #--- enable podio macros--------------------------------------------------------
 include(cmake/podioMacros.cmake)
