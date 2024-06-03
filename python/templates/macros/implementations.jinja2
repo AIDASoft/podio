@@ -18,9 +18,9 @@
   return *this;
 }
 
-Mutable{{ type }} {{ full_type }}::clone(bool emptyRelations) const {
+Mutable{{ type }} {{ full_type }}::clone(bool cloneRelations) const {
 {% if prefix %}
-  if (emptyRelations) {
+  if (!cloneRelations) {
     auto tmp = new {{ type }}Obj(podio::ObjectID{}, m_obj->data);
 {% for relation in multi_relations %}
     tmp->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>();
@@ -35,7 +35,7 @@ Mutable{{ type }} {{ full_type }}::clone(bool emptyRelations) const {
 {% for relation in multi_relations %}
   tmp->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>();
 {% endfor %}
-  if (!emptyRelations) {
+  if (cloneRelations) {
 {% for relation in multi_relations %}
     // If the current object has been read from a file, then the object may only have a slice of the relation vector
     // so this slice has to be copied in case we want to modify it

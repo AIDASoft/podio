@@ -1386,15 +1386,15 @@ TEST_CASE("Relations after cloning with SIO", "[relations][basics]") {
 
 #endif
 
-void testCloneEmptyRelations() {
+TEST_CASE("Clone empty relations", "[relations][basics]") {
   auto coll = ExampleClusterCollection();
   coll.create();
   coll.create();
   coll[0].addHits(ExampleHit());
   coll[0].addHits(ExampleHit());
   auto newColl = ExampleClusterCollection();
-  newColl.push_back(coll.at(0).clone(true));
-  newColl.push_back(coll.at(1).clone(true));
+  newColl.push_back(coll.at(0).clone(false));
+  newColl.push_back(coll.at(1).clone(false));
   std::cout << newColl[0].Hits().size() << '\n';
   std::cout << newColl[1].Hits().size() << '\n';
   REQUIRE(newColl[0].Hits().empty());
@@ -1406,16 +1406,12 @@ void testCloneEmptyRelations() {
 
   auto immCluster = ExampleCluster(coll.at(0));
   auto immCluster2 = ExampleCluster(coll.at(1));
-  auto clonedImmCluster = immCluster.clone(true);
-  auto clonedImmCluster2 = immCluster2.clone(true);
+  auto clonedImmCluster = immCluster.clone(false);
+  auto clonedImmCluster2 = immCluster2.clone(false);
   REQUIRE(clonedImmCluster.Hits().empty());
   REQUIRE(clonedImmCluster2.Hits().empty());
   clonedImmCluster.addHits(ExampleHit());
   REQUIRE(clonedImmCluster.Hits().size() == 1);
   clonedImmCluster.addHits(ExampleHit());
   REQUIRE(clonedImmCluster.Hits().size() == 2);
-}
-
-TEST_CASE("Clone empty relations", "[relations][basics]") {
-  testCloneEmptyRelations();
 }
