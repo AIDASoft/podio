@@ -177,8 +177,11 @@ endmacro(ADD_CLANG_TIDY)
 # --- Macro to find a python version that is compatible with ROOT and to setup
 # --- the python install directory for the podio python sources
 #
-# The python install directory is exposed via the PODIO_PYTHON_INSTALL_DIR cmake
-# variable.
+# The python install directory is exposed via the podio_PYTHON_INSTALLDIR cmake
+# variable. It defaults to
+# CMAKE_INSTALL_PREFIX/lib[64]/pythonX.YY/site-packages/, where pythonX.YY is
+# the major.minor version of python and lib or lib64 is decided from checking
+# Python3_SITEARCH
 #
 # NOTE: This macro needs to be called **AFTER** find_package(ROOT) since that is
 # necessary to expose
@@ -212,4 +215,17 @@ else()
   find_package(Python3 COMPONENTS Development Interpreter)
 endif()
 
+# Setup the python install dir. See the discussion in
+# https://github.com/AIDASoft/podio/pull/599 for more details on why this is
+# done the way it is
+set(podio_python_lib_dir lib)
+if("${Python3_SITEARCH}" MATCHES "/lib64/")
+  set(podio_python_lib_dir lib64)
+endif()
+
+set(podio_PYTHON_INSTALLDIR
+  "${CMAKE_INSTALL_PREFIX}/${podio_python_lib_dir}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages"
+  CACHE STRING
+  "The install prefix for the python bindings and the generator and templates"
+)
 endmacro(podio_python_setup)
