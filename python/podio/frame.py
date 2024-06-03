@@ -12,59 +12,20 @@ import ROOT
 if ROOT.gInterpreter.LoadFile("podio/Frame.h") == 0:  # noqa: E402
     from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
-    _FRAME_HEADER_AVAILABLE = True
-else:
-    _FRAME_HEADER_AVAILABLE = False
 
-
-def _determine_supported_parameter_types():
-    """Determine the supported types for the parameters.
-
-    Returns:
-        tuple(tuple(str, str)): the tuple with the string representation of all
-            c++ and their corresponding python types that are supported
-    """
-    types_tuple = podio.SupportedGenericDataTypes()
-    n_types = cppyy.gbl.std.tuple_size[podio.SupportedGenericDataTypes].value
-
-    # Get the python types with the help of cppyy and the STL
-    py_types = [type(cppyy.gbl.std.get[i](types_tuple)).__name__ for i in range(n_types)]
-
-    def _determine_cpp_type(idx_and_type):
-        """Determine the actual c++ type from the python type name.
-
-        Mainly maps 'str' to 'std::string', and also determines whether a python
-        'float' is actually a 'double' or a 'float' in c++. The latter is necessary
-        since python only has float (corresponding to double in c++) and we
-        need the exact c++ type
-        """
-        idx, typename = idx_and_type
-        if typename == "float":
-            cpp_type = cppyy.gbl.std.tuple_element[idx, podio.SupportedGenericDataTypes].type
-            if cppyy.typeid(cpp_type).name() == "d":
-                return "double"
-            return "float"
-        if typename == "str":
-            return "std::string"
-        return typename
-
-    cpp_types = list(map(_determine_cpp_type, enumerate(py_types)))
-    return tuple(zip(cpp_types, py_types))
-
-
-if _FRAME_HEADER_AVAILABLE:
-    try:
-        SUPPORTED_PARAMETER_TYPES = _determine_supported_parameter_types()
-    except AttributeError:
-        # On macOS there is an issue that makes the template machinery not work
-        # so we just hard code the map here in case we hit that issue. See
-        # https://github.com/root-project/root/issues/14232
-        SUPPORTED_PARAMETER_TYPES = (
-            ("int", "int"),
-            ("float", "float"),
-            ("std::string", "str"),
-            ("double", "float"),
-        )
+# This is the list of supported types for the GenericParameters in both c++ and
+# python. It is used as a bi-directional map for converting between c++ and
+# python types. The mapping mostly takes care of mapping 'str' to 'std::string'
+# as well as 'double' to 'float' (since python does not have an actual 32 bit
+# floating point type).We are not determining this list from the
+# SupportedGenericDataTypes tuple dynamically since we are running into
+# https://github.com/root-project/root/issues/14232 otherwise
+SUPPORTED_PARAMETER_TYPES = (
+    ("int", "int"),
+    ("float", "float"),
+    ("std::string", "str"),
+    ("double", "float"),
+)
 
 
 def _get_cpp_types(type_str):
