@@ -196,9 +196,9 @@ IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION
   message( STATUS "Required python version ${REQUIRE_PYTHON_VERSION}")
 
   if(NOT PODIO_RELAX_PYVER)
-    find_package(Python ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development Interpreter)
+    find_package(Python3 ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development Interpreter)
   else()
-    find_package(Python ${REQUIRE_PYTHON_VERSION} REQUIRED COMPONENTS Development Interpreter)
+    find_package(Python3 ${REQUIRE_PYTHON_VERSION} REQUIRED COMPONENTS Development Interpreter)
     string(REPLACE "." ";" _root_pyver_tuple ${REQUIRE_PYTHON_VERSION})
     list(GET _root_pyver_tuple 0 _root_pyver_major)
     list(GET _root_pyver_tuple 1 _root_pyver_minor)
@@ -209,7 +209,7 @@ IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION
     endif()
   endif()
 else()
-  find_package(Python COMPONENTS Development Interpreter)
+  find_package(Python3 COMPONENTS Development Interpreter)
 endif()
 
 endmacro(podio_python_setup)
