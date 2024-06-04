@@ -173,3 +173,59 @@ macro(ADD_CLANG_TIDY)
     set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
   endif(CLANG_TIDY)
 endmacro(ADD_CLANG_TIDY)
+
+# --- Macro to find a python version that is compatible with ROOT and to setup
+# --- the python install directory for the podio python sources
+#
+# The python install directory is exposed via the podio_PYTHON_INSTALLDIR cmake
+# variable. It defaults to
+# CMAKE_INSTALL_PREFIX/lib[64]/pythonX.YY/site-packages/, where pythonX.YY is
+# the major.minor version of python and lib or lib64 is decided from checking
+# Python3_SITEARCH
+#
+# NOTE: This macro needs to be called **AFTER** find_package(ROOT) since that is
+# necessary to expose
+macro(podio_python_setup)
+#Check if Python version detected matches the version used to build ROOT
+SET(Python_FIND_FRAMEWORK LAST)
+IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
+  # some cmake versions don't include python patch level in PYTHON_VERSION
+  IF(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0 AND CMAKE_VERSION VERSION_LESS_EQUAL 3.17.2)
+    string(REGEX MATCH [23]\.[0-9]+ REQUIRE_PYTHON_VERSION ${ROOT_PYTHON_VERSION})
+  ELSE()
+    SET(REQUIRE_PYTHON_VERSION ${ROOT_PYTHON_VERSION})
+  ENDIF()
+  message( STATUS "Python version used for building ROOT ${ROOT_PYTHON_VERSION}" )
+  message( STATUS "Required python version ${REQUIRE_PYTHON_VERSION}")
+
+  if(NOT PODIO_RELAX_PYVER)
+    find_package(Python3 ${REQUIRE_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development Interpreter)
+  else()
+    find_package(Python3 ${REQUIRE_PYTHON_VERSION} REQUIRED COMPONENTS Development Interpreter)
+    string(REPLACE "." ";" _root_pyver_tuple ${REQUIRE_PYTHON_VERSION})
+    list(GET _root_pyver_tuple 0 _root_pyver_major)
+    list(GET _root_pyver_tuple 1 _root_pyver_minor)
+    if(NOT "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}" VERSION_EQUAL "${_root_pyver_major}.${_root_pyver_minor}")
+      message(FATAL_ERROR "There is a mismatch between the major and minor versions in Python"
+        " (found ${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}) and ROOT, compiled with "
+        "Python ${_root_pyver_major}.${_root_pyver_minor}")
+    endif()
+  endif()
+else()
+  find_package(Python3 COMPONENTS Development Interpreter)
+endif()
+
+# Setup the python install dir. See the discussion in
+# https://github.com/AIDASoft/podio/pull/599 for more details on why this is
+# done the way it is
+set(podio_python_lib_dir lib)
+if("${Python3_SITEARCH}" MATCHES "/lib64/")
+  set(podio_python_lib_dir lib64)
+endif()
+
+set(podio_PYTHON_INSTALLDIR
+  "${CMAKE_INSTALL_PREFIX}/${podio_python_lib_dir}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages"
+  CACHE STRING
+  "The install prefix for the python bindings and the generator and templates"
+)
+endmacro(podio_python_setup)

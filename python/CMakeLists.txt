@@ -1,6 +1,3 @@
-SET(podio_PYTHON_INSTALLDIR python)
-SET(podio_PYTHON_INSTALLDIR ${podio_PYTHON_INSTALLDIR} PARENT_SCOPE)
-
 set(to_install
   podio_class_generator.py
   podio_schema_evolution.py
