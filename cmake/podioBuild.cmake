@@ -205,9 +205,9 @@ IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION
     string(REPLACE "." ";" _root_pyver_tuple ${REQUIRE_PYTHON_VERSION})
     list(GET _root_pyver_tuple 0 _root_pyver_major)
     list(GET _root_pyver_tuple 1 _root_pyver_minor)
-    if(NOT "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}" VERSION_EQUAL "${_root_pyver_major}.${_root_pyver_minor}")
+    if(NOT "${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}" VERSION_EQUAL "${_root_pyver_major}.${_root_pyver_minor}")
       message(FATAL_ERROR "There is a mismatch between the major and minor versions in Python"
-        " (found ${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}) and ROOT, compiled with "
+        " (found ${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}) and ROOT, compiled with "
         "Python ${_root_pyver_major}.${_root_pyver_minor}")
     endif()
   endif()
