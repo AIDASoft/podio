@@ -18,22 +18,41 @@
   return *this;
 }
 
-Mutable{{ type }} {{ full_type }}::clone() const {
+Mutable{{ type }} {{ full_type }}::clone(bool cloneRelations) const {
 {% if prefix %}
+  if (!cloneRelations) {
+    auto tmp = new {{ type }}Obj(podio::ObjectID{}, m_obj->data);
+{% for relation in multi_relations %}
+    tmp->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>();
+    tmp->data.{{ relation.name }}_begin = 0;
+    tmp->data.{{ relation.name }}_end = 0;
+{% endfor %}
+    return Mutable{{ type }}(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
+  }
   return Mutable{{ type }}(podio::utils::MaybeSharedPtr(new {{ type }}Obj(*m_obj), podio::utils::MarkOwned));
 {% else %}
   auto tmp = new {{ type }}Obj(podio::ObjectID{}, m_obj->data);
 {% for relation in multi_relations %}
   tmp->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>();
-  // If the current object has been read from a file, then the object may only have a slice of the relation vector
-  // so this slice has to be copied in case we want to modify it
-  tmp->m_{{ relation.name }}->reserve(m_obj->m_{{ relation.name }}->size());
-  for (size_t i = m_obj->data.{{ relation.name }}_begin; i < m_obj->data.{{ relation.name }}_end; i++) {
-    tmp->m_{{ relation.name }}->emplace_back((*m_obj->m_{{ relation.name }})[i]);
-  }
-  tmp->data.{{ relation.name }}_begin = 0;
-  tmp->data.{{ relation.name }}_end = tmp->m_{{ relation.name }}->size();
 {% endfor %}
+  if (cloneRelations) {
+{% for relation in multi_relations %}
+    // If the current object has been read from a file, then the object may only have a slice of the relation vector
+    // so this slice has to be copied in case we want to modify it
+    tmp->m_{{ relation.name }}->reserve(m_obj->m_{{ relation.name }}->size());
+    for (size_t i = m_obj->data.{{ relation.name }}_begin; i < m_obj->data.{{ relation.name }}_end; i++) {
+      tmp->m_{{ relation.name }}->emplace_back((*m_obj->m_{{ relation.name }})[i]);
+    }
+    tmp->data.{{ relation.name }}_begin = 0;
+    tmp->data.{{ relation.name }}_end = tmp->m_{{ relation.name }}->size();
+{% endfor %}
+  }
+  else {
+{% for relation in multi_relations %}
+    tmp->data.{{ relation.name }}_begin = 0;
+    tmp->data.{{ relation.name }}_end = 0;
+{% endfor %}
+  }
   return Mutable{{ type }}(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
 {% endif %}
 }

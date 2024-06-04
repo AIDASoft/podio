@@ -1385,3 +1385,31 @@ TEST_CASE("Relations after cloning with SIO", "[relations][basics]") {
 }
 
 #endif
+
+TEST_CASE("Clone empty relations", "[relations][basics]") {
+  auto coll = ExampleClusterCollection();
+  coll.create();
+  coll.create();
+  coll[0].addHits(ExampleHit());
+  coll[0].addHits(ExampleHit());
+  auto newColl = ExampleClusterCollection();
+  newColl.push_back(coll.at(0).clone(false));
+  newColl.push_back(coll.at(1).clone(false));
+  REQUIRE(newColl[0].Hits().empty());
+  REQUIRE(newColl[1].Hits().empty());
+  newColl[0].addHits(ExampleHit());
+  REQUIRE(newColl[0].Hits().size() == 1);
+  newColl[0].addHits(ExampleHit());
+  REQUIRE(newColl[0].Hits().size() == 2);
+
+  auto immCluster = ExampleCluster(coll.at(0));
+  auto immCluster2 = ExampleCluster(coll.at(1));
+  auto clonedImmCluster = immCluster.clone(false);
+  auto clonedImmCluster2 = immCluster2.clone(false);
+  REQUIRE(clonedImmCluster.Hits().empty());
+  REQUIRE(clonedImmCluster2.Hits().empty());
+  clonedImmCluster.addHits(ExampleHit());
+  REQUIRE(clonedImmCluster.Hits().size() == 1);
+  clonedImmCluster.addHits(ExampleHit());
+  REQUIRE(clonedImmCluster.Hits().size() == 2);
+}
