@@ -131,14 +131,20 @@ public:
 
   /// Get the contained value as the concrete type it was put in. This will
   /// throw a std::runtime_error if T is not the type of the currently held
-  /// value. Use holds to check beforehand if necessary  template<typename T>
+  /// value. Use isA to check beforehand if necessary
   template<typename T>
-  T getValue() const {
+  T as() const {
     if (!isA<T>()) {
       throw std::runtime_error("Cannot get value as object currently holds another type");
     }
     // We can safely cast here since we check types before
     return static_cast<Model<T>*>(m_self.get())->m_value;
+  }
+
+  template<typename T>
+  [[deprecated("Use 'as' instead.")]]
+  T getValue() const {
+    return as<T>();
   }
 
   friend bool operator==(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
