@@ -43,5 +43,3 @@ PODIO_ADD_SIO_IO_BLOCKS(newdm "${headers}" "${sources}")
 ```
 
 For a complete example, please have a look at [EDM4hep](https://github.com/key4hep/EDM4hep/blob/main/edm4hep/CMakeLists.txt)
-
-## More advanced data model generation
