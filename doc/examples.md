@@ -86,6 +86,16 @@ and via direct object access:
     }
 ```
 
+### Cloneing objects
+
+In order to clone objects it is necessary to use the `clone` method which
+returns a `Mutable` object again. `clone` takes a parameter `cloneRelations`
+which is defaulted to `true`. By default the relation information of the
+original object is simply copied over, changing this to `false` only copies the
+data but none of the relations.
+
+![](figures/object_clone.svg)
+
 ### Support for Notebook-Pattern
 
 The `notebook pattern` uses the assumption that it is better to create a small
