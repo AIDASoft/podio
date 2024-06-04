@@ -14,7 +14,7 @@ The file [cmake/podioMacros.cmake](https://github.com/AIDASoft/podio/blob/master
 Their exact parameters and functionality are documented in the file mentioned above. Below a few examples.
 
 ## A simple example
-After a proper `find_package(PODIO)`, the C++ code of the new data model `newdm` can be created and compiled via
+After a proper `find_package(podio REQUIRED)`, the C++ code of the new data model `newdm` can be created and compiled via
 
 ```cmake
 # generate the c++ code from the yaml definition
