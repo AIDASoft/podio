@@ -88,6 +88,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#object-creation-and-storage">Object Creation and Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#object-references">Object References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#looping-through-collections">Looping through Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cloneing-objects">Cloneing objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#podio-frame-container"><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#object-retrieval">Object Retrieval</a></li>
@@ -655,6 +656,15 @@ to objects in this collection are invalidated as well.</strong></p>
 <span class="w">    </span><span class="p">}</span>
 </pre></div>
 </div>
+</section>
+<section id="cloneing-objects">
+<h2>Cloneing objects<a class="headerlink" href="#cloneing-objects" title="Link to this heading"></a></h2>
+<p>In order to clone objects it is necessary to use the <code class="docutils literal notranslate"><span class="pre">clone</span></code> method which
+returns a <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> object again. <code class="docutils literal notranslate"><span class="pre">clone</span></code> takes a parameter <code class="docutils literal notranslate"><span class="pre">cloneRelations</span></code>
+which is defaulted to <code class="docutils literal notranslate"><span class="pre">true</span></code>. By default the relation information of the
+original object is simply copied over, changing this to <code class="docutils literal notranslate"><span class="pre">false</span></code> only copies the
+data but none of the relations.</p>
+<p><img alt="" src="_images/object_clone.svg" /></p>
 </section>
 <section id="support-for-notebook-pattern">
 <h2>Support for Notebook-Pattern<a class="headerlink" href="#support-for-notebook-pattern" title="Link to this heading"></a></h2>
