@@ -1395,8 +1395,6 @@ TEST_CASE("Clone empty relations", "[relations][basics]") {
   auto newColl = ExampleClusterCollection();
   newColl.push_back(coll.at(0).clone(false));
   newColl.push_back(coll.at(1).clone(false));
-  std::cout << newColl[0].Hits().size() << '\n';
-  std::cout << newColl[1].Hits().size() << '\n';
   REQUIRE(newColl[0].Hits().empty());
   REQUIRE(newColl[1].Hits().empty());
   newColl[0].addHits(ExampleHit());
