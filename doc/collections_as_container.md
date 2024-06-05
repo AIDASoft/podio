@@ -18,9 +18,9 @@ The following tables list the compliance of a PODIO generated collection with th
 | `value_type` | `T` | *[Erasable](https://en.cppreference.com/w/cpp/named_req/Erasable)* | ✔️ yes | Defined as an immutable user layer object type |
 | `reference` | `T&` | | ❌ no | Not defined |
 | `const_reference` | `const T&` | | ❌ no | Not defined |
-| `iterator` | Iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) convertible to `const_iterator` | ❌ no | Defined as podio `MutableCollectionIterator`. `iterator::value_type` not defined, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator)), not convertible to `const_iterator`|
-| `const_iterator` | Constant iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no | Defined as podio `CollectionIterator`. `const_iterator::value_type` not defined, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator))
-| `difference_type`| Signed integer | Must be the same as `std::iterator_traits::difference_type` for `iterator` and `const_iterator` | ❌ no | `std::iterator_traits::difference_type` not defined |
+| `iterator` | Iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) convertible to `const_iterator` | ❌ no | Defined as podio `MutableCollectionIterator`. Not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator)), not convertible to `const_iterator`|
+| `const_iterator` | Constant iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no | Defined as podio `CollectionIterator`. Not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator))
+| `difference_type`| Signed integer | Must be the same as `std::iterator_traits::difference_type` for `iterator` and `const_iterator` | ✔️ yes | |
 | `size_type` | Unsigned integer | Large enough to represent all positive values of `difference_type` | ✔️ yes | |
 
 ### Container member functions and operators
@@ -70,7 +70,7 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 
 | Named requirement | `iterator` | `const_iterator` |
 |-------------------|-----------------------|-----------------------------|
-| [LegacyIterator](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no ([see below](#legacyiterator)) | ❌ no ([see below](#legacyiterator)) |
+| [LegacyIterator](https://en.cppreference.com/w/cpp/named_req/Iterator) | ✔️ yes ([see below](#legacyiterator)) | ✔️ yes ([see below](#legacyiterator)) |
 | [LegacyInputIterator](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no ([see below](#legacyinputiterator)) | ❌ no ([see below](#legacyinputiterator)) |
 | [LegacyForwardIterator](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no ([see below](#legacyforwarditerator)) | ❌ no ([see below](#legacyforwarditerator)) |
 | [LegacyOutputIterator](https://en.cppreference.com/w/cpp/named_req/OutputIterator) | ❌ no ([see below](#legacyoutputiterator)) | ❌ no ([see below](#legacyoutputiterator)) |
@@ -100,11 +100,11 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 | [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ✔️ yes / ✔️ yes | |
 | [*Destructible*](https://en.cppreference.com/w/cpp/named_req/Destructible) | ✔️ yes / ✔️ yes | |
 | [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ✔️ yes / ✔️ yes | |
-| `std::iterator_traits::value_type` (Until C++20 ) | ❌ no / ❌ no | Not defined |
-| `std::iterator_traits::difference_type` | ❌ no / ❌ no | Not defined |
-| `std::iterator_traits::reference` | ❌ no / ❌ no | Not defined |
-| `std::iterator_traits::pointer` | ❌ no / ❌ no | Not defined |
-| `std::iterator_traits::iterator_category` | ❌ no / ❌ no | Not defined |
+| `std::iterator_traits::value_type` (Until C++20 ) | ✔️ yes / ✔️ yes | |
+| `std::iterator_traits::difference_type` | ✔️ yes / ✔️ yes | |
+| `std::iterator_traits::reference` | ✔️ yes / ✔️ yes | |
+| `std::iterator_traits::pointer` | ✔️ yes / ✔️ yes | |
+| `std::iterator_traits::iterator_category` | ✔️ yes / ✔️ yes | |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
@@ -115,17 +115,17 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*LegacyIterator*](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no / ❌ no | [See above](#legacyiterator) |
+| [*LegacyIterator*](https://en.cppreference.com/w/cpp/named_req/Iterator) | ✔️ yes / ✔️ yes | [See above](#legacyiterator) |
 | [*EqualityComparable*](https://en.cppreference.com/w/cpp/named_req/EqualityComparable) | ✔️ yes / ✔️ yes | |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
 | `i != j` | Contextually convertible to `bool` | Same as `!(i==j)` | ✔️ yes / ✔️ yes | |
-| `*i` | `reference`, convertible to `value_type` | | ❌ no / ❌ no | `reference` and `value_type` not defined |
+| `*i` | `reference`, convertible to `value_type` | | ✔️ yes / ✔️ yes | |
 | `i->m` | | Same as `(*i).m` | ✔️ yes / ✔️ yes | |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
 | `(void)r++` | | Same as `(void)++r` | ❌ no / ❌ no | Post-increment not defined |
-| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Post-increment and `value_type` not defined |
+| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Post-increment not defined |
 
 ### LegacyForwardIterator
 
@@ -135,20 +135,20 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 |-------------|-------------------------------------------|---------|
 | [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
 | [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Value initialization not defined |
-| If *mutable* iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` and `value_type` not defined |
+| If *mutable* iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` type is not a reference (`&` or `&&`) |
 | [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | References from dereferencing equal iterators aren't bound to the same object |
 | [Singular iterators](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | Value initialization not defined |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
 | `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Post-increment not defined |
-| `*i++` | `reference` | | ❌ no / ❌ no | Post-increment and `reference` not defined |
+| `*i++` | `reference` | | ❌ no / ❌ no | Post-increment not defined |
 
 ### LegacyOutputIterator
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*LegacyIterator*](https://en.cppreference.com/w/cpp/named_req/Iterator) | ❌ no / ❌ no | [See above](#legacyiterator) |
+| [*LegacyIterator*](https://en.cppreference.com/w/cpp/named_req/Iterator) | ✔️ yes / ✔️ yes | [See above](#legacyiterator) |
 | Is pointer type or class type | ✔️ yes / ✔️ yes | |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
