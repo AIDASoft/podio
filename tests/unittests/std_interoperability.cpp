@@ -448,19 +448,19 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
         // CopyConstructible
         // iterator
-        DOCUMENTED_STATIC_FAILURE(std::is_move_constructible_v<iterator>);
-        DOCUMENTED_STATIC_FAILURE(std::is_copy_constructible_v<iterator>);
+        STATIC_REQUIRE(std::is_move_constructible_v<iterator>);
+        STATIC_REQUIRE(std::is_copy_constructible_v<iterator>);
         // const_iterator
-        DOCUMENTED_STATIC_FAILURE(std::is_move_constructible_v<const_iterator>);
-        DOCUMENTED_STATIC_FAILURE(std::is_copy_constructible_v<const_iterator>);
+        STATIC_REQUIRE(std::is_move_constructible_v<const_iterator>);
+        STATIC_REQUIRE(std::is_copy_constructible_v<const_iterator>);
 
         // CopyAssignable
         // iterator
-        DOCUMENTED_STATIC_FAILURE(std::is_move_assignable_v<iterator>);
-        DOCUMENTED_STATIC_FAILURE(std::is_copy_assignable_v<iterator>);
+        STATIC_REQUIRE(std::is_move_assignable_v<iterator>);
+        STATIC_REQUIRE(std::is_copy_assignable_v<iterator>);
         // const_iterator
-        DOCUMENTED_STATIC_FAILURE(std::is_move_assignable_v<const_iterator>);
-        DOCUMENTED_STATIC_FAILURE(std::is_copy_assignable_v<const_iterator>);
+        STATIC_REQUIRE(std::is_move_assignable_v<const_iterator>);
+        STATIC_REQUIRE(std::is_copy_assignable_v<const_iterator>);
 
         // Destructible
         // iterator
@@ -470,9 +470,9 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
         // Swappable
         // iterator
-        DOCUMENTED_STATIC_FAILURE(std::is_swappable_v<iterator&>);
+        STATIC_REQUIRE(std::is_swappable_v<iterator&>);
         // const_iterator
-        DOCUMENTED_STATIC_FAILURE(std::is_swappable_v<const_iterator&>);
+        STATIC_REQUIRE(std::is_swappable_v<const_iterator&>);
 
 #if (__cplusplus < 202002L)
         // std::iterator_traits<It>::value_type (required prior to C++20)
@@ -670,11 +670,11 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       REQUIRE(*a == *b);
       REQUIRE(++a == ++b);
       REQUIRE(*a == *b);
-      DOCUMENTED_STATIC_FAILURE(std::is_copy_constructible_v<iterator>);
-      // auto a_copy = a;
-      // ++a_copy;
-      // REQUIRE(a == b);
-      // REQUIRE(*a == *b);
+      STATIC_REQUIRE(std::is_copy_constructible_v<iterator>);
+      auto a_copy = a;
+      ++a_copy;
+      REQUIRE(a == b);
+      REQUIRE(*a == *b);
 
       // const_iterator
       auto ca = coll.cbegin();
@@ -683,11 +683,11 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       REQUIRE(*ca == *cb);
       REQUIRE(++ca == ++cb);
       REQUIRE(*ca == *cb);
-      DOCUMENTED_STATIC_FAILURE(std::is_copy_constructible_v<const_iterator>);
-      // auto ca_copy = ca;
-      // ++ca_copy;
-      // REQUIRE(ca == cb);
-      // REQUIRE(*ca == *cb);
+      STATIC_REQUIRE(std::is_copy_constructible_v<const_iterator>);
+      auto ca_copy = ca;
+      ++ca_copy;
+      REQUIRE(ca == cb);
+      REQUIRE(*ca == *cb);
     }
 
     // Singular iterators

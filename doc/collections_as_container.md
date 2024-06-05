@@ -96,10 +96,10 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*CopyConstructible*](https://en.cppreference.com/w/cpp/named_req/CopyConstructible) | ❌ no / ❌ no | Move constructor and copy constructor not defined |
-| [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ❌ no / ❌ no | Move assignment and copy assignment not defined |
+| [*CopyConstructible*](https://en.cppreference.com/w/cpp/named_req/CopyConstructible) | ✔️ yes / ✔️ yes | |
+| [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ✔️ yes / ✔️ yes | |
 | [*Destructible*](https://en.cppreference.com/w/cpp/named_req/Destructible) | ✔️ yes / ✔️ yes | |
-| [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ❌ no / ❌ no | |
+| [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ✔️ yes / ✔️ yes | |
 | `std::iterator_traits::value_type` (Until C++20 ) | ❌ no / ❌ no | Not defined |
 | `std::iterator_traits::difference_type` | ❌ no / ❌ no | Not defined |
 | `std::iterator_traits::reference` | ❌ no / ❌ no | Not defined |
@@ -131,13 +131,12 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 
 In addition to the *LegacyForwardIterator* the C++ standard specifies also the *mutable LegacyForwardIterator*, which is both *LegacyForwardIterator* and *LegacyOutputIterator*. The term **mutable** used in this context doesn't imply mutability in the sense used in the PODIO.
 
-
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
 | [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
 | [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Value initialization not defined |
 | If *mutable* iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` and `value_type` not defined |
-| [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | Copy constructor not defined |
+| [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ✔️ yes / ✔️ yes | |
 | [Singular iterators](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | Value initialization not defined |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |

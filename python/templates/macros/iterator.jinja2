@@ -5,8 +5,11 @@ class {{ iterator_type }} {
 public:
   {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object({{ ptr_init }}), m_collection(collection) {}
 
-  {{ iterator_type }}(const {{ iterator_type }}&) = delete;
-  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = delete;
+  {{ iterator_type }}(const {{ iterator_type }}&) = default;
+  {{ iterator_type }}({{ iterator_type }}&&) = default;
+  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = default;
+  {{ iterator_type }}& operator=({{iterator_type}}&&) = default;
+  ~{{ iterator_type }}() = default;
 
   bool operator!=(const {{ iterator_type}}& x) const {
     return m_index != x.m_index; // TODO: may not be complete
