@@ -1,5 +1,5 @@
-#ifndef PODIO_UTILITIES_ROOT_HELPERS_H
-#define PODIO_UTILITIES_ROOT_HELPERS_H
+#ifndef PODIO_UTILITIES_ROOTHELPERS_H
+#define PODIO_UTILITIES_ROOTHELPERS_H
 
 #include "TBranch.h"
 
@@ -41,4 +41,4 @@ namespace root_utils {
 } // namespace root_utils
 } // namespace podio
 
-#endif // PODIO_UTILITIES_ROOT_HELPERS_H
+#endif // PODIO_UTILITIES_ROOTHELPERS_H
