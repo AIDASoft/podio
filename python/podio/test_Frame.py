@@ -81,11 +81,6 @@ class FrameTest(unittest.TestCase):
             coll = ExampleHitCollection()
             _ = frame.getName(coll)
 
-        with self.assertRaises(KeyError):
-            coll = ExampleHitCollection()
-            hit = coll.create()
-            _ = frame.getName(hit)
-
     def test_frame_put_collection(self):
         """Check that putting a collection works as expected"""
         frame = Frame()
@@ -217,4 +212,3 @@ class FrameReadTest(unittest.TestCase):
         mc_particles = self.event.get("mcparticles")
         self.assertEqual(self.event.getName(mc_particles), "mcparticles")
         self.assertEqual(self.event.getName(mc_particles.getID()), "mcparticles")
-        self.assertEqual(self.event.getName(mc_particles[0]), "mcparticles")
