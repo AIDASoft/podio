@@ -838,6 +838,26 @@ write. If None, all collections are written</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="podio.frame.Frame.getName">
+<span class="sig-name descname"><span class="pre">getName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.frame.Frame.getName" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the collection from the Frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token</strong> (<em>podio.CollectionBase</em><em> | </em><em>int</em>) – A collection or its ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The name of the collection inside the frame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If no collection can be found in the frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="podio.frame.Frame.get_param_info">
 <span class="sig-name descname"><span class="pre">get_param_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.frame.Frame.get_param_info" title="Link to this definition"></a></dt>
 <dd><p>Get the parameter type information stored under the given name.</p>
@@ -1223,6 +1243,26 @@ Frame based I/O into Frames for a more seamless transition.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>tuple(str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio.Frame.getName">
+<span class="sig-name descname"><span class="pre">getName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.Frame.getName" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the collection from the Frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token</strong> (<em>podio.CollectionBase</em><em> | </em><em>int</em>) – A collection or its ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The name of the collection inside the frame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If no collection can be found in the frame</p>
 </dd>
 </dl>
 </dd></dl>
