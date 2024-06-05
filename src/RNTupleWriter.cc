@@ -170,7 +170,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     // &const_cast<podio::GenericParameters&>(frame.getParameters()));
   }
 
-  auto params = frame.getParameters();
+  const auto& params = frame.getParameters();
   fillParams<int>(params, catInfo, entry.get());
   fillParams<float>(params, catInfo, entry.get());
   fillParams<double>(params, catInfo, entry.get());
