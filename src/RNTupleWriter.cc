@@ -44,7 +44,9 @@ root_utils::ParamStorage<T>& RNTupleWriter::getParamStorage(CategoryInfo& catInf
 template <typename T>
 void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo,
                                ROOT::Experimental::REntry* entry) {
-  auto& [keys, values] = getParamStorage<T>(catInfo);
+  auto& paramStorage = getParamStorage<T>(catInfo);
+  auto& keys = paramStorage.keys;
+  auto& values = paramStorage.values;
   keys = params.getKeys<T>();
   values = params.getValues<T>();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)

@@ -10,6 +10,7 @@
     <class name="podio::GenericParameters::MapType<float>"/>
     <class name="podio::GenericParameters::MapType<double>"/>
     <class name="podio::GenericParameters::MapType<std::string>"/>
+
     <class name="std::vector<std::tuple<int, std::string, bool, unsigned int>>"/>
     <class name="std::vector<std::tuple<int, std::string, bool, unsigned>>"/>
     <class name="std::vector<std::tuple<int, std::string, bool>>"/>
@@ -17,6 +18,12 @@
     <class name="std::vector<std::tuple<uint32_t, std::string, bool, unsigned int>>"/>
     <class name="std::vector<std::tuple<uint32_t, std::string, bool, unsigned>>"/>
     <class name="std::vector<std::tuple<uint32_t, std::string, bool>>"/>
+
+    <class name="std::vector<std::vector<std::string>>"/>
+    <class name="std::vector<std::vector<int>>"/>
+    <class name="std::vector<std::vector<float>>"/>
+    <class name="std::vector<std::vector<double>>"/>
+
     <class name="podio::CollectionBase"/>
     <class name="podio::CollectionIDTable">
         <field name="m_mutex" transient="true"/>
@@ -24,6 +31,7 @@
     <class name="podio::version::Version"/>
     <class name="podio::ObjectID"/>
     <class name="vector<podio::ObjectID>"/>
+
     <class name="podio::UserDataCollection<float>"/>
     <class name="podio::UserDataCollection<double>"/>
     <class name="podio::UserDataCollection<int8_t>"/>

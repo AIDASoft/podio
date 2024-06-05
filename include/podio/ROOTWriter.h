@@ -108,6 +108,13 @@ private:
     std::vector<root_utils::CollectionWriteInfoT> collInfo{}; ///< Collection info for this category
     podio::CollectionIDTable idTable{};                       ///< The collection id table for this category
     std::vector<std::string> collsToWrite{};                  ///< The collections to write for this category
+
+    // Storage for the keys & values of all the parameters of this category
+    // (resp. at least the current entry)
+    root_utils::ParamStorage<int> intParams{};
+    root_utils::ParamStorage<float> floatParams{};
+    root_utils::ParamStorage<double> doubleParams{};
+    root_utils::ParamStorage<std::string> stringParams{};
   };
 
   /// Initialize the branches for this category
@@ -117,9 +124,10 @@ private:
   /// Get the (potentially uninitialized category information for this category)
   CategoryInfo& getCategoryInfo(const std::string& category);
 
-  static void resetBranches(std::vector<root_utils::CollectionBranches>& branches,
-                            const std::vector<root_utils::StoreCollection>& collections,
-                            /*const*/ podio::GenericParameters* parameters);
+  static void resetBranches(CategoryInfo& categoryInfo, const std::vector<root_utils::StoreCollection>& collections);
+
+  /// Fill the parameter keys and values into the CategoryInfo storage
+  static void fillParams(CategoryInfo& catInfo, const GenericParameters& params);
 
   std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
