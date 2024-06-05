@@ -36,7 +36,34 @@ namespace root_utils {
   /// Pair of keys and values for one type of the ones that can be stored in
   /// GenericParameters
   template <typename T>
-  using ParamStorage = std::tuple<std::vector<std::string>, std::vector<std::vector<T>>>;
+  struct ParamStorage {
+    ParamStorage() = default;
+    ~ParamStorage() = default;
+    ParamStorage(const ParamStorage&) = delete;
+    ParamStorage& operator=(const ParamStorage&) = delete;
+    ParamStorage(ParamStorage&&) = default;
+    ParamStorage& operator=(ParamStorage&&) = default;
+
+    ParamStorage(const std::vector<std::string>& ks, const std::vector<std::vector<T>>& vs) : keys(ks), values(vs) {
+    }
+
+    auto keysPtr() {
+      m_keysPtr = &keys;
+      return &m_keysPtr;
+    }
+
+    auto valuesPtr() {
+      m_valuesPtr = &values;
+      return &m_valuesPtr;
+    }
+
+    std::vector<std::string> keys{};
+    std::vector<std::vector<T>> values{};
+
+  private:
+    std::vector<std::string>* m_keysPtr{nullptr};
+    std::vector<std::vector<T>>* m_valuesPtr{nullptr};
+  };
 
 } // namespace root_utils
 } // namespace podio
