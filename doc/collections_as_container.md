@@ -15,7 +15,7 @@ The following tables list the compliance of a PODIO generated collection with th
 
 | Name | Type | Requirements | Fulfilled by Collection? | Comment |
 |------|------|--------------|--------------------------|---------|
-| `value_type` | `T` | *[Erasable](https://en.cppreference.com/w/cpp/named_req/Erasable)* | ✔️ yes | Defined as immutable component type |
+| `value_type` | `T` | *[Erasable](https://en.cppreference.com/w/cpp/named_req/Erasable)* | ✔️ yes | Defined as an immutable user layer object type |
 | `reference` | `T&` |  | ❌ no | Not defined |
 | `const_reference` | `const T&` | | ❌ no | Not defined |
 | `iterator` | Iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) convertible to `const_iterator` | ❌ no | Defined as podio `MutableCollectionIterator`. `iterator::value_type` not defined, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator)), not convertible to `const_iterator`|
