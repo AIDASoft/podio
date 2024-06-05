@@ -5,13 +5,12 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
+#include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
 // ROOT specific includes
 #include "TChain.h"
 #include "TClass.h"
-#include "TFile.h"
-#include "TTree.h"
 #include "TTreeCache.h"
 
 #include <stdexcept>
@@ -27,22 +26,83 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<st
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
 
+template <typename T>
+struct TypeToBranchIndexOffset;
+
+template <>
+struct TypeToBranchIndexOffset<int> {
+  constexpr static int keys = 8;
+  constexpr static int values = 7;
+};
+
+template <>
+struct TypeToBranchIndexOffset<float> {
+  constexpr static int keys = 6;
+  constexpr static int values = 5;
+};
+
+template <>
+struct TypeToBranchIndexOffset<double> {
+  constexpr static int keys = 4;
+  constexpr static int values = 3;
+};
+
+template <>
+struct TypeToBranchIndexOffset<std::string> {
+  constexpr static int keys = 2;
+  constexpr static int values = 1;
+};
+
+template <typename T>
+void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericParameters& params, bool reloadBranches,
+                            unsigned int localEntry) {
+  const auto nBranches = catInfo.branches.size();
+  if (reloadBranches) {
+    auto& keyBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::keys].data;
+    keyBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPKeyName<T>());
+    auto& valueBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::values].data;
+    valueBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPValueName<T>());
+  }
+
+  auto keyBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::keys].data;
+  auto valueBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::values].data;
+
+  root_utils::ParamStorage<T> storage;
+  keyBranch->SetAddress(storage.keysPtr());
+  keyBranch->GetEntry(localEntry);
+  valueBranch->SetAddress(storage.valuesPtr());
+  valueBranch->GetEntry(localEntry);
+
+  for (size_t i = 0; i < storage.keys.size(); ++i) {
+    params.getMap<T>().emplace(std::move(storage.keys[i]), std::move(storage.values[i]));
+  }
+}
+
 GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catInfo, bool reloadBranches,
                                                   unsigned int localEntry) {
-  // Parameter branch is always the last one
-  auto& paramBranches = catInfo.branches.back();
-
-  // Make sure to have a valid branch pointer after switching trees in the chain
-  // as well as on the first event
-  if (reloadBranches) {
-    paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
-  }
-  auto* branch = paramBranches.data;
-
   GenericParameters params;
-  auto* emd = &params;
-  branch->SetAddress(&emd);
-  branch->GetEntry(localEntry);
+
+  if (m_fileVersion < podio::version::Version{0, 99, 99}) {
+    // Parameter branch is always the last one
+    auto& paramBranches = catInfo.branches.back();
+
+    // Make sure to have a valid branch pointer after switching trees in the chain
+    // as well as on the first event
+    if (reloadBranches) {
+      paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
+    }
+    auto* branch = paramBranches.data;
+
+    auto* emd = &params;
+    branch->SetAddress(&emd);
+    branch->GetEntry(localEntry);
+  } else {
+    readParams<int>(catInfo, params, reloadBranches, localEntry);
+    readParams<float>(catInfo, params, reloadBranches, localEntry);
+    readParams<double>(catInfo, params, reloadBranches, localEntry);
+    readParams<std::string>(catInfo, params, reloadBranches, localEntry);
+  }
+
   return params;
 }
 
@@ -162,13 +222,26 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
     std::tie(catInfo.branches, catInfo.storedClasses) =
         createCollectionBranches(catInfo.chain.get(), *catInfo.table, *collInfo);
   }
-
   delete collInfo;
 
   // Finally set up the branches for the parameters
-  root_utils::CollectionBranches paramBranches{};
-  paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
-  catInfo.branches.push_back(paramBranches);
+  if (m_fileVersion < podio::version::Version{0, 99, 99}) {
+    root_utils::CollectionBranches paramBranches{};
+    paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
+    catInfo.branches.push_back(paramBranches);
+  } else {
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intKeyName));
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intValueName));
+
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::floatKeyName));
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::floatValueName));
+
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::doubleKeyName));
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::doubleValueName));
+
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringKeyName));
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringValueName));
+  }
 }
 
 std::vector<std::string> getAvailableCategories(TChain* metaChain) {

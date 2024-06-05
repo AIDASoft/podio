@@ -156,6 +156,10 @@ private:
   /// Read the parameters for the entry specified in the passed CategoryInfo
   GenericParameters readEntryParameters(CategoryInfo& catInfo, bool reloadBranches, unsigned int localEntry);
 
+  template <typename T>
+  static void readParams(CategoryInfo& catInfo, podio::GenericParameters& params, bool reloadBranches,
+                         unsigned int localEntry);
+
   /// Read the data entry specified in the passed CategoryInfo, and increase the
   /// counter afterwards. In case the requested entry is larger than the
   /// available number of entries, return a nullptr.
