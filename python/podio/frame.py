@@ -129,7 +129,7 @@ class Frame:
                 return f"{tok:0>8x}"
             return _get_id(tok.getID())
 
-        raise KeyError(f"No collection name can be found in Frame for {_get_id(token)}")
+        raise KeyError(f"No collection name can be found in Frame for collection id: {_get_id(token)}")
 
     def put(self, collection, name):
         """Put the collection into the frame
