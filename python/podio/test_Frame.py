@@ -70,6 +70,17 @@ class FrameTest(unittest.TestCase):
             collection = [1, 2, 4]
             _ = frame.put(collection, "invalid_collection_type")
 
+    def test_frame_get_name_invalid_token(self):
+        """Check that trying to get the collection name raises an exception if
+        the collection is not known to the frame"""
+        frame = Frame()
+        with self.assertRaises(KeyError):
+            _ = frame.getName(42)
+
+        with self.assertRaises(KeyError):
+            coll = ExampleHitCollection()
+            _ = frame.getName(coll)
+
     def test_frame_put_collection(self):
         """Check that putting a collection works as expected"""
         frame = Frame()
@@ -195,3 +206,9 @@ class FrameReadTest(unittest.TestCase):
         )
         # as_type='float' will also retrieve double values (if the name is unambiguous)
         self.assertEqual(self.event.get_parameter("SomeVectorData", as_type="float"), [0.0, 0.0])
+
+    def test_frame_get_name(self):
+        """Check that retrieving the name of a collection works as expected"""
+        mc_particles = self.event.get("mcparticles")
+        self.assertEqual(self.event.getName(mc_particles), "mcparticles")
+        self.assertEqual(self.event.getName(mc_particles.getID()), "mcparticles")

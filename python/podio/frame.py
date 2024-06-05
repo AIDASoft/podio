@@ -107,6 +107,32 @@ class Frame:
             raise KeyError(f"Collection '{name}' is not available")
         return collection
 
+    def getName(self, token):
+        """Get the name of the collection from the Frame
+
+        Args:
+            token (podio.CollectionBase | int): A collection or its ID
+
+        Returns:
+            str: The name of the collection inside the frame
+
+        Raises:
+            KeyError: If no collection can be found in the frame
+
+        """
+        maybeName = self._frame.getName(token)
+        if maybeName.has_value():
+            return maybeName.value()
+
+        def _get_id(tok):
+            if isinstance(tok, int):
+                return f"{tok:0>8x}"
+            return _get_id(tok.getID())
+
+        raise KeyError(
+            f"No collection name can be found in Frame for collection id: {_get_id(token)}"
+        )
+
     def put(self, collection, name):
         """Put the collection into the frame
 
