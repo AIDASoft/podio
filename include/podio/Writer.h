@@ -2,12 +2,12 @@
 #define PODIO_WRITER_H
 
 #include "podio/Frame.h"
-#include "podio/podioVersion.h"
 
 namespace podio {
 
 class Writer {
 public:
+  // ROOT dictionary generation needs this to be public for some reason
   struct WriterConcept {
     virtual ~WriterConcept() = default;
 
@@ -19,8 +19,9 @@ public:
     virtual void finish() = 0;
   };
 
+private:
   template <typename T>
-  struct WriterModel final : public WriterConcept {
+  struct WriterModel final : WriterConcept {
     WriterModel(std::unique_ptr<T> writer) : m_writer(std::move(writer)) {
     }
     WriterModel(const WriterModel&) = delete;
@@ -51,6 +52,7 @@ public:
 
   std::unique_ptr<WriterConcept> m_self{nullptr};
 
+public:
   template <typename T>
   Writer(std::unique_ptr<T> reader) : m_self(std::make_unique<WriterModel<T>>(std::move(reader))) {
   }
