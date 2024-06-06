@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/DatamodelRegistry.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <tuple>
