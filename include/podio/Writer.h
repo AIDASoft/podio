@@ -11,11 +11,8 @@ public:
   struct WriterConcept {
     virtual ~WriterConcept() = default;
 
-    virtual void writeFrame(const podio::Frame& frame, const std::string& category) = 0;
     virtual void writeFrame(const podio::Frame& frame, const std::string& category,
                             const std::vector<std::string>& collections) = 0;
-    virtual void writeEvent(const podio::Frame& frame) = 0;
-    virtual void writeEvent(const podio::Frame& frame, const std::vector<std::string>& collections) = 0;
     virtual void finish() = 0;
   };
 
@@ -31,18 +28,9 @@ private:
 
     ~WriterModel() = default;
 
-    void writeFrame(const podio::Frame& frame, const std::string& category) override {
-      return m_writer->writeFrame(frame, category);
-    }
     void writeFrame(const podio::Frame& frame, const std::string& category,
                     const std::vector<std::string>& collections) override {
       return m_writer->writeFrame(frame, category, collections);
-    }
-    void writeEvent(const podio::Frame& frame) override {
-      return writeFrame(frame, podio::Category::Event);
-    }
-    void writeEvent(const podio::Frame& frame, const std::vector<std::string>& collections) override {
-      return writeFrame(frame, podio::Category::Event, collections);
     }
     void finish() override {
       return m_writer->finish();
@@ -65,16 +53,16 @@ public:
   ~Writer() = default;
 
   void writeFrame(const podio::Frame& frame, const std::string& category) {
-    return m_self->writeFrame(frame, category);
+    return m_self->writeFrame(frame, category, frame.getAvailableCollections());
   }
   void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collections) {
     return m_self->writeFrame(frame, category, collections);
   }
   void writeEvent(const podio::Frame& frame) {
-    return writeFrame(frame, podio::Category::Event);
+    writeFrame(frame, podio::Category::Event, frame.getAvailableCollections());
   }
   void writeEvent(const podio::Frame& frame, const std::vector<std::string>& collections) {
-    return writeFrame(frame, podio::Category::Event, collections);
+    writeFrame(frame, podio::Category::Event, collections);
   }
   void finish() {
     return m_self->finish();
