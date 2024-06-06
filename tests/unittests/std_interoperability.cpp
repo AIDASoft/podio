@@ -2,6 +2,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleHit.h"
 #include <catch2/catch_test_macros.hpp>
+#include <cstddef>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -413,9 +414,9 @@ TEST_CASE("Collection and iterator concepts") {
   SECTION("Iterator") {
     DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<iterator, CollectionType::value_type>);
-    DOCUMENTED_STATIC_FAILURE(std::weakly_incrementable<iterator>);
+    STATIC_REQUIRE(std::weakly_incrementable<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::incrementable<iterator>);
-    DOCUMENTED_STATIC_FAILURE(std::input_or_output_iterator<iterator>);
+    STATIC_REQUIRE(std::input_or_output_iterator<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::output_iterator<iterator, CollectionType::value_type>);
     DOCUMENTED_STATIC_FAILURE(std::forward_iterator<iterator>);
@@ -426,9 +427,9 @@ TEST_CASE("Collection and iterator concepts") {
   SECTION("Const_iterator") {
     DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<const_iterator, CollectionType::value_type>);
-    DOCUMENTED_STATIC_FAILURE(std::weakly_incrementable<const_iterator>);
+    STATIC_REQUIRE(std::weakly_incrementable<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::incrementable<const_iterator>);
-    DOCUMENTED_STATIC_FAILURE(std::input_or_output_iterator<const_iterator>);
+    STATIC_REQUIRE(std::input_or_output_iterator<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::input_iterator<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::output_iterator<const_iterator, CollectionType::value_type>);
     DOCUMENTED_STATIC_FAILURE(std::forward_iterator<const_iterator>);
@@ -586,37 +587,36 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       // (void)r++
       // iterator
       STATIC_REQUIRE(traits::has_preincrement_v<iterator>);
-      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
-      // STATIC_REQUIRE(
-      //     std::is_same_v<decltype((void)++std::declval<iterator&>()), decltype((void)std::declval<iterator&>()++)>);
+      STATIC_REQUIRE(traits::has_postincrement_v<iterator>);
+      STATIC_REQUIRE(
+          std::is_same_v<decltype((void)++std::declval<iterator&>()), decltype((void)std::declval<iterator&>()++)>);
       // const_iterator
       STATIC_REQUIRE(traits::has_preincrement_v<const_iterator>);
-      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
-      // STATIC_REQUIRE(std::is_same_v<decltype((void)++std::declval<const_iterator&>()),
-      //                               decltype((void)std::declval<const_iterator&>()++)>);
+      STATIC_REQUIRE(traits::has_postincrement_v<const_iterator>);
+      STATIC_REQUIRE(std::is_same_v<decltype((void)++std::declval<const_iterator&>()),
+                                    decltype((void)std::declval<const_iterator&>()++)>);
 
       // *r++
       // iterator
       STATIC_REQUIRE(traits::has_indirection_v<iterator>);
       STATIC_REQUIRE(traits::has_value_type_v<std::iterator_traits<iterator>>);
-      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
-      // STATIC_REQUIRE(
-      //     std::is_convertible_v<decltype(*std::declval<iterator&>()++), std::iterator_traits<iterator>::value_type>);
+      STATIC_REQUIRE(traits::has_postincrement_v<iterator>);
+      STATIC_REQUIRE(
+          std::is_convertible_v<decltype(*std::declval<iterator&>()++), std::iterator_traits<iterator>::value_type>);
       // const_iterator
       STATIC_REQUIRE(traits::has_indirection_v<const_iterator>);
       STATIC_REQUIRE(traits::has_value_type_v<std::iterator_traits<const_iterator>>);
-      DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
-      // STATIC_REQUIRE(std::is_convertible_v<decltype(*std::declval<const_iterator&>()++),
-      //                                      std::iterator_traits<const_iterator>::value_type>);
+      STATIC_REQUIRE(traits::has_postincrement_v<const_iterator>);
+      STATIC_REQUIRE(std::is_convertible_v<decltype(*std::declval<const_iterator&>()++),
+                                           std::iterator_traits<const_iterator>::value_type>);
 
       // iterator_category - not strictly necessary but advised
       // iterator
       STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
-      DOCUMENTED_STATIC_FAILURE(
-          std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+      STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
       // const_iterator
       STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
-      DOCUMENTED_STATIC_FAILURE(
+      STATIC_REQUIRE(
           std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<const_iterator>::iterator_category>);
 
     } // end of LegacyInputIterator
@@ -717,26 +717,24 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
     // i++
     // iterator
-    DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
-    // STATIC_REQUIRE(std::is_same_v<decltype(std::declval<iterator&>()++), iterator>);
+    STATIC_REQUIRE(traits::has_postincrement_v<iterator>);
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<iterator&>()++), iterator>);
     // const_iterator
-    DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
-    // STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const_iterator&>()++), const_iterator>);
+    STATIC_REQUIRE(traits::has_postincrement_v<const_iterator>);
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const_iterator&>()++), const_iterator>);
 
     // *i++
     // iterator
     STATIC_REQUIRE(traits::has_indirection_v<iterator>);
     STATIC_REQUIRE(traits::has_reference_v<std::iterator_traits<iterator>>);
-    DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
-    // STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<iterator&>()++),
-    // std::iterator_traits<iterator>::reference>);
+    STATIC_REQUIRE(traits::has_postincrement_v<iterator>);
+    STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<iterator&>()++), std::iterator_traits<iterator>::reference>);
     // const_iterator
     STATIC_REQUIRE(traits::has_indirection_v<const_iterator>);
     STATIC_REQUIRE(traits::has_reference_v<std::iterator_traits<const_iterator>>);
-    DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
-    // STATIC_REQUIRE(
-    //     std::is_same_v<decltype(*std::declval<const_iterator&>()++),
-    //     std::iterator_traits<const_iterator>::reference>);
+    STATIC_REQUIRE(traits::has_postincrement_v<const_iterator>);
+    STATIC_REQUIRE(
+        std::is_same_v<decltype(*std::declval<const_iterator&>()++), std::iterator_traits<const_iterator>::reference>);
 
     // iterator_category - not strictly necessary but advised
     // iterator
@@ -795,23 +793,39 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
     // r++
     // iterator
-    DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<iterator>);
-    // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator&>()++), const iterator&>);
+    STATIC_REQUIRE(traits::has_postincrement_v<iterator>);
+    STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<iterator&>()++), const iterator&>);
     // const_iterator
-    DOCUMENTED_STATIC_FAILURE(traits::has_postincrement_v<const_iterator>);
-    // STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<const_iterator&>()++), const const_iterator&>);
+    STATIC_REQUIRE(traits::has_postincrement_v<const_iterator>);
+    STATIC_REQUIRE(std::is_convertible_v<decltype(std::declval<const_iterator&>()++), const const_iterator&>);
 
     // *r++ = o
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type>);
-    DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::mutable_type>);
-    // TODO add runtime check for assignment validity like in '*r = o' case
+    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type::mutable_type>);
+    {
+      auto coll = CollectionType{};
+      auto item = coll.create(13ull, 0., 0., 0., 0.);
+      REQUIRE(coll.begin()->cellID() == 13ull);
+      auto new_item = CollectionType::value_type::mutable_type{42ull, 0., 0., 0., 0.};
+      *coll.begin()++ = new_item;
+      DOCUMENTED_FAILURE(coll.begin()->cellID() == 42ull);
+    }
     // const_iterator
-    DOCUMENTED_STATIC_FAILURE(
-        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type>);
-    DOCUMENTED_STATIC_FAILURE(
-        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::mutable_type>);
-    // TODO add runtime check for assignment validity like in '*r = o' case
+    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type>);
+    STATIC_REQUIRE(
+        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type::mutable_type>);
+    {
+      auto coll = CollectionType{};
+      auto item = coll.create(13ull, 0., 0., 0., 0.);
+      REQUIRE(coll.cbegin()->cellID() == 13ull);
+      auto new_item = CollectionType::value_type::mutable_type{42ull, 0., 0., 0., 0.};
+      *coll.cbegin()++ = new_item;
+      DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 42ull);
+      new_item.cellID(44ull);
+      *coll.cbegin()++ = static_cast<CollectionType::value_type>(new_item);
+      DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 44ull);
+    }
 
     // iterator_category - not strictly necessary but advised
     // Derived either from:
@@ -832,7 +846,6 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 }
 
 TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
-  auto coll = CollectionType();
   SECTION("Reverse iterator") {
     // iterator
     STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
@@ -860,6 +873,7 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     STATIC_REQUIRE(traits::has_push_back_v<CollectionType, const CollectionType::value_type&>);
     STATIC_REQUIRE(traits::has_push_back_v<CollectionType, CollectionType::value_type&&>);
 
+    auto coll = CollectionType();
     auto it = std::back_inserter(coll);
     // insert immutable to not-SubsetCollection
     REQUIRE_THROWS_AS(it = CollectionType::value_type{}, std::invalid_argument);
@@ -908,31 +922,46 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     // iterator
     STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
     STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
-    DOCUMENTED_STATIC_FAILURE(
-        std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+    STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
 #if (__cplusplus >= 202002L)
     DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
 #endif
-    // TODO add more checks here
+    STATIC_REQUIRE(std::is_same_v<iterator::reference, std::move_iterator<iterator>::reference>);
     // const_iterator
     STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
-    STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
-    DOCUMENTED_STATIC_FAILURE(
-        std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+    STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
+    STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<const_iterator>::iterator_category>);
 #if (__cplusplus >= 202002L)
-    DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
+    DOCUMENTED_STATIC_FAILURE(std::input_iterator<const_iterator>);
 #endif
-    // TODO add more checks here
+    STATIC_REQUIRE(std::is_same_v<const_iterator::reference, std::move_iterator<const_iterator>::reference>);
   }
 
 #if (__cplusplus >= 202002L)
   SECTION("Counted iterator") {
     // iterator
-    DOCUMENTED_STATIC_FAILURE(std::input_or_output_iterator<iterator>);
+    STATIC_REQUIRE(std::input_or_output_iterator<iterator>);
+    {
+      auto coll = CollectionType();
+      coll.create().cellID(42);
+      auto counted = std::counted_iterator(coll.begin(), coll.size());
+      REQUIRE(counted != std::default_sentinel);
+      REQUIRE(counted.count() == 1);
+      REQUIRE((*counted).cellID() == 42);
+      REQUIRE(++counted == std::default_sentinel);
+    }
     // TODO add runtime checks
     // const_iterator
-    DOCUMENTED_STATIC_FAILURE(std::input_or_output_iterator<const_iterator>);
-    // TODO add runtime checks
+    STATIC_REQUIRE(std::input_or_output_iterator<const_iterator>);
+    {
+      auto coll = CollectionType();
+      coll.create().cellID(42);
+      auto counted = std::counted_iterator(coll.cbegin(), coll.size());
+      REQUIRE(counted != std::default_sentinel);
+      REQUIRE(counted.count() == 1);
+      REQUIRE((*counted).cellID() == 42);
+      REQUIRE(++counted == std::default_sentinel);
+    }
   }
 #endif
 }

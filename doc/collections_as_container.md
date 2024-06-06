@@ -71,7 +71,7 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 | Named requirement | `iterator` | `const_iterator` |
 |-------------------|-----------------------|-----------------------------|
 | [LegacyIterator](https://en.cppreference.com/w/cpp/named_req/Iterator) | ✔️ yes ([see below](#legacyiterator)) | ✔️ yes ([see below](#legacyiterator)) |
-| [LegacyInputIterator](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no ([see below](#legacyinputiterator)) | ❌ no ([see below](#legacyinputiterator)) |
+| [LegacyInputIterator](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ✔️ yes ([see below](#legacyinputiterator)) | ✔️ yes ([see below](#legacyinputiterator)) |
 | [LegacyForwardIterator](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no ([see below](#legacyforwarditerator)) | ❌ no ([see below](#legacyforwarditerator)) |
 | [LegacyOutputIterator](https://en.cppreference.com/w/cpp/named_req/OutputIterator) | ❌ no ([see below](#legacyoutputiterator)) | ❌ no ([see below](#legacyoutputiterator)) |
 | [LegacyBidirectionalIterator](https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator) | ❌ no | ❌ no |
@@ -82,9 +82,9 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 |---------|------------------------|------------------------------|
 | `std::indirectly_readable` | ❌ no | ❌ no |
 | `std::indirectly_writable` | ❌ no | ❌ no |
-| `std::weakly_incrementable` | ❌ no | ❌ no |
+| `std::weakly_incrementable` | ✔️ yes | ✔️ yes |
 | `std::incrementable` | ❌ no | ❌ no |
-| `std::input_or_output_iterator` | ❌ no | ❌ no |
+| `std::input_or_output_iterator` | ✔️ yes | ✔️ yes |
 | `std::input_iterator` | ❌ no | ❌ no |
 | `std::output_iterator` | ❌ no | ❌ no |
 | `std::forward_iterator` | ❌ no | ❌ no |
@@ -124,8 +124,8 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 | `*i` | `reference`, convertible to `value_type` | | ✔️ yes / ✔️ yes | |
 | `i->m` | | Same as `(*i).m` | ✔️ yes / ✔️ yes | |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
-| `(void)r++` | | Same as `(void)++r` | ❌ no / ❌ no | Post-increment not defined |
-| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ❌ no / ❌ no | Post-increment not defined |
+| `(void)r++` | | Same as `(void)++r` | ✔️ yes / ✔️ yes | |
+| `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ✔️ yes / ✔️ yes | |
 
 ### LegacyForwardIterator
 
@@ -133,7 +133,7 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
-| [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
+| [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ✔️ yes / ✔️ yes | [See above](#legacyinputiterator)|
 | [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Value initialization not defined |
 | If *mutable* iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` type is not a reference (`&` or `&&`) |
 | [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | References from dereferencing equal iterators aren't bound to the same object |
@@ -141,8 +141,8 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ❌ no / ❌ no | Post-increment not defined |
-| `*i++` | `reference` | | ❌ no / ❌ no | Post-increment not defined |
+| `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ✔️ yes / ✔️ yes | |
+| `*i++` | `reference` | | ✔️ yes / ✔️ yes | |
 
 ### LegacyOutputIterator
 
@@ -155,8 +155,8 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 |------------|-------------|-----------|-------------------------------------------|---------|
 | `*r = o` | | | ❗ attention / ❗ attention | Defined but an assignment doesn't modify objects inside collection |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
-| `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ❌ no / ❌ no | Post-increment not defined |
-| `*r++ = o` | | Same as `*r = o; ++r;`| ❌ no / ❌ no | Post-increment not defined |
+| `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ✔️ yes / ✔️ yes | |
+| `*r++ = o` | | Same as `*r = o; ++r;`| ❗ attention / ❗ attention | Defined but an assignment doesn't modify objects inside collection |
 
 ## Collection iterators and standard iterator adaptors
 
@@ -166,9 +166,9 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `std::back_insert_iterator` | ❗ attention | Compatible only with SubsetCollections, otherwise throws `std::invalid_argument` |
 | `std::front_insert_iterator` | ❌ no | `push_front` not defined |
 | `std::insert_iterator` | ❌ no | `insert` not defined |
-| `std::const_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
-| `std::move_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
-| `std::counted_iterator` | ❌ no | `iterator` and `const_iterator` not `std::input_or_output_iterator` |
+| `std::const_iterator` (C++23) | ❌ no | C++23 not supported yet |
+| `std::move_iterator` | ✔️ yes | Limited usefulness since dereference returns `reference` not rvalue (`&&`) |
+| `std::counted_iterator` | ✔️ yes | |
 
 
 ## Collection and standard algorithms
