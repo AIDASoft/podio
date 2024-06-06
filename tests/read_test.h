@@ -39,7 +39,7 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
 }
 
 void processEvent(const podio::Frame& event, int eventNum, podio::version::Version fileVersion) {
-  const float evtWeight = event.getParameter<float>("UserEventWeight");
+  const float evtWeight = event.getParameter<float>("UserEventWeight").value();
   if (evtWeight != (float)100. * eventNum) {
     std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float)100. * eventNum << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
@@ -47,7 +47,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   std::stringstream ss;
   ss << " event_number_" << eventNum;
-  const auto& evtName = event.getParameter<std::string>("UserEventName");
+  const auto evtName = event.getParameter<std::string>("UserEventName").value();
 
   if (evtName != ss.str()) {
     std::cout << " read UserEventName: " << evtName << " - expected : " << ss.str() << std::endl;
@@ -55,7 +55,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   if (fileVersion > podio::version::Version{0, 14, 1}) {
-    const auto& someVectorData = event.getParameter<std::vector<int>>("SomeVectorData");
+    const auto someVectorData = event.getParameter<std::vector<int>>("SomeVectorData").value();
     if (someVectorData.size() != 4) {
       throw std::runtime_error("Couldn't read event meta data parameters: 'SomeVectorData'");
     }
@@ -67,7 +67,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   if (fileVersion > podio::version::Version{0, 16, 2}) {
-    const auto& doubleParams = event.getParameter<std::vector<double>>("SomeVectorData");
+    const auto doubleParams = event.getParameter<std::vector<double>>("SomeVectorData").value();
     if (doubleParams.size() != 2 || doubleParams[0] != eventNum * 1.1 || doubleParams[1] != eventNum * 2.2) {
       throw std::runtime_error("Could not read event parameter: 'SomeDoubleValues' correctly");
     }

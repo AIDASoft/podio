@@ -33,13 +33,13 @@ TEST_CASE("Frame parameters", "[frame][basics]") {
   REQUIRE(event.getParameter<std::string>("aString") == "from a string literal");
 
   event.putParameter("someInts", {42, 123});
-  const auto& ints = event.getParameter<std::vector<int>>("someInts");
+  const auto ints = event.getParameter<std::vector<int>>("someInts").value();
   REQUIRE(ints.size() == 2);
   REQUIRE(ints[0] == 42);
   REQUIRE(ints[1] == 123);
 
   event.putParameter("someStrings", {"one", "two", "three"});
-  const auto& strings = event.getParameter<std::vector<std::string>>("someStrings");
+  const auto strings = event.getParameter<std::vector<std::string>>("someStrings").value();
   REQUIRE(strings.size() == 3);
   REQUIRE(strings[0] == "one");
   REQUIRE(strings[1] == "two");
@@ -239,7 +239,7 @@ void checkFrame(const podio::Frame& frame) {
   REQUIRE(clusters[1].Clusters()[0] == clusters[0]);
 
   REQUIRE(frame.getParameter<int>("anInt") == 42);
-  auto& floats = frame.getParameter<std::vector<float>>("someFloats");
+  const auto floats = frame.getParameter<std::vector<float>>("someFloats").value();
   REQUIRE(floats.size() == 3);
   REQUIRE(floats[0] == 1.23f);
   REQUIRE(floats[1] == 2.34f);
@@ -339,7 +339,7 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
       frame.putParameter(makeName("string", i), std::to_string(i));
       CHECK_INCREASE(frame.getParameter<std::string>("string_par") == "some string", successes[i]);
 
-      const auto& floatPars = frame.getParameter<std::vector<float>>("float_pars");
+      const auto floatPars = frame.getParameter<std::vector<float>>("float_pars").value();
       CHECK_INCREASE(floatPars.size() == 3, successes[i]);
       CHECK_INCREASE(floatPars[0] == 1.23f, successes[i]);
       CHECK_INCREASE(floatPars[1] == 4.56f, successes[i]);

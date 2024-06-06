@@ -9,14 +9,17 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <vector>
 
+#if PODIO_ENABLE_SIO
 namespace sio {
 class read_device;
 class write_device;
 using version_type = uint32_t; // from sio/definitions
 } // namespace sio
+#endif
 
 #if PODIO_ENABLE_RNTUPLE
 namespace podio {
@@ -38,33 +41,6 @@ static constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, Su
 /// should only be present for actually supported data types
 template <typename T>
 using EnableIfValidGenericDataType = typename std::enable_if_t<isSupportedGenericDataType<T>>;
-
-namespace detail {
-  /// Helper struct to determine how to return different types from the
-  /// GenericParameters to avoid unnecessary copies but also to prohibit carrying
-  /// around const references to ints or floats
-  template <typename T>
-  struct GenericDataReturnTypeHelper {
-    using type = T;
-  };
-
-  /// Specialization for std::string. Those will always be returned by const ref
-  template <>
-  struct GenericDataReturnTypeHelper<std::string> {
-    using type = const std::string&;
-  };
-
-  /// Specialization for std::vector. Those will always be returned by const ref
-  template <typename T>
-  struct GenericDataReturnTypeHelper<std::vector<T>> {
-    using type = const std::vector<T>&;
-  };
-} // namespace detail
-
-/// Alias template for determining the appropriate return type for the passed in
-/// type
-template <typename T>
-using GenericDataReturnType = typename detail::GenericDataReturnTypeHelper<T>::type;
 
 /// GenericParameters objects allow one to store generic named parameters of type
 ///  int, float and string or vectors of these types.
@@ -98,29 +74,27 @@ public:
 
   ~GenericParameters() = default;
 
-  /// Get the value that is stored under the given key, by const reference or by
-  /// value depending on the desired type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
-  GenericDataReturnType<T> getValue(const std::string&) const;
+  std::optional<T> get(const std::string& key) const;
 
   /// Store (a copy of) the passed value under the given key
   template <typename T, typename = EnableIfValidGenericDataType<T>>
-  void setValue(const std::string& key, T value);
+  void set(const std::string& key, T value);
 
   /// Overload for catching const char* setting for string values
-  void setValue(const std::string& key, std::string value) {
-    setValue<std::string>(key, std::move(value));
+  void set(const std::string& key, std::string value) {
+    set<std::string>(key, std::move(value));
   }
 
   /// Overload for catching initializer list setting of string vector values
-  void setValue(const std::string& key, std::vector<std::string> values) {
-    setValue<std::vector<std::string>>(key, std::move(values));
+  void set(const std::string& key, std::vector<std::string> values) {
+    set<std::vector<std::string>>(key, std::move(values));
   }
 
   /// Overload for catching initializer list setting for vector values
   template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
-  void setValue(const std::string& key, std::initializer_list<T>&& values) {
-    setValue<std::vector<T>>(key, std::move(values));
+  void set(const std::string& key, std::initializer_list<T>&& values) {
+    set<std::vector<T>>(key, std::move(values));
   }
 
   /// Get the number of elements stored under the given key for a type
@@ -145,8 +119,10 @@ public:
     return _intMap.empty() && _floatMap.empty() && _stringMap.empty();
   }
 
+#if PODIO_ENABLE_SIO
   friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
   friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
+#endif
 
 #if PODIO_ENABLE_RNTUPLE
   friend RNTupleReader;
@@ -168,7 +144,7 @@ public:
   }
 
 private:
-  /// Get a reference to the internal map for a given type (necessary for SIO)
+  /// Get a reference to the internal map for a given type
   template <typename T>
   MapType<detail::GetVectorType<T>>& getMap() {
     if constexpr (std::is_same_v<detail::GetVectorType<T>, int>) {
@@ -182,7 +158,6 @@ private:
     }
   }
 
-private:
   /// Get the mutex that guards the map for the given type
   template <typename T>
   std::mutex& getMutex() const {
@@ -209,16 +184,13 @@ private:
 };
 
 template <typename T, typename>
-GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) const {
+std::optional<T> GenericParameters::get(const std::string& key) const {
   const auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
   std::lock_guard lock{mtx};
   const auto it = map.find(key);
-  // If there is no entry to the key, we just return an empty default
-  // TODO: make this case detectable from the outside
   if (it == map.end()) {
-    static const auto empty = T{};
-    return empty;
+    return std::nullopt;
   }
 
   // We have to check whether the return type is a vector or a single value
@@ -231,7 +203,7 @@ GenericDataReturnType<T> GenericParameters::getValue(const std::string& key) con
 }
 
 template <typename T, typename>
-void GenericParameters::setValue(const std::string& key, T value) {
+void GenericParameters::set(const std::string& key, T value) {
   auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
 

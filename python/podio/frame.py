@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Module for the python bindings of the podio::Frame"""
 
+from copy import deepcopy
+
 import cppyy
 
 import ROOT
@@ -188,10 +190,12 @@ class Frame:
         """
 
         def _get_param_value(par_type, name):
-            par_value = self._frame.getParameter[par_type](name)
+            # We can safely assume that getting the value here works, because
+            # only valid keys will end up here
+            par_value = self._frame.getParameter[par_type](name).value()
             if len(par_value) == 1:
                 return par_value[0]
-            return list(par_value)
+            return list(deepcopy(par_value))
 
         # This access already raises the KeyError if there is no such parameter
         par_type = self._param_key_types[name]
