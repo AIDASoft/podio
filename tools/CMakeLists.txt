@@ -1,4 +1,10 @@
+add_executable(podio-dump-tool src/podio-dump-tool.cpp)
+target_link_libraries(podio-dump-tool PRIVATE podio::podio podio::podioIO fmt::fmt)
+
+install(TARGETS podio-dump-tool EXPORT podioTargets DESTINATION ${CMAKE_INSTALL_BINDIR})
+
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/json-to-yaml DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-vis DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(ENABLE_RNTUPLE)
   install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-ttree-to-rntuple DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -37,6 +43,10 @@ endif()
 
 # Add a very basic tests here to make sure that podio-dump at least runs
 if(BUILD_TESTING)
+  # Copy these two files into the build tree to be able to test things
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/json-to-yaml ${CMAKE_CURRENT_BINARY_DIR}/json-to-yaml COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/podio-dump ${CMAKE_CURRENT_BINARY_DIR}/podio-dump COPYONLY)
+
   # Helper function for easily creating "tests" that simply execute podio-dump
   # with different arguments. Not crashing is considered success.
   #
@@ -44,11 +54,11 @@ if(BUILD_TESTING)
   #     name        the name of the test
   #     depends_on  the target name of the test that produces the required input file
   function(CREATE_DUMP_TEST name depends_on)
-    add_test(NAME ${name} COMMAND ./podio-dump ${ARGN})
+    add_test(NAME ${name} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/podio-dump ${ARGN})
     PODIO_SET_TEST_ENV(${name})
 
     set_tests_properties(${name} PROPERTIES
-       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
        )
     if (depends_on)
       set_tests_properties(${name} PROPERTIES
@@ -69,7 +79,7 @@ if(BUILD_TESTING)
     set(_name podio-dump-legacy_${name}_${version})
     ExternalData_Add_Test(legacy_test_cases
       NAME ${_name}
-      COMMAND ./podio-dump ${ARGN} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
+      COMMAND ./podio-dump.py ${ARGN} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
     )
     PODIO_SET_TEST_ENV(${_name})
 

@@ -1,202 +1,37 @@
-#!/usr/bin/env python3
-"""podio-dump tool to dump contents of podio files"""
+#!/usr/bin/env bash
 
-import sys
-import json
-import yaml
+# Small wrapper script around the c++ executable that dumps the data and some
+# potential post-processing that is easier with python
 
-from tabulate import tabulate
+set -euo pipefail
 
-from podio_version import __version__
+THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+if ! ls "${THIS_DIR}"/podio-dump-tool > /dev/null 2>&1; then
+    echo "Could not find podio-dump-tool executable (has it been installed?)" >&2
+    exit 1
+fi
 
+ALL_ARGS=("$@")
+DUMP_MODEL=0
 
-def print_general_info(reader, filename):
-    """Print an overview of the file contents at the very beginning.
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --dump-edm*)
+            DUMP_MODEL=1
+            break
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
 
-    This prints things like the available categories (and how many entries they
-    have) as well as the filename, etc.
-
-    Args:
-        reader (root_io.Reader, sio_io.Reader): An initialized reader
-        filename (str): The name of the input file
-    """
-    legacy_text = " (this is a legacy file!)" if reader.is_legacy else ""
-    print(
-        f"input file: {filename}{legacy_text}\n"
-        "            (written with podio version: "
-        f"{reader.current_file_version()})\n"
-    )
-
-    print("datamodel model definitions stored in this file: ")
-    for edm_name in reader.datamodel_definitions:
-        try:
-            edm_version = reader.current_file_version(edm_name)
-            print(f" - {edm_name} ({edm_version})")
-        except KeyError:
-            print(f" - {edm_name}")
-
-    print()
-    print("Frame categories in this file:")
-    cats = [(c, len(reader.get(c))) for c in reader.categories]
-    print(tabulate(cats, headers=["Name", "Entries"]))
-
-
-def print_frame_detailed(frame):
-    """Print the Frame in all its glory, dumping every collection via print
-
-    Args:
-        frame (podio.Frame): The frame to print
-    """
-    print("Collections:")
-    for name in sorted(frame.getAvailableCollections(), key=str.casefold):
-        coll = frame.get(name)
-        print(name, flush=True)
-        coll.print()
-        print(flush=True)
-
-    print("\nParameters:", flush=True)
-    frame.get_parameters().print()
-    print(flush=True)
-
-
-def print_frame_overview(frame):
-    """Print a Frame overview, dumping just collection names, types and sizes
-
-    Args:
-        frame (podio.Frame): The frame to print
-    """
-    rows = []
-    for name in sorted(frame.getAvailableCollections(), key=str.casefold):
-        coll = frame.get(name)
-        rows.append((name, coll.getValueTypeName().data(), len(coll), f"{coll.getID():0>8x}"))
-    print("Collections:")
-    print(tabulate(rows, headers=["Name", "ValueType", "Size", "ID"]))
-
-    rows = []
-    for name in sorted(frame.parameters, key=str.casefold):
-        for par_type, n_pars in frame.get_param_info(name).items():
-            rows.append([name, par_type, n_pars])
-    print("\nParameters:")
-    print(tabulate(rows, headers=["Name", "Type", "Elements"]))
-
-
-def print_frame(frame, cat_name, ientry, detailed):
-    """Print a Frame.
-
-    Args:
-        frame (podio.Frame): The frame to print
-        cat_name (str): The category name
-        ientry (int): The entry number of this Frame
-        detailed (bool): Print just an overview or dump the whole contents
-    """
-    print("{:#^82}".format(f" {cat_name}: {ientry} "))  # pylint: disable=consider-using-f-string
-
-    if detailed:
-        print_frame_detailed(frame)
-    else:
-        print_frame_overview(frame)
-
-    # Additional new line before the next entry
-    print("\n", flush=True)
-
-
-def dump_model(reader, model_name):
-    """Dump the model in yaml format"""
-    if model_name not in reader.datamodel_definitions:
-        print(f"ERROR: Cannot dump model '{model_name}' (not present in file)")
-        return False
-
-    model_def = json.loads(reader.get_datamodel_definition(model_name))
-    print(yaml.dump(model_def, sort_keys=False, default_flow_style=False))
-
-    return True
-
-
-def main(args):
-    """Main"""
-    from podio.reading import get_reader  # pylint: disable=import-outside-toplevel
-
-    try:
-        reader = get_reader(args.inputfile)
-    except ValueError as err:
-        print(f"ERROR: Cannot open file '{args.inputfile}': {err}")
-        sys.exit(1)
-
-    if args.dump_edm is not None:
-        if dump_model(reader, args.dump_edm):
-            sys.exit(0)
-        else:
-            sys.exit(1)
-
-    print_general_info(reader, args.inputfile)
-    if args.category not in reader.categories:
-        print(f"ERROR: Cannot print category '{args.category}' (not present in file)")
-        sys.exit(1)
-
-    frames = reader.get(args.category)
-    for ient in args.entries:
-        try:
-            print_frame(frames[ient], args.category, ient, args.detailed)
-        except IndexError:
-            print(f'WARNING: Entry no. {ient} in "{args.category}" not present in the file!')
-
-
-def parse_entry_range(ent_string):
-    """Parse which entries to print"""
-    try:
-        return [int(ent_string)]
-    except ValueError:
-        pass
-
-    try:
-        return [int(i) for i in ent_string.split(",")]
-    except ValueError:
-        pass
-
-    try:
-        first, last = [int(i) for i in ent_string.split(":")]
-        return list(range(first, last + 1))
-    except ValueError:
-        pass
-
-    raise argparse.ArgumentTypeError(f"'{ent_string}' cannot be parsed into a list of entries")
-
-
-if __name__ == "__main__":
-    import argparse
-
-    # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
-    parser = argparse.ArgumentParser(description="Dump contents of a podio file to stdout")
-    parser.add_argument("inputfile", help="Name of the file to dump content from")
-    parser.add_argument(
-        "-c",
-        "--category",
-        help="Which Frame category to dump",
-        default="events",
-        type=str,
-    )
-    parser.add_argument(
-        "-e",
-        "--entries",
-        help="Which entries to print. A single number, comma separated list of numbers"
-        ' or "first:last" for an inclusive range of entries. Defaults to the first entry.',
-        type=parse_entry_range,
-        default=[0],
-    )
-    parser.add_argument(
-        "-d",
-        "--detailed",
-        help="Dump the full contents not just the collection info",
-        action="store_true",
-        default=False,
-    )
-    parser.add_argument(
-        "--dump-edm",
-        help="Dump the specified EDM definition from the file in yaml format",
-        type=str,
-        default=None,
-    )
-    parser.add_argument("--version", action="version", version=f"podio {__version__}")
-
-    clargs = parser.parse_args()
-    main(clargs)
+if [ ${DUMP_MODEL} = 1 ]; then
+    if ! ls "${THIS_DIR}"/json-to-yaml > /dev/null 2>&1; then
+        echo "Could not find the json-to-yaml executable (has it been instaled?)" >&2
+        exit 1
+    fi
+    "${THIS_DIR}"/podio-dump-tool "${ALL_ARGS[@]}" | "${THIS_DIR}"/json-to-yaml
+else
+    "${THIS_DIR}"/podio-dump-tool "${ALL_ARGS[@]}"
+fi
