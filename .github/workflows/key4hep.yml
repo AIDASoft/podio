@@ -15,13 +15,13 @@ jobs:
       matrix:
         include:
           - release: "sw-nightlies.hsf.org/key4hep"
-            RNTUPLE: ON
+
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v4
       with:
-        container: centos7
+        container: el9
         view-path: /cvmfs/${{ matrix.release }}
         run: |
           echo "::group::Run CMake"
@@ -33,7 +33,7 @@ jobs:
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=AUTO \
-            -DENABLE_RNTUPLE=${{ matrix.RNTUPLE }} \
+            -DENABLE_RNTUPLE=ON \
             -G Ninja ..
           echo "::endgroup::"
           echo "::group::Build"
