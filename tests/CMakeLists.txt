@@ -59,6 +59,7 @@ set(root_legacy_test_versions
   v00-16-02
   v00-16-05
   v00-16-06
+  v00-99
 )
 
 add_subdirectory(root_io)
@@ -66,6 +67,7 @@ if (ENABLE_SIO)
   set(sio_legacy_test_versions
     v00-16-05
     v00-16-06
+    v00-99
   )
 
   add_subdirectory(sio_io)
