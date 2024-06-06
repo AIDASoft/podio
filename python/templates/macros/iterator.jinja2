@@ -10,6 +10,7 @@ public:
   using iterator_category = std::input_iterator_tag;
 
   {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object({{ ptr_init }}), m_collection(collection) {}
+  {{ iterator_type }}(): {{ iterator_type }}(0, nullptr) {}
 
   {{ iterator_type }}(const {{ iterator_type }}&) = default;
   {{ iterator_type }}({{ iterator_type }}&&) = default;

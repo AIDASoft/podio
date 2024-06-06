@@ -83,7 +83,7 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 | `std::indirectly_readable` | ❌ no | ❌ no |
 | `std::indirectly_writable` | ❌ no | ❌ no |
 | `std::weakly_incrementable` | ✔️ yes | ✔️ yes |
-| `std::incrementable` | ❌ no | ❌ no |
+| `std::incrementable` | ✔️ yes | ✔️ yes |
 | `std::input_or_output_iterator` | ✔️ yes | ✔️ yes |
 | `std::input_iterator` | ❌ no | ❌ no |
 | `std::output_iterator` | ❌ no | ❌ no |
@@ -134,10 +134,10 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |-------------|-------------------------------------------|---------|
 | [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ✔️ yes / ✔️ yes | [See above](#legacyinputiterator)|
-| [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Value initialization not defined |
+| [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ✔️ yes / ✔️ yes | |
 | If *mutable* iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` type is not a reference (`&` or `&&`) |
 | [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | References from dereferencing equal iterators aren't bound to the same object |
-| [Singular iterators](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | Value initialization not defined |
+| [Singular iterators](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ✔️ yes / ✔️ yes | |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|

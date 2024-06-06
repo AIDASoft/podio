@@ -415,7 +415,7 @@ TEST_CASE("Collection and iterator concepts") {
     DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<iterator, CollectionType::value_type>);
     STATIC_REQUIRE(std::weakly_incrementable<iterator>);
-    DOCUMENTED_STATIC_FAILURE(std::incrementable<iterator>);
+    STATIC_REQUIRE(std::incrementable<iterator>);
     STATIC_REQUIRE(std::input_or_output_iterator<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
     DOCUMENTED_STATIC_FAILURE(std::output_iterator<iterator, CollectionType::value_type>);
@@ -428,7 +428,7 @@ TEST_CASE("Collection and iterator concepts") {
     DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<const_iterator, CollectionType::value_type>);
     STATIC_REQUIRE(std::weakly_incrementable<const_iterator>);
-    DOCUMENTED_STATIC_FAILURE(std::incrementable<const_iterator>);
+    STATIC_REQUIRE(std::incrementable<const_iterator>);
     STATIC_REQUIRE(std::input_or_output_iterator<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::input_iterator<const_iterator>);
     DOCUMENTED_STATIC_FAILURE(std::output_iterator<const_iterator, CollectionType::value_type>);
@@ -655,9 +655,9 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 
     // DefaultConstructible
     // iterator
-    DOCUMENTED_STATIC_FAILURE(std::is_default_constructible_v<iterator>);
+    STATIC_REQUIRE(std::is_default_constructible_v<iterator>);
     // const_iterator
-    DOCUMENTED_STATIC_FAILURE(std::is_default_constructible_v<const_iterator>);
+    STATIC_REQUIRE(std::is_default_constructible_v<const_iterator>);
 
     // Multipass guarantee
     // iterator
@@ -704,16 +704,12 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // Singular iterators
     // iterator
     STATIC_REQUIRE(traits::has_equality_comparator_v<iterator>);
-    DOCUMENTED_STATIC_FAILURE(std::is_default_constructible_v<iterator>);
-    //{
-    //  REQUIRE(iterator{} == iterator{});
-    //}
+    STATIC_REQUIRE(std::is_default_constructible_v<iterator>);
+    { REQUIRE(iterator{} == iterator{}); }
     // const_iterator
     STATIC_REQUIRE(traits::has_equality_comparator_v<const_iterator>);
-    DOCUMENTED_STATIC_FAILURE(std::is_default_constructible_v<const_iterator>);
-    //{
-    //  REQUIRE(const_iterator{} == const_iterator{});
-    //}
+    STATIC_REQUIRE(std::is_default_constructible_v<const_iterator>);
+    { REQUIRE(const_iterator{} == const_iterator{}); }
 
     // i++
     // iterator
