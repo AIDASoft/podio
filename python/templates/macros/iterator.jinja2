@@ -7,7 +7,7 @@ public:
   using difference_type = ptrdiff_t;
   using reference = {{ prefix }}{{ class.bare_type }};
   using pointer = {{ prefix }}{{ class.bare_type }}*;
-  using iterator_category = void;
+  using iterator_category = std::input_iterator_tag;
 
   {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object({{ ptr_init }}), m_collection(collection) {}
 
@@ -28,6 +28,7 @@ public:
   reference operator*();
   pointer operator->();
   {{ iterator_type }}& operator++();
+  {{ iterator_type }} operator++(int);
 
 private:
   size_t m_index;
@@ -54,6 +55,12 @@ private:
 {{ iterator_type }}& {{ iterator_type }}::operator++() {
   ++m_index;
   return *this;
+}
+
+{{ iterator_type }} {{ iterator_type }}::operator++(int) {
+  auto copy = *this;
+  ++m_index;
+  return copy;
 }
 
 {% endwith %}
