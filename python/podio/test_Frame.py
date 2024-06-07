@@ -41,6 +41,7 @@ EXPECTED_EXTENSION_COLL_NAMES = {
     "extension_ExternalComponent",
     "extension_ExternalRelation",
     "VectorMemberSubsetColl",
+    "interface_examples",
 }
 
 # The expected parameter names in each frame
