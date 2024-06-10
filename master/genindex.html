@@ -178,6 +178,27 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="collections_as_container.html">PODIO Collection as a <em>Container</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#container-types">Container Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#container-member-functions-and-operators">Container member functions and operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-as-an-allocatorawarecontainer">Collection as an <em>AllocatorAwareContainer</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#allocatorawarecontainer-types">AllocatorAwareContainer types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#allocatorawarecontainer-expression-and-statements"><em>AllocatorAwareContainer</em> expression and statements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-iterators-as-an-iterator">Collection iterators as an <em>Iterator</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#iterator-summary">Iterator summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyiterator">LegacyIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyinputiterator">LegacyInputIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyforwarditerator">LegacyForwardIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyoutputiterator">LegacyOutputIterator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#standard-range-algorithms">Standard range algorithms</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cpp_api/api.html">C++ API documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cpp_api/classlist.html">Class list</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -1112,6 +1133,8 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_collection_base.html#_CPPv4NK5podio14CollectionBase7isValidEv">podio::CollectionBase::isValid (C++ function)</a>, <a href="cpp_api/file/_collection_base_8h.html#_CPPv4NK5podio14CollectionBase7isValidEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio14CollectionBase7isValidEv">[2]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_collection_base.html#_CPPv4NK5podio14CollectionBase8max_sizeEv">podio::CollectionBase::max_size (C++ function)</a>, <a href="cpp_api/file/_collection_base_8h.html#_CPPv4NK5podio14CollectionBase8max_sizeEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio14CollectionBase8max_sizeEv">[2]</a>
+</li>
       <li><a href="cpp_api/class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseaSERK14CollectionBase">podio::CollectionBase::operator= (C++ function)</a>, <a href="cpp_api/file/_collection_base_8h.html#_CPPv4N5podio14CollectionBaseaSERK14CollectionBase">[1]</a>, <a href="cpp_api/file/_collection_base_8h.html#_CPPv4N5podio14CollectionBaseaSERR14CollectionBase">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio14CollectionBaseaSERK14CollectionBase">[3]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBase16prepareAfterReadEv">podio::CollectionBase::prepareAfterRead (C++ function)</a>, <a href="cpp_api/file/_collection_base_8h.html#_CPPv4N5podio14CollectionBase16prepareAfterReadEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio14CollectionBase16prepareAfterReadEv">[2]</a>
@@ -1774,8 +1797,6 @@
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader7m_tableE">podio::ROOTLegacyReader::m_table (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReader8openFileERKNSt6stringE">podio::ROOTLegacyReader::openFile (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader8openFileERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReader8openFileERKNSt6stringE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReader9openFilesERKNSt6vectorINSt6stringEEE">podio::ROOTLegacyReader::openFiles (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader9openFilesERKNSt6vectorINSt6stringEEE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReader9openFilesERKNSt6vectorINSt6stringEEE">[2]</a>
@@ -1784,6 +1805,8 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReader9readEntryERKNSt6stringEKj">podio::ROOTLegacyReader::readEntry (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader9readEntryERKNSt6stringEKj">[1]</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader9readEntryEv">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReader9readEntryERKNSt6stringEKj">[3]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader17readEventMetaDataEv">podio::ROOTLegacyReader::readEventMetaData (C++ function)</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReader13readNextEntryERKNSt6stringE">podio::ROOTLegacyReader::readNextEntry (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_legacy_reader_8h.html#_CPPv4N5podio16ROOTLegacyReader13readNextEntryERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio16ROOTLegacyReader13readNextEntryERKNSt6stringE">[2]</a>
@@ -2282,9 +2305,17 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection5beginEv">podio::UserDataCollection::begin (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4NK5podio18UserDataCollection5beginEv">[1]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection5beginEv">[2]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4NK5podio18UserDataCollection5beginEv">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection5beginEv">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio18UserDataCollection5beginEv">[5]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4NK5podio18UserDataCollection6cbeginEv">podio::UserDataCollection::cbegin (C++ function)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4NK5podio18UserDataCollection6cbeginEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio18UserDataCollection6cbeginEv">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4NK5podio18UserDataCollection4cendEv">podio::UserDataCollection::cend (C++ function)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4NK5podio18UserDataCollection4cendEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio18UserDataCollection4cendEv">[2]</a>
+</li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection5clearEv">podio::UserDataCollection::clear (C++ function)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection5clearEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection5clearEv">[2]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection14const_iteratorE">podio::UserDataCollection::const_iterator (C++ type)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection14const_iteratorE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection14const_iteratorE">[2]</a>
+</li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection12dataTypeNameE">podio::UserDataCollection::dataTypeName (C++ member)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection12dataTypeNameE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection12dataTypeNameE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection15difference_typeE">podio::UserDataCollection::difference_type (C++ type)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection15difference_typeE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection15difference_typeE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4NK5podio18UserDataCollection5emptyEv">podio::UserDataCollection::empty (C++ function)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4NK5podio18UserDataCollection5emptyEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio18UserDataCollection5emptyEv">[2]</a>
 </li>
@@ -2308,11 +2339,15 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4NK5podio18UserDataCollection7isValidEv">podio::UserDataCollection::isValid (C++ function)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4NK5podio18UserDataCollection7isValidEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio18UserDataCollection7isValidEv">[2]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection8iteratorE">podio::UserDataCollection::iterator (C++ type)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection8iteratorE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection8iteratorE">[2]</a>
+</li>
       <li><a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection14m_collectionIDE">podio::UserDataCollection::m_collectionID (C++ member)</a>
 </li>
       <li><a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection16m_refCollectionsE">podio::UserDataCollection::m_refCollections (C++ member)</a>
 </li>
       <li><a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection13m_vecmem_infoE">podio::UserDataCollection::m_vecmem_info (C++ member)</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4NK5podio18UserDataCollection8max_sizeEv">podio::UserDataCollection::max_size (C++ function)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4NK5podio18UserDataCollection8max_sizeEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio18UserDataCollection8max_sizeEv">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollectionaSERK18UserDataCollection">podio::UserDataCollection::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollectionaSERR18UserDataCollection">[1]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollectionaSERK18UserDataCollection">[2]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollectionaSERR18UserDataCollection">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollectionaSERK18UserDataCollection">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollectionaSERR18UserDataCollection">[5]</a>
 </li>
@@ -2338,9 +2373,13 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4NK5podio18UserDataCollection4sizeEv">podio::UserDataCollection::size (C++ function)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4NK5podio18UserDataCollection4sizeEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio18UserDataCollection4sizeEv">[2]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection9size_typeE">podio::UserDataCollection::size_type (C++ type)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection9size_typeE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection9size_typeE">[2]</a>
+</li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection8typeNameE">podio::UserDataCollection::typeName (C++ member)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection8typeNameE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection8typeNameE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERK18UserDataCollection">podio::UserDataCollection::UserDataCollection (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERR18UserDataCollection">[1]</a>, <a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERRNSt6vectorI9BasicTypeEE">[2]</a>, <a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionEv">[3]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERK18UserDataCollection">[4]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERR18UserDataCollection">[5]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERRNSt6vectorI9BasicTypeEE">[6]</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionEv">[7]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERK18UserDataCollection">[8]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERR18UserDataCollection">[9]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionERRNSt6vectorI9BasicTypeEE">[10]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection18UserDataCollectionEv">[11]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection10value_typeE">podio::UserDataCollection::value_type (C++ type)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection10value_typeE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection10value_typeE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4N5podio18UserDataCollection13valueTypeNameE">podio::UserDataCollection::valueTypeName (C++ member)</a>, <a href="cpp_api/file/_user_data_collection_8h.html#_CPPv4N5podio18UserDataCollection13valueTypeNameE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18UserDataCollection13valueTypeNameE">[2]</a>
 </li>

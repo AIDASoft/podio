@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples for Supported Interface &mdash; PODIO  documentation</title>
+  <title>PODIO Collection as a Container &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="The Frame concept" href="frame.html" />
-    <link rel="prev" title="Data Models and Data Model Definitions" href="datamodel_syntax.html" /> 
+    <link rel="next" title="C++ API documentation" href="cpp_api/api.html" />
+    <link rel="prev" title="Python interface for data models" href="python.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -83,17 +83,17 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples for Supported Interface</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#object-ownership">Object Ownership</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#object-creation-and-storage">Object Creation and Storage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#object-references">Object References</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#looping-through-collections">Looping through Collections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#cloneing-objects">Cloneing objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#podio-frame-container"><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#object-retrieval">Object Retrieval</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#user-defined-meta-data">User defined Meta Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#python-interface">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples for Supported Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#object-ownership">Object Ownership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#object-creation-and-storage">Object Creation and Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#object-references">Object References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#looping-through-collections">Looping through Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#cloneing-objects">Cloneing objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#podio-frame-container"><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#object-retrieval">Object Retrieval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#user-defined-meta-data">User defined Meta Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#python-interface">Python Interface</a></li>
 </ul>
 </li>
 </ul>
@@ -181,25 +181,25 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="collections_as_container.html">PODIO Collection as a <em>Container</em></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#container-types">Container Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#container-member-functions-and-operators">Container member functions and operators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-as-an-allocatorawarecontainer">Collection as an <em>AllocatorAwareContainer</em></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#allocatorawarecontainer-types">AllocatorAwareContainer types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#allocatorawarecontainer-expression-and-statements"><em>AllocatorAwareContainer</em> expression and statements</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PODIO Collection as a <em>Container</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#container-types">Container Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#container-member-functions-and-operators">Container member functions and operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collection-as-an-allocatorawarecontainer">Collection as an <em>AllocatorAwareContainer</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#allocatorawarecontainer-types">AllocatorAwareContainer types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allocatorawarecontainer-expression-and-statements"><em>AllocatorAwareContainer</em> expression and statements</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-iterators-as-an-iterator">Collection iterators as an <em>Iterator</em></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#iterator-summary">Iterator summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyiterator">LegacyIterator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyinputiterator">LegacyInputIterator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyforwarditerator">LegacyForwardIterator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyoutputiterator">LegacyOutputIterator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collection-iterators-as-an-iterator">Collection iterators as an <em>Iterator</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#iterator-summary">Iterator summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacyiterator">LegacyIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacyinputiterator">LegacyInputIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacyforwarditerator">LegacyForwardIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacyoutputiterator">LegacyOutputIterator</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#standard-range-algorithms">Standard range algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#standard-range-algorithms">Standard range algorithms</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cpp_api/api.html">C++ API documentation</a><ul>
@@ -600,7 +600,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Examples for Supported Interface</li>
+      <li class="breadcrumb-item active">PODIO Collection as a <em>Container</em></li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -609,148 +609,622 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="examples-for-supported-interface">
-<h1>Examples for Supported Interface<a class="headerlink" href="#examples-for-supported-interface" title="Link to this heading"></a></h1>
-<p>The following snippets show the support of PODIO for the different use cases as
-well as some potential pitfalls. These examples are mainly concerned with how
-collections of objects and the objects themselves interact. As such they are
-framework agnostic.</p>
-<section id="object-ownership">
-<h2>Object Ownership<a class="headerlink" href="#object-ownership" title="Link to this heading"></a></h2>
-<p>Every data created is either explicitly owned by collections or automatically garbage-collected. There is no need for any <code class="docutils literal notranslate"><span class="pre">new</span></code> or <code class="docutils literal notranslate"><span class="pre">delete</span></code> call on user side.
-As a general rule: <strong>If an object has been added to a collection, the collection
-assumes ownership and if the collection goes out of scope all handles that point
-to objects in this collection are invalidated as well.</strong></p>
+  <section id="podio-collection-as-a-container">
+<h1>PODIO Collection as a <em>Container</em><a class="headerlink" href="#podio-collection-as-a-container" title="Link to this heading"></a></h1>
+<p>Comparison of the PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code>s with a C++ named requirement <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Container"><em>Container</em></a>.</p>
+<p>The PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code>s interface was designed to mimic the standard <em>Container</em> interface, in particular <code class="docutils literal notranslate"><span class="pre">std::vector</span></code>. Perfect compliance with the <em>Container</em> is not achieved as the <code class="docutils literal notranslate"><span class="pre">Collection</span></code>s are concerned with additional semantics such as mutable/immutable element access, associations and relations, and IO which that are not part of <em>Container</em>.</p>
+<p>On the implementation level most of the differences with respect to the <em>Container</em> comes from the fact that in order to satisfy the additional semantics a <code class="docutils literal notranslate"><span class="pre">Collection</span></code> doesn’t directly store <a class="reference internal" href="design.html#the-user-layer"><span class="std std-ref">user layer objects</span></a>. Instead, <a class="reference internal" href="design.html#the-internal-data-layer"><span class="std std-ref">data layer objects</span></a> are stored and user layer objects are constructed and returned when needed. Similarly, the <code class="docutils literal notranslate"><span class="pre">Collection</span></code> iterators operate on the user layer objects but don’t expose <code class="docutils literal notranslate"><span class="pre">Collection</span></code>’s storage directly to the users. Instead, they construct and return user layer objects when needed.
+In other words, a <code class="docutils literal notranslate"><span class="pre">Collection</span></code> utilizes the user layer type as a reference type instead of using plain references (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code> or <code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code>) to stored data layer types.</p>
+<p>As a consequence some of the <strong>standard algorithms may not work</strong> with PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code> iterators.  See <a class="reference internal" href="#collection-and-standard-algorithms"><span class="xref myst">standard algorithm documentation</span></a> below.</p>
+<p>The following tables list the compliance of a PODIO generated collection with the <em>Container</em> named requirement, stating which member types, interfaces, or concepts are fulfilled and which are not. Additionally, there are some comments explaining missing parts or pointing out differences in behaviour.</p>
+<section id="container-types">
+<h2>Container Types<a class="headerlink" href="#container-types" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Requirements</p></th>
+<th class="head"><p>Fulfilled by Collection?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">value_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p><em><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Erasable">Erasable</a></em></p></td>
+<td><p>✔️ yes</p></td>
+<td><p>Defined as an immutable user layer object type</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T&amp;</span></code></p></td>
+<td><p></p></td>
+<td><p>❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">const_reference</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">T&amp;</span></code></p></td>
+<td><p></p></td>
+<td><p>❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code></p></td>
+<td><p>Iterator whose <code class="docutils literal notranslate"><span class="pre">value_type</span></code> is <code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> convertible to <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>Defined as podio <code class="docutils literal notranslate"><span class="pre">MutableCollectionIterator</span></code>. <code class="docutils literal notranslate"><span class="pre">iterator::value_type</span></code> not defined, not <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>), not convertible to <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
+<td><p>Constant iterator whose <code class="docutils literal notranslate"><span class="pre">value_type</span></code> is <code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a></p></td>
+<td><p>❌ no</p></td>
+<td><p>Defined as podio <code class="docutils literal notranslate"><span class="pre">CollectionIterator</span></code>. <code class="docutils literal notranslate"><span class="pre">const_iterator::value_type</span></code> not defined, not <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></p></td>
+<td><p>Signed integer</p></td>
+<td><p>Must be the same as <code class="docutils literal notranslate"><span class="pre">std::iterator_traits::difference_type</span></code> for <code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::difference_type</span></code> not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">size_type</span></code></p></td>
+<td><p>Unsigned integer</p></td>
+<td><p>Large enough to represent all positive values of <code class="docutils literal notranslate"><span class="pre">difference_type</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="object-creation-and-storage">
-<h2>Object Creation and Storage<a class="headerlink" href="#object-creation-and-storage" title="Link to this heading"></a></h2>
-<p>Objects and collections can be created via factories, which ensure proper object ownership:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HitCollection</span><span class="p">{};</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hit1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="mf">1.4</span><span class="p">,</span><span class="mf">2.4</span><span class="p">,</span><span class="mf">3.7</span><span class="p">,</span><span class="mf">4.2</span><span class="p">);</span><span class="w">  </span><span class="c1">// init with values</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hit2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">create</span><span class="p">();</span><span class="w"> </span><span class="c1">// default-construct object</span>
-<span class="w">    </span><span class="n">hit2</span><span class="p">.</span><span class="n">energy</span><span class="p">(</span><span class="mf">42.23</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>In addition, individual objects can be created in the free. If they aren’t attached to a collection, they are automatically garbage-collected:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hit1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Hit</span><span class="p">();</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hit2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Hit</span><span class="p">();</span>
-<span class="w">    </span><span class="p">...</span>
-<span class="w">    </span><span class="n">hits</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">hit1</span><span class="p">);</span>
-<span class="w">    </span><span class="p">...</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="n">automatic</span><span class="w"> </span><span class="n">deletion</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">hit2</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p>In this respect all objects behave like objects in Python.</p>
+<section id="container-member-functions-and-operators">
+<h2>Container member functions and operators<a class="headerlink" href="#container-member-functions-and-operators" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Expression</p></th>
+<th class="head"><p>Return type</p></th>
+<th class="head"><p>Semantics</p></th>
+<th class="head"><p>Fulfilled by Collection?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">C()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">C</span></code></p></td>
+<td><p>Creates an empty container</p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">C(a)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">C</span></code></p></td>
+<td><p>Creates a copy of <code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>Not defined, non-copyable by design</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">C(rv)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">C</span></code></p></td>
+<td><p>Moves <code class="docutils literal notranslate"><span class="pre">rv</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">b</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">C&amp;</span></code></p></td>
+<td><p>Destroys or copy-assigns all elements of <code class="docutils literal notranslate"><span class="pre">a</span></code> from elements of <code class="docutils literal notranslate"><span class="pre">b</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>Not defined, non-copyable by design</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">rv</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">C&amp;</span></code></p></td>
+<td><p>Destroys or move-assigns all elements of <code class="docutils literal notranslate"><span class="pre">a</span></code> from elements of <code class="docutils literal notranslate"><span class="pre">rv</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a.~C()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">void</span></code></p></td>
+<td><p>Destroys all elements of <code class="docutils literal notranslate"><span class="pre">a</span></code> and frees all memory</p></td>
+<td><p>✔️ yes</p></td>
+<td><p>Invalidates all handles retrieved from this collection</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a.begin()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(const_)iterator</span></code></p></td>
+<td><p>Iterator to the first element of <code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a.end()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(const_)iterator</span></code></p></td>
+<td><p>Iterator to one past the last element of <code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a.cbegin()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">const_cast&lt;const</span> <span class="pre">C&amp;&gt;(a).begin()</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a.cend()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">const_cast&lt;const</span> <span class="pre">C&amp;&gt;(a).end()</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">==</span> <span class="pre">b</span></code></p></td>
+<td><p>Convertible to <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">std::equal(a.begin(),</span> <span class="pre">a.end(),</span> <span class="pre">b.begin(),</span> <span class="pre">b.end())</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">!=</span> <span class="pre">b</span></code></p></td>
+<td><p>Convertible to <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">!(a</span> <span class="pre">==</span> <span class="pre">b)</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a.swap(b)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">void</span></code></p></td>
+<td><p>Exchanges the values of <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">swap(a,b)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">void</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">a.swap(b)</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a.swap(b)</span></code> not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a.size()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">size_type</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">std::distance(a.begin(),</span> <span class="pre">a.end())</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a.max_size()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">size_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b.size()</span></code> where b is the largest possible container</p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a.empty()</span></code></p></td>
+<td><p>Convertible to <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">a.begin()</span> <span class="pre">==</span> <span class="pre">a.end()</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="object-references">
-<h2>Object References<a class="headerlink" href="#object-references" title="Link to this heading"></a></h2>
-<p>The library supports the creation of one-to-many relations:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HitCollection</span><span class="p">{};</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hit1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">create</span><span class="p">();</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hit2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">create</span><span class="p">();</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">clusters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ClusterCollection</span><span class="p">{};</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clusters</span><span class="p">.</span><span class="n">create</span><span class="p">();</span>
-<span class="w">    </span><span class="n">cluster</span><span class="p">.</span><span class="n">addHit</span><span class="p">(</span><span class="n">hit1</span><span class="p">);</span>
-<span class="w">    </span><span class="n">cluster</span><span class="p">.</span><span class="n">addHit</span><span class="p">(</span><span class="n">hit2</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>The references can be accessed via iterators on the referencing objects</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cluster</span><span class="p">.</span><span class="n">Hits_begin</span><span class="p">(),</span><span class="w"> </span>\
-<span class="w">         </span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cluster</span><span class="p">.</span><span class="n">Hits_end</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">!=</span><span class="n">end</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">){</span>
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="o">-&gt;</span><span class="n">energy</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-</pre></div>
-</div>
-<p>or via direct accessors</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cluster</span><span class="p">.</span><span class="n">Hits_size</span><span class="p">();</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">hit</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">cluster</span><span class="p">.</span><span class="n">Hits</span><span class="p">(</span><span class="o">&lt;</span><span class="n">aNumber</span><span class="o">&gt;</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>If asking for an entry outside bounds, a <code class="docutils literal notranslate"><span class="pre">std::out_of_range</span></code> exception is thrown.</p>
+<section id="collection-as-an-allocatorawarecontainer">
+<h2>Collection as an <em>AllocatorAwareContainer</em><a class="headerlink" href="#collection-as-an-allocatorawarecontainer" title="Link to this heading"></a></h2>
+<p>The C++ standard specifies <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer">AllocatorAwareContainer</a> for containers that can use other allocators beside the default allocator.</p>
+<p>PODIO collections don’t provide a customization point for allocators and use only the default allocator. Therefore they are not <em>AllocatorAwareContainers</em>.</p>
+<section id="allocatorawarecontainer-types">
+<h3>AllocatorAwareContainer types<a class="headerlink" href="#allocatorawarecontainer-types" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Requirements</p></th>
+<th class="head"><p>Fulfilled by Collection?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">allocator_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">allocator_type::value_type</span></code> same as <code class="docutils literal notranslate"><span class="pre">value_type</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">allocator_type</span></code> not defined</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="looping-through-collections">
-<h2>Looping through Collections<a class="headerlink" href="#looping-through-collections" title="Link to this heading"></a></h2>
-<p>Looping through collections is supported in two ways. Via iterators:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">end</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">end</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="o">-&gt;</span><span class="n">energy</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-</pre></div>
-</div>
-<p>and via direct object access:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">){</span>
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">hit</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">energy</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-</pre></div>
-</div>
+<section id="allocatorawarecontainer-expression-and-statements">
+<h3><em>AllocatorAwareContainer</em> expression and statements<a class="headerlink" href="#allocatorawarecontainer-expression-and-statements" title="Link to this heading"></a></h3>
+<p>The PODIO Collections currently are not checked against expression and statements requirements for <em>AllocatorAwareContainer</em>.</p>
 </section>
-<section id="cloneing-objects">
-<h2>Cloneing objects<a class="headerlink" href="#cloneing-objects" title="Link to this heading"></a></h2>
-<p>In order to clone objects it is necessary to use the <code class="docutils literal notranslate"><span class="pre">clone</span></code> method which
-returns a <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> object again. <code class="docutils literal notranslate"><span class="pre">clone</span></code> takes a parameter <code class="docutils literal notranslate"><span class="pre">cloneRelations</span></code>
-which is defaulted to <code class="docutils literal notranslate"><span class="pre">true</span></code>. By default the relation information of the
-original object is simply copied over, changing this to <code class="docutils literal notranslate"><span class="pre">false</span></code> only copies the
-data but none of the relations.</p>
-<p><img alt="" src="_images/object_clone.svg" /></p>
 </section>
-<section id="support-for-notebook-pattern">
-<h2>Support for Notebook-Pattern<a class="headerlink" href="#support-for-notebook-pattern" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">notebook</span> <span class="pre">pattern</span></code> uses the assumption that it is better to create a small
-copy of only the data that are needed for a particular calculation. This
-pattern is supported by providing access like</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">x_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">x</span><span class="p">();</span><span class="w">   </span><span class="c1">// returning all values</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">y_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hits</span><span class="p">.</span><span class="n">y</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="c1">// or only the first 10 elements</span>
-</pre></div>
-</div>
-<p>The resulting <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> can then be used in (auto-)vectorizable code.
-Passing in a size argument is optional; If no argument is passed all elements will be returned,
-if an argument is passed only as many elements as requested will be returned.
-If the collection holds less elements than are requested, only as elements as are available will be returned.</p>
+<section id="collection-iterators-as-an-iterator">
+<h2>Collection iterators as an <em>Iterator</em><a class="headerlink" href="#collection-iterators-as-an-iterator" title="Link to this heading"></a></h2>
+<p>The C++ specifies a set of named requirements for iterators. Starting with C++20 the standard specifies also iterator concepts. The requirements imposed by the concepts and named requirements are similar but not identical.</p>
+<p>In the following tables a convention from <code class="docutils literal notranslate"><span class="pre">Collection</span></code> is used: <code class="docutils literal notranslate"><span class="pre">iterator</span></code> stands for PODIO <code class="docutils literal notranslate"><span class="pre">MutableCollectionIterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> stands for PODIO <code class="docutils literal notranslate"><span class="pre">CollectionIterator</span></code>.</p>
+<section id="iterator-summary">
+<h3>Iterator summary<a class="headerlink" href="#iterator-summary" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Named requirement</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator">LegacyIterator</a></p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyiterator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyiterator"><span class="xref myst">see below</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a></p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyinputiterator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyinputiterator"><span class="xref myst">see below</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a></p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/OutputIterator">LegacyOutputIterator</a></p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyoutputiterator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>❌ no (<a class="reference internal" href="#legacyoutputiterator"><span class="xref myst">see below</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterator</a></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator">LegacyRandomAccessIterator</a></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ContiguousIterator">LegacyContiguousIterator</a></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::indirectly_readable</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::indirectly_writable</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::weakly_incrementable</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::incrementable</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::input_or_output_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::output_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::forward_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::bidirectional_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::random_access_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::contiguous_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p>❌ no</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="podio-frame-container">
-<h2><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container<a class="headerlink" href="#podio-frame-container" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> is the main container for containing and grouping collections
-together. It has two main methods:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">/// Store a collection</span>
-<span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">put</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">coll</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
-
-<span class="w">    </span><span class="c1">/// access a collection</span>
-<span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
-<span class="w">    </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>Note that for <code class="docutils literal notranslate"><span class="pre">put</span></code>ting collections into the Frame an explicit <code class="docutils literal notranslate"><span class="pre">std::move</span></code> is
-necessary to highlight the change of ownership that happens in this case.</p>
+<section id="legacyiterator">
+<h3>LegacyIterator<a class="headerlink" href="#legacyiterator" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Requirement</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/CopyConstructible"><em>CopyConstructible</em></a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Move constructor and copy constructor not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/CopyAssignable"><em>CopyAssignable</em></a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Move assignment and copy assignment not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Destructible"><em>Destructible</em></a></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Swappable"><em>Swappable</em></a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::value_type</span></code> (Until C++20 )</p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::difference_type</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::reference</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::pointer</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::iterator_category</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Not defined</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Expression</p></th>
+<th class="head"><p>Return type</p></th>
+<th class="head"><p>Semantics</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*r</span></code></p></td>
+<td><p>Unspecified</p></td>
+<td><p></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">++r</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">It&amp;</span></code></p></td>
+<td><p></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="object-retrieval">
-<h2>Object Retrieval<a class="headerlink" href="#object-retrieval" title="Link to this heading"></a></h2>
-<p>Collections can be retrieved explicitly:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">hits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frame</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">HitCollection</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;hits&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">hits</span><span class="p">.</span><span class="n">isValid</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
-</pre></div>
-</div>
-<p>Or implicitly when following an object reference. In both cases the access to data that has been retrieved is <code class="docutils literal notranslate"><span class="pre">const</span></code>.</p>
+<section id="legacyinputiterator">
+<h3>LegacyInputIterator<a class="headerlink" href="#legacyinputiterator" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Requirement</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator"><em>LegacyIterator</em></a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p><a class="reference internal" href="#legacyiterator"><span class="xref myst">See above</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/EqualityComparable"><em>EqualityComparable</em></a></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Expression</p></th>
+<th class="head"><p>Return type</p></th>
+<th class="head"><p>Semantics</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">!=</span> <span class="pre">j</span></code></p></td>
+<td><p>Contextually convertible to <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">!(i==j)</span></code></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code>, convertible to <code class="docutils literal notranslate"><span class="pre">value_type</span></code></p></td>
+<td><p></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code> and <code class="docutils literal notranslate"><span class="pre">value_type</span></code> not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i-&gt;m</span></code></p></td>
+<td><p></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">(*i).m</span></code></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">++r</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">It&amp;</span></code></p></td>
+<td><p></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(void)r++</span></code></p></td>
+<td><p></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">(void)++r</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Post-increment not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*r++</span></code></p></td>
+<td><p>Convertible to <code class="docutils literal notranslate"><span class="pre">value_type</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">value_type</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">*r;</span> <span class="pre">++r;</span> <span class="pre">return</span> <span class="pre">x;</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Post-increment and <code class="docutils literal notranslate"><span class="pre">value_type</span></code> not defined</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="user-defined-meta-data">
-<h2>User defined Meta Data<a class="headerlink" href="#user-defined-meta-data" title="Link to this heading"></a></h2>
-<p>Sometimes it is necessary or useful to store additional data that is not directly foreseen in the EDM.
-This could be configuration parameters of simulation jobs, or parameter descriptions like cell-ID encoding etc. PODIO currently allows to store such meta data in terms of a <code class="docutils literal notranslate"><span class="pre">GenericParameters</span></code> class that
-holds an arbitrary number of named parameters of type <code class="docutils literal notranslate"><span class="pre">int,</span> <span class="pre">float,</span> <span class="pre">string</span></code> or vectors if these.
-Meta data can be stored and retrieved from the <code class="docutils literal notranslate"><span class="pre">Frame</span></code> via the templated <code class="docutils literal notranslate"><span class="pre">putParameter</span></code> and <code class="docutils literal notranslate"><span class="pre">getParameter</span></code> methods.</p>
-<section id="python-interface">
-<h3>Python Interface<a class="headerlink" href="#python-interface" title="Link to this heading"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">Reader</span></code> and <code class="docutils literal notranslate"><span class="pre">Writer</span></code> classes in the <code class="docutils literal notranslate"><span class="pre">root_io</span></code> and <code class="docutils literal notranslate"><span class="pre">sio_io</span></code> submodules
-provide all the necessary functionality to read and write event files. An
-example of reading files looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">podio.root_io</span> <span class="kn">import</span> <span class="n">Reader</span>
-    <span class="n">reader</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="s2">&quot;one or many input files&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">reader</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">):</span>
-      <span class="n">hits</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hits&quot;</span><span class="p">)</span>
-      <span class="k">for</span> <span class="n">hit</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
-        <span class="c1"># ...</span>
-</pre></div>
-</div>
+<section id="legacyforwarditerator">
+<h3>LegacyForwardIterator<a class="headerlink" href="#legacyforwarditerator" title="Link to this heading"></a></h3>
+<p>In addition to the <em>LegacyForwardIterator</em> the C++ standard specifies also the <em>mutable LegacyForwardIterator</em>, which is both <em>LegacyForwardIterator</em> and <em>LegacyOutputIterator</em>. The term <strong>mutable</strong> used in this context doesn’t imply mutability in the sense used in the PODIO.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Requirement</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><em>LegacyInputIterator</em></a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p><a class="reference internal" href="#legacyinputiterator"><span class="xref myst">See above</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/DefaultConstructible"><em>DefaultConstructible</em></a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Value initialization not defined</p></td>
+</tr>
+<tr class="row-even"><td><p>If <em>mutable</em> iterator then <code class="docutils literal notranslate"><span class="pre">reference</span></code> same as <code class="docutils literal notranslate"><span class="pre">value_type&amp;</span></code> or <code class="docutils literal notranslate"><span class="pre">value_type&amp;&amp;</span></code>, otherwise same as <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">value_type&amp;</span></code> or <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">value_type&amp;&amp;</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code> and <code class="docutils literal notranslate"><span class="pre">value_type</span></code> not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">Multipass guarantee</a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Copy constructor not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">Singular iterators</a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Value initialization not defined</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Expression</p></th>
+<th class="head"><p>Return type</p></th>
+<th class="head"><p>Semantics</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i++</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">It</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">It</span> <span class="pre">ip</span> <span class="pre">=</span> <span class="pre">i;</span> <span class="pre">++i;</span> <span class="pre">return</span> <span class="pre">ip;</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Post-increment not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*i++</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code></p></td>
+<td><p></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Post-increment and <code class="docutils literal notranslate"><span class="pre">reference</span></code> not defined</p></td>
+</tr>
+</tbody>
+</table>
 </section>
+<section id="legacyoutputiterator">
+<h3>LegacyOutputIterator<a class="headerlink" href="#legacyoutputiterator" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Requirement</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator"><em>LegacyIterator</em></a></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p><a class="reference internal" href="#legacyiterator"><span class="xref myst">See above</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Is pointer type or class type</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Expression</p></th>
+<th class="head"><p>Return type</p></th>
+<th class="head"><p>Semantics</p></th>
+<th class="head"><p>Fulfilled by <code class="docutils literal notranslate"><span class="pre">iterator</span></code>/<code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*r</span> <span class="pre">=</span> <span class="pre">o</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p>❗ attention / ❗ attention</p></td>
+<td><p>Defined but an assignment doesn’t modify objects inside collection</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">++r</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">It&amp;</span></code></p></td>
+<td><p></p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">r++</span></code></p></td>
+<td><p>Convertible to <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">It&amp;</span></code></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">It</span> <span class="pre">temp</span> <span class="pre">=</span> <span class="pre">r;</span> <span class="pre">++r;</span> <span class="pre">return</span> <span class="pre">temp;</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Post-increment not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*r++</span> <span class="pre">=</span> <span class="pre">o</span></code></p></td>
+<td><p></p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">*r</span> <span class="pre">=</span> <span class="pre">o;</span> <span class="pre">++r;</span></code></p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Post-increment not defined</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="collection-iterators-and-standard-iterator-adaptors">
+<h2>Collection iterators and standard iterator adaptors<a class="headerlink" href="#collection-iterators-and-standard-iterator-adaptors" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Adaptor</p></th>
+<th class="head"><p>Compatible with Collection?</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::reverse_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <em>LegacyBidirectionalIterator</em> or <code class="docutils literal notranslate"><span class="pre">std::bidirectional_iterator</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::back_insert_iterator</span></code></p></td>
+<td><p>❗ attention</p></td>
+<td><p>Compatible only with SubsetCollections, otherwise throws <code class="docutils literal notranslate"><span class="pre">std::invalid_argument</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::front_insert_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">push_front</span></code> not defined</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::insert_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">insert</span></code> not defined</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::const_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <em>LegacyInputIterator</em> or <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::move_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <em>LegacyInputIterator</em> or <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::counted_iterator</span></code></p></td>
+<td><p>❌ no</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <code class="docutils literal notranslate"><span class="pre">std::input_or_output_iterator</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="collection-and-standard-algorithms">
+<h2>Collection and standard algorithms<a class="headerlink" href="#collection-and-standard-algorithms" title="Link to this heading"></a></h2>
+<p>Most of the standard algorithms require the iterators to be at least <em>InputIterator</em>. The iterators of PODIO collection don’t fulfil this requirement, therefore they are not compatible with standard algorithms according to the specification.</p>
+<p>In practice, some algorithms may still compile with the collections depending on the implementation of a given algorithm. In general, the standard <strong>algorithms mutating a collection will give wrong results</strong>, while the standard algorithms not mutating a collection in principle should give correct results if they compile.</p>
+</section>
+<section id="standard-range-algorithms">
+<h2>Standard range algorithms<a class="headerlink" href="#standard-range-algorithms" title="Link to this heading"></a></h2>
+<p>The standard range algorithm use constrains to operate at least on <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code>s and <code class="docutils literal notranslate"><span class="pre">std::ranges::input_range</span></code>s. The iterators of PODIO collection don’t model these concepts, therefore can’t be used with standard range algorithms. The range algorithms won’t compile with PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code> iterators.</p>
 </section>
 </section>
 
