@@ -1,6 +1,7 @@
 #ifndef PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/ExampleWithInterfaceRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "read_test.h"
 
@@ -69,6 +70,35 @@ void checkVecMemSubsetColl(const podio::Frame& event) {
   ASSERT(subsetColl[0] == origColl[0], "subset coll does not have the right contents");
 }
 
+void checkInterfaceCollection(const podio::Frame& event) {
+  const auto& interfaceColl = event.get<ExampleWithInterfaceRelationCollection>("interface_examples");
+  ASSERT(interfaceColl.size() == 2, "interface_examples should have two elements");
+
+  const auto& hits = event.get<ExampleHitCollection>("hits");
+  const auto& particles = event.get<ExampleMCCollection>("mcparticles");
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters");
+
+  const auto iface0 = interfaceColl[0];
+  const auto iface1 = interfaceColl[1];
+
+  ASSERT(iface0.aSingleEnergyType() == hits[0], "OneToOneRelation aSingleEnergy not persisted as expected");
+  ASSERT(iface1.aSingleEnergyType() == clusters[0], "OneToOneRelation aSingleEnergy not persisted as expected");
+
+  const auto iface0Rels = iface0.manyEnergies();
+  ASSERT(iface0Rels.size() == 3,
+         "OneToManyRelation to interface does not have the expected number of related elements");
+  ASSERT(iface0Rels[0] == hits[0], "OneToManyRelations to interface not persisted correctly");
+  ASSERT(iface0Rels[1] == clusters[0], "OneToManyRelations to interface not persisted correctly");
+  ASSERT(iface0Rels[2] == particles[0], "OneToManyRelations to interface not persisted correctly");
+
+  const auto iface1Rels = iface1.manyEnergies();
+  ASSERT(iface1Rels.size() == 3,
+         "OneToManyRelation to interface does not have the expected number of related elements");
+  ASSERT(iface1Rels[0] == particles[0], "OneToManyRelations to interface not persisted correctly");
+  ASSERT(iface1Rels[1] == hits[0], "OneToManyRelations to interface not persisted correctly");
+  ASSERT(iface1Rels[2] == clusters[0], "OneToManyRelations to interface not persisted correctly");
+}
+
 template <typename ReaderT>
 int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   auto reader = ReaderT();
@@ -124,6 +154,10 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     // As well as a test for the vector members subset category
     if (reader.currentFileVersion() >= podio::version::Version{0, 16, 99}) {
       checkVecMemSubsetColl(otherFrame);
+    }
+    // Interface tests once they are present
+    if (reader.currentFileVersion() >= podio::version::Version{0, 99, 99}) {
+      checkInterfaceCollection(otherFrame);
     }
   }
 
