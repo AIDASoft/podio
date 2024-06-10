@@ -675,6 +675,10 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       ++a_copy;
       REQUIRE(a == b);
       REQUIRE(*a == *b);
+      // bound to the same object
+      const auto& ref_a = *a;
+      const auto& ref_b = *b;
+      DOCUMENTED_FAILURE(std::addressof(ref_a) == std::addressof(ref_b));
 
       // const_iterator
       auto ca = coll.cbegin();
@@ -688,6 +692,10 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
       ++ca_copy;
       REQUIRE(ca == cb);
       REQUIRE(*ca == *cb);
+      // bound to the same object
+      const auto& ref_ca = *ca;
+      const auto& ref_cb = *cb;
+      DOCUMENTED_FAILURE(std::addressof(ref_ca) == std::addressof(ref_cb));
     }
 
     // Singular iterators

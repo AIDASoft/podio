@@ -136,7 +136,7 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator) | ❌ no / ❌ no | [See above](#legacyinputiterator)|
 | [*DefaultConstructible*](https://en.cppreference.com/w/cpp/named_req/DefaultConstructible) | ❌ no / ❌ no | Value initialization not defined |
 | If *mutable* iterator then `reference` same as `value_type&` or `value_type&&`, otherwise same as `const value_type&` or `const value_type&&` | ❌ no / ❌ no | `reference` and `value_type` not defined |
-| [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ✔️ yes / ✔️ yes | |
+| [Multipass guarantee](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | References from dereferencing equal iterators aren't bound to the same object |
 | [Singular iterators](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no / ❌ no | Value initialization not defined |
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
