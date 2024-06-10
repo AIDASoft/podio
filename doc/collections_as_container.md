@@ -7,7 +7,7 @@ The PODIO `Collection`s interface was designed to mimic the standard *Container*
 On the implementation level most of the differences with respect to the *Container* comes from the fact that in order to satisfy the additional semantics a `Collection` doesn't directly store [user layer objects](design.md#the-user-layer). Instead, [data layer objects](design.md#the-internal-data-layer) are stored and user layer objects are constructed and returned when needed. Similarly, the `Collection` iterators operate on the user layer objects but don't expose `Collection`'s storage directly to the users. Instead, they construct and return user layer objects when needed.
 In other words, a `Collection` utilizes the user layer type as a reference type instead of using plain references (`&` or `&&`) to stored data layer types.
 
-As a consequence some of the **standard algorithms may not work** with PODIO `Collection` iterators.  See [standard algorithm documentation](#collection-and-standard-algorithms) below.
+As a consequence some of the **standard algorithms may not work** with PODIO `Collection` iterators. See [standard algorithm documentation](#collection-and-standard-algorithms) below.
 
 The following tables list the compliance of a PODIO generated collection with the *Container* named requirement, stating which member types, interfaces, or concepts are fulfilled and which are not. Additionally, there are some comments explaining missing parts or pointing out differences in behaviour.
 
@@ -16,12 +16,12 @@ The following tables list the compliance of a PODIO generated collection with th
 | Name | Type | Requirements | Fulfilled by Collection? | Comment |
 |------|------|--------------|--------------------------|---------|
 | `value_type` | `T` | *[Erasable](https://en.cppreference.com/w/cpp/named_req/Erasable)* | ✔️ yes | Defined as an immutable user layer object type |
-| `reference` | `T&` |  | ❌ no | Not defined |
+| `reference` | `T&` | | ❌ no | Not defined |
 | `const_reference` | `const T&` | | ❌ no | Not defined |
 | `iterator` | Iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) convertible to `const_iterator` | ❌ no | Defined as podio `MutableCollectionIterator`. `iterator::value_type` not defined, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator)), not convertible to `const_iterator`|
 | `const_iterator` | Constant iterator whose `value_type` is `T` | [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) | ❌ no | Defined as podio `CollectionIterator`. `const_iterator::value_type` not defined, not [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator) ([see below](#legacyforwarditerator))
 | `difference_type`| Signed integer | Must be the same as `std::iterator_traits::difference_type` for `iterator` and `const_iterator` | ❌ no | `std::iterator_traits::difference_type` not defined |
-| `size_type` | Unsigned integer | Large enough to represent all positive values of `difference_type` | ✔️ yes |  |
+| `size_type` | Unsigned integer | Large enough to represent all positive values of `difference_type` | ✔️ yes | |
 
 ### Container member functions and operators
 
@@ -31,18 +31,18 @@ The following tables list the compliance of a PODIO generated collection with th
 | `C(a)` | `C` | Creates a copy of `a` | ❌ no | Not defined, non-copyable by design |
 | `C(rv)` | `C` | Moves `rv` | ✔️ yes | |
 | `a = b` | `C&` | Destroys or copy-assigns all elements of `a` from elements of `b` | ❌ no | Not defined, non-copyable by design |
-| `a = rv` | `C&` | Destroys or move-assigns all elements of `a` from elements of `rv` |  ✔️ yes | |
-| `a.~C()` | `void` | Destroys all elements of `a` and frees all memory|  ✔️ yes | Invalidates all handles retrieved from this collection |
-| `a.begin()` | `(const_)iterator` | Iterator to the first element of `a` |  ✔️ yes | |
+| `a = rv` | `C&` | Destroys or move-assigns all elements of `a` from elements of `rv` | ✔️ yes | |
+| `a.~C()` | `void` | Destroys all elements of `a` and frees all memory| ✔️ yes | Invalidates all handles retrieved from this collection |
+| `a.begin()` | `(const_)iterator` | Iterator to the first element of `a` | ✔️ yes | |
 | `a.end()` | `(const_)iterator` | Iterator to one past the last element of `a` | ✔️ yes | |
 | `a.cbegin()` | `const_iterator` | Same as `const_cast<const C&>(a).begin()` | ✔️ yes | |
-| `a.cend()` | `const_iterator` | Same as `const_cast<const C&>(a).end()`|  ✔️ yes | |
+| `a.cend()` | `const_iterator` | Same as `const_cast<const C&>(a).end()`| ✔️ yes | |
 | `a == b` | Convertible to `bool` | Same as `std::equal(a.begin(), a.end(), b.begin(), b.end())`| ❌ no | Not defined |
 | `a != b` | Convertible to `bool` | Same as `!(a == b)` | ❌ no | Not defined |
 | `a.swap(b)` | `void` | Exchanges the values of `a` and `b` | ❌ no | Not defined |
 | `swap(a,b)` | `void` | Same as `a.swap(b)` | ❌ no | `a.swap(b)` not defined |
 | `a.size()` | `size_type` | Same as `std::distance(a.begin(), a.end())` | ✔️ yes | |
-| `a.max_size()` | `size_type` | `b.size()` where b is the largest possible container | ✔️ yes | |
+| `a.max_size()` | `size_type` | `b.size()` where `b` is the largest possible container | ✔️ yes | |
 | `a.empty()` | Convertible to `bool` | Same as `a.begin() == a.end()` | ✔️ yes | |
 
 ## Collection as an *AllocatorAwareContainer*
@@ -53,9 +53,9 @@ PODIO collections don't provide a customization point for allocators and use onl
 
 ### AllocatorAwareContainer types
 
-| Name |  Requirements | Fulfilled by Collection? | Comment |
+| Name | Requirements | Fulfilled by Collection? | Comment |
 |------|--------------|--------------------------|---------|
-| `allocator_type`  | `allocator_type::value_type` same as `value_type` | ❌ no | `allocator_type` not defined |
+| `allocator_type` | `allocator_type::value_type` same as `value_type` | ❌ no | `allocator_type` not defined |
 
 ### *AllocatorAwareContainer* expression and statements
 
@@ -120,7 +120,7 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `i != j` |  Contextually convertible to `bool` | Same as `!(i==j)` | ✔️ yes / ✔️ yes | |
+| `i != j` | Contextually convertible to `bool` | Same as `!(i==j)` | ✔️ yes / ✔️ yes | |
 | `*i` | `reference`, convertible to `value_type` | | ❌ no / ❌ no | `reference` and `value_type` not defined |
 | `i->m` | | Same as `(*i).m` | ✔️ yes / ✔️ yes | |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
@@ -155,7 +155,7 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
 | `*r = o` | | | ❗ attention / ❗ attention | Defined but an assignment doesn't modify objects inside collection |
-| `++r` | `It&` | | ✔️ yes / ✔️ yes  | |
+| `++r` | `It&` | | ✔️ yes / ✔️ yes | |
 | `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ❌ no / ❌ no | Post-increment not defined |
 | `*r++ = o` | | Same as `*r = o; ++r;`| ❌ no / ❌ no | Post-increment not defined |
 
@@ -169,7 +169,7 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `std::insert_iterator` | ❌ no | `insert` not defined |
 | `std::const_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
 | `std::move_iterator` | ❌ no | `iterator` and `const_iterator` not *LegacyInputIterator* or `std::input_iterator` |
-| `std::counted_iterator` |  ❌ no | `iterator` and `const_iterator` not `std::input_or_output_iterator` |
+| `std::counted_iterator` | ❌ no | `iterator` and `const_iterator` not `std::input_or_output_iterator` |
 
 
 ## Collection and standard algorithms
