@@ -58,7 +58,7 @@ void printMap(const MapType& map, std::ostream& os) {
   os.flags(osflags);
 }
 
-void GenericParameters::print(std::ostream& os, bool flush) {
+void GenericParameters::print(std::ostream& os, bool flush) const {
   os << "int parameters\n\n";
   printMap(getMap<int>(), os);
   os << "\nfloat parameters\n";
