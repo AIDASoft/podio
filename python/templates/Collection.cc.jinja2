@@ -59,6 +59,10 @@ std::size_t {{ collection_type }}::size() const {
   return m_storage.entries.size();
 }
 
+std::size_t {{ collection_type }}::max_size() const {
+  return m_storage.entries.max_size();
+}
+
 bool {{ collection_type }}::empty() const {
   return m_storage.entries.empty();
 }

@@ -55,6 +55,9 @@ public:
   /// number of elements in the collection
   virtual size_t size() const = 0;
 
+  /// maximal number of elements in the collection
+  virtual std::size_t max_size() const = 0;
+
   /// Is the collection empty
   virtual bool empty() const = 0;
 

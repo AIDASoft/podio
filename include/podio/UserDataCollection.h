@@ -77,6 +77,12 @@ private:
   VectorMembersInfo m_vecmem_info{};
 
 public:
+  using value_type = typename std::vector<BasicType>::value_type;
+  using const_iterator = typename std::vector<BasicType>::const_iterator;
+  using iterator = typename std::vector<BasicType>::iterator;
+  using difference_type = typename std::vector<BasicType>::difference_type;
+  using size_type = typename std::vector<BasicType>::size_type;
+
   UserDataCollection() = default;
   /// Constructor from an existing vector (which will be moved from!)
   UserDataCollection(std::vector<BasicType>&& vec) : _vec(std::move(vec)) {
@@ -131,6 +137,11 @@ public:
   /// number of elements in the collection
   size_t size() const override {
     return _vec.size();
+  }
+
+  /// maximal number of elements in the collection
+  size_t max_size() const override {
+    return _vec.max_size();
   }
 
   /// Is the collection empty
@@ -194,17 +205,23 @@ public:
 
   // ----- some wrappers for std::vector and access to the complete std::vector (if really needed)
 
-  typename std::vector<BasicType>::iterator begin() {
+  iterator begin() {
     return _vec.begin();
   }
-  typename std::vector<BasicType>::iterator end() {
+  iterator end() {
     return _vec.end();
   }
-  typename std::vector<BasicType>::const_iterator begin() const {
+  const_iterator begin() const {
     return _vec.begin();
   }
-  typename std::vector<BasicType>::const_iterator end() const {
+  const_iterator end() const {
     return _vec.end();
+  }
+  const_iterator cbegin() const {
+    return _vec.cbegin();
+  }
+  const_iterator cend() const {
+    return _vec.cend();
   }
 
   typename std::vector<BasicType>::reference operator[](size_t idx) {

@@ -51,6 +51,8 @@ public:
   using value_type = {{ class.bare_type }};
   using const_iterator = {{ class.bare_type }}CollectionIterator;
   using iterator = {{ class.bare_type }}MutableCollectionIterator;
+  using difference_type = ptrdiff_t;
+  using size_type = size_t;
 
   {{ class.bare_type }}Collection();
   {{ class.bare_type }}Collection({{ class.bare_type }}CollectionData&& data, bool isSubsetColl);
@@ -85,6 +87,9 @@ public:
 
   /// number of elements in the collection
   std::size_t size() const final;
+
+  /// maximal number of elements in the collection
+  std::size_t max_size() const final;
 
   /// Is the collection empty
   bool empty() const final;
@@ -153,11 +158,17 @@ public:
   const_iterator begin() const {
     return const_iterator(0, &m_storage.entries);
   }
+  const_iterator cbegin() const {
+    return begin();
+  }
   iterator end() {
     return iterator(m_storage.entries.size(), &m_storage.entries);
   }
   const_iterator end() const {
     return const_iterator(m_storage.entries.size(), &m_storage.entries);
+  }
+  const_iterator cend() const {
+    return end();
   }
 
 {% for member in Members %}
