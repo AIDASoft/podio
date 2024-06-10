@@ -338,6 +338,12 @@ class DataModelComparator:
                     f"Forbidden schema change in '{change.name}' for '{change.member_name}' from "
                     f"'{change.old_member.full_type}' to '{change.new_member.full_type}'"
                 )
+            # changing from one component type to another component type is forbidden
+            elif change.old_member.full_type in self.datamodel_old.components:
+                self.errors.append(
+                    f"Forbidden schema change in '{change.name}' for '{change.member_name}' from "
+                    f"'{change.old_member.full_type}' to '{change.new_member.full_type}'"
+                )
 
         # are there dropped/added datatype pairs that could be interpreted as rename?
         # for now assuming no change to the individual datatype definition
@@ -469,4 +475,4 @@ if __name__ == "__main__":
     comparator.read()
     comparator.compare()
     comparator.print_comparison()
-    print(comparator.get_changed_schemata(schema_filter=root_filter))
+    #print(comparator.get_changed_schemata(schema_filter=root_filter))
