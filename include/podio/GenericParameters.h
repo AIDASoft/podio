@@ -112,7 +112,7 @@ public:
     _stringMap.clear();
   }
 
-  void print(std::ostream& os = std::cout, bool flush = true);
+  void print(std::ostream& os = std::cout, bool flush = true) const;
 
   /// Check if no parameter is stored (i.e. if all internal maps are empty)
   bool empty() const {
