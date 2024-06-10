@@ -105,8 +105,8 @@ class ChangedMember(SchemaChange):
         self.new_member = new_member
         self.klassname = name
         super().__init__(
-            f"'{self.name}.{self.member_name}' changed type from '+\
-                    '{self.old_member.full_type} to {self.new_member.full_type}"
+            f"'{self.name}.{self.member_name}' changed type from "+\
+                    f"{self.old_member.full_type} to {self.new_member.full_type}"
         )
 
 
