@@ -88,8 +88,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         if "ROOT" in self.io_handlers:
             self._prepare_iorules()
             self._create_selection_xml()
-        self._write_cmake_lists_file()
         self._write_all_collections_header()
+        self._write_cmake_lists_file()
 
     def do_process_component(self, name, component):
         """Handle everything cpp specific after the common processing of a component"""
