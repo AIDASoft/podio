@@ -493,7 +493,7 @@ have resolvable schema evolution incompatibilities:"
         self._write_file(
             os.path.join(self.install_dir, self.package_name, f"{self.package_name}.h"),
             self._eval_template(
-                "AllCollections.h.jinja2",
+                "datamodel.h.jinja2",
                 {
                     "includes": collection_files,
                     "incfolder": self.incfolder,
