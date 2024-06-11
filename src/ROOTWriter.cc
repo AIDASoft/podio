@@ -37,7 +37,7 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
     catInfo.tree->SetDirectory(m_file.get());
   }
 
-  std::vector<StoreCollection> collections;
+  std::vector<root_utils::StoreCollection> collections;
   collections.reserve(catInfo.collsToWrite.size());
   for (const auto& name : catInfo.collsToWrite) {
     auto* coll = frame.getCollectionForWrite(name);
@@ -76,7 +76,7 @@ ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(const std::string& categor
   return it->second;
 }
 
-void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
+void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_utils::StoreCollection>& collections,
                               /*const*/ podio::GenericParameters& parameters) {
   catInfo.branches.reserve(collections.size() + 1); // collections + parameters
 
@@ -118,7 +118,7 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreColl
     }
 
     catInfo.branches.push_back(branches);
-    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name).value(), coll->getTypeName(),
+    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name).value(), std::string(coll->getTypeName()),
                                   coll->isSubsetCollection(), coll->getSchemaVersion());
   }
 
@@ -129,12 +129,12 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreColl
 }
 
 void ROOTWriter::resetBranches(std::vector<root_utils::CollectionBranches>& branches,
-                               const std::vector<ROOTWriter::StoreCollection>& collections,
+                               const std::vector<root_utils::StoreCollection>& collections,
                                /*const*/ podio::GenericParameters* parameters) {
   size_t iColl = 0;
-  for (auto& coll : collections) {
+  for (auto& [_, coll] : collections) {
     const auto& collBranches = branches[iColl];
-    root_utils::setCollectionAddresses(coll.second->getBuffers(), collBranches);
+    root_utils::setCollectionAddresses(coll->getBuffers(), collBranches);
     iColl++;
   }
 
