@@ -7,8 +7,7 @@
 namespace podio {
 
 class Reader {
-public:
-  // ROOT dictionary generation needs this to be public for some reason
+private:
   struct ReaderConcept {
     virtual ~ReaderConcept() = default;
 

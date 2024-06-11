@@ -6,8 +6,7 @@
 namespace podio {
 
 class Writer {
-public:
-  // ROOT dictionary generation needs this to be public for some reason
+private:
   struct WriterConcept {
     virtual ~WriterConcept() = default;
 
