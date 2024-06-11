@@ -32,6 +32,8 @@ class RNTupleWriter;
 namespace podio {
 
 #if !defined(__CLING__)
+// cling doesn't really deal well (i.e. at all in this case) with the forward
+// declaration here and errors out, breaking e.g. python bindings.
 class ROOTReader;
 #endif
 
