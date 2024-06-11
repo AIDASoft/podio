@@ -26,6 +26,16 @@ namespace root_utils {
   /// write a collection. Needed to cache the branch pointers and avoid having to
   /// get them from a TTree/TChain for every event.
   struct CollectionBranches {
+    CollectionBranches() = default;
+    ~CollectionBranches() = default;
+    CollectionBranches(const CollectionBranches&) = delete;
+    CollectionBranches& operator=(const CollectionBranches&) = delete;
+    CollectionBranches(CollectionBranches&&) = default;
+    CollectionBranches& operator=(CollectionBranches&&) = default;
+
+    CollectionBranches(TBranch* dataBranch) : data(dataBranch) {
+    }
+
     TBranch* data{nullptr};
     std::vector<TBranch*> refs{};
     std::vector<TBranch*> vecs{};
