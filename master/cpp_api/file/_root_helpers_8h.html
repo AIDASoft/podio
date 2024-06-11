@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File CollectionBranches.h &mdash; PODIO  documentation</title>
+  <title>File RootHelpers.h &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -361,8 +361,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_info.html#_CPPv4N5podio13RNTupleReader14CollectionInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionInfo</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_collection_info.html">Struct podio::RNTupleWriter::CollectionInfo</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_collection_info.html#_CPPv4N5podio13RNTupleWriter14CollectionInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionInfo</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html">Struct podio::RNTupleWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html#_CPPv4N5podio13RNTupleWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info.html">Struct podio::ROOTReader::CategoryInfo</a><ul>
@@ -598,7 +598,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">File CollectionBranches.h</li>
+      <li class="breadcrumb-item active">File RootHelpers.h</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -607,19 +607,44 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="file-collectionbranches-h">
-<h1>File CollectionBranches.h<a class="headerlink" href="#file-collectionbranches-h" title="Link to this heading"></a></h1>
+  <section id="file-roothelpers-h">
+<h1>File RootHelpers.h<a class="headerlink" href="#file-roothelpers-h" title="Link to this heading"></a></h1>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv45podio">
 <span id="_CPPv35podio"></span><span id="_CPPv25podio"></span><span id="podio"></span><span class="target" id="namespacepodio"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">podio</span></span></span><br /></dt>
 <dd><dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utilsE">
 <span id="_CPPv3N5podio10root_utilsE"></span><span id="_CPPv2N5podio10root_utilsE"></span><span id="podio::root_utils"></span><span class="target" id="namespacepodio_1_1root__utils"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">root_utils</span></span></span><a class="headerlink" href="#_CPPv4N5podio10root_utilsE" title="Link to this definition"></a><br /></dt>
-<dd><dl class="cpp struct">
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils20CollectionWriteInfoTE">
+<span id="_CPPv3N5podio10root_utils20CollectionWriteInfoTE"></span><span id="_CPPv2N5podio10root_utils20CollectionWriteInfoTE"></span><span class="target" id="namespacepodio_1_1root__utils_1a9e8d2f068a332b837f876597a9f7c8cb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionWriteInfoT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio10root_utils20CollectionWriteInfoTE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils28CollectionInfoWithoutSchemaTE">
+<span id="_CPPv3N5podio10root_utils28CollectionInfoWithoutSchemaTE"></span><span id="_CPPv2N5podio10root_utils28CollectionInfoWithoutSchemaTE"></span><span class="target" id="namespacepodio_1_1root__utils_1acf1ff1844eba914a4b0134f57bc559fb"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionInfoWithoutSchemaT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio10root_utils28CollectionInfoWithoutSchemaTE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils15StoreCollectionE">
+<span id="_CPPv3N5podio10root_utils15StoreCollectionE"></span><span id="_CPPv2N5podio10root_utils15StoreCollectionE"></span><span class="target" id="namespacepodio_1_1root__utils_1a390e2b2af11ed566a863b08c5e048d1a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StoreCollection</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio10root_utils15StoreCollectionE" title="Link to this definition"></a><br /></dt>
+<dd><p>A collection name and a base pointer grouped together for writing. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio10root_utils12ParamStorageE">
+<span id="_CPPv3I0EN5podio10root_utils12ParamStorageE"></span><span id="_CPPv2I0EN5podio10root_utils12ParamStorageE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1_1root__utils_1a08bd59fa12515422f5afdf58bbbdd47d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ParamStorage</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN5podio10root_utils12ParamStorageE" title="podio::root_utils::ParamStorage::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN5podio10root_utils12ParamStorageE" title="Link to this definition"></a><br /></dt>
+<dd><p>Pair of keys and values for one type of the ones that can be stored in GenericParameters. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranchesE">
 <span id="_CPPv3N5podio10root_utils18CollectionBranchesE"></span><span id="_CPPv2N5podio10root_utils18CollectionBranchesE"></span><span id="podio::root_utils::CollectionBranches"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionBranches</span></span></span><a class="headerlink" href="#_CPPv4N5podio10root_utils18CollectionBranchesE" title="Link to this definition"></a><br /></dt>
 <dd><div class="docutils container">
-<em>#include &lt;podio/CollectionBranches.h&gt;</em></div>
+<em>#include &lt;podio/utilities/RootHelpers.h&gt;</em></div>
 <p>Small helper struct to collect all branches that are necessary to read or write a collection. </p>
 <p>Needed to cache the branch pointers and avoid having to get them from a TTree/TChain for every event. </p>
 <div class="breathe-sectiondef docutils container">
