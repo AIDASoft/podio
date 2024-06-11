@@ -19,11 +19,11 @@ public:
   ~{{ iterator_type }}() = default;
 
   bool operator!=(const {{ iterator_type}}& x) const {
-    return m_index != x.m_index; // TODO: may not be complete
+    return m_index != x.m_index;
   }
 
   bool operator==(const {{ iterator_type }}& x) const {
-    return m_index ==  x.m_index; // TODO: may not be complete
+    return m_index ==  x.m_index;
   }
 
   reference operator*();

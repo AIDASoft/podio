@@ -851,6 +851,7 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
 #if (__cplusplus >= 202002L)
     DOCUMENTED_STATIC_FAILURE(std::bidirectional_iterator<iterator>);
 #endif
+    // TODO add runtime checks here
     // const_iterator
     STATIC_REQUIRE(traits::has_const_iterator_v<CollectionType>);
     STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
@@ -946,7 +947,6 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
       REQUIRE((*counted).cellID() == 42);
       REQUIRE(++counted == std::default_sentinel);
     }
-    // TODO add runtime checks
     // const_iterator
     STATIC_REQUIRE(std::input_or_output_iterator<const_iterator>);
     {
