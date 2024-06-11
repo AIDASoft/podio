@@ -5,6 +5,7 @@ set(root_dependent_tests
   write_frame_root.cpp
   read_python_frame_root.cpp
   read_frame_root_multiple.cpp
+  read_frame_root_tdirectory.cpp
   read_and_write_frame_root.cpp
   write_interface_root.cpp
   read_interface_root.cpp
@@ -29,6 +30,7 @@ set_property(TEST read_interface_root PROPERTY DEPENDS write_interface_root)
 set_tests_properties(
   read_frame_root
   read_frame_root_multiple
+  read_frame_root_tdirectory
   read_and_write_frame_root
 
   PROPERTIES

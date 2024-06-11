@@ -71,6 +71,17 @@ public:
   ///
   /// @param filenames The filenames of all input files that should be read
   void openFiles(const std::vector<std::string>& filenames);
+  
+  /**
+   * Open trees for reading from the specified TDirectory. 
+   * 
+   * This can be used with a TMemFile for in-memory operation via streaming.
+   * The specified directory should contain all trees including metadata
+   * and category trees.
+   *
+   *  @param dir The TDirectory to look for the podio trees in.
+   */
+   void openTDirectory(TDirectory *dir);
 
   /// Read the next data entry for a given category.
   ///
@@ -127,6 +138,9 @@ public:
   }
 
 private:
+
+  void readMetaData();
+
   /// Helper struct to group together all the necessary state to read / process
   /// a given category. A "category" in this case describes all frames with the
   /// same name which are constrained by the ROOT file structure that we use to
@@ -134,9 +148,15 @@ private:
   /// reading from a TTree / TChain (i.e. collection infos, branches, ...)
   struct CategoryInfo {
     /// constructor from chain for more convenient map insertion
-    CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
-    }
-    std::unique_ptr<TChain> chain{nullptr};                                      ///< The TChain with the data
+    CategoryInfo() : chain("unused"){}
+
+    // The copy constructor and assignment operators are explicitly deleted 
+    // here since TChain has these declared private and therefore inaccessible.
+    CategoryInfo(const podio::ROOTReader::CategoryInfo&) = delete;
+    CategoryInfo& operator=(const podio::ROOTReader::CategoryInfo&) = delete;
+
+    TChain chain;                                                                ///< The TChain with the data (if reading from files)
+    TTree *tree = {nullptr};                                                     ///< The TTree with the data (use this, not chain!)
     unsigned entry{0};                                                           ///< The next entry to read
     std::vector<std::pair<std::string, detail::CollectionInfo>> storedClasses{}; ///< The stored collections in this
                                                                                  ///< category
@@ -166,7 +186,8 @@ private:
   podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl, bool reloadBranches,
                                                     unsigned int localEntry);
 
-  std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
+  TTree* m_metaTree{nullptr};                                   ///< The metadata tree (use this to access)
+  TChain m_metaChain{"unused"};                                           ///< A TChain (only used if reading from files. m_metaTree will point to this if needed)
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
   std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
 

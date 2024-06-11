@@ -15,6 +15,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     check_benchmark_outputs
     read_frame_legacy_root
     read_frame_root_multiple
+    read_frame_root_tdirectory
     write_python_frame_root
     read_python_frame_root
     read_and_write_frame_root
