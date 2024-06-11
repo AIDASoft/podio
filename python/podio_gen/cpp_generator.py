@@ -491,9 +491,7 @@ have resolvable schema evolution incompatibilities:"
 
         collection_files = (x.split("::")[-1] + "Collection.h" for x in self.datamodel.datatypes)
         self._write_file(
-            os.path.join(
-                self.install_dir, self.package_name, f"All{self.package_name}Collections.h"
-            ),
+            os.path.join(self.install_dir, self.package_name, f"{self.package_name}.h"),
             self._eval_template(
                 "AllCollections.h.jinja2",
                 {
