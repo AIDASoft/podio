@@ -251,12 +251,11 @@ std::vector<std::string> GenericParameters::getKeys() const {
 template <typename T, typename>
 std::vector<std::vector<T>> GenericParameters::getValues() const {
   std::vector<std::vector<T>> values;
-  const auto& map = getMap<T>();
-  values.reserve(map.size());
-
   {
     auto& mtx = getMutex<T>();
+    const auto& map = getMap<T>();
     std::lock_guard lock{mtx};
+    values.reserve(map.size());
     std::transform(map.begin(), map.end(), std::back_inserter(values), [](const auto& pair) { return pair.second; });
   }
   return values;
