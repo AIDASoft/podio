@@ -303,7 +303,6 @@ void RNTupleWriter::finish() {
   for (auto& [_, catInfo] : m_categories) {
     catInfo.writer.reset();
   }
-  metadataWriter.reset();
 
   m_finished = true;
 }
