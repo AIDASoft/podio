@@ -26,6 +26,8 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<st
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
 
+/// Helper struct to get the negative offsets from the end of the branches
+/// vector for the different types of generic parameters.
 template <typename T>
 struct TypeToBranchIndexOffset;
 

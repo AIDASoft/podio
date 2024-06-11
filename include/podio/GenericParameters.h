@@ -30,10 +30,10 @@ class RNTupleWriter;
 #endif
 
 namespace podio {
-class ROOTReader;
-}
 
-namespace podio {
+#if !defined(__CLING__)
+class ROOTReader;
+#endif
 
 /// The types which are supported in the GenericParameters
 using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
@@ -133,10 +133,13 @@ public:
   friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
 #endif
 
-  friend ROOTReader;
 #if PODIO_ENABLE_RNTUPLE
   friend RNTupleReader;
   friend RNTupleWriter;
+#endif
+
+#if !defined(__CLING__)
+  friend ROOTReader;
 #endif
 
   /// Get a reference to the internal map for a given type
