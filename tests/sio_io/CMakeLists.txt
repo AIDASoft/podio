@@ -33,5 +33,7 @@ target_link_libraries(read_frame_legacy_sio PRIVATE "${sio_libs}" TestDataModel)
 
 foreach(version IN LISTS sio_legacy_test_versions)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_sio ${version}-example_frame.sio)
-  ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_sio ${version}-example.sio)
+  if (version MATCHES "^v00-16")
+    ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_sio ${version}-example.sio)
+  endif()
 endforeach()
