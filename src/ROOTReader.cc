@@ -227,8 +227,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
   // Finally set up the branches for the parameters
   if (m_fileVersion < podio::version::Version{0, 99, 99}) {
     root_utils::CollectionBranches paramBranches{};
-    paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
-    catInfo.branches.push_back(paramBranches);
+    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName));
   } else {
     catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intKeyName));
     catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intValueName));
@@ -373,7 +372,7 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
     collBranches.emplace_back(std::move(branches));
   }
 
-  return {collBranches, storedClasses};
+  return {std::move(collBranches), storedClasses};
 }
 
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
@@ -419,7 +418,7 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
     collBranches.emplace_back(std::move(branches));
   }
 
-  return {collBranches, storedClasses};
+  return {std::move(collBranches), storedClasses};
 }
 
 } // namespace podio

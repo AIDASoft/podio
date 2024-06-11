@@ -207,7 +207,7 @@ void ROOTLegacyReader::createCollectionBranches(const std::vector<root_utils::Co
 
     m_storedClasses.emplace_back(name, std::make_tuple(collType, isSubsetColl, collSchemaVersion, collectionIndex++));
 
-    m_collectionBranches.push_back(branches);
+    m_collectionBranches.emplace_back(std::move(branches));
   }
 }
 

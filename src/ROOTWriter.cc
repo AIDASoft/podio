@@ -120,7 +120,7 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
       }
     }
 
-    catInfo.branches.push_back(branches);
+    catInfo.branches.emplace_back(std::move(branches));
     catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name).value(), std::string(coll->getTypeName()),
                                   coll->isSubsetCollection(), coll->getSchemaVersion());
   }
