@@ -132,9 +132,9 @@ void ROOTWriter::resetBranches(std::vector<root_utils::CollectionBranches>& bran
                                const std::vector<root_utils::StoreCollection>& collections,
                                /*const*/ podio::GenericParameters* parameters) {
   size_t iColl = 0;
-  for (auto& coll : collections) {
+  for (auto& [_, coll] : collections) {
     const auto& collBranches = branches[iColl];
-    root_utils::setCollectionAddresses(coll.second->getBuffers(), collBranches);
+    root_utils::setCollectionAddresses(coll->getBuffers(), collBranches);
     iColl++;
   }
 

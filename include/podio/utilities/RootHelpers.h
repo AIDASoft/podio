@@ -20,7 +20,7 @@ namespace root_utils {
   using CollectionInfoWithoutSchemaT = std::tuple<int, std::string, bool>;
 
   /// A collection name and a base pointer grouped together for writing
-  using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
+  using StoreCollection = std::tuple<const std::string&, podio::CollectionBase*>;
 
   /// Small helper struct to collect all branches that are necessary to read or
   /// write a collection. Needed to cache the branch pointers and avoid having to
