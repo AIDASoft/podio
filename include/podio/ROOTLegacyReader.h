@@ -1,13 +1,12 @@
 #ifndef PODIO_ROOTLEGACYREADER_H
 #define PODIO_ROOTLEGACYREADER_H
 
-#include "podio/CollectionBranches.h"
 #include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/RootHelpers.h"
 
 #include "TChain.h"
 
-#include <iostream>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -114,7 +113,7 @@ public:
 private:
   std::pair<TTree*, unsigned> getLocalTreeAndEntry(const std::string& treename);
 
-  void createCollectionBranches(const std::vector<std::tuple<uint32_t, std::string, bool, unsigned int>>& collInfo);
+  void createCollectionBranches(const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
 
   podio::GenericParameters readEventMetaData();
 

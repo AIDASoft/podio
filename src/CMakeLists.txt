@@ -94,6 +94,7 @@ SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
+  ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers

@@ -8,6 +8,7 @@
 #include "rootUtils.h"
 
 #include "TTree.h"
+#include <tuple>
 
 namespace podio {
 
@@ -37,7 +38,7 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
     catInfo.tree->SetDirectory(m_file.get());
   }
 
-  std::vector<StoreCollection> collections;
+  std::vector<root_utils::StoreCollection> collections;
   collections.reserve(catInfo.collsToWrite.size());
   for (const auto& name : catInfo.collsToWrite) {
     auto* coll = frame.getCollectionForWrite(name);
@@ -61,7 +62,8 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
       throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.collsToWrite, collsToWrite));
     }
-    resetBranches(catInfo.branches, collections, &const_cast<podio::GenericParameters&>(frame.getParameters()));
+    fillParams(catInfo, frame.getParameters());
+    resetBranches(catInfo, collections);
   }
 
   catInfo.tree->Fill();
@@ -76,9 +78,10 @@ ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(const std::string& categor
   return it->second;
 }
 
-void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
+void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_utils::StoreCollection>& collections,
                               /*const*/ podio::GenericParameters& parameters) {
-  catInfo.branches.reserve(collections.size() + 1); // collections + parameters
+  catInfo.branches.reserve(collections.size() +
+                           std::tuple_size_v<podio::SupportedGenericDataTypes> * 2); // collections + parameters
 
   // First collections
   for (auto& [name, coll] : collections) {
@@ -117,28 +120,45 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<StoreColl
       }
     }
 
-    catInfo.branches.push_back(branches);
-    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name).value(), coll->getTypeName(),
+    catInfo.branches.emplace_back(std::move(branches));
+    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name).value(), std::string(coll->getTypeName()),
                                   coll->isSubsetCollection(), coll->getSchemaVersion());
   }
 
-  // Also make branches for the parameters
-  root_utils::CollectionBranches branches;
-  branches.data = catInfo.tree->Branch(root_utils::paramBranchName, &parameters);
-  catInfo.branches.push_back(branches);
+  fillParams(catInfo, parameters);
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::intKeyName, &catInfo.intParams.keys));
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::intValueName, &catInfo.intParams.values));
+
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::floatKeyName, &catInfo.floatParams.keys));
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::floatValueName, &catInfo.floatParams.values));
+
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::doubleKeyName, &catInfo.doubleParams.keys));
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::doubleValueName, &catInfo.doubleParams.values));
+
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::stringKeyName, &catInfo.stringParams.keys));
+  catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::stringValueName, &catInfo.stringParams.values));
 }
 
-void ROOTWriter::resetBranches(std::vector<root_utils::CollectionBranches>& branches,
-                               const std::vector<ROOTWriter::StoreCollection>& collections,
-                               /*const*/ podio::GenericParameters* parameters) {
+void ROOTWriter::resetBranches(CategoryInfo& categoryInfo,
+                               const std::vector<root_utils::StoreCollection>& collections) {
   size_t iColl = 0;
-  for (auto& coll : collections) {
-    const auto& collBranches = branches[iColl];
-    root_utils::setCollectionAddresses(coll.second->getBuffers(), collBranches);
+  for (auto& [_, coll] : collections) {
+    const auto& collBranches = categoryInfo.branches[iColl];
+    root_utils::setCollectionAddresses(coll->getBuffers(), collBranches);
     iColl++;
   }
 
-  branches.back().data->SetAddress(&parameters);
+  categoryInfo.branches[iColl].data->SetAddress(categoryInfo.intParams.keysPtr());
+  categoryInfo.branches[iColl + 1].data->SetAddress(categoryInfo.intParams.valuesPtr());
+
+  categoryInfo.branches[iColl + 2].data->SetAddress(categoryInfo.floatParams.keysPtr());
+  categoryInfo.branches[iColl + 3].data->SetAddress(categoryInfo.floatParams.valuesPtr());
+
+  categoryInfo.branches[iColl + 4].data->SetAddress(categoryInfo.doubleParams.keysPtr());
+  categoryInfo.branches[iColl + 5].data->SetAddress(categoryInfo.doubleParams.valuesPtr());
+
+  categoryInfo.branches[iColl + 6].data->SetAddress(categoryInfo.stringParams.keysPtr());
+  categoryInfo.branches[iColl + 7].data->SetAddress(categoryInfo.stringParams.valuesPtr());
 }
 
 void ROOTWriter::finish() {
@@ -173,6 +193,13 @@ ROOTWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const
   }
 
   return {std::vector<std::string>{}, collsToWrite};
+}
+
+void ROOTWriter::fillParams(CategoryInfo& catInfo, const GenericParameters& params) {
+  catInfo.intParams = {params.getKeys<int>(), params.getValues<int>()};
+  catInfo.floatParams = {params.getKeys<float>(), params.getValues<float>()};
+  catInfo.doubleParams = {params.getKeys<double>(), params.getValues<double>()};
+  catInfo.stringParams = {params.getKeys<std::string>(), params.getValues<std::string>()};
 }
 
 } // namespace podio

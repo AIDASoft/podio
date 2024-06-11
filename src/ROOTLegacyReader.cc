@@ -138,7 +138,7 @@ void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
   // Check if the CollectionTypeInfo branch is there and assume that the file
   // has been written with with podio pre #197 (<0.13.1) if that is not the case
   if (auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo")) {
-    auto collectionInfo = new std::vector<root_utils::CollectionInfoT>;
+    auto collectionInfo = new std::vector<root_utils::CollectionWriteInfoT>;
 
     if (m_fileVersion < podio::version::Version{0, 16, 4}) {
       auto oldCollInfo = new std::vector<root_utils::CollectionInfoWithoutSchemaT>();
@@ -171,7 +171,7 @@ unsigned ROOTLegacyReader::getEntries(const std::string& name) const {
   return m_chain->GetEntries();
 }
 
-void ROOTLegacyReader::createCollectionBranches(const std::vector<root_utils::CollectionInfoT>& collInfo) {
+void ROOTLegacyReader::createCollectionBranches(const std::vector<root_utils::CollectionWriteInfoT>& collInfo) {
   size_t collectionIndex{0};
 
   for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
@@ -207,7 +207,7 @@ void ROOTLegacyReader::createCollectionBranches(const std::vector<root_utils::Co
 
     m_storedClasses.emplace_back(name, std::make_tuple(collType, isSubsetColl, collSchemaVersion, collectionIndex++));
 
-    m_collectionBranches.push_back(branches);
+    m_collectionBranches.emplace_back(std::move(branches));
   }
 }
 

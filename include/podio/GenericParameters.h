@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -29,6 +30,12 @@ class RNTupleWriter;
 #endif
 
 namespace podio {
+
+#if !defined(__CLING__)
+// cling doesn't really deal well (i.e. at all in this case) with the forward
+// declaration here and errors out, breaking e.g. python bindings.
+class ROOTReader;
+#endif
 
 /// The types which are supported in the GenericParameters
 using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
@@ -105,6 +112,10 @@ public:
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   std::vector<std::string> getKeys() const;
 
+  /// Get all the available values for a given type
+  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  std::vector<std::vector<T>> getValues() const;
+
   /// erase all elements
   void clear() {
     _intMap.clear();
@@ -127,6 +138,10 @@ public:
 #if PODIO_ENABLE_RNTUPLE
   friend RNTupleReader;
   friend RNTupleWriter;
+#endif
+
+#if !defined(__CLING__)
+  friend ROOTReader;
 #endif
 
   /// Get a reference to the internal map for a given type
@@ -243,5 +258,17 @@ std::vector<std::string> GenericParameters::getKeys() const {
   return keys;
 }
 
+template <typename T, typename>
+std::vector<std::vector<T>> GenericParameters::getValues() const {
+  std::vector<std::vector<T>> values;
+  {
+    auto& mtx = getMutex<T>();
+    const auto& map = getMap<T>();
+    std::lock_guard lock{mtx};
+    values.reserve(map.size());
+    std::transform(map.begin(), map.end(), std::back_inserter(values), [](const auto& pair) { return pair.second; });
+  }
+  return values;
+}
 } // namespace podio
 #endif
