@@ -481,15 +481,15 @@ TEST_CASE("Collection and iterator concepts") {
   SECTION("input_iterator") {
     // indirectly_readable
     // iterator
-    DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<iterator>);
+    STATIC_REQUIRE(std::indirectly_readable<iterator>);
     // const_iterator
-    DOCUMENTED_STATIC_FAILURE(std::indirectly_readable<const_iterator>);
+    STATIC_REQUIRE(std::indirectly_readable<const_iterator>);
 
     // input_iterator
     // iterator
-    DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
+    STATIC_REQUIRE(std::input_iterator<iterator>);
     // const_iterator
-    DOCUMENTED_STATIC_FAILURE(std::input_iterator<const_iterator>);
+    STATIC_REQUIRE(std::input_iterator<const_iterator>);
   }
 
   SECTION("output_iterator") {
@@ -1093,7 +1093,7 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
     STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
 #if (__cplusplus >= 202002L)
-    DOCUMENTED_STATIC_FAILURE(std::input_iterator<iterator>);
+    STATIC_REQUIRE(std::input_iterator<iterator>);
 #endif
     STATIC_REQUIRE(std::is_same_v<iterator::reference, std::move_iterator<iterator>::reference>);
     // const_iterator
@@ -1101,7 +1101,7 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
     STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<const_iterator>::iterator_category>);
 #if (__cplusplus >= 202002L)
-    DOCUMENTED_STATIC_FAILURE(std::input_iterator<const_iterator>);
+    STATIC_REQUIRE(std::input_iterator<const_iterator>);
 #endif
     STATIC_REQUIRE(std::is_same_v<const_iterator::reference, std::move_iterator<const_iterator>::reference>);
   }

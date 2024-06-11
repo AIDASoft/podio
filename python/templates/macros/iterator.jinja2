@@ -8,6 +8,7 @@ public:
   using reference = {{ prefix }}{{ class.bare_type }};
   using pointer = {{ prefix }}{{ class.bare_type }}*;
   using iterator_category = std::input_iterator_tag;
+  using iterator_concept = std::input_iterator_tag;
 
   {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object({{ ptr_init }}), m_collection(collection) {}
   {{ iterator_type }}() = default;
@@ -26,7 +27,7 @@ public:
     return m_index ==  x.m_index;
   }
 
-  reference operator*();
+  reference operator*() const;
   pointer operator->();
   {{ iterator_type }}& operator++();
   {{ iterator_type }} operator++(int);
@@ -43,9 +44,8 @@ private:
 {% macro iterator_definitions(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
 {% set ptr_type = 'podio::utils::MaybeSharedPtr<' + class.bare_type +'Obj>' %}
-{{ iterator_type }}::reference {{ iterator_type }}::operator*() {
-  m_object.m_obj = {{ ptr_type }}((*m_collection)[m_index]);
-  return m_object;
+{{ iterator_type }}::reference {{ iterator_type }}::operator*() const {
+  return reference{ {{ ptr_type }}((*m_collection)[m_index]) };
 }
 
 {{ iterator_type }}::pointer {{ iterator_type }}::operator->() {

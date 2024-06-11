@@ -80,12 +80,12 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 
 | Concept | `iterator` | `const_iterator` |
 |---------|------------------------|------------------------------|
-| `std::indirectly_readable` | ❌ no | ❌ no |
+| `std::indirectly_readable` | ✔️ yes / ✔️ yes |
 | `std::indirectly_writable` | ❌ no | ❌ no |
 | `std::weakly_incrementable` | ✔️ yes | ✔️ yes |
 | `std::incrementable` | ✔️ yes | ✔️ yes |
 | `std::input_or_output_iterator` | ✔️ yes | ✔️ yes |
-| `std::input_iterator` | ❌ no | ❌ no |
+| `std::input_iterator` | ✔️ yes / ✔️ yes |
 | `std::output_iterator` | ❌ no | ❌ no |
 | `std::forward_iterator` | ❌ no | ❌ no |
 | `std::bidirectional_iterator` | ❌ no | ❌ no |
