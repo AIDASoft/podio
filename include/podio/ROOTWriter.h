@@ -1,9 +1,9 @@
 #ifndef PODIO_ROOTWRITER_H
 #define PODIO_ROOTWRITER_H
 
+#include "podio/CollectionBranches.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
-#include "podio/utilities/RootHelpers.h"
 
 #include "TFile.h"
 
@@ -100,34 +100,32 @@ public:
   checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
 
 private:
+  using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
+
+  // collectionID, collectionType, subsetCollection
+  // @note same as in rootUtils.h private header!
+  using CollectionInfoT = std::tuple<uint32_t, std::string, bool, unsigned int>;
+
   /// Helper struct to group together all necessary state to write / process a
   /// given category. Created during the first writing of a category
   struct CategoryInfo {
-    TTree* tree{nullptr};                                     ///< The TTree to which this category is written
-    std::vector<root_utils::CollectionBranches> branches{};   ///< The branches for this category
-    std::vector<root_utils::CollectionWriteInfoT> collInfo{}; ///< Collection info for this category
-    podio::CollectionIDTable idTable{};                       ///< The collection id table for this category
-    std::vector<std::string> collsToWrite{};                  ///< The collections to write for this category
-
-    // Storage for the keys & values of all the parameters of this category
-    // (resp. at least the current entry)
-    root_utils::ParamStorage<int> intParams{};
-    root_utils::ParamStorage<float> floatParams{};
-    root_utils::ParamStorage<double> doubleParams{};
-    root_utils::ParamStorage<std::string> stringParams{};
+    TTree* tree{nullptr};                                   ///< The TTree to which this category is written
+    std::vector<root_utils::CollectionBranches> branches{}; ///< The branches for this category
+    std::vector<CollectionInfoT> collInfo{};                ///< Collection info for this category
+    podio::CollectionIDTable idTable{};                     ///< The collection id table for this category
+    std::vector<std::string> collsToWrite{};                ///< The collections to write for this category
   };
 
   /// Initialize the branches for this category
-  void initBranches(CategoryInfo& catInfo, const std::vector<root_utils::StoreCollection>& collections,
+  void initBranches(CategoryInfo& catInfo, const std::vector<StoreCollection>& collections,
                     /*const*/ podio::GenericParameters& parameters);
 
   /// Get the (potentially uninitialized category information for this category)
   CategoryInfo& getCategoryInfo(const std::string& category);
 
-  static void resetBranches(CategoryInfo& categoryInfo, const std::vector<root_utils::StoreCollection>& collections);
-
-  /// Fill the parameter keys and values into the CategoryInfo storage
-  static void fillParams(CategoryInfo& catInfo, const GenericParameters& params);
+  static void resetBranches(std::vector<root_utils::CollectionBranches>& branches,
+                            const std::vector<ROOTWriter::StoreCollection>& collections,
+                            /*const*/ podio::GenericParameters* parameters);
 
   std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories

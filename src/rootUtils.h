@@ -1,10 +1,14 @@
 #ifndef PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 #define PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 
+#include "podio/CollectionBase.h"
+#include "podio/CollectionBranches.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
-#include "podio/utilities/RootHelpers.h"
 
 #include "TBranch.h"
+#include "TChain.h"
+#include "TClass.h"
 #include "TTree.h"
 
 #include <algorithm>
@@ -199,6 +203,13 @@ inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionB
   }
 }
 
+// A collection of additional information that describes the collection: the
+// collectionID, the collection (data) type, whether it is a subset
+// collection, and its schema version
+using CollectionInfoT = std::tuple<uint32_t, std::string, bool, unsigned int>;
+// for backwards compatibility
+using CollectionInfoWithoutSchemaT = std::tuple<int, std::string, bool>;
+
 inline void readBranchesData(const CollectionBranches& branches, Long64_t entry) {
   // Read all data
   if (branches.data) {
@@ -222,7 +233,7 @@ inline void readBranchesData(const CollectionBranches& branches, Long64_t entry)
  * collections
  */
 inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable const& idTable) {
-  std::vector<CollectionWriteInfoT> collInfo;
+  std::vector<CollectionInfoT> collInfo;
 
   for (size_t iColl = 0; iColl < idTable.names().size(); ++iColl) {
     const auto collID = idTable.ids()[iColl];

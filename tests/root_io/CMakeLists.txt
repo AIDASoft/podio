@@ -45,9 +45,7 @@ target_link_libraries(read_frame_legacy_root PRIVATE "${root_libs}")
 
 foreach(version IN LISTS root_legacy_test_versions)
   ADD_PODIO_LEGACY_TEST(${version} read_frame_root ${version}-example_frame.root)
-  if (version MATCHES "^v00-16")
-    ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root ${version}-example.root)
-  endif()
+  ADD_PODIO_LEGACY_TEST(${version} read_frame_legacy_root ${version}-example.root)
 endforeach()
 
 #--- Write via python and the ROOT backend and see if we can read it back in in
