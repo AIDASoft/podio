@@ -25,37 +25,15 @@ public:
   ROOTFrameData(const ROOTFrameData&) = delete;
   ROOTFrameData& operator=(const ROOTFrameData&) = delete;
 
-  ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params) :
-      m_buffers(std::move(buffers)), m_idTable(std::move(idTable)), m_parameters(std::move(params)) {
-  }
+  ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params);
 
-  std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name) {
-    const auto bufferHandle = m_buffers.extract(name);
-    if (bufferHandle.empty()) {
-      return std::nullopt;
-    }
+  std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
 
-    return {bufferHandle.mapped()};
-  }
+  podio::CollectionIDTable getIDTable() const;
 
-  podio::CollectionIDTable getIDTable() const {
-    // Construct a copy of the internal table
-    return {m_idTable->ids(), m_idTable->names()};
-  }
+  std::unique_ptr<podio::GenericParameters> getParameters();
 
-  std::unique_ptr<podio::GenericParameters> getParameters() {
-    return std::make_unique<podio::GenericParameters>(std::move(m_parameters));
-  }
-
-  std::vector<std::string> getAvailableCollections() const {
-    std::vector<std::string> collections;
-    collections.reserve(m_buffers.size());
-    for (const auto& [name, _] : m_buffers) {
-      collections.push_back(name);
-    }
-
-    return collections;
-  }
+  std::vector<std::string> getAvailableCollections() const;
 
 private:
   // TODO: switch to something more elegant once the basic functionality and
@@ -65,13 +43,6 @@ private:
   CollIDPtr m_idTable{nullptr};
   podio::GenericParameters m_parameters{};
 };
-
-// Interim workaround for https://github.com/AIDASoft/podio#500
-inline ROOTFrameData::~ROOTFrameData() {
-  for (auto& [_, buffer] : m_buffers) {
-    buffer.deleteBuffers(buffer);
-  }
-}
 
 } // namespace podio
 
