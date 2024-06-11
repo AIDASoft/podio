@@ -1,11 +1,11 @@
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
 
+#include "podio/CollectionBase.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
-#include "podio/utilities/RootHelpers.h"
 
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
@@ -102,42 +102,42 @@ public:
   checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
 
 private:
-  std::unique_ptr<ROOT::Experimental::RNTupleModel>
-  createModels(const std::vector<root_utils::StoreCollection>& collections);
-
-  /// Helper struct to group all the necessary information for one category.
-  struct CategoryInfo {
-    std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
-
-    // The following are assumed to run in parallel!
-    std::vector<uint32_t> ids{};                  ///< The ids of all collections
-    std::vector<std::string> names{};             ///< The names of all collections
-    std::vector<std::string> types{};             ///< The types of all collections
-    std::vector<short> subsetCollections{};       ///< The flags identifying the subcollections
-    std::vector<SchemaVersionT> schemaVersions{}; ///< The schema versions of all collections
-
-    // Storage for the keys & values of all the parameters of this category
-    // (resp. at least the current entry)
-    root_utils::ParamStorage<int> intParams{};
-    root_utils::ParamStorage<float> floatParams{};
-    root_utils::ParamStorage<double> doubleParams{};
-    root_utils::ParamStorage<std::string> stringParams{};
-  };
-  CategoryInfo& getCategoryInfo(const std::string& category);
-
   template <typename T>
-  void fillParams(const GenericParameters& params, CategoryInfo& catInfo, ROOT::Experimental::REntry* entry);
+  void fillParams(GenericParameters& params, ROOT::Experimental::REntry* entry);
 
-  template <typename T>
-  root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
+  using StoreCollection = std::pair<const std::string&, podio::CollectionBase*>;
+  std::unique_ptr<ROOT::Experimental::RNTupleModel> createModels(const std::vector<StoreCollection>& collections);
+
+  std::unique_ptr<ROOT::Experimental::RNTupleModel> m_metadata{};
+  std::unique_ptr<ROOT::Experimental::RNTupleWriter> m_metadataWriter{};
 
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 
-  std::unordered_map<std::string, CategoryInfo> m_categories{};
+  struct CollectionInfo {
+    std::vector<uint32_t> id{};
+    std::vector<std::string> name{};
+    std::vector<std::string> type{};
+    std::vector<short> isSubsetCollection{};
+    std::vector<SchemaVersionT> schemaVersion{};
+    std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr};
+  };
+  CollectionInfo& getCategoryInfo(const std::string& category);
+
+  std::unordered_map<std::string, CollectionInfo> m_categories{};
 
   bool m_finished{false};
+
+  std::vector<std::string> m_intkeys{}, m_floatkeys{}, m_doublekeys{}, m_stringkeys{};
+
+  std::vector<std::vector<int>> m_intvalues{};
+  std::vector<std::vector<float>> m_floatvalues{};
+  std::vector<std::vector<double>> m_doublevalues{};
+  std::vector<std::vector<std::string>> m_stringvalues{};
+
+  template <typename T>
+  std::pair<std::vector<std::string>&, std::vector<std::vector<T>>&> getKeyValueVectors();
 };
 
 } // namespace podio
