@@ -1,0 +1,10 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ package_name }}_H
+#define {{ package_name.upper() }}_{{ package_name }}_H
+
+{% for name in includes %}
+#include "{{ incfolder }}{{ name }}"
+{% endfor %}
+
+#endif // {{ package_name.upper() }}_{{ package_name }}_H

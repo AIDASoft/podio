@@ -88,6 +88,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         if "ROOT" in self.io_handlers:
             self._prepare_iorules()
             self._create_selection_xml()
+        self._write_all_collections_header()
         self._write_cmake_lists_file()
 
     def do_process_component(self, name, component):
@@ -483,6 +484,22 @@ have resolvable schema evolution incompatibilities:"
             f"{self.install_dir}/podio_generated_files.cmake",
             "\n".join(full_contents),
             self.any_changes,
+        )
+
+    def _write_all_collections_header(self):
+        """Write a header file that includes all collection headers"""
+
+        collection_files = (x.split("::")[-1] + "Collection.h" for x in self.datamodel.datatypes)
+        self._write_file(
+            os.path.join(self.install_dir, self.package_name, f"{self.package_name}.h"),
+            self._eval_template(
+                "datamodel.h.jinja2",
+                {
+                    "includes": collection_files,
+                    "incfolder": self.incfolder,
+                    "package_name": self.package_name,
+                },
+            ),
         )
 
     def _write_edm_def_file(self):
