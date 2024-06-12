@@ -1,14 +1,13 @@
 #ifndef PODIO_ROOTREADER_H
 #define PODIO_ROOTREADER_H
 
-#include "podio/CollectionBranches.h"
 #include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/RootHelpers.h"
 
 #include "TChain.h"
 
-#include <iostream>
 #include <memory>
 #include <string>
 #include <string_view>

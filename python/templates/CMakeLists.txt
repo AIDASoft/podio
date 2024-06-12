@@ -1,6 +1,7 @@
 set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/Collection.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Collection.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/datamodel.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/CollectionData.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/CollectionData.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/Component.h.jinja2

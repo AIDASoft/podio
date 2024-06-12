@@ -80,6 +80,7 @@ SET(root_sources
   ROOTWriter.cc
   ROOTReader.cc
   ROOTLegacyReader.cc
+  ROOTFrameData.cc
 )
 if(ENABLE_RNTUPLE)
   list(APPEND root_sources
@@ -92,6 +93,8 @@ SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
+  ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
@@ -146,7 +149,11 @@ set(io_headers
   ${PROJECT_SOURCE_DIR}/include/podio/Reader.h
   )
 
-PODIO_ADD_LIB_AND_DICT(podioIO "${io_headers}" "${io_sources}" io_selection.xml)
+add_library(podioIO SHARED ${io_sources})
+add_library(podio::podioIO ALIAS podioIO)
+target_include_directories(podioIO PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(podioIO PUBLIC podio::podio podio::podioRootIO)
 if(ENABLE_SIO)
   target_link_libraries(podioIO PUBLIC podio::podioSioIO)
@@ -170,8 +177,6 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
   ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
   ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
-  ${CMAKE_CURRENT_BINARY_DIR}/podioIODictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodioIODict_rdict.pcm
   DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
 if (ENABLE_SIO)
