@@ -18,9 +18,7 @@ void RNTupleReader::readParams(const std::string& name, unsigned entNum, Generic
   auto keyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
-  for (size_t i = 0; i < keyView(entNum).size(); ++i) {
-    params.getMap<T>().emplace(std::move(keyView(entNum)[i]), std::move(valueView(entNum)[i]));
-  }
+  params.loadFrom(keyView(entNum), valueView(entNum));
 }
 
 GenericParameters RNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {

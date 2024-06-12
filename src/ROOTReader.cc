@@ -75,9 +75,7 @@ void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericPar
   valueBranch->SetAddress(storage.valuesPtr());
   valueBranch->GetEntry(localEntry);
 
-  for (size_t i = 0; i < storage.keys.size(); ++i) {
-    params.getMap<T>().emplace(std::move(storage.keys[i]), std::move(storage.values[i]));
-  }
+  params.loadFrom(std::move(storage.keys), std::move(storage.values));
 }
 
 GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catInfo, bool reloadBranches,

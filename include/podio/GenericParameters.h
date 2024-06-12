@@ -104,6 +104,10 @@ public:
     set<std::vector<T>>(key, std::move(values));
   }
 
+  /// Load multiple key value pairs simultaneously
+  template <typename T>
+  void loadFrom(std::vector<std::string> keys, std::vector<std::vector<T>> values);
+
   /// Get the number of elements stored under the given key for a type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   size_t getN(const std::string& key) const;
@@ -272,5 +276,17 @@ std::vector<std::vector<T>> GenericParameters::getValues() const {
   }
   return values;
 }
+
+template <typename T>
+void GenericParameters::loadFrom(std::vector<std::string> keys, std::vector<std::vector<T>> values) {
+  auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+
+  std::lock_guard lock{mtx};
+  for (size_t i = 0; i < keys.size(); ++i) {
+    map.emplace(std::move(keys[i]), std::move(values[i]));
+  }
+}
+
 } // namespace podio
 #endif
