@@ -33,9 +33,9 @@ public:
   {{ iterator_type }} operator++(int);
 
 private:
-  size_t m_index = 0;
+  size_t m_index{0};
   {{ prefix }}{{ class.bare_type }} m_object { {{ ptr_init }} };
-  const {{ class.bare_type }}ObjPointerContainer* m_collection = nullptr;
+  const {{ class.bare_type }}ObjPointerContainer* m_collection{nullptr};
 };
 {% endwith %}
 {% endmacro %}
