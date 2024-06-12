@@ -81,6 +81,7 @@ SET(root_sources
   ROOTReader.cc
   ROOTLegacyReader.cc
   ROOTFrameData.cc
+  RootHelpers.cc
 )
 if(ENABLE_RNTUPLE)
   list(APPEND root_sources

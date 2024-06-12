@@ -105,8 +105,8 @@ public:
   }
 
   /// Load multiple key value pairs simultaneously
-  template <typename T>
-  void loadFrom(std::vector<std::string> keys, std::vector<std::vector<T>> values);
+  template <typename T, template <typename...> typename VecLike>
+  void loadFrom(VecLike<std::string> keys, VecLike<std::vector<T>> values);
 
   /// Get the number of elements stored under the given key for a type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
@@ -277,8 +277,8 @@ std::vector<std::vector<T>> GenericParameters::getValues() const {
   return values;
 }
 
-template <typename T>
-void GenericParameters::loadFrom(std::vector<std::string> keys, std::vector<std::vector<T>> values) {
+template <typename T, template <typename...> typename VecLike>
+void GenericParameters::loadFrom(VecLike<std::string> keys, VecLike<std::vector<T>> values) {
   auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
 

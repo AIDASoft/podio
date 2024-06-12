@@ -1,6 +1,9 @@
 #ifndef PODIO_UTILITIES_ROOTHELPERS_H
 #define PODIO_UTILITIES_ROOTHELPERS_H
 
+#include "podio/GenericParameters.h"
+
+#include "ROOT/RVec.hxx"
 #include "TBranch.h"
 
 #include <string>
@@ -76,6 +79,12 @@ namespace root_utils {
     std::vector<std::string>* m_keysPtr{nullptr};
     std::vector<std::vector<T>>* m_valuesPtr{nullptr};
   };
+
+  GenericParameters
+  loadParamsFrom(ROOT::VecOps::RVec<std::string> intKeys, ROOT::VecOps::RVec<std::vector<int>> intValues,
+                 ROOT::VecOps::RVec<std::string> floatKeys, ROOT::VecOps::RVec<std::vector<float>> floatValues,
+                 ROOT::VecOps::RVec<std::string> doubleKeys, ROOT::VecOps::RVec<std::vector<double>> doubleValues,
+                 ROOT::VecOps::RVec<std::string> stringKeys, ROOT::VecOps::RVec<std::vector<std::string>> stringValues);
 
 } // namespace root_utils
 } // namespace podio

@@ -62,3 +62,7 @@ if (ENABLE_RNTUPLE)
 
   set_property(TEST read_python_frame_rntuple PROPERTY DEPENDS write_python_frame_rntuple)
 endif()
+
+add_test(NAME param_reading_rdataframe COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/param_reading_rdataframe.py example_frame.root)
+PODIO_SET_TEST_ENV(param_reading_rdataframe)
+set_property(TEST param_reading_rdataframe PROPERTY DEPENDS write_frame_root)
