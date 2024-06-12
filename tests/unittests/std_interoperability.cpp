@@ -1117,6 +1117,11 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
       REQUIRE(counted != std::default_sentinel);
       REQUIRE(counted.count() == 1);
       REQUIRE((*counted).cellID() == 42);
+      DOCUMENTED_STATIC_FAILURE(std::contiguous_iterator<iterator>); // counted-> requires std::contiguous_iterator
+      // REQUIRE(counted->cellID() == 42);
+      DOCUMENTED_STATIC_FAILURE(traits::has_member_of_pointer_v<const iterator>); // can't base()->() because
+                                                                                  // base() returns const object
+      // REQUIRE(counted.base()->cellID() == 42);
       REQUIRE(++counted == std::default_sentinel);
     }
     // const_iterator
@@ -1128,6 +1133,11 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
       REQUIRE(counted != std::default_sentinel);
       REQUIRE(counted.count() == 1);
       REQUIRE((*counted).cellID() == 42);
+      DOCUMENTED_STATIC_FAILURE(std::contiguous_iterator<iterator>); // counted-> requires std::contiguous_iterator
+      // REQUIRE(counted->cellID() == 42)
+      DOCUMENTED_STATIC_FAILURE(traits::has_member_of_pointer_v<const const_iterator>); // can't base()->() because
+                                                                                        // base() returns const object
+      // REQUIRE(counted.base()->cellID() == 42);
       REQUIRE(++counted == std::default_sentinel);
     }
   }
