@@ -668,19 +668,23 @@ They are broadly split along the classes that are generated for each datatype or
 <td><p>The classes managing the collection storage (not user facing!)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;datatype-name&gt;CollectionData.h</span></code>, <code class="docutils literal notranslate"><span class="pre">src/&lt;datatype-name&gt;CollectionData.cc</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">selection.xml.jinja2</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datamodel.h.jinja2</span></code></p></td>
+<td><p>The <em>full datamodel header</em> that includes everything of a generated EDM (via including all generated <code class="docutils literal notranslate"><span class="pre">Collections</span></code>).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;]/&lt;package&gt;.h</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">selection.xml.jinja2</span></code></p></td>
 <td><p>The <code class="docutils literal notranslate"><span class="pre">selection.xml</span></code> file that is necessary for generating a root dictionary for the generated datamodel</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">src/selection.xml</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SIOBlock.{h,cc}.jinja2</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SIOBlock.{h,cc}.jinja2</span></code></p></td>
 <td><p>The SIO blocks that are necessary for the SIO backend</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;datatype-name&gt;SIOBlock.h</span></code>, <code class="docutils literal notranslate"><span class="pre">src/&lt;datatype-name&gt;SIOBlock.cc</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MutableStruct.jl.jinja2</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MutableStruct.jl.jinja2</span></code></p></td>
 <td><p>The mutable struct definitions of components and datatypes for julia</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;datatype-name&gt;Struct.jl</span></code>, <code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;component-name&gt;Struct.jl</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ParentModule.jl.jinja2</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ParentModule.jl.jinja2</span></code></p></td>
 <td><p>The constructor and collection definitions of components and datatypes in the data model are contained within a single module named after the package-name</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;package-name&gt;.jl</span></code></p></td>
 </tr>
