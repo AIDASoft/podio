@@ -57,18 +57,20 @@ namespace root_utils {
     ParamStorage(const std::vector<std::string>& ks, const std::vector<std::vector<T>>& vs) : keys(ks), values(vs) {
     }
 
+    /// Get a pointer to the stored keys for binding it to a TBranch
     auto keysPtr() {
       m_keysPtr = &keys;
       return &m_keysPtr;
     }
 
+    /// Get a pointer to the stored vectors for binding it to a TBranch
     auto valuesPtr() {
       m_valuesPtr = &values;
       return &m_valuesPtr;
     }
 
-    std::vector<std::string> keys{};
-    std::vector<std::vector<T>> values{};
+    std::vector<std::string> keys{};      ///< The keys for this type
+    std::vector<std::vector<T>> values{}; ///< The values for this type
 
   private:
     std::vector<std::string>* m_keysPtr{nullptr};
