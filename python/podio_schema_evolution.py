@@ -31,7 +31,7 @@ class AddedComponent(SchemaChange):
     def __init__(self, component, name):
         self.component = component
         self.name = name
-        super().__init__(f"'{self.component.name}' has been added")
+        super().__init__(f"'{self.name}' has been added")
 
 
 class DroppedComponent(SchemaChange):
