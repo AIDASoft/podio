@@ -47,8 +47,7 @@ void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& ca
   auto& paramStorage = getParamStorage<T>(catInfo);
   auto& keys = paramStorage.keys;
   auto& values = paramStorage.values;
-  keys = params.getKeys<T>();
-  values = params.getValues<T>();
+  std::tie(keys, values) = params.getKeysAndValues<T>();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   entry->BindRawPtr(root_utils::getGPKeyName<T>(), &keys);
   entry->BindRawPtr(root_utils::getGPValueName<T>(), &values);

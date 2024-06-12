@@ -118,7 +118,7 @@ public:
 
   /// Get all the available values for a given type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
-  std::vector<std::vector<T>> getValues() const;
+  std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> getKeysAndValues() const;
 
   /// erase all elements
   void clear() {
@@ -263,8 +263,9 @@ std::vector<std::string> GenericParameters::getKeys() const {
 }
 
 template <typename T, typename>
-std::vector<std::vector<T>> GenericParameters::getValues() const {
+std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> GenericParameters::getKeysAndValues() const {
   std::vector<std::vector<T>> values;
+  std::vector<std::string> keys;
   auto& mtx = getMutex<T>();
   const auto& map = getMap<T>();
   {
@@ -272,9 +273,14 @@ std::vector<std::vector<T>> GenericParameters::getValues() const {
     // values
     std::lock_guard lock{mtx};
     values.reserve(map.size());
-    std::transform(map.begin(), map.end(), std::back_inserter(values), [](const auto& pair) { return pair.second; });
+    keys.reserve(map.size());
+
+    for (const auto& [k, v] : map) {
+      keys.emplace_back(k);
+      values.emplace_back(v);
+    }
   }
-  return values;
+  return {keys, values};
 }
 
 template <typename T, template <typename...> typename VecLike>

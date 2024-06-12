@@ -57,7 +57,8 @@ namespace root_utils {
     ParamStorage(ParamStorage&&) = default;
     ParamStorage& operator=(ParamStorage&&) = default;
 
-    ParamStorage(const std::vector<std::string>& ks, const std::vector<std::vector<T>>& vs) : keys(ks), values(vs) {
+    ParamStorage(std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> keysValues) :
+        keys(std::move(std::get<0>(keysValues))), values(std::move(std::get<1>(keysValues))) {
     }
 
     /// Get a pointer to the stored keys for binding it to a TBranch

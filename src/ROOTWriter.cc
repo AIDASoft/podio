@@ -196,10 +196,10 @@ ROOTWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const
 }
 
 void ROOTWriter::fillParams(CategoryInfo& catInfo, const GenericParameters& params) {
-  catInfo.intParams = {params.getKeys<int>(), params.getValues<int>()};
-  catInfo.floatParams = {params.getKeys<float>(), params.getValues<float>()};
-  catInfo.doubleParams = {params.getKeys<double>(), params.getValues<double>()};
-  catInfo.stringParams = {params.getKeys<std::string>(), params.getValues<std::string>()};
+  catInfo.intParams = params.getKeysAndValues<int>();
+  catInfo.floatParams = params.getKeysAndValues<float>();
+  catInfo.doubleParams = params.getKeysAndValues<double>();
+  catInfo.stringParams = params.getKeysAndValues<std::string>();
 }
 
 } // namespace podio
