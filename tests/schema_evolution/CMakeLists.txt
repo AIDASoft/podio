@@ -33,4 +33,20 @@ function(PODIO_CREATE_READ_NEW_DATA_TEST sourcefile additional_libs)
   )
 endfunction()
 
+add_test(
+  NAME schema-evolution-script
+  COMMAND ${PROJECT_SOURCE_DIR}/python/podio_schema_evolution.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/datalayout_new.yaml
+    ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml
+)
+
+add_test(
+  NAME schema-evolution-script-with-evol
+  COMMAND
+    ${PROJECT_SOURCE_DIR}/python/podio_schema_evolution.py
+    --evo ${CMAKE_CURRENT_SOURCE_DIR}/schema_evolution.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/datalayout_new.yaml
+    ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml
+)
+
 add_subdirectory(root_io)

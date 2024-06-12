@@ -33,6 +33,11 @@ components :
       - int x
       - int y_new
 
+  ex2::NamespaceStructLong:
+    Members:
+      - int64_t x
+      - int64_t y_new
+
   ex2::NamespaceInNamespaceStruct:
     Members:
       - ex2::NamespaceStruct data
@@ -191,7 +196,7 @@ datatypes :
     Members:
       - std::int16_t i16Val{42} // some int16 value
       - std::array<float, 2> floats {3.14f, 1.23f} // some float values
-      - ex2::NamespaceStruct s{10, 11} // one that we happen to know works
+      - ex2::NamespaceStructLong s{10, 11} // one that we happen to know works
       - double d{9.876e5} // double val
       - CompWithInit comp // To make sure that the default initializer of the component does what it should
 
