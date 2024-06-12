@@ -167,8 +167,8 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `std::front_insert_iterator` | ❌ no | `push_front` not defined |
 | `std::insert_iterator` | ❌ no | `insert` not defined |
 | `std::const_iterator` (C++23) | ❌ no | C++23 not supported yet |
-| `std::move_iterator` | ✔️ yes | Limited usefulness since dereference returns `reference` not rvalue (`&&`) |
-| `std::counted_iterator` | ✔️ yes | |
+| `std::move_iterator` | ✔️ yes | Limited usefulness since dereference returns `reference` type not rvalue reference (`&&`) |
+| `std::counted_iterator` | ✔️ yes | `operator->` not defined as it requires `std::contiguous_iterator` |
 
 
 ## Collection and standard algorithms
