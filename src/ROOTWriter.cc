@@ -80,8 +80,7 @@ ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(const std::string& categor
 
 void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_utils::StoreCollection>& collections,
                               /*const*/ podio::GenericParameters& parameters) {
-  catInfo.branches.reserve(collections.size() +
-                           std::tuple_size_v<podio::SupportedGenericDataTypes> * 2); // collections + parameters
+  catInfo.branches.reserve(collections.size() + root_utils::nParamBranches); // collections + parameters
 
   // First collections
   for (auto& [name, coll] : collections) {
@@ -126,6 +125,8 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
   }
 
   fillParams(catInfo, parameters);
+  // NOTE: The order in which these are created is codified for later use in
+  // root_utils::getGPBranchOffsets
   catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::intKeyName, &catInfo.intParams.keys));
   catInfo.branches.emplace_back(catInfo.tree->Branch(root_utils::intValueName, &catInfo.intParams.values));
 
@@ -147,18 +148,25 @@ void ROOTWriter::resetBranches(CategoryInfo& categoryInfo,
     root_utils::setCollectionAddresses(coll->getBuffers(), collBranches);
     iColl++;
   }
+  // Correct index to point to the last branch of collection data for symmetric
+  // handling of the offsets in reading and writing
+  iColl--;
 
-  categoryInfo.branches[iColl].data->SetAddress(categoryInfo.intParams.keysPtr());
-  categoryInfo.branches[iColl + 1].data->SetAddress(categoryInfo.intParams.valuesPtr());
+  constexpr auto intOffset = root_utils::getGPBranchOffsets<int>();
+  categoryInfo.branches[iColl + intOffset.keys].data->SetAddress(categoryInfo.intParams.keysPtr());
+  categoryInfo.branches[iColl + intOffset.values].data->SetAddress(categoryInfo.intParams.valuesPtr());
 
-  categoryInfo.branches[iColl + 2].data->SetAddress(categoryInfo.floatParams.keysPtr());
-  categoryInfo.branches[iColl + 3].data->SetAddress(categoryInfo.floatParams.valuesPtr());
+  constexpr auto floatOffset = root_utils::getGPBranchOffsets<float>();
+  categoryInfo.branches[iColl + floatOffset.keys].data->SetAddress(categoryInfo.floatParams.keysPtr());
+  categoryInfo.branches[iColl + floatOffset.values].data->SetAddress(categoryInfo.floatParams.valuesPtr());
 
-  categoryInfo.branches[iColl + 4].data->SetAddress(categoryInfo.doubleParams.keysPtr());
-  categoryInfo.branches[iColl + 5].data->SetAddress(categoryInfo.doubleParams.valuesPtr());
+  constexpr auto doubleOffset = root_utils::getGPBranchOffsets<double>();
+  categoryInfo.branches[iColl + doubleOffset.keys].data->SetAddress(categoryInfo.doubleParams.keysPtr());
+  categoryInfo.branches[iColl + doubleOffset.values].data->SetAddress(categoryInfo.doubleParams.valuesPtr());
 
-  categoryInfo.branches[iColl + 6].data->SetAddress(categoryInfo.stringParams.keysPtr());
-  categoryInfo.branches[iColl + 7].data->SetAddress(categoryInfo.stringParams.valuesPtr());
+  constexpr auto stringOffset = root_utils::getGPBranchOffsets<std::string>();
+  categoryInfo.branches[iColl + stringOffset.keys].data->SetAddress(categoryInfo.stringParams.keysPtr());
+  categoryInfo.branches[iColl + stringOffset.values].data->SetAddress(categoryInfo.stringParams.valuesPtr());
 }
 
 void ROOTWriter::finish() {

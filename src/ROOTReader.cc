@@ -26,48 +26,21 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<st
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
 
-/// Helper struct to get the negative offsets from the end of the branches
-/// vector for the different types of generic parameters.
-template <typename T>
-struct TypeToBranchIndexOffset;
-
-template <>
-struct TypeToBranchIndexOffset<int> {
-  constexpr static int keys = 8;
-  constexpr static int values = 7;
-};
-
-template <>
-struct TypeToBranchIndexOffset<float> {
-  constexpr static int keys = 6;
-  constexpr static int values = 5;
-};
-
-template <>
-struct TypeToBranchIndexOffset<double> {
-  constexpr static int keys = 4;
-  constexpr static int values = 3;
-};
-
-template <>
-struct TypeToBranchIndexOffset<std::string> {
-  constexpr static int keys = 2;
-  constexpr static int values = 1;
-};
-
 template <typename T>
 void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericParameters& params, bool reloadBranches,
                             unsigned int localEntry) {
-  const auto nBranches = catInfo.branches.size();
+  const auto collBranchIdx = catInfo.branches.size() - root_utils::nParamBranches - 1;
+  constexpr auto brOffset = root_utils::getGPBranchOffsets<T>();
+
   if (reloadBranches) {
-    auto& keyBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::keys].data;
+    auto& keyBranch = catInfo.branches[collBranchIdx + brOffset.keys].data;
     keyBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPKeyName<T>());
-    auto& valueBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::values].data;
+    auto& valueBranch = catInfo.branches[collBranchIdx + brOffset.values].data;
     valueBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPValueName<T>());
   }
 
-  auto keyBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::keys].data;
-  auto valueBranch = catInfo.branches[nBranches - TypeToBranchIndexOffset<T>::values].data;
+  auto keyBranch = catInfo.branches[collBranchIdx + brOffset.keys].data;
+  auto valueBranch = catInfo.branches[collBranchIdx + brOffset.values].data;
 
   root_utils::ParamStorage<T> storage;
   keyBranch->SetAddress(storage.keysPtr());
