@@ -45,15 +45,13 @@ template <typename T>
 void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo,
                                ROOT::Experimental::REntry* entry) {
   auto& paramStorage = getParamStorage<T>(catInfo);
-  auto& keys = paramStorage.keys;
-  auto& values = paramStorage.values;
-  std::tie(keys, values) = params.getKeysAndValues<T>();
+  paramStorage = params.getKeysAndValues<T>();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
-  entry->BindRawPtr(root_utils::getGPKeyName<T>(), &keys);
-  entry->BindRawPtr(root_utils::getGPValueName<T>(), &values);
+  entry->BindRawPtr(root_utils::getGPKeyName<T>(), &paramStorage.keys);
+  entry->BindRawPtr(root_utils::getGPValueName<T>(), &paramStorage.values);
 #else
-  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &keys);
-  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &values);
+  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &paramStorage.keys);
+  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &paramStorage.values);
 #endif
 }
 
