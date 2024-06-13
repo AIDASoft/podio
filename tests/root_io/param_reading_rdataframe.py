@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Small test case for checking that utilities work as expeced in RDataFrame"""
 
 import sys
 import ROOT
@@ -10,7 +11,8 @@ df = ROOT.RDataFrame("events", sys.argv[1])
 evtWeights = (
     df.Define(
         "params",
-        "podio::root_utils::loadParamsFrom(GPIntKeys, GPIntValues, GPFloatKeys, GPFloatValues, GPDoubleKeys, GPDoubleValues, GPStringKeys, GPStringValues)",
+        "podio::root_utils::loadParamsFrom(GPIntKeys, GPIntValues, GPFloatKeys, GPFloatValues,"
+        "GPDoubleKeys, GPDoubleValues, GPStringKeys, GPStringValues)",
     )
     .Define("eventweight", 'params.get<float>("UserEventWeight").value()')
     .Histo1D("eventweight")
