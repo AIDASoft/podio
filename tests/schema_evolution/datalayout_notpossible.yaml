@@ -196,7 +196,7 @@ datatypes :
     Members:
       - std::int16_t i16Val{42} // some int16 value
       - std::array<float, 2> floats {3.14f, 1.23f} // some float values
-      - ex2::NamespaceStruct s{10, 11} //
+      - ex2::NamespaceStructLong s{10, 11} // this schema evolution should fail
       - double d{9.876e5} // double val
       - CompWithInit comp // To make sure that the default initializer of the component does what it should
 

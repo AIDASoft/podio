@@ -49,4 +49,14 @@ add_test(
     ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml
 )
 
+add_test(
+  NAME schema-evolution-script-with-failure
+  COMMAND
+    ${PROJECT_SOURCE_DIR}/python/podio_schema_evolution.py
+    --evo ${CMAKE_CURRENT_SOURCE_DIR}/schema_evolution.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/datalayout_notpossible.yaml
+    ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml
+)
+set_property(TEST schema-evolution-script-with-failure PROPERTY WILL_FAIL)
+
 add_subdirectory(root_io)
