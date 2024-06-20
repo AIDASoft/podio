@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contributing to PODIO &mdash; PODIO  documentation</title>
+  <title>Storage details of files produced by podio &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -23,7 +23,9 @@
         <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Building a new data model library with CMake" href="cmake.html" />
+    <link rel="prev" title="Writing extra data outside an EDM" href="userdata.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,7 +47,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="doc.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc.html#quick-start">Quick-start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="design.html">Design and Implementation Details</a><ul>
@@ -124,14 +126,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="storage_details.html">Storage details of files produced by podio</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="storage_details.html#root">ROOT</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="storage_details.html#storage-of-collection-data">Storage of Collection data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="storage_details.html#storage-of-frame-parameters">Storage of Frame parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="storage_details.html#storage-of-podio-related-metadata">Storage of podio related metadata</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage details of files produced by podio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#root">ROOT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#storage-of-collection-data">Storage of Collection data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#storage-of-frame-parameters">Storage of Frame parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#storage-of-podio-related-metadata">Storage of podio related metadata</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="storage_details.html#sio">SIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sio">SIO</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cmake.html">Building a new data model library with CMake</a><ul>
@@ -612,7 +614,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Contributing to PODIO</li>
+      <li class="breadcrumb-item active">Storage details of files produced by podio</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -621,69 +623,105 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="contributing-to-podio">
-<h1>Contributing to PODIO<a class="headerlink" href="#contributing-to-podio" title="Link to this heading"></a></h1>
-<p>Please read these guidelines if you want to contribute to the PODIO project.</p>
-<section id="git-workflow">
-<h2>Git workflow<a class="headerlink" href="#git-workflow" title="Link to this heading"></a></h2>
-<p>For PODIO we would like to follow a so called “No Switch Yard” (NoSY) workflow.</p>
-<p>In essence this means that you develop your (small) new feature in a dedicated
-<em>feature branch</em> that is kept up to date with the master branch until you create
-a PR, as we only allow <em>rebase merges</em> for PRs.</p>
-<section id="example-workflow">
-<h3>Example workflow<a class="headerlink" href="#example-workflow" title="Link to this heading"></a></h3>
-<ul>
-<li><p>checkout a copy of PODIO from the origin at AIDASoft:</p>
-<p>git clone https://github.com/AIDASoft/podio.git
-cd podio</p>
-</li>
-<li><p>create a fork of the repository on the Github web page</p>
+  <section id="storage-details-of-files-produced-by-podio">
+<h1>Storage details of files produced by podio<a class="headerlink" href="#storage-details-of-files-produced-by-podio" title="Link to this heading"></a></h1>
+<p>This page describes some of the details of how podio stores data of generated
+EDMs and related metadata on file for the different backends.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We in general do not treat the file layout part of the public API for podio.
+This means that if you rely on exact details of a given file layout we might
+break things. This is especially true for the way we store <em>podio related metadata</em>
+metadata, e.g. information on collection types, their schema version, or the
+mapping of names to collection IDs. <strong>However, we will limit breaking changes to
+cases where it is absolutely necessary.</strong></p>
+</div>
+<section id="root">
+<h2>ROOT<a class="headerlink" href="#root" title="Link to this heading"></a></h2>
+<p>For ROOT we offer two different options, one based on <code class="docutils literal notranslate"><span class="pre">TTree</span></code>s and one based on
+<code class="docutils literal notranslate"><span class="pre">RNTuple</span></code>s. The basic layout of files is largely the same for these two options,
+some minor differences are present in the storage of podio related metadata.</p>
+<p>The overall structure of a podio generated ROOT file looks like this</p>
 <ul class="simple">
-<li><p>if you have not yet done so earlier</p></li>
+<li><p>Each category gets its own <code class="docutils literal notranslate"><span class="pre">TTree</span></code> or <code class="docutils literal notranslate"><span class="pre">RNTupleModel</span></code>, where the name is the category name</p></li>
+<li><p>Each Frame of a category will be one entry in that.</p></li>
+<li><p>The Frame parameters are stored as part of each entry</p></li>
+<li><p>An additional <code class="docutils literal notranslate"><span class="pre">podio_metadata</span></code> is created to hold the podio related metadata.</p></li>
 </ul>
-</li>
-<li><p>add your fork as remote downstream using your Github username</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git remote add downstream  https://&lt;yourUserName&gt;@github.com/&lt;yourUserName&gt;/podio.git
-</pre></div>
+<p>An overview of this schema looks like this</p>
+<a class="reference internal image-reference" href="_images/file_layout_root.svg"><img alt="ROOT file layout schematic" class="align-center" src="_images/file_layout_root.svg" width="487.5px" /></a>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For a ROOT based backend all entries of a category have to have the same
+(collection) contents. This content is defined by the <strong>first entry that is
+written for a category</strong></p>
 </div>
-</li>
-<li><p>create a new feature branch; choose a meaningful name</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git checkout -b &lt;myNewBranch&gt;
-</pre></div>
-</div>
-</li>
-<li><p>make the changes to existing files (or add new ones) and frequently keep up to date with the master:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git fetch origin; git rebase origin/master
-</pre></div>
-</div>
-</li>
-<li><p>after having committed everything to your new branch, push it to your fork of PODIO:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git push downstream &lt;myNewBranch&gt;
-</pre></div>
-</div>
-</li>
-<li><p>reload your own github website (https://github.com/<yourUserName>/podio)</p>
+<section id="storage-of-collection-data">
+<h3>Storage of Collection data<a class="headerlink" href="#storage-of-collection-data" title="Link to this heading"></a></h3>
+<p>Each collection (that is not a subset collection) is decomposed into the
+following branches (or fields for <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code>)</p>
 <ul class="simple">
-<li><p>you should see your commit</p></li>
-<li><p>now you can create a pull request on the web site</p></li>
+<li><p>One branch of <code class="docutils literal notranslate"><span class="pre">std::vector&lt;XYZData&gt;</span></code>, with the same name as the collection</p></li>
+<li><p>One branch (if any) of <code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> per <code class="docutils literal notranslate"><span class="pre">VectorMember</span></code> (of type <code class="docutils literal notranslate"><span class="pre">T</span></code>) with the name <code class="docutils literal notranslate"><span class="pre">_&lt;collection-name&gt;_&lt;vector-member-name&gt;</span></code></p></li>
+<li><p>One branch (if any) of <code class="docutils literal notranslate"><span class="pre">std::vector&lt;podio::ObjectID&gt;</span></code> per <code class="docutils literal notranslate"><span class="pre">OneToOneRelation</span></code> or per <code class="docutils literal notranslate"><span class="pre">OneToManyRelation</span></code> with the name <code class="docutils literal notranslate"><span class="pre">_&lt;collection-name&gt;_&lt;relation-name&gt;</span></code></p></li>
 </ul>
-</li>
+<p>If the collection is a subset collection, then there will be only branch (or
+field for <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code>) of <code class="docutils literal notranslate"><span class="pre">std::vector&lt;podio::ObjectID&gt;</span></code> with the name <code class="docutils literal notranslate"><span class="pre">&lt;collection-name&gt;_objIdx</span></code></p>
+</section>
+<section id="storage-of-frame-parameters">
+<h3>Storage of Frame parameters<a class="headerlink" href="#storage-of-frame-parameters" title="Link to this heading"></a></h3>
+<p>The Frame parameters are internally handled via <code class="docutils literal notranslate"><span class="pre">podio::GenericParameters</span></code>. For
+I/O they are decomposed into pairs of vectors containing the keys and values for
+each of the supported generic parameters types. In practice this means that
+there will be the following branches per supported type</p>
+<ul class="simple">
+<li><p>One branch of <code class="docutils literal notranslate"><span class="pre">std::vector&lt;std::string&gt;</span></code> holding all the keys with the name of
+<code class="docutils literal notranslate"><span class="pre">GP&lt;Type&gt;Keys</span></code> (where type is one of <code class="docutils literal notranslate"><span class="pre">Int</span></code>, <code class="docutils literal notranslate"><span class="pre">Float</span></code>, <code class="docutils literal notranslate"><span class="pre">Double</span></code> or <code class="docutils literal notranslate"><span class="pre">String</span></code>)</p></li>
+<li><p>One branch of <code class="docutils literal notranslate"><span class="pre">std::vector&lt;std::vector&lt;T&gt;&gt;</span></code> holding all the values with the
+name of <code class="docutils literal notranslate"><span class="pre">GP&lt;Type&gt;Values</span></code> (where type is one of <code class="docutils literal notranslate"><span class="pre">Int</span></code>, <code class="docutils literal notranslate"><span class="pre">Float</span></code>, <code class="docutils literal notranslate"><span class="pre">Double</span></code> or
+<code class="docutils literal notranslate"><span class="pre">String</span></code> and <code class="docutils literal notranslate"><span class="pre">T</span></code> is one of <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code> or <code class="docutils literal notranslate"><span class="pre">std::string</span></code>)</p></li>
 </ul>
 </section>
-<section id="release-notes">
-<h3>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading"></a></h3>
-<p>Please make sure you fill in meaningful release notes in the comment field that is
-provided at the Github web page when creating the PR, e.g.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">BEGINRELEASENOTES</span>
-<span class="o">-</span><span class="w"> </span><span class="n">updated</span><span class="w"> </span><span class="n">documentation</span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="n">guidelines</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">contributing</span>
-<span class="o">-</span><span class="w"> </span><span class="n">reverted</span><span class="w"> </span><span class="n">some</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">changes</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">tests</span><span class="o">/</span><span class="n">examples</span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">read</span><span class="o">-</span><span class="n">one</span><span class="err">`</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="n">again</span><span class="w"> </span><span class="n">called</span><span class="w"> </span><span class="err">`</span><span class="n">read</span><span class="err">`</span>
-
-<span class="n">ENDRELEASENOTES</span>
-</pre></div>
-</div>
+<section id="storage-of-podio-related-metadata">
+<h3>Storage of podio related metadata<a class="headerlink" href="#storage-of-podio-related-metadata" title="Link to this heading"></a></h3>
+<p>The podio related metadata, stored in the <code class="docutils literal notranslate"><span class="pre">podio_metadata</span></code> <code class="docutils literal notranslate"><span class="pre">TTree</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">RNTupleModel</span></code>) contains the following general information once per file</p>
+<ul class="simple">
+<li><p>The version of podio that has been used to write this file</p></li>
+<li><p>The complete datamodel definitions for each datamodel that was encountered
+when writing the file</p></li>
+</ul>
+<p>And the following information once per category</p>
+<ul class="simple">
+<li><p>The mapping of collection names to collection IDs</p></li>
+<li><p>The types of all the stored collections</p></li>
+<li><p>The schema version of all stored collections</p></li>
+<li><p>Which collections are stored as subset collections</p></li>
+</ul>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">TTree</span></code> based and <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code> based backends differ slighlty in the way
+these data are stored exactly. The <code class="docutils literal notranslate"><span class="pre">TTree</span></code> based backend stores the data in a
+slightly more structued way, taking advantage of ROOTs capabilities to stream
+out more complex object, e.g. the <code class="docutils literal notranslate"><span class="pre">podio::CollectionIDTable</span></code> is streamed as a
+whole. The <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code> based backend on the other hand, destructures the
+information into separate fields that run in parallel.</p>
 </section>
+</section>
+<section id="sio">
+<h2>SIO<a class="headerlink" href="#sio" title="Link to this heading"></a></h2>
+<p>The SIO based backend stores all Frames as separate (compressed) binary records.
+Each record contains the Frame data and the corresponding podio related metadata
+to interpret the record. Additionally, it stores one additional record at the
+very beginning of the file containing the version of podio that has been used to
+write this file. After all records containing Frame data another record is
+written that contains some more podio related metadata, e.g. all datamodel
+definitions that were encountered when writing the file. This record also
+contains a <code class="docutils literal notranslate"><span class="pre">podio::SIOFileTOCRecordBlock</span></code>, which contains information about the
+file positions of all Frame records that have been written, allowing for quick
+(random) access when reading files again. To find the beginning of this record
+the very last bits of the binary record are used to encode the start position of
+this record.</p>
+<p>Schematically an SIO file written by podio looks like this</p>
+<a class="reference internal image-reference" href="_images/file_layout_sio.svg"><img alt="SIO file layout schematic" class="align-center" src="_images/file_layout_sio.svg" width="167.75px" /></a>
 </section>
 </section>
 
