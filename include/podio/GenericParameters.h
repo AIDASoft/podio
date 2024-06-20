@@ -31,6 +31,12 @@ class RNTupleWriter;
 
 namespace podio {
 
+#if !defined(__CLING__)
+// cling doesn't really deal well (i.e. at all in this case) with the forward
+// declaration here and errors out, breaking e.g. python bindings.
+class ROOTReader;
+#endif
+
 /// The types which are supported in the GenericParameters
 using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
 
@@ -98,6 +104,10 @@ public:
     set<std::vector<T>>(key, std::move(values));
   }
 
+  /// Load multiple key value pairs simultaneously
+  template <typename T, template <typename...> typename VecLike>
+  void loadFrom(VecLike<std::string> keys, VecLike<std::vector<T>> values);
+
   /// Get the number of elements stored under the given key for a type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
   size_t getN(const std::string& key) const;
@@ -108,7 +118,7 @@ public:
 
   /// Get all the available values for a given type
   template <typename T, typename = EnableIfValidGenericDataType<T>>
-  std::vector<std::vector<T>> getValues() const;
+  std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> getKeysAndValues() const;
 
   /// erase all elements
   void clear() {
@@ -132,6 +142,10 @@ public:
 #if PODIO_ENABLE_RNTUPLE
   friend RNTupleReader;
   friend RNTupleWriter;
+#endif
+
+#if !defined(__CLING__)
+  friend ROOTReader;
 #endif
 
   /// Get a reference to the internal map for a given type
@@ -249,8 +263,9 @@ std::vector<std::string> GenericParameters::getKeys() const {
 }
 
 template <typename T, typename>
-std::vector<std::vector<T>> GenericParameters::getValues() const {
+std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> GenericParameters::getKeysAndValues() const {
   std::vector<std::vector<T>> values;
+  std::vector<std::string> keys;
   auto& mtx = getMutex<T>();
   const auto& map = getMap<T>();
   {
@@ -258,9 +273,26 @@ std::vector<std::vector<T>> GenericParameters::getValues() const {
     // values
     std::lock_guard lock{mtx};
     values.reserve(map.size());
-    std::transform(map.begin(), map.end(), std::back_inserter(values), [](const auto& pair) { return pair.second; });
+    keys.reserve(map.size());
+
+    for (const auto& [k, v] : map) {
+      keys.emplace_back(k);
+      values.emplace_back(v);
+    }
   }
-  return values;
+  return {keys, values};
 }
+
+template <typename T, template <typename...> typename VecLike>
+void GenericParameters::loadFrom(VecLike<std::string> keys, VecLike<std::vector<T>> values) {
+  auto& map = getMap<T>();
+  auto& mtx = getMutex<T>();
+
+  std::lock_guard lock{mtx};
+  for (size_t i = 0; i < keys.size(); ++i) {
+    map.emplace(std::move(keys[i]), std::move(values[i]));
+  }
+}
+
 } // namespace podio
 #endif

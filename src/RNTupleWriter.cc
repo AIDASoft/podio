@@ -44,15 +44,14 @@ root_utils::ParamStorage<T>& RNTupleWriter::getParamStorage(CategoryInfo& catInf
 template <typename T>
 void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo,
                                ROOT::Experimental::REntry* entry) {
-  auto& [keys, values] = getParamStorage<T>(catInfo);
-  keys = params.getKeys<T>();
-  values = params.getValues<T>();
+  auto& paramStorage = getParamStorage<T>(catInfo);
+  paramStorage = params.getKeysAndValues<T>();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
-  entry->BindRawPtr(root_utils::getGPKeyName<T>(), &keys);
-  entry->BindRawPtr(root_utils::getGPValueName<T>(), &values);
+  entry->BindRawPtr(root_utils::getGPKeyName<T>(), &paramStorage.keys);
+  entry->BindRawPtr(root_utils::getGPValueName<T>(), &paramStorage.values);
 #else
-  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &keys);
-  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &values);
+  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &paramStorage.keys);
+  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &paramStorage.values);
 #endif
 }
 

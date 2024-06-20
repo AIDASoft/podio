@@ -19,6 +19,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_python_frame_root
     read_and_write_frame_root
 
+    param_reading_rdataframe
+
     write_frame_root
     read_frame_root
 
