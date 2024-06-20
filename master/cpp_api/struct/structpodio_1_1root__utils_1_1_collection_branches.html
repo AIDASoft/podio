@@ -24,7 +24,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct podio::utils::MaybeSharedPtr::ControlBlock" href="structpodio_1_1utils_1_1_maybe_shared_ptr_1_1_control_block.html" />
+    <link rel="next" title="Struct podio::root_utils::ParamStorage" href="structpodio_1_1root__utils_1_1_param_storage.html" />
     <link rel="prev" title="Struct podio::det::nonesuch" href="structpodio_1_1det_1_1nonesuch.html" /> 
 </head>
 
@@ -419,6 +419,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="structpodio_1_1root__utils_1_1_param_storage.html">Struct podio::root_utils::ParamStorage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="structpodio_1_1root__utils_1_1_param_storage.html#_CPPv4I0EN5podio10root_utils12ParamStorageE"><code class="docutils literal notranslate"><span class="pre">ParamStorage</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="structpodio_1_1utils_1_1_maybe_shared_ptr_1_1_control_block.html">Struct podio::utils::MaybeSharedPtr::ControlBlock</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="structpodio_1_1utils_1_1_maybe_shared_ptr_1_1_control_block.html#_CPPv4N5podio5utils14MaybeSharedPtr12ControlBlockE"><code class="docutils literal notranslate"><span class="pre">ControlBlock</span></code></a></li>
 </ul>
@@ -618,6 +622,44 @@
 <span id="_CPPv3N5podio10root_utils18CollectionBranchesE"></span><span id="_CPPv2N5podio10root_utils18CollectionBranchesE"></span><span id="podio::root_utils::CollectionBranches"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionBranches</span></span></span><br /></dt>
 <dd><p>Small helper struct to collect all branches that are necessary to read or write a collection. </p>
 <p>Needed to cache the branch pointers and avoid having to get them from a TTree/TChain for every event. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranches18CollectionBranchesEv">
+<span id="_CPPv3N5podio10root_utils18CollectionBranches18CollectionBranchesEv"></span><span id="_CPPv2N5podio10root_utils18CollectionBranches18CollectionBranchesEv"></span><span id="podio::root_utils::CollectionBranches::CollectionBranches"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches_1a9db099c5dbe6dfde63214ff6be3b3090"></span><span class="sig-name descname"><span class="n"><span class="pre">CollectionBranches</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranchesD0Ev">
+<span id="_CPPv3N5podio10root_utils18CollectionBranchesD0Ev"></span><span id="_CPPv2N5podio10root_utils18CollectionBranchesD0Ev"></span><span id="podio::root_utils::CollectionBranches::~CollectionBranches"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches_1acdfb4a43c8fbdebe0bd17286a08b2268"></span><span class="sig-name descname"><span class="n"><span class="pre">~CollectionBranches</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranches18CollectionBranchesERK18CollectionBranches">
+<span id="_CPPv3N5podio10root_utils18CollectionBranches18CollectionBranchesERK18CollectionBranches"></span><span id="_CPPv2N5podio10root_utils18CollectionBranches18CollectionBranchesERK18CollectionBranches"></span><span id="podio::root_utils::CollectionBranches::CollectionBranches__CollectionBranchesCR"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches_1a22a6e3ad1c99443f89cea9a0b05c369b"></span><span class="sig-name descname"><span class="n"><span class="pre">CollectionBranches</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_root_helpers_8h.html#_CPPv4N5podio10root_utils18CollectionBranches18CollectionBranchesERK18CollectionBranches" title="podio::root_utils::CollectionBranches::CollectionBranches"><span class="n"><span class="pre">CollectionBranches</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranchesaSERK18CollectionBranches">
+<span id="_CPPv3N5podio10root_utils18CollectionBranchesaSERK18CollectionBranches"></span><span id="_CPPv2N5podio10root_utils18CollectionBranchesaSERK18CollectionBranches"></span><span id="podio::root_utils::CollectionBranches::assign-operator__CollectionBranchesCR"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches_1ad73cc378f5570e6049dd67e64ad8237e"></span><a class="reference internal" href="../file/_root_helpers_8h.html#_CPPv4N5podio10root_utils18CollectionBranchesE" title="podio::root_utils::CollectionBranches"><span class="n"><span class="pre">CollectionBranches</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_root_helpers_8h.html#_CPPv4N5podio10root_utils18CollectionBranchesE" title="podio::root_utils::CollectionBranches"><span class="n"><span class="pre">CollectionBranches</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranches18CollectionBranchesERR18CollectionBranches">
+<span id="_CPPv3N5podio10root_utils18CollectionBranches18CollectionBranchesERR18CollectionBranches"></span><span id="_CPPv2N5podio10root_utils18CollectionBranches18CollectionBranchesERR18CollectionBranches"></span><span id="podio::root_utils::CollectionBranches::CollectionBranches__CollectionBranchesRR"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches_1a1bbe4195ed5e27b670202f51ac98e93d"></span><span class="sig-name descname"><span class="n"><span class="pre">CollectionBranches</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/_root_helpers_8h.html#_CPPv4N5podio10root_utils18CollectionBranches18CollectionBranchesERR18CollectionBranches" title="podio::root_utils::CollectionBranches::CollectionBranches"><span class="n"><span class="pre">CollectionBranches</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranchesaSERR18CollectionBranches">
+<span id="_CPPv3N5podio10root_utils18CollectionBranchesaSERR18CollectionBranches"></span><span id="_CPPv2N5podio10root_utils18CollectionBranchesaSERR18CollectionBranches"></span><span id="podio::root_utils::CollectionBranches::assign-operator__CollectionBranchesRR"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches_1a69e5f1459fe8337003f3a9cd5aa8c74a"></span><a class="reference internal" href="../file/_root_helpers_8h.html#_CPPv4N5podio10root_utils18CollectionBranchesE" title="podio::root_utils::CollectionBranches"><span class="n"><span class="pre">CollectionBranches</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../file/_root_helpers_8h.html#_CPPv4N5podio10root_utils18CollectionBranchesE" title="podio::root_utils::CollectionBranches"><span class="n"><span class="pre">CollectionBranches</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils18CollectionBranches18CollectionBranchesEP7TBranch">
+<span id="_CPPv3N5podio10root_utils18CollectionBranches18CollectionBranchesEP7TBranch"></span><span id="_CPPv2N5podio10root_utils18CollectionBranches18CollectionBranchesEP7TBranch"></span><span id="podio::root_utils::CollectionBranches::CollectionBranches__TBranchP"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_branches_1a1d0d8d44a454b69380f13f0ddf038c5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionBranches</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">TBranch</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dataBranch</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
