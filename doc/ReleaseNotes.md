@@ -1,3 +1,200 @@
+# v01-00
+
+* 2024-06-20 tmadlener ([PR#629](https://github.com/AIDASoft/podio/pull/629))
+  - Document how files written by podio look like
+
+* 2024-06-20 tmadlener ([PR#625](https://github.com/AIDASoft/podio/pull/625))
+  - Make the TTree based backend also write the GenericParameters as pairs of vectors (keys and values) to make the format the same for the RNTuple and the TTree based backends.
+
+* 2024-06-14 Benedikt Hegner ([PR#622](https://github.com/AIDASoft/podio/pull/622))
+  - Detect more impossible schema evolutions
+  - Improving printout of schema evolution checker
+
+* 2024-06-12 tmadlener ([PR#627](https://github.com/AIDASoft/podio/pull/627))
+  - Fix a bug in the schema evolution generation script that crashes in case a datatype member that is a component is changed.
+  - Adapt new datalayout to include such a change
+  - Add new tests to run schema evolution script standalone
+
+* 2024-06-12 jmcarcell ([PR#606](https://github.com/AIDASoft/podio/pull/606))
+  - Add a header file including all the collections in the datamodel. This header will be generated and installed into `<datamodel>/<datamodel>.h`.
+
+* 2024-06-11 tmadlener ([PR#623](https://github.com/AIDASoft/podio/pull/623))
+  - Move the implementation of `ROOTFrameData` member functions into a separate cc file.
+
+* 2024-06-11 tmadlener ([PR#618](https://github.com/AIDASoft/podio/pull/618))
+  - Fix minor issues with the `Reader` and `Writer` interface classes
+    - Make sure that only the public API is public
+    - Fix some const correctness issues by marking `const` methods as such
+    - Remove unnecessary and (partially) unused APIs from the `Writer` interface
+  - Remove the dictionary generation for `podioIO` as we don't need the dictionaries
+
+* 2024-06-11 tmadlener ([PR#614](https://github.com/AIDASoft/podio/pull/614))
+  - Refactor the `RNTupleWriter` internals a bit and reduce some code duplication between the `RNTupleWriter` and the `ROOTWriter`
+  - Add `getKeys` and `getValues` methods to `GenericParameters`
+  - Remove the `CollectionBranches.h` header and move all root related helpers into `utilities/RootHelpers.h`
+
+* 2024-06-10 tmadlener ([PR#621](https://github.com/AIDASoft/podio/pull/621))
+  - Make `GenericParameters::print` const-correct to allow proper usage
+
+* 2024-06-10 tmadlener ([PR#619](https://github.com/AIDASoft/podio/pull/619))
+  - Add I/O tests for a type with an interface relation, in order to make sure things work as expected.
+
+* 2024-06-10 Mateusz Jakub Fila ([PR#598](https://github.com/AIDASoft/podio/pull/598))
+  - Added documentation on collection compatibility with container named requirement
+  - Added container-like methods `cbegin`, `cend`, `max_size` and aliases `size_type`, `difference_type` to collection
+
+* 2024-06-06 tmadlener ([PR#616](https://github.com/AIDASoft/podio/pull/616))
+  - Switch to Alma9 for the Key4hep based workflow in CI, since CentOS7 is no longer built regularly
+
+* 2024-06-06 tmadlener ([PR#580](https://github.com/AIDASoft/podio/pull/580))
+  - Make the `GenericParameters` return `std::optional` on non-existant keys instead of empty defaults. This allows to differentiate between empty (but set) and unset parameters, as the default value could actually be a valid parameter value for some types (e.g. integers or floats).
+    - Rename the `setValue` and `getValue` functions to just `set` and `get`. This is also a breaking change, but as far as we are aware the `GenericParameters` are only used internally in podio.
+  - Make the `Frame::getParameter` also return this `std::optional`. **This is a breaking change that might require adaptation of existing code**
+
+* 2024-06-05 tmadlener ([PR#608](https://github.com/AIDASoft/podio/pull/608))
+  - Add python bindings for the `Frame::getName` functionality introduced in #586
+
+* 2024-06-04 jmcarcell ([PR#612](https://github.com/AIDASoft/podio/pull/612))
+  - Fix Python->Python3 when `PODIO_RELAX_PYVER` is ON
+
+* 2024-06-04 jmcarcell ([PR#609](https://github.com/AIDASoft/podio/pull/609))
+  - Add a parameter `cloneRelations` for the `clone` method of the user facing handle classes to be able to clone without the relation information.
+
+* 2024-06-04 Benedikt Hegner ([PR#607](https://github.com/AIDASoft/podio/pull/607))
+  - Add documentation for CMake macros
+
+* 2024-06-04 tmadlener ([PR#602](https://github.com/AIDASoft/podio/pull/602))
+  - Remove the dynamic determination of the supported parameter types for the python bindings to work around https://github.com/root-project/root/issues/14232 and https://github.com/key4hep/EDM4hep/issues/246.
+
+* 2024-06-04 Dmitry Kalinkin ([PR#599](https://github.com/AIDASoft/podio/pull/599))
+  - The Python library is installed to `lib/python3.XX/site-packages` instead of `python` by default. This is a more standard prefix for python packages
+    - Use the `podio_PYTHON_INSTALLDIR` cmake variable to change this. 
+  - Move python setup and compatibility checks with ROOT python version into a dedicated cmake macro (`podio_python_setup`)
+
+* 2024-06-04 tmadlener ([PR#595](https://github.com/AIDASoft/podio/pull/595))
+  - Deprecate the `getValue` method in favor of the `as` method for generated interface types.
+
+* 2024-05-28 jmcarcell ([PR#610](https://github.com/AIDASoft/podio/pull/610))
+  - Drop unused comparison templates
+
+* 2024-05-24 Mateusz Jakub Fila ([PR#605](https://github.com/AIDASoft/podio/pull/605))
+  - Added .clang-format config files to avoid formatting jinja2 templates and tests' extra_code
+
+* 2024-05-22 Mateusz Jakub Fila ([PR#601](https://github.com/AIDASoft/podio/pull/601))
+  - Added  ExtraCode declarationFile and implementationFile directives
+
+* 2024-05-22 jmcarcell ([PR#522](https://github.com/AIDASoft/podio/pull/522))
+  - Add a reader and writer interface and tests using those
+  - Add a new library `podioIO` with the interface readers and writers
+
+* 2024-05-14 Mateusz Jakub Fila ([PR#570](https://github.com/AIDASoft/podio/pull/570))
+  - Added mechanism to load cppyy pythonizations
+  - Added pythonization for bound-check subscript operation in collections
+
+* 2024-05-13 jmcarcell ([PR#600](https://github.com/AIDASoft/podio/pull/600))
+  - Add include to fix building with GCC 14
+
+* 2024-05-07 tmadlener ([PR#597](https://github.com/AIDASoft/podio/pull/597))
+  - Update CI workflows to run on `LCG_105` using `gcc13` and `clang16` as well as bumping the OS to EL9. Build RNTuple by default
+  - Update the Ubuntu based workflows to run on ubuntu 22.04
+
+* 2024-05-02 Andre Sailer ([PR#591](https://github.com/AIDASoft/podio/pull/591))
+  - CI: alma9-gcc13 dev stack
+
+* 2024-05-02 tmadlener ([PR#568](https://github.com/AIDASoft/podio/pull/568))
+  - Switch to gcc13 and clang16 for sanitizer workflows. Also switch to EL9 as OS to run on.
+
+* 2024-04-22 jmcarcell ([PR#583](https://github.com/AIDASoft/podio/pull/583))
+  - Fix OneToManyRelations and VectorMembers in cloned objects. Currently, pushing back these fields to a cloned object does not give the expected result, because the objects that we get after reading are not the same as we had before writing.
+  - Add some code testing this behavior: pushing back to cloned objects that have been read from a file and also after cloning the cloned object.
+
+* 2024-04-19 jmcarcell ([PR#589](https://github.com/AIDASoft/podio/pull/589))
+  - Fix leak in the buffer vectorMembers when reading SIO frames
+
+* 2024-04-19 jmcarcell ([PR#588](https://github.com/AIDASoft/podio/pull/588))
+  - Set the right path for `PODIO_SIOBLOCK_PATH`, fixing unit tests that read and write SIO files (there aren't any at the moment)
+  - Add an error message when `PODIO_SIOBLOCK_PATH` is set but none of the SioBlock libraries are found.
+
+* 2024-04-19 tmadlener ([PR#586](https://github.com/AIDASoft/podio/pull/586))
+  - Add a `Frame::getName` method to retrieve the name of a collection via it's collectionID (if the collection is known to the Frame).
+
+* 2024-04-19 jmcarcell ([PR#585](https://github.com/AIDASoft/podio/pull/585))
+  - Pass arguments by const reference to avoid making copies in a few places where passing by value was used
+
+* 2024-04-16 jmcarcell ([PR#587](https://github.com/AIDASoft/podio/pull/587))
+  - Change "Collcetion" to "Collection". It's an aesthetic change
+
+* 2024-04-15 jmcarcell ([PR#584](https://github.com/AIDASoft/podio/pull/584))
+  - Change a few permissions to 644 for a few text files that have executable permissions
+  - Add a couple of files to the .gitignore
+
+* 2024-04-11 jmcarcell ([PR#578](https://github.com/AIDASoft/podio/pull/578))
+  - Check if the data passed to the frame model is not a nullptr before doing anything with it.
+
+* 2024-04-10 jmcarcell ([PR#577](https://github.com/AIDASoft/podio/pull/577))
+  - Improve error message for push_back when using an immutable type
+
+* 2024-04-10 tmadlener ([PR#573](https://github.com/AIDASoft/podio/pull/573))
+  - Remove outdated information from top level README
+
+* 2024-04-09 tmadlener ([PR#574](https://github.com/AIDASoft/podio/pull/574))
+  - Make all docstrings of c++ classes use the `///` style (instead of the previous mix of `///` and /**/`.
+  - Extend and improve existing docstrings (e.g. add `@params` and `@returns` tags, add information or reword).
+
+* 2024-04-03 tmadlener ([PR#575](https://github.com/AIDASoft/podio/pull/575))
+  - Make sure that the `as_type` argument is respected in `Frame.put_parameter` also for lists of doubles / floats.
+  - Fix test to actually check for this.
+
+* 2024-04-02 tmadlener ([PR#547](https://github.com/AIDASoft/podio/pull/547))
+  - Fix the RNTupleWriter after ROOT has slightly changed the API for the RNTupleModel. Fixes #545
+
+* 2024-03-20 tmadlener ([PR#572](https://github.com/AIDASoft/podio/pull/572))
+  - Add the necessary infrastructure to run documentation generation on CERNs gitlab infrastructure via a mirror of this repository
+    - Deployed to https://key4hep.web.cern.ch/podio
+  - Update Doxyfile to have no warnings with newer doxygen versions
+
+* 2024-03-19 Mateusz Jakub Fila ([PR#571](https://github.com/AIDASoft/podio/pull/571))
+  - Fixed typos
+
+* 2024-03-11 Wouter Deconinck ([PR#561](https://github.com/AIDASoft/podio/pull/561))
+  - support podio-vis for extension data models
+
+* 2024-02-28 tmadlener ([PR#566](https://github.com/AIDASoft/podio/pull/566))
+  - Use `tabulate` to make the overview table of the categories in a file more consistent with the rest of the output.
+    - Also fixes a small issue with long category names.
+
+* 2024-02-24 Mateusz Jakub Fila ([PR#564](https://github.com/AIDASoft/podio/pull/564))
+  - Fix mutable to immutable object conversion with python bindings
+
+* 2024-02-22 Wouter Deconinck ([PR#562](https://github.com/AIDASoft/podio/pull/562))
+  - upgrade github-action-cvmfs@v3 to github-action-cvmfs@v4
+  - upgrade actions/checkout to v4
+
+* 2024-02-21 tmadlener ([PR#560](https://github.com/AIDASoft/podio/pull/560))
+  - Generate `operator!=` for all user facing handle classes to make constructs like `!(lhs == rhs)` obsolete.
+
+* 2024-02-19 jmcarcell ([PR#559](https://github.com/AIDASoft/podio/pull/559))
+  - Improve error messages when opening a bad file; instead of saying that the file couldn't be found say also that the tree that podio looks for couldn't be read
+
+* 2024-02-15 jmcarcell ([PR#558](https://github.com/AIDASoft/podio/pull/558))
+  - Improve the deprecated message
+
+* 2024-02-15 tmadlener ([PR#553](https://github.com/AIDASoft/podio/pull/553))
+  - Generate mutable reference getters for all members on the `Mutable` types
+    - Previously this was only generated for non-builtin (i.e. non-trivial) members. 
+    - Additionally, deprecate the API that does not respect the `getSyntax` option.
+    - Fixes https://github.com/AIDASoft/podio/issues/551
+
+* 2024-02-13 tmadlener ([PR#557](https://github.com/AIDASoft/podio/pull/557))
+  - Remove deprecated `collections` property from Frame python bindings
+  - Remove deprecated `getParametersForWrite` method from Frame interface
+
+* 2024-02-13 jmcarcell ([PR#556](https://github.com/AIDASoft/podio/pull/556))
+  - Add a schema_version for the extension datamodel, this fixes a warning at configure time
+
+* 2024-02-06 jmcarcell ([PR#555](https://github.com/AIDASoft/podio/pull/555))
+  - Change FCC stack to Key4hep in the README
+
 # v00-99
 
 * 2024-02-06 tmadlener ([PR#554](https://github.com/AIDASoft/podio/pull/554))
