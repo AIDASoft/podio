@@ -699,6 +699,7 @@ auto createCollections(const size_t nElements = 3u) {
     auto cluster = clusterColl.create();
     // create a few relations as well
     cluster.addHits(hit);
+    cluster.energy(150.f * i);
 
     auto vecMem = vecMemColl.create();
     vecMem.addcount(i);
@@ -1245,14 +1246,21 @@ template <typename ReaderT, typename WriterT>
 void runRelationAfterCloneCheck(const std::string& filename = "unittest_relations_after_cloning.root") {
   auto [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
   auto frame = podio::Frame();
-  frame.put(std::move(hitColl), "hits");
-  frame.put(std::move(clusterColl), "clusters");
-  frame.put(std::move(vecMemColl), "vectors");
   // Empty relations
   auto emptyColl = ExampleClusterCollection();
   emptyColl.create();
   emptyColl.create();
   frame.put(std::move(emptyColl), "emptyClusters");
+  // OneToOne relations
+  auto oneToOneColl = ExampleWithOneRelationCollection();
+  auto obj = oneToOneColl.create();
+  obj.cluster(clusterColl[1]);
+
+  frame.put(std::move(oneToOneColl), "oneToOne");
+  frame.put(std::move(hitColl), "hits");
+  frame.put(std::move(clusterColl), "clusters");
+  frame.put(std::move(vecMemColl), "vectors");
+
   auto writer = WriterT(filename);
   writer.writeFrame(frame, podio::Category::Event);
   writer.finish();
@@ -1298,6 +1306,12 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   newClusterCollection.push_back(nEmptyCluster);
   newHitCollection.push_back(hit);
   newHitCollection.push_back(anotherHit);
+
+  auto& collWithOneRelation = readFrame.get<ExampleWithOneRelationCollection>("oneToOne");
+  REQUIRE(collWithOneRelation.size() == 1);
+  auto nObj = collWithOneRelation[0].clone();
+  REQUIRE(collWithOneRelation[0].cluster().energy() == 150.);
+  REQUIRE(nObj.cluster().energy() == 150.);
 
   // Test cloned objects after writing and reading
   auto newName = std::filesystem::path(filename)

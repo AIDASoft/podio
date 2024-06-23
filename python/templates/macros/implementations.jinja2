@@ -1,4 +1,4 @@
-{% macro constructors_destructors(type, members, multi_relations=[], prefix='') %}
+{% macro constructors_destructors(type, members, one_to_one_relations=[], multi_relations=[], prefix='') %}
 {% set full_type = prefix + type %}
 
 {{ full_type }}::{{ full_type }}() :
@@ -36,6 +36,11 @@ Mutable{{ type }} {{ full_type }}::clone(bool cloneRelations) const {
   tmp->m_{{ relation.name }} = new std::vector<{{ relation.full_type }}>();
 {% endfor %}
   if (cloneRelations) {
+{% for relation in one_to_one_relations %}
+  if (m_obj->m_{{ relation.name }}) {
+    tmp->m_{{ relation.name }} = new {{ relation.full_type }}(*m_obj->m_{{ relation.name }});
+  }
+{% endfor %}
 {% for relation in multi_relations %}
     // If the current object has been read from a file, then the object may only have a slice of the relation vector
     // so this slice has to be copied in case we want to modify it
