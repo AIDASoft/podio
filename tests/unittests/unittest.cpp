@@ -1254,7 +1254,8 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   // OneToOne relations
   auto oneToOneColl = ExampleWithOneRelationCollection();
   auto obj = oneToOneColl.create();
-  obj.cluster(clusterColl[1]); // energy is 200
+  obj.cluster(clusterColl[1]);
+
   frame.put(std::move(oneToOneColl), "oneToOne");
   frame.put(std::move(hitColl), "hits");
   frame.put(std::move(clusterColl), "clusters");
