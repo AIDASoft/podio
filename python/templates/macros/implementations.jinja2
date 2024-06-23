@@ -123,7 +123,7 @@ const {{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syn
 {% macro single_relation_setters(class, relations, get_syntax, prefix='') %}
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
-void {{ class_type }}::{{ relation.setter_name(get_syntax) }}({{ relation.full_type }} value) {
+void {{ class_type }}::{{ relation.setter_name(get_syntax) }}(const {{ relation.full_type }}& value) {
   if (m_obj->m_{{ relation.name }}) {
     delete m_obj->m_{{ relation.name }};
   }
