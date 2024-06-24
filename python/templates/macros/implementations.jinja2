@@ -180,10 +180,7 @@ podio::RelationRange<{{ relation.full_type }}> {{ class_type }}::{{ relation.get
 {% macro common_object_funcs(class, prefix='') %}
 {% set full_type = prefix + class.bare_type %}
 bool {{ full_type }}::isAvailable() const {
-  if (m_obj) {
-    return true;
-  }
-  return false;
+  return m_obj;
 }
 
 const podio::ObjectID {{ full_type }}::getObjectID() const {
