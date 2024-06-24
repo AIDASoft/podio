@@ -121,7 +121,7 @@
 {% macro single_relation_setters(relations, get_syntax) %}
 {% for relation in relations %}
   /// Set the {{ relation.description }}
-  void {{ relation.setter_name(get_syntax) }}({{ relation.full_type }} value);
+  void {{ relation.setter_name(get_syntax) }}(const {{ relation.full_type }}& value);
 {% endfor %}
 {%- endmacro %}
 

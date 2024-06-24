@@ -57,7 +57,7 @@
 {%- endwith %}
 
 {% for relation in OneToOneRelations %}
-  if (m_{{ relation.name }}) delete m_{{ relation.name }};
+  delete m_{{ relation.name }};
 {% endfor %}
 }
 {%- endif %}
