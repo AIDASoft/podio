@@ -1,3 +1,19 @@
+# v01-00-01
+
+* 2024-06-24 tmadlener ([PR#634](https://github.com/AIDASoft/podio/pull/634))
+  - Bump CI runners to run on `ubuntu-latest`
+
+* 2024-06-24 jmcarcell ([PR#633](https://github.com/AIDASoft/podio/pull/633))
+  - Minor cleanups for generated EDMs
+    - Pass the argument by const reference in the relation setter
+    - Remove a few includes that are not needed
+    - Don't check for `nullptr` before deleting a (possibly `nullptr`) pointer
+    - Remove `if - else` check and use implicit conversion of pointer to bool
+
+* 2024-06-23 jmcarcell ([PR#632](https://github.com/AIDASoft/podio/pull/632))
+  - Fix one to one relations for cloned objects by copying the one to one relations too.
+  - Add a test that checks values for cloned objects from a non mutable object.
+
 # v01-00
 
 * 2024-06-20 tmadlener ([PR#629](https://github.com/AIDASoft/podio/pull/629))
