@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File SIOBlock.h &mdash; PODIO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=7f41d439"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            PODIO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../doc.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../doc.html#quick-start">Quick-start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../design.html">Design and Implementation Details</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../design.html#layout-of-objects">Layout of Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../design.html#the-user-layer">The User Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../design.html#the-internal-data-layer">The Internal Data Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../design.html#the-pod-layer">The POD Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../design.html#the-collections">The Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../design.html#vectorization-support-notebook-pattern">Vectorization support / notebook pattern</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../design.html#handling-mutability">Handling mutability</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../datamodel_syntax.html">Data Models and Data Model Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#basic-concepts-and-supported-features">Basic Concepts and Supported Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#mandatory-fields">Mandatory fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#definition-of-custom-components">Definition of custom components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#definition-of-custom-data-classes">Definition of custom data classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#defining-members">Defining members</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#definition-of-references-between-objects">Definition of references between objects:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#explicit-definition-of-methods">Explicit definition of methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#assigning-to-interface-types">Assigning to interface types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples for Supported Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#object-ownership">Object Ownership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#object-creation-and-storage">Object Creation and Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#object-references">Object References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#looping-through-collections">Looping through Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#cloneing-objects">Cloneing objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#podio-frame-container"><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#object-retrieval">Object Retrieval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#user-defined-meta-data">User defined Meta Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../examples.html#python-interface">Python Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../frame.html">The <code class="docutils literal notranslate"><span class="pre">Frame</span></code> concept</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../frame.html#basic-functionality-of-a-frame">Basic functionality of a <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../frame.html#usage-examples-for-collection-data">Usage examples for collection data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../frame.html#putting-collection-data-into-the-frame">Putting collection data into the <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../frame.html#getting-collection-references-from-the-frame">Getting collection (references) from the <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../frame.html#usage-for-parameters">Usage for Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../frame.html#i-o-basics-and-philosophy">I/O basics and philosophy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../frame.html#writing-a-frame">Writing a <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../frame.html#reading-a-frame">Reading a <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../frame.html#schema-evolution">Schema evolution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../frame.html#frame-implementation-and-design">Frame implementation and design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userdata.html">Writing extra data outside an EDM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../userdata.html#example-usage">Example usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../userdata.html#some-limitations">Some limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../userdata.html#no-relations-to-other-collections">No relations to other collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../userdata.html#limited-supported-types">Limited supported types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../storage_details.html">Storage details of files produced by podio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../storage_details.html#root">ROOT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../storage_details.html#storage-of-collection-data">Storage of Collection data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../storage_details.html#storage-of-frame-parameters">Storage of Frame parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../storage_details.html#storage-of-podio-related-metadata">Storage of podio related metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../storage_details.html#sio">SIO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../cmake.html">Building a new data model library with CMake</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../cmake.html#exported-cmake-functions-and-macros">Exported CMake functions and macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cmake.html#a-simple-example">A simple example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced_topics.html">Advanced Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced_topics.html#writing-extra-data-outside-the-edm">Writing extra data outside the EDM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced_topics.html#changing-creating-new-templates">Changing / creating new templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced_topics.html#persistency">Persistency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#writing-back-end">Writing Back-End</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#reading-back-end">Reading Back-End</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#dumping-json">Dumping JSON</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced_topics.html#thread-safety">Thread-safety</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#changing-user-data">Changing user data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#serialization">Serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#not-thread-safe-components">Not-thread-safe components</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced_topics.html#running-pre-commit">Running pre-commit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced_topics.html#retrieving-the-edm-definition-from-a-data-file">Retrieving the EDM definition from a data file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#accessing-the-edm-definition-programmatically">Accessing the EDM definition programmatically</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../advanced_topics.html#technical-details-on-edm-definition-embedding">Technical details on EDM definition embedding</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../advanced_topics.html#the-datamodelregistry">The <code class="docutils literal notranslate"><span class="pre">DatamodelRegistry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../advanced_topics.html#i-o-helpers-for-edm-definition-storing">I/O helpers for EDM definition storing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Changing / creating new templates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../templates.html#preprocessing-of-yaml-file">Preprocessing of yaml file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../templates.html#existing-templates">Existing templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../templates.html#adding-a-new-template">Adding a new template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../templates.html#available-information-in-the-templates">Available information in the templates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../templates.html#general-information">General information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../templates.html#components">Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../templates.html#datatypes">Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../templates.html#membervariable"><code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../templates.html#datatype"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../templates.html#julia-code-generation">Julia code generation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../python.html">Python interface for data models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../python.html#pythonizations">Pythonizations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../python.html#developing-new-pythonizations">Developing new pythonizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../python.html#considerations">Considerations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../collections_as_container.html">PODIO Collection as a <em>Container</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#container-types">Container Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#container-member-functions-and-operators">Container member functions and operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-as-an-allocatorawarecontainer">Collection as an <em>AllocatorAwareContainer</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#allocatorawarecontainer-types">AllocatorAwareContainer types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#allocatorawarecontainer-expression-and-statements"><em>AllocatorAwareContainer</em> expression and statements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-iterators-as-an-iterator">Collection iterators as an <em>Iterator</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#iterator-summary">Iterator summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#legacyiterator">LegacyIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#legacyinputiterator">LegacyInputIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#legacyforwarditerator">LegacyForwardIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#legacyoutputiterator">LegacyOutputIterator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#standard-range-algorithms">Standard range algorithms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">C++ API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../classlist.html">Class list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE"><code class="docutils literal notranslate"><span class="pre">CollectionBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_collection_buffer_factory.html">Class podio::CollectionBufferFactory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_collection_buffer_factory.html#_CPPv4N5podio23CollectionBufferFactoryE"><code class="docutils literal notranslate"><span class="pre">CollectionBufferFactory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_collection_i_d_table.html">Class podio::CollectionIDTable</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_collection_i_d_table.html#_CPPv4N5podio17CollectionIDTableE"><code class="docutils literal notranslate"><span class="pre">CollectionIDTable</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_collector.html">Class podio::DatamodelDefinitionCollector</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_collector.html#_CPPv4N5podio28DatamodelDefinitionCollectorE"><code class="docutils literal notranslate"><span class="pre">DatamodelDefinitionCollector</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_holder.html">Class podio::DatamodelDefinitionHolder</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolderE"><code class="docutils literal notranslate"><span class="pre">DatamodelDefinitionHolder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_datamodel_registry.html">Class podio::DatamodelRegistry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistryE"><code class="docutils literal notranslate"><span class="pre">DatamodelRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_frame.html">Class podio::Frame</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_generic_parameters.html">Class podio::GenericParameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE"><code class="docutils literal notranslate"><span class="pre">GenericParameters</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_i_collection_provider.html">Class podio::ICollectionProvider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_i_collection_provider.html#_CPPv4N5podio19ICollectionProviderE"><code class="docutils literal notranslate"><span class="pre">ICollectionProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_object_i_d.html">Class podio::ObjectID</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_object_i_d.html#_CPPv4N5podio8ObjectIDE"><code class="docutils literal notranslate"><span class="pre">ObjectID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_r_n_tuple_reader.html">Class podio::RNTupleReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReaderE"><code class="docutils literal notranslate"><span class="pre">RNTupleReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_r_n_tuple_writer.html">Class podio::RNTupleWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_r_n_tuple_writer.html#_CPPv4N5podio13RNTupleWriterE"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_frame_data.html">Class podio::ROOTFrameData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataE"><code class="docutils literal notranslate"><span class="pre">ROOTFrameData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_legacy_reader.html">Class podio::ROOTLegacyReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReaderE"><code class="docutils literal notranslate"><span class="pre">ROOTLegacyReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_reader.html">Class podio::ROOTReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4N5podio10ROOTReaderE"><code class="docutils literal notranslate"><span class="pre">ROOTReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_writer.html">Class podio::ROOTWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_r_o_o_t_writer.html#_CPPv4N5podio10ROOTWriterE"><code class="docutils literal notranslate"><span class="pre">ROOTWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_reader.html">Class podio::Reader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_reader.html#_CPPv4N5podio6ReaderE"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_relation_range.html">Class podio::RelationRange</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_relation_range.html#_CPPv4I0EN5podio13RelationRangeE"><code class="docutils literal notranslate"><span class="pre">RelationRange</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html">Class podio::SIOBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE"><code class="docutils literal notranslate"><span class="pre">SIOBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_factory.html">Class podio::SIOBlockFactory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_factory.html#_CPPv4N5podio15SIOBlockFactoryE"><code class="docutils literal notranslate"><span class="pre">SIOBlockFactory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_library_loader.html">Class podio::SIOBlockLibraryLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">SIOBlockLibraryLoader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_user_data.html">Class podio::SIOBlockUserData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I00EN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">SIOBlockUserData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_collection_i_d_table_block.html">Class podio::SIOCollectionIDTableBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_collection_i_d_table_block.html#_CPPv4N5podio25SIOCollectionIDTableBlockE"><code class="docutils literal notranslate"><span class="pre">SIOCollectionIDTableBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_event_meta_data_block.html">Class podio::SIOEventMetaDataBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_event_meta_data_block.html#_CPPv4N5podio21SIOEventMetaDataBlockE"><code class="docutils literal notranslate"><span class="pre">SIOEventMetaDataBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_file_t_o_c_record.html">Class podio::SIOFileTOCRecord</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_file_t_o_c_record.html#_CPPv4N5podio16SIOFileTOCRecordE"><code class="docutils literal notranslate"><span class="pre">SIOFileTOCRecord</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_frame_data.html">Class podio::SIOFrameData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_frame_data.html#_CPPv4N5podio12SIOFrameDataE"><code class="docutils literal notranslate"><span class="pre">SIOFrameData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_legacy_reader.html">Class podio::SIOLegacyReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_legacy_reader.html#_CPPv4N5podio15SIOLegacyReaderE"><code class="docutils literal notranslate"><span class="pre">SIOLegacyReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_numbered_meta_data_block.html">Class podio::SIONumberedMetaDataBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_numbered_meta_data_block.html#_CPPv4N5podio24SIONumberedMetaDataBlockE"><code class="docutils literal notranslate"><span class="pre">SIONumberedMetaDataBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_reader.html">Class podio::SIOReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_reader.html#_CPPv4N5podio9SIOReaderE"><code class="docutils literal notranslate"><span class="pre">SIOReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_writer.html">Class podio::SIOWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_writer.html#_CPPv4N5podio9SIOWriterE"><code class="docutils literal notranslate"><span class="pre">SIOWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_schema_evolution.html">Class podio::SchemaEvolution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_schema_evolution.html#_CPPv4N5podio15SchemaEvolutionE"><code class="docutils literal notranslate"><span class="pre">SchemaEvolution</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_user_data_collection.html">Class podio::UserDataCollection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_user_data_collection.html#_CPPv4I00EN5podio18UserDataCollectionE"><code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_writer.html">Class podio::Writer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1utils_1_1_maybe_shared_ptr.html">Class podio::utils::MaybeSharedPtr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1utils_1_1_maybe_shared_ptr.html#_CPPv4I0EN5podio5utils14MaybeSharedPtrE"><code class="docutils literal notranslate"><span class="pre">MaybeSharedPtr</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../structlist.html">Struct list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">CollectionReadBuffers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_collection_write_buffers.html">Struct podio::CollectionWriteBuffers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_collection_write_buffers.html#_CPPv4N5podio22CollectionWriteBuffersE"><code class="docutils literal notranslate"><span class="pre">CollectionWriteBuffers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_frame_1_1_frame_concept.html">Struct podio::Frame::FrameConcept</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_frame_1_1_frame_concept.html#_CPPv4N5podio5Frame12FrameConceptE"><code class="docutils literal notranslate"><span class="pre">FrameConcept</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_frame_1_1_frame_model.html">Struct podio::Frame::FrameModel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_frame_1_1_frame_model.html#_CPPv4I0EN5podio5Frame10FrameModelE"><code class="docutils literal notranslate"><span class="pre">FrameModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_info.html">Struct podio::RNTupleReader::CollectionInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_info.html#_CPPv4N5podio13RNTupleReader14CollectionInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html">Struct podio::RNTupleWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html#_CPPv4N5podio13RNTupleWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info.html">Struct podio::ROOTReader::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info.html#_CPPv4N5podio10ROOTReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html#_CPPv4N5podio10ROOTWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_reader_1_1_reader_concept.html">Struct podio::Reader::ReaderConcept</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4N5podio6Reader13ReaderConceptE"><code class="docutils literal notranslate"><span class="pre">ReaderConcept</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_reader_1_1_reader_model.html">Struct podio::Reader::ReaderModel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4I0EN5podio6Reader11ReaderModelE"><code class="docutils literal notranslate"><span class="pre">ReaderModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_relation_names.html">Struct podio::RelationNames</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_relation_names.html#_CPPv4N5podio13RelationNamesE"><code class="docutils literal notranslate"><span class="pre">RelationNames</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_s_i_o_file_t_o_c_record_block.html">Struct podio::SIOFileTOCRecordBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_s_i_o_file_t_o_c_record_block.html#_CPPv4N5podio21SIOFileTOCRecordBlockE"><code class="docutils literal notranslate"><span class="pre">SIOFileTOCRecordBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_s_i_o_map_block.html">Struct podio::SIOMapBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_s_i_o_map_block.html#_CPPv4I00EN5podio11SIOMapBlockE"><code class="docutils literal notranslate"><span class="pre">SIOMapBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_s_i_o_version_block.html">Struct podio::SIOVersionBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_s_i_o_version_block.html#_CPPv4N5podio15SIOVersionBlockE"><code class="docutils literal notranslate"><span class="pre">SIOVersionBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_schema_evolution_1_1_map_index.html">Struct podio::SchemaEvolution::MapIndex</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_schema_evolution_1_1_map_index.html#_CPPv4N5podio15SchemaEvolution8MapIndexE"><code class="docutils literal notranslate"><span class="pre">MapIndex</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_writer_1_1_writer_concept.html">Struct podio::Writer::WriterConcept</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_writer_1_1_writer_concept.html#_CPPv4N5podio6Writer13WriterConceptE"><code class="docutils literal notranslate"><span class="pre">WriterConcept</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_writer_1_1_writer_model.html">Struct podio::Writer::WriterModel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_writer_1_1_writer_model.html#_CPPv4I0EN5podio6Writer11WriterModelE"><code class="docutils literal notranslate"><span class="pre">WriterModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1det_1_1nonesuch.html">Struct podio::det::nonesuch</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchE"><code class="docutils literal notranslate"><span class="pre">nonesuch</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1root__utils_1_1_param_storage.html">Struct podio::root_utils::ParamStorage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1root__utils_1_1_param_storage.html#_CPPv4I0EN5podio10root_utils12ParamStorageE"><code class="docutils literal notranslate"><span class="pre">ParamStorage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1utils_1_1_maybe_shared_ptr_1_1_control_block.html">Struct podio::utils::MaybeSharedPtr::ControlBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1utils_1_1_maybe_shared_ptr_1_1_control_block.html#_CPPv4N5podio5utils14MaybeSharedPtr12ControlBlockE"><code class="docutils literal notranslate"><span class="pre">ControlBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1version_1_1_version.html">Struct podio::version::Version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1version_1_1_version.html#_CPPv4N5podio7version7VersionE"><code class="docutils literal notranslate"><span class="pre">Version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../namespacelist.html">Namespace list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacepodio.html">Namespace podio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacepodio.html#_CPPv45podio"><code class="docutils literal notranslate"><span class="pre">podio</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacepodio_1_1_category.html">Namespace podio::Category</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacepodio_1_1_category.html#_CPPv4N5podio8CategoryE"><code class="docutils literal notranslate"><span class="pre">Category</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacepodio_1_1det.html">Namespace podio::det</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacepodio_1_1det.html#_CPPv4N5podio3detE"><code class="docutils literal notranslate"><span class="pre">det</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacepodio_1_1root__utils.html">Namespace podio::root_utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacepodio_1_1root__utils.html#_CPPv4N5podio10root_utilsE"><code class="docutils literal notranslate"><span class="pre">root_utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacepodio_1_1sio__helpers.html">Namespace podio::sio_helpers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacepodio_1_1sio__helpers.html#_CPPv4N5podio11sio_helpersE"><code class="docutils literal notranslate"><span class="pre">sio_helpers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacepodio_1_1utils.html">Namespace podio::utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacepodio_1_1utils.html#_CPPv4N5podio5utilsE"><code class="docutils literal notranslate"><span class="pre">utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacepodio_1_1version.html">Namespace podio::version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacepodio_1_1version.html#_CPPv4N5podio7versionE"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../namespace/namespacesio.html">Namespace sio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio"><code class="docutils literal notranslate"><span class="pre">sio</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../py_api/modules.html">python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../py_api/podio.html">podio package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.pythonizations.html">podio.pythonizations package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.base_writer">podio.base_writer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.base_writer.AllWriters"><code class="docutils literal notranslate"><span class="pre">AllWriters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.base_writer.BaseWriterMixin"><code class="docutils literal notranslate"><span class="pre">BaseWriterMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.frame">podio.frame module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.frame.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.frame_iterator">podio.frame_iterator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.frame_iterator.FrameCategoryIterator"><code class="docutils literal notranslate"><span class="pre">FrameCategoryIterator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.reading">podio.reading module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.reading.RootFileFormat"><code class="docutils literal notranslate"><span class="pre">RootFileFormat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.reading.get_reader"><code class="docutils literal notranslate"><span class="pre">get_reader()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.root_io">podio.root_io module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.root_io.LegacyReader"><code class="docutils literal notranslate"><span class="pre">LegacyReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.root_io.RNTupleReader"><code class="docutils literal notranslate"><span class="pre">RNTupleReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.root_io.RNTupleWriter"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.root_io.Reader"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.root_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.sio_io">podio.sio_io module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.sio_io.LegacyReader"><code class="docutils literal notranslate"><span class="pre">LegacyReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.sio_io.Reader"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.sio_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../py_api/podio_class_generator.html">podio_class_generator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../py_api/podio_gen.html">podio_gen package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_gen.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_gen.html#module-podio_gen.cpp_generator">podio_gen.cpp_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.cpp_generator.CPPClassGenerator"><code class="docutils literal notranslate"><span class="pre">CPPClassGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.cpp_generator.IncludeFrom"><code class="docutils literal notranslate"><span class="pre">IncludeFrom</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.cpp_generator.replace_component_in_paths"><code class="docutils literal notranslate"><span class="pre">replace_component_in_paths()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_gen.html#module-podio_gen.generator_base">podio_gen.generator_base module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_base.ClassGeneratorBaseMixin"><code class="docutils literal notranslate"><span class="pre">ClassGeneratorBaseMixin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_base.write_file_if_changed"><code class="docutils literal notranslate"><span class="pre">write_file_if_changed()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_gen.html#module-podio_gen.generator_utils">podio_gen.generator_utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_utils.DataModel"><code class="docutils literal notranslate"><span class="pre">DataModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_utils.DataModelJSONEncoder"><code class="docutils literal notranslate"><span class="pre">DataModelJSONEncoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_utils.DataType"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_utils.DefinitionError"><code class="docutils literal notranslate"><span class="pre">DefinitionError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable"><code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.generator_utils.get_julia_type"><code class="docutils literal notranslate"><span class="pre">get_julia_type()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_gen.html#module-podio_gen.julia_generator">podio_gen.julia_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.julia_generator.JuliaClassGenerator"><code class="docutils literal notranslate"><span class="pre">JuliaClassGenerator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_gen.html#module-podio_gen.podio_config_reader">podio_gen.podio_config_reader module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator"><code class="docutils literal notranslate"><span class="pre">ClassDefinitionValidator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.podio_config_reader.MemberParser"><code class="docutils literal notranslate"><span class="pre">MemberParser</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_gen.html#module-podio_gen">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../py_api/podio_schema_evolution.html">podio_schema_evolution module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.AddedComponent"><code class="docutils literal notranslate"><span class="pre">AddedComponent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.AddedDatatype"><code class="docutils literal notranslate"><span class="pre">AddedDatatype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.AddedMember"><code class="docutils literal notranslate"><span class="pre">AddedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.ChangedMember"><code class="docutils literal notranslate"><span class="pre">ChangedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator"><code class="docutils literal notranslate"><span class="pre">DataModelComparator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.compare"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.compare()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.get_changed_schemata"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.get_changed_schemata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.heuristics"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.heuristics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.heuristics_members"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.heuristics_members()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.print_comparison"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.print_comparison()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.read"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.read_evolution_file"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.read_evolution_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DroppedComponent"><code class="docutils literal notranslate"><span class="pre">DroppedComponent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DroppedDatatype"><code class="docutils literal notranslate"><span class="pre">DroppedDatatype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.DroppedMember"><code class="docutils literal notranslate"><span class="pre">DroppedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.RenamedDataType"><code class="docutils literal notranslate"><span class="pre">RenamedDataType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.RenamedMember"><code class="docutils literal notranslate"><span class="pre">RenamedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.RootIoRule"><code class="docutils literal notranslate"><span class="pre">RootIoRule</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.SchemaChange"><code class="docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.root_filter"><code class="docutils literal notranslate"><span class="pre">root_filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_schema_evolution.html#podio_schema_evolution.sio_filter"><code class="docutils literal notranslate"><span class="pre">sio_filter()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PODIO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">File SIOBlock.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-sioblock-h">
+<h1>File SIOBlock.h<a class="headerlink" href="#file-sioblock-h" title="Link to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv45podio">
+<span id="_CPPv35podio"></span><span id="_CPPv25podio"></span><span id="podio"></span><span class="target" id="namespacepodio"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">podio</span></span></span><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t">
+<span id="_CPPv3I00EN5podio16handlePODDataSIOER4devTP7PODData6size_t"></span><span id="_CPPv2I00EN5podio16handlePODDataSIOER4devTP7PODData6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">devT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PODData</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1ab83fbd4fe8b25c4b12e78520c080e58c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handlePODDataSIO</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t" title="podio::handlePODDataSIO::devT"><span class="n"><span class="pre">devT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t" title="podio::handlePODDataSIO::PODData"><span class="n"><span class="pre">PODData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio12writeMapLikeEvRN3sio12write_deviceERK8MapLikeT">
+<span id="_CPPv3I0EN5podio12writeMapLikeERN3sio12write_deviceERK8MapLikeT"></span><span id="_CPPv2I0EN5podio12writeMapLikeERN3sio12write_deviceERK8MapLikeT"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapLikeT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1ac01208f3902f73fb99be2e316ad6426b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeMapLike</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5podio12writeMapLikeEvRN3sio12write_deviceERK8MapLikeT" title="podio::writeMapLike::MapLikeT"><span class="n"><span class="pre">MapLikeT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5podio12writeMapLikeEvRN3sio12write_deviceERK8MapLikeT" title="Link to this definition"></a><br /></dt>
+<dd><p>Write anything that iterates like an std::map. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio11readMapLikeEvRN3sio11read_deviceER8MapLikeT">
+<span id="_CPPv3I0EN5podio11readMapLikeERN3sio11read_deviceER8MapLikeT"></span><span id="_CPPv2I0EN5podio11readMapLikeERN3sio11read_deviceER8MapLikeT"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapLikeT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1a4549e11a924620c3eec7303ed522c373"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readMapLike</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="#_CPPv4I0EN5podio11readMapLikeEvRN3sio11read_deviceER8MapLikeT" title="podio::readMapLike::MapLikeT"><span class="n"><span class="pre">MapLikeT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5podio11readMapLikeEvRN3sio11read_deviceER8MapLikeT" title="Link to this definition"></a><br /></dt>
+<dd><p>Read anything that iterates like an std::map. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlockE">
+<span id="_CPPv3N5podio8SIOBlockE"></span><span id="_CPPv2N5podio8SIOBlockE"></span><span id="podio::SIOBlock"></span><span class="target" id="classpodio_1_1_s_i_o_block"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<p>Base class for sio::block handlers used with PODIO. </p>
+<p>Subclassed by <a class="reference internal" href="../namespace/namespacepodio.html#classpodio_1_1_s_i_o_block_user_data"><span class="std std-ref">podio::SIOBlockUserData&lt; BasicType, typename &gt;</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock8SIOBlockERKNSt6stringEN3sio12version_typeE">
+<span id="_CPPv3N5podio8SIOBlock8SIOBlockERKNSt6stringEN3sio12version_typeE"></span><span id="_CPPv2N5podio8SIOBlock8SIOBlockERKNSt6stringEN3sio12version_typeE"></span><span id="podio::SIOBlock::SIOBlock__ssCR.sio::version_type"></span><span class="target" id="classpodio_1_1_s_i_o_block_1a743a00cb8f422bb5ed12110049e5ee83"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">nam</span></span>, <a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">version_type</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vers</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock8SIOBlockEv">
+<span id="_CPPv3N5podio8SIOBlock8SIOBlockEv"></span><span id="_CPPv2N5podio8SIOBlock8SIOBlockEv"></span><span id="podio::SIOBlock::SIOBlock"></span><span class="target" id="classpodio_1_1_s_i_o_block_1a3e4e9132368c113f27ede80a98c7d8d2"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock8SIOBlockERK8SIOBlock">
+<span id="_CPPv3N5podio8SIOBlock8SIOBlockERK8SIOBlock"></span><span id="_CPPv2N5podio8SIOBlock8SIOBlockERK8SIOBlock"></span><span id="podio::SIOBlock::SIOBlock__SIOBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_block_1abf12091b35bdb771b34121fe401cc9fd"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlock8SIOBlockERK8SIOBlock" title="podio::SIOBlock::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlockaSERK8SIOBlock">
+<span id="_CPPv3N5podio8SIOBlockaSERK8SIOBlock"></span><span id="_CPPv2N5podio8SIOBlockaSERK8SIOBlock"></span><span id="podio::SIOBlock::assign-operator__SIOBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_block_1af186c5ffbdd349a00d1bfea3aac6f747"></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE" title="podio::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE" title="podio::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock13getCollectionEv">
+<span id="_CPPv3N5podio8SIOBlock13getCollectionEv"></span><span id="_CPPv2N5podio8SIOBlock13getCollectionEv"></span><span id="podio::SIOBlock::getCollection"></span><span class="target" id="classpodio_1_1_s_i_o_block_1a05a6c07bcbdc95fbf446b5561c8f39e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getCollection</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio8SIOBlock10getBuffersEv">
+<span id="_CPPv3NK5podio8SIOBlock10getBuffersEv"></span><span id="_CPPv2NK5podio8SIOBlock10getBuffersEv"></span><span id="podio::SIOBlock::getBuffersC"></span><span class="target" id="classpodio_1_1_s_i_o_block_1a47eb7fc37e7389402bef75ab20ecaa87"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="_collection_buffers_8h.html#_CPPv4N5podio21CollectionReadBuffersE" title="podio::CollectionReadBuffers"><span class="n"><span class="pre">CollectionReadBuffers</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getBuffers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock4nameEv">
+<span id="_CPPv3N5podio8SIOBlock4nameEv"></span><span id="_CPPv2N5podio8SIOBlock4nameEv"></span><span id="podio::SIOBlock::name"></span><span class="target" id="classpodio_1_1_s_i_o_block_1a0d8dc19a4f97dea889d2ea37f2091191"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock19setSubsetCollectionEb">
+<span id="_CPPv3N5podio8SIOBlock19setSubsetCollectionEb"></span><span id="_CPPv2N5podio8SIOBlock19setSubsetCollectionEb"></span><span id="podio::SIOBlock::setSubsetCollection__b"></span><span class="target" id="classpodio_1_1_s_i_o_block_1addfdad5120fdfc9f0d8ca25e19a219a7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setSubsetCollection</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subsetColl</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock13setCollectionEPN5podio14CollectionBaseE">
+<span id="_CPPv3N5podio8SIOBlock13setCollectionEPN5podio14CollectionBaseE"></span><span id="_CPPv2N5podio8SIOBlock13setCollectionEPN5podio14CollectionBaseE"></span><span id="podio::SIOBlock::setCollection__podio::CollectionBaseP"></span><span class="target" id="classpodio_1_1_s_i_o_block_1af8253b904a6ca8edb588548a1c57f4c1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setCollection</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio8SIOBlock6createERKNSt6stringE">
+<span id="_CPPv3NK5podio8SIOBlock6createERKNSt6stringE"></span><span id="_CPPv2NK5podio8SIOBlock6createERKNSt6stringE"></span><span id="podio::SIOBlock::create__ssCRC"></span><span class="target" id="classpodio_1_1_s_i_o_block_1a1d149367a6c7ad7081abce4bd0c18191"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE" title="podio::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock12m_subsetCollE">
+<span id="_CPPv3N5podio8SIOBlock12m_subsetCollE"></span><span id="_CPPv2N5podio8SIOBlock12m_subsetCollE"></span><span id="podio::SIOBlock::m_subsetColl__b"></span><span class="target" id="classpodio_1_1_s_i_o_block_1aac44c86d28aad29adf62ed5a3f6e61ee"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m_subsetColl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio8SIOBlock12m_subsetCollE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8SIOBlock9m_buffersE">
+<span id="_CPPv3N5podio8SIOBlock9m_buffersE"></span><span id="_CPPv2N5podio8SIOBlock9m_buffersE"></span><span id="podio::SIOBlock::m_buffers__podio::CollectionReadBuffers"></span><span class="target" id="classpodio_1_1_s_i_o_block_1aca332ea9d21137ce5d008cd2be610cc8"></span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="_collection_buffers_8h.html#_CPPv4N5podio21CollectionReadBuffersE" title="podio::CollectionReadBuffers"><span class="n"><span class="pre">CollectionReadBuffers</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m_buffers</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio8SIOBlock9m_buffersE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOBlockFactoryE">
+<span id="_CPPv3N5podio15SIOBlockFactoryE"></span><span id="_CPPv2N5podio15SIOBlockFactoryE"></span><span id="podio::SIOBlockFactory"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlockFactory</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<p>factory for creating sio::blocks for a given type of EDM-collection </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOBlockFactory26registerBlockForCollectionERKNSt6stringEP8SIOBlock">
+<span id="_CPPv3N5podio15SIOBlockFactory26registerBlockForCollectionERKNSt6stringEP8SIOBlock"></span><span id="_CPPv2N5podio15SIOBlockFactory26registerBlockForCollectionERKNSt6stringEP8SIOBlock"></span><span id="podio::SIOBlockFactory::registerBlockForCollection__ssCR.SIOBlockP"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory_1a989f3cd04195b0409edd660d252102d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">registerBlockForCollection</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">type</span></span>, <a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE" title="podio::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio15SIOBlockFactory11createBlockEPKN5podio14CollectionBaseERKNSt6stringE">
+<span id="_CPPv3NK5podio15SIOBlockFactory11createBlockEPKN5podio14CollectionBaseERKNSt6stringE"></span><span id="_CPPv2NK5podio15SIOBlockFactory11createBlockEPKN5podio14CollectionBaseERKNSt6stringE"></span><span id="podio::SIOBlockFactory::createBlock__podio::CollectionBaseCP.ssCRC"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory_1acd85991ed064cd5756a1ed811f0885e0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE" title="podio::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">col</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio15SIOBlockFactory11createBlockERKNSt6stringERKNSt6stringEKb">
+<span id="_CPPv3NK5podio15SIOBlockFactory11createBlockERKNSt6stringERKNSt6stringEKb"></span><span id="_CPPv2NK5podio15SIOBlockFactory11createBlockERKNSt6stringERKNSt6stringEKb"></span><span id="podio::SIOBlockFactory::createBlock__ssCR.ssCR.bCC"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory_1a571bd06674b36f0bf9f95529eb81ba75"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE" title="podio::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">typeStr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isRefColl</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOBlockFactory8instanceEv">
+<span id="_CPPv3N5podio15SIOBlockFactory8instanceEv"></span><span id="_CPPv2N5podio15SIOBlockFactory8instanceEv"></span><span id="podio::SIOBlockFactory::instance"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory_1ab58b0fbacddc3a1a57386f6830913af4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_factory.html#_CPPv4N5podio15SIOBlockFactoryE" title="podio::SIOBlockFactory"><span class="n"><span class="pre">SIOBlockFactory</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">instance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-types">Private Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOBlockFactory8BlockMapE">
+<span id="_CPPv3N5podio15SIOBlockFactory8BlockMapE"></span><span id="_CPPv2N5podio15SIOBlockFactory8BlockMapE"></span><span id="podio::SIOBlockFactory::BlockMap"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory_1aeb336c54d259227bd41a3f4cfea69844"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE" title="podio::SIOBlock"><span class="n"><span class="pre">SIOBlock</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockMap</span></span></span><a class="headerlink" href="#_CPPv4N5podio15SIOBlockFactory8BlockMapE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOBlockFactory15SIOBlockFactoryEv">
+<span id="_CPPv3N5podio15SIOBlockFactory15SIOBlockFactoryEv"></span><span id="_CPPv2N5podio15SIOBlockFactory15SIOBlockFactoryEv"></span><span id="podio::SIOBlockFactory::SIOBlockFactory"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory_1a1a9f51f61b1adaa497ec42f0eb4cc8e8"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlockFactory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOBlockFactory15SIOBlockFactoryEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOBlockFactory4_mapE">
+<span id="_CPPv3N5podio15SIOBlockFactory4_mapE"></span><span id="_CPPv2N5podio15SIOBlockFactory4_mapE"></span><span id="podio::SIOBlockFactory::_map__BlockMap"></span><span class="target" id="classpodio_1_1_s_i_o_block_factory_1aeb6110b881ac4f4d2490226d29fad483"></span><a class="reference internal" href="#_CPPv4N5podio15SIOBlockFactory8BlockMapE" title="podio::SIOBlockFactory::BlockMap"><span class="n"><span class="pre">BlockMap</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_map</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOBlockFactory4_mapE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoaderE">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoaderE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoaderE"></span><span id="podio::SIOBlockLibraryLoader"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlockLibraryLoader</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader8instanceEv">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader8instanceEv"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader8instanceEv"></span><span id="podio::SIOBlockLibraryLoader::instance"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1a3a8c53828f81af759e0daf67de473058"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoaderE" title="podio::SIOBlockLibraryLoader"><span class="n"><span class="pre">SIOBlockLibraryLoader</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">instance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-types">Private Types</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatusE">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader10LoadStatusE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader10LoadStatusE"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1aa113a6842c9d0a3b34e5d40695413c01"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadStatus</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">short</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatusE" title="Link to this definition"></a><br /></dt>
+<dd><p>Status code for loading shared SIOBlocks libraries. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatus7SuccessE">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader10LoadStatus7SuccessE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader10LoadStatus7SuccessE"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1aa113a6842c9d0a3b34e5d40695413c01a505a83f220c02df2f85c3810cd9ceb38"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Success</span></span></span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatus7SuccessE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatus13AlreadyLoadedE">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader10LoadStatus13AlreadyLoadedE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader10LoadStatus13AlreadyLoadedE"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1aa113a6842c9d0a3b34e5d40695413c01a3cd0dcca263062e228b48dc510f78334"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AlreadyLoaded</span></span></span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatus13AlreadyLoadedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatus5ErrorE">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader10LoadStatus5ErrorE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader10LoadStatus5ErrorE"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1aa113a6842c9d0a3b34e5d40695413c01a902b0d55fddef6f8d651fe1035b7d4bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Error</span></span></span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatus5ErrorE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader21SIOBlockLibraryLoaderEv">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader21SIOBlockLibraryLoaderEv"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader21SIOBlockLibraryLoaderEv"></span><span id="podio::SIOBlockLibraryLoader::SIOBlockLibraryLoader"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1a9abe9c225ffd339814bc0100045f4197"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlockLibraryLoader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader21SIOBlockLibraryLoaderEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader7loadLibERKNSt6stringE">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader7loadLibERKNSt6stringE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader7loadLibERKNSt6stringE"></span><span id="podio::SIOBlockLibraryLoader::loadLib__ssCR"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1abca271d76521d53598dd50f4baff6889"></span><a class="reference internal" href="#_CPPv4N5podio21SIOBlockLibraryLoader10LoadStatusE" title="podio::SIOBlockLibraryLoader::LoadStatus"><span class="n"><span class="pre">LoadStatus</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadLib</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">libname</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader7loadLibERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Load a library with the given name via dlopen. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader11_loadedLibsE">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader11_loadedLibsE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader11_loadedLibsE"></span><span id="podio::SIOBlockLibraryLoader::_loadedLibs__std::map:ss.voidP:"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1a19d98ba816e70a3bc009be9923585897"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_loadedLibs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader11_loadedLibsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-static-functions">Private Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader11getLibNamesEv">
+<span id="_CPPv3N5podio21SIOBlockLibraryLoader11getLibNamesEv"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader11getLibNamesEv"></span><span id="podio::SIOBlockLibraryLoader::getLibNames"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1a254837a5751651e54c1d3e3d2a8389f9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLibNames</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio21SIOBlockLibraryLoader11getLibNamesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get all files that are found on LD_LIBRARY_PATH and that have “SioBlocks” in their name together with the directory they are in. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlockE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlockE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlockE"></span><span id="podio::SIOCollectionIDTableBlock"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOCollectionIDTableBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<p>A dedicated block for handling the I/O of the CollectionIDTable. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockEv">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockEv"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockEv"></span><span id="podio::SIOCollectionIDTableBlock::SIOCollectionIDTableBlock"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a060cbf092f8a1812a8f96ea0ce561e37"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOCollectionIDTableBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockERRNSt6vectorINSt6stringEEERRNSt6vectorI8uint32_tEERRNSt6vectorINSt6stringEEERRNSt6vectorIsEE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockERRNSt6vectorINSt6stringEEERRNSt6vectorI8uint32_tEERRNSt6vectorINSt6stringEEERRNSt6vectorIsEE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockERRNSt6vectorINSt6stringEEERRNSt6vectorI8uint32_tEERRNSt6vectorINSt6stringEEERRNSt6vectorIsEE"></span><span id="podio::SIOCollectionIDTableBlock::SIOCollectionIDTableBlock__std::vector:ss:RR.std::vector:uint32_t:RR.std::vector:ss:RR.std::vector:short:RR"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1af0b2fdc49e3dc5ce278c39bd249f4f36"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOCollectionIDTableBlock</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">names</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ids</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">isSubsetColl</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockERK25SIOCollectionIDTableBlock">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockERK25SIOCollectionIDTableBlock"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockERK25SIOCollectionIDTableBlock"></span><span id="podio::SIOCollectionIDTableBlock::SIOCollectionIDTableBlock__SIOCollectionIDTableBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a272d651922f3e6dd289a68b67c85f92a"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOCollectionIDTableBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_collection_i_d_table_block.html#_CPPv4N5podio25SIOCollectionIDTableBlock25SIOCollectionIDTableBlockERK25SIOCollectionIDTableBlock" title="podio::SIOCollectionIDTableBlock::SIOCollectionIDTableBlock"><span class="n"><span class="pre">SIOCollectionIDTableBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlockaSERK25SIOCollectionIDTableBlock">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlockaSERK25SIOCollectionIDTableBlock"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlockaSERK25SIOCollectionIDTableBlock"></span><span id="podio::SIOCollectionIDTableBlock::assign-operator__SIOCollectionIDTableBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a6979eae94a25397ed1c773611aeb3b39"></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_collection_i_d_table_block.html#_CPPv4N5podio25SIOCollectionIDTableBlockE" title="podio::SIOCollectionIDTableBlock"><span class="n"><span class="pre">SIOCollectionIDTableBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_collection_i_d_table_block.html#_CPPv4N5podio25SIOCollectionIDTableBlockE" title="podio::SIOCollectionIDTableBlock"><span class="n"><span class="pre">SIOCollectionIDTableBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock4readERN3sio11read_deviceEN3sio12version_typeE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="podio::SIOCollectionIDTableBlock::read__sio::read_deviceR.sio::version_type"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1af10afd5497a8c08141a8c9c78de8b0f2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">version_type</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock5writeERN3sio12write_deviceE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock5writeERN3sio12write_deviceE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock5writeERN3sio12write_deviceE"></span><span id="podio::SIOCollectionIDTableBlock::write__sio::write_deviceR"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1aa1120c2edf83448dcc0027d66dde00f7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock8getTableEv">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock8getTableEv"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock8getTableEv"></span><span id="podio::SIOCollectionIDTableBlock::getTable"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a9eb5c917ba8355feba2e4e06ac50b92d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_i_d_table.html#_CPPv4N5podio17CollectionIDTableE" title="podio::CollectionIDTable"><span class="n"><span class="pre">CollectionIDTable</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getTable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio25SIOCollectionIDTableBlock12getTypeNamesEv">
+<span id="_CPPv3NK5podio25SIOCollectionIDTableBlock12getTypeNamesEv"></span><span id="_CPPv2NK5podio25SIOCollectionIDTableBlock12getTypeNamesEv"></span><span id="podio::SIOCollectionIDTableBlock::getTypeNamesC"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a77ff757351858de70298c3f7a0449ea6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getTypeNames</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio25SIOCollectionIDTableBlock23getSubsetCollectionBitsEv">
+<span id="_CPPv3NK5podio25SIOCollectionIDTableBlock23getSubsetCollectionBitsEv"></span><span id="_CPPv2NK5podio25SIOCollectionIDTableBlock23getSubsetCollectionBitsEv"></span><span id="podio::SIOCollectionIDTableBlock::getSubsetCollectionBitsC"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1aed9b4faa4cc398f5e8b701f5aff9894e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getSubsetCollectionBits</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock6_namesE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock6_namesE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock6_namesE"></span><span id="podio::SIOCollectionIDTableBlock::_names__std::vector:ss:"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a3f6301930e85caa84c74b39990474d76"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_names</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio25SIOCollectionIDTableBlock6_namesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock4_idsE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock4_idsE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock4_idsE"></span><span id="podio::SIOCollectionIDTableBlock::_ids__std::vector:uint32_t:"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a43aebf7617c74defe4b76e09db951944"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_ids</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio25SIOCollectionIDTableBlock4_idsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock6_typesE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock6_typesE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock6_typesE"></span><span id="podio::SIOCollectionIDTableBlock::_types__std::vector:ss:"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a3be98ea687c7c1b7143a308eea34ebc9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_types</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio25SIOCollectionIDTableBlock6_typesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25SIOCollectionIDTableBlock13_isSubsetCollE">
+<span id="_CPPv3N5podio25SIOCollectionIDTableBlock13_isSubsetCollE"></span><span id="_CPPv2N5podio25SIOCollectionIDTableBlock13_isSubsetCollE"></span><span id="podio::SIOCollectionIDTableBlock::_isSubsetColl__std::vector:short:"></span><span class="target" id="classpodio_1_1_s_i_o_collection_i_d_table_block_1a3f56a158ff2ab7aba0ec83155b4c8b18"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_isSubsetColl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio25SIOCollectionIDTableBlock13_isSubsetCollE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOEventMetaDataBlockE">
+<span id="_CPPv3N5podio21SIOEventMetaDataBlockE"></span><span id="_CPPv2N5podio21SIOEventMetaDataBlockE"></span><span id="podio::SIOEventMetaDataBlock"></span><span class="target" id="classpodio_1_1_s_i_o_event_meta_data_block"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOEventMetaDataBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<p>A block for handling the EventMeta data. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOEventMetaDataBlock21SIOEventMetaDataBlockEv">
+<span id="_CPPv3N5podio21SIOEventMetaDataBlock21SIOEventMetaDataBlockEv"></span><span id="_CPPv2N5podio21SIOEventMetaDataBlock21SIOEventMetaDataBlockEv"></span><span id="podio::SIOEventMetaDataBlock::SIOEventMetaDataBlock"></span><span class="target" id="classpodio_1_1_s_i_o_event_meta_data_block_1a5586a6e580de7bb6f26c6b8d5b525dc1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOEventMetaDataBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOEventMetaDataBlock21SIOEventMetaDataBlockERK21SIOEventMetaDataBlock">
+<span id="_CPPv3N5podio21SIOEventMetaDataBlock21SIOEventMetaDataBlockERK21SIOEventMetaDataBlock"></span><span id="_CPPv2N5podio21SIOEventMetaDataBlock21SIOEventMetaDataBlockERK21SIOEventMetaDataBlock"></span><span id="podio::SIOEventMetaDataBlock::SIOEventMetaDataBlock__SIOEventMetaDataBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_event_meta_data_block_1a1add14f09df5d707b4446bf440cc14ec"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOEventMetaDataBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_event_meta_data_block.html#_CPPv4N5podio21SIOEventMetaDataBlock21SIOEventMetaDataBlockERK21SIOEventMetaDataBlock" title="podio::SIOEventMetaDataBlock::SIOEventMetaDataBlock"><span class="n"><span class="pre">SIOEventMetaDataBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOEventMetaDataBlockaSERK21SIOEventMetaDataBlock">
+<span id="_CPPv3N5podio21SIOEventMetaDataBlockaSERK21SIOEventMetaDataBlock"></span><span id="_CPPv2N5podio21SIOEventMetaDataBlockaSERK21SIOEventMetaDataBlock"></span><span id="podio::SIOEventMetaDataBlock::assign-operator__SIOEventMetaDataBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_event_meta_data_block_1a1f39c35e4d747d0da00723f56ac8f37d"></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_event_meta_data_block.html#_CPPv4N5podio21SIOEventMetaDataBlockE" title="podio::SIOEventMetaDataBlock"><span class="n"><span class="pre">SIOEventMetaDataBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_event_meta_data_block.html#_CPPv4N5podio21SIOEventMetaDataBlockE" title="podio::SIOEventMetaDataBlock"><span class="n"><span class="pre">SIOEventMetaDataBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOEventMetaDataBlock4readERN3sio11read_deviceEN3sio12version_typeE">
+<span id="_CPPv3N5podio21SIOEventMetaDataBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="_CPPv2N5podio21SIOEventMetaDataBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="podio::SIOEventMetaDataBlock::read__sio::read_deviceR.sio::version_type"></span><span class="target" id="classpodio_1_1_s_i_o_event_meta_data_block_1aa4d21d557a114122ad668725794e7d77"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">version_type</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOEventMetaDataBlock5writeERN3sio12write_deviceE">
+<span id="_CPPv3N5podio21SIOEventMetaDataBlock5writeERN3sio12write_deviceE"></span><span id="_CPPv2N5podio21SIOEventMetaDataBlock5writeERN3sio12write_deviceE"></span><span id="podio::SIOEventMetaDataBlock::write__sio::write_deviceR"></span><span class="target" id="classpodio_1_1_s_i_o_event_meta_data_block_1a44330168708ca7719bb13066b8469c46"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOEventMetaDataBlock8metadataE">
+<span id="_CPPv3N5podio21SIOEventMetaDataBlock8metadataE"></span><span id="_CPPv2N5podio21SIOEventMetaDataBlock8metadataE"></span><span id="podio::SIOEventMetaDataBlock::metadata__podio::GenericParametersP"></span><span class="target" id="classpodio_1_1_s_i_o_event_meta_data_block_1accea867685ca3f74c4d72dbce86e872b"></span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE" title="podio::GenericParameters"><span class="n"><span class="pre">GenericParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">metadata</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16SIOFileTOCRecordE">
+<span id="_CPPv3N5podio16SIOFileTOCRecordE"></span><span id="_CPPv2N5podio16SIOFileTOCRecordE"></span><span id="podio::SIOFileTOCRecord"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOFileTOCRecord</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16SIOFileTOCRecord12PositionTypeE">
+<span id="_CPPv3N5podio16SIOFileTOCRecord12PositionTypeE"></span><span id="_CPPv2N5podio16SIOFileTOCRecord12PositionTypeE"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1aa8ef376a6dea85ef9a9776a0a3d45ce7"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PositionType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio11sio_helpersE" title="podio::sio_helpers"><span class="n"><span class="pre">sio_helpers</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio11sio_helpers13position_typeE" title="podio::sio_helpers::position_type"><span class="n"><span class="pre">position_type</span></span></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16SIOFileTOCRecord9addRecordERKNSt6stringE12PositionType">
+<span id="_CPPv3N5podio16SIOFileTOCRecord9addRecordERKNSt6stringE12PositionType"></span><span id="_CPPv2N5podio16SIOFileTOCRecord9addRecordERKNSt6stringE12PositionType"></span><span id="podio::SIOFileTOCRecord::addRecord__ssCR.PositionType"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1adc66ba0d2336db769352237bd5cdfa6b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addRecord</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="../class/classpodio_1_1_s_i_o_file_t_o_c_record.html#_CPPv4N5podio16SIOFileTOCRecord12PositionTypeE" title="podio::SIOFileTOCRecord::PositionType"><span class="n"><span class="pre">PositionType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">startPos</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio16SIOFileTOCRecord11getNRecordsERKNSt6stringE">
+<span id="_CPPv3NK5podio16SIOFileTOCRecord11getNRecordsERKNSt6stringE"></span><span id="_CPPv2NK5podio16SIOFileTOCRecord11getNRecordsERKNSt6stringE"></span><span id="podio::SIOFileTOCRecord::getNRecords__ssCRC"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1a17f310cf36d2051ca328ae5277a98d7c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getNRecords</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio16SIOFileTOCRecord11getPositionERKNSt6stringEj">
+<span id="_CPPv3NK5podio16SIOFileTOCRecord11getPositionERKNSt6stringEj"></span><span id="_CPPv2NK5podio16SIOFileTOCRecord11getPositionERKNSt6stringEj"></span><span id="podio::SIOFileTOCRecord::getPosition__ssCR.unsignedC"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1aac035bff54d7162913d75cb62fbc0915"></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_file_t_o_c_record.html#_CPPv4N5podio16SIOFileTOCRecord12PositionTypeE" title="podio::SIOFileTOCRecord::PositionType"><span class="n"><span class="pre">PositionType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getPosition</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">iEntry</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get the position of the iEntry-th record with the given name. </p>
+<p>If no entry with the given name is recorded, return 0. Note there is no internal check on whether the given name actually has iEntry records. Use getNRecords to check for that if necessary. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio16SIOFileTOCRecord14getRecordNamesEv">
+<span id="_CPPv3NK5podio16SIOFileTOCRecord14getRecordNamesEv"></span><span id="_CPPv2NK5podio16SIOFileTOCRecord14getRecordNamesEv"></span><span id="podio::SIOFileTOCRecord::getRecordNamesC"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1ada6210712a52249d8a3101c988e4a01d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getRecordNames</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get all the record names that are stored in this TOC record. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-types">Private Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16SIOFileTOCRecord14RecordListTypeE">
+<span id="_CPPv3N5podio16SIOFileTOCRecord14RecordListTypeE"></span><span id="_CPPv2N5podio16SIOFileTOCRecord14RecordListTypeE"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1ab7a3c9f3889b7da3f56e31ef0bd4a984"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RecordListType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_file_t_o_c_record.html#_CPPv4N5podio16SIOFileTOCRecord12PositionTypeE" title="podio::SIOFileTOCRecord::PositionType"><span class="n"><span class="pre">PositionType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio16SIOFileTOCRecord14RecordListTypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16SIOFileTOCRecord7MapTypeE">
+<span id="_CPPv3N5podio16SIOFileTOCRecord7MapTypeE"></span><span id="_CPPv2N5podio16SIOFileTOCRecord7MapTypeE"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1a27bd4cf604e7f203a2db18145514fc38"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5podio16SIOFileTOCRecord14RecordListTypeE" title="podio::SIOFileTOCRecord::RecordListType"><span class="n"><span class="pre">RecordListType</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio16SIOFileTOCRecord7MapTypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16SIOFileTOCRecord11m_recordMapE">
+<span id="_CPPv3N5podio16SIOFileTOCRecord11m_recordMapE"></span><span id="_CPPv2N5podio16SIOFileTOCRecord11m_recordMapE"></span><span id="podio::SIOFileTOCRecord::m_recordMap__MapType"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record_1a2d3da2adfaa9d3e1906437468f42b432"></span><a class="reference internal" href="#_CPPv4N5podio16SIOFileTOCRecord7MapTypeE" title="podio::SIOFileTOCRecord::MapType"><span class="n"><span class="pre">MapType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m_recordMap</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio16SIOFileTOCRecord11m_recordMapE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<em class="property"><span class="pre">friend</span> <span class="pre">struct</span></em> <span class="pre">SIOFileTOCRecordBlock</span></dt>
+</dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlockE">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlockE"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlockE"></span><span id="podio::SIOFileTOCRecordBlock"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOFileTOCRecordBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlockE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEv">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEv"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEv"></span><span id="podio::SIOFileTOCRecordBlock::SIOFileTOCRecordBlock"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block_1a93d1f3ce6e027f971fd8bd49ffb0d7be"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOFileTOCRecordBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEP16SIOFileTOCRecord">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEP16SIOFileTOCRecord"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEP16SIOFileTOCRecord"></span><span id="podio::SIOFileTOCRecordBlock::SIOFileTOCRecordBlock__SIOFileTOCRecordP"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block_1aa14569c935fe6ce369997310bdc6f762"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOFileTOCRecordBlock</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_file_t_o_c_record.html#_CPPv4N5podio16SIOFileTOCRecordE" title="podio::SIOFileTOCRecord"><span class="n"><span class="pre">SIOFileTOCRecord</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">r</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockEP16SIOFileTOCRecord" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockERK21SIOFileTOCRecordBlock">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockERK21SIOFileTOCRecordBlock"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockERK21SIOFileTOCRecordBlock"></span><span id="podio::SIOFileTOCRecordBlock::SIOFileTOCRecordBlock__SIOFileTOCRecordBlockCR"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block_1a31db4a46c492f5e9a348b64ea402c082"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOFileTOCRecordBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockERK21SIOFileTOCRecordBlock" title="podio::SIOFileTOCRecordBlock::SIOFileTOCRecordBlock"><span class="n"><span class="pre">SIOFileTOCRecordBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlock21SIOFileTOCRecordBlockERK21SIOFileTOCRecordBlock" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlockaSERK21SIOFileTOCRecordBlock">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlockaSERK21SIOFileTOCRecordBlock"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlockaSERK21SIOFileTOCRecordBlock"></span><span id="podio::SIOFileTOCRecordBlock::assign-operator__SIOFileTOCRecordBlockCR"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block_1aafdb425c140297c49695767ed6c11608"></span><a class="reference internal" href="#_CPPv4N5podio21SIOFileTOCRecordBlockE" title="podio::SIOFileTOCRecordBlock"><span class="n"><span class="pre">SIOFileTOCRecordBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio21SIOFileTOCRecordBlockE" title="podio::SIOFileTOCRecordBlock"><span class="n"><span class="pre">SIOFileTOCRecordBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlockaSERK21SIOFileTOCRecordBlock" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlock4readERN3sio11read_deviceEN3sio12version_typeE">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="podio::SIOFileTOCRecordBlock::read__sio::read_deviceR.sio::version_type"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block_1a4414fd71b25a4760a731f1afaef616c2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">version_type</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlock4readERN3sio11read_deviceEN3sio12version_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlock5writeERN3sio12write_deviceE">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlock5writeERN3sio12write_deviceE"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlock5writeERN3sio12write_deviceE"></span><span id="podio::SIOFileTOCRecordBlock::write__sio::write_deviceR"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block_1a9340319cc741e51a7c079640816bdd57"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlock5writeERN3sio12write_deviceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOFileTOCRecordBlock6recordE">
+<span id="_CPPv3N5podio21SIOFileTOCRecordBlock6recordE"></span><span id="_CPPv2N5podio21SIOFileTOCRecordBlock6recordE"></span><span id="podio::SIOFileTOCRecordBlock::record__SIOFileTOCRecordP"></span><span class="target" id="structpodio_1_1_s_i_o_file_t_o_c_record_block_1aa8c7d848295c4d23ba74a287f1c51621"></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_file_t_o_c_record.html#_CPPv4N5podio16SIOFileTOCRecordE" title="podio::SIOFileTOCRecord"><span class="n"><span class="pre">SIOFileTOCRecord</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">record</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio21SIOFileTOCRecordBlock6recordE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN5podio11SIOMapBlockE">
+<span id="_CPPv3I00EN5podio11SIOMapBlockE"></span><span id="_CPPv2I00EN5podio11SIOMapBlockE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structpodio_1_1_s_i_o_map_block"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><a class="headerlink" href="#_CPPv4I00EN5podio11SIOMapBlockE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<p>A block to serialize anything that behaves similar in iterating as a map&lt;KeyT, ValueT&gt;, e.g. </p>
+<p>vector&lt;tuple&lt;KeyT, ValueT&gt;&gt;, which is what is used internally to represent the data to be written. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock11SIOMapBlockEv">
+<span id="_CPPv3N5podio11SIOMapBlock11SIOMapBlockEv"></span><span id="_CPPv2N5podio11SIOMapBlock11SIOMapBlockEv"></span><span id="podio::SIOMapBlock::SIOMapBlock"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a1def0a6605fe1bd207fec22bd7648825"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio11SIOMapBlock11SIOMapBlockEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock11SIOMapBlockERRNSt6vectorINSt5tupleI4KeyT6ValueTEEEE">
+<span id="_CPPv3N5podio11SIOMapBlock11SIOMapBlockERRNSt6vectorINSt5tupleI4KeyT6ValueTEEEE"></span><span id="_CPPv2N5podio11SIOMapBlock11SIOMapBlockERRNSt6vectorINSt5tupleI4KeyT6ValueTEEEE"></span><span id="podio::SIOMapBlock::SIOMapBlock__std::vector:std::tuple:KeyT.ValueT::RR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1aa67e4d992ad1a1bd4f4e461d532524b0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::KeyT"><span class="n"><span class="pre">KeyT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::ValueT"><span class="n"><span class="pre">ValueT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio11SIOMapBlock11SIOMapBlockERRNSt6vectorINSt5tupleI4KeyT6ValueTEEEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock">
+<span id="_CPPv3N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock"></span><span id="_CPPv2N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock"></span><span id="podio::SIOMapBlock::SIOMapBlock__SIOMapBlockCR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a6451509f5ae3225c3cc3ca0640146465"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOMapBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock" title="podio::SIOMapBlock::SIOMapBlock"><span class="n"><span class="pre">SIOMapBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio11SIOMapBlock11SIOMapBlockERK11SIOMapBlock" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlockaSERK11SIOMapBlock">
+<span id="_CPPv3N5podio11SIOMapBlockaSERK11SIOMapBlock"></span><span id="_CPPv2N5podio11SIOMapBlockaSERK11SIOMapBlock"></span><span id="podio::SIOMapBlock::assign-operator__SIOMapBlockCR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a57038e7203156338a9dc97665d53b07d"></span><a class="reference internal" href="#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock"><span class="n"><span class="pre">SIOMapBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock"><span class="n"><span class="pre">SIOMapBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio11SIOMapBlockaSERK11SIOMapBlock" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock4readERN3sio11read_deviceEN3sio12version_typeE">
+<span id="_CPPv3N5podio11SIOMapBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="_CPPv2N5podio11SIOMapBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="podio::SIOMapBlock::read__sio::read_deviceR.sio::version_type"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a67a1a8ce1bf67f73b0dfd9f8b328aeb0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">version_type</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5podio11SIOMapBlock4readERN3sio11read_deviceEN3sio12version_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock5writeERN3sio12write_deviceE">
+<span id="_CPPv3N5podio11SIOMapBlock5writeERN3sio12write_deviceE"></span><span id="_CPPv2N5podio11SIOMapBlock5writeERN3sio12write_deviceE"></span><span id="podio::SIOMapBlock::write__sio::write_deviceR"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1a318962b1f75cdd11f1de5adadfa77523"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5podio11SIOMapBlock5writeERN3sio12write_deviceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11SIOMapBlock7mapDataE">
+<span id="_CPPv3N5podio11SIOMapBlock7mapDataE"></span><span id="_CPPv2N5podio11SIOMapBlock7mapDataE"></span><span id="podio::SIOMapBlock::mapData__std::vector:std::tuple:KeyT.ValueT::"></span><span class="target" id="structpodio_1_1_s_i_o_map_block_1affbba5f7c9f752fc5622236bd986963b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::KeyT"><span class="n"><span class="pre">KeyT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN5podio11SIOMapBlockE" title="podio::SIOMapBlock::ValueT"><span class="n"><span class="pre">ValueT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mapData</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio11SIOMapBlock7mapDataE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio24SIONumberedMetaDataBlockE">
+<span id="_CPPv3N5podio24SIONumberedMetaDataBlockE"></span><span id="_CPPv2N5podio24SIONumberedMetaDataBlockE"></span><span id="podio::SIONumberedMetaDataBlock"></span><span class="target" id="classpodio_1_1_s_i_o_numbered_meta_data_block"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIONumberedMetaDataBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<p>A block for handling the run and collection meta data. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio24SIONumberedMetaDataBlock24SIONumberedMetaDataBlockERKNSt6stringE">
+<span id="_CPPv3N5podio24SIONumberedMetaDataBlock24SIONumberedMetaDataBlockERKNSt6stringE"></span><span id="_CPPv2N5podio24SIONumberedMetaDataBlock24SIONumberedMetaDataBlockERKNSt6stringE"></span><span id="podio::SIONumberedMetaDataBlock::SIONumberedMetaDataBlock__ssCR"></span><span class="target" id="classpodio_1_1_s_i_o_numbered_meta_data_block_1af4caeb84c95cddbc74be4d8c1eeea48e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIONumberedMetaDataBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio24SIONumberedMetaDataBlock24SIONumberedMetaDataBlockERK24SIONumberedMetaDataBlock">
+<span id="_CPPv3N5podio24SIONumberedMetaDataBlock24SIONumberedMetaDataBlockERK24SIONumberedMetaDataBlock"></span><span id="_CPPv2N5podio24SIONumberedMetaDataBlock24SIONumberedMetaDataBlockERK24SIONumberedMetaDataBlock"></span><span id="podio::SIONumberedMetaDataBlock::SIONumberedMetaDataBlock__SIONumberedMetaDataBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_numbered_meta_data_block_1a5986ba78521d1dbdda9b2bd8608506ca"></span><span class="sig-name descname"><span class="n"><span class="pre">SIONumberedMetaDataBlock</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_numbered_meta_data_block.html#_CPPv4N5podio24SIONumberedMetaDataBlock24SIONumberedMetaDataBlockERK24SIONumberedMetaDataBlock" title="podio::SIONumberedMetaDataBlock::SIONumberedMetaDataBlock"><span class="n"><span class="pre">SIONumberedMetaDataBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio24SIONumberedMetaDataBlockaSERK24SIONumberedMetaDataBlock">
+<span id="_CPPv3N5podio24SIONumberedMetaDataBlockaSERK24SIONumberedMetaDataBlock"></span><span id="_CPPv2N5podio24SIONumberedMetaDataBlockaSERK24SIONumberedMetaDataBlock"></span><span id="podio::SIONumberedMetaDataBlock::assign-operator__SIONumberedMetaDataBlockCR"></span><span class="target" id="classpodio_1_1_s_i_o_numbered_meta_data_block_1abef23dfe16dd823f734521d645c5f783"></span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_numbered_meta_data_block.html#_CPPv4N5podio24SIONumberedMetaDataBlockE" title="podio::SIONumberedMetaDataBlock"><span class="n"><span class="pre">SIONumberedMetaDataBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_numbered_meta_data_block.html#_CPPv4N5podio24SIONumberedMetaDataBlockE" title="podio::SIONumberedMetaDataBlock"><span class="n"><span class="pre">SIONumberedMetaDataBlock</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio24SIONumberedMetaDataBlock4readERN3sio11read_deviceEN3sio12version_typeE">
+<span id="_CPPv3N5podio24SIONumberedMetaDataBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="_CPPv2N5podio24SIONumberedMetaDataBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="podio::SIONumberedMetaDataBlock::read__sio::read_deviceR.sio::version_type"></span><span class="target" id="classpodio_1_1_s_i_o_numbered_meta_data_block_1adaa880c57621bf45bb98eba43ce9a830"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">version_type</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">version</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio24SIONumberedMetaDataBlock5writeERN3sio12write_deviceE">
+<span id="_CPPv3N5podio24SIONumberedMetaDataBlock5writeERN3sio12write_deviceE"></span><span id="_CPPv2N5podio24SIONumberedMetaDataBlock5writeERN3sio12write_deviceE"></span><span id="podio::SIONumberedMetaDataBlock::write__sio::write_deviceR"></span><span class="target" id="classpodio_1_1_s_i_o_numbered_meta_data_block_1a8c6a69171604f539af26ca98fb1115b0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio24SIONumberedMetaDataBlock4dataE">
+<span id="_CPPv3N5podio24SIONumberedMetaDataBlock4dataE"></span><span id="_CPPv2N5podio24SIONumberedMetaDataBlock4dataE"></span><span id="podio::SIONumberedMetaDataBlock::data__std::map:i.GenericParameters:P"></span><span class="target" id="classpodio_1_1_s_i_o_numbered_meta_data_block_1a25edc6fe71af06eec49ed0819b3015f4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE" title="podio::GenericParameters"><span class="n"><span class="pre">GenericParameters</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOVersionBlockE">
+<span id="_CPPv3N5podio15SIOVersionBlockE"></span><span id="_CPPv2N5podio15SIOVersionBlockE"></span><span id="podio::SIOVersionBlock"></span><span class="target" id="structpodio_1_1_s_i_o_version_block"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOVersionBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">block</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOVersionBlockE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOVersionBlock15SIOVersionBlockEv">
+<span id="_CPPv3N5podio15SIOVersionBlock15SIOVersionBlockEv"></span><span id="_CPPv2N5podio15SIOVersionBlock15SIOVersionBlockEv"></span><span id="podio::SIOVersionBlock::SIOVersionBlock"></span><span class="target" id="structpodio_1_1_s_i_o_version_block_1a22d407f29b190df1fd9e749e0923eaec"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOVersionBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio15SIOVersionBlock15SIOVersionBlockEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOVersionBlock15SIOVersionBlockEN5podio7version7VersionE">
+<span id="_CPPv3N5podio15SIOVersionBlock15SIOVersionBlockEN5podio7version7VersionE"></span><span id="_CPPv2N5podio15SIOVersionBlock15SIOVersionBlockEN5podio7version7VersionE"></span><span id="podio::SIOVersionBlock::SIOVersionBlock__podio::version::Version"></span><span class="target" id="structpodio_1_1_s_i_o_version_block_1a0091837832fa2c808b96f89c25809573"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOVersionBlock</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio15SIOVersionBlock15SIOVersionBlockEN5podio7version7VersionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOVersionBlock5writeERN3sio12write_deviceE">
+<span id="_CPPv3N5podio15SIOVersionBlock5writeERN3sio12write_deviceE"></span><span id="_CPPv2N5podio15SIOVersionBlock5writeERN3sio12write_deviceE"></span><span id="podio::SIOVersionBlock::write__sio::write_deviceR"></span><span class="target" id="structpodio_1_1_s_i_o_version_block_1a9366b791021f8acf32c4d4d3287b1edd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">write_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOVersionBlock5writeERN3sio12write_deviceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOVersionBlock4readERN3sio11read_deviceEN3sio12version_typeE">
+<span id="_CPPv3N5podio15SIOVersionBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="_CPPv2N5podio15SIOVersionBlock4readERN3sio11read_deviceEN3sio12version_typeE"></span><span id="podio::SIOVersionBlock::read__sio::read_deviceR.sio::version_type"></span><span class="target" id="structpodio_1_1_s_i_o_version_block_1a2d69242c12d416039ac50b973204d732"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">read_device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="../namespace/namespacesio.html#_CPPv43sio" title="sio"><span class="n"><span class="pre">sio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">version_type</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOVersionBlock4readERN3sio11read_deviceEN3sio12version_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio15SIOVersionBlock7versionE">
+<span id="_CPPv3N5podio15SIOVersionBlock7versionE"></span><span id="_CPPv2N5podio15SIOVersionBlock7versionE"></span><span id="podio::SIOVersionBlock::version__podio::version::Version"></span><span class="target" id="structpodio_1_1_s_i_o_version_block_1aea962d2a621ad758899fb57d75116331"></span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">version</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio15SIOVersionBlock7versionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11sio_helpersE">
+<span id="_CPPv3N5podio11sio_helpersE"></span><span id="_CPPv2N5podio11sio_helpersE"></span><span id="podio::sio_helpers"></span><span class="target" id="namespacepodio_1_1sio__helpers"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sio_helpers</span></span></span><a class="headerlink" href="#_CPPv4N5podio11sio_helpersE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11sio_helpers13position_typeE">
+<span id="_CPPv3N5podio11sio_helpers13position_typeE"></span><span id="_CPPv2N5podio11sio_helpers13position_typeE"></span><span class="target" id="namespacepodio_1_1sio__helpers_1a12d4c8ebed54768e4548e39d0ee69211"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">position_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N5podio11sio_helpers13position_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11sio_helpers12SIOTocMarkerE">
+<span id="_CPPv3N5podio11sio_helpers12SIOTocMarkerE"></span><span id="_CPPv2N5podio11sio_helpers12SIOTocMarkerE"></span><span id="podio::sio_helpers::SIOTocMarker__uint32_t"></span><span class="target" id="namespacepodio_1_1sio__helpers_1ae57aebbd42e9df51b2abaabf19fd265f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOTocMarker</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0xc001fea7</span></span><a class="headerlink" href="#_CPPv4N5podio11sio_helpers12SIOTocMarkerE" title="Link to this definition"></a><br /></dt>
+<dd><p>marker for showing that a TOC has been stored in the file </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11sio_helpers14SIOTocInfoSizeE">
+<span id="_CPPv3N5podio11sio_helpers14SIOTocInfoSizeE"></span><span id="_CPPv2N5podio11sio_helpers14SIOTocInfoSizeE"></span><span id="podio::sio_helpers::SIOTocInfoSize__i"></span><span class="target" id="namespacepodio_1_1sio__helpers_1a4d51e0cb6058947e5589a2384f1b4984"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOTocInfoSize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N5podio11sio_helpers14SIOTocInfoSizeE" title="Link to this definition"></a><br /></dt>
+<dd><p>the number of bits necessary to store the SIOTocMarker and the actual position of the start of the SIOFileTOCRecord </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11sio_helpers16SIOTocRecordNameE">
+<span id="_CPPv3N5podio11sio_helpers16SIOTocRecordNameE"></span><span id="_CPPv2N5podio11sio_helpers16SIOTocRecordNameE"></span><span id="podio::sio_helpers::SIOTocRecordName__cCP"></span><span class="target" id="namespacepodio_1_1sio__helpers_1a715cb66f8c07f99a5e29c7d1a31d372d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">SIOTocRecordName</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;podio_SIO_TOC_Record&quot;</span></span><a class="headerlink" href="#_CPPv4N5podio11sio_helpers16SIOTocRecordNameE" title="Link to this definition"></a><br /></dt>
+<dd><p>The name of the TOCRecord. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11sio_helpers20SIOEDMDefinitionNameE">
+<span id="_CPPv3N5podio11sio_helpers20SIOEDMDefinitionNameE"></span><span id="_CPPv2N5podio11sio_helpers20SIOEDMDefinitionNameE"></span><span id="podio::sio_helpers::SIOEDMDefinitionName__cCP"></span><span class="target" id="namespacepodio_1_1sio__helpers_1acc09883fb5400d0318f13958b383d797"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">SIOEDMDefinitionName</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;podio_SIO_EDMDefinitions&quot;</span></span><a class="headerlink" href="#_CPPv4N5podio11sio_helpers20SIOEDMDefinitionNameE" title="Link to this definition"></a><br /></dt>
+<dd><p>The name of the record containing the EDM definitions in json format. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Key4hep authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
