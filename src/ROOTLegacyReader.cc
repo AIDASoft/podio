@@ -25,7 +25,6 @@
 #include "TClass.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "podio/CollectionBranches.h"
 #include "podio/podioVersion.h"
 
 namespace podio {
