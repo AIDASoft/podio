@@ -13,9 +13,11 @@
 #include <ROOT/RError.hxx>
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <ROOT/RNTupleWriteOptions.hxx>
 
 #include <Compression.h>
 #include <stdexcept>
+#include <utility>
 
 namespace podio {
 class GenericParameters;

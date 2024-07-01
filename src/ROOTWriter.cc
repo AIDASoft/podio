@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <optional>
 #include <stdexcept>
+#include <utility>
 
 namespace podio {
 

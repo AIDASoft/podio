@@ -3,8 +3,8 @@
 
 #include "TBranch.h"
 #include "TTree.h"
-#include "podio/utilities/RootHelpers.h"
 #include "podio/CollectionIDTable.h"
+#include "podio/utilities/RootHelpers.h"
 
 #include <algorithm>
 #include <cctype>

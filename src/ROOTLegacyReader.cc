@@ -4,6 +4,7 @@
 #include "rootUtils.h"
 
 #include <TBranch.h>
+#include <compare>
 #include <cstddef>
 #include <functional>
 #include <iostream>
@@ -26,6 +27,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/RootHelpers.h"
 
 namespace podio {
 

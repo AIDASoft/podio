@@ -1,8 +1,6 @@
 #ifndef PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 #define PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 
-#include "podio/CollectionBase.h"
-
 #include <cstddef>
 #include <set>
 #include <string>

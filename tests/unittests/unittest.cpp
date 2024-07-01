@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -33,6 +34,8 @@
 #include "datamodel/ExampleForCyclicDependency2.h"
 #include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitData.h"
+#include "datamodel/ExampleWithExternalExtraCode.h"
+#include "datamodel/ExampleWithOneRelation.h"
 #include "datamodel/ExampleWithVectorMember.h"
 #include "datamodel/MutableEventInfo.h"
 #include "datamodel/MutableExampleForCyclicDependency1.h"
