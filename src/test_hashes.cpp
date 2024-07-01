@@ -1,12 +1,15 @@
 #include "MurmurHash3.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <map>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 

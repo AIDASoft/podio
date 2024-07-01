@@ -6,6 +6,7 @@
 
 #include <sio/definitions.h>
 
+#include <fstream>
 #include <string>
 #include <utility>
 #include <vector>

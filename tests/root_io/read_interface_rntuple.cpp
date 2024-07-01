@@ -1,4 +1,7 @@
+#include "podio/Reader.h"
 #include "read_interface.h"
+
+#include <memory>
 
 int main(int, char**) {
   auto reader = podio::makeReader("example_from_rntuple_interface.root");

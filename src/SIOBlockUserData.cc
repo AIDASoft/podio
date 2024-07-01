@@ -1,5 +1,7 @@
 #include "podio/SIOBlockUserData.h"
 
+#include <cstdint>
+
 namespace podio {
 
 static SIOBlockUserData<float> _defaultfloatCollectionSIOBlock;

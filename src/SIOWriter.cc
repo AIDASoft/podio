@@ -1,12 +1,14 @@
 #include "podio/SIOWriter.h"
-#include "podio/CollectionBase.h"
-#include "podio/CollectionIDTable.h"
-#include "podio/Frame.h"
-#include "podio/GenericParameters.h"
-#include "podio/SIOBlock.h"
 
+#include "podio/Frame.h"
+#include "podio/SIOBlock.h"
+#include "podio/podioVersion.h"
+#include "sio/definitions.h"
 #include "sioUtils.h"
 
+#include <sio/exception.h>
+
+#include <cstdint>
 #include <memory>
 #include <string>
 

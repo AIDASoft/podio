@@ -3,20 +3,31 @@
 #include "podio/ROOTFrameData.h"
 #include "rootUtils.h"
 
+#include <TBranch.h>
+#include <compare>
+#include <cstddef>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
+#include <vector>
 // podio specific includes
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
 #include "podio/ROOTLegacyReader.h"
-
 // ROOT specific includes
 #include "TChain.h"
 #include "TClass.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "TTreeCache.h"
-
-#include <unordered_map>
+#include "podio/podioVersion.h"
+#include "podio/utilities/RootHelpers.h"
 
 namespace podio {
 

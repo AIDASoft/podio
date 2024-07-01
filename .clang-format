@@ -59,8 +59,10 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
-IncludeBlocks:   Preserve
+IncludeBlocks:   Regroup
 IncludeCategories:
+  - Regex:           '<[[:alnum:]._]+>'
+    Priority:        5
   - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
     Priority:        4
   - Regex:           '.*'

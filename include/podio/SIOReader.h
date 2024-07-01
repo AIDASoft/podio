@@ -8,10 +8,12 @@
 
 #include <sio/definitions.h>
 
+#include <fstream>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace podio {
 
