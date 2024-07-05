@@ -88,6 +88,7 @@ endif()
 # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
 # before that it's an empty variable so we check if it's any number > 0
 if(NOT DEFINED ROOT_CXX_STANDARD)
+  message(STATUS "ROOT c++ standard not yet available. Determining from compile features")
   get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
   foreach(cxxstd IN ITEMS 20;17;14;11)
     if ("cxx_std_${cxxstd}" IN_LIST ROOT_COMPILE_FEATURES)
@@ -99,6 +100,8 @@ endif()
 
 if(NOT DEFINED ROOT_CXX_STANDARD)
   message(WARNING "ROOT c++ standard could not be detected")
+else()
+  message(STATUS "Determined ROOT c++ standard: " ${ROOT_CXX_STANDARD})
 endif()
 
 if(ROOT_CXX_STANDARD VERSION_LESS 17)
