@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v01-00 &mdash; PODIO  documentation</title>
+  <title>v01-00-01 &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -612,7 +612,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">v01-00</li>
+      <li class="breadcrumb-item active">v01-00-01</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -621,7 +621,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="v01-00">
+  <section id="v01-00-01">
+<h1>v01-00-01<a class="headerlink" href="#v01-00-01" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2024-06-24 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/634">PR#634</a>)</p>
+<ul>
+<li><p>Bump CI runners to run on <code class="docutils literal notranslate"><span class="pre">ubuntu-latest</span></code></p></li>
+</ul>
+</li>
+<li><p>2024-06-24 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/633">PR#633</a>)</p>
+<ul>
+<li><p>Minor cleanups for generated EDMs</p>
+<ul>
+<li><p>Pass the argument by const reference in the relation setter</p></li>
+<li><p>Remove a few includes that are not needed</p></li>
+<li><p>Don’t check for <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> before deleting a (possibly <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>) pointer</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">-</span> <span class="pre">else</span></code> check and use implicit conversion of pointer to bool</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2024-06-23 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/632">PR#632</a>)</p>
+<ul>
+<li><p>Fix one to one relations for cloned objects by copying the one to one relations too.</p></li>
+<li><p>Add a test that checks values for cloned objects from a non mutable object.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v01-00">
 <h1>v01-00<a class="headerlink" href="#v01-00" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>2024-06-20 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/629">PR#629</a>)</p>
