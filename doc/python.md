@@ -12,7 +12,7 @@ import ROOT
 
 res = ROOT.gSystem.Load('libGeneratedModelDict')
 if res < 0:
-    raise RuntimeError('Failed to load libGeneratedModelDict.so')
+    raise RuntimeError('Failed to load libGeneratedModelDict')
 ```
 
 For reference usage, see the [Python module of EDM4hep](https://github.com/key4hep/EDM4hep/blob/main/python/edm4hep/__init__.py).
