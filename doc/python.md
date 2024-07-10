@@ -10,7 +10,7 @@ To load the Python bindings from a generated C++ model dictionary, first make su
 ```python
 import ROOT
 
-res = ROOT.gSystem.Load('libGeneratedModelDict.so')
+res = ROOT.gSystem.Load('libGeneratedModelDict')
 if res < 0:
     raise RuntimeError('Failed to load libGeneratedModelDict.so')
 ```
