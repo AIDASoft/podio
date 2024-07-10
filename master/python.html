@@ -631,9 +631,9 @@
 <p>To load the Python bindings from a generated C++ model dictionary, first make sure the model’s library and headers can be found in <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">ROOT_INCLUDE_HEADERS</span></code> respectively, then:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ROOT</span>
 
-<span class="n">res</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">gSystem</span><span class="o">.</span><span class="n">Load</span><span class="p">(</span><span class="s1">&#39;libGeneratedModelDict.so&#39;</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">gSystem</span><span class="o">.</span><span class="n">Load</span><span class="p">(</span><span class="s1">&#39;libGeneratedModelDict&#39;</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">res</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Failed to load libGeneratedModelDict.so&#39;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Failed to load libGeneratedModelDict&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For reference usage, see the <a class="reference external" href="https://github.com/key4hep/EDM4hep/blob/main/python/edm4hep/__init__.py">Python module of EDM4hep</a>.</p>
