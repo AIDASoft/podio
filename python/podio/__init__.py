@@ -7,7 +7,7 @@ from .__version__ import __version__
 try:
     from ROOT import podio  # noqa: F401
 except ImportError:
-    print("Unable to load podio, make sure that libpodio.so is in LD_LIBRARY_PATH")
+    print("Unable to load podio, make sure that libpodio is in LD_LIBRARY_PATH")
     raise
 
 from .frame import Frame
