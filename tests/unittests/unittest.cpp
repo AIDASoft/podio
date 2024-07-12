@@ -1168,6 +1168,29 @@ TEST_CASE("JSON", "[json]") {
   }
 }
 
+TEST_CASE("subset collection JSON", "[json]") {
+  auto clusters = ExampleClusterCollection();
+  clusters.setID(42);
+  for (int i = 0; i < 5; ++i) {
+    clusters.create(i * 1.0);
+  }
+
+  auto subsetClusters = ExampleClusterCollection();
+  subsetClusters.setID(123);
+  subsetClusters.setSubsetCollection();
+  for (int i = clusters.size() - 1; i >= 0; i--) {
+    subsetClusters.push_back(clusters[i]);
+  }
+
+  const nlohmann::json json{{"subset", subsetClusters}};
+  REQUIRE(json["subset"].size() == 5);
+
+  for (int i = 0; i < 5; ++i) {
+    REQUIRE(json["subset"][i]["collectionID"] == clusters.getID());
+    REQUIRE(json["subset"][i]["index"] == 4 - i);
+  }
+}
+
 #endif
 
 // Write a template function that can be used with different writers in order to
