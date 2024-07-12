@@ -5,6 +5,10 @@
 #include <iomanip>
 #include <ostream>
 
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
+  #include "nlohmann/json.hpp"
+#endif
+
 namespace podio {
 
 class ObjectID {
@@ -36,6 +40,12 @@ inline std::ostream& operator<<(std::ostream& os, const podio::ObjectID& id) {
   os.flags(oldFlags);
   return os << id.index;
 }
+
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
+inline void to_json(nlohmann::json& j, const podio::ObjectID& id) {
+  j = nlohmann::json{{"collectionID", id.collectionID}, {"index", id.index}};
+}
+#endif
 
 } // namespace podio
 
