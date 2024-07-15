@@ -7,7 +7,6 @@
 #define {{ package_name.upper() }}_{{ class.bare_type }}Collection_H
 
 // datamodel specific includes
-#include "{{ incfolder }}{{ class.bare_type }}Data.h"
 #include "{{ incfolder }}{{ class.bare_type }}.h"
 #include "{{ incfolder }}Mutable{{ class.bare_type }}.h"
 #include "{{ incfolder }}{{ class.bare_type }}Obj.h"
@@ -16,15 +15,13 @@
 // podio specific includes
 #include "podio/ICollectionProvider.h"
 #include "podio/CollectionBase.h"
-#include "podio/CollectionIDTable.h"
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json_fwd.hpp"
 #endif
 
-#include <string>
+#include <string_view>
 #include <vector>
-#include <deque>
 #include <array>
 #include <algorithm>
 #include <ostream>
