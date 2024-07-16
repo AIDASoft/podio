@@ -15,23 +15,19 @@
 
 #if PODIO_ENABLE_SIO && __has_include("podio/detail/AssociationSIOBlock.h")
   #include "podio/detail/AssociationSIOBlock.h"
-  /**
-   * Main macro for declaring associations. Takes care of the following things:
-   * - Registering the necessary buffer creation functionality with the
-   *   CollectionBufferFactory.
-   * - Registering the necessary SIOBlock with the SIOBlock factory
-   */
+  /// Main macro for declaring associations. Takes care of the following things:
+  /// - Registering the necessary buffer creation functionality with the
+  ///   CollectionBufferFactory.
+  /// - Registering the necessary SIOBlock with the SIOBlock factory
   #define PODIO_DECLARE_ASSOCIATION(FromT, ToT)                                                                        \
     const static auto PODIO_PP_CONCAT(REGISTERED_ASSOCIATION_, __COUNTER__) =                                          \
         podio::detail::registerAssociationCollection<FromT, ToT>(                                                      \
             podio::detail::associationCollTypeName<FromT, ToT>());                                                     \
     const static auto PODIO_PP_CONCAT(ASSOCIATION_SIO_BLOCK_, __COUNTER__) = podio::AssociationSIOBlock<FromT, ToT>{};
 #else
-  /**
-   * Main macro for declaring associations. Takes care of the following things:
-   * - Registering the necessary buffer creation functionality with the
-   *   CollectionBufferFactory.
-   */
+  /// Main macro for declaring associations. Takes care of the following things:
+  /// - Registering the necessary buffer creation functionality with the
+  ///   CollectionBufferFactory.
   #define PODIO_DECLARE_ASSOCIATION(FromT, ToT)                                                                        \
     const static auto PODIO_PP_CONCAT(REGISTERED_ASSOCIATION_, __COUNTER__) =                                          \
         podio::detail::registerAssociationCollection<FromT, ToT>(                                                      \

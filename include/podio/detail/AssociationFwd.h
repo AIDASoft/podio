@@ -12,28 +12,22 @@
 namespace podio {
 namespace detail {
 
-  /**
-   * Variable template to for determining whether T is either FromT or ToT.
-   * Mainly defined for convenience
-   */
+  /// Variable template to for determining whether T is either FromT or ToT.
+  /// Mainly defined for convenience
   template <typename T, typename FromT, typename ToT>
   static constexpr bool isFromOrToT = detail::isInTuple<T, std::tuple<FromT, ToT>>;
 
-  /**
-   * Variable template to for determining whether T is either FromT or ToT or
-   * any of their mutable versions.
-   */
+  /// Variable template to for determining whether T is either FromT or ToT or
+  /// any of their mutable versions.
   template <typename T, typename FromT, typename ToT>
   static constexpr bool isMutableFromOrToT =
       detail::isInTuple<T, std::tuple<FromT, ToT, GetMutableHandleType<FromT>, GetMutableHandleType<ToT>>>;
 
-  /**
-   * Get the collection type name for an AssociationCollection
-   *
-   * @tparam FromT the From type of the association
-   * @tparam ToT the To type of the association
-   * @returns a type string that is a valid c++ template instantiation
-   */
+  /// Get the collection type name for an AssociationCollection
+  ///
+  /// @tparam FromT the From type of the association
+  /// @tparam ToT the To type of the association
+  /// @returns a type string that is a valid c++ template instantiation
   template <typename FromT, typename ToT>
   inline const std::string_view associationCollTypeName() {
     const static std::string typeName =
@@ -41,13 +35,11 @@ namespace detail {
     return std::string_view{typeName};
   }
 
-  /**
-   * Get the value type name for an AssociationCollection
-   *
-   * @tparam FromT the From type of the association
-   * @tparam ToT the To type of the association
-   * @returns a type string that is a valid c++ template instantiation
-   */
+  /// Get the value type name for an AssociationCollection
+  ///
+  /// @tparam FromT the From type of the association
+  /// @tparam ToT the To type of the association
+  /// @returns a type string that is a valid c++ template instantiation
   template <typename FromT, typename ToT>
   inline const std::string_view associationTypeName() {
     const static std::string typeName =
@@ -55,16 +47,14 @@ namespace detail {
     return std::string_view{typeName};
   }
 
-  /**
-   * Get an SIO friendly type name for an AssociationCollection (necessary for
-   * registration in the SIOBlockFactory)
-   *
-   * @tparam FromT the From type of the association
-   * @tparam ToT the To type of
-   * the association
-   * @returns a string that uniquely identifies this combination
-   * of From and To types
-   */
+  /// Get an SIO friendly type name for an AssociationCollection (necessary for
+  /// registration in the SIOBlockFactory)
+  ///
+  /// @tparam FromT the From type of the association
+  /// @tparam ToT the To type of
+  /// the association
+  /// @returns a string that uniquely identifies this combination
+  /// of From and To types
   template <typename FromT, typename ToT>
   inline const std::string& associationSIOName() {
     static auto n = std::string("ASSOCIATION_FROM_") + FromT::typeName + "_TO_" + ToT::typeName;

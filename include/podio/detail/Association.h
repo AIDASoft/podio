@@ -15,11 +15,9 @@
 
 namespace podio {
 
-/**
- * Generalized Association type for both Mutable and immutable (default)
- * versions. User facing clases with the expected naming scheme are defined via
- * template aliases are defined just below
- */
+/// Generalized Association type for both Mutable and immutable (default)
+/// versions. User facing clases with the expected naming scheme are defined via
+/// template aliases are defined just below
 template <typename FromT, typename ToT, bool Mutable>
 class AssociationT {
   // The typedefs in AssociationFwd.h should make sure that at this point
@@ -123,16 +121,14 @@ public:
     m_obj->m_to = new detail::GetDefaultHandleType<ToU>(value);
   }
 
-  /**
-   * Templated version for getting an element of the association by type. Only
-   * available for Associations where FromT and ToT are **not the same type**,
-   * and if the requested type is actually part of the Association. It is only
-   * possible to get the immutable types from this. Will result in a compilation
-   * error if any of these conditions is not met.
-   *
-   * @tparam T the desired type
-   * @returns T the element of the Association
-   * */
+  /// Templated version for getting an element of the association by type. Only
+  /// available for Associations where FromT and ToT are **not the same type**,
+  /// and if the requested type is actually part of the Association. It is only
+  /// possible to get the immutable types from this. Will result in a
+  /// compilation error if any of these conditions is not met.
+  ///
+  /// @tparam T the desired type
+  /// @returns T the element of the Association
   template <typename T, typename = std::enable_if_t<!std::is_same_v<ToT, FromT> && detail::isFromOrToT<T, FromT, ToT>>>
   T get() const {
     if constexpr (std::is_same_v<T, FromT>) {
@@ -142,17 +138,15 @@ public:
     }
   }
 
-  /**
-   * Tuple like index based access to the elements of the Association. Returns
-   * only immutable types of the associations. This method enables structured
-   * bindings for Associations.
-   *
-   * @tparam Index an index (smaller than 3) to access an element of the Association
-   * @returns Depending on the value of Index:
-   *   - 0: The From element of the Association
-   *   - 1: The To element of the Association
-   *   - 2: The weight of the Association
-   */
+  /// Tuple like index based access to the elements of the Association. Returns
+  /// only immutable types of the associations. This method enables structured
+  /// bindings for Associations.
+  ///
+  /// @tparam Index an index (smaller than 3) to access an element of the Association
+  /// @returns Depending on the value of Index:
+  ///   - 0: The From element of the Association
+  ///   - 1: The To element of the Association
+  ///   - 2: The weight of the Association
   template <size_t Index, typename = std::enable_if_t<(Index < 3)>>
   auto get() const {
     if constexpr (Index == 0) {
@@ -164,15 +158,13 @@ public:
     }
   }
 
-  /**
-   * Templated version for setting an element of the association by type. Only
-   * available for Associations where FromT and ToT are **not the same type**,
-   * and if the requested type is actually part of the Association. Will result
-   * in a compilation error if any of these conditions is not met.
-   *
-   * @tparam T type of value (**infered!**)
-   * @param value the element to set for this association.
-   */
+  /// Templated version for setting an element of the association by type. Only
+  /// available for Associations where FromT and ToT are **not the same type**,
+  /// and if the requested type is actually part of the Association. Will result
+  /// in a compilation error if any of these conditions is not met.
+  ///
+  /// @tparam T type of value (**infered!**)
+  /// @param value the element to set for this association.
   template <
       typename T,
       typename = std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> && detail::isMutableFromOrToT<T, FromT, ToT>>>
