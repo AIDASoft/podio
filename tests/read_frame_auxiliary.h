@@ -63,7 +63,7 @@ int test_frame_aux_info(const std::string& fileName) {
   auto collsToRead = collsToWrite;
   if (reader.currentFileVersion() < podio::version::Version{0, 16, 3}) {
     collsToRead.erase(collsToRead.end() - 3, collsToRead.end());
-  } else if (reader.currentFileVersion() < podio::version::Version{0, 17, 99}) {
+  } else if (reader.currentFileVersion() < podio::version::Version{1, 0, 99}) {
     collsToRead.erase(collsToRead.end() - 1, collsToRead.end());
   }
 
