@@ -36,13 +36,11 @@ class AssociationCollection : public podio::CollectionBase {
                 "Associations need to be instantiated with the default types!");
 
   // convenience typedefs
-  using AssocT = Association<FromT, ToT>;
-  using MutableAssocT = MutableAssociation<FromT, ToT>;
-
-  using CollectionT = podio::AssociationCollection<FromT, ToT>;
   using CollectionDataT = podio::AssociationCollectionData<FromT, ToT>;
 
 public:
+  using value_type = Association<FromT, ToT>;
+  using mutable_type = MutableAssociation<FromT, ToT>;
   using const_iterator = AssociationCollectionIterator<FromT, ToT>;
   using iterator = AssociationMutableCollectionIterator<FromT, ToT>;
   using difference_type = ptrdiff_t;
@@ -66,34 +64,34 @@ public:
   }
 
   /// Append a new association to the collection and return this object
-  MutableAssocT create() {
+  mutable_type create() {
     if (m_isSubsetColl) {
       throw std::logic_error("Cannot create new elements on a subset collection");
     }
 
     auto obj = m_storage.entries.emplace_back(new AssociationObj<FromT, ToT>());
     obj->id = {int(m_storage.entries.size() - 1), m_collectionID};
-    return MutableAssocT(obj);
+    return mutable_type(obj);
   }
 
   /// Returns the immutable object of given index
-  AssocT operator[](unsigned int index) const {
-    return AssocT(m_storage.entries[index]);
+  value_type operator[](unsigned int index) const {
+    return value_type(m_storage.entries[index]);
   }
   /// Returns the mutable object of given index
-  MutableAssocT operator[](unsigned int index) {
-    return MutableAssocT(m_storage.entries[index]);
+  mutable_type operator[](unsigned int index) {
+    return mutable_type(m_storage.entries[index]);
   }
   /// Returns the immutable object of given index
-  AssocT at(unsigned int index) const {
-    return AssocT(m_storage.entries.at(index));
+  value_type at(unsigned int index) const {
+    return value_type(m_storage.entries.at(index));
   }
   /// Returns the mutable object of given index
-  MutableAssocT at(unsigned int index) {
-    return MutableAssocT(m_storage.entries.at(index));
+  mutable_type at(unsigned int index) {
+    return mutable_type(m_storage.entries.at(index));
   }
 
-  void push_back(MutableAssocT object) {
+  void push_back(mutable_type object) {
     // We have to do different things here depending on whether this is a
     // subset collection or not. A normal collection cannot collect objects
     // that are already part of another collection, while a subset collection
@@ -109,11 +107,11 @@ public:
       }
 
     } else {
-      push_back(AssocT(object));
+      push_back(value_type(object));
     }
   }
 
-  void push_back(AssocT object) {
+  void push_back(value_type object) {
     if (!m_isSubsetColl) {
       throw std::invalid_argument("Can only add immutable objects to subset collections");
     }
