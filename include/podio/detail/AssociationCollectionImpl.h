@@ -45,6 +45,8 @@ class AssociationCollection : public podio::CollectionBase {
 public:
   using const_iterator = AssociationCollectionIterator<FromT, ToT>;
   using iterator = AssociationMutableCollectionIterator<FromT, ToT>;
+  using difference_type = ptrdiff_t;
+  using size_type = size_t;
 
   AssociationCollection() = default;
 
@@ -59,7 +61,7 @@ public:
   AssociationCollection& operator=(AssociationCollection&&) = default;
 
   ~AssociationCollection() {
-    // Need the storage how to clean up
+    // Need to tell the storage how to clean up
     m_storage.clear(m_isSubsetColl);
   }
 
@@ -128,6 +130,11 @@ public:
     return m_storage.entries.size();
   }
 
+  /// maximal number of elements in the collection
+  std::size_t max_size() const override {
+    return m_storage.entries.max_size();
+  }
+
   /// Is the collection empty
   bool empty() const override {
     return m_storage.entries.empty();
@@ -149,8 +156,14 @@ public:
   const_iterator begin() const {
     return const_iterator(0, &m_storage.entries);
   }
+  const_iterator cbegin() const {
+    return begin();
+  }
   const_iterator end() const {
     return const_iterator(m_storage.entries.size(), &m_storage.entries);
+  }
+  const_iterator cend() const {
+    return end();
   }
   iterator begin() {
     return iterator(0, &m_storage.entries);
