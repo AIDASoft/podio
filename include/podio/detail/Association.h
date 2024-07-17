@@ -39,11 +39,11 @@ public:
   using collection_type = podio::AssociationCollection<FromT, ToT>;
 
   /// Constructor
-  AssociationT() : m_obj(new AssociationObjT(), podio::utils::MarkOwned) {
+  AssociationT() : m_obj(new AssociationObjT{}, podio::utils::MarkOwned) {
   }
 
   /// Constructor with weight
-  AssociationT(float weight) : m_obj(new AssociationObjT(), podio::utils::MarkOwned) {
+  AssociationT(float weight) : m_obj(new AssociationObjT{}, podio::utils::MarkOwned) {
     m_obj->weight = weight;
   }
 
@@ -66,9 +66,17 @@ public:
   /// Create a mutable deep-copy with identical relations
   template <typename FromU = FromT, typename ToU = ToT,
             typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
-  MutableAssociation<FromU, ToU> clone() const {
-    return MutableAssociation<FromU, ToU>(
-        podio::utils::MaybeSharedPtr(new AssociationObjT(*m_obj), podio::utils::MarkOwned));
+  MutableAssociation<FromU, ToU> clone(bool cloneRelations = true) const {
+    auto tmp = new AssociationObjT(podio::ObjectID{}, m_obj->weight);
+    if (cloneRelations) {
+      if (m_obj->m_from) {
+        tmp->m_from = new FromT(*m_obj->m_from);
+      }
+      if (m_obj->m_to) {
+        tmp->m_to = new ToT(*m_obj->m_to);
+      }
+    }
+    return MutableAssociation<FromU, ToU>(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
   }
 
   static Association<FromT, ToT> makeEmpty() {
