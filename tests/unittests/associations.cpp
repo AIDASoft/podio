@@ -128,6 +128,11 @@ TEST_CASE("Association basics", "[associations]") {
     // Mutable and immutable associations should be comparable
     TestA assoc = mutAssoc;
     REQUIRE(assoc == mutAssoc);
+
+    // operator!= is also defined and working
+    auto newAssoc = TestA{};
+    REQUIRE(otherAssoc != newAssoc);
+    REQUIRE(assoc != newAssoc);
   }
 }
 
