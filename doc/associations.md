@@ -1,4 +1,4 @@
-# Associationg unrelated objects with each other
+# Associating unrelated objects with each other
 Sometimes it is necessary to build associations between objects whose datatypes are
 not related via a `OneToOneRelation` or a `OneToManyRelation`. These *external
 relations* are called *Associations* in podio, and they are implemented as a
@@ -58,7 +58,7 @@ with `Mutable` types will result in a compilation error.
 #include "edm4hep/MCParticleCollection.h"
 #include "edm4hep/ReconstructedParticleCollection.h"
 
-// declare a new assocation type
+// declare a new association type
 using MCRecoParticleAssociationCollection = podio::AssociationCollection<edm4hep::MCParticle,
                                                                          edm4hep::ReconstructedParticle>;
 ```
@@ -95,7 +95,7 @@ auto recoP = assoc.get<edm4hep::ReconstructedParticle>();
 auto weight = assoc.getWeight();
 ```
 
-It is also possible to access the elments of an association via an index based
+It is also possible to access the elements of an association via an index based
 `get` (similar to `std::tuple`). In this case `0` corresponds to `getFrom`, `1`
 corresponds to `getTo` and `2` corresponds to the weight. The main purpose of
 this feature is to enable structured bindings:
@@ -105,7 +105,7 @@ const auto& [mcP, recoP, weight] = assoc;
 ```
 
 The above three examples are three equivalent ways of retrieving the same things
-from an `Association`. **The templated `get` and `set` methods are only availble
+from an `Association`. **The templated `get` and `set` methods are only available
 if `FromT` and `ToT` are not the same type** and will lead to a compilation
 error otherwise.
 
@@ -163,7 +163,7 @@ following files:
   for the collection data functionality
 - [`"podio/detail/AssociationFwd.h"`](https://github.com/AIDASoft/podio/blob/master/include/podio/detail/AssociationFwd.h):
   for some type helper functionality and some forward declarations that are used
-  throughout the othe headers
+  throughout the other headers
 - [`"podio/detail/AssociationSIOBlock.h"`](https://github.com/AIDASoft/podio/blob/master/include/podio/detail/AssociationSIOBlock.h):
   for defining the SIOBlocks that are necessary to use SIO
 
@@ -188,7 +188,7 @@ template <typename FromT, typename ToT>
 using MutableAssociation = AssociationT<FromT, ToT, true>;
 ```
 
-Throught the implementation it is assumed that `FromT` and `ToT` always are the
+Throughout the implementation it is assumed that `FromT` and `ToT` always are the
 default handle types. This is ensured through `static_assert`s in the
 `AssociationCollection` to make sure it can only be instantiated with those. The
 `GetDefaultHandleType` helper templates are used to retrieve the correct type
