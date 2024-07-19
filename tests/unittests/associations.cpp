@@ -16,11 +16,11 @@ using TestAIter = podio::AssociationCollectionIterator<ExampleHit, ExampleCluste
 using TestAMutIter = podio::AssociationMutableCollectionIterator<ExampleHit, ExampleCluster>;
 
 TEST_CASE("Association constness", "[associations][static-checks]") {
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutA>().getFrom()), ExampleHit>);
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutA>().getTo()), ExampleCluster>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutA>().getFrom()), const ExampleHit>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutA>().getTo()), const ExampleCluster>);
 
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestA>().getFrom()), ExampleHit>);
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestA>().getTo()), ExampleCluster>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestA>().getFrom()), const ExampleHit>);
+  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestA>().getTo()), const ExampleCluster>);
 }
 
 TEST_CASE("Association basics", "[associations]") {
