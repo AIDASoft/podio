@@ -211,6 +211,22 @@ public:
     return m_obj == other.m_obj;
   }
 
+  bool operator!=(const AssociationT& other) const {
+    return !(*this == other);
+  }
+
+  template <typename FromU, typename ToU,
+            typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  bool operator==(const AssociationT<FromU, ToU, !Mutable>& other) const {
+    return m_obj == other.m_obj;
+  }
+
+  template <typename FromU, typename ToU,
+            typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  bool operator!=(const AssociationT<FromU, ToU, !Mutable>& other) const {
+    return !(*this == other);
+  }
+
   bool operator<(const AssociationT& other) const {
     return m_obj < other.m_obj;
   }
