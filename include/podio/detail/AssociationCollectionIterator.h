@@ -12,7 +12,7 @@ class AssociationCollectionIteratorT {
 
 public:
   AssociationCollectionIteratorT(size_t index, const AssociationObjPointerContainer<FromT, ToT>* coll) :
-      m_index(index), m_object(nullptr), m_collection(coll) {
+      m_index(index), m_object(podio::utils::MaybeSharedPtr<AssociationObjT>{nullptr}), m_collection(coll) {
   }
 
   AssociationCollectionIteratorT(const AssociationCollectionIteratorT&) = delete;

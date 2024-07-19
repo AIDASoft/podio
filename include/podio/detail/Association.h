@@ -79,6 +79,7 @@ public:
     return MutableAssociation<FromU, ToU>(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
   }
 
+  template <bool Mut, typename = std::enable_if_t<!Mut>>
   static Association<FromT, ToT> makeEmpty() {
     return {nullptr};
   }
@@ -98,7 +99,7 @@ public:
   }
 
   /// Access the related-from object
-  FromT getFrom() const {
+  const FromT getFrom() const {
     if (!m_obj->m_from) {
       return FromT::makeEmpty();
     }
@@ -114,7 +115,7 @@ public:
   }
 
   /// Access the related-to object
-  ToT getTo() const {
+  const ToT getTo() const {
     if (!m_obj->m_to) {
       return ToT::makeEmpty();
     }
@@ -223,6 +224,8 @@ private:
   /// Constructor from existing AssociationObj
   explicit AssociationT(podio::utils::MaybeSharedPtr<AssociationObjT> obj) : m_obj(std::move(obj)) {
   }
+
+  template <bool Mut, typename = std::enable_if_t<!Mut>>
   AssociationT(AssociationObjT* obj) : m_obj(podio::utils::MaybeSharedPtr<AssociationObjT>(obj)) {
   }
 
