@@ -13,6 +13,7 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/SchemaEvolution.h"
+#include "podio/utilities/MaybeSharedPtr.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #ifdef PODIO_JSON_OUTPUT
@@ -71,7 +72,7 @@ public:
 
     auto obj = m_storage.entries.emplace_back(new AssociationObj<FromT, ToT>());
     obj->id = {int(m_storage.entries.size() - 1), m_collectionID};
-    return mutable_type(obj);
+    return mutable_type(podio::utils::MaybeSharedPtr(obj));
   }
 
   /// Returns the immutable object of given index
@@ -80,7 +81,7 @@ public:
   }
   /// Returns the mutable object of given index
   mutable_type operator[](unsigned int index) {
-    return mutable_type(m_storage.entries[index]);
+    return mutable_type(podio::utils::MaybeSharedPtr(m_storage.entries[index]));
   }
   /// Returns the immutable object of given index
   value_type at(unsigned int index) const {
@@ -88,7 +89,7 @@ public:
   }
   /// Returns the mutable object of given index
   mutable_type at(unsigned int index) {
-    return mutable_type(m_storage.entries.at(index));
+    return mutable_type(podio::utils::MaybeSharedPtr(m_storage.at(index)));
   }
 
   void push_back(mutable_type object) {
