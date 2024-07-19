@@ -118,6 +118,12 @@ TEST_CASE("Association basics", "[associations]") {
     REQUIRE(anotherAssoc.getWeight() == 42.0f);
     REQUIRE(anotherAssoc.getFrom() == otherHit);
     REQUIRE(anotherAssoc.getTo() == otherCluster);
+
+    // Cloning without relations
+    auto assocNoRel = assoc.clone(false);
+    REQUIRE_FALSE(assocNoRel.getFrom().isAvailable());
+    REQUIRE_FALSE(assocNoRel.getTo().isAvailable());
+    REQUIRE(assocNoRel.getWeight() == 3.14f);
   }
 
   SECTION("Equality operator") {
