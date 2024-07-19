@@ -27,8 +27,7 @@ TEST_CASE("Association basics", "[associations]") {
   auto cluster = MutableExampleCluster();
   auto hit = MutableExampleHit();
 
-  auto mutAssoc = TestMutA(); // NOLINT(clang-analyzer-cplusplus.NewDelete) necessary due to clang-tidy and Catch2
-                              // SECTIONs interaction (common setup seems to confuse clang-tidy)
+  auto mutAssoc = TestMutA();
   mutAssoc.setWeight(3.14f);
   mutAssoc.setFrom(hit);
   mutAssoc.setTo(cluster);
