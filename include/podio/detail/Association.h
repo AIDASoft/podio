@@ -33,6 +33,23 @@ class AssociationT {
   friend AssociationCollectionIteratorT<FromT, ToT, Mutable>;
   friend AssociationT<FromT, ToT, !Mutable>;
 
+  /// Helper member variable to check whether FromU and ToU can be used for this
+  /// Association. We need this to make SFINAE trigger in some cases below
+  template <typename FromU, typename ToU>
+  constexpr static bool sameTypes = std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>;
+
+  /// Variable template to for determining whether T is either FromT or ToT.
+  /// Mainly defined for convenience
+  template <typename T>
+  static constexpr bool isFromOrToT = detail::isInTuple<T, std::tuple<FromT, ToT>>;
+
+  /// Variable template to for determining whether T is either FromT or ToT or
+  /// any of their mutable versions.
+  template <typename T>
+  static constexpr bool isMutableFromOrToT =
+      detail::isInTuple<T,
+                        std::tuple<FromT, ToT, detail::GetMutableHandleType<FromT>, detail::GetMutableHandleType<ToT>>>;
+
 public:
   using mutable_type = podio::MutableAssociation<FromT, ToT>;
   using value_type = podio::Association<FromT, ToT>;
@@ -57,15 +74,13 @@ public:
   }
 
   /// Implicit conversion of mutable to immutable associations
-  template <typename FromU, typename ToU,
-            typename = std::enable_if_t<Mutable && std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  template <typename FromU, typename ToU, typename = std::enable_if_t<Mutable && sameTypes<FromU, ToU>>>
   operator AssociationT<FromU, ToU, false>() const {
     return AssociationT<FromU, ToU, false>(m_obj);
   }
 
   /// Create a mutable deep-copy with identical relations
-  template <typename FromU = FromT, typename ToU = ToT,
-            typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  template <typename FromU = FromT, typename ToU = ToT, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
   MutableAssociation<FromU, ToU> clone(bool cloneRelations = true) const {
     auto tmp = new AssociationObjT(podio::ObjectID{}, m_obj->weight);
     if (cloneRelations) {
@@ -138,7 +153,7 @@ public:
   ///
   /// @tparam T the desired type
   /// @returns T the element of the Association
-  template <typename T, typename = std::enable_if_t<!std::is_same_v<ToT, FromT> && detail::isFromOrToT<T, FromT, ToT>>>
+  template <typename T, typename = std::enable_if_t<!std::is_same_v<ToT, FromT> && isFromOrToT<T>>>
   T get() const {
     if constexpr (std::is_same_v<T, FromT>) {
       return getFrom();
@@ -174,9 +189,7 @@ public:
   ///
   /// @tparam T type of value (**infered!**)
   /// @param value the element to set for this association.
-  template <
-      typename T,
-      typename = std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> && detail::isMutableFromOrToT<T, FromT, ToT>>>
+  template <typename T, typename = std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> && isMutableFromOrToT<T>>>
   void set(T value) {
     if constexpr (std::is_same_v<T, FromT>) {
       setFrom(std::move(value));
@@ -215,14 +228,12 @@ public:
     return !(*this == other);
   }
 
-  template <typename FromU, typename ToU,
-            typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  template <typename FromU, typename ToU, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
   bool operator==(const AssociationT<FromU, ToU, !Mutable>& other) const {
     return m_obj == other.m_obj;
   }
 
-  template <typename FromU, typename ToU,
-            typename = std::enable_if_t<std::is_same_v<FromU, FromT> && std::is_same_v<ToU, ToT>>>
+  template <typename FromU, typename ToU, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
   bool operator!=(const AssociationT<FromU, ToU, !Mutable>& other) const {
     return !(*this == other);
   }
@@ -241,7 +252,7 @@ private:
   explicit AssociationT(podio::utils::MaybeSharedPtr<AssociationObjT> obj) : m_obj(std::move(obj)) {
   }
 
-  template <bool Mut, typename = std::enable_if_t<!Mut>>
+  template <typename FromU, typename ToU, typename = std::enable_if_t<!Mutable && sameTypes<FromU, ToU>>>
   AssociationT(AssociationObjT* obj) : m_obj(podio::utils::MaybeSharedPtr<AssociationObjT>(obj)) {
   }
 

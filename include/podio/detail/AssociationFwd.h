@@ -12,17 +12,6 @@
 namespace podio {
 namespace detail {
 
-  /// Variable template to for determining whether T is either FromT or ToT.
-  /// Mainly defined for convenience
-  template <typename T, typename FromT, typename ToT>
-  static constexpr bool isFromOrToT = detail::isInTuple<T, std::tuple<FromT, ToT>>;
-
-  /// Variable template to for determining whether T is either FromT or ToT or
-  /// any of their mutable versions.
-  template <typename T, typename FromT, typename ToT>
-  static constexpr bool isMutableFromOrToT =
-      detail::isInTuple<T, std::tuple<FromT, ToT, GetMutableHandleType<FromT>, GetMutableHandleType<ToT>>>;
-
   /// Get the collection type name for an AssociationCollection
   ///
   /// @tparam FromT the From type of the association
