@@ -1,6 +1,6 @@
 #include "podio/AssociationCollection.h"
 
-#include "datamodel/ExampleMCCollection.h"
-#include "datamodel/ExampleWithARelationCollection.h"
+#include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleHitCollection.h"
 
-PODIO_DECLARE_ASSOCIATION(ExampleMC, ex42::ExampleWithARelation)
+PODIO_DECLARE_ASSOCIATION(ExampleHit, ExampleCluster)
