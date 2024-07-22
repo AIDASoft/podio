@@ -591,17 +591,24 @@ have resolvable schema evolution incompatibilities:"
 
     def _sort_includes(self, includes):
         """Sort the includes in order to try to have the std includes at the bottom"""
-        package_includes = sorted(i for i in includes if self.package_name in i)
-        podio_includes = sorted(i for i in includes if "podio" in i)
-        stl_includes = sorted(i for i in includes if "<" in i and ">" in i)
-
+        package_includes = []
+        podio_includes = []
+        stl_includes = []
         upstream_includes = []
-        if self.upstream_edm:
-            upstream_includes = sorted(
-                i for i in includes if self.upstream_edm.options["includeSubfolder"] in i
-            )
+        for include in includes:
+            if self.package_name in include:
+                package_includes.append(include)
+            elif "podio" in include:
+                podio_includes.append(include)
+            elif "<" in include and ">" in include:
+                stl_includes.append(include)
+            elif self.upstream_edm and self.upstream_edm.options["includeSubfolder"] in include:
+                upstream_includes.append(include)
+            else:
+                print(f"Warning: unable to include '{include}'")
 
-        # Are their includes that fulfill more than one of the above conditions? Are
-        # there includes that fulfill none?
-
+        package_includes.sort()
+        podio_includes.sort()
+        stl_includes.sort()
+        upstream_includes.sort()
         return package_includes + upstream_includes + podio_includes + stl_includes
