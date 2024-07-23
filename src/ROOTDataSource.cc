@@ -35,20 +35,8 @@ void ROOTDataSource::SetupInput(int nEvents) {
     throw std::runtime_error("podio::ROOTDataSource: No input files provided!");
   }
 
-  for (const auto& filePath : m_filePathList) {
-    // Check if file exists
-    // if (!std::filesystem::exists(filePath)) {
-    //   throw std::runtime_error("podio::ROOTDataSource: Provided file \""
-    //                            + filePath + "\" does not exist!");
-    // }
-
-    // Check if the provided file contains required metadata
-    std::unique_ptr<TFile> inFile(TFile::Open(filePath.data(), "READ"));
-    auto metadata = inFile->Get("podio_metadata");
-    if (!metadata) {
-      throw std::runtime_error("podio::ROOTDataSource: Provided file is missing podio metadata!");
-    }
-  }
+  // Check if the provided file(s) exists and contains required metadata is done
+  // inside ROOTReader::openFile
 
   // Create probing frame
   podio::Frame frame;
@@ -174,7 +162,7 @@ std::vector<std::pair<ULong64_t, ULong64_t>> ROOTDataSource::GetEntryRanges() {
   return rangesToBeProcessed;
 }
 
-void ROOTDataSource::InitSlot([[maybe_unused]] unsigned int slot, [[maybe_unused]] ULong64_t firstEntry) {
+void ROOTDataSource::InitSlot(unsigned int, ULong64_t) {
   // std::cout << "podio::ROOTDataSource: Initializing slot: " << slot
   //           << " with first entry " << firstEntry << std::endl;
 }
@@ -200,7 +188,7 @@ bool ROOTDataSource::SetEntry(unsigned int slot, ULong64_t entry) {
   return true;
 }
 
-void ROOTDataSource::FinalizeSlot([[maybe_unused]] unsigned int slot) {
+void ROOTDataSource::FinalizeSlot(unsigned int) {
   /*
   std::cout << "podio::ROOTDataSource: Finalizing slot: " << slot << std::endl;
   std::cout << "Reader: " << &m_podioReaderRefs[slot].get() << std::endl;
@@ -221,7 +209,7 @@ void ROOTDataSource::Finalize() {
 }
 
 Record_t ROOTDataSource::GetColumnReadersImpl(std::string_view columnName,
-                                              [[maybe_unused]] const std::type_info& typeInfo) {
+                                              const std::type_info&) {
   /*
   std::cout << "podio::ROOTDataSource: Getting column reader implementation for column:\n"
             << "                   " << columnName
@@ -271,28 +259,29 @@ bool ROOTDataSource::HasColumn(std::string_view columnName) const {
   // std::cout << "podio::ROOTDataSource: Looking for column: " << columnName
   //           << std::endl;
 
-  if (std::find(m_columnNames.begin(), m_columnNames.end(), columnName) != m_columnNames.end()) {
-    return true;
-  }
-
-  return false;
+  return std::find(m_columnNames.begin(), m_columnNames.end(), columnName) != m_columnNames.end();
 }
+
 
 std::string ROOTDataSource::GetTypeName(std::string_view columnName) const {
   // std::cout << "podio::ROOTDataSource: Looking for type name of column: "
   //           << columnName << std::endl;
 
   auto itr = std::find(m_columnNames.begin(), m_columnNames.end(), columnName);
-  if (itr != m_columnNames.end()) {
-    auto i = std::distance(m_columnNames.begin(), itr);
-    // std::cout << "podio::ROOTDataSource: Found type name: "
-    //           << m_columnTypes.at(i) << std::endl;
-
-    return m_columnTypes.at(i) + "Collection";
+  if (itr == m_columnNames.end()) {
+    std::string errMsg = "podio::ROOTDataSource: Type name for \"";
+    errMsg += columnName;
+    errMsg += "\" not found!";
+    throw std::runtime_error(errMsg);
   }
 
-  return "float";
+  auto typeIndex = std::distance(m_columnNames.begin(), itr);
+  // std::cout << "podio::ROOTDataSource: Found type name: "
+  //           << m_columnTypes.at(typeIndex) << std::endl;
+
+  return m_columnTypes.at(typeIndex) + "Collection";
 }
+
 
 ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList) {
   ROOT::RDataFrame rdf(std::make_unique<ROOTDataSource>(filePathList));

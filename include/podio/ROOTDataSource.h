@@ -1,18 +1,22 @@
 #ifndef PODIO_DATASOURCE_H__
 #define PODIO_DATASOURCE_H__
 
-// STL
-#include <string>
-#include <vector>
+// Podio
+#include <podio/CollectionBase.h>
+#include <podio/Frame.h>
+#include <podio/ROOTReader.h>
 
 // ROOT
 #include <ROOT/RDataFrame.hxx>
 #include <ROOT/RDataSource.hxx>
 
-// Podio
-#include <podio/CollectionBase.h>
-#include <podio/Frame.h>
-#include <podio/ROOTReader.h>
+// STL
+#include <string>
+#include <vector>
+#include <utility>
+#include <typeinfo>
+#include <memory>
+
 
 namespace podio {
 using Record_t = std::vector<void*>;
@@ -148,9 +152,12 @@ private:
   void SetupInput(int nEvents);
 };
 
+///
+/// Not used.
+///
 template <typename T>
 std::vector<T**> ROOTDataSource::GetColumnReaders(std::string_view columnName) {
-  std::cout << "podio::ROOTDataSource: Getting column readers for column: " << columnName << std::endl;
+  // std::cout << "podio::ROOTDataSource: Getting column readers for column: " << columnName << std::endl;
 
   std::vector<T**> readers;
 
