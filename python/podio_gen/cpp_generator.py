@@ -595,7 +595,7 @@ have resolvable schema evolution incompatibilities:"
         podio_includes = []
         stl_includes = []
         upstream_includes = []
-        for include in includes:
+        for include in (inc for inc in includes if inc):
             if self.package_name in include:
                 package_includes.append(include)
             elif "podio" in include:
