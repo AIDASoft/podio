@@ -1,6 +1,6 @@
 
 # Build/install/test directories
-build
+*build*
 install
 tests/src
 tests/datamodel
@@ -77,6 +77,7 @@ spack*
 /doc/py_api
 /doc/_build
 /doc/cpp_api/
+/doc/doc_output/
 
 # CLion artifacts
 .idea/
