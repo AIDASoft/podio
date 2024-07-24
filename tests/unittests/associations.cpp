@@ -24,6 +24,9 @@ TEST_CASE("Association constness", "[associations][static-checks]") {
 }
 
 TEST_CASE("Association basics", "[associations]") {
+  // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few
+  // false positives here from clang-tidy that we are confident are false
+  // positives, because we don't see issues in our builds with sanitizers
   auto cluster = MutableExampleCluster();
   auto hit = MutableExampleHit();
 
@@ -82,7 +85,9 @@ TEST_CASE("Association basics", "[associations]") {
   SECTION("Implicit conversion") {
     // Use an immediately invoked lambda to check that the implicit conversion
     // is working as desired
-    [hit, cluster](TestA assoc) { // NOLINT(performance-unnecessary-value-param)
+    [hit, cluster](TestA assoc) { // NOLINT(performance-unnecessary-value-param):
+                                  // We want the value here to force teh
+                                  // conversion
       REQUIRE(assoc.getWeight() == 3.14f);
       REQUIRE(assoc.getFrom() == hit);
       REQUIRE(assoc.getTo() == cluster);
@@ -140,8 +145,12 @@ TEST_CASE("Association basics", "[associations]") {
     REQUIRE(assoc != newAssoc);
   }
 }
+// NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 TEST_CASE("Associations templated accessors", "[associations]") {
+  // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few
+  // false positives here from clang-tidy that we are confident are false
+  // positives, because we don't see issues in our builds with sanitizers
   ExampleHit hit;
   ExampleCluster cluster;
 
@@ -172,6 +181,7 @@ TEST_CASE("Associations templated accessors", "[associations]") {
     REQUIRE(w == 1.0);
   }
 }
+// NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 TEST_CASE("AssociationCollection constness", "[associations][static-checks][const-correctness]") {
   // Test type-aliases in AssociationCollection
@@ -252,6 +262,9 @@ TEST_CASE("AssociationCollection constness", "[associations][static-checks][cons
 }
 
 TEST_CASE("AssociationCollection subset collection", "[associations][subset-colls]") {
+  // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few
+  // false positives here from clang-tidy that we are confident are false
+  // positives, because we don't see issues in our builds with sanitizers
   auto assocs = TestAColl();
   auto assoc1 = assocs.create();
   assoc1.setWeight(1.0f);
@@ -292,6 +305,7 @@ TEST_CASE("AssociationCollection subset collection", "[associations][subset-coll
     REQUIRE_THROWS_AS(assocRefs.create(), std::logic_error);
   }
 }
+// NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 auto createAssocCollections(const size_t nElements = 3u) {
   auto colls = std::make_tuple(TestAColl(), ExampleHitCollection(), ExampleClusterCollection());
