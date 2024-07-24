@@ -94,7 +94,7 @@ public:
     return MutableAssociation<FromU, ToU>(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
   }
 
-  template <bool Mut, typename = std::enable_if_t<!Mut>>
+  template <bool Mut = Mutable, typename = std::enable_if_t<!Mut && !Mutable>>
   static Association<FromT, ToT> makeEmpty() {
     return {nullptr};
   }
@@ -252,7 +252,7 @@ private:
   explicit AssociationT(podio::utils::MaybeSharedPtr<AssociationObjT> obj) : m_obj(std::move(obj)) {
   }
 
-  template <typename FromU, typename ToU, typename = std::enable_if_t<!Mutable && sameTypes<FromU, ToU>>>
+  template <bool Mut = Mutable, typename = std::enable_if_t<!Mut && !Mutable>>
   AssociationT(AssociationObjT* obj) : m_obj(podio::utils::MaybeSharedPtr<AssociationObjT>(obj)) {
   }
 
