@@ -330,6 +330,23 @@ void checkCollections(const TestAColl& assocs, const ExampleHitCollection& hits,
   }
 }
 
+TEST_CASE("AssociationCollection looping", "[associations][basics]") {
+  const auto [assocColl, hitColl, clusterColl] = createAssocCollections();
+
+  int i = 0;
+  const auto collSize = assocColl.size();
+  for (const auto& [from, to, weight] : assocColl) {
+    STATIC_REQUIRE(std::is_same_v<decltype(from), const ExampleHit>);
+    STATIC_REQUIRE(std::is_same_v<decltype(to), const ExampleCluster>);
+    STATIC_REQUIRE(std::is_same_v<decltype(weight), const float>);
+
+    REQUIRE(from == hitColl[i]);
+    REQUIRE(to == clusterColl[collSize - 1 - i]);
+    REQUIRE(weight == i);
+    i++;
+  }
+}
+
 TEST_CASE("AssociationCollection movability", "[associations][move-semantics][collections]") {
   // Setup a few collections for testing
   auto [assocColl, hitColl, clusterColl] = createAssocCollections();
