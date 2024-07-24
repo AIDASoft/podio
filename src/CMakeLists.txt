@@ -33,7 +33,8 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
   target_include_directories(${dictname} PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
+  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio
+    podio::podioIO ROOT::Core ROOT::Tree)
   if(ENABLE_RNTUPLE)
     target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
   endif()

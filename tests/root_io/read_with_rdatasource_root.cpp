@@ -1,8 +1,5 @@
-#include "read_frame.h"
-#include "read_frame_auxiliary.h"
-
-#include "datamodel/ExampleClusterCollection.h"
 #include "podio/ROOTDataSource.h"
+#include "datamodel/ExampleClusterCollection.h"
 
 #include <iostream>
 #include <string>

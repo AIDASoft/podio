@@ -4,23 +4,20 @@
 // Podio
 #include <podio/CollectionBase.h>
 #include <podio/Frame.h>
-#include <podio/ROOTReader.h>
+#include <podio/Reader.h>
 
 // ROOT
 #include <ROOT/RDataFrame.hxx>
 #include <ROOT/RDataSource.hxx>
 
 // STL
-#include <string>
-#include <vector>
-#include <utility>
-#include <typeinfo>
 #include <memory>
-
+#include <string>
+#include <typeinfo>
+#include <utility>
+#include <vector>
 
 namespace podio {
-using Record_t = std::vector<void*>;
-
 class ROOTDataSource : public ROOT::RDF::RDataSource {
 public:
   ///
@@ -103,7 +100,7 @@ protected:
   /// @brief Type-erased vector of pointers to pointers to column
   ///        values --- one per slot.
   ///
-  Record_t GetColumnReadersImpl(std::string_view name, const std::type_info& typeInfo) override;
+  std::vector<void*> GetColumnReadersImpl(std::string_view name, const std::type_info& typeInfo) override;
 
   std::string AsString() override {
     return "Podio data source";
@@ -138,7 +135,7 @@ private:
   std::vector<unsigned int> m_activeCollections = {};
 
   /// Root podio readers
-  std::vector<std::unique_ptr<podio::ROOTReader>> m_podioReaders = {};
+  std::vector<std::unique_ptr<podio::Reader>> m_podioReaders = {};
 
   /// Podio frames
   std::vector<std::unique_ptr<podio::Frame>> m_frames = {};
@@ -156,7 +153,7 @@ private:
 /// Not used.
 ///
 template <typename T>
-std::vector<T**> ROOTDataSource::GetColumnReaders(std::string_view columnName) {
+std::vector<T**> ROOTDataSource::GetColumnReaders(std::string_view) {
   // std::cout << "podio::ROOTDataSource: Getting column readers for column: " << columnName << std::endl;
 
   std::vector<T**> readers;

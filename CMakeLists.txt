@@ -64,6 +64,9 @@ option(FORCE_RUN_ALL_TESTS "Run all the tests even those with known problems" OF
 option(CLANG_TIDY "Run clang-tidy after compilation." OFF)
 ADD_CLANG_TIDY()
 
+# Export compile commands --- used by the tools from clang family
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC        "Whether or not to create doxygen doc target." OFF)
 option(ENABLE_SIO        "Build SIO I/O support" OFF)
