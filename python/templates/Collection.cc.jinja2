@@ -250,8 +250,13 @@ const auto registeredCollection = registerCollection();
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
   j = nlohmann::json::array();
+  const auto subset = collection.isSubsetCollection();
   for (auto&& elem : collection) {
-    j.emplace_back(elem);
+    if (subset) {
+      j.emplace_back(elem.id());
+    } else {
+      j.emplace_back(elem);
+    }
   }
 }
 #endif
