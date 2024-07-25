@@ -1,5 +1,5 @@
-#include "podio/DataSource.h"
 #include "datamodel/ExampleClusterCollection.h"
+#include "podio/DataSource.h"
 
 #include <iostream>
 #include <string>

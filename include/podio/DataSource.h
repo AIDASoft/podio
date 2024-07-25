@@ -1,5 +1,5 @@
-#ifndef PODIO_DATASOURCE_H__
-#define PODIO_DATASOURCE_H__
+#ifndef PODIO_DATASOURCE_H
+#define PODIO_DATASOURCE_H
 
 // Podio
 #include <podio/CollectionBase.h>
@@ -176,4 +176,4 @@ ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList);
 ROOT::RDataFrame CreateDataFrame(const std::string& filePath);
 } // namespace podio
 
-#endif /* PODIO_DATASOURCE_H__ */
+#endif /* PODIO_DATASOURCE_H */
