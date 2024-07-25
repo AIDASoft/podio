@@ -27,6 +27,7 @@ jobs:
           cd build
           cmake -DENABLE_SIO=ON \
             -DENABLE_JULIA=ON \
+            -DENABLE_DATASOURCE=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
