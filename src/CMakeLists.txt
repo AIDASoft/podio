@@ -33,8 +33,7 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
   target_include_directories(${dictname} PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio
-    podio::podioIO ROOT::Core ROOT::Tree)
+  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
   if(ENABLE_RNTUPLE)
     target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
   endif()
@@ -83,7 +82,6 @@ SET(root_sources
   ROOTLegacyReader.cc
   ROOTFrameData.cc
   RootHelpers.cc
-  ROOTDataSource.cc
 )
 if(ENABLE_RNTUPLE)
   list(APPEND root_sources
@@ -98,7 +96,6 @@ SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTDataSource.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
@@ -108,12 +105,7 @@ if(ENABLE_RNTUPLE)
 endif()
 
 PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" root_selection.xml)
-target_link_libraries(podioRootIO PUBLIC podio::podio
-                                         ROOT::Core
-                                         ROOT::RIO
-                                         ROOT::Tree
-                                         ROOT::ROOTVecOps
-                                         ROOT::ROOTDataFrame)
+target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree ROOT::ROOTVecOps)
 if(ENABLE_RNTUPLE)
   target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
   target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=1)
@@ -147,6 +139,7 @@ if(ENABLE_SIO)
   LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
 endif()
 
+
 # --- IO
 set(io_sources
   Writer.cc
@@ -168,18 +161,57 @@ if(ENABLE_SIO)
   target_link_libraries(podioIO PUBLIC podio::podioSioIO)
 endif()
 
+
+# --- DataSource
+if(ENABLE_DATASOURCE)
+  set(rds_sources
+      DataSource.cc
+  )
+
+  set(rds_headers
+      ${PROJECT_SOURCE_DIR}/include/podio/DataSource.h
+  )
+
+  podio_add_lib_and_dict(podioDataSource "${rds_headers}" "${rds_sources}" rds_selection.xml)
+  target_link_libraries(podioDataSource PUBLIC podio::podio
+                                               podio::podioIO
+                                               podio::podioRootIO
+                                               ROOT::Core
+                                               ROOT::RIO
+                                               ROOT::Tree
+                                               ROOT::ROOTVecOps
+                                               ROOT::ROOTDataFrame
+  )
+  target_compile_definitions(podioDataSource PUBLIC PODIO_ENABLE_DATASOURCE=1)
+endif()
+
+
 # --- Install everything
-install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO ${INSTALL_LIBRARIES}
-  EXPORT podioTargets
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+if (NOT ENABLE_DATASOURCE)
+  install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO ${INSTALL_LIBRARIES}
+    EXPORT podioTargets
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+else()
+  install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO podioDataSource ${INSTALL_LIBRARIES}
+    EXPORT podioTargets
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+endif()
 
 # Only install the necessary headers
-if (ENABLE_SIO)
-  install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
-else()
-  install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-    REGEX SIO.*\\.h$ EXCLUDE )
+file(GLOB headers_necessary
+     RELATIVE ${PROJECT_SOURCE_DIR}
+     "${PROJECT_SOURCE_DIR}/install/podio/*.h")
+
+if (NOT ENABLE_SIO)
+  list(FILTER headers_necessary EXCLUDE REGEX SIO.*\\.h$)
 endif()
+if (NOT ENABLE_RNTUPLE)
+  list(FILTER headers_necessary EXCLUDE REGEX RNTuple.*\\.h$)
+endif()
+if (NOT ENABLE_RNTUPLE)
+  list(FILTER headers_necessary EXCLUDE REGEX DataSource.h)
+endif()
+install(FILES ${headers_necessary} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/podio")
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
@@ -192,6 +224,14 @@ if (ENABLE_SIO)
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/podioSioIODictDict.rootmap
     ${CMAKE_CURRENT_BINARY_DIR}/libpodioSioIODict_rdict.pcm
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    )
+endif()
+
+if (ENABLE_DATASOURCE)
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/podioDataSourceDictDict.rootmap
+    ${CMAKE_CURRENT_BINARY_DIR}/libpodioDataSourceDict_rdict.pcm
     DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     )
 endif()

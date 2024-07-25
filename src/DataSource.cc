@@ -1,4 +1,4 @@
-#include "podio/ROOTDataSource.h"
+#include "podio/DataSource.h"
 #include "podio/Reader.h"
 
 // podio
@@ -13,19 +13,19 @@
 #include <memory>
 
 namespace podio {
-ROOTDataSource::ROOTDataSource(const std::string& filePath, int nEvents) : m_nSlots{1} {
+DataSource::DataSource(const std::string& filePath, int nEvents) : m_nSlots{1} {
   m_filePathList.emplace_back(filePath);
   SetupInput(nEvents);
 }
 
-ROOTDataSource::ROOTDataSource(const std::vector<std::string>& filePathList, int nEvents) :
+DataSource::DataSource(const std::vector<std::string>& filePathList, int nEvents) :
     m_nSlots{1}, m_filePathList{filePathList} {
   SetupInput(nEvents);
 }
 
-void ROOTDataSource::SetupInput(int nEvents) {
+void DataSource::SetupInput(int nEvents) {
   if (m_filePathList.empty()) {
-    throw std::runtime_error("podio::ROOTDataSource: No input files provided!");
+    throw std::runtime_error("podio::DataSource: No input files provided!");
   }
 
   // Check if the provided file(s) exists and contain required metadata is done
@@ -41,13 +41,13 @@ void ROOTDataSource::SetupInput(int nEvents) {
   // Determine over how many events to run
   if (nEventsInFiles > 0) {
   } else {
-    throw std::runtime_error("podio::ROOTDataSource: No events found!");
+    throw std::runtime_error("podio::DataSource: No events found!");
   }
 
   if (nEvents < 0) {
     m_nEvents = nEventsInFiles;
   } else if (nEvents == 0) {
-    throw std::runtime_error("podio::ROOTDataSource: Requested to run over zero events!");
+    throw std::runtime_error("podio::DataSource: Requested to run over zero events!");
   } else {
     m_nEvents = nEvents;
   }
@@ -66,11 +66,11 @@ void ROOTDataSource::SetupInput(int nEvents) {
   }
 }
 
-void ROOTDataSource::SetNSlots(unsigned int nSlots) {
+void DataSource::SetNSlots(unsigned int nSlots) {
   m_nSlots = nSlots;
 
   if (m_nSlots > m_nEvents) {
-    throw std::runtime_error("podio::ROOTDataSource: Number of events too small!");
+    throw std::runtime_error("podio::DataSource: Number of events too small!");
   }
 
   int eventsPerSlot = m_nEvents / m_nSlots;
@@ -93,10 +93,10 @@ void ROOTDataSource::SetNSlots(unsigned int nSlots) {
   }
 }
 
-void ROOTDataSource::Initialize() {
+void DataSource::Initialize() {
 }
 
-std::vector<std::pair<ULong64_t, ULong64_t>> ROOTDataSource::GetEntryRanges() {
+std::vector<std::pair<ULong64_t, ULong64_t>> DataSource::GetEntryRanges() {
   std::vector<std::pair<ULong64_t, ULong64_t>> rangesToBeProcessed;
   for (auto& range : m_rangesAvailable) {
     rangesToBeProcessed.emplace_back(range.first, range.second);
@@ -114,10 +114,10 @@ std::vector<std::pair<ULong64_t, ULong64_t>> ROOTDataSource::GetEntryRanges() {
   return rangesToBeProcessed;
 }
 
-void ROOTDataSource::InitSlot(unsigned int, ULong64_t) {
+void DataSource::InitSlot(unsigned int, ULong64_t) {
 }
 
-bool ROOTDataSource::SetEntry(unsigned int slot, ULong64_t entry) {
+bool DataSource::SetEntry(unsigned int slot, ULong64_t entry) {
   m_frames[slot] = std::make_unique<podio::Frame>(m_podioReaders[slot]->readFrame(podio::Category::Event, entry));
 
   for (auto& collectionIndex : m_activeCollections) {
@@ -127,16 +127,16 @@ bool ROOTDataSource::SetEntry(unsigned int slot, ULong64_t entry) {
   return true;
 }
 
-void ROOTDataSource::FinalizeSlot(unsigned int) {
+void DataSource::FinalizeSlot(unsigned int) {
 }
 
-void ROOTDataSource::Finalize() {
+void DataSource::Finalize() {
 }
 
-std::vector<void*> ROOTDataSource::GetColumnReadersImpl(std::string_view columnName, const std::type_info&) {
+std::vector<void*> DataSource::GetColumnReadersImpl(std::string_view columnName, const std::type_info&) {
   auto itr = std::find(m_columnNames.begin(), m_columnNames.end(), columnName);
   if (itr == m_columnNames.end()) {
-    std::string errMsg = "podio::ROOTDataSource: Can't find requested column \"";
+    std::string errMsg = "podio::DataSource: Can't find requested column \"";
     errMsg += columnName;
     errMsg += "\"!";
     throw std::runtime_error(errMsg);
@@ -144,7 +144,7 @@ std::vector<void*> ROOTDataSource::GetColumnReadersImpl(std::string_view columnN
   auto columnIndex = std::distance(m_columnNames.begin(), itr);
   m_activeCollections.emplace_back(columnIndex);
 
-  Record_t columnReaders(m_nSlots);
+  std::vector<void*> columnReaders(m_nSlots);
   for (size_t slotIndex = 0; slotIndex < m_nSlots; ++slotIndex) {
     columnReaders[slotIndex] = (void*)&m_Collections[columnIndex][slotIndex];
   }
@@ -152,18 +152,18 @@ std::vector<void*> ROOTDataSource::GetColumnReadersImpl(std::string_view columnN
   return columnReaders;
 }
 
-const std::vector<std::string>& ROOTDataSource::GetColumnNames() const {
+const std::vector<std::string>& DataSource::GetColumnNames() const {
   return m_columnNames;
 }
 
-bool ROOTDataSource::HasColumn(std::string_view columnName) const {
+bool DataSource::HasColumn(std::string_view columnName) const {
   return std::find(m_columnNames.begin(), m_columnNames.end(), columnName) != m_columnNames.end();
 }
 
-std::string ROOTDataSource::GetTypeName(std::string_view columnName) const {
+std::string DataSource::GetTypeName(std::string_view columnName) const {
   auto itr = std::find(m_columnNames.begin(), m_columnNames.end(), columnName);
   if (itr == m_columnNames.end()) {
-    std::string errMsg = "podio::ROOTDataSource: Type name for \"";
+    std::string errMsg = "podio::DataSource: Type name for \"";
     errMsg += columnName;
     errMsg += "\" not found!";
     throw std::runtime_error(errMsg);
@@ -175,13 +175,13 @@ std::string ROOTDataSource::GetTypeName(std::string_view columnName) const {
 }
 
 ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList) {
-  ROOT::RDataFrame rdf(std::make_unique<ROOTDataSource>(filePathList));
+  ROOT::RDataFrame rdf(std::make_unique<DataSource>(filePathList));
 
   return rdf;
 }
 
 ROOT::RDataFrame CreateDataFrame(const std::string& filePath) {
-  ROOT::RDataFrame rdf(std::make_unique<ROOTDataSource>(filePath));
+  ROOT::RDataFrame rdf(std::make_unique<DataSource>(filePath));
 
   return rdf;
 }
