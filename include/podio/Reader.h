@@ -12,7 +12,8 @@ namespace podio {
 /// Offers some more high level functionality compared to the lower level
 /// backend specific readers that this class wraps. In contrast to the lower
 /// level readers that usually return arbitrary FrameData, this interface class
-/// will return fully constructed Frames.
+/// will return fully constructed Frames. In addition, it provides convenience
+/// methods to deal specifically with the "events" frame category.
 ///
 /// @note The recommended way to construct is to use the makeReader() functions
 /// since they handle the instantiation of the correct low level readers
@@ -216,7 +217,7 @@ Reader makeReader(const std::string& filename);
 ///
 /// @throws std::runtime_error in case the file extensions differ or in case
 ///         support for the necessary I/O backend has not been built
-Reader makeReader(const std::vector<std::string>& filename);
+Reader makeReader(const std::vector<std::string>& filenames);
 
 } // namespace podio
 

@@ -9,10 +9,12 @@ namespace podio {
 /// (almost) transparently
 ///
 /// Offers some more high level functionality compared to the lower level
-/// backend specific writers that this class wraps. Since this simply wraps
-/// lower level writers, some of the limitations of the wrapped writers will
-/// still apply, e.g. if used for writing ROOT files frames of a given category
-/// will have to have the same contents
+/// backend specific writers that this class wraps. In addition, it provides
+/// convenience methods to deal specifically with the "events" frame category.
+///
+/// @note Since this simply wraps lower level writers, some of the limitations
+/// of the wrapped writers will still apply, e.g. if used for writing ROOT files
+/// frames of a given category will have to have the same contents.
 ///
 /// @note The recommended way to construct is to use the makeWriter() function
 /// since that handles the instantiation of the correct low level writers
