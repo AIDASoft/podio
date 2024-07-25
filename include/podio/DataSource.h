@@ -18,64 +18,61 @@
 #include <vector>
 
 namespace podio {
-class ROOTDataSource : public ROOT::RDF::RDataSource {
+class DataSource : public ROOT::RDF::RDataSource {
 public:
   ///
-  /// @brief Construct the podio::ROOTDataSource from the provided file.
+  /// @brief Construct the podio::DataSource from the provided file.
   ///
-  explicit ROOTDataSource(const std::string& filePath, int nEvents = -1);
+  explicit DataSource(const std::string& filePath, int nEvents = -1);
 
   ///
-  /// @brief Construct the podio::ROOTDataSource from the provided file
-  ///        list.
+  /// @brief Construct the podio::DataSource from the provided file list.
   ///
-  explicit ROOTDataSource(const std::vector<std::string>& filePathList, int nEvents = -1);
+  explicit DataSource(const std::vector<std::string>& filePathList, int nEvents = -1);
 
   ///
-  /// @brief Inform the podio::ROOTDataSource of the desired level of
-  ///        parallelism.
+  /// @brief Inform the podio::DataSource of the desired level of parallelism.
   ///
   void SetNSlots(unsigned int nSlots) override;
 
   ///
-  /// @brief Retrieve from podio::ROOTDataSource per-thread readers for the
-  ///        desired columns.
+  /// @brief Retrieve from podio::DataSource per-thread readers for the desired
+  /// columns.
   ///
   template <typename T>
   std::vector<T**> GetColumnReaders(std::string_view columnName);
 
   ///
-  /// @brief Inform podio::ROOTDataSource that an event-loop is about to
-  ///        start.
+  /// @brief Inform podio::DataSource that an event-loop is about to start.
   ///
   void Initialize() override;
 
   ///
-  /// @brief Retrieve from podio::ROOTDataSource a set of ranges of entries
-  ///        that can be processed concurrently.
+  /// @brief Retrieve from podio::DataSource a set of ranges of entries that
+  ///        can be processed concurrently.
   ///
   std::vector<std::pair<ULong64_t, ULong64_t>> GetEntryRanges() override;
 
   ///
-  /// @brief Inform podio::ROOTDataSource that a certain thread is about to
-  ///        start working on a certain range of entries.
+  /// @brief Inform podio::DataSource that a certain thread is about to start
+  ///        working on a certain range of entries.
   ///
   void InitSlot(unsigned int slot, ULong64_t firstEntry) override;
 
   ///
-  /// @brief Inform podio::ROOTDataSource that a certain thread is about to
-  ///        start working on a certain entry.
+  /// @brief Inform podio::DataSource that a certain thread is about to start
+  ///        working on a certain entry.
   ///
   bool SetEntry(unsigned int slot, ULong64_t entry) override;
 
   ///
-  /// @brief Inform podio::ROOTDataSource that a certain thread finished
-  ///        working on a certain range of entries.
+  /// @brief Inform podio::DataSource that a certain thread finished working
+  ///        on a certain range of entries.
   ///
   void FinalizeSlot(unsigned int slot) override;
 
   ///
-  /// @brief Inform podio::ROOTDataSource that an event-loop finished.
+  /// @brief Inform podio::DataSource that an event-loop finished.
   ///
   void Finalize() override;
 
@@ -141,7 +138,7 @@ private:
   std::vector<std::unique_ptr<podio::Frame>> m_frames = {};
 
   ///
-  /// @brief Setup input for the podio::ROOTDataSource.
+  /// @brief Setup input for the podio::DataSource.
   ///
   /// @param[in]  Number of events.
   /// @return     void.
@@ -153,8 +150,8 @@ private:
 /// Not used.
 ///
 template <typename T>
-std::vector<T**> ROOTDataSource::GetColumnReaders(std::string_view) {
-  // std::cout << "podio::ROOTDataSource: Getting column readers for column: " << columnName << std::endl;
+std::vector<T**> DataSource::GetColumnReaders(std::string_view) {
+  // std::cout << "podio::DataSource: Getting column readers for column: " << columnName << std::endl;
 
   std::vector<T**> readers;
 

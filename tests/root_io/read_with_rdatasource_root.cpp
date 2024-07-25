@@ -1,4 +1,4 @@
-#include "podio/ROOTDataSource.h"
+#include "podio/DataSource.h"
 #include "datamodel/ExampleClusterCollection.h"
 
 #include <iostream>
