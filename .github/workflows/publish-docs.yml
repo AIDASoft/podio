@@ -32,7 +32,7 @@ jobs:
           echo -e "::endgroup::\n::group::Build podio"
           cmake -B build . --install-prefix=$(pwd)/install \
                 -GNinja -DENABLE_SIO=ON -DENABLE_RNTUPLE=ON \
-                -DBUILD_TESTING=OFF \
+                -DENABLE_DATASOURCE=ON -DBUILD_TESTING=OFF \
                 -DCMAKE_CXX_STANDARD=20
           cmake --build build --target install
           source ./init.sh && source ./env.sh
