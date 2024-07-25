@@ -208,7 +208,7 @@ Reader makeReader(const std::string& filename);
 /// reading. All files are assumed to be of the same I/O format, no switching
 /// between formats is possible.
 ///
-/// @note For SIO files this will only read the first file!
+/// @note For SIO files this will only work with exactly one file!
 ///
 /// @param filenames The (paths to the) files to read from
 ///
@@ -216,7 +216,8 @@ Reader makeReader(const std::string& filename);
 ///          data from the passed files
 ///
 /// @throws std::runtime_error in case the file extensions differ or in case
-///         support for the necessary I/O backend has not been built
+///         support for the necessary I/O backend has not been built or in case
+///         multiple files for the SIO backend are passed
 Reader makeReader(const std::vector<std::string>& filenames);
 
 } // namespace podio

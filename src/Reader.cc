@@ -60,6 +60,9 @@ Reader makeReader(const std::vector<std::string>& filenames) {
     }
   } else if (suffix == "sio") {
 #if PODIO_ENABLE_SIO
+    if (filenames.size() > 1) {
+      throw std::runtime_error("The SIO reader does currently not support reading multiple files");
+    }
     auto actualReader = std::make_unique<SIOReader>();
     actualReader->openFile(filenames[0]);
     Reader reader{std::move(actualReader)};
