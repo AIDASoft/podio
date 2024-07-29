@@ -1,7 +1,7 @@
-#ifndef PODIO_DETAIL_ASSOCIATIONSIOBLOCK_H
-#define PODIO_DETAIL_ASSOCIATIONSIOBLOCK_H
+#ifndef PODIO_DETAIL_LINKSIOBLOCK_H
+#define PODIO_DETAIL_LINKSIOBLOCK_H
 
-#include "podio/detail/AssociationCollectionImpl.h"
+#include "podio/detail/LinkCollectionImpl.h"
 
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
@@ -15,24 +15,24 @@
 
 namespace podio {
 template <typename FromT, typename ToT>
-class AssociationSIOBlock : public podio::SIOBlock {
+class LinkSIOBlock : public podio::SIOBlock {
 public:
-  AssociationSIOBlock() :
-      SIOBlock(podio::detail::associationSIOName<FromT, ToT>(),
-               sio::version::encode_version(AssociationCollection<FromT, ToT>::schemaVersion, 0)) {
+  LinkSIOBlock() :
+      SIOBlock(podio::detail::linkSIOName<FromT, ToT>(),
+               sio::version::encode_version(LinkCollection<FromT, ToT>::schemaVersion, 0)) {
     podio::SIOBlockFactory::instance().registerBlockForCollection(
-        std::string(podio::detail::associationTypeName<FromT, ToT>()), this);
+        std::string(podio::detail::linkTypeName<FromT, ToT>()), this);
   }
 
-  AssociationSIOBlock(const std::string& name) :
-      SIOBlock(name, sio::version::encode_version(AssociationCollection<FromT, ToT>::schemaVersion, 0)) {
+  LinkSIOBlock(const std::string& name) :
+      SIOBlock(name, sio::version::encode_version(LinkCollection<FromT, ToT>::schemaVersion, 0)) {
   }
 
   void read(sio::read_device& device, sio::version_type version) override {
     auto& bufferFactory = podio::CollectionBufferFactory::instance();
     // TODO:
     // - Error handling of empty optional
-    auto maybeBuffers = bufferFactory.createBuffers(std::string(podio::detail::associationCollTypeName<FromT, ToT>()),
+    auto maybeBuffers = bufferFactory.createBuffers(std::string(podio::detail::linkCollTypeName<FromT, ToT>()),
                                                     sio::version::major_version(version), m_subsetColl);
     m_buffers = maybeBuffers.value();
 
@@ -72,10 +72,10 @@ public:
   }
 
   SIOBlock* create(const std::string& name) const override {
-    return new AssociationSIOBlock(name);
+    return new LinkSIOBlock(name);
   }
 };
 
 } // namespace podio
 
-#endif // PODIO_DETAIL_ASSOCIATIONSIOBLOCK_H
+#endif // PODIO_DETAIL_LINKSIOBLOCK_H

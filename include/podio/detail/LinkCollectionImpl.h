@@ -1,11 +1,11 @@
-#ifndef PODIO_DETAIL_ASSOCIATIONCOLLECTIONIMPL_H
-#define PODIO_DETAIL_ASSOCIATIONCOLLECTIONIMPL_H
+#ifndef PODIO_DETAIL_LINKCOLLECTIONIMPL_H
+#define PODIO_DETAIL_LINKCOLLECTIONIMPL_H
 
-#include "podio/detail/Association.h"
-#include "podio/detail/AssociationCollectionData.h"
-#include "podio/detail/AssociationCollectionIterator.h"
-#include "podio/detail/AssociationFwd.h"
-#include "podio/detail/AssociationObj.h"
+#include "podio/detail/Link.h"
+#include "podio/detail/LinkCollectionData.h"
+#include "podio/detail/LinkCollectionIterator.h"
+#include "podio/detail/LinkFwd.h"
+#include "podio/detail/LinkObj.h"
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
@@ -30,47 +30,47 @@
 namespace podio {
 
 template <typename FromT, typename ToT>
-class AssociationCollection : public podio::CollectionBase {
+class LinkCollection : public podio::CollectionBase {
   static_assert(std::is_same_v<FromT, detail::GetDefaultHandleType<FromT>>,
-                "Associations need to be instantiated with the default types!");
+                "Links need to be instantiated with the default types!");
   static_assert(std::is_same_v<ToT, detail::GetDefaultHandleType<ToT>>,
-                "Associations need to be instantiated with the default types!");
+                "Links need to be instantiated with the default types!");
 
   // convenience typedefs
-  using CollectionDataT = podio::AssociationCollectionData<FromT, ToT>;
+  using CollectionDataT = podio::LinkCollectionData<FromT, ToT>;
 
 public:
-  using value_type = Association<FromT, ToT>;
-  using mutable_type = MutableAssociation<FromT, ToT>;
-  using const_iterator = AssociationCollectionIterator<FromT, ToT>;
-  using iterator = AssociationMutableCollectionIterator<FromT, ToT>;
+  using value_type = Link<FromT, ToT>;
+  using mutable_type = MutableLink<FromT, ToT>;
+  using const_iterator = LinkCollectionIterator<FromT, ToT>;
+  using iterator = LinkMutableCollectionIterator<FromT, ToT>;
   using difference_type = ptrdiff_t;
   using size_type = size_t;
 
-  AssociationCollection() = default;
+  LinkCollection() = default;
 
-  AssociationCollection(CollectionDataT&& data, bool isSubsetColl) :
+  LinkCollection(CollectionDataT&& data, bool isSubsetColl) :
       m_isSubsetColl(isSubsetColl), m_collectionID(0), m_storage(std::move(data)) {
   }
 
   // Move-only type
-  AssociationCollection(const AssociationCollection&) = delete;
-  AssociationCollection& operator=(const AssociationCollection&) = delete;
-  AssociationCollection(AssociationCollection&&) = default;
-  AssociationCollection& operator=(AssociationCollection&&) = default;
+  LinkCollection(const LinkCollection&) = delete;
+  LinkCollection& operator=(const LinkCollection&) = delete;
+  LinkCollection(LinkCollection&&) = default;
+  LinkCollection& operator=(LinkCollection&&) = default;
 
-  ~AssociationCollection() {
+  ~LinkCollection() {
     // Need to tell the storage how to clean up
     m_storage.clear(m_isSubsetColl);
   }
 
-  /// Append a new association to the collection and return this object
+  /// Append a new link to the collection and return this object
   mutable_type create() {
     if (m_isSubsetColl) {
       throw std::logic_error("Cannot create new elements on a subset collection");
     }
 
-    auto obj = m_storage.entries.emplace_back(new AssociationObj<FromT, ToT>());
+    auto obj = m_storage.entries.emplace_back(new LinkObj<FromT, ToT>());
     obj->id = {int(m_storage.entries.size() - 1), m_collectionID};
     return mutable_type(podio::utils::MaybeSharedPtr(obj));
   }
@@ -180,11 +180,11 @@ public:
   }
 
   const std::string_view getTypeName() const override {
-    return podio::detail::associationCollTypeName<FromT, ToT>();
+    return podio::detail::linkCollTypeName<FromT, ToT>();
   }
 
   const std::string_view getValueTypeName() const override {
-    return podio::detail::associationTypeName<FromT, ToT>();
+    return podio::detail::linkTypeName<FromT, ToT>();
   }
 
   const std::string_view getDataTypeName() const override {
@@ -279,7 +279,7 @@ private:
 };
 
 template <typename FromT, typename ToT>
-std::ostream& operator<<(std::ostream& o, const AssociationCollection<FromT, ToT>& v) {
+std::ostream& operator<<(std::ostream& o, const LinkCollection<FromT, ToT>& v) {
   const auto old_flags = o.flags();
   o << "          id:      weight:" << '\n';
   for (const auto&& el : v) {
@@ -298,7 +298,7 @@ std::ostream& operator<<(std::ostream& o, const AssociationCollection<FromT, ToT
 
 #ifdef PODIO_JSON_OUTPUT
 template <typename FromT, typename ToT>
-void to_json(nlohmann::json& j, const AssociationCollection<FromT, ToT>& collection) {
+void to_json(nlohmann::json& j, const LinkCollection<FromT, ToT>& collection) {
   j = nlohmann::json::array();
   for (auto&& elem : collection) {
     j.emplace_back(elem);
@@ -308,9 +308,9 @@ void to_json(nlohmann::json& j, const AssociationCollection<FromT, ToT>& collect
 
 namespace detail {
   template <typename FromT, typename ToT>
-  podio::CollectionReadBuffers createAssociationBuffers(bool subsetColl) {
+  podio::CollectionReadBuffers createLinkBuffers(bool subsetColl) {
     auto readBuffers = podio::CollectionReadBuffers{};
-    readBuffers.data = subsetColl ? nullptr : new AssociationDataContainer();
+    readBuffers.data = subsetColl ? nullptr : new LinkDataContainer();
 
     // Either it is a subset collection or we have two relations
     const auto nRefs = subsetColl ? 1 : 2;
@@ -321,8 +321,8 @@ namespace detail {
     }
 
     readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
-      AssociationCollectionData<FromT, ToT> data(buffers, isSubsetColl);
-      return std::make_unique<AssociationCollection<FromT, ToT>>(std::move(data), isSubsetColl);
+      LinkCollectionData<FromT, ToT> data(buffers, isSubsetColl);
+      return std::make_unique<LinkCollection<FromT, ToT>>(std::move(data), isSubsetColl);
     };
 
     readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
@@ -336,7 +336,7 @@ namespace detail {
         // If we have data then we are not a subset collection and we have
         // to clean up all type erased buffers by casting them back to
         // something that we can delete
-        delete static_cast<AssociationDataContainer*>(buffers.data);
+        delete static_cast<LinkDataContainer*>(buffers.data);
       }
       delete buffers.references;
       delete buffers.vectorMembers;
@@ -346,16 +346,16 @@ namespace detail {
   }
 
   template <typename FromT, typename ToT>
-  bool registerAssociationCollection(const std::string_view assocTypeName) {
-    const static auto reg = [&assocTypeName]() {
-      const auto schemaVersion = AssociationCollection<FromT, ToT>::schemaVersion;
+  bool registerLinkCollection(const std::string_view linkTypeName) {
+    const static auto reg = [&linkTypeName]() {
+      const auto schemaVersion = LinkCollection<FromT, ToT>::schemaVersion;
 
       auto& factory = CollectionBufferFactory::mutInstance();
-      factory.registerCreationFunc(std::string(assocTypeName), schemaVersion, createAssociationBuffers<FromT, ToT>);
+      factory.registerCreationFunc(std::string(linkTypeName), schemaVersion, createLinkBuffers<FromT, ToT>);
 
       // For now passing the same schema version for from and current version
-      // simply to make SchemaEvolution aware of AssociationCollections
-      podio::SchemaEvolution::mutInstance().registerEvolutionFunc(std::string(assocTypeName), schemaVersion,
+      // simply to make SchemaEvolution aware of LinkCollections
+      podio::SchemaEvolution::mutInstance().registerEvolutionFunc(std::string(linkTypeName), schemaVersion,
                                                                   schemaVersion, SchemaEvolution::noOpSchemaEvolution,
                                                                   SchemaEvolution::Priority::AutoGenerated);
 
@@ -367,4 +367,4 @@ namespace detail {
 
 } // namespace podio
 
-#endif // PODIO_DETAIL_ASSOCIATIONCOLLECTIONIMPL_H
+#endif // PODIO_DETAIL_LINKCOLLECTIONIMPL_H

@@ -80,7 +80,7 @@ RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) con
     return {emptyVec, emptyVec};
   }
 
-  if (typeName.substr(0, 18) == "podio::Association") {
+  if (typeName.substr(0, 11) == "podio::Link") {
     static constexpr auto fromName = "from";
     static constexpr auto toName = "to";
     const static std::vector<std::string_view> relationNames = {fromName, toName};

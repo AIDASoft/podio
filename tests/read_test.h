@@ -14,8 +14,8 @@
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 // podio specific includes
-#include "podio/AssociationCollection.h"
 #include "podio/Frame.h"
+#include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
 #include "podio/podioVersion.h"
 
@@ -27,8 +27,8 @@
 #include <stdexcept>
 #include <vector>
 
-// Define an association that is used for the I/O tests
-using TestAssocCollection = podio::AssociationCollection<ExampleHit, ExampleCluster>;
+// Define an link that is used for the I/O tests
+using TestLinkCollection = podio::LinkCollection<ExampleHit, ExampleCluster>;
 
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
@@ -415,20 +415,20 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
-  // ======================= Associations ==========================
+  // ======================= Links ==========================
   if (fileVersion >= podio::version::Version{1, 0, 99}) {
-    auto& associations = event.get<TestAssocCollection>("associations");
-    const auto nAssocs = std::min(clusters.size(), hits.size());
-    if (associations.size() != nAssocs) {
-      throw std::runtime_error("AssociationsCollection does not have the expected size");
+    auto& links = event.get<TestLinkCollection>("links");
+    const auto nLinks = std::min(clusters.size(), hits.size());
+    if (links.size() != nLinks) {
+      throw std::runtime_error("LinksCollection does not have the expected size");
     }
-    int assocIndex = 0;
-    for (auto assoc : associations) {
-      if (!((assoc.getWeight() == 0.5 * assocIndex) && (assoc.getFrom() == hits[assocIndex]) &&
-            (assoc.getTo() == clusters[nAssocs - 1 - assocIndex]))) {
-        throw std::runtime_error("Association does not have expected content");
+    int linkIndex = 0;
+    for (auto link : links) {
+      if (!((link.getWeight() == 0.5 * linkIndex) && (link.getFrom() == hits[linkIndex]) &&
+            (link.getTo() == clusters[nLinks - 1 - linkIndex]))) {
+        throw std::runtime_error("Link does not have expected content");
       }
-      assocIndex++;
+      linkIndex++;
     }
   }
 }
