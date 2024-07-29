@@ -1,29 +1,29 @@
-#ifndef PODIO_DETAIL_ASSOCIATIONOBJ_H
-#define PODIO_DETAIL_ASSOCIATIONOBJ_H
+#ifndef PODIO_DETAIL_LINKOBJ_H
+#define PODIO_DETAIL_LINKOBJ_H
 
-#include "podio/detail/AssociationFwd.h"
+#include "podio/detail/LinkFwd.h"
 
 #include "podio/ObjectID.h"
 
 namespace podio {
 
 template <typename FromT, typename ToT>
-class AssociationObj {
+class LinkObj {
 
-  friend Association<FromT, ToT>;
-  friend MutableAssociation<FromT, ToT>;
+  friend Link<FromT, ToT>;
+  friend MutableLink<FromT, ToT>;
 
 public:
   /// Constructor
-  AssociationObj() : id(), weight(0.0f), m_from(nullptr), m_to(nullptr) {
+  LinkObj() : id(), weight(0.0f), m_from(nullptr), m_to(nullptr) {
   }
 
   /// Constructor from ObjectID and weight (does not initialize relations yet!)
-  AssociationObj(const podio::ObjectID id_, float weight_) : id(id_), weight(weight_) {
+  LinkObj(const podio::ObjectID id_, float weight_) : id(id_), weight(weight_) {
   }
 
   /// Copy constructor (deep-copy of relations)
-  AssociationObj(const AssociationObj& other) : id(), weight(other.weight), m_from(nullptr), m_to(nullptr) {
+  LinkObj(const LinkObj& other) : id(), weight(other.weight), m_from(nullptr), m_to(nullptr) {
     if (other.m_from) {
       m_from = new FromT(*other.m_from);
     }
@@ -33,10 +33,10 @@ public:
   }
 
   /// No assignment operator
-  AssociationObj& operator=(const AssociationObj&) = delete;
+  LinkObj& operator=(const LinkObj&) = delete;
 
   /// Destructor
-  ~AssociationObj() {
+  ~LinkObj() {
     delete m_from;
     delete m_to;
   }
@@ -50,4 +50,4 @@ public:
 
 } // namespace podio
 
-#endif // PODIO_DETAIL_ASSOCIATIONOBJ_H
+#endif // PODIO_DETAIL_LINKOBJ_H

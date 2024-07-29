@@ -20,15 +20,15 @@
 #include "extension_model/ExternalComponentTypeCollection.h"
 #include "extension_model/ExternalRelationTypeCollection.h"
 
-#include "podio/AssociationCollection.h"
 #include "podio/Frame.h"
+#include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
 
 #include <string>
 #include <tuple>
 
-// Define an association that is used for the I/O tests
-using TestAssocCollection = podio::AssociationCollection<ExampleHit, ExampleCluster>;
+// Define an link that is used for the I/O tests
+using TestLinkCollection = podio::LinkCollection<ExampleHit, ExampleCluster>;
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
@@ -384,20 +384,20 @@ auto createExampleWithInterfaceCollection(const ExampleHitCollection& hits, cons
   return coll;
 }
 
-auto createAssociationCollection(const ExampleHitCollection& hits, const ExampleClusterCollection& clusters) {
-  TestAssocCollection associations{};
-  const auto nAssocs = std::min(clusters.size(), hits.size());
-  for (size_t iA = 0; iA < nAssocs; ++iA) {
-    auto assoc = associations.create();
-    assoc.setWeight(0.5 * iA);
+auto createLinkCollection(const ExampleHitCollection& hits, const ExampleClusterCollection& clusters) {
+  TestLinkCollection links{};
+  const auto nLinks = std::min(clusters.size(), hits.size());
+  for (size_t iA = 0; iA < nLinks; ++iA) {
+    auto link = links.create();
+    link.setWeight(0.5 * iA);
 
     // Fill in opposite "order" to at least make sure that we uncover issues
     // that would otherwise be masked by parallel running of indices
-    assoc.setFrom(hits[iA]);
-    assoc.setTo(clusters[nAssocs - 1 - iA]);
+    link.setFrom(hits[iA]);
+    link.setTo(clusters[nLinks - 1 - iA]);
   }
 
-  return associations;
+  return links;
 }
 
 podio::Frame makeFrame(int iFrame) {
@@ -460,7 +460,7 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createExtensionExternalRelationCollection(iFrame, hits, clusters), "extension_ExternalRelation");
 
   frame.put(createExampleWithInterfaceCollection(hits, clusters, mcps), "interface_examples");
-  frame.put(createAssociationCollection(hits, clusters), "associations");
+  frame.put(createLinkCollection(hits, clusters), "links");
 
   return frame;
 }

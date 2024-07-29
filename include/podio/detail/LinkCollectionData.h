@@ -1,8 +1,8 @@
-#ifndef PODIO_DETAIL_ASSOCIATIONCOLLECTIONDATA_H
-#define PODIO_DETAIL_ASSOCIATIONCOLLECTIONDATA_H
+#ifndef PODIO_DETAIL_LINKCOLLECTIONDATA_H
+#define PODIO_DETAIL_LINKCOLLECTIONDATA_H
 
-#include "podio/detail/AssociationFwd.h"
-#include "podio/detail/AssociationObj.h"
+#include "podio/detail/LinkFwd.h"
+#include "podio/detail/LinkObj.h"
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
@@ -15,18 +15,18 @@
 namespace podio {
 
 template <typename FromT, typename ToT>
-class AssociationCollectionData {
+class LinkCollectionData {
 public:
-  AssociationObjPointerContainer<FromT, ToT> entries{};
+  LinkObjPointerContainer<FromT, ToT> entries{};
 
-  AssociationCollectionData() :
-      m_rel_from(new std::vector<FromT>()), m_rel_to(new std::vector<ToT>()), m_data(new AssociationDataContainer()) {
+  LinkCollectionData() :
+      m_rel_from(new std::vector<FromT>()), m_rel_to(new std::vector<ToT>()), m_data(new LinkDataContainer()) {
     m_refCollections.reserve(2);
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
   }
 
-  AssociationCollectionData(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
+  LinkCollectionData(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
       m_rel_from(new std::vector<FromT>()),
       m_rel_to(new std::vector<ToT>()),
       m_refCollections(std::move(*buffers.references)) {
@@ -35,11 +35,11 @@ public:
     }
   }
 
-  AssociationCollectionData(const AssociationCollectionData&) = delete;
-  AssociationCollectionData& operator=(const AssociationCollectionData&) = delete;
-  AssociationCollectionData(AssociationCollectionData&&) = default;
-  AssociationCollectionData& operator=(AssociationCollectionData&&) = default;
-  ~AssociationCollectionData() = default;
+  LinkCollectionData(const LinkCollectionData&) = delete;
+  LinkCollectionData& operator=(const LinkCollectionData&) = delete;
+  LinkCollectionData(LinkCollectionData&&) = default;
+  LinkCollectionData& operator=(LinkCollectionData&&) = default;
+  ~LinkCollectionData() = default;
 
   podio::CollectionWriteBuffers getCollectionBuffers(bool isSubsetColl) {
     return {isSubsetColl ? nullptr : (void*)&m_data, (void*)m_data.get(), &m_refCollections, &m_vecInfo};
@@ -118,7 +118,7 @@ public:
   void prepareAfterRead(uint32_t collectionID) {
     int index = 0;
     for (const auto data : *m_data) {
-      auto obj = new AssociationObj<FromT, ToT>({index++, collectionID}, data);
+      auto obj = new LinkObj<FromT, ToT>({index++, collectionID}, data);
       entries.emplace_back(obj);
     }
 
@@ -129,9 +129,9 @@ public:
     if (isSubsetColl) {
       for (const auto& id : *m_refCollections[0]) {
         podio::CollectionBase* coll{nullptr};
-        AssociationObj<FromT, ToT>* obj{nullptr};
+        LinkObj<FromT, ToT>* obj{nullptr};
         if (collectionProvider->get(id.collectionID, coll)) {
-          auto* tmp_coll = static_cast<AssociationCollection<FromT, ToT>*>(coll);
+          auto* tmp_coll = static_cast<LinkCollection<FromT, ToT>*>(coll);
           obj = tmp_coll->m_storage.entries[id.index];
         }
         entries.push_back(obj);
@@ -194,9 +194,9 @@ private:
   // I/O related buffers (as far as necessary)
   podio::CollRefCollection m_refCollections{};
   podio::VectorMembersInfo m_vecInfo{};
-  std::unique_ptr<AssociationDataContainer> m_data{nullptr};
+  std::unique_ptr<LinkDataContainer> m_data{nullptr};
 };
 
 } // namespace podio
 
-#endif // PODIO_DETAIL_ASSOCIATIONCOLLECTIONDATA_H
+#endif // PODIO_DETAIL_LINKCOLLECTIONDATA_H

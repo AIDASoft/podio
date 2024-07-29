@@ -34,7 +34,7 @@ EXPECTED_COLL_NAMES = {
     "WithNamespaceRelationCopy",
     "emptyCollection",
     "emptySubsetColl",
-    "associations",
+    "links",
 }
 
 # The expected collections from the extension (only present in the other_events category)
