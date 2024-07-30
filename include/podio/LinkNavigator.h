@@ -1,7 +1,7 @@
-#ifndef PODIO_ASSOCIATIONNAVIGATOR_H
-#define PODIO_ASSOCIATIONNAVIGATOR_H
+#ifndef PODIO_LINKNAVIGATOR_H
+#define PODIO_LINKNAVIGATOR_H
 
-#include "podio/detail/AssociationFwd.h"
+#include "podio/detail/LinkFwd.h"
 
 #include <map>
 #include <tuple>
@@ -12,7 +12,7 @@ namespace podio {
 
 namespace detail::associations {
   /// A small struct that simply bundles an object and its weight for a more
-  /// convenient return value for the AssociationNavigator
+  /// convenient return value for the LinkNavigator
   ///
   /// @note In most uses the names of the members should not really matter as it
   /// is possible to us this via structured bindings
@@ -34,25 +34,25 @@ namespace detail::associations {
 /// Hence, there are also no guarantees on the order of the returned objects,
 /// even if there inherintly is an order to them in the underlying associations
 /// collection.
-template <typename AssociationCollT>
-class AssociationNavigator {
-  using FromT = AssociationCollT::from_type;
-  using ToT = AssociationCollT::to_type;
+template <typename LinkCollT>
+class LinkNavigator {
+  using FromT = LinkCollT::from_type;
+  using ToT = LinkCollT::to_type;
 
   template <typename T>
   using WeightedObject = detail::associations::WeightedObject<T>;
 
 public:
   /// Construct a navigator from an association collection
-  AssociationNavigator(const AssociationCollT& associations);
+  LinkNavigator(const LinkCollT& associations);
 
   /// We do only construct from a collection
-  AssociationNavigator() = delete;
-  AssociationNavigator(const AssociationNavigator&) = default;
-  AssociationNavigator& operator=(const AssociationNavigator&) = default;
-  AssociationNavigator(AssociationNavigator&&) = default;
-  AssociationNavigator& operator=(AssociationNavigator&&) = default;
-  ~AssociationNavigator() = default;
+  LinkNavigator() = delete;
+  LinkNavigator(const LinkNavigator&) = default;
+  LinkNavigator& operator=(const LinkNavigator&) = default;
+  LinkNavigator(LinkNavigator&&) = default;
+  LinkNavigator& operator=(LinkNavigator&&) = default;
+  ~LinkNavigator() = default;
 
   /// Get all the objects and weights that are associated to the passed object
   ///
@@ -93,8 +93,8 @@ private:
   std::multimap<ToT, WeightedObject<FromT>> m_to2from; ///< Map the to to the from objects
 };
 
-template <typename AssociationCollT>
-AssociationNavigator<AssociationCollT>::AssociationNavigator(const AssociationCollT& associations) {
+template <typename LinkCollT>
+LinkNavigator<LinkCollT>::LinkNavigator(const LinkCollT& associations) {
   for (const auto& [from, to, weight] : associations) {
     m_from2to.emplace(std::piecewise_construct, std::forward_as_tuple(from), std::forward_as_tuple(to, weight));
     m_to2from.emplace(std::piecewise_construct, std::forward_as_tuple(to), std::forward_as_tuple(from, weight));
@@ -103,4 +103,4 @@ AssociationNavigator<AssociationCollT>::AssociationNavigator(const AssociationCo
 
 } // namespace podio
 
-#endif // PODIO_ASSOCIATIONNAVIGATOR_H
+#endif // PODIO_LINKNAVIGATOR_H

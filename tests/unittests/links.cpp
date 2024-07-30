@@ -1,7 +1,7 @@
 #include "catch2/catch_test_macros.hpp"
 
-#include "podio/AssociationNavigator.h"
 #include "podio/LinkCollection.h"
+#include "podio/LinkNavigator.h"
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
@@ -475,8 +475,8 @@ TEST_CASE("Link JSON conversion", "[links][json]") {
 
 #endif
 
-TEST_CASE("AssociationNavigator basics", "[asssociations]") {
-  TestAColl coll{};
+TEST_CASE("LinkNavigator basics", "[links]") {
+  TestLColl coll{};
   std::vector<ExampleHit> hits(11);
   std::vector<ExampleCluster> clusters(3);
 
@@ -490,7 +490,7 @@ TEST_CASE("AssociationNavigator basics", "[asssociations]") {
   auto a = coll.create();
   a.set(hits[10]);
 
-  podio::AssociationNavigator nav{coll};
+  podio::LinkNavigator nav{coll};
 
   for (size_t i = 0; i < 10; ++i) {
     const auto& hit = hits[i];
