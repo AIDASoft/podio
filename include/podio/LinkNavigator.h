@@ -89,8 +89,8 @@ public:
   }
 
 private:
-  std::multimap<FromT, WeightedObject<ToT>> m_from2to; ///< Map the from to the to objects
-  std::multimap<ToT, WeightedObject<FromT>> m_to2from; ///< Map the to to the from objects
+  std::multimap<FromT, WeightedObject<ToT>> m_from2to{}; ///< Map the from to the to objects
+  std::multimap<ToT, WeightedObject<FromT>> m_to2from{}; ///< Map the to to the from objects
 };
 
 template <typename LinkCollT>
