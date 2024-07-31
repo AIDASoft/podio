@@ -1,6 +1,10 @@
 ---
 schema_version : 2
 
+version_info:
+  header: "datamodel/version.h"
+  variable: "datamodel::ver::version"
+
 options :
   # should getters / setters be prefixed with get / set?
   getSyntax: False

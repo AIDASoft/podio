@@ -511,6 +511,7 @@ have resolvable schema evolution incompatibilities:"
             "incfolder": self.incfolder,
             "schema_version": self.datamodel.schema_version,
             "datatypes": self.datamodel.datatypes,
+            "version_info": self.datamodel.version_info,
         }
 
         def quoted_sv(string):
