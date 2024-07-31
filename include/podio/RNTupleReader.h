@@ -96,6 +96,13 @@ public:
     return m_fileVersion;
   }
 
+  /// Get the (build) version of a datamodel that has been used to write the
+  /// current file
+  ///
+  /// @param name The name of the datamodel
+  ///
+  /// @returns The (build) version of the datamodel if available or an empty
+  ///          optional
   std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
     return m_datamodelHolder.getDatamodelVersion(name);
   }
