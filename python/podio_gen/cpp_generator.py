@@ -85,9 +85,11 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
     def post_process(self, _):
         """Do the cpp specific post processing"""
         self._write_edm_def_file()
+
         if "ROOT" in self.io_handlers:
             self._prepare_iorules()
             self._create_selection_xml()
+
         self._write_all_collections_header()
         self._write_cmake_lists_file()
 
@@ -208,6 +210,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         """Do the preprocessing that is necessary for the classes and Mutable classes"""
         includes = set(datatype["includes_data"])
         fwd_declarations = defaultdict(list)
+        fwd_declarations[datatype["class"].namespace] = [
+            f"{datatype['class'].bare_type}Collection"
+        ]
         includes_cc = set()
 
         for member in datatype["Members"]:

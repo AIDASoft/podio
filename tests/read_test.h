@@ -15,6 +15,7 @@
 
 // podio specific includes
 #include "podio/Frame.h"
+#include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
 #include "podio/podioVersion.h"
 
@@ -27,6 +28,9 @@
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
+
+// Define an link that is used for the I/O tests
+using TestLinkCollection = podio::LinkCollection<ExampleHit, ExampleCluster>;
 
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
@@ -410,6 +414,23 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
       if (d != 42.) {
         throw std::runtime_error("Couldn't read userDoubles properly");
       }
+    }
+  }
+
+  // ======================= Links ==========================
+  if (fileVersion >= podio::version::Version{1, 0, 99}) {
+    auto& links = event.get<TestLinkCollection>("links");
+    const auto nLinks = std::min(clusters.size(), hits.size());
+    if (links.size() != nLinks) {
+      throw std::runtime_error("LinksCollection does not have the expected size");
+    }
+    int linkIndex = 0;
+    for (auto link : links) {
+      if (!((link.getWeight() == 0.5 * linkIndex) && (link.getFrom() == hits[linkIndex]) &&
+            (link.getTo() == clusters[nLinks - 1 - linkIndex]))) {
+        throw std::runtime_error("Link does not have expected content");
+      }
+      linkIndex++;
     }
   }
 }
