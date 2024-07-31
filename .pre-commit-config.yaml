@@ -9,9 +9,9 @@ repos:
     hooks:
       - id: clang-tidy
         name: clang-tidy
-        entry: clang-tidy -warnings-as-errors='*,-clang-diagnostic-deprecated-declarations' -p compile_commands.json
+        entry: .github/scripts/clang-tidy-hook
         types: [c++]
-        exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)|podioVersion.in.h|SIOFrame.*h)
+        exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)|podioVersion.in.h)
         language: system
       - id: clang-format
         name: clang-format
