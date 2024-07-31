@@ -21,10 +21,14 @@
 #include "extension_model/ExternalRelationTypeCollection.h"
 
 #include "podio/Frame.h"
+#include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
 
 #include <string>
 #include <tuple>
+
+// Define an link that is used for the I/O tests
+using TestLinkCollection = podio::LinkCollection<ExampleHit, ExampleCluster>;
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
@@ -380,6 +384,22 @@ auto createExampleWithInterfaceCollection(const ExampleHitCollection& hits, cons
   return coll;
 }
 
+auto createLinkCollection(const ExampleHitCollection& hits, const ExampleClusterCollection& clusters) {
+  TestLinkCollection links{};
+  const auto nLinks = std::min(clusters.size(), hits.size());
+  for (size_t iA = 0; iA < nLinks; ++iA) {
+    auto link = links.create();
+    link.setWeight(0.5 * iA);
+
+    // Fill in opposite "order" to at least make sure that we uncover issues
+    // that would otherwise be masked by parallel running of indices
+    link.setFrom(hits[iA]);
+    link.setTo(clusters[nLinks - 1 - iA]);
+  }
+
+  return links;
+}
+
 podio::Frame makeFrame(int iFrame) {
   podio::Frame frame{};
 
@@ -440,6 +460,7 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createExtensionExternalRelationCollection(iFrame, hits, clusters), "extension_ExternalRelation");
 
   frame.put(createExampleWithInterfaceCollection(hits, clusters, mcps), "interface_examples");
+  frame.put(createLinkCollection(hits, clusters), "links");
 
   return frame;
 }

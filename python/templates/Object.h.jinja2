@@ -50,6 +50,8 @@ public:
 
 public:
 
+  static constexpr auto typeName = "{{ class.full_type }}";
+
 {{ macros.member_getters(Members, use_get_syntax) }}
 {{ macros.single_relation_getters(OneToOneRelations, use_get_syntax) }}
 {{ macros.multi_relation_handling(OneToManyRelations + VectorMembers, use_get_syntax) }}
