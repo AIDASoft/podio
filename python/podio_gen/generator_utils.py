@@ -304,6 +304,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
         interfaces=None,
         options=None,
         schema_version=None,
+        version_info=None,
     ):
         self.options = options or {
             # should getters / setters be prefixed with get / set?
@@ -315,6 +316,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
             "includeSubfolder": False,
         }
         self.schema_version = schema_version
+        self.version_info = version_info
         self.components = components or {}
         self.datatypes = datatypes or {}
         self.interfaces = interfaces or {}
