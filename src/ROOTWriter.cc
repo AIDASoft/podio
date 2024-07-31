@@ -4,6 +4,7 @@
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
 
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "rootUtils.h"
 
 #include "TTree.h"
@@ -184,6 +185,18 @@ void ROOTWriter::finish() {
 
   auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
   metaTree->Branch(root_utils::edmDefBranchName, &edmDefinitions);
+
+  // Collect the (build) versions of the generated datamodels where available
+  DatamodelDefinitionHolder::VersionList edmVersions;
+  for (const auto& [name, _] : edmDefinitions) {
+    auto edmVersion = podio::DatamodelRegistry::instance().getDatamodelVersion(name);
+    if (edmVersion) {
+      edmVersions.emplace_back(name, edmVersion.value());
+    }
+  }
+  for (auto& [name, version] : edmVersions) {
+    metaTree->Branch(root_utils::edmVersionBranchName(name).c_str(), &version);
+  }
 
   metaTree->Fill();
 

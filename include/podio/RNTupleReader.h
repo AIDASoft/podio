@@ -96,6 +96,10 @@ public:
     return m_fileVersion;
   }
 
+  std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
+    return m_datamodelHolder.getDatamodelVersion(name);
+  }
+
   /// Get the datamodel definition for the given name
   ///
   /// @param name The name of the datamodel

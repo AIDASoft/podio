@@ -104,6 +104,10 @@ public:
     return m_fileVersion;
   }
 
+  std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
+    return m_datamodelHolder.getDatamodelVersion(name);
+  }
+
   /// Get the names of all the available Frame categories in the current file(s).
   ///
   /// @returns The names of the available categories from the file

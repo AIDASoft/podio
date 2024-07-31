@@ -123,6 +123,12 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     return 1;
   }
 
+  const auto extensionModelVersion = reader.currentFileVersion("extension_model");
+  if (extensionModelVersion) {
+    std::cerr << "The (build) version of the extension model was available althought it shouldn't be. Its value is "
+              << extensionModelVersion.value() << std::endl;
+  }
+
   if (reader.getEntries(podio::Category::Event) != 10) {
     std::cerr << "Could not read back the number of events correctly. "
               << "(expected:" << 10 << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;

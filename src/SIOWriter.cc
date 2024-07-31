@@ -2,6 +2,7 @@
 #include "podio/Frame.h"
 #include "podio/SIOBlock.h"
 
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "sioUtils.h"
 
 #include <memory>
@@ -54,11 +55,24 @@ void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& categor
 }
 
 void SIOWriter::finish() {
-  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(
+  auto edmDefMap = std::make_shared<podio::SIOMapBlockV2<std::string, std::string>>(
       m_datamodelCollector.getDatamodelDefinitionsToWrite());
 
   sio::block_list blocks;
   blocks.push_back(edmDefMap);
+
+  DatamodelDefinitionHolder::VersionList edmVersions;
+  for (const auto& [name, _] : edmDefMap->mapData) {
+    auto edmVersion = podio::DatamodelRegistry::instance().getDatamodelVersion(name);
+    if (edmVersion) {
+      edmVersions.emplace_back(name, edmVersion.value());
+    }
+  }
+
+  auto edmVersionMap =
+      std::make_shared<podio::SIOMapBlockV2<std::string, podio::version::Version>>(std::move(edmVersions));
+  blocks.push_back(edmVersionMap);
+
   m_tocRecord.addRecord(sio_helpers::SIOEDMDefinitionName, sio_utils::writeRecord(blocks, "EDMDefinitions", m_stream));
 
   blocks.clear();

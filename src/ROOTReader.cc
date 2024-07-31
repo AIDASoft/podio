@@ -262,7 +262,19 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     auto* datamodelDefs = new DatamodelDefinitionHolder::MapType{};
     edmDefBranch->SetAddress(&datamodelDefs);
     edmDefBranch->GetEntry(0);
-    m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
+
+    DatamodelDefinitionHolder::VersionList edmVersions{};
+    for (const auto& [name, _] : *datamodelDefs) {
+      if (auto* edmVersionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmVersionBranchName(name))) {
+        auto* edmVersion = new podio::version::Version{};
+        edmVersionBranch->SetAddress(&edmVersion);
+        edmVersionBranch->GetEntry(0);
+        edmVersions.emplace_back(name, *edmVersion);
+        delete edmVersion;
+      }
+    }
+
+    m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs), std::move(edmVersions));
     delete datamodelDefs;
   }
 
