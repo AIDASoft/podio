@@ -119,8 +119,8 @@ void SIOReader::readEDMDefinitions() {
   const auto& [buffer, _] = sio_utils::readRecord(m_stream);
 
   sio::block_list blocks;
-  blocks.emplace_back(std::make_shared<podio::SIOMapBlockV2<std::string, std::string>>());
-  blocks.emplace_back(std::make_shared<podio::SIOMapBlockV2<std::string, podio::version::Version>>());
+  blocks.emplace_back(std::make_shared<podio::SIOMapBlock<std::string, std::string>>());
+  blocks.emplace_back(std::make_shared<podio::SIOMapBlock<std::string, podio::version::Version>>());
 
   sio::api::read_blocks(buffer.span(), blocks);
 

@@ -171,30 +171,6 @@ public:
   podio::GenericParameters* metadata{nullptr};
 };
 
-/// A block to serialize anything that behaves similar in iterating as a
-/// map<KeyT, ValueT>, e.g. vector<tuple<KeyT, ValueT>>, which is what is used
-/// internally to represent the data to be written.
-template <typename KeyT, typename ValueT>
-struct SIOMapBlock : public sio::block {
-  SIOMapBlock() : sio::block("SIOMapBlock", sio::version::encode_version(0, 1)) {
-  }
-  SIOMapBlock(std::vector<std::tuple<KeyT, ValueT>>&& data) :
-      sio::block("SIOMapBlock", sio::version::encode_version(0, 1)), mapData(std::move(data)) {
-  }
-
-  SIOMapBlock(const SIOMapBlock&) = delete;
-  SIOMapBlock& operator=(const SIOMapBlock&) = delete;
-
-  void read(sio::read_device& device, sio::version_type) override {
-    readMapLike(device, mapData);
-  }
-  void write(sio::write_device& device) override {
-    writeMapLike(device, mapData);
-  }
-
-  std::vector<std::tuple<KeyT, ValueT>> mapData{};
-};
-
 namespace detail {
   inline std::string sioMapBlockNameImpl(std::string keyTName, std::string valueTName) {
     std::replace(keyTName.begin(), keyTName.end(), ':', '_');
@@ -220,16 +196,16 @@ namespace detail {
 /// map<KeyT, ValueT>, e.g. vector<tuple<KeyT, ValueT>>, which is what is used
 /// internally to represent the data to be written.
 template <typename KeyT, typename ValueT>
-struct SIOMapBlockV2 : public sio::block {
-  SIOMapBlockV2() : sio::block(detail::sioMapBlockName<KeyT, ValueT>(), sio::version::encode_version(0, 1)) {
+struct SIOMapBlock : public sio::block {
+  SIOMapBlock() : sio::block(detail::sioMapBlockName<KeyT, ValueT>(), sio::version::encode_version(0, 2)) {
   }
-  SIOMapBlockV2(std::vector<std::tuple<KeyT, ValueT>>&& data) :
-      sio::block(detail::sioMapBlockName<KeyT, ValueT>(), sio::version::encode_version(0, 1)),
+  SIOMapBlock(std::vector<std::tuple<KeyT, ValueT>>&& data) :
+      sio::block(detail::sioMapBlockName<KeyT, ValueT>(), sio::version::encode_version(0, 2)),
       mapData(std::move(data)) {
   }
 
-  SIOMapBlockV2(const SIOMapBlockV2&) = delete;
-  SIOMapBlockV2& operator=(const SIOMapBlockV2&) = delete;
+  SIOMapBlock(const SIOMapBlock&) = delete;
+  SIOMapBlock& operator=(const SIOMapBlock&) = delete;
 
   void read(sio::read_device& device, sio::version_type) override {
     readMapLike(device, mapData);

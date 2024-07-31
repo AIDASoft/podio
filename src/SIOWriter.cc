@@ -55,7 +55,7 @@ void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& categor
 }
 
 void SIOWriter::finish() {
-  auto edmDefMap = std::make_shared<podio::SIOMapBlockV2<std::string, std::string>>(
+  auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(
       m_datamodelCollector.getDatamodelDefinitionsToWrite());
 
   sio::block_list blocks;
@@ -70,7 +70,7 @@ void SIOWriter::finish() {
   }
 
   auto edmVersionMap =
-      std::make_shared<podio::SIOMapBlockV2<std::string, podio::version::Version>>(std::move(edmVersions));
+      std::make_shared<podio::SIOMapBlock<std::string, podio::version::Version>>(std::move(edmVersions));
   blocks.push_back(edmVersionMap);
 
   m_tocRecord.addRecord(sio_helpers::SIOEDMDefinitionName, sio_utils::writeRecord(blocks, "EDMDefinitions", m_stream));
