@@ -5,6 +5,7 @@ Module holding some generator utility functions
 
 import re
 import json
+from copy import deepcopy
 
 
 def _get_namespace_class(full_type):
@@ -304,6 +305,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
         interfaces=None,
         options=None,
         schema_version=None,
+        version_info=None,
     ):
         self.options = options or {
             # should getters / setters be prefixed with get / set?
@@ -315,6 +317,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
             "includeSubfolder": False,
         }
         self.schema_version = schema_version
+        self.version_info = version_info
         self.components = components or {}
         self.datatypes = datatypes or {}
         self.interfaces = interfaces or {}
@@ -322,7 +325,11 @@ class DataModel:  # pylint: disable=too-few-public-methods
     def _to_json(self):
         """Return the dictionary, so that we can easily hook this into the pythons
         JSON ecosystem"""
-        return self.__dict__
+        definition = deepcopy(self.__dict__)
+        # Only dump the version information if it's populated
+        if definition["version_info"] is None:
+            del definition["version_info"]
+        return definition
 
 
 class DataModelJSONEncoder(json.JSONEncoder):

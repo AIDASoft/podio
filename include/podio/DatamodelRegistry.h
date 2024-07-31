@@ -1,6 +1,9 @@
 #ifndef PODIO_DATAMODELREGISTRY_H
 #define PODIO_DATAMODELREGISTRY_H
 
+#include "podio/podioVersion.h"
+
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -97,6 +100,8 @@ public:
   /// @returns The name of the datamodel
   const std::string& getDatamodelName(size_t index) const;
 
+  std::optional<podio::version::Version> getDatamodelVersion(const std::string& name) const;
+
   /// Register a datamodel and return its index in the registry.
   ///
   /// This is the hook that is called during dynamic loading of an EDM to
@@ -114,6 +119,9 @@ public:
   size_t registerDatamodel(std::string name, std::string_view definition,
                            const podio::RelationNameMapping& relationNames);
 
+  size_t registerDatamodel(std::string name, std::string_view definition,
+                           const podio::RelationNameMapping& relationNames, podio::version::Version version);
+
   /// Get the names of the relations and vector members of a datatype
   RelationNames getRelationNames(std::string_view typeName) const;
 
@@ -123,6 +131,8 @@ private:
   std::vector<std::pair<std::string, std::string_view>> m_definitions{};
 
   std::unordered_map<std::string_view, RelationNames> m_relations{};
+
+  std::unordered_map<std::string, podio::version::Version> m_datamodelVersions{};
 };
 } // namespace podio
 

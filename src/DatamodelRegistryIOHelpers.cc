@@ -47,4 +47,14 @@ std::vector<std::string> DatamodelDefinitionHolder::getAvailableDatamodels() con
   return defs;
 }
 
+std::optional<podio::version::Version> DatamodelDefinitionHolder::getDatamodelVersion(const std::string& name) const {
+  const auto it = std::find_if(m_edmVersions.begin(), m_edmVersions.end(),
+                               [&name](const auto& entry) { return std::get<0>(entry) == name; });
+  if (it != m_edmVersions.end()) {
+    return std::get<1>(*it);
+  }
+
+  return std::nullopt;
+}
+
 } // namespace podio

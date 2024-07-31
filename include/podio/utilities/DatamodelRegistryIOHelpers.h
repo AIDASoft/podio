@@ -35,8 +35,12 @@ class DatamodelDefinitionHolder {
 public:
   /// The "map" type that is used internally
   using MapType = std::vector<std::tuple<std::string, std::string>>;
-  /// Constructor from an existing collection of names and datamodel definitions
-  DatamodelDefinitionHolder(MapType&& definitions) : m_availEDMDefs(std::move(definitions)) {
+  /// The "map" mapping names and datamodel versions (where available)
+  using VersionList = std::vector<std::tuple<std::string, podio::version::Version>>;
+
+  /// Constructor from an existing collection of names and datamodel definitions and versions
+  DatamodelDefinitionHolder(MapType&& definitions, VersionList&& versions) :
+      m_availEDMDefs(std::move(definitions)), m_edmVersions(std::move(versions)) {
   }
 
   DatamodelDefinitionHolder() = default;
@@ -57,8 +61,11 @@ public:
   /// Get all names of the datamodels that have been read from file
   std::vector<std::string> getAvailableDatamodels() const;
 
+  std::optional<podio::version::Version> getDatamodelVersion(const std::string& name) const;
+
 protected:
   MapType m_availEDMDefs{};
+  VersionList m_edmVersions{};
 };
 
 } // namespace podio

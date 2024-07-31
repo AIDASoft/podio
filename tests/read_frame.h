@@ -3,6 +3,7 @@
 
 #include "datamodel/ExampleWithInterfaceRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/version.h"
 #include "read_test.h"
 
 #include "extension_model/ContainedTypeCollection.h"
@@ -113,6 +114,33 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     std::cerr << "The podio build version could not be read back correctly. "
               << "(expected:" << podio::version::build_version << ", actual: " << reader.currentFileVersion() << ")"
               << std::endl;
+    return 1;
+  }
+
+  const auto datamodelVersion = reader.currentFileVersion("datamodel").value_or(podio::version::Version{});
+  if (assertBuildVersion && datamodelVersion != podio::version::Version(datamodel::ver::version)) {
+    std::cerr << "The (build) version of the datamodel could not be read back correctly. "
+              << "(expected: " << podio::version::Version(datamodel::ver::version) << ", actual: " << datamodelVersion
+              << ")" << std::endl;
+    return 1;
+  }
+
+  const auto extensionModelVersion = reader.currentFileVersion("extension_model");
+  if (extensionModelVersion) {
+    std::cerr << "The (build) version of the extension model was available althought it shouldn't be. Its value is "
+              << extensionModelVersion.value() << std::endl;
+  }
+
+  const auto availableCategories = reader.getAvailableCategories();
+  if (availableCategories.size() != 2) {
+    std::cerr << "More categories than expected!" << std::endl;
+    return 1;
+  }
+  if (std::find(availableCategories.begin(), availableCategories.end(), "events") == availableCategories.end() ||
+      std::find(availableCategories.begin(), availableCategories.end(), "other_events") == availableCategories.end()) {
+    std::cerr << "Could not read back the available categories as expected! (expected: ['events', 'other_events']), "
+                 "actual: ['"
+              << availableCategories[0] << "', '" << availableCategories[1] << "']" << std::endl;
     return 1;
   }
 

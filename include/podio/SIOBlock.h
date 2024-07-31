@@ -16,14 +16,15 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <type_traits>
 #include <vector>
 
 namespace podio {
 
 template <typename devT, typename PODData>
-void handlePODDataSIO(devT& device, PODData* data, size_t size) {
+void handlePODDataSIO(devT& device, const PODData* data, size_t size) {
   unsigned count = size * sizeof(PODData);
-  char* dataPtr = reinterpret_cast<char*>(data);
+  auto* dataPtr = reinterpret_cast<char*>(const_cast<PODData*>(data));
   device.data(dataPtr, count);
 }
 
@@ -33,7 +34,12 @@ void writeMapLike(sio::write_device& device, const MapLikeT& map) {
   device.data((int)map.size());
   for (const auto& [key, value] : map) {
     device.data(key);
-    device.data(value);
+    using MappedType = detail::GetMappedType<MapLikeT>;
+    if constexpr (std::is_trivial_v<MappedType>) {
+      handlePODDataSIO(device, &value, 1);
+    } else {
+      device.data(value);
+    }
   }
 }
 
@@ -165,15 +171,37 @@ public:
   podio::GenericParameters* metadata{nullptr};
 };
 
+namespace detail {
+  inline std::string sioMapBlockNameImpl(std::string keyTName, std::string valueTName) {
+    std::replace(keyTName.begin(), keyTName.end(), ':', '_');
+    std::replace(valueTName.begin(), valueTName.end(), ':', '_');
+    return "SIOMapBlockV2_KK_" + keyTName + "_VV_" + valueTName;
+  }
+
+  template <typename KeyT, typename ValueT>
+  inline std::string sioMapBlockName();
+
+#define SIOMAPBLOCK_NAME(key_type, value_type)                                                                         \
+  template <>                                                                                                          \
+  inline std::string sioMapBlockName<key_type, value_type>() {                                                         \
+    return sioMapBlockNameImpl(#key_type, #value_type);                                                                \
+  }
+
+  SIOMAPBLOCK_NAME(std::string, std::string)
+  SIOMAPBLOCK_NAME(std::string, podio::version::Version)
+#undef SIOMAPBLOCK_NAME
+} // namespace detail
+
 /// A block to serialize anything that behaves similar in iterating as a
 /// map<KeyT, ValueT>, e.g. vector<tuple<KeyT, ValueT>>, which is what is used
 /// internally to represent the data to be written.
 template <typename KeyT, typename ValueT>
 struct SIOMapBlock : public sio::block {
-  SIOMapBlock() : sio::block("SIOMapBlock", sio::version::encode_version(0, 1)) {
+  SIOMapBlock() : sio::block(detail::sioMapBlockName<KeyT, ValueT>(), sio::version::encode_version(0, 2)) {
   }
   SIOMapBlock(std::vector<std::tuple<KeyT, ValueT>>&& data) :
-      sio::block("SIOMapBlock", sio::version::encode_version(0, 1)), mapData(std::move(data)) {
+      sio::block(detail::sioMapBlockName<KeyT, ValueT>(), sio::version::encode_version(0, 2)),
+      mapData(std::move(data)) {
   }
 
   SIOMapBlock(const SIOMapBlock&) = delete;

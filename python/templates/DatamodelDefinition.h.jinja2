@@ -3,6 +3,10 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/SchemaEvolution.h"
 
+{% if version_info %}
+#include "{{ version_info.header }}"
+{% endif %}
+
 namespace {{ package_name }}::meta {
 /**
  * The complete definition of the datamodel at generation time in JSON format.
@@ -41,7 +45,15 @@ class DatamodelRegistryIndex {
 public:
   static size_t value() {
     static const auto relationNames = {{ package_name }}__getRelationNames();
-    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition, relationNames));
+    static auto index =
+      DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel(
+                               "{{ package_name }}",
+                               {{ package_name }}__JSONDefinition,
+                               relationNames
+{% if version_info %}
+                               , podio::version::Version({{ version_info.variable }})
+{% endif %}
+                             ));
     return index.m_value;
   }
 private:
