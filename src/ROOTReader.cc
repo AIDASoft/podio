@@ -222,7 +222,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
 
   for (int i = 0; i < branches->GetEntries(); ++i) {
     const std::string name = branches->At(i)->GetName();
-    const auto fUnder = name.find("___");
+    const auto fUnder = name.find(root_utils::idTableName(""));
     if (fUnder != std::string::npos) {
       brNames.emplace_back(name.substr(0, fUnder));
     }
