@@ -25,8 +25,15 @@ elif [[ "$unamestr" = 'Darwin' ]]; then
     fi
 fi
 
-if ! echo $PYTHONPATH | grep -o $PODIO/python > /dev/null 2>&1; then
-  export PYTHONPATH=$PODIO/python:$PYTHONPATH
+python_stem=python3.$(python -c 'import sys; print(sys.version_info[1])')/site-packages
+if [ -d $PODIO/lib64/${python_stem} ]; then
+  if ! echo $PYTHONPATH | grep -o $PODIO/lib64/${python_stem} > /dev/null 2>&1; then
+    export PYTHONPATH=$PODIO/lib64/${python_stem}:$PYTHONPATH
+  fi
+else
+  if ! echo $PYTHONPATH | grep -o $PODIO/lib/${python_stem} > /dev/null 2>&1; then
+    export PYTHONPATH=$PODIO/lib/${python_stem}:$PYTHONPATH
+  fi
 fi
 
 if ! echo $ROOT_INCLUDE_PATH | grep -o $PODIO/include > /dev/null 2>&1; then
