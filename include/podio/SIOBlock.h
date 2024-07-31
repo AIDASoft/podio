@@ -187,8 +187,8 @@ namespace detail {
     return sioMapBlockNameImpl(#key_type, #value_type);                                                                \
   }
 
-  SIOMAPBLOCK_NAME(std::string, std::string);
-  SIOMAPBLOCK_NAME(std::string, podio::version::Version);
+  SIOMAPBLOCK_NAME(std::string, std::string)
+  SIOMAPBLOCK_NAME(std::string, podio::version::Version)
 #undef SIOMAPBLOCK_NAME
 } // namespace detail
 
