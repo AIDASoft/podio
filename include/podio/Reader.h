@@ -26,6 +26,7 @@ private:
     virtual podio::Frame readFrame(const std::string& name, size_t index) = 0;
     virtual size_t getEntries(const std::string& name) const = 0;
     virtual podio::version::Version currentFileVersion() const = 0;
+    virtual std::optional<podio::version::Version> currentFileVersion(const std::string& name) const = 0;
     virtual std::vector<std::string_view> getAvailableCategories() const = 0;
     virtual const std::string_view getDatamodelDefinition(const std::string& name) const = 0;
     virtual std::vector<std::string> getAvailableDatamodels() const = 0;
@@ -64,6 +65,10 @@ private:
     }
     podio::version::Version currentFileVersion() const override {
       return m_reader->currentFileVersion();
+    }
+
+    std::optional<podio::version::Version> currentFileVersion(const std::string& name) const override {
+      return m_reader->currentFileVersion(name);
     }
 
     std::vector<std::string_view> getAvailableCategories() const override {
@@ -164,6 +169,10 @@ public:
   /// @returns The podio build version
   podio::version::Version currentFileVersion() const {
     return m_self->currentFileVersion();
+  }
+
+  std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
+    return m_self->currentFileVersion(name);
   }
 
   /// Get the names of all the available Frame categories in the current file(s).
