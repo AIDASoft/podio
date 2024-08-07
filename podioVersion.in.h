@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <sstream>
 #include <ostream>
-#include <tuple>
 #if __cplusplus >= 202002L
   #include <compare>
 #endif

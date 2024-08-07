@@ -1,14 +1,21 @@
 #include "podio/ROOTWriter.h"
+
+#include "TTree.h"
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
-
+#include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
-#include "TTree.h"
-#include <tuple>
+#include <TBranch.h>
+#include <TFile.h>
+#include <cstddef>
+#include <optional>
+#include <stdexcept>
+#include <utility>
 
 namespace podio {
 

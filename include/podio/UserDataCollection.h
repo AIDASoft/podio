@@ -7,11 +7,17 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
-#include <map>
-#include <string>
-#include <typeindex>
-#include <utility>
+#include <cstddef>
+#include <cstdint>
+#include <iostream>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
 #include <vector>
+
+namespace podio {
+class ICollectionProvider;
+} // namespace podio
 
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \

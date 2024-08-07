@@ -1,10 +1,18 @@
 #include "podio/SIOBlock.h"
 
+#include "podio/CollectionBase.h"
+#include "podio/GenericParameters.h"
+#include "sio/definitions.h"
+#include "sio/io_device.h"
+#include "sio/version.h"
+
 #include <algorithm>
 #include <cstdlib>
 #include <dlfcn.h>
+#include <iostream>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #ifdef USE_BOOST_FILESYSTEM
   #include <boost/filesystem.hpp>
 #else

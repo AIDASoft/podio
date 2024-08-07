@@ -1,6 +1,11 @@
 #include "podio/SIOFrameData.h"
-#include "podio/SIOBlock.h"
 
+#include "podio/SIOBlock.h"
+#include "sio/buffer.h"
+#include "sio/definitions.h"
+
+#include <sio/api.h>
+#include <sio/block.h>
 #include <sio/compression/zlib.h>
 
 #include <algorithm>

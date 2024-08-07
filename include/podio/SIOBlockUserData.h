@@ -3,16 +3,19 @@
 
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
+#include "podio/GenericParameters.h"
 #include "podio/SIOBlock.h"
 #include "podio/UserDataCollection.h"
 
 #include <sio/api.h>
+#include <sio/definitions.h>
 #include <sio/io_device.h>
 #include <sio/version.h>
 
 #include <algorithm>
 #include <string>
 #include <typeindex>
+#include <vector>
 
 namespace podio {
 namespace detail {
