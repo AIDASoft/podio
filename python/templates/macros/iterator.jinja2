@@ -3,27 +3,39 @@
 {% set ptr_init = 'podio::utils::MaybeSharedPtr<' + class.bare_type +'Obj>{nullptr}' %}
 class {{ iterator_type }} {
 public:
-  {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object({{ ptr_init }}), m_collection(collection) {}
+  using value_type = {{ class.bare_type }};
+  using difference_type = ptrdiff_t;
+  using reference = {{ prefix }}{{ class.bare_type }};
+  using pointer = {{ prefix }}{{ class.bare_type }}*;
+  using iterator_category = std::input_iterator_tag;
+  using iterator_concept = std::input_iterator_tag;
 
-  {{ iterator_type }}(const {{ iterator_type }}&) = delete;
-  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = delete;
+  {{ iterator_type }}(size_t index, const {{ class.bare_type }}ObjPointerContainer* collection) : m_index(index), m_object({{ ptr_init }}), m_collection(collection) {}
+  {{ iterator_type }}() = default;
+
+  {{ iterator_type }}(const {{ iterator_type }}&) = default;
+  {{ iterator_type }}({{ iterator_type }}&&) = default;
+  {{ iterator_type }}& operator=(const {{ iterator_type }}&) = default;
+  {{ iterator_type }}& operator=({{iterator_type}}&&) = default;
+  ~{{ iterator_type }}() = default;
 
   bool operator!=(const {{ iterator_type}}& x) const {
-    return m_index != x.m_index; // TODO: may not be complete
+    return m_index != x.m_index;
   }
 
   bool operator==(const {{ iterator_type }}& x) const {
-    return m_index ==  x.m_index; // TODO: may not be complete
+    return m_index ==  x.m_index;
   }
 
-  {{ prefix }}{{ class.bare_type }} operator*();
-  {{ prefix }}{{ class.bare_type }}* operator->();
+  reference operator*() const;
+  pointer operator->();
   {{ iterator_type }}& operator++();
+  {{ iterator_type }} operator++(int);
 
 private:
-  size_t m_index;
-  {{ prefix }}{{ class.bare_type }} m_object;
-  const {{ class.bare_type }}ObjPointerContainer* m_collection;
+  size_t m_index{0};
+  {{ prefix }}{{ class.bare_type }} m_object { {{ ptr_init }} };
+  const {{ class.bare_type }}ObjPointerContainer* m_collection{nullptr};
 };
 {% endwith %}
 {% endmacro %}
@@ -32,12 +44,11 @@ private:
 {% macro iterator_definitions(class, prefix='') %}
 {% with iterator_type = class.bare_type + prefix + 'CollectionIterator' %}
 {% set ptr_type = 'podio::utils::MaybeSharedPtr<' + class.bare_type +'Obj>' %}
-{{ prefix }}{{ class.bare_type }} {{ iterator_type }}::operator*() {
-  m_object.m_obj = {{ ptr_type }}((*m_collection)[m_index]);
-  return m_object;
+{{ iterator_type }}::reference {{ iterator_type }}::operator*() const {
+  return reference{ {{ ptr_type }}((*m_collection)[m_index]) };
 }
 
-{{ prefix }}{{ class.bare_type }}* {{ iterator_type }}::operator->() {
+{{ iterator_type }}::pointer {{ iterator_type }}::operator->() {
   m_object.m_obj = {{ ptr_type }}((*m_collection)[m_index]);
   return &m_object;
 }
@@ -45,6 +56,12 @@ private:
 {{ iterator_type }}& {{ iterator_type }}::operator++() {
   ++m_index;
   return *this;
+}
+
+{{ iterator_type }} {{ iterator_type }}::operator++(int) {
+  auto copy = *this;
+  ++m_index;
+  return copy;
 }
 
 {% endwith %}
