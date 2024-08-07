@@ -2,7 +2,6 @@
 #define PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 
 #include "podio/CollectionIDTable.h"
-#include "podio/GenericParameters.h"
 #include "podio/utilities/RootHelpers.h"
 
 #include "TBranch.h"

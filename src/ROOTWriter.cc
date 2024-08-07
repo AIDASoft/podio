@@ -1,5 +1,4 @@
 #include "podio/ROOTWriter.h"
-#include "podio/CollectionBase.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"

@@ -7,12 +7,6 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
-#include <map>
-#include <string>
-#include <typeindex>
-#include <utility>
-#include <vector>
-
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \
   constexpr const char* userDataTypeName<type>() {                                                                     \

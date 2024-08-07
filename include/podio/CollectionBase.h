@@ -2,13 +2,10 @@
 #define PODIO_COLLECTIONBASE_H
 
 #include "podio/CollectionBuffers.h"
-#include "podio/ObjectID.h"
 #include "podio/SchemaEvolution.h"
 
 #include <iostream>
 #include <string_view>
-#include <utility>
-#include <vector>
 
 namespace podio {
 // forward declarations
