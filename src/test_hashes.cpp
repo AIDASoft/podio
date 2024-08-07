@@ -1,6 +1,5 @@
 #include "MurmurHash3.h"
 
-#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>

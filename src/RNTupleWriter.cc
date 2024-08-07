@@ -1,7 +1,5 @@
 #include "podio/RNTupleWriter.h"
-#include "podio/CollectionBase.h"
 #include "podio/DatamodelRegistry.h"
-#include "podio/GenericParameters.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "rootUtils.h"
@@ -9,10 +7,8 @@
 #include "TFile.h"
 
 #include <ROOT/RField.hxx>
-#include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
-#include <algorithm>
 
 namespace podio {
 
