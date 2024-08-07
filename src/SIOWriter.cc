@@ -1,8 +1,5 @@
 #include "podio/SIOWriter.h"
-#include "podio/CollectionBase.h"
-#include "podio/CollectionIDTable.h"
 #include "podio/Frame.h"
-#include "podio/GenericParameters.h"
 #include "podio/SIOBlock.h"
 
 #include "sioUtils.h"

@@ -14,9 +14,6 @@
 #include "TClass.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "TTreeCache.h"
-
-#include <unordered_map>
 
 namespace podio {
 

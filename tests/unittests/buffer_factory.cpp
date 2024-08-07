@@ -3,7 +3,6 @@
 
 #include "datamodel/DatamodelDefinition.h"
 #include "datamodel/ExampleClusterCollection.h"
-#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
 #include "catch2/catch_test_macros.hpp"
