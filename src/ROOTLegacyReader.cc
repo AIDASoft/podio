@@ -15,7 +15,6 @@
 #include "TFile.h"
 #include "TTree.h"
 
-
 namespace podio {
 
 std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(const std::string& name) {

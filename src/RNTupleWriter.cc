@@ -9,7 +9,6 @@
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
-
 namespace podio {
 
 RNTupleWriter::RNTupleWriter(const std::string& filename) :
