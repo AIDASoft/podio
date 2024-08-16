@@ -74,7 +74,7 @@ public:
 
   /// Store the given frame with the given category
   ///
-  /// This stores all avaialble categories from the passed frame
+  /// This stores all available categories from the passed frame
   ///
   /// @param frame    The frame to write
   /// @param category The category name under which this frame should be stored
@@ -96,7 +96,7 @@ public:
 
   /// Store the given frame under the "events" category
   ///
-  /// This stores all avaialble categories from the passed frame
+  /// This stores all available categories from the passed frame
   ///
   /// @param frame    The frame to write
   void writeEvent(const podio::Frame& frame) {

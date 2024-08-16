@@ -73,9 +73,9 @@ And the following information once per category
 - The schema version of all stored collections
 - Which collections are stored as subset collections
 
-Here the `TTree` based and `RNTuple` based backends differ slighlty in the way
+Here the `TTree` based and `RNTuple` based backends differ slightly in the way
 these data are stored exactly. The `TTree` based backend stores the data in a
-slightly more structued way, taking advantage of ROOTs capabilities to stream
+slightly more structured way, taking advantage of ROOTs capabilities to stream
 out more complex object, e.g. the `podio::CollectionIDTable` is streamed as a
 whole. The `RNTuple` based backend on the other hand, destructures the
 information into separate fields that run in parallel.
