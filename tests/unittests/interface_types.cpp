@@ -2,8 +2,8 @@
 
 #include "podio/ObjectID.h"
 
-#include "datamodel/MutableExampleCluster.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/MutableExampleCluster.h"
 #include "datamodel/TypeWithEnergy.h"
 
 #include <map>
