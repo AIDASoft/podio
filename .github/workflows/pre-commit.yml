@@ -19,11 +19,12 @@ jobs:
         view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
         run: |
           echo "::group::Setup pre-commit"
-          export PATH=/root/.local/bin:$PATH
           # Newer versions of git are more cautious around the github runner
           # environment and without this git rev-parse --show-cdup in pre-commit
           # fails
           git config --global --add safe.directory $(pwd)
+          python -m venv /root/pre-commit-venv
+          source /root/pre-commit-venv/bin/activate
           pip install pre-commit
           pip install pylint==2.17.7
           pip install flake8
