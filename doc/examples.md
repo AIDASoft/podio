@@ -86,7 +86,7 @@ and via direct object access:
     }
 ```
 
-### Cloneing objects
+### Cloning objects
 
 In order to clone objects it is necessary to use the `clone` method which
 returns a `Mutable` object again. `clone` takes a parameter `cloneRelations`

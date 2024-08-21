@@ -151,7 +151,7 @@ public:
   /// @tparam FrameDataT Arbitrary data container that provides access to the
   ///                    collection buffers as well as the metadata, when
   ///                    requested by the Frame. The unique_ptr has to be checked
-  ///                    for validity before calling this construtor.
+  ///                    for validity before calling this constructor.
   ///
   /// @throws std::invalid_argument if the passed pointer is a nullptr.
   template <typename FrameDataT>
