@@ -2,10 +2,8 @@
 
 #include "podio/ObjectID.h"
 
-#include "datamodel/AnotherTypeWithEnergy.h"
-#include "datamodel/EnergyInNamespaceCollection.h"
-#include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/MutableExampleCluster.h"
 #include "datamodel/TypeWithEnergy.h"
 
 #include <map>

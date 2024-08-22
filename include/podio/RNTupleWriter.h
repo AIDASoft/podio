@@ -2,7 +2,6 @@
 #define PODIO_RNTUPLEWRITER_H
 
 #include "podio/Frame.h"
-#include "podio/GenericParameters.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
@@ -10,7 +9,6 @@
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
-#include <RVersion.h>
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   #include <ROOT/RNTupleWriter.hxx>
 #endif

@@ -1,5 +1,4 @@
 #include "podio/SIOLegacyReader.h"
-#include "podio/SIOBlock.h"
 
 #include "sioUtils.h"
 

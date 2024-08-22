@@ -11,7 +11,6 @@
 // ROOT specific includes
 #include "TChain.h"
 #include "TClass.h"
-#include "TTreeCache.h"
 
 #include <stdexcept>
 #include <unordered_map>

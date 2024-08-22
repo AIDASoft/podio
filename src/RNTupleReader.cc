@@ -1,5 +1,4 @@
 #include "podio/RNTupleReader.h"
-#include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"

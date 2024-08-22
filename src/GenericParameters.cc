@@ -1,6 +1,5 @@
 #include "podio/GenericParameters.h"
 
-#include <algorithm>
 #include <iomanip>
 
 namespace podio {
