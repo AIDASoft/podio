@@ -62,10 +62,15 @@ deployment:
   only:
     refs:
       - master
+      - versioned-docs
   # need the doxygen artifacts for this step
   dependencies:
     - generate-docs
   stage: deploy
+
+  variables:
+    EOS_PATH: $EOS_DEPLOY_BASE_PATH/test_deplay_path
+
   # see see https://gitlab.cern.ch/ci-tools/ci-web-deployer
   image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
   script:
