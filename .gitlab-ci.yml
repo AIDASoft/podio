@@ -24,9 +24,12 @@ generate-docs:
   script:
     # use the nightlies and install some dependencies on top of them
     - source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
-    - export PATH=/root/.local/bin:$PATH
-    - export PYTHONPATH=/root/.local/lib/python3.10/site-packages:$PYTHONPATH
+    - python3 -m venv /root/doc-gen-venv
+    - source /root/doc-gen-venv/bin/activate
     - python3 -m pip install -r doc/requirements.txt
+    # For some weird reason we have to make sure that we actually really pick
+    # the packages we just installed into the venv here
+    - export PYTHONPATH=$VIRTUAL_ENV/lib/python3.$(python3 -c 'import sys; print(f"{sys.version_info[1]}")')/site-packages:$PYTHONPATH
     - cmake -B build . --install-prefix=$(pwd)/install -GNinja -DENABLE_SIO=ON -DENABLE_RNTUPLE=ON -DBUILD_TESTING=OFF -DCMAKE_CXX_STANDARD=20 -DCREATE_DOC=ON
     - cmake --build build --target documentation
 
