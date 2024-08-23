@@ -88,7 +88,7 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#object-creation-and-storage">Object Creation and Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#object-references">Object References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#looping-through-collections">Looping through Collections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#cloneing-objects">Cloneing objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#cloning-objects">Cloning objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#podio-frame-container"><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#object-retrieval">Object Retrieval</a></li>
@@ -698,9 +698,9 @@ when writing the file</p></li>
 <li><p>The schema version of all stored collections</p></li>
 <li><p>Which collections are stored as subset collections</p></li>
 </ul>
-<p>Here the <code class="docutils literal notranslate"><span class="pre">TTree</span></code> based and <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code> based backends differ slighlty in the way
+<p>Here the <code class="docutils literal notranslate"><span class="pre">TTree</span></code> based and <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code> based backends differ slightly in the way
 these data are stored exactly. The <code class="docutils literal notranslate"><span class="pre">TTree</span></code> based backend stores the data in a
-slightly more structued way, taking advantage of ROOTs capabilities to stream
+slightly more structured way, taking advantage of ROOTs capabilities to stream
 out more complex object, e.g. the <code class="docutils literal notranslate"><span class="pre">podio::CollectionIDTable</span></code> is streamed as a
 whole. The <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code> based backend on the other hand, destructures the
 information into separate fields that run in parallel.</p>
