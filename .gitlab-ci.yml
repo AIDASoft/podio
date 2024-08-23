@@ -63,6 +63,7 @@ deployment:
     refs:
       - master
       - versioned-docs
+      - /^v\d+-\d+-?\d+?$/
   # need the doxygen artifacts for this step
   dependencies:
     - generate-docs
