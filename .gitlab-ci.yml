@@ -73,7 +73,9 @@ deployment:
 
   # see see https://gitlab.cern.ch/ci-tools/ci-web-deployer
   image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+  before_script:
+    - if [ -z "$CI_COMMIT_BRANCH" ]; then TARGET_DEPLOY_DIR=$CI_COMMIT_TAG; else TARGET_DEPLOY_DIR=$CI_COMMIT_BRANCH; fi
+    - export EOS_PATH=$EOS_DEPLOY_BASE_PATH/test_deploy/$TARGET_DEPLOY_DIR
   script:
     - deploy-eos
-  before_script: []
   after_script: []
