@@ -214,6 +214,9 @@ endif()
 install(FILES ${headers_necessary}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
 )
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio/utilities
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
+)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
