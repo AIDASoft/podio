@@ -36,13 +36,6 @@ public:
   void SetNSlots(unsigned int nSlots) override;
 
   ///
-  /// @brief Retrieve from podio::DataSource per-thread readers for the desired
-  /// columns.
-  ///
-  template <typename T>
-  std::vector<T**> GetColumnReaders(std::string_view columnName);
-
-  ///
   /// @brief Inform podio::DataSource that an event-loop is about to start.
   ///
   void Initialize() override;
@@ -111,7 +104,7 @@ private:
   std::vector<std::string> m_filePathList = {};
 
   /// Total number of events
-  unsigned int m_nEvents = 0;
+  ULong64_t m_nEvents = 0;
 
   /// Ranges of events available to be processed
   std::vector<std::pair<ULong64_t, ULong64_t>> m_rangesAvailable = {};
@@ -145,18 +138,6 @@ private:
   ///
   void SetupInput(int nEvents);
 };
-
-///
-/// Not used.
-///
-template <typename T>
-std::vector<T**> DataSource::GetColumnReaders(std::string_view) {
-  // std::cout << "podio::DataSource: Getting column readers for column: " << columnName << std::endl;
-
-  std::vector<T**> readers;
-
-  return readers;
-}
 
 ///
 /// @brief Create RDataFrame from multiple Podio files.

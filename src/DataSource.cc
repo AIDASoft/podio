@@ -36,7 +36,7 @@ void DataSource::SetupInput(int nEvents) {
   unsigned int nEventsInFiles = 0;
   auto podioReader = podio::makeReader(m_filePathList);
   nEventsInFiles = podioReader.getEntries(podio::Category::Event);
-  frame = podio::Frame(podioReader.readFrame(podio::Category::Event, 0));
+  frame = podioReader.readFrame(podio::Category::Event, 0);
 
   // Determine over how many events to run
   if (nEventsInFiles > 0) {
@@ -89,7 +89,7 @@ void DataSource::SetNSlots(unsigned int nSlots) {
   }
 
   for (size_t i = 0; i < m_nSlots; ++i) {
-    m_frames.emplace_back(std::make_unique<podio::Frame>(podio::Frame{}));
+    m_frames.emplace_back(std::make_unique<podio::Frame>());
   }
 }
 
