@@ -199,8 +199,7 @@ endif()
 
 # Only install the necessary headers
 file(GLOB headers_necessary
-     RELATIVE ${PROJECT_SOURCE_DIR}
-     "${PROJECT_SOURCE_DIR}/install/podio/*.h")
+     "${PROJECT_SOURCE_DIR}/include/podio/*.h")
 
 if (NOT ENABLE_SIO)
   list(FILTER headers_necessary EXCLUDE REGEX SIO.*\\.h$)
@@ -208,10 +207,13 @@ endif()
 if (NOT ENABLE_RNTUPLE)
   list(FILTER headers_necessary EXCLUDE REGEX RNTuple.*\\.h$)
 endif()
-if (NOT ENABLE_RNTUPLE)
+if (NOT ENABLE_DATASOURCE)
   list(FILTER headers_necessary EXCLUDE REGEX DataSource.h)
 endif()
-install(FILES ${headers_necessary} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/podio")
+
+install(FILES ${headers_necessary}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
+)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
