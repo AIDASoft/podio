@@ -5,7 +5,6 @@ Module holding some generator utility functions
 
 import re
 import json
-from copy import deepcopy
 
 
 def _get_namespace_class(full_type):

@@ -44,7 +44,7 @@ class IncludeFrom(IntEnum):
 class CPPClassGenerator(ClassGeneratorBaseMixin):
     """The c++ class / code generator for podio"""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         yamlfile,
         install_dir,
