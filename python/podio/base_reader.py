@@ -89,3 +89,23 @@ class BaseReaderMixin:
                 write this file
         """
         return self._reader.currentFileVersion()
+
+    def get_datamodel_version(self, edm_name):
+        """Get the datamodel version
+
+        Args:
+            edm_name (str): The package name of the datamodel
+
+        Returns:
+            podio.version.Version: The version of the datamodel if available
+
+        Raises:
+            KeyError: If the datamodel does not have a version stored
+            RuntimeError: If the reader is a legacy reader
+        """
+        if self._is_legacy:
+            raise RuntimeError("Legacy readers do not store any version info")
+        maybe_version = self._reader.currentFileVersion(edm_name)
+        if maybe_version.has_value():
+            return maybe_version.value()
+        raise KeyError(f"No version information available for '{edm_name}'")
