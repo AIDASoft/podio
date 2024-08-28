@@ -3,10 +3,6 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/SchemaEvolution.h"
 
-{% if version_info %}
-#include "{{ version_info.header }}"
-{% endif %}
-
 namespace {{ package_name }}::meta {
 /**
  * The complete definition of the datamodel at generation time in JSON format.
@@ -50,8 +46,8 @@ public:
                                "{{ package_name }}",
                                {{ package_name }}__JSONDefinition,
                                relationNames
-{% if version_info %}
-                               , podio::version::Version({{ version_info.variable }})
+{% if datamodel_version %}
+                               , podio::version::Version{ {{ datamodel_version | join(", ") }} }
 {% endif %}
                              ));
     return index.m_value;

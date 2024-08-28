@@ -107,13 +107,23 @@ class ClassGeneratorBaseMixin:
 
     """
 
-    def __init__(self, yamlfile, install_dir, package_name, verbose, dryrun, upstream_edm):
+    def __init__(
+        self,
+        yamlfile,
+        install_dir,
+        package_name,
+        verbose,
+        dryrun,
+        upstream_edm,
+        datamodel_version=None,
+    ):
         self.yamlfile = yamlfile
         self.install_dir = install_dir
         self.package_name = package_name
         self.verbose = verbose
         self.dryrun = dryrun
         self.upstream_edm = upstream_edm
+        self.datamodel_version = datamodel_version
 
         try:
             self.datamodel = PodioConfigReader.read(yamlfile, package_name, upstream_edm)

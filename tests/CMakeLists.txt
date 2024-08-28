@@ -14,7 +14,7 @@ set(extra_code extra_code/component_declarations.cc
 )
 
 PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
-  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS} DEPENDS ${extra_code}
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS} DEPENDS ${extra_code} VERSION ${${PROJECT_NAME}_VERSION}
 )
 
 # Use the cmake building blocks to add the different parts (conditionally)

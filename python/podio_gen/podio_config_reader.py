@@ -531,23 +531,6 @@ class PodioConfigReader:
                 f"schema_version has to be convertible to int (is {model_dict['schema_version']})"
             )
 
-        try:
-            version_info = model_dict["version_info"]
-            try:
-                for key in ("variable", "header"):
-                    if not isinstance(version_info[key], str):
-                        raise DefinitionError(
-                            f"'version_info:{key} needs to be a single string, but is {version_info[key]}"
-                        )
-            except KeyError:
-                raise DefinitionError(
-                    "'version_info' needs to define a 'header' and a 'variable' to be valid"
-                    f" but it defines {model_dict['version_info']}"
-                )
-        except KeyError:
-            version_info = None
-            pass
-
         components = {}
         if "components" in model_dict:
             for klassname, value in model_dict["components"].items():
@@ -576,9 +559,7 @@ class PodioConfigReader:
 
         # If this doesn't raise an exception everything should in principle work out
         validator = ClassDefinitionValidator()
-        datamodel = DataModel(
-            datatypes, components, interfaces, options, schema_version, version_info
-        )
+        datamodel = DataModel(datatypes, components, interfaces, options, schema_version)
         validator.validate(datamodel, upstream_edm)
         return datamodel
 

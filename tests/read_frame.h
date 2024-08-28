@@ -3,7 +3,6 @@
 
 #include "datamodel/ExampleWithInterfaceRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
-#include "datamodel/version.h"
 #include "read_test.h"
 
 #include "extension_model/ContainedTypeCollection.h"
@@ -116,10 +115,9 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   }
 
   const auto datamodelVersion = reader.currentFileVersion("datamodel").value_or(podio::version::Version{});
-  if (assertBuildVersion && datamodelVersion != podio::version::Version(datamodel::ver::version)) {
+  if (assertBuildVersion && datamodelVersion != podio::version::build_version) {
     std::cerr << "The (build) version of the datamodel could not be read back correctly. "
-              << "(expected: " << podio::version::Version(datamodel::ver::version) << ", actual: " << datamodelVersion
-              << ")" << std::endl;
+              << "(expected: " << podio::version::build_version << ", actual: " << datamodelVersion << ")" << std::endl;
     return 1;
   }
 

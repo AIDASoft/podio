@@ -55,8 +55,17 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         upstream_edm,
         old_description,
         evolution_file,
+        datamodel_version=None,
     ):
-        super().__init__(yamlfile, install_dir, package_name, verbose, dryrun, upstream_edm)
+        super().__init__(
+            yamlfile,
+            install_dir,
+            package_name,
+            verbose,
+            dryrun,
+            upstream_edm,
+            datamodel_version=datamodel_version,
+        )
         self.io_handlers = io_handlers
 
         # schema evolution specific code
@@ -505,13 +514,14 @@ have resolvable schema evolution incompatibilities:"
     def _write_edm_def_file(self):
         """Write the edm definition to a compile time string"""
         model_encoder = DataModelJSONEncoder()
+        print(f"{self.datamodel_version=}")
         data = {
             "package_name": self.package_name,
             "edm_definition": model_encoder.encode(self.datamodel),
             "incfolder": self.incfolder,
             "schema_version": self.datamodel.schema_version,
             "datatypes": self.datamodel.datatypes,
-            "version_info": self.datamodel.version_info,
+            "datamodel_version": self.datamodel_version,
         }
 
         def quoted_sv(string):
