@@ -192,7 +192,7 @@ if (NOT ENABLE_DATASOURCE)
     EXPORT podioTargets
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 else()
-  install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO podioDataSource ${INSTALL_LIBRARIES}
+  install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO podioDataSource podioDataSourceDict ${INSTALL_LIBRARIES}
     EXPORT podioTargets
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
