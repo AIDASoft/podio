@@ -7,6 +7,7 @@ add_test(NAME datamodel_def_store_roundtrip_root COMMAND ${PROJECT_SOURCE_DIR}/t
   ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root
   datamodel
   ${PROJECT_SOURCE_DIR}/tests
+  --datamodel-version=${podio_VERSION}
   )
 PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_root)
 
@@ -34,6 +35,7 @@ if (ENABLE_SIO)
     ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio
     datamodel
     ${PROJECT_SOURCE_DIR}/tests
+    --datamodel-version=${podio_VERSION}
     )
   PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_sio)
   # The extension model needs to know about the upstream model for generation
@@ -64,6 +66,7 @@ if (ENABLE_RNTUPLE)
     ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root
     datamodel
     ${PROJECT_SOURCE_DIR}/tests
+    --datamodel-version=${podio_VERSION}
   )
   PODIO_SET_TEST_ENV(datamodel_def_store_roundtrip_rntuple)
 
