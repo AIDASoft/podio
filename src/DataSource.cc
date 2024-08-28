@@ -39,8 +39,7 @@ void DataSource::SetupInput(int nEvents) {
   frame = podioReader.readFrame(podio::Category::Event, 0);
 
   // Determine over how many events to run
-  if (nEventsInFiles > 0) {
-  } else {
+  if (nEventsInFiles <= 0) {
     throw std::runtime_error("podio::DataSource: No events found!");
   }
 
@@ -57,10 +56,10 @@ void DataSource::SetupInput(int nEvents) {
 
   // Get collections stored in the files
   std::vector<std::string> collNames = frame.getAvailableCollections();
-  for (const auto& collName : collNames) {
+  for (auto&& collName : collNames) {
     const podio::CollectionBase* coll = frame.get(collName);
     if (coll->isValid()) {
-      m_columnNames.emplace_back(collName);
+      m_columnNames.emplace_back(std::move(collName));
       m_columnTypes.emplace_back(coll->getTypeName());
     }
   }
