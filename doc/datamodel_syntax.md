@@ -212,25 +212,16 @@ this schema version is a single integer. This makes it rather hard to use in
 typical versioning, where one might differentiate between *major*, *minor* (and
 *patch*) versions. Hence, the versioning of a datamodel and its schema version
 are coupled but do not necessarily have to be the same. podio offers hooks to
-store this important meta information into the produce files. In order to do
-this you can use the `version_info` section:
+store this important meta information into the produce files. In order to do you
+can pass the version of the datamodel to the generator via the
+`--datamodel-version` argument. It expects the version to conform to this
+regular expression: `"v?\d+(\.|-)\d+((\.|-)\d+)?$"`, i.e. that the major and
+minor version are present, separated by either a dot or comma with an optional
+patch version and an optional `v` prefix.
 
-```yaml
-version_info:
-  header: "datamodel/version.h"
-  variable: "datamodel::version::build_version"
-```
-
-It takes two parameters
-- `header`: This is the header file where the version is stored
-- `variable`: This is the variable (inside the `header` from header file) that
-  defines the (build) version. It has to be convertible to a
-  `podio::version::Version`
-
-If this part is found in the YAML file this information will be injected into
-the podio internals and will be stored in the output files. They can be
-retrieved via the `currentFileVersion(const std::string&)` methods of the
-various readers.
+If this this information is passed to the generator will be injected into the
+podio internals and will be stored in the output files. They can be retrieved
+via the `currentFileVersion(const std::string&)` methods of the various readers.
 
 
 ## Extending a datamodel / using types from an upstream datamodel
