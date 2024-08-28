@@ -8,6 +8,7 @@ import yaml
 from tabulate import tabulate
 
 from podio_version import __version__
+from podio.version import version_as_str
 
 
 def print_general_info(reader, filename):
@@ -20,11 +21,15 @@ def print_general_info(reader, filename):
         reader (root_io.Reader, sio_io.Reader): An initialized reader
     """
     legacy_text = " (this is a legacy file!)" if reader.is_legacy else ""
-    print(f"input file: {filename}{legacy_text}\n")
+    print(
+        f"input file: {filename}{legacy_text}\n"
+        f"            (written with podio version: {version_as_str(reader.get_podio_version())})\n"
+    )
     print(
         "datamodel model definitions stored in this file: "
         f'{", ".join(reader.datamodel_definitions)}'
     )
+
     print()
     print("Frame categories in this file:")
     cats = [(c, len(reader.get(c))) for c in reader.categories]

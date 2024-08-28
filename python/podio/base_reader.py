@@ -80,3 +80,12 @@ class BaseReaderMixin:
         if self._is_legacy:
             return ""
         return self._reader.getDatamodelDefinition(edm_name).data()
+
+    def get_podio_version(self):
+        """Get the podio (build) version that was used to write this file
+
+        Returns:
+            podio.version.Version: The build version of podio that was use to
+                write this file
+        """
+        return self._reader.currentFileVersion()
