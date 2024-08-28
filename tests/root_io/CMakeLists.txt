@@ -19,7 +19,16 @@ if(ENABLE_RNTUPLE)
       read_interface_rntuple.cpp
      )
 endif()
+if(ENABLE_DATASOURCE)
+  set(root_dependent_tests
+      ${root_dependent_tests}
+      read_with_rdatasource_root.cpp
+  )
+endif()
 set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO podio::podioIO)
+if(ENABLE_DATASOURCE)
+  list(APPEND root_libs podio::podioDataSource)
+endif()
 foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
@@ -38,6 +47,10 @@ set_tests_properties(
 if(ENABLE_RNTUPLE)
   set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
   set_property(TEST read_interface_rntuple PROPERTY DEPENDS write_interface_rntuple)
+endif()
+
+if(ENABLE_DATASOURCE)
+  set_property(TEST read_with_rdatasource_root PROPERTY DEPENDS write_frame_root)
 endif()
 
 add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
