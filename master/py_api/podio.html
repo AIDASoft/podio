@@ -535,6 +535,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#podio.sio_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio.version">podio.version module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio.version.version_as_str"><code class="docutils literal notranslate"><span class="pre">version_as_str()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio">Module contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
 </ul>
@@ -699,6 +703,24 @@ setup.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>tuple(str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio.base_reader.BaseReaderMixin.current_file_version">
+<span class="sig-name descname"><span class="pre">current_file_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.base_reader.BaseReaderMixin.current_file_version" title="Link to this definition"></a></dt>
+<dd><p>Get the podio (build) version that was used to write this file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>The build version of podio that was use to</dt><dd><p>write this file</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>podio.version.Version</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1241,6 +1263,31 @@ Frame based I/O into Frames for a more seamless transition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The name of the output file</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-podio.version">
+<span id="podio-version-module"></span><h2>podio.version module<a class="headerlink" href="#module-podio.version" title="Link to this heading"></a></h2>
+<p>Module that facilitates working with the podio::version::Version</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="podio.version.version_as_str">
+<span class="sig-prename descclassname"><span class="pre">podio.version.</span></span><span class="sig-name descname"><span class="pre">version_as_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ver</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.version.version_as_str" title="Link to this definition"></a></dt>
+<dd><p>Stringify the version into the usual format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ver</strong> (<em>podio.version.Version</em>) – A podio version</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A stringified version of the version, in the format</dt><dd><p>MAJOR.MINOR.PATCH</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>

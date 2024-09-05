@@ -532,6 +532,10 @@
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.sio_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.version">podio.version module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.version.version_as_str"><code class="docutils literal notranslate"><span class="pre">version_as_str()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio">Module contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
 </ul>
@@ -710,10 +714,10 @@
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator">ClassDefinitionValidator (class in podio_gen.podio_config_reader)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_base.ClassGeneratorBaseMixin">ClassGeneratorBaseMixin (class in podio_gen.generator_base)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer">CollectionSubscriptPythonizer (class in podio.pythonizations.collection_subscript)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.MemberParser.comment_str">comment_str (podio_gen.podio_config_reader.MemberParser attribute)</a>
@@ -721,6 +725,8 @@
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.compare">compare() (podio_schema_evolution.DataModelComparator method)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.cpp_generator.CPPClassGenerator">CPPClassGenerator (class in podio_gen.cpp_generator)</a>
+</li>
+      <li><a href="py_api/podio.html#podio.base_reader.BaseReaderMixin.current_file_version">current_file_version() (podio.base_reader.BaseReaderMixin method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -974,6 +980,8 @@
 </li>
         <li><a href="py_api/podio.html#module-podio.sio_io">podio.sio_io</a>
 </li>
+        <li><a href="py_api/podio.html#module-podio.version">podio.version</a>
+</li>
         <li><a href="py_api/podio_class_generator.html#module-podio_class_generator">podio_class_generator</a>
 </li>
         <li><a href="py_api/podio_gen.html#module-podio_gen">podio_gen</a>
@@ -1117,6 +1125,13 @@
 
       <ul>
         <li><a href="py_api/podio.html#module-podio.sio_io">module</a>
+</li>
+      </ul></li>
+      <li>
+    podio.version
+
+      <ul>
+        <li><a href="py_api/podio.html#module-podio.version">module</a>
 </li>
       </ul></li>
       <li><a href="cpp_api/file/_schema_evolution_8h.html#_CPPv4N5podio7BackendE">podio::Backend (C++ enum)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7BackendE">[1]</a>
@@ -1869,10 +1884,10 @@
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData12m_parametersE">podio::ROOTFrameData::m_parameters (C++ member)</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">podio::ROOTFrameData::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[1]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">[2]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[5]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">podio::ROOTFrameData::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[1]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">[2]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[5]</a>
+</li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERK13ROOTFrameData">podio::ROOTFrameData::ROOTFrameData (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERR13ROOTFrameData">[1]</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERR9BufferMapRR9CollIDPtrRRN5podio17GenericParametersE">[2]</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataEv">[3]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERK13ROOTFrameData">[4]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERR13ROOTFrameData">[5]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERR9BufferMapRR9CollIDPtrRRN5podio17GenericParametersE">[6]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataEv">[7]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERK13ROOTFrameData">[8]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERR13ROOTFrameData">[9]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataERR9BufferMapRR9CollIDPtrRRN5podio17GenericParametersE">[10]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameData13ROOTFrameDataEv">[11]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataD0Ev">podio::ROOTFrameData::~ROOTFrameData (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameDataD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameDataD0Ev">[2]</a>
@@ -2830,6 +2845,8 @@
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.valid_extra_datatype_keys">valid_extra_datatype_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.validate">validate() (podio_gen.podio_config_reader.ClassDefinitionValidator class method)</a>
+</li>
+      <li><a href="py_api/podio.html#podio.version.version_as_str">version_as_str() (in module podio.version)</a>
 </li>
   </ul></td>
 </tr></table>
