@@ -79,15 +79,15 @@ class ReaderTestCaseMixin:
         for model in datamodels:
             self.assertTrue(model in ("datamodel", "extension_model"))
 
-        self.assertEqual(self.reader.get_datamodel_version("datamodel"), build_version)
+        self.assertEqual(self.reader.current_file_version("datamodel"), build_version)
 
     def test_invalid_datamodel_version(self):
         """Make sure that the necessary exceptions are raised"""
         with self.assertRaises(KeyError):
-            self.reader.get_datamodel_version("extension_model")
+            self.reader.current_file_version("extension_model")
 
         with self.assertRaises(KeyError):
-            self.reader.get_datamodel_version("non-existant-model")
+            self.reader.current_file_version("non-existant-model")
 
 
 class LegacyReaderTestCaseMixin:
