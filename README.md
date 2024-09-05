@@ -3,20 +3,13 @@
 [![linux](https://github.com/AIDASoft/podio/actions/workflows/test.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/test.yml)
 [![ubuntu](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml)
 [![coverity](https://scan.coverity.com/projects/22634/badge.svg)](https://scan.coverity.com/projects/aidasoft-podio)
+[![docs](https://img.shields.io/badge/docs-master-blue.svg)](https://key4hep.web.cern.ch/podio/)
 
 ## Documentation
 
- - [Introduction](./doc/doc.md)
- - [Design](./doc/design.md)
- - [Data Model Syntax](./doc/datamodel_syntax.md)
- - [Examples](./doc/examples.md)
- - [Advanced Topics](./doc/advanced_topics.md)
- - [Python Interface](./doc/python.md)
- - [Contributing](./doc/contributing.md)
-
-<!-- Browse the API documentation created with Doxygen at -->
-
-<!-- [http://fccsw.web.cern.ch/fccsw/podio/index.html](http://fccsw.web.cern.ch/fccsw/podio/index.html). -->
+The full documentation can be found at
+[**key4hep.web.cern.ch/podio**](https://key4hep.web.cern.ch/podio/index.html). You
+can also find an API reference there.
 
 ## Prerequisites
 
