@@ -215,7 +215,7 @@ are coupled but do not necessarily have to be the same. podio offers hooks to
 store this important meta information into the produce files. In order to do you
 can pass the version of the datamodel to the generator via the
 `--datamodel-version` argument. It expects the version to conform to this
-regular expression: `"v?\d+(\.|-)\d+((\.|-)\d+)?$"`, i.e. that the major and
+regular expression: `"v?\d+[\.|-]\d+([\.|-]\d+)?$"`, i.e. that the major and
 minor version are present, separated by either a dot or comma with an optional
 patch version and an optional `v` prefix.
 

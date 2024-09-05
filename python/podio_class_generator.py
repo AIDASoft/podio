@@ -79,7 +79,7 @@ def parse_version(version_str):
     if version_str is None:
         return None
 
-    if re.match(r"v?(\d+)(\.|-)(\d+)((\.|-)(\d+))?$", version_str):
+    if re.match(r"v?\d+[\.|-]\d+([\.|-]\d+)?$", version_str):
         ver = version_str.replace("-", ".").replace("v", "").split(".")
         return tuple(int(v) for v in ver)
 
