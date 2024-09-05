@@ -142,7 +142,6 @@ if(ENABLE_SIO)
       IMPORTED_LOCATION ${SIO_LIBRARIES})
   endif()
 
-  PODIO_CHECK_CPP_FS(PODIO_FS_LIBS)
   if (SIO_FOUND)
     MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
     list(APPEND PODIO_IO_HANDLERS SIO)

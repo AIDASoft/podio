@@ -371,37 +371,3 @@ function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
   # Disable clang-tidy on generated sources
   set_target_properties(${CORE_LIB}SioBlocks PROPERTIES CXX_CLANG_TIDY "")
 endfunction()
-
-
-#---------------------------------------------------------------------------------------------------
-function(PODIO_CHECK_CPP_FS FS_LIBS)
-  SET(have_filesystem FALSE)
-  MESSAGE(STATUS "Checking for filesystem library support of compiler")
-  # GNU implementation prior to 9.1 requires linking with -lstdc++fs and LLVM
-  # implementation prior to LLVM 9.0 requires linking with -lc++fs
-  # After that it should be built-in
-  FOREACH(FS_LIB_NAME "" stdc++fs c++fs)
-    # MESSAGE(STATUS "Linking against ${FS_LIB_NAME}")
-    try_compile(have_filesystem ${PROJECT_BINARY_DIR}/try ${PROJECT_SOURCE_DIR}/cmake/try_filesystem.cpp
-      CXX_STANDARD ${CMAKE_CXX_STANDARD}
-      CXX_EXTENSIONS False
-      OUTPUT_VARIABLE HAVE_FS_OUTPUT
-      LINK_LIBRARIES ${FS_LIB_NAME}
-      )
-    # MESSAGE(STATUS "-----> " ${HAVE_FS_OUTPUT})
-    IF(have_filesystem)
-      MESSAGE(STATUS "Compiler supports filesystem when linking against '${FS_LIB_NAME}'")
-      SET(${FS_LIBS} ${FS_LIB_NAME} PARENT_SCOPE)
-      RETURN()
-    ENDIF()
-    MESSAGE(STATUS "Compiler not compatible when linking against '${FS_LIB_NAME}'")
-  ENDFOREACH()
-
-  MESSAGE(STATUS "Compiler does not have filesystem support, falling back to boost::filesystem")
-  find_package(Boost REQUIRED COMPONENTS filesystem system)
-  SET(${FS_LIBS} Boost::filesystem Boost::system PARENT_SCOPE)
-  SET_TARGET_PROPERTIES(Boost::filesystem
-    PROPERTIES
-    INTERFACE_COMPILE_DEFINITIONS USE_BOOST_FILESYSTEM
-    )
-endfunction()
