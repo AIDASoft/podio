@@ -11,7 +11,7 @@ except ImportError:
     raise
 
 from .frame import Frame
-from . import root_io, reading
+from . import root_io, reading, version
 
 try:
     # We try to import the sio bindings which may fail if ROOT is not able to
@@ -21,10 +21,4 @@ try:
 except ImportError:
     pass
 
-__all__ = [
-    "__version__",
-    "Frame",
-    "root_io",
-    "sio_io",
-    "reading",
-]
+__all__ = ["__version__", "Frame", "root_io", "sio_io", "reading", "version"]
