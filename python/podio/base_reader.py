@@ -81,7 +81,7 @@ class BaseReaderMixin:
             return ""
         return self._reader.getDatamodelDefinition(edm_name).data()
 
-    def get_podio_version(self):
+    def current_file_version(self):
         """Get the podio (build) version that was used to write this file
 
         Returns:
