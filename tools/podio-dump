@@ -23,7 +23,8 @@ def print_general_info(reader, filename):
     legacy_text = " (this is a legacy file!)" if reader.is_legacy else ""
     print(
         f"input file: {filename}{legacy_text}\n"
-        f"            (written with podio version: {version_as_str(reader.current_file_version())})\n"
+        "            (written with podio version: "
+        f"{version_as_str(reader.current_file_version())})\n"
     )
     print(
         "datamodel model definitions stored in this file: "
