@@ -1,7 +1,7 @@
 """Prevent creating new attributes for existing objects
 The new attributes created in Python won't be visible for podio IO
 therefore preventing the addition of new attributes for podio objects
-might be desirable and help detecting miss-assignments"""
+might be desirable and help detecting mis-assignments"""
 
 from .utils.pythonizer import Pythonizer
 
