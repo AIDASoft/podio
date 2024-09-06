@@ -49,3 +49,15 @@ class CollectionSubscriptTest(unittest.TestCase):
         with self.assertRaises(IndexError):
             _ = collection[20]
         _ = collection[0]
+
+
+class AttributeCreationTest(unittest.TestCase):
+    """Setting new attributes test"""
+
+    def test_disable_new_attribute_creation(self):
+        component = nsp.AnotherNamespaceStruct()
+        self.assertEqual(component.x, 0)
+        component.x = 1
+        self.assertEqual(component.x, 1)
+        with self.assertRaises(AttributeError):
+            component.not_existing_attribute = 0
