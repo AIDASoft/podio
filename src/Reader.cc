@@ -24,6 +24,10 @@ Reader makeReader(const std::string& filename) {
 
 Reader makeReader(const std::vector<std::string>& filenames) {
 
+  if (filenames.empty()) {
+    throw std::runtime_error("No files given to create a Podio Reader");
+  }
+
   auto suffix = filenames[0].substr(filenames[0].find_last_of(".") + 1);
   for (size_t i = 1; i < filenames.size(); ++i) {
     if (filenames[i].substr(filenames[i].find_last_of(".") + 1) != suffix) {
@@ -34,6 +38,10 @@ Reader makeReader(const std::vector<std::string>& filenames) {
   if (suffix == "root") {
     TFile* file = TFile::Open(filenames[0].c_str());
     bool hasRNTuple = false;
+
+    if (!file) {
+      throw std::runtime_error("Could not open file: " + filenames[0]);
+    }
 
     for (auto key : *file->GetListOfKeys()) {
       auto tkey = dynamic_cast<TKey*>(key);
