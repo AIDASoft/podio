@@ -3,13 +3,9 @@
 #include <algorithm>
 #include <cstdlib>
 #include <dlfcn.h>
+#include <filesystem>
 #include <map>
 #include <sstream>
-#ifdef USE_BOOST_FILESYSTEM
-  #include <boost/filesystem.hpp>
-#else
-  #include <filesystem>
-#endif
 
 namespace podio {
 
@@ -133,11 +129,7 @@ SIOBlockLibraryLoader::LoadStatus SIOBlockLibraryLoader::loadLib(const std::stri
 }
 
 std::vector<std::tuple<std::string, std::string>> SIOBlockLibraryLoader::getLibNames() {
-#ifdef USE_BOOST_FILESYSTEM
-  namespace fs = boost::filesystem;
-#else
   namespace fs = std::filesystem;
-#endif
   std::vector<std::tuple<std::string, std::string>> libs;
 
   const auto ldLibPath = []() {
