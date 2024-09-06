@@ -42,6 +42,11 @@ components :
     Members:
       - ex2::NamespaceStruct data
 
+  nsp::AnotherNamespaceStruct:
+    Members:
+      - int x
+      - int y
+
   StructWithFixedWithTypes:
     Members:
       - uint16_t fixedUnsigned16 // unsigned int with exactly 16 bits
