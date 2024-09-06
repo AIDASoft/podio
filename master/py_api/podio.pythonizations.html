@@ -727,6 +727,61 @@
 </dd></dl>
 
 </section>
+<section id="module-podio.pythonizations.freeze_class">
+<span id="podio-pythonizations-freeze-class-module"></span><h2>podio.pythonizations.freeze_class module<a class="headerlink" href="#module-podio.pythonizations.freeze_class" title="Link to this heading"></a></h2>
+<p>Prevent creating new attributes for existing objects
+The new attributes created in Python won’t be visible for podio IO
+therefore preventing the addition of new attributes for podio objects
+might be desirable and help detecting mis-assignments</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio.pythonizations.freeze_class.FreezeClassPythonizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio.pythonizations.freeze_class.</span></span><span class="sig-name descname"><span class="pre">FreezeClassPythonizer</span></span><a class="headerlink" href="#podio.pythonizations.freeze_class.FreezeClassPythonizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer" title="podio.pythonizations.utils.pythonizer.Pythonizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pythonizer</span></code></a></p>
+<p>Prevent setting new attributes</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio.pythonizations.freeze_class.FreezeClassPythonizer.filter">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.freeze_class.FreezeClassPythonizer.filter" title="Link to this definition"></a></dt>
+<dd><p>Abstract classmethod to filter classes to which the pythonizations should be applied</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class</strong> (<em>type</em>) – Class object.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the class.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if class should be pythonized.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio.pythonizations.freeze_class.FreezeClassPythonizer.modify">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.freeze_class.FreezeClassPythonizer.modify" title="Link to this definition"></a></dt>
+<dd><p>Abstract classmethod modifying classes to be pythonized</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class</strong> (<em>type</em>) – Class object.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the class.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio.pythonizations.freeze_class.FreezeClassPythonizer.priority">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.freeze_class.FreezeClassPythonizer.priority" title="Link to this definition"></a></dt>
+<dd><p>This most likely should be the last pythonization loaded
+otherwise it may interfere with creating attributes during other pythonizations</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-podio.pythonizations">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-podio.pythonizations" title="Link to this heading"></a></h2>
 <p>cppyy pythonizations for podio</p>
