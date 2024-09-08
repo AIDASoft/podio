@@ -295,7 +295,7 @@ TEST_CASE("Frame parameters multithread insert", "[frame][basics][multithread]")
     threads.emplace_back([&frame, i]() {
       frame.putParameter(makeName("int_par", i), i);
 
-      frame.putParameter(makeName("float_par", i), (float)i);
+      frame.putParameter(makeName("float_par", i), static_cast<float>(i));
 
       frame.putParameter(makeName("string_par", i), std::to_string(i));
     });
@@ -307,7 +307,7 @@ TEST_CASE("Frame parameters multithread insert", "[frame][basics][multithread]")
 
   for (int i = 0; i < nThreads; ++i) {
     REQUIRE(frame.getParameter<int>(makeName("int_par", i)) == i);
-    REQUIRE(frame.getParameter<float>(makeName("float_par", i)) == (float)i);
+    REQUIRE(frame.getParameter<float>(makeName("float_par", i)) == static_cast<float>(i));
     REQUIRE(frame.getParameter<std::string>(makeName("string_par", i)) == std::to_string(i));
   }
 }
@@ -331,10 +331,10 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
   for (int i = 0; i < nThreads; ++i) {
     threads.emplace_back([&frame, i, &successes]() {
       frame.putParameter(makeName("int", i), i);
-      frame.putParameter(makeName("float", i), (float)i);
+      frame.putParameter(makeName("float", i), static_cast<float>(i));
 
       CHECK_INCREASE(frame.getParameter<int>("int_par") == 42, successes[i]);
-      CHECK_INCREASE(frame.getParameter<float>(makeName("float", i)) == (float)i, successes[i]);
+      CHECK_INCREASE(frame.getParameter<float>(makeName("float", i)) == static_cast<float>(i), successes[i]);
 
       frame.putParameter(makeName("string", i), std::to_string(i));
       CHECK_INCREASE(frame.getParameter<std::string>("string_par") == "some string", successes[i]);
@@ -350,7 +350,7 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
       constexpr int nParams = 100;
       for (int k = 0; k < nParams; ++k) {
         frame.putParameter(makeName("intPar", i) + std::to_string(k), i * k);
-        frame.putParameter(makeName("floatPar", i) + std::to_string(k), (float)i * k);
+        frame.putParameter(makeName("floatPar", i) + std::to_string(k), static_cast<float>(i) * k);
         frame.putParameter(makeName("stringPar", i) + std::to_string(k), std::to_string(i * k));
       }
     });
@@ -365,7 +365,7 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
     REQUIRE(successes[i] == 7);
 
     REQUIRE(frame.getParameter<int>(makeName("int", i)) == i);
-    REQUIRE(frame.getParameter<float>(makeName("float", i)) == (float)i);
+    REQUIRE(frame.getParameter<float>(makeName("float", i)) == static_cast<float>(i));
     REQUIRE(frame.getParameter<std::string>(makeName("string", i)) == std::to_string(i));
   }
 }

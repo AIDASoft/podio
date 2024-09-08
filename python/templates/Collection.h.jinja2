@@ -72,7 +72,7 @@ public:
   void print(std::ostream& os=std::cout, bool flush=true) const final;
 
   /// operator to allow pointer like calling of members a la LCIO
-  {{ class.bare_type }}Collection* operator->() { return ({{ class.bare_type }}Collection*) this; }
+  {{ class.bare_type }}Collection* operator->() { return static_cast<{{ class.bare_type }}Collection*>(this); }
 
   /// Append a new object to the collection, and return this object.
   Mutable{{ class.bare_type }} create();

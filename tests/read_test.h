@@ -20,12 +20,10 @@
 
 // STL
 #include <cassert>
-#include <exception>
 #include <iostream>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <type_traits>
 #include <vector>
 
 template <typename FixedWidthT>
@@ -40,8 +38,8 @@ bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std
 
 void processEvent(const podio::Frame& event, int eventNum, podio::version::Version fileVersion) {
   const float evtWeight = event.getParameter<float>("UserEventWeight").value();
-  if (evtWeight != (float)100. * eventNum) {
-    std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << (float)100. * eventNum << std::endl;
+  if (evtWeight != static_cast<float>(100. * eventNum)) {
+    std::cout << " read UserEventWeight: " << evtWeight << " - expected : " << static_cast<float>(100. * eventNum) << std::endl;
     throw std::runtime_error("Couldn't read event meta data parameters 'UserEventWeight'");
   }
 
@@ -196,7 +194,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
 
     for (auto pr : mcpRefs) {
-      if ((unsigned)pr.getObjectID().collectionID == mcpRefs.getID()) {
+      if (static_cast<unsigned>(pr.getObjectID().collectionID) == mcpRefs.getID()) {
         throw std::runtime_error(
             "objects of a reference collection should have a different collectionID than the reference collection");
       }
@@ -380,7 +378,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
     auto& usrInts = event.get<podio::UserDataCollection<uint64_t>>("userInts");
 
-    if (usrInts.size() != (unsigned)eventNum + 1) {
+    if (usrInts.size() != static_cast<unsigned>(eventNum + 1)) {
       throw std::runtime_error("Could not read all userInts properly (expected: " + std::to_string(eventNum + 1) +
                                ", actual: " + std::to_string(usrInts.size()) + ")");
     }

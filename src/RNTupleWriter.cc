@@ -112,9 +112,9 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     auto collBuffers = coll->getBuffers();
     if (collBuffers.vecPtr) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
-      entry->BindRawPtr(name, (void*)collBuffers.vecPtr);
+      entry->BindRawPtr(name, static_cast<void*>(collBuffers.vecPtr));
 #else
-      entry->CaptureValueUnsafe(name, (void*)collBuffers.vecPtr);
+      entry->CaptureValueUnsafe(name, static_cast<void*>(collBuffers.vecPtr));
 #endif
     }
 
@@ -148,7 +148,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
         for (auto& [type, vec] : (*vmInfo)) {
           const auto typeName = "vector<" + type + ">";
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
-          auto ptr = *(std::vector<int>**)vec;
+          auto ptr = *static_cast<std::vector<int>**>(vec);
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
           entry->BindRawPtr(brName, ptr);
 #else

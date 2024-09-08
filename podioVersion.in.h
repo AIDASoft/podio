@@ -2,8 +2,8 @@
 #define PODIO_PODIOVERSION_H
 
 #include <cstdint>
-#include <sstream>
 #include <ostream>
+#include <sstream>
 #include <tuple>
 #if __cplusplus >= 202002L
   #include <compare>
@@ -78,8 +78,9 @@ static constexpr Version build_version{podio_VERSION_MAJOR, podio_VERSION_MINOR,
 
 /// Decode a version from a 64 bit unsigned
 static constexpr Version decode_version(unsigned long version) noexcept {
-  return Version{(uint16_t)PODIO_MAJOR_VERSION(version), (uint16_t)PODIO_MINOR_VERSION(version),
-                 (uint16_t)PODIO_PATCH_VERSION(version)};
+  return Version{static_cast<uint16_t>(PODIO_MAJOR_VERSION(version)),
+                 static_cast<uint16_t>(PODIO_MINOR_VERSION(version)),
+                 static_cast<uint16_t>(PODIO_PATCH_VERSION(version))};
 }
 } // namespace podio::version
 
