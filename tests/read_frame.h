@@ -85,15 +85,13 @@ void checkInterfaceCollection(const podio::Frame& event) {
   ASSERT(iface1.aSingleEnergyType() == clusters[0], "OneToOneRelation aSingleEnergy not persisted as expected")
 
   const auto iface0Rels = iface0.manyEnergies();
-  ASSERT(iface0Rels.size() == 3,
-         "OneToManyRelation to interface does not have the expected number of related elements")
+  ASSERT(iface0Rels.size() == 3, "OneToManyRelation to interface does not have the expected number of related elements")
   ASSERT(iface0Rels[0] == hits[0], "OneToManyRelations to interface not persisted correctly")
   ASSERT(iface0Rels[1] == clusters[0], "OneToManyRelations to interface not persisted correctly")
   ASSERT(iface0Rels[2] == particles[0], "OneToManyRelations to interface not persisted correctly")
 
   const auto iface1Rels = iface1.manyEnergies();
-  ASSERT(iface1Rels.size() == 3,
-         "OneToManyRelation to interface does not have the expected number of related elements")
+  ASSERT(iface1Rels.size() == 3, "OneToManyRelation to interface does not have the expected number of related elements")
   ASSERT(iface1Rels[0] == particles[0], "OneToManyRelations to interface not persisted correctly")
   ASSERT(iface1Rels[1] == hits[0], "OneToManyRelations to interface not persisted correctly")
   ASSERT(iface1Rels[2] == clusters[0], "OneToManyRelations to interface not persisted correctly")
