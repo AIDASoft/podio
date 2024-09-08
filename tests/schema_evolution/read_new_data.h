@@ -57,7 +57,7 @@ int readExampleWithARelation(const podio::Frame& event) {
   const auto& coll = event.get<ex42::ExampleWithARelationCollection>("floatToDoubleMemberTest");
   auto elem = coll[0];
 
-  ASSERT_EQUAL(elem.number(), static_cast<double>(3.14), "Conversion from float to double member does not work as expected")
+  ASSERT_EQUAL(elem.number(), (double)3.14f, "Conversion from float to double member does not work as expected")
 
   return 0;
 }

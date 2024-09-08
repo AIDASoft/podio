@@ -64,7 +64,7 @@ struct Version {
     std::stringstream ss;
     ss << *this;
     return ss.str();
-  };
+  }
 
   friend std::ostream& operator<<(std::ostream&, const Version& v);
 };
