@@ -1,6 +1,7 @@
 #ifndef PODIO_DATAMODELREGISTRY_H
 #define PODIO_DATAMODELREGISTRY_H
 
+#include <stddef.h>
 #include <string>
 #include <string_view>
 #include <tuple>

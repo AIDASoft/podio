@@ -5,13 +5,18 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include <algorithm>
+#include <initializer_list>
 #include <iostream>
 #include <iterator>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <stddef.h>
 #include <string>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #if PODIO_ENABLE_SIO

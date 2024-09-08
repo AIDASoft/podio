@@ -5,6 +5,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <stddef.h>
+#include <utility>
 
 namespace podio {
 

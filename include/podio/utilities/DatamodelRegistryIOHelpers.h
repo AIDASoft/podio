@@ -1,15 +1,16 @@
 #ifndef PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 #define PODIO_UTILITIES_DATAMODELREGISTRYIOHELPERS_H
 
-#include "podio/CollectionBase.h"
-#include "podio/DatamodelRegistry.h"
-
 #include <set>
+#include <stddef.h>
 #include <string>
+#include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 namespace podio {
+class CollectionBase;
 
 /// Helper class to collect the datamodel (JSON) definitions that should be
 /// written.
