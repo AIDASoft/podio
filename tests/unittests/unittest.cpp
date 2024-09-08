@@ -7,6 +7,7 @@
 
 #include <array>
 #include <compare>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
@@ -15,7 +16,6 @@
 #include <optional>
 #include <set>
 #include <sstream>
-#include <stddef.h>
 #include <stdexcept>
 #include <string>
 #include <thread>

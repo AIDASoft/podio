@@ -2,8 +2,8 @@
 #include "podio/ROOTLegacyReader.h"
 #include "read_test.h"
 
+#include <cstddef>
 #include <iostream>
-#include <stddef.h>
 #include <stdexcept>
 #include <string>
 

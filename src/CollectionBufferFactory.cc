@@ -2,7 +2,7 @@
 
 #include "podio/CollectionBuffers.h"
 
-#include <stddef.h>
+#include <cstddef>
 #include <utility>
 
 namespace podio {

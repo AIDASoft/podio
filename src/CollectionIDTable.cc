@@ -4,9 +4,9 @@
 #include "MurmurHash3.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <iterator>
-#include <stddef.h>
 #include <utility>
 
 namespace podio {

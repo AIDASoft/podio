@@ -3,7 +3,7 @@
 
 #include "podio/GenericParameters.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <tuple>
 #include <vector>

@@ -1,9 +1,9 @@
 #ifndef PODIO_SCHEMAEVOLUTION_H
 #define PODIO_SCHEMAEVOLUTION_H
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <stddef.h>
 #include <string>
 #include <unordered_map>
 #include <vector>

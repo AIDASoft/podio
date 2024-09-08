@@ -8,7 +8,7 @@
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RVersion.hxx>
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace ROOT {
 namespace Experimental {

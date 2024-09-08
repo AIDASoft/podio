@@ -5,6 +5,7 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
@@ -12,7 +13,6 @@
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <stddef.h>
 #include <string>
 #include <tuple>
 #include <type_traits>

@@ -10,9 +10,9 @@
 #include "podio/ROOTWriter.h"
 #include "podio/RelationRange.h"
 
+#include <cstddef>
 #include <iostream>
 #include <sstream>
-#include <stddef.h>
 #include <stdexcept>
 #include <string>
 #include <utility>

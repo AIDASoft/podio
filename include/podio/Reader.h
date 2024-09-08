@@ -5,8 +5,8 @@
 #include "podio/FrameCategories.h"
 #include "podio/podioVersion.h"
 
-#include <memory>
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>

@@ -8,8 +8,8 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 
+#include <cstddef>
 #include <memory>
-#include <stddef.h>
 #include <string>
 #include <string_view>
 #include <tuple>

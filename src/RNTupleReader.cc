@@ -13,13 +13,13 @@
 #include <ROOT/RNTupleView.hxx>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <format>
 #include <iostream>
 #include <memory>
 #include <numeric>
 #include <optional>
-#include <stddef.h>
-#include <stdint.h>
 #include <tuple>
 #include <utility>
 

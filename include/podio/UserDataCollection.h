@@ -7,9 +7,9 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
-#include <stddef.h>
-#include <stdint.h>
 #include <string_view>
 #include <tuple>
 #include <type_traits>
