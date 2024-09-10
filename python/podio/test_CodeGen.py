@@ -54,7 +54,8 @@ class CollectionSubscriptTest(unittest.TestCase):
     def test_getitem_return_type(self):
         """Test that collection subscript returns an instance of podio immutable datatype"""
         collection = nsp.EnergyInNamespaceCollection()
-        _ = collection.create()
+        obj = collection.create()
+        self.assertIsInstance(obj, nsp.MutableEnergyInNamespace)
         self.assertIsInstance(collection[0], nsp.EnergyInNamespace)
 
 
