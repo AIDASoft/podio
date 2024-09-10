@@ -123,7 +123,7 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
 
   const auto extensionModelVersion = reader.currentFileVersion("extension_model");
   if (extensionModelVersion) {
-    std::cerr << "The (build) version of the extension model was available althought it shouldn't be. Its value is "
+    std::cerr << "The (build) version of the extension model was available although it shouldn't be. Its value is "
               << extensionModelVersion.value() << std::endl;
   }
 

@@ -55,7 +55,7 @@ EXPECTED_PARAM_NAMES = {
 
 
 class FrameTest(unittest.TestCase):
-    """General unittests for for python bindings of the Frame"""
+    """General unittests for python bindings of the Frame"""
 
     def test_frame_invalid_access(self):
         """Check that the advertised exceptions are raised on invalid access."""

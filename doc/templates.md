@@ -55,7 +55,7 @@ By default a `.h` and a `.cc` file will be generated, but this can be overridden
 With that in place it is now only necessary to call `_fill_templates` with the appropriate template name and the pre processed data.
 Note that for most templates this means that they have to be filled for each datatype or component individually.
 
-If additional preprocessing is necessary, it will be necessary to also add that to the the language specific generators.
+If additional preprocessing is necessary, it will be necessary to also add that to the language specific generators.
 The main entry point to the generation is the `process` method which essentially just delegates to other methods.
 
 ## Available information in the templates
@@ -99,10 +99,10 @@ The following keys / variables are filled for each datatype
 |-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `class`                       | The (immutable, user-facing) class as `DataType` (see [below](#datatype))                                                                                |
 | `Members`                     | The members of the datatype as a list of `MemberVariable`s (see [below](#membervariable))                                                                                                        |
-| `OneToOneRelations`           | The one-to-one relation members of the datatype as  a list of `MemberVariable`s                                                                                     |
+| `OneToOneRelations`           | The one-to-one relation members of the datatype as a list of `MemberVariable`s                                                                                     |
 | `OneToManyRelations`          | The one-to-many relation members of the datatype as a list of `MemberVariable`s                                                                                    |
 | `VectorMembers`               | The vector members of the datatype as a list of `MemberVariable`s                                                                                                  |
-| `includes`                    | The include directives for the the user facing classes header files                                                                                      |
+| `includes`                    | The include directives for the user facing classes header files                                                                                      |
 | `includes_cc`                 | The include directives for the implementations of the user facing classes                                                                                 |
 | `includes_data`               | The necessary include directives for the `Data` POD types                                                                                                |
 | `includes_obj`                | The include directives for the `Obj` classes headers.                                                                                                    |
