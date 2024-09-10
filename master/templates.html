@@ -735,7 +735,7 @@ The <code class="docutils literal notranslate"><span class="pre">prefix</span></
 By default a <code class="docutils literal notranslate"><span class="pre">.h</span></code> and a <code class="docutils literal notranslate"><span class="pre">.cc</span></code> file will be generated, but this can be overridden by adding the template to the <code class="docutils literal notranslate"><span class="pre">endings</span></code> dictionary.
 With that in place it is now only necessary to call <code class="docutils literal notranslate"><span class="pre">_fill_templates</span></code> with the appropriate template name and the pre processed data.
 Note that for most templates this means that they have to be filled for each datatype or component individually.</p>
-<p>If additional preprocessing is necessary, it will be necessary to also add that to the the language specific generators.
+<p>If additional preprocessing is necessary, it will be necessary to also add that to the language specific generators.
 The main entry point to the generation is the <code class="docutils literal notranslate"><span class="pre">process</span></code> method which essentially just delegates to other methods.</p>
 </section>
 <section id="available-information-in-the-templates">
@@ -818,7 +818,7 @@ generation!</p>
 <td><p>The members of the datatype as a list of <code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code>s (see <a class="reference internal" href="#membervariable"><span class="xref myst">below</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OneToOneRelations</span></code></p></td>
-<td><p>The one-to-one relation members of the datatype as  a list of <code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code>s</p></td>
+<td><p>The one-to-one relation members of the datatype as a list of <code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code>s</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OneToManyRelations</span></code></p></td>
 <td><p>The one-to-many relation members of the datatype as a list of <code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code>s</p></td>
@@ -827,7 +827,7 @@ generation!</p>
 <td><p>The vector members of the datatype as a list of <code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code>s</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">includes</span></code></p></td>
-<td><p>The include directives for the the user facing classes header files</p></td>
+<td><p>The include directives for the user facing classes header files</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">includes_cc</span></code></p></td>
 <td><p>The include directives for the implementations of the user facing classes</p></td>

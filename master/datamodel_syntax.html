@@ -847,13 +847,13 @@ this schema version is a single integer. This makes it rather hard to use in
 typical versioning, where one might differentiate between <em>major</em>, <em>minor</em> (and
 <em>patch</em>) versions. Hence, the versioning of a datamodel and its schema version
 are coupled but do not necessarily have to be the same. podio offers hooks to
-store this important meta information into the produce files. In order to do you
-can pass the version of the datamodel to the generator via the
+store this important meta information into the produce files.
+The version of the datamodel can be passed to the generator via the
 <code class="docutils literal notranslate"><span class="pre">--datamodel-version</span></code> argument. It expects the version to conform to this
 regular expression: <code class="docutils literal notranslate"><span class="pre">&quot;v?\d+[\.|-]\d+([\.|-]\d+)?$&quot;</span></code>, i.e. that the major and
 minor version are present, separated by either a dot or comma with an optional
 patch version and an optional <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix.</p>
-<p>If this this information is passed to the generator it will be injected into the
+<p>If this information is passed to the generator it will be injected into the
 podio internals and will be stored in the output files. They can be retrieved
 via the <code class="docutils literal notranslate"><span class="pre">currentFileVersion(const</span> <span class="pre">std::string&amp;)</span></code> methods of the various readers.</p>
 </section>
