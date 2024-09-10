@@ -94,7 +94,7 @@ protected:
 
   std::string AsString() override {
     return "Podio data source";
-  };
+  }
 
 private:
   /// Number of slots/threads

@@ -774,7 +774,7 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
     REQUIRE(hitRelationBuffer->size() == nElements * 1);          // Each cluster has one hit in these tests
     for (size_t iHit = 0; iHit < nElements * 1; ++iHit) {
       const auto& hitID = (*hitRelationBuffer)[iHit];
-      REQUIRE(hitID.index == (int)iHit);
+      REQUIRE(hitID.index == static_cast<int>(iHit));
       REQUIRE(static_cast<unsigned>(hitID.collectionID) == hits.getID());
     }
   }
@@ -787,7 +787,7 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
     // Now we are really descending into implementation details
     const auto* countBuffer = *static_cast<std::vector<int>**>((*vecMemVecBuffers)[0].second);
     REQUIRE(countBuffer->size() == nElements * 2);
-    for (int iC = 0; iC < (int)nElements; ++iC) {
+    for (int iC = 0; iC < static_cast<int>(nElements); ++iC) {
       REQUIRE((*countBuffer)[iC * 2] == iC);
       REQUIRE((*countBuffer)[iC * 2 + 1] == 42 + iC);
     }

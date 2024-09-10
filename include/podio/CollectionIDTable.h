@@ -41,7 +41,7 @@ public:
   /// return registered names
   const std::vector<std::string>& names() const {
     return m_names;
-  };
+  }
 
   /// return the ids
   const std::vector<uint32_t>& ids() const {

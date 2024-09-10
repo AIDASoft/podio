@@ -145,7 +145,7 @@ std::vector<void*> DataSource::GetColumnReadersImpl(std::string_view columnName,
 
   std::vector<void*> columnReaders(m_nSlots);
   for (size_t slotIndex = 0; slotIndex < m_nSlots; ++slotIndex) {
-    columnReaders[slotIndex] = (void*)&m_Collections[columnIndex][slotIndex];
+    columnReaders[slotIndex] = static_cast<void*>(&m_Collections[columnIndex][slotIndex]);
   }
 
   return columnReaders;

@@ -24,7 +24,7 @@ void writeCollection() {
     item1.Number(i);
     info.push_back(item1);
 
-    event.putParameter("UserEventWeight", (float)100. * i);
+    event.putParameter("UserEventWeight", 100.f * i);
     std::cout << " event number: " << i << std::endl;
     event.putParameter("UserEventName", std::to_string(i));
 

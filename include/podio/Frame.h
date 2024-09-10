@@ -114,7 +114,7 @@ class Frame {
     /// Get a const reference to the internally used GenericParameters
     const podio::GenericParameters& parameters() const override {
       return *m_parameters;
-    };
+    }
 
     bool get(uint32_t collectionID, podio::CollectionBase*& collection) const override;
 

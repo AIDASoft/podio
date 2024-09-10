@@ -161,7 +161,7 @@ public:
   /// clear the collection and all internal states
   void clear() override {
     _vec.clear();
-  };
+  }
 
   /// check if this collection is a subset collection - no subset possible
   bool isSubsetCollection() const override {

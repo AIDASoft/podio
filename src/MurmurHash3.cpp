@@ -46,6 +46,10 @@ inline uint64_t rotl64(uint64_t x, int8_t r) {
 
 #endif // !defined(_MSC_VER)
 
+// Disable -Wold-style-cast for this file
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+
 //-----------------------------------------------------------------------------
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
@@ -131,7 +135,7 @@ void MurmurHash3_x86_32(const void* key, int len, uint32_t seed, void* out) {
     k1 = ROTL32(k1, 15);
     k1 *= c2;
     h1 ^= k1;
-  };
+  }
 
   //----------
   // finalization
@@ -281,7 +285,7 @@ void MurmurHash3_x86_128(const void* key, const int len, uint32_t seed, void* ou
     k1 = ROTL32(k1, 15);
     k1 *= c2;
     h1 ^= k1;
-  };
+  }
 
   //----------
   // finalization
@@ -418,7 +422,7 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
     k1 = ROTL64(k1, 31);
     k1 *= c2;
     h1 ^= k1;
-  };
+  }
 
   //----------
   // finalization
@@ -440,3 +444,5 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
 }
 
 //-----------------------------------------------------------------------------
+
+#pragma GCC diagnostic pop
