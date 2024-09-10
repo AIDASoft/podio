@@ -21,7 +21,8 @@ For reference usage, see the [Python module of EDM4hep](https://github.com/key4h
 
 Python as a language uses different constructions and conventions than C++, perfectly fine C++ code translated one to one to Python could be clunky by Python's standard. cppyy offers a mechanism called [pythonizations](https://cppyy.readthedocs.io/en/latest/pythonizations.html) to make the resulting bindings more pythonic. Some basic pythonizations are included automatically (for instance `operator[]` is translated to `__getitem__`) but others can be specified by a user.
 
-Podio comes with its own set of pythonizations useful for the data models generated with it. To apply all the provided pythonizations to a `model_namespace` namespace:
+Podio comes with its own set of pythonizations useful for the data models generated with it. These pythonizations are available in the submodules of the `podio.pythonizations`. For the full list see the [python API](https://key4hep.web.cern.ch/podio/py_api/podio.pythonizations.html#submodules) documentation.
+To apply all the provided pythonizations to a `model_namespace` namespace:
 
 ```python
 from podio.pythonizations import load_pythonizations
