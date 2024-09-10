@@ -410,7 +410,6 @@ have resolvable schema evolution incompatibilities:"
         """
         types_in_interfaces = defaultdict(list)
         for name, interface in self.datamodel.interfaces.items():
-            print(f"preprocessing interface {name}")
             for if_type in interface["Types"]:
                 types_in_interfaces[if_type.full_type].append(name)
 
@@ -605,7 +604,7 @@ have resolvable schema evolution incompatibilities:"
         podio_includes = []
         stl_includes = []
         upstream_includes = []
-        for include in (inc for inc in includes if inc):
+        for include in (inc.strip() for inc in includes if inc.strip()):
             if self.package_name in include:
                 package_includes.append(include)
             elif "podio" in include:
