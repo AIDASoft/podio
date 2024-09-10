@@ -212,7 +212,7 @@ this schema version is a single integer. This makes it rather hard to use in
 typical versioning, where one might differentiate between *major*, *minor* (and
 *patch*) versions. Hence, the versioning of a datamodel and its schema version
 are coupled but do not necessarily have to be the same. podio offers hooks to
-store this important meta information into the produce files. The
+store this important meta information into the produce files.
 The version of the datamodel can be passed to the generator via the
 `--datamodel-version` argument. It expects the version to conform to this
 regular expression: `"v?\d+[\.|-]\d+([\.|-]\d+)?$"`, i.e. that the major and
