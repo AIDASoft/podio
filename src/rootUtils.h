@@ -92,7 +92,7 @@ struct GPBranchOffsets {
 constexpr auto nParamBranches = std::tuple_size_v<podio::SupportedGenericDataTypes> * 2;
 
 /// Get the branch offsets for a given parameter type. In this case it is
-/// assumed that the integer branches start immediately after the branche for
+/// assumed that the integer branches start immediately after the branch for
 /// the collections
 template <typename T>
 constexpr auto getGPBranchOffsets() {

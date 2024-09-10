@@ -133,7 +133,7 @@ void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
   delete versionPtr;
 
   // Check if the CollectionTypeInfo branch is there and assume that the file
-  // has been written with with podio pre #197 (<0.13.1) if that is not the case
+  // has been written with podio pre #197 (<0.13.1) if that is not the case
   if (auto* collInfoBranch = root_utils::getBranch(metadatatree, "CollectionTypeInfo")) {
     auto collectionInfo = new std::vector<root_utils::CollectionWriteInfoT>;
 

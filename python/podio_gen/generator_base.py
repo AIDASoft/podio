@@ -78,7 +78,7 @@ class ClassGeneratorBaseMixin:
                          component dictionary further. When called only the
                          "class" key will be populated. Return a dictionary or
                          None. If None, this will not be put into the "components"
-                         list. This function also has to to take care of filling
+                         list. This function also has to take care of filling
                          the necessary templates!
 
     do_process_datatype(name: str, datatype: dict): do some language specific

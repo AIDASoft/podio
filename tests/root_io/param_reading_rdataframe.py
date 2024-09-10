@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small test case for checking that utilities work as expeced in RDataFrame"""
+"""Small test case for checking that utilities work as expected in RDataFrame"""
 
 import sys
 import ROOT

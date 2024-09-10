@@ -91,7 +91,7 @@ private:
 public:
   /// Create a reader from a low level reader
   ///
-  /// @tparam T The type of the low level reader (will bededuced)
+  /// @tparam T The type of the low level reader (will be deduced)
   /// @param actualReader a low level reader that provides access to FrameDataT
   template <typename T>
   Reader(std::unique_ptr<T> actualReader);
