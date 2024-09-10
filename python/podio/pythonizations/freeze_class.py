@@ -11,16 +11,38 @@ class FreezeClassPythonizer(Pythonizer):
 
     @classmethod
     def priority(cls):
-        """This most likely should be the last pythonization loaded
-        otherwise it may interfere with creating attributes during other pythonizations"""
+        """
+        This most likely should be the last pythonization loaded.
+        Otherwise it may interfere with creating attributes during other pythonizations.
+
+        Returns:
+            int: Priority.
+        """
         return 99
 
     @classmethod
     def filter(cls, class_, name):
+        """
+        Filter passing all the classes
+
+        Args:
+            class_ (type): Class object.
+            name (str): Name of the class.
+
+        Returns:
+            bool: True.
+        """
         return True
 
     @classmethod
     def modify(cls, class_, name):
+        """Raise an `AttributeError` if new attribute would be set
+
+        Args:
+            class_ (type): Class object.
+            name (str): Name of the class.
+        """
+
         def freeze_setattr(self, attr, val):
             object_type = type(self)
             if attr not in object_type.__dict__:
