@@ -5,6 +5,10 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 
+#ifdef PODIO_JSON_OUTPUT
+  #include "nlohmann/json.hpp"
+#endif
+
 #include <type_traits>
 
 // Test datatypes (spelling them out here explicitly to make sure that
@@ -410,3 +414,26 @@ TEST_CASE("LinkCollection movability", "[links][move-semantics][collections]") {
     REQUIRE(evenNewerLinks.isSubsetCollection());
   }
 }
+
+#ifdef PODIO_JSON_OUTPUT
+TEST_CASE("Link JSON converstion", "[links][json]") {
+  const auto& [links, hits, clusters] = createLinkCollections();
+  const nlohmann::json json{{"links", links}};
+
+  REQUIRE(json["links"].size() == 3);
+
+  int i = 0;
+  for (const auto& link : json["links"]) {
+    REQUIRE(link["weight"] == i);
+    REQUIRE(link["from"]["index"] == i);
+    i++;
+  }
+
+  i = 2;
+  for (const auto& link : json["links"]) {
+    REQUIRE(link["to"]["index"] == i);
+    i--;
+  }
+}
+
+#endif

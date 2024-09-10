@@ -257,7 +257,7 @@ private:
   }
 
   podio::utils::MaybeSharedPtr<LinkObjT> m_obj{nullptr};
-}; // namespace podio
+};
 
 template <typename FromT, typename ToT>
 std::ostream& operator<<(std::ostream& os, const Link<FromT, ToT>& link) {
@@ -273,7 +273,7 @@ std::ostream& operator<<(std::ostream& os, const Link<FromT, ToT>& link) {
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 template <typename FromT, typename ToT>
-void to_json(nlohmann::json& j, const Link<FromT, ToT>& link) {
+void to_json(nlohmann::json& j, const podio::LinkT<FromT, ToT, false>& link) {
   j = nlohmann::json{{"weight", link.getWeight()}};
 
   j["from"] = nlohmann::json{{"collectionID", link.getFrom().getObjectID().collectionID},

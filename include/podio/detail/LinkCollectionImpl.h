@@ -296,16 +296,6 @@ std::ostream& operator<<(std::ostream& o, const LinkCollection<FromT, ToT>& v) {
   return o;
 }
 
-#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
-template <typename FromT, typename ToT>
-void to_json(nlohmann::json& j, const LinkCollection<FromT, ToT>& collection) {
-  j = nlohmann::json::array();
-  for (auto&& elem : collection) {
-    j.emplace_back(elem);
-  }
-}
-#endif
-
 namespace detail {
   template <typename FromT, typename ToT>
   podio::CollectionReadBuffers createLinkBuffers(bool subsetColl) {
@@ -364,6 +354,16 @@ namespace detail {
     return reg;
   }
 } // namespace detail
+
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
+template <typename FromT, typename ToT>
+void to_json(nlohmann::json& j, const podio::LinkCollection<FromT, ToT>& collection) {
+  j = nlohmann::json::array();
+  for (auto&& elem : collection) {
+    j.emplace_back(elem);
+  }
+}
+#endif
 
 } // namespace podio
 
