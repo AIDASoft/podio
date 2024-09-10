@@ -77,6 +77,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#embedding-a-datamodel-version">Embedding a datamodel version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
 </ul>
@@ -548,6 +549,7 @@
 <li class="toctree-l2"><a class="reference internal" href="podio_class_generator.html">podio_class_generator module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.parse_version"><code class="docutils literal notranslate"><span class="pre">parse_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
 </ul>
 </li>
@@ -718,18 +720,31 @@ setup.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.base_reader.BaseReaderMixin.current_file_version">
-<span class="sig-name descname"><span class="pre">current_file_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.base_reader.BaseReaderMixin.current_file_version" title="Link to this definition"></a></dt>
-<dd><p>Get the podio (build) version that was used to write this file</p>
+<span class="sig-name descname"><span class="pre">current_file_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edm_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.base_reader.BaseReaderMixin.current_file_version" title="Link to this definition"></a></dt>
+<dd><p>Get the (build) version that was used to write this file</p>
+<p>If called without argument or None, the podio build version is returned
+otherwise the build version of the datamodel</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt>The build version of podio that was use to</dt><dd><p>write this file</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>edm_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The package name of the datamodel</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The build version of podio or the build</dt><dd><p>version of the datamodel (if available) that was used to write
+this file</p>
 </dd>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>podio.version.Version</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>podio.version.Version</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyError</strong> – If the datamodel does not have a version stored</p></li>
+<li><p><strong>RuntimeError</strong> – If the reader is a legacy reader and a datamodel
+    version is requested</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

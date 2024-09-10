@@ -77,6 +77,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#embedding-a-datamodel-version">Embedding a datamodel version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#potential-pitfalls">Potential pitfalls</a></li>
 </ul>
@@ -548,6 +549,7 @@
 <li class="toctree-l2"><a class="reference internal" href="py_api/podio_class_generator.html">podio_class_generator module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.parse_version"><code class="docutils literal notranslate"><span class="pre">parse_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
 </ul>
 </li>
@@ -837,6 +839,23 @@ is currently being held internally.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">getSyntax</span></code>: steers the naming of get and set methods. If set to true, methods are prefixed with <code class="docutils literal notranslate"><span class="pre">get</span></code> and <code class="docutils literal notranslate"><span class="pre">set</span></code> following the capitalized member name, otherwise the member name is used for both.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">exposePODMembers</span></code>: whether get and set methods are also generated for members of a member-component. In the example corresponding methods would be generated to directly set / get <code class="docutils literal notranslate"><span class="pre">x</span></code> through <code class="docutils literal notranslate"><span class="pre">ExampleType</span></code>.</p></li>
 </ul>
+</section>
+<section id="embedding-a-datamodel-version">
+<h2>Embedding a datamodel version<a class="headerlink" href="#embedding-a-datamodel-version" title="Link to this heading"></a></h2>
+<p>Each datamodel definition needs a schema version. However, in the case of podio
+this schema version is a single integer. This makes it rather hard to use in
+typical versioning, where one might differentiate between <em>major</em>, <em>minor</em> (and
+<em>patch</em>) versions. Hence, the versioning of a datamodel and its schema version
+are coupled but do not necessarily have to be the same. podio offers hooks to
+store this important meta information into the produce files. In order to do you
+can pass the version of the datamodel to the generator via the
+<code class="docutils literal notranslate"><span class="pre">--datamodel-version</span></code> argument. It expects the version to conform to this
+regular expression: <code class="docutils literal notranslate"><span class="pre">&quot;v?\d+[\.|-]\d+([\.|-]\d+)?$&quot;</span></code>, i.e. that the major and
+minor version are present, separated by either a dot or comma with an optional
+patch version and an optional <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix.</p>
+<p>If this this information is passed to the generator it will be injected into the
+podio internals and will be stored in the output files. They can be retrieved
+via the <code class="docutils literal notranslate"><span class="pre">currentFileVersion(const</span> <span class="pre">std::string&amp;)</span></code> methods of the various readers.</p>
 </section>
 <section id="extending-a-datamodel-using-types-from-an-upstream-datamodel">
 <h2>Extending a datamodel / using types from an upstream datamodel<a class="headerlink" href="#extending-a-datamodel-using-types-from-an-upstream-datamodel" title="Link to this heading"></a></h2>

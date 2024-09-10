@@ -75,6 +75,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#embedding-a-datamodel-version">Embedding a datamodel version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
 </ul>
@@ -546,6 +547,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../py_api/podio_class_generator.html">podio_class_generator module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.parse_version"><code class="docutils literal notranslate"><span class="pre">parse_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
 </ul>
 </li>
@@ -696,13 +698,19 @@
 <dd><p>The “map” type that is used internally. </p>
 </dd></dl>
 
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25DatamodelDefinitionHolder11VersionListE">
+<span id="_CPPv3N5podio25DatamodelDefinitionHolder11VersionListE"></span><span id="_CPPv2N5podio25DatamodelDefinitionHolder11VersionListE"></span><span class="target" id="classpodio_1_1_datamodel_definition_holder_1a295bf274b41b490929b172ef3fb9ab54"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VersionList</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd><p>The “map” mapping names and datamodel versions (where available) </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapType">
-<span id="_CPPv3N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapType"></span><span id="_CPPv2N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapType"></span><span id="podio::DatamodelDefinitionHolder::DatamodelDefinitionHolder__MapTypeRR"></span><span class="target" id="classpodio_1_1_datamodel_definition_holder_1ad689782629c753c098eba47f7a9e53ba"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DatamodelDefinitionHolder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder7MapTypeE" title="podio::DatamodelDefinitionHolder::MapType"><span class="n"><span class="pre">MapType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">definitions</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Constructor from an existing collection of names and datamodel definitions. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapTypeRR11VersionList">
+<span id="_CPPv3N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapTypeRR11VersionList"></span><span id="_CPPv2N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapTypeRR11VersionList"></span><span id="podio::DatamodelDefinitionHolder::DatamodelDefinitionHolder__MapTypeRR.VersionListRR"></span><span class="target" id="classpodio_1_1_datamodel_definition_holder_1acb795a020edf14bd6e80b2332c119bd7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DatamodelDefinitionHolder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder7MapTypeE" title="podio::DatamodelDefinitionHolder::MapType"><span class="n"><span class="pre">MapType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">definitions</span></span>, <a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder11VersionListE" title="podio::DatamodelDefinitionHolder::VersionList"><span class="n"><span class="pre">VersionList</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">versions</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor from an existing collection of names and datamodel definitions and versions. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -753,12 +761,22 @@
 <dd><p>Get all names of the datamodels that have been read from file. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio25DatamodelDefinitionHolder19getDatamodelVersionERKNSt6stringE">
+<span id="_CPPv3NK5podio25DatamodelDefinitionHolder19getDatamodelVersionERKNSt6stringE"></span><span id="_CPPv2NK5podio25DatamodelDefinitionHolder19getDatamodelVersionERKNSt6stringE"></span><span id="podio::DatamodelDefinitionHolder::getDatamodelVersion__ssCRC"></span><span class="target" id="classpodio_1_1_datamodel_definition_holder_1a2f0cda9337e77c4e697bd6b5b6eb5e9b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="podio_version_8h.html#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDatamodelVersion</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio25DatamodelDefinitionHolder14m_availEDMDefsE">
 <span id="_CPPv3N5podio25DatamodelDefinitionHolder14m_availEDMDefsE"></span><span id="_CPPv2N5podio25DatamodelDefinitionHolder14m_availEDMDefsE"></span><span id="podio::DatamodelDefinitionHolder::m_availEDMDefs__MapType"></span><span class="target" id="classpodio_1_1_datamodel_definition_holder_1af4a7be8926ca78cfc1bba1fd4ec997c1"></span><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder7MapTypeE" title="podio::DatamodelDefinitionHolder::MapType"><span class="n"><span class="pre">MapType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m_availEDMDefs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio25DatamodelDefinitionHolder14m_availEDMDefsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio25DatamodelDefinitionHolder13m_edmVersionsE">
+<span id="_CPPv3N5podio25DatamodelDefinitionHolder13m_edmVersionsE"></span><span id="_CPPv2N5podio25DatamodelDefinitionHolder13m_edmVersionsE"></span><span id="podio::DatamodelDefinitionHolder::m_edmVersions__VersionList"></span><span class="target" id="classpodio_1_1_datamodel_definition_holder_1ad56942fec4ef9c327308edbdd59742a5"></span><a class="reference internal" href="../class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder11VersionListE" title="podio::DatamodelDefinitionHolder::VersionList"><span class="n"><span class="pre">VersionList</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m_edmVersions</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio25DatamodelDefinitionHolder13m_edmVersionsE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

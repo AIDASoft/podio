@@ -74,6 +74,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#embedding-a-datamodel-version">Embedding a datamodel version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
 </ul>
@@ -545,6 +546,7 @@
 <li class="toctree-l2"><a class="reference internal" href="py_api/podio_class_generator.html">podio_class_generator module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.parse_version"><code class="docutils literal notranslate"><span class="pre">parse_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_class_generator.html#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
 </ul>
 </li>
@@ -1049,6 +1051,8 @@
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader.parse_model">parse_model() (podio_gen.podio_config_reader.PodioConfigReader class method)</a>
 </li>
+      <li><a href="py_api/podio_class_generator.html#podio_class_generator.parse_version">parse_version() (in module podio_class_generator)</a>
+</li>
       <li>
     podio
 
@@ -1325,17 +1329,23 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolderE">podio::DatamodelDefinitionHolder (C++ class)</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolderE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolderE">[2]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERK25DatamodelDefinitionHolder">podio::DatamodelDefinitionHolder::DatamodelDefinitionHolder (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR25DatamodelDefinitionHolder">[1]</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapType">[2]</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderEv">[3]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERK25DatamodelDefinitionHolder">[4]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR25DatamodelDefinitionHolder">[5]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapType">[6]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderEv">[7]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERK25DatamodelDefinitionHolder">[8]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR25DatamodelDefinitionHolder">[9]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapType">[10]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderEv">[11]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERK25DatamodelDefinitionHolder">podio::DatamodelDefinitionHolder::DatamodelDefinitionHolder (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR25DatamodelDefinitionHolder">[1]</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapTypeRR11VersionList">[2]</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderEv">[3]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERK25DatamodelDefinitionHolder">[4]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR25DatamodelDefinitionHolder">[5]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapTypeRR11VersionList">[6]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderEv">[7]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERK25DatamodelDefinitionHolder">[8]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR25DatamodelDefinitionHolder">[9]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderERR7MapTypeRR11VersionList">[10]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder25DatamodelDefinitionHolderEv">[11]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4NK5podio25DatamodelDefinitionHolder22getAvailableDatamodelsEv">podio::DatamodelDefinitionHolder::getAvailableDatamodels (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4NK5podio25DatamodelDefinitionHolder22getAvailableDatamodelsEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio25DatamodelDefinitionHolder22getAvailableDatamodelsEv">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4NK5podio25DatamodelDefinitionHolder22getDatamodelDefinitionERKNSt6stringE">podio::DatamodelDefinitionHolder::getDatamodelDefinition (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4NK5podio25DatamodelDefinitionHolder22getDatamodelDefinitionERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio25DatamodelDefinitionHolder22getDatamodelDefinitionERKNSt6stringE">[2]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4NK5podio25DatamodelDefinitionHolder19getDatamodelVersionERKNSt6stringE">podio::DatamodelDefinitionHolder::getDatamodelVersion (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4NK5podio25DatamodelDefinitionHolder19getDatamodelVersionERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio25DatamodelDefinitionHolder19getDatamodelVersionERKNSt6stringE">[2]</a>
+</li>
       <li><a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder14m_availEDMDefsE">podio::DatamodelDefinitionHolder::m_availEDMDefs (C++ member)</a>
+</li>
+      <li><a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder13m_edmVersionsE">podio::DatamodelDefinitionHolder::m_edmVersions (C++ member)</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder7MapTypeE">podio::DatamodelDefinitionHolder::MapType (C++ type)</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder7MapTypeE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder7MapTypeE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolderaSERK25DatamodelDefinitionHolder">podio::DatamodelDefinitionHolder::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolderaSERR25DatamodelDefinitionHolder">[1]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolderaSERK25DatamodelDefinitionHolder">[2]</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolderaSERR25DatamodelDefinitionHolder">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolderaSERK25DatamodelDefinitionHolder">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolderaSERR25DatamodelDefinitionHolder">[5]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolder11VersionListE">podio::DatamodelDefinitionHolder::VersionList (C++ type)</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolder11VersionListE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolder11VersionListE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolderD0Ev">podio::DatamodelDefinitionHolder::~DatamodelDefinitionHolder (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_i_o_helpers_8h.html#_CPPv4N5podio25DatamodelDefinitionHolderD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio25DatamodelDefinitionHolderD0Ev">[2]</a>
 </li>
@@ -1347,9 +1357,13 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4NK5podio17DatamodelRegistry16getDatamodelNameE6size_t">podio::DatamodelRegistry::getDatamodelName (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4NK5podio17DatamodelRegistry16getDatamodelNameE6size_t">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio17DatamodelRegistry16getDatamodelNameE6size_t">[2]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4NK5podio17DatamodelRegistry19getDatamodelVersionERKNSt6stringE">podio::DatamodelRegistry::getDatamodelVersion (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4NK5podio17DatamodelRegistry19getDatamodelVersionERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio17DatamodelRegistry19getDatamodelVersionERKNSt6stringE">[2]</a>
+</li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4NK5podio17DatamodelRegistry16getRelationNamesENSt11string_viewE">podio::DatamodelRegistry::getRelationNames (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4NK5podio17DatamodelRegistry16getRelationNamesENSt11string_viewE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio17DatamodelRegistry16getRelationNamesENSt11string_viewE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistry8instanceEv">podio::DatamodelRegistry::instance (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistry8instanceEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistry8instanceEv">[2]</a>
+</li>
+      <li><a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistry19m_datamodelVersionsE">podio::DatamodelRegistry::m_datamodelVersions (C++ member)</a>
 </li>
       <li><a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistry13m_definitionsE">podio::DatamodelRegistry::m_definitions (C++ member)</a>
 </li>
@@ -1363,7 +1377,7 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistryaSERK17DatamodelRegistry">podio::DatamodelRegistry::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistryaSERRK17DatamodelRegistry">[1]</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistryaSERK17DatamodelRegistry">[2]</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistryaSERRK17DatamodelRegistry">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistryaSERK17DatamodelRegistry">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistryaSERRK17DatamodelRegistry">[5]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE">podio::DatamodelRegistry::registerDatamodel (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE">[2]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE">podio::DatamodelRegistry::registerDatamodel (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingEN5podio7version7VersionE">[1]</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE">[2]</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingEN5podio7version7VersionE">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingE">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistry17registerDatamodelENSt6stringENSt11string_viewERKN5podio19RelationNameMappingEN5podio7version7VersionE">[5]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistryD0Ev">podio::DatamodelRegistry::~DatamodelRegistry (C++ function)</a>, <a href="cpp_api/file/_datamodel_registry_8h.html#_CPPv4N5podio17DatamodelRegistryD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17DatamodelRegistryD0Ev">[2]</a>
 </li>
@@ -1575,7 +1589,7 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersD0Ev">podio::GenericParameters::~GenericParameters (C++ function)</a>, <a href="cpp_api/file/_generic_parameters_8h.html#_CPPv4N5podio17GenericParametersD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17GenericParametersD0Ev">[2]</a>
 </li>
-      <li><a href="cpp_api/file/_s_i_o_block_8h.html#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t">podio::handlePODDataSIO (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t">[1]</a>
+      <li><a href="cpp_api/file/_s_i_o_block_8h.html#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTPK7PODData6size_t">podio::handlePODDataSIO (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTPK7PODData6size_t">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_i_collection_provider.html#_CPPv4N5podio19ICollectionProviderE">podio::ICollectionProvider (C++ class)</a>, <a href="cpp_api/file/_i_collection_provider_8h.html#_CPPv4N5podio19ICollectionProviderE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio19ICollectionProviderE">[2]</a>
 </li>
@@ -1609,7 +1623,7 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6ReaderE">podio::Reader (C++ class)</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4N5podio6ReaderE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6ReaderE">[2]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader18currentFileVersionEv">podio::Reader::currentFileVersion (C++ function)</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader18currentFileVersionEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader18currentFileVersionEv">[2]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader18currentFileVersionERKNSt6stringE">podio::Reader::currentFileVersion (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader18currentFileVersionEv">[1]</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader18currentFileVersionERKNSt6stringE">[2]</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader18currentFileVersionEv">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader18currentFileVersionERKNSt6stringE">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader18currentFileVersionEv">[5]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader22getAvailableCategoriesEv">podio::Reader::getAvailableCategories (C++ function)</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader22getAvailableCategoriesEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader22getAvailableCategoriesEv">[2]</a>
 </li>
@@ -1629,7 +1643,7 @@
 </li>
       <li><a href="cpp_api/file/_reader_8h.html#_CPPv4N5podio6Reader13ReaderConceptE">podio::Reader::ReaderConcept (C++ struct)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4N5podio6Reader13ReaderConceptE">[1]</a>
 </li>
-      <li><a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionEv">podio::Reader::ReaderConcept::currentFileVersion (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionEv">[1]</a>
+      <li><a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionERKNSt6stringE">podio::Reader::ReaderConcept::currentFileVersion (C++ function)</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionEv">[1]</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionERKNSt6stringE">[2]</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionEv">[3]</a>
 </li>
       <li><a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader13ReaderConcept22getAvailableCategoriesEv">podio::Reader::ReaderConcept::getAvailableCategories (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept22getAvailableCategoriesEv">[1]</a>
 </li>
@@ -1647,7 +1661,7 @@
 </li>
       <li><a href="cpp_api/file/_reader_8h.html#_CPPv4I0EN5podio6Reader11ReaderModelE">podio::Reader::ReaderModel (C++ struct)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4I0EN5podio6Reader11ReaderModelE">[1]</a>
 </li>
-      <li><a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader11ReaderModel18currentFileVersionEv">podio::Reader::ReaderModel::currentFileVersion (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4NK5podio6Reader11ReaderModel18currentFileVersionEv">[1]</a>
+      <li><a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader11ReaderModel18currentFileVersionERKNSt6stringE">podio::Reader::ReaderModel::currentFileVersion (C++ function)</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader11ReaderModel18currentFileVersionEv">[1]</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4NK5podio6Reader11ReaderModel18currentFileVersionERKNSt6stringE">[2]</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4NK5podio6Reader11ReaderModel18currentFileVersionEv">[3]</a>
 </li>
       <li><a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader11ReaderModel22getAvailableCategoriesEv">podio::Reader::ReaderModel::getAvailableCategories (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4NK5podio6Reader11ReaderModel22getAvailableCategoriesEv">[1]</a>
 </li>
@@ -1727,7 +1741,7 @@
 </li>
       <li><a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader14CollectionInfo4typeE">podio::RNTupleReader::CollectionInfo::type (C++ member)</a>, <a href="cpp_api/struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_info.html#_CPPv4N5podio13RNTupleReader14CollectionInfo4typeE">[1]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionEv">podio::RNTupleReader::currentFileVersion (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionEv">[2]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionERKNSt6stringE">podio::RNTupleReader::currentFileVersion (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionEv">[1]</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionERKNSt6stringE">[2]</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionEv">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionERKNSt6stringE">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RNTupleReader18currentFileVersionEv">[5]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4NK5podio13RNTupleReader22getAvailableCategoriesEv">podio::RNTupleReader::getAvailableCategories (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4NK5podio13RNTupleReader22getAvailableCategoriesEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RNTupleReader22getAvailableCategoriesEv">[2]</a>
 </li>
@@ -1891,14 +1905,14 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4NK5podio13ROOTFrameData10getIDTableEv">podio::ROOTFrameData::getIDTable (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4NK5podio13ROOTFrameData10getIDTableEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13ROOTFrameData10getIDTableEv">[2]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameData13getParametersEv">podio::ROOTFrameData::getParameters (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData13getParametersEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameData13getParametersEv">[2]</a>
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData9m_buffersE">podio::ROOTFrameData::m_buffers (C++ member)</a>
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData9m_idTableE">podio::ROOTFrameData::m_idTable (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameData12m_parametersE">podio::ROOTFrameData::m_parameters (C++ member)</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">podio::ROOTFrameData::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[1]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">[2]</a>, <a href="cpp_api/file/_r_o_o_t_frame_data_8h.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameDataaSERK13ROOTFrameData">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13ROOTFrameDataaSERR13ROOTFrameData">[5]</a>
@@ -1967,7 +1981,7 @@
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4N5podio10ROOTReader12CategoryInfo5tableE">podio::ROOTReader::CategoryInfo::table (C++ member)</a>, <a href="cpp_api/struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info.html#_CPPv4N5podio10ROOTReader12CategoryInfo5tableE">[1]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4NK5podio10ROOTReader18currentFileVersionEv">podio::ROOTReader::currentFileVersion (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4NK5podio10ROOTReader18currentFileVersionEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio10ROOTReader18currentFileVersionEv">[2]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4NK5podio10ROOTReader18currentFileVersionERKNSt6stringE">podio::ROOTReader::currentFileVersion (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4NK5podio10ROOTReader18currentFileVersionEv">[1]</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4NK5podio10ROOTReader18currentFileVersionERKNSt6stringE">[2]</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4NK5podio10ROOTReader18currentFileVersionEv">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio10ROOTReader18currentFileVersionERKNSt6stringE">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio10ROOTReader18currentFileVersionEv">[5]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4NK5podio10ROOTReader22getAvailableCategoriesEv">podio::ROOTReader::getAvailableCategories (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4NK5podio10ROOTReader22getAvailableCategoriesEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio10ROOTReader22getAvailableCategoriesEv">[2]</a>
 </li>
@@ -2363,7 +2377,7 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_s_i_o_reader.html#_CPPv4N5podio9SIOReaderE">podio::SIOReader (C++ class)</a>, <a href="cpp_api/file/_s_i_o_reader_8h.html#_CPPv4N5podio9SIOReaderE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9SIOReaderE">[2]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_s_i_o_reader.html#_CPPv4NK5podio9SIOReader18currentFileVersionEv">podio::SIOReader::currentFileVersion (C++ function)</a>, <a href="cpp_api/file/_s_i_o_reader_8h.html#_CPPv4NK5podio9SIOReader18currentFileVersionEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio9SIOReader18currentFileVersionEv">[2]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_s_i_o_reader.html#_CPPv4NK5podio9SIOReader18currentFileVersionERKNSt6stringE">podio::SIOReader::currentFileVersion (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_s_i_o_reader.html#_CPPv4NK5podio9SIOReader18currentFileVersionEv">[1]</a>, <a href="cpp_api/file/_s_i_o_reader_8h.html#_CPPv4NK5podio9SIOReader18currentFileVersionERKNSt6stringE">[2]</a>, <a href="cpp_api/file/_s_i_o_reader_8h.html#_CPPv4NK5podio9SIOReader18currentFileVersionEv">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio9SIOReader18currentFileVersionERKNSt6stringE">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio9SIOReader18currentFileVersionEv">[5]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_s_i_o_reader.html#_CPPv4NK5podio9SIOReader22getAvailableCategoriesEv">podio::SIOReader::getAvailableCategories (C++ function)</a>, <a href="cpp_api/file/_s_i_o_reader_8h.html#_CPPv4NK5podio9SIOReader22getAvailableCategoriesEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio9SIOReader22getAvailableCategoriesEv">[2]</a>
 </li>
@@ -2813,13 +2827,15 @@
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable.setter_name">setter_name() (podio_gen.generator_utils.MemberVariable method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable.signature">signature (podio_gen.generator_utils.MemberVariable property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/namespace/namespacesio.html#_CPPv43sio">sio (C++ type)</a>
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.sio_filter">sio_filter() (in module podio_schema_evolution)</a>
+</li>
+      <li><a href="cpp_api/file/_s_i_o_block_8h.html#c.SIOMAPBLOCK_NAME">SIOMAPBLOCK_NAME (C macro)</a>
 </li>
   </ul></td>
 </tr></table>

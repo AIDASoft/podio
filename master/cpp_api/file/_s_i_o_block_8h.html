@@ -75,6 +75,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#embedding-a-datamodel-version">Embedding a datamodel version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
 </ul>
@@ -546,6 +547,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../py_api/podio_class_generator.html">podio_class_generator module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.parse_version"><code class="docutils literal notranslate"><span class="pre">parse_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio_class_generator.html#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
 </ul>
 </li>
@@ -639,14 +641,22 @@
              
   <section id="file-sioblock-h">
 <h1>File SIOBlock.h<a class="headerlink" href="#file-sioblock-h" title="Link to this heading"></a></h1>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.SIOMAPBLOCK_NAME">
+<span class="target" id="_s_i_o_block_8h_1a0d2ca4017121329df877ae50e0924ab7"></span><span class="sig-name descname"><span class="n"><span class="pre">SIOMAPBLOCK_NAME</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">key_type</span></span>, <span class="n"><span class="pre">value_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SIOMAPBLOCK_NAME" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv45podio">
 <span id="_CPPv35podio"></span><span id="_CPPv25podio"></span><span id="podio"></span><span class="target" id="namespacepodio"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">podio</span></span></span><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t">
-<span id="_CPPv3I00EN5podio16handlePODDataSIOER4devTP7PODData6size_t"></span><span id="_CPPv2I00EN5podio16handlePODDataSIOER4devTP7PODData6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">devT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PODData</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1ab83fbd4fe8b25c4b12e78520c080e58c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handlePODDataSIO</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t" title="podio::handlePODDataSIO::devT"><span class="n"><span class="pre">devT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <a class="reference internal" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t" title="podio::handlePODDataSIO::PODData"><span class="n"><span class="pre">PODData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTP7PODData6size_t" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I00EN5podio16handlePODDataSIOEvR4devTPK7PODData6size_t">
+<span id="_CPPv3I00EN5podio16handlePODDataSIOER4devTPK7PODData6size_t"></span><span id="_CPPv2I00EN5podio16handlePODDataSIOER4devTPK7PODData6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">devT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PODData</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1a0aeeae28abba7d0ff2f3089d154edf3e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handlePODDataSIO</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTPK7PODData6size_t" title="podio::handlePODDataSIO::devT"><span class="n"><span class="pre">devT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTPK7PODData6size_t" title="podio::handlePODDataSIO::PODData"><span class="n"><span class="pre">PODData</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio16handlePODDataSIOEvR4devTPK7PODData6size_t" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">

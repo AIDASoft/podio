@@ -77,6 +77,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#embedding-a-datamodel-version">Embedding a datamodel version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
 </ul>
@@ -548,6 +549,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">podio_class_generator module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_class_generator.parse_version"><code class="docutils literal notranslate"><span class="pre">parse_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
 </ul>
 </li>
@@ -653,6 +655,13 @@
 <dt class="sig sig-object py" id="podio_class_generator.has_clang_format">
 <span class="sig-prename descclassname"><span class="pre">podio_class_generator.</span></span><span class="sig-name descname"><span class="pre">has_clang_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_class_generator.has_clang_format" title="Link to this definition"></a></dt>
 <dd><p>Check if clang format is available</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="podio_class_generator.parse_version">
+<span class="sig-prename descclassname"><span class="pre">podio_class_generator.</span></span><span class="sig-name descname"><span class="pre">parse_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_class_generator.parse_version" title="Link to this definition"></a></dt>
+<dd><p>Parse the version into a tuple of (major, minor, patch) from the passed
+version string.</p>
 </dd></dl>
 
 <dl class="py function">
