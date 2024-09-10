@@ -296,7 +296,7 @@ std::ostream& operator<<(std::ostream& o, const LinkCollection<FromT, ToT>& v) {
   return o;
 }
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 template <typename FromT, typename ToT>
 void to_json(nlohmann::json& j, const LinkCollection<FromT, ToT>& collection) {
   j = nlohmann::json::array();

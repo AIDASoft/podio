@@ -271,7 +271,7 @@ std::ostream& operator<<(std::ostream& os, const Link<FromT, ToT>& link) {
             << " to: " << link.getTo().id() << '\n';
 }
 
-#ifdef PODIO_JSON_OUTPUT
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 template <typename FromT, typename ToT>
 void to_json(nlohmann::json& j, const Link<FromT, ToT>& link) {
   j = nlohmann::json{{"weight", link.getWeight()}};
