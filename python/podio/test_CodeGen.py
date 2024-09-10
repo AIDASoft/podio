@@ -43,12 +43,19 @@ class CollectionSubscriptTest(unittest.TestCase):
     """Collection subscript test"""
 
     def test_bound_check(self):
+        """Test that bound checking for collection subscript is enabled"""
         collection = nsp.EnergyInNamespaceCollection()
         _ = collection.create()
         self.assertEqual(len(collection), 1)
         with self.assertRaises(IndexError):
             _ = collection[20]
         _ = collection[0]
+
+    def test_getitem_return_type(self):
+        """Test that collection subscript returns an instance of podio immutable datatype"""
+        collection = nsp.EnergyInNamespaceCollection()
+        _ = collection.create()
+        self.assertIsInstance(collection[0], nsp.EnergyInNamespace)
 
 
 class AttributeCreationTest(unittest.TestCase):
