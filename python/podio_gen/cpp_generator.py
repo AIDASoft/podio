@@ -514,7 +514,6 @@ have resolvable schema evolution incompatibilities:"
     def _write_edm_def_file(self):
         """Write the edm definition to a compile time string"""
         model_encoder = DataModelJSONEncoder()
-        print(f"{self.datamodel_version=}")
         data = {
             "package_name": self.package_name,
             "edm_definition": model_encoder.encode(self.datamodel),
