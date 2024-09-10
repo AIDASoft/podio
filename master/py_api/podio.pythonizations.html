@@ -675,11 +675,11 @@
 <dt class="sig sig-object py" id="podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio.pythonizations.collection_subscript.</span></span><span class="sig-name descname"><span class="pre">CollectionSubscriptPythonizer</span></span><a class="headerlink" href="#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer" title="podio.pythonizations.utils.pythonizer.Pythonizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pythonizer</span></code></a></p>
-<p>Bound-check __getitem__ for classes derived from podio::CollectionBase</p>
+<p>Bound-check <cite>__getitem__</cite> for classes derived from <cite>podio.CollectionBase</cite></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.filter">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.filter" title="Link to this definition"></a></dt>
-<dd><p>Abstract classmethod to filter classes to which the pythonizations should be applied</p>
+<dd><p>Filters-out classes non derived from <cite>podio.CollectionBase</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -688,7 +688,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if class should be pythonized.</p>
+<dd class="field-even"><p>True if class is derived from <cite>podio.CollectionBase</cite> and should be pythonized.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
@@ -699,7 +699,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.modify">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.modify" title="Link to this definition"></a></dt>
-<dd><p>Abstract classmethod modifying classes to be pythonized</p>
+<dd><p>Raise an <cite>IndexError</cite> exception if an index is invalid.
+The <cite>__getitem__</cite> will return immutable datatype objects instead of the mutable ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -713,10 +714,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.priority">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer.priority" title="Link to this definition"></a></dt>
-<dd><p>Order in which the pythonizations are applied</p>
+<dd><p>No special requirements for order of applying</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Priority</p>
+<dd class="field-odd"><p>Priority.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
@@ -741,7 +742,7 @@ might be desirable and help detecting mis-assignments</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.pythonizations.freeze_class.FreezeClassPythonizer.filter">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.freeze_class.FreezeClassPythonizer.filter" title="Link to this definition"></a></dt>
-<dd><p>Abstract classmethod to filter classes to which the pythonizations should be applied</p>
+<dd><p>Filter passing all the classes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -750,7 +751,7 @@ might be desirable and help detecting mis-assignments</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if class should be pythonized.</p>
+<dd class="field-even"><p>True.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
@@ -761,7 +762,7 @@ might be desirable and help detecting mis-assignments</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.pythonizations.freeze_class.FreezeClassPythonizer.modify">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.freeze_class.FreezeClassPythonizer.modify" title="Link to this definition"></a></dt>
-<dd><p>Abstract classmethod modifying classes to be pythonized</p>
+<dd><p>Raise an <cite>AttributeError</cite> if new attribute would be set</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -775,8 +776,16 @@ might be desirable and help detecting mis-assignments</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.pythonizations.freeze_class.FreezeClassPythonizer.priority">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.pythonizations.freeze_class.FreezeClassPythonizer.priority" title="Link to this definition"></a></dt>
-<dd><p>This most likely should be the last pythonization loaded
-otherwise it may interfere with creating attributes during other pythonizations</p>
+<dd><p>This most likely should be the last pythonization loaded.
+Otherwise it may interfere with creating attributes during other pythonizations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Priority.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
