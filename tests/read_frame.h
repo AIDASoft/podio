@@ -114,6 +114,32 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     return 1;
   }
 
+  const auto datamodelVersion = reader.currentFileVersion("datamodel").value_or(podio::version::Version{});
+  if (assertBuildVersion && datamodelVersion != podio::version::build_version) {
+    std::cerr << "The (build) version of the datamodel could not be read back correctly. "
+              << "(expected: " << podio::version::build_version << ", actual: " << datamodelVersion << ")" << std::endl;
+    return 1;
+  }
+
+  const auto extensionModelVersion = reader.currentFileVersion("extension_model");
+  if (extensionModelVersion) {
+    std::cerr << "The (build) version of the extension model was available althought it shouldn't be. Its value is "
+              << extensionModelVersion.value() << std::endl;
+  }
+
+  const auto availableCategories = reader.getAvailableCategories();
+  if (availableCategories.size() != 2) {
+    std::cerr << "More categories than expected!" << std::endl;
+    return 1;
+  }
+  if (std::find(availableCategories.begin(), availableCategories.end(), "events") == availableCategories.end() ||
+      std::find(availableCategories.begin(), availableCategories.end(), "other_events") == availableCategories.end()) {
+    std::cerr << "Could not read back the available categories as expected! (expected: ['events', 'other_events']), "
+                 "actual: ['"
+              << availableCategories[0] << "', '" << availableCategories[1] << "']" << std::endl;
+    return 1;
+  }
+
   if (reader.getEntries(podio::Category::Event) != 10) {
     std::cerr << "Could not read back the number of events correctly. "
               << "(expected:" << 10 << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;

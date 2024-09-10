@@ -84,7 +84,16 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   auto edm = edmView(0);
-  m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm));
+  DatamodelDefinitionHolder::VersionList edmVersions{};
+  for (const auto& [name, _] : edm) {
+    try {
+      auto edmVersionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
+      auto edmVersion = edmVersionView(0);
+      edmVersions.emplace_back(name, podio::version::Version{edmVersion[0], edmVersion[1], edmVersion[2]});
+    } catch (const ROOT::Experimental::RException&) {
+    }
+  }
+  m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm), std::move(edmVersions));
 
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);

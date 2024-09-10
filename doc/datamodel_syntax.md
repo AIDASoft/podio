@@ -206,6 +206,23 @@ Some customization of the generated code is possible through flags. These flags 
 - `getSyntax`: steers the naming of get and set methods. If set to true, methods are prefixed with `get` and `set` following the capitalized member name, otherwise the member name is used for both.
 - `exposePODMembers`: whether get and set methods are also generated for members of a member-component. In the example corresponding methods would be generated to directly set / get `x` through `ExampleType`.
 
+## Embedding a datamodel version
+Each datamodel definition needs a schema version. However, in the case of podio
+this schema version is a single integer. This makes it rather hard to use in
+typical versioning, where one might differentiate between *major*, *minor* (and
+*patch*) versions. Hence, the versioning of a datamodel and its schema version
+are coupled but do not necessarily have to be the same. podio offers hooks to
+store this important meta information into the produce files. In order to do you
+can pass the version of the datamodel to the generator via the
+`--datamodel-version` argument. It expects the version to conform to this
+regular expression: `"v?\d+[\.|-]\d+([\.|-]\d+)?$"`, i.e. that the major and
+minor version are present, separated by either a dot or comma with an optional
+patch version and an optional `v` prefix.
+
+If this this information is passed to the generator it will be injected into the
+podio internals and will be stored in the output files. They can be retrieved
+via the `currentFileVersion(const std::string&)` methods of the various readers.
+
 
 ## Extending a datamodel / using types from an upstream datamodel
 It is possible to extend another datamodel with your own types, resp. use some datatypes or components from an upstream datamodel in your own datamodel.

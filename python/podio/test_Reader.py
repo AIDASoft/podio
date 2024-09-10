@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Unit tests for podio readers"""
 
+from podio.version import build_version
+
 
 class ReaderTestCaseMixin:
     """Common unittests for readers.
@@ -69,6 +71,23 @@ class ReaderTestCaseMixin:
         for _ in non_existant:
             i += 1
         self.assertEqual(i, 0)
+
+    def test_available_datamodels(self):
+        """Make sure that the datamodel information can be retrieved"""
+        datamodels = self.reader.datamodel_definitions
+        self.assertEqual(len(datamodels), 2)
+        for model in datamodels:
+            self.assertTrue(model in ("datamodel", "extension_model"))
+
+        self.assertEqual(self.reader.current_file_version("datamodel"), build_version)
+
+    def test_invalid_datamodel_version(self):
+        """Make sure that the necessary exceptions are raised"""
+        with self.assertRaises(KeyError):
+            self.reader.current_file_version("extension_model")
+
+        with self.assertRaises(KeyError):
+            self.reader.current_file_version("non-existant-model")
 
 
 class LegacyReaderTestCaseMixin:

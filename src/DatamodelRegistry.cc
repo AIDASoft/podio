@@ -22,7 +22,7 @@ size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view d
 
   if (it == m_definitions.cend()) {
     int index = m_definitions.size();
-    m_definitions.emplace_back(name, definition);
+    m_definitions.emplace_back(std::move(name), definition);
 
     for (const auto& [typeName, relations, vectorMembers] : relationNames) {
       m_relations.emplace(typeName, RelationNames{relations, vectorMembers});
@@ -33,6 +33,14 @@ size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view d
 
   // TODO: Output?
   return std::distance(m_definitions.cbegin(), it);
+}
+
+size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition,
+                                            const podio::RelationNameMapping& relationNames,
+                                            podio::version::Version version) {
+  auto index = registerDatamodel(name, definition, relationNames);
+  m_datamodelVersions.emplace(std::move(name), version);
+  return index;
 }
 
 const std::string_view DatamodelRegistry::getDatamodelDefinition(std::string_view name) const {
@@ -82,6 +90,13 @@ RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) con
   }
 
   return {emptyVec, emptyVec};
+}
+
+std::optional<podio::version::Version> DatamodelRegistry::getDatamodelVersion(const std::string& name) const {
+  if (const auto it = m_datamodelVersions.find(name); it != m_datamodelVersions.end()) {
+    return it->second;
+  }
+  return std::nullopt;
 }
 
 } // namespace podio

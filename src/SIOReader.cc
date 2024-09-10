@@ -120,10 +120,13 @@ void SIOReader::readEDMDefinitions() {
 
   sio::block_list blocks;
   blocks.emplace_back(std::make_shared<podio::SIOMapBlock<std::string, std::string>>());
+  blocks.emplace_back(std::make_shared<podio::SIOMapBlock<std::string, podio::version::Version>>());
+
   sio::api::read_blocks(buffer.span(), blocks);
 
   auto datamodelDefs = static_cast<SIOMapBlock<std::string, std::string>*>(blocks[0].get());
-  m_datamodelHolder = DatamodelDefinitionHolder(std::move(datamodelDefs->mapData));
+  auto edmVersions = static_cast<SIOMapBlock<std::string, podio::version::Version>*>(blocks[1].get());
+  m_datamodelHolder = DatamodelDefinitionHolder(std::move(datamodelDefs->mapData), std::move(edmVersions->mapData));
 }
 
 } // namespace podio

@@ -81,11 +81,31 @@ class BaseReaderMixin:
             return ""
         return self._reader.getDatamodelDefinition(edm_name).data()
 
-    def current_file_version(self):
-        """Get the podio (build) version that was used to write this file
+    def current_file_version(self, edm_name=None):
+        """Get the (build) version that was used to write this file
+
+        If called without argument or None, the podio build version is returned
+        otherwise the build version of the datamodel
+
+        Args:
+            edm_name (str, optional): The package name of the datamodel
 
         Returns:
-            podio.version.Version: The build version of podio that was use to
-                write this file
+            podio.version.Version: The build version of podio or the build
+                version of the datamodel (if available) that was used to write
+                this file
+
+        Raises:
+            KeyError: If the datamodel does not have a version stored
+            RuntimeError: If the reader is a legacy reader and a datamodel
+                version is requested
         """
-        return self._reader.currentFileVersion()
+        if edm_name is None:
+            return self._reader.currentFileVersion()
+
+        if self._is_legacy:
+            raise RuntimeError("Legacy readers do not store any version info")
+        maybe_version = self._reader.currentFileVersion(edm_name)
+        if maybe_version.has_value():
+            return maybe_version.value()
+        raise KeyError(f"No version information available for '{edm_name}'")

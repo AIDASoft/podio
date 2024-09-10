@@ -41,7 +41,15 @@ class DatamodelRegistryIndex {
 public:
   static size_t value() {
     static const auto relationNames = {{ package_name }}__getRelationNames();
-    static auto index = DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel("{{ package_name }}", {{ package_name }}__JSONDefinition, relationNames));
+    static auto index =
+      DatamodelRegistryIndex(podio::DatamodelRegistry::mutInstance().registerDatamodel(
+                               "{{ package_name }}",
+                               {{ package_name }}__JSONDefinition,
+                               relationNames
+{% if datamodel_version %}
+                               , podio::version::Version{ {{ datamodel_version | join(", ") }} }
+{% endif %}
+                             ));
     return index.m_value;
   }
 private:

@@ -263,6 +263,14 @@ void RNTupleWriter::finish() {
   *versionField = {podioVersion.major, podioVersion.minor, podioVersion.patch};
 
   auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
+  for (const auto& [name, _] : edmDefinitions) {
+    auto edmVersion = DatamodelRegistry::instance().getDatamodelVersion(name);
+    if (edmVersion) {
+      auto edmVersionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name).c_str());
+      *edmVersionField = {edmVersion->major, edmVersion->minor, edmVersion->patch};
+    }
+  }
+
   auto edmField = metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   *edmField = std::move(edmDefinitions);
 

@@ -4,7 +4,7 @@
 
 import os
 import subprocess
-
+import re
 
 from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_utils import DefinitionError
@@ -70,6 +70,20 @@ def read_upstream_edm(name_path):
         raise argparse.ArgumentTypeError(
             f"{path} does not contain a valid datamodel definition"
         ) from err
+
+
+def parse_version(version_str):
+    """Parse the version into a tuple of (major, minor, patch) from the passed
+    version string.
+    """
+    if version_str is None:
+        return None
+
+    if re.match(r"v?\d+[\.|-]\d+([\.|-]\d+)?$", version_str):
+        ver = version_str.replace("-", ".").replace("v", "").split(".")
+        return tuple(int(v) for v in ver)
+
+    raise argparse.ArgumentTypeError(f"{version_str} cannot be parsed as a valid version")
 
 
 if __name__ == "__main__":
@@ -147,6 +161,12 @@ if __name__ == "__main__":
         default=None,
         action="store",
     )
+    parser.add_argument(
+        "--datamodel-version",
+        help="The version string of the generated datamodel",
+        default=None,
+        type=parse_version,
+    )
 
     args = parser.parse_args()
 
@@ -176,6 +196,7 @@ if __name__ == "__main__":
             verbose=args.verbose,
             dryrun=args.dryrun,
             upstream_edm=args.upstream_edm,
+            datamodel_version=args.datamodel_version,
             old_description=args.old_description,
             evolution_file=args.evolution_file,
         )

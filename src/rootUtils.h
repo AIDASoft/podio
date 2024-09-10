@@ -140,6 +140,12 @@ constexpr static auto versionBranchName = "PodioBuildVersion";
  */
 constexpr static auto edmDefBranchName = "EDMDefinitions";
 
+/// The name of the branch used for storing the version of a generated datamodel
+/// (if available)
+inline std::string edmVersionBranchName(const std::string& edmname) {
+  return edmname + "___Version";
+}
+
 /**
  * Name of the branch for storing the idTable for a given category in the meta
  * data tree

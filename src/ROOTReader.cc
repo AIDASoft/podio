@@ -222,7 +222,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
 
   for (int i = 0; i < branches->GetEntries(); ++i) {
     const std::string name = branches->At(i)->GetName();
-    const auto fUnder = name.find("___");
+    const auto fUnder = name.find(root_utils::idTableName(""));
     if (fUnder != std::string::npos) {
       brNames.emplace_back(name.substr(0, fUnder));
     }
@@ -262,7 +262,19 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     auto* datamodelDefs = new DatamodelDefinitionHolder::MapType{};
     edmDefBranch->SetAddress(&datamodelDefs);
     edmDefBranch->GetEntry(0);
-    m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs));
+
+    DatamodelDefinitionHolder::VersionList edmVersions{};
+    for (const auto& [name, _] : *datamodelDefs) {
+      if (auto* edmVersionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmVersionBranchName(name))) {
+        auto* edmVersion = new podio::version::Version{};
+        edmVersionBranch->SetAddress(&edmVersion);
+        edmVersionBranch->GetEntry(0);
+        edmVersions.emplace_back(name, *edmVersion);
+        delete edmVersion;
+      }
+    }
+
+    m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs), std::move(edmVersions));
     delete datamodelDefs;
   }
 

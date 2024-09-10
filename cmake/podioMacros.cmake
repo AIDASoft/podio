@@ -131,13 +131,14 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 #      LANG                 OPTIONAL: The programming language choice
 #                           Default is cpp
 #      DEPENDS              OPTIONAL: List of files to be added as configure dependencies of the datamodel
+#      VERSION              OPTIONAL: The version of the datamodel (which does not have to be the schema version!)
 # )
 #
 # Note that the create_${datamodel} target will always be called, but if the YAML_FILE has not changed
 # this is essentially a no-op, and should not cause re-compilation.
 #---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "OLD_DESCRIPTION;OUTPUT_FOLDER;UPSTREAM_EDM;SCHEMA_EVOLUTION" "IO_BACKEND_HANDLERS;LANG;DEPENDS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OLD_DESCRIPTION;OUTPUT_FOLDER;UPSTREAM_EDM;SCHEMA_EVOLUTION" "IO_BACKEND_HANDLERS;LANG;DEPENDS;VERSION" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
@@ -196,6 +197,11 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     endif()
   endif()
 
+  set(VERSION_ARG "")
+  if (ARG_VERSION)
+    set(VERSION_ARG "--datamodel-version=${ARG_VERSION}")
+  endif()
+
   # Make sure that we re run the generation process every time either the
   # templates or the yaml file changes.
   include(${podio_PYTHON_DIR}/templates/CMakeLists.txt)
@@ -215,7 +221,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   message(STATUS "Creating '${datamodel}' datamodel")
   # we need to bootstrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${OLD_DESCRIPTION_ARG} ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG}
+    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${OLD_DESCRIPTION_ARG} ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG} ${VERSION_ARG}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE podio_generate_command_retval
     )
