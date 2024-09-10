@@ -410,7 +410,6 @@ have resolvable schema evolution incompatibilities:"
         """
         types_in_interfaces = defaultdict(list)
         for name, interface in self.datamodel.interfaces.items():
-            print(f"preprocessing interface {name}")
             for if_type in interface["Types"]:
                 types_in_interfaces[if_type.full_type].append(name)
 
