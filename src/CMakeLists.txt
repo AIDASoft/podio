@@ -215,6 +215,7 @@ install(FILES ${headers_necessary}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
 )
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio/utilities
+                  ${PROJECT_SOURCE_DIR}/include/podio/detail
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
 )
 
