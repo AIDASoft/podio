@@ -15,6 +15,8 @@
 #include "datamodel/ExampleWithNamespaceCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/LinkCollections.h"
+#include "datamodel/TypeWithEnergy.h"
 
 #include "extension_model/ContainedTypeCollection.h"
 #include "extension_model/ExternalComponentTypeCollection.h"
@@ -23,12 +25,11 @@
 #include "podio/Frame.h"
 #include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #include <string>
 #include <tuple>
-
-// Define an link that is used for the I/O tests
-using TestLinkCollection = podio::LinkCollection<ExampleHit, ExampleCluster>;
+#include <type_traits>
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
@@ -400,6 +401,27 @@ auto createLinkCollection(const ExampleHitCollection& hits, const ExampleCluster
   return links;
 }
 
+auto createLinkWithInterfaceCollection(const ExampleClusterCollection& clusters, const ExampleHitCollection& hits,
+                                       const ExampleMCCollection& mcs) {
+  TestInterfaceLinkCollection links{};
+
+  auto link = links.create();
+  link.set(clusters[0]);
+  link.set(TypeWithEnergy{hits[0]});
+  link.setWeight(1.23f);
+
+  link = links.create();
+  link.set(clusters[1]);
+  link.set(TypeWithEnergy{mcs[0]});
+  link.setWeight(3.14f);
+
+  link = links.create();
+  link.set(clusters[0]);
+  link.set(TypeWithEnergy{clusters[1]});
+
+  return links;
+}
+
 podio::Frame makeFrame(int iFrame) {
   podio::Frame frame{};
 
@@ -461,6 +483,7 @@ podio::Frame makeFrame(int iFrame) {
 
   frame.put(createExampleWithInterfaceCollection(hits, clusters, mcps), "interface_examples");
   frame.put(createLinkCollection(hits, clusters), "links");
+  frame.put(createLinkWithInterfaceCollection(clusters, hits, mcps), "links_with_interfaces");
 
   return frame;
 }

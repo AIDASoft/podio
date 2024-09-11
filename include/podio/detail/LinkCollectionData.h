@@ -7,6 +7,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/ICollectionProvider.h"
+#include "podio/detail/RelationIOHelpers.h"
 
 #include <deque>
 #include <memory>
@@ -148,8 +149,7 @@ public:
           entries[i]->m_from = nullptr;
           continue;
         }
-        auto* tmp_coll = static_cast<detail::GetCollectionType<FromT>*>(coll);
-        entries[i]->m_from = new FromT((*tmp_coll)[id.index]);
+        podio::detail::addSingleRelation(entries[i]->m_from, coll, id);
       } else {
         entries[i]->m_from = nullptr;
       }
@@ -163,8 +163,7 @@ public:
           entries[i]->m_to = nullptr;
           continue;
         }
-        auto* tmp_coll = static_cast<detail::GetCollectionType<ToT>*>(coll);
-        entries[i]->m_to = new ToT((*tmp_coll)[id.index]);
+        podio::detail::addSingleRelation(entries[i]->m_to, coll, id);
       } else {
         entries[i]->m_to = nullptr;
       }

@@ -24,6 +24,7 @@ static const std::vector<std::string> collsToWrite = {"mcparticles",
                                                       "WithNamespaceRelationCopy",
                                                       "emptyCollection",
                                                       "emptySubsetColl",
-                                                      "links"};
+                                                      "links",
+                                                      "links_with_interfaces"};
 
 #endif // PODIO_TESTS_FRAME_TEST_COMMON_H
