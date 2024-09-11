@@ -21,4 +21,10 @@ try:
 except ImportError:
     pass
 
-__all__ = ["__version__", "Frame", "root_io", "sio_io", "reading", "version"]
+try:
+    # Same mechanism as for the sio_io above
+    from . import data_source
+except ImportError:
+    pass
+
+__all__ = ["__version__", "Frame", "root_io", "sio_io", "reading", "data_source", "version"]
