@@ -209,6 +209,16 @@ namespace detail {
   template <typename Tuple>
   using TupleOfMutableTypes = typename ToTupleOfTemplateHelper<GetMutableHandleType, Tuple>::type;
 
+  /// Detector for checking for the existence of an interfaced_type type member
+  template <typename T>
+  using hasInterface_t = typename T::interfaced_types;
+
+  /// Variable template for checking whether the passed type T is an interface
+  /// type.
+  ///
+  /// @note: This simply checks whether T has an interfaced_types type member.
+  template <typename T>
+  constexpr static bool isInterfaceType = det::is_detected_v<hasInterface_t, T>;
 } // namespace detail
 
 // forward declaration to be able to use it below
