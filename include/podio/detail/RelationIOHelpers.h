@@ -29,7 +29,7 @@ namespace podio::detail {
 /// @param id The ObjectID of the element that we are currently looking for
 template <typename T, typename InterfaceType>
 void tryAddTo(T, std::vector<InterfaceType>& relElements, const podio::CollectionBase* coll, const podio::ObjectID id) {
-  if (auto typedColl = dynamic_cast<const T::collection_type*>(coll)) {
+  if (auto typedColl = dynamic_cast<const typename T::collection_type*>(coll)) {
     const T tmp = (*typedColl)[id.index];
     relElements.emplace_back(tmp);
   }
@@ -87,7 +87,7 @@ void addMultiRelation(std::vector<RelType>& relElements, const podio::Collection
   if constexpr (podio::detail::isInterfaceType<RelType>) {
     addInterfaceToMultiRelation(relElements, coll, id);
   } else {
-    const auto* typeColl = static_cast<const RelType::collection_type*>(coll);
+    const auto* typeColl = static_cast<const typename RelType::collection_type*>(coll);
     relElements.emplace_back((*typeColl)[id.index]);
   }
 }
