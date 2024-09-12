@@ -1,12 +1,9 @@
 """Python module for creating ROOT RDataFrame with files containing podio Frames"""
 
-from ROOT import gSystem, gInterpreter
+from ROOT import gSystem
 
-if not gSystem.DynamicPathName("libpodioDataSource", True):
-    raise ImportError("Error finding libpodioDataSource")
-
-if gInterpreter.LoadFile("podio/DataSource.h") != 0:
-    raise ImportError("Error when loading file podio/DataSource.h")
+if gSystem.Load("libpodioDataSourceDict") < 0:
+    raise ImportError("Error when loading libpodioDataSourceDict")
 
 from ROOT import podio  # pylint: disable=wrong-import-position
 

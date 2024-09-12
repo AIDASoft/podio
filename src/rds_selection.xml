@@ -1,5 +1,6 @@
 <lcgdict>
   <selection>
     <class name="podio::DataSource"/>
+    <function name="podio::CreateDataFrame"/>
   </selection>
 </lcgdict>
