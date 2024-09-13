@@ -49,8 +49,7 @@ void tryAddTo(T, std::vector<InterfaceType>& relElements, const podio::Collectio
 template <typename InterfaceType>
 void addInterfaceToMultiRelation(std::vector<InterfaceType>& relElements, const podio::CollectionBase* coll,
                                  const podio::ObjectID id) {
-  std::apply([&relElements, &coll, &id](auto... t) { (tryAddTo(t, relElements, coll, id), ...); },
-             typename InterfaceType::interfaced_types{});
+  std::apply([&](auto... t) { (tryAddTo(t, relElements, coll, id), ...); }, typename InterfaceType::interfaced_types{});
 }
 
 /// Helper function for adding an object to the OneToManyRelations container
@@ -132,8 +131,7 @@ void tryAssignTo(T, InterfaceType*& relation, const podio::CollectionBase* coll,
 template <typename InterfaceType>
 void addInterfaceToSingleRelation(InterfaceType*& relation, const podio::CollectionBase* coll,
                                   const podio::ObjectID id) {
-  std::apply([&relation, &coll, &id](auto... t) { (tryAssignTo(t, relation, coll, id), ...); },
-             typename InterfaceType::interfaced_types{});
+  std::apply([&](auto... t) { (tryAssignTo(t, relation, coll, id), ...); }, typename InterfaceType::interfaced_types{});
 }
 
 /// Helper function for assigning the related object in a OneToOneRelation
