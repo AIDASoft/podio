@@ -300,6 +300,8 @@ namespace detail {
   template <typename FromT, typename ToT>
   podio::CollectionReadBuffers createLinkBuffers(bool subsetColl) {
     auto readBuffers = podio::CollectionReadBuffers{};
+    readBuffers.type = podio::detail::linkCollTypeName<FromT, ToT>();
+    readBuffers.schemaVersion = podio::LinkCollection<FromT, ToT>::schemaVersion;
     readBuffers.data = subsetColl ? nullptr : new LinkDataContainer();
 
     // Either it is a subset collection or we have two relations
