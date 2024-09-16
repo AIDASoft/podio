@@ -89,7 +89,7 @@ public:
   /// @param frame        The Frame to store
   /// @param category     The category name under which this Frame should be
   ///                     stored
-  /// @param collsToWrite The collection names that should be written
+  /// @param collections  The collection names that should be written
   void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collections) {
     return m_self->writeFrame(frame, category, collections);
   }
@@ -108,7 +108,7 @@ public:
   /// This stores only the desired collections and not the complete frame.
   ///
   /// @param frame        The Frame to store
-  /// @param collsToWrite The collection names that should be written
+  /// @param collections  The collection names that should be written
   void writeEvent(const podio::Frame& frame, const std::vector<std::string>& collections) {
     writeFrame(frame, podio::Category::Event, collections);
   }

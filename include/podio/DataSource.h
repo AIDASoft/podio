@@ -133,8 +133,7 @@ private:
   ///
   /// @brief Setup input for the podio::DataSource.
   ///
-  /// @param[in]  Number of events.
-  /// @return     void.
+  /// @param[in] nEvents Number of events.
   ///
   void SetupInput(int nEvents);
 };
