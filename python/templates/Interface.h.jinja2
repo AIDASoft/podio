@@ -26,6 +26,12 @@ public:
   /// tuple
   using interfaced_types = std::tuple<{{ Types | join(", ")}}>;
 
+  /// Mark interfaces as always acting as default datatypes.
+  ///
+  /// @note We only detect the member typedef, not whether it is actually usable
+  /// in any meaningful way
+  using mutable_type = podio::det::nonesuch;
+
 private:
   /// type alias containing all the mutable types that can be used to initialize
   /// this interface

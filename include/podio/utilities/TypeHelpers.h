@@ -186,6 +186,16 @@ namespace detail {
   using hasCollection_t = typename T::collection_type;
 
   /// Variable template for determining whether type T is a podio generated
+  /// mutable handle class
+  template <typename T>
+  constexpr static bool isMutableHandleType = det::is_detected_v<hasObject_t, std::remove_reference_t<T>>;
+
+  /// Variable template for determining whether type T is a podio generated
+  /// default handle class
+  template <typename T>
+  constexpr static bool isDefaultHandleType = det::is_detected_v<hasMutable_t, std::remove_reference_t<T>>;
+
+  /// Variable template for determining whether type T is a podio generated
   /// handle class.
   ///
   /// @note this basically just checks the existence of the mutable_type and
@@ -193,7 +203,7 @@ namespace detail {
   /// wanted to. However, for our purposes we mainly need it for a static_assert
   /// to have more understandable compilation error message.
   template <typename T>
-  constexpr static bool isPodioType = det::is_detected_v<hasObject_t, T> || det::is_detected_v<hasMutable_t, T>;
+  constexpr static bool isPodioType = isDefaultHandleType<T> || isMutableHandleType<T>;
 
   /// Variable template for obtaining the default handle type from any podio
   /// generated handle type.
@@ -201,7 +211,8 @@ namespace detail {
   /// If T is already a default handle, this will return T, if T is a mutable
   /// handle it will return T::object_type.
   template <typename T>
-  using GetDefaultHandleType = typename det::detected_or<T, hasObject_t, T>::type;
+  using GetDefaultHandleType =
+      typename det::detected_or<std::remove_reference_t<T>, hasObject_t, std::remove_reference_t<T>>::type;
 
   /// Variable template for obtaining the mutable handle type from any podio
   /// generated handle type.
@@ -209,12 +220,13 @@ namespace detail {
   /// If T is already a mutable handle, this will return T, if T is a default
   /// handle it will return T::mutable_type.
   template <typename T>
-  using GetMutableHandleType = typename det::detected_or<T, hasMutable_t, T>::type;
+  using GetMutableHandleType =
+      typename det::detected_or<std::remove_reference_t<T>, hasMutable_t, std::remove_reference_t<T>>::type;
 
   /// Variable template for obtaining the collection type from any podio
   /// generated handle type
   template <typename T>
-  using GetCollectionType = det::detected_t<hasCollection_t, T>;
+  using GetCollectionType = det::detected_t<hasCollection_t, std::remove_reference_t<T>>;
 
   /// Helper type alias to transform a tuple of handle types to a tuple of
   /// mutable handle types.
@@ -230,7 +242,7 @@ namespace detail {
   ///
   /// @note: This simply checks whether T has an interfaced_types type member.
   template <typename T>
-  constexpr static bool isInterfaceType = det::is_detected_v<hasInterface_t, T>;
+  constexpr static bool isInterfaceType = det::is_detected_v<hasInterface_t, std::remove_reference_t<T>>;
 } // namespace detail
 
 // forward declaration to be able to use it below

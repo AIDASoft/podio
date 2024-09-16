@@ -79,7 +79,14 @@ public:
     return LinkT<FromU, ToU, false>(m_obj);
   }
 
-  /// Create a mutable deep-copy with identical relations
+  /// Create a mutable deep-copy
+  ///
+  /// @param cloneRelations if set to false only the weight will be cloned but
+  ///                       not the relations to the objects this link points
+  ///                       to. Defaults to true
+  ///
+  /// @returns A mutable deep-copy of this link which is independent of the
+  ///          original one
   template <typename FromU = FromT, typename ToU = ToT, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
   MutableLink<FromU, ToU> clone(bool cloneRelations = true) const {
     auto tmp = new LinkObjT(podio::ObjectID{}, m_obj->weight);
@@ -94,6 +101,7 @@ public:
     return MutableLink<FromU, ToU>(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
   }
 
+  /// Create an empty Link handle
   template <bool Mut = Mutable, typename = std::enable_if_t<!Mut && !Mutable>>
   static Link<FromT, ToT> makeEmpty() {
     return {nullptr};
@@ -122,11 +130,30 @@ public:
   }
 
   /// Set the related-from object
+  ///
+  /// @note All setFrom overloads are equivalent and the correct one is selected
+  /// at compile time. We need to differentiate between the handles, only to
+  /// make the python bindings work
   template <typename FromU,
-            typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT>>>
+            std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT> &&
+                                 detail::isDefaultHandleType<FromU>,
+                             int> = 0>
   void setFrom(FromU value) {
     delete m_obj->m_from;
     m_obj->m_from = new detail::GetDefaultHandleType<FromU>(value);
+  }
+
+  /// Set the related-from object
+  ///
+  /// @note All setFrom overloads are equivalent and the correct one is selected
+  /// at compile time. We need to differentiate between the handles, only to
+  /// make the python bindings work
+  template <typename FromU,
+            std::enable_if_t<Mutable && std::is_same_v<detail::GetMutableHandleType<FromT>, FromU> &&
+                                 detail::isMutableHandleType<FromU>,
+                             int> = 0>
+  void setFrom(FromU value) {
+    setFrom(detail::GetDefaultHandleType<FromU>(value));
   }
 
   /// Access the related-to object
@@ -138,11 +165,30 @@ public:
   }
 
   /// Set the related-to object
+  ///
+  /// @note All setTo overloads are equivalent and the correct one is selected
+  /// at compile time. We need to differentiate between the handles, only to
+  /// make the python bindings work
   template <typename ToU,
-            typename = std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<ToU>, ToT>>>
+            std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<ToU>, ToT> &&
+                                 detail::isDefaultHandleType<ToU>,
+                             int> = 0>
   void setTo(ToU value) {
     delete m_obj->m_to;
     m_obj->m_to = new detail::GetDefaultHandleType<ToU>(value);
+  }
+
+  /// Set the related-to object
+  ///
+  /// @note All setTo overloads are equivalent and the correct one is selected
+  /// at compile time. We need to differentiate between the handles, only to
+  /// make the python bindings work
+  template <typename ToU,
+            std::enable_if_t<Mutable && std::is_same_v<detail::GetMutableHandleType<ToT>, ToU> &&
+                                 detail::isMutableHandleType<ToU>,
+                             int> = 0>
+  void setTo(ToU value) {
+    setTo(detail::GetDefaultHandleType<ToU>(value));
   }
 
   /// Templated version for getting an element of the link by type. Only

@@ -35,6 +35,7 @@ EXPECTED_COLL_NAMES = {
     "emptyCollection",
     "emptySubsetColl",
     "links",
+    "links_with_interfaces",
 }
 
 # The expected collections from the extension (only present in the other_events category)

@@ -4,6 +4,8 @@
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/LinkCollections.h"
+#include "datamodel/TypeWithEnergy.h"
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -311,6 +313,11 @@ TEST_CASE("LinkCollection subset collection", "[links][subset-colls]") {
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 
+TEST_CASE("LinkCollection basics", "[links]") {
+  REQUIRE(podio::detail::linkCollTypeName<ExampleCluster, ExampleHit>() ==
+          "podio::LinkCollection<ExampleCluster,ExampleHit>");
+}
+
 auto createLinkCollections(const size_t nElements = 3u) {
   auto colls = std::make_tuple(TestLColl(), ExampleHitCollection(), ExampleClusterCollection());
 
@@ -413,6 +420,26 @@ TEST_CASE("LinkCollection movability", "[links][move-semantics][collections]") {
     checkCollections(evenNewerLinks, hitColl, clusterColl);
     REQUIRE(evenNewerLinks.isSubsetCollection());
   }
+}
+
+TEST_CASE("Links with interfaces", "[links][interface-types]") {
+  auto coll = TestInterfaceLinkCollection{};
+  auto cluster = ExampleCluster();
+  auto hit = ExampleHit();
+  auto iface = TypeWithEnergy(hit);
+
+  auto link = coll.create();
+  link.setFrom(cluster);
+  link.setTo(iface);
+
+  REQUIRE(link.getFrom() == cluster);
+  REQUIRE(link.get<ExampleCluster>() == cluster);
+  REQUIRE(link.getTo() == iface);
+  REQUIRE(link.get<TypeWithEnergy>() == iface);
+
+  link.set(TypeWithEnergy(cluster));
+  REQUIRE(link.get<ExampleCluster>() == cluster); // unchanged
+  REQUIRE(link.get<TypeWithEnergy>() == cluster);
 }
 
 #ifdef PODIO_JSON_OUTPUT
