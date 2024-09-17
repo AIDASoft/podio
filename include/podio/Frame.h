@@ -283,8 +283,9 @@ public:
   /// @param key The key under which the value is stored
   ///
   /// @returns   An optional holding the value if it is present
-  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  template <typename T>
   inline auto getParameter(const std::string& key) const {
+    static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
     return m_self->parameters().get<T>(key);
   }
 
