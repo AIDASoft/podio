@@ -264,7 +264,7 @@ class Frame:
                 cpp_types = _get_cpp_types(as_type)
                 if len(cpp_types) == 0:
                     raise ValueError(f"Cannot put a parameter of type {as_type} into a Frame")
-                self._frame.putParameter[cpp_types[0]](key, value)
+                self._frame.putParameter[cpp_types[0][0]](key, value)
 
             # If we have a single integer, a std::string overload kicks in with higher
             # priority than the template for some reason. So we explicitly select the
