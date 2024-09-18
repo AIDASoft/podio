@@ -61,7 +61,7 @@ public:
 
   /// Constructor with weight
   LinkT(float weight) : m_obj(new LinkObjT{}, podio::utils::MarkOwned) {
-    m_obj->weight = weight;
+    m_obj->data.weight = weight;
   }
 
   /// Copy constructor
@@ -89,7 +89,7 @@ public:
   ///          original one
   template <typename FromU = FromT, typename ToU = ToT, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
   MutableLink<FromU, ToU> clone(bool cloneRelations = true) const {
-    auto tmp = new LinkObjT(podio::ObjectID{}, m_obj->weight);
+    auto tmp = new LinkObjT(podio::ObjectID{}, m_obj->data);
     if (cloneRelations) {
       if (m_obj->m_from) {
         tmp->m_from = new FromT(*m_obj->m_from);
@@ -112,13 +112,13 @@ public:
 
   /// Get the weight of the link
   float getWeight() const {
-    return m_obj->weight;
+    return m_obj->data.weight;
   }
 
   /// Set the weight of the link
   template <bool Mut = Mutable, typename = std::enable_if_t<Mut && Mutable>>
   void setWeight(float value) {
-    m_obj->weight = value;
+    m_obj->data.weight = value;
   }
 
   /// Access the related-from object

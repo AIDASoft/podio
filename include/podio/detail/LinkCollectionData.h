@@ -32,7 +32,7 @@ public:
       m_rel_to(new std::vector<ToT>()),
       m_refCollections(std::move(*buffers.references)) {
     if (!isSubsetColl) {
-      m_data.reset(buffers.dataAsVector<float>());
+      m_data.reset(buffers.dataAsVector<LinkData>());
     }
   }
 
@@ -100,7 +100,7 @@ public:
 
     m_data->reserve(entries.size());
     for (const auto obj : entries) {
-      m_data->push_back(obj->weight);
+      m_data->push_back(obj->data);
 
       if (obj->m_from) {
         m_refCollections[0]->emplace_back(obj->m_from->getObjectID());

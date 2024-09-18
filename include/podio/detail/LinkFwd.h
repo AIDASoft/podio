@@ -59,7 +59,13 @@ class LinkObj;
 template <typename FromT, typename ToT>
 using LinkObjPointerContainer = std::deque<LinkObj<FromT, ToT>*>;
 
-using LinkDataContainer = std::vector<float>;
+/// Simple struct to keep implementation more in line with generated links and
+/// to ease evolution of generated links into templated ones
+struct LinkData {
+  float weight{};
+};
+
+using LinkDataContainer = std::vector<LinkData>;
 
 template <typename FromT, typename ToT, bool Mutable>
 class LinkT;
