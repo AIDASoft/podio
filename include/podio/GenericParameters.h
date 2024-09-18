@@ -81,16 +81,16 @@ public:
 
   ~GenericParameters() = default;
 
-  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  template <typename T>
   std::optional<T> get(const std::string& key) const;
 
   /// Store (a copy of) the passed value under the given key
-  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  template <typename T>
   void set(const std::string& key, T value);
 
   /// Overload for catching const char* setting for string values
-  void set(const std::string& key, std::string value) {
-    set<std::string>(key, std::move(value));
+  void set(const std::string& key, const char* value) {
+    set<std::string>(key, std::string(value));
   }
 
   /// Overload for catching initializer list setting of string vector values
@@ -113,11 +113,11 @@ public:
   size_t getN(const std::string& key) const;
 
   /// Get all available keys for a given type
-  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  template <typename T>
   std::vector<std::string> getKeys() const;
 
   /// Get all the available values for a given type
-  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  template <typename T>
   std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> getKeysAndValues() const;
 
   /// erase all elements
@@ -202,8 +202,9 @@ private:
   mutable MutexPtr m_doubleMtx{nullptr}; ///< The mutex guarding the double map
 };
 
-template <typename T, typename>
+template <typename T>
 std::optional<T> GenericParameters::get(const std::string& key) const {
+  static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
   const auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
   std::lock_guard lock{mtx};
@@ -221,8 +222,9 @@ std::optional<T> GenericParameters::get(const std::string& key) const {
   }
 }
 
-template <typename T, typename>
+template <typename T>
 void GenericParameters::set(const std::string& key, T value) {
+  static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
   auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
 
@@ -248,8 +250,9 @@ size_t GenericParameters::getN(const std::string& key) const {
   return 0;
 }
 
-template <typename T, typename>
+template <typename T>
 std::vector<std::string> GenericParameters::getKeys() const {
+  static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
   std::vector<std::string> keys;
   const auto& map = getMap<T>();
   keys.reserve(map.size());
@@ -262,8 +265,9 @@ std::vector<std::string> GenericParameters::getKeys() const {
   return keys;
 }
 
-template <typename T, typename>
+template <typename T>
 std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> GenericParameters::getKeysAndValues() const {
+  static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
   std::vector<std::vector<T>> values;
   std::vector<std::string> keys;
   auto& mtx = getMutex<T>();

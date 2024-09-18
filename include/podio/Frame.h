@@ -304,8 +304,9 @@ public:
   /// @tparam T The desired parameter type
   ///
   /// @returns  A vector of keys for this parameter type
-  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  template <typename T>
   inline std::vector<std::string> getParameterKeys() const {
+    static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
     return m_self->parameters().getKeys<T>();
   }
 
