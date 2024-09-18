@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Module that facilitates working with the podio::version::Version"""
 
-from functools import total_ordering
-from packaging import version
-
 import ROOT
 
 # NOTE: It is necessary that this can be found on the ROOT_INCLUDE_PATH
@@ -13,57 +10,33 @@ import ROOT
 if ROOT.gInterpreter.LoadFile("podio/podioVersion.h") == 0:  # noqa: E402
     from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
+Version = podio.version.Version
 
-@total_ordering
-class Version:
-    """A dedicated version class for podio versions, as they are returned by
-    the c++ interface.
 
-    We make this so that version comparisons work as expected in python as well
-    """
+def _str_dunder(self):
+    """Shim to get a more reasonable string representation"""
+    return f"{self.major}.{self.minor}.{self.patch}"
 
-    def __init__(self, *args):
-        """Construct a python version from its c++ counterpart
 
-        Takes either a podio.version.Version, up to three numbers which are
-        interpreted as major, minor, patch or a valid (python) version string
-        """
-        # We don't do a lot of validation here, we just convert everything into
-        # a string and then let the version parsing fail in case the inputs are
-        # wrong
-        ver = args[0]
-        if len(args) == 1:
-            if isinstance(ver, podio.version.Version):
-                ver = f"{ver.major}.{ver.minor}.{ver.patch}"
+Version.__str__ = _str_dunder
+
+
+def parse(*args):
+    """Construct a version from either a list of integers or a version string"""
+    if len(args) == 1:
+        if isinstance(args[0], podio.version.Version):
+            return args[0]
+        if isinstance(args[0], str):
+            ver_tuple = tuple(int(v) for v in args[0].split("."))
         else:
-            ver = ".".join(str(v) for v in args)
-
-        self.version = version.Version(ver)
-
-    def __getattr__(self, attr):
-        """Delegate attribute retrieval to the underlying version"""
-        return getattr(self.version, attr)
-
-    def __str__(self):
-        return str(self.version)
-
-    def __repr__(self):
-        return f"podio.Version({self.version!r})"
-
-    def __eq__(self, other):
-        if isinstance(other, Version):
-            return self.version == other.version
-        if isinstance(other, version.Version):
-            return self.version == other
-        return NotImplemented
-
-    def __lt__(self, other):
-        if isinstance(other, Version):
-            return self.version < other.version
-        if isinstance(other, version.Version):
-            return self.version < other
-        return NotImplemented
+            ver_tuple = (int(args[0]),)
+    else:
+        ver_tuple = tuple(args)
+    ver = Version()
+    for mem, val in zip(("major", "minor", "patch"), ver_tuple):
+        setattr(ver, mem, val)
+    return ver
 
 
 # The version with which podio has been built. Same as __version__
-build_version = Version(podio.version.build_version)
+build_version = podio.version.build_version
