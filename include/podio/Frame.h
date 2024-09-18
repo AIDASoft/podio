@@ -236,7 +236,7 @@ public:
   /// @param value The value of the parameter. A copy will be put into the Frame
   template <typename T>
   inline void putParameter(const std::string& key, T value) {
-    static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
+    static_assert(podio::isSupportedGenericDataType<T>, "T is not a supported parameter type");
     m_self->parameters().set(key, std::move(value));
   }
 
@@ -285,7 +285,7 @@ public:
   /// @returns   An optional holding the value if it is present
   template <typename T>
   inline auto getParameter(const std::string& key) const {
-    static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
+    static_assert(podio::isSupportedGenericDataType<T>, "T is not a supported parameter type");
     return m_self->parameters().get<T>(key);
   }
 
@@ -306,7 +306,7 @@ public:
   /// @returns  A vector of keys for this parameter type
   template <typename T>
   inline std::vector<std::string> getParameterKeys() const {
-    static_assert(podio::isSupportedGenericDataType<T>, "The type is not supported by the GenericParameters");
+    static_assert(podio::isSupportedGenericDataType<T>, "T is not a supported parameter type");
     return m_self->parameters().getKeys<T>();
   }
 
