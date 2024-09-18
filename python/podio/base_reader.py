@@ -4,6 +4,7 @@ backend specific bindings"""
 
 
 from podio.frame_iterator import FrameCategoryIterator
+from podio.version import Version
 
 
 class BaseReaderMixin:
@@ -101,11 +102,11 @@ class BaseReaderMixin:
                 version is requested
         """
         if edm_name is None:
-            return self._reader.currentFileVersion()
+            return Version(self._reader.currentFileVersion())
 
         if self._is_legacy:
             raise RuntimeError("Legacy readers do not store any version info")
         maybe_version = self._reader.currentFileVersion(edm_name)
         if maybe_version.has_value():
-            return maybe_version.value()
+            return Version(maybe_version.value())
         raise KeyError(f"No version information available for '{edm_name}'")

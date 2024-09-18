@@ -8,7 +8,6 @@ import yaml
 from tabulate import tabulate
 
 from podio_version import __version__
-from podio.version import version_as_str
 
 
 def print_general_info(reader, filename):
@@ -25,14 +24,14 @@ def print_general_info(reader, filename):
     print(
         f"input file: {filename}{legacy_text}\n"
         "            (written with podio version: "
-        f"{version_as_str(reader.current_file_version())})\n"
+        f"{reader.current_file_version()})\n"
     )
 
     print("datamodel model definitions stored in this file: ")
     for edm_name in reader.datamodel_definitions:
         try:
             edm_version = reader.current_file_version(edm_name)
-            print(f" - {edm_name} ({version_as_str(edm_version)})")
+            print(f" - {edm_name} ({edm_version})")
         except KeyError:
             print(f" - {edm_name}")
 
