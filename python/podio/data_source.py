@@ -2,7 +2,10 @@
 
 from ROOT import gSystem
 
-if gSystem.Load("libpodioDataSourceDict") < 0:
+if (
+    not gSystem.DynamicPathName("libpodioDataSourceDict", True)
+    or gSystem.Load("libpodioDataSourceDict") < 0
+):
     raise ImportError("Error when loading libpodioDataSourceDict")
 
 from ROOT import podio  # pylint: disable=wrong-import-position
