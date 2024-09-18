@@ -243,6 +243,27 @@ namespace detail {
   /// @note: This simply checks whether T has an interfaced_types type member.
   template <typename T>
   constexpr static bool isInterfaceType = det::is_detected_v<hasInterface_t, std::remove_reference_t<T>>;
+
+  /// Helper struct to make the detection whether type U can be used to
+  /// initialize the interface type T in a SFINAE friendly way
+  template <typename T, typename U, typename isInterface = std::bool_constant<isInterfaceType<T>>>
+  struct InterfaceInitializerHelper {};
+
+  /// Specialization for actual interface types, including the check whether T
+  /// is initializable from U
+  template <typename T, typename U>
+  struct InterfaceInitializerHelper<T, U, std::bool_constant<true>>
+      : std::bool_constant<T::template isInitializableFrom<U>> {};
+
+  /// Specialization for non interface types
+  template <typename T, typename U>
+  struct InterfaceInitializerHelper<T, U, std::bool_constant<false>> : std::false_type {};
+
+  /// Variable template for checking whether the passed type T is an interface
+  /// and can be initialized from type U
+  template <typename T, typename U>
+  constexpr static bool isInterfaceInitializableFrom = InterfaceInitializerHelper<T, U>::value;
+
 } // namespace detail
 
 // forward declaration to be able to use it below

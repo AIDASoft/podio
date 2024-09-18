@@ -156,6 +156,16 @@ public:
     setFrom(detail::GetDefaultHandleType<FromU>(value));
   }
 
+  /// Set the related-from object
+  ///
+  /// @note All setFrom overloads are equivalent and the correct one is selected
+  /// at compile time. We need this overload to allow for an implicit conversion
+  /// to interface types in case the relation contains an interface type.
+  template <typename FromU, std::enable_if_t<Mutable && detail::isInterfaceInitializableFrom<FromT, FromU>, int> = 0>
+  void setFrom(FromU value) {
+    setFrom(FromT(value));
+  }
+
   /// Access the related-to object
   const ToT getTo() const {
     if (!m_obj->m_to) {
@@ -189,6 +199,16 @@ public:
                              int> = 0>
   void setTo(ToU value) {
     setTo(detail::GetDefaultHandleType<ToU>(value));
+  }
+
+  /// Set the related-to object
+  ///
+  /// @note All setTo overloads are equivalent and the correct one is selected
+  /// at compile time. We need this overload to allow for an implicit conversion
+  /// to interface types in case the relation contains an interface type.
+  template <typename ToU, std::enable_if_t<Mutable && detail::isInterfaceInitializableFrom<ToT, ToU>, int> = 0>
+  void setTo(ToU value) {
+    setTo(ToT(value));
   }
 
   /// Templated version for getting an element of the link by type. Only
@@ -235,7 +255,11 @@ public:
   ///
   /// @tparam T type of value (**infered!**)
   /// @param value the element to set for this link.
-  template <typename T, typename = std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> && isMutableFromOrToT<T>>>
+  template <typename T,
+            std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> &&
+                                 (isMutableFromOrToT<T> || detail::isInterfaceInitializableFrom<ToT, T> ||
+                                  detail::isInterfaceInitializableFrom<FromT, T>),
+                             int> = 0>
   void set(T value) {
     if constexpr (std::is_same_v<T, FromT>) {
       setFrom(std::move(value));

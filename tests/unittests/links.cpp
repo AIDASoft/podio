@@ -440,6 +440,15 @@ TEST_CASE("Links with interfaces", "[links][interface-types]") {
   link.set(TypeWithEnergy(cluster));
   REQUIRE(link.get<ExampleCluster>() == cluster); // unchanged
   REQUIRE(link.get<TypeWithEnergy>() == cluster);
+
+  // Setting with implicit conversion to interface
+  auto hit2 = ExampleHit();
+  link.setTo(hit2);
+  REQUIRE(link.get<TypeWithEnergy>() == hit2);
+
+  link.set(hit);
+  REQUIRE(link.get<TypeWithEnergy>() == hit);
+  REQUIRE(link.get<ExampleCluster>() == cluster);
 }
 
 #ifdef PODIO_JSON_OUTPUT
