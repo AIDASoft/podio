@@ -32,7 +32,7 @@ SUPPORTED_PARAMETER_TYPES = (
 
 def _get_cpp_types(type_str):
     """Get all possible c++ types from the passed py_type string."""
-    types = list(filter(lambda t: type_str in t, SUPPORTED_PARAMETER_TYPES))
+    types = [t for t in SUPPORTED_PARAMETER_TYPES if type_str in t]
     if not types:
         raise ValueError(f"{type_str} cannot be mapped to a valid parameter type")
 
@@ -43,7 +43,7 @@ def _get_cpp_vector_types(type_str):
     """Get the possible std::vector<cpp_type> from the passed py_type string."""
     # Gather a list of all types that match the type_str (c++ or python)
     types = _get_cpp_types(type_str)
-    return [f"std::vector<{t}>" for t in map(lambda x: x[0], types)]
+    return [f"std::vector<{t[0]}>" for t in types]
 
 
 def _is_collection_base(thing):
@@ -264,7 +264,9 @@ class Frame:
                 cpp_types = _get_cpp_types(as_type)
                 if len(cpp_types) == 0:
                     raise ValueError(f"Cannot put a parameter of type {as_type} into a Frame")
-                self._frame.putParameter[cpp_types[0]](key, value)
+                # The first [0] gets the tuple, the second [0] gets the actual C++ type
+                # from SUPPORTED_PARAMETER_TYPES
+                self._frame.putParameter[cpp_types[0][0]](key, value)
 
             # If we have a single integer, a std::string overload kicks in with higher
             # priority than the template for some reason. So we explicitly select the

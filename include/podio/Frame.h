@@ -234,8 +234,9 @@ public:
   ///              is supported by GenericParameters
   /// @param key   The name under which this parameter should be stored
   /// @param value The value of the parameter. A copy will be put into the Frame
-  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  template <typename T>
   inline void putParameter(const std::string& key, T value) {
+    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     m_self->parameters().set(key, std::move(value));
   }
 
@@ -246,8 +247,8 @@ public:
   ///
   /// @param key   The name under which this parameter should be stored
   /// @param value The value of the parameter. A copy will be put into the Frame
-  inline void putParameter(const std::string& key, std::string value) {
-    putParameter<std::string>(key, std::move(value));
+  inline void putParameter(const std::string& key, const char* value) {
+    putParameter<std::string>(key, value);
   }
 
   /// Add a vector of strings value the parameters of the Frame.
@@ -282,8 +283,9 @@ public:
   /// @param key The key under which the value is stored
   ///
   /// @returns   An optional holding the value if it is present
-  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  template <typename T>
   inline auto getParameter(const std::string& key) const {
+    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     return m_self->parameters().get<T>(key);
   }
 
@@ -302,8 +304,9 @@ public:
   /// @tparam T The desired parameter type
   ///
   /// @returns  A vector of keys for this parameter type
-  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  template <typename T>
   inline std::vector<std::string> getParameterKeys() const {
+    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     return m_self->parameters().getKeys<T>();
   }
 
