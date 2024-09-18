@@ -234,9 +234,8 @@ public:
   ///              is supported by GenericParameters
   /// @param key   The name under which this parameter should be stored
   /// @param value The value of the parameter. A copy will be put into the Frame
-  template <typename T>
+  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
   inline void putParameter(const std::string& key, T value) {
-    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     m_self->parameters().set(key, std::move(value));
   }
 
@@ -247,8 +246,8 @@ public:
   ///
   /// @param key   The name under which this parameter should be stored
   /// @param value The value of the parameter. A copy will be put into the Frame
-  inline void putParameter(const std::string& key, const char* value) {
-    putParameter<std::string>(key, value);
+  inline void putParameter(const std::string& key, std::string value) {
+    putParameter<std::string>(key, std::move(value));
   }
 
   /// Add a vector of strings value the parameters of the Frame.
