@@ -41,10 +41,9 @@ struct Version {
   uint16_t minor{0};
   uint16_t patch{0};
 
-#if __cplusplus >= 202002L
-  auto operator<=>(const Version&) const = default;
-#else
-  // No spaceship yet in c++17
+  // We explicitly define these here instead of using the default spaceship
+  // operator because cppyy does not recognize that yet and we want the
+  // comparisons to work in python as well
   #define DEFINE_COMP_OPERATOR(OP)                                                                                     \
     constexpr bool operator OP(const Version& o) const noexcept {                                                      \
       return std::tie(major, minor, patch) OP std::tie(o.major, o.minor, o.patch);                                     \
@@ -58,7 +57,6 @@ struct Version {
   DEFINE_COMP_OPERATOR(!=)
 
   #undef DEFINE_COMP_OPERATOR
-#endif
 
   explicit operator std::string() const {
     std::stringstream ss;
