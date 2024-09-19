@@ -85,6 +85,8 @@ public:
   ///
   std::string GetTypeName(std::string_view columnName) const override;
 
+  std::string GetLabel() override { return "PODIO Datasource"; };
+
 protected:
   ///
   /// @brief Type-erased vector of pointers to pointers to column
