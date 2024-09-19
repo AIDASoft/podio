@@ -17,7 +17,7 @@ GenericParameters::GenericParameters(const GenericParameters& other) :
     m_stringMtx(std::make_unique<std::mutex>()),
     m_doubleMtx(std::make_unique<std::mutex>()) {
   {
-    // acquire all three locks at once to make sure all three internal maps are
+    // acquire all four locks at once to make sure all four internal maps are
     // copied at the same "state" of the GenericParameters
     auto& intMtx = other.getMutex<int>();
     auto& floatMtx = other.getMutex<float>();
