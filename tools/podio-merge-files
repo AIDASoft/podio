@@ -17,9 +17,11 @@ parser.add_argument(
     default="first",
     help="metadata to include in the output file, default: only the one from the first event, other options: all events, none",
 )
-parser.add_argument("--metadata-category-name",
-                    default="metadata",
-                    help="name of the metadata category in the output file, default: metadata")
+parser.add_argument(
+    "--metadata-category-name",
+    default="metadata",
+    help="name of the metadata category in the output file, default: metadata",
+)
 args = parser.parse_args()
 
 all_files = set()
