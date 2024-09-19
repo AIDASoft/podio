@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+"""podio-merge-files tool to merge any number of podio files into one"""
+
+import argparse
+import podio.root_io
+from podio import reading
+
+parser = argparse.ArgumentParser(
+    description="Merge any number of podio files into one, can merge TTree and RNTuple files"
+)
+
+parser.add_argument("--output-file", help="name of the output file", required=True)
+parser.add_argument("files", nargs="+", help="which files to merge")
+parser.add_argument(
+    "--metadata",
+    choices=["none", "all", "first"],
+    default="first",
+    help="metadata to include in the output file, default: only the one from the first event, other options: all events, none",
+)
+parser.add_argument("--metadata-category-name",
+                    default="metadata",
+                    help="name of the metadata category in the output file, default: metadata")
+args = parser.parse_args()
+
+all_files = set()
+for f in args.files:
+    if f in all_files:
+        raise ValueError(f"File {f} is present more than once in the input list")
+    all_files.add(f)
+
+root_format = reading._determine_root_format(args.files[0])
+if root_format == reading.RootFileFormat.TTREE:
+    reader = podio.root_io.Reader(args.files)
+    writer = podio.root_io.Writer(args.output_file)
+elif root_format == reading.RootFileFormat.RNTUPLE:
+    reader = podio.root_io.RNTupleReader(args.files)
+    writer = podio.root_io.RNTupleWriter(args.output_file)
+else:
+    raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
+
+
+for category in reader.categories:
+    if category == args.metadata_category_name and args.metadata == "none":
+        continue
+    if category == args.metadata_category_name and args.metadata == "first":
+        all_frames = [reader.get(category)[0]]
+    else:
+        all_frames = reader.get(category)
+    for frame in all_frames:
+        writer.write_frame(frame, category)

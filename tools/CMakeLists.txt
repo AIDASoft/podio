@@ -3,6 +3,7 @@ install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-vis DESTINATION ${CMAKE_INSTALL
 if(ENABLE_RNTUPLE)
   install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-ttree-to-rntuple DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
+install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-merge-files DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Add a very basic test of podio-vis
 if(BUILD_TESTING)
