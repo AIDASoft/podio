@@ -85,7 +85,9 @@ public:
   ///
   std::string GetTypeName(std::string_view columnName) const override;
 
-  std::string GetLabel() override { return "PODIO Datasource"; };
+  std::string GetLabel() override { 
+    return "PODIO Datasource";
+  };
 
 protected:
   ///
