@@ -16,7 +16,7 @@ parser.add_argument(
     choices=["none", "all", "first"],
     default="first",
     help="metadata to include in the output file, default: "
-         "only the one from the first event, other options: all events, none",
+         "only the one from the first file, other options: all files, none",
 )
 parser.add_argument(
     "--metadata-category-name",
