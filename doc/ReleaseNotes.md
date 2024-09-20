@@ -1,3 +1,125 @@
+# v01-01
+
+* 2024-09-20 Leonhard Reichenbach ([PR#682](https://github.com/AIDASoft/podio/pull/682))
+  - DataSource: implement missing GetLabel method
+
+* 2024-09-19 tmadlener ([PR#678](https://github.com/AIDASoft/podio/pull/678))
+  - Add a `podio.version` module exposing `podio::version::Version` also in python.
+  - Remove the `version_as_str` method again, since that is handled by `Version` now.
+
+* 2024-09-18 jmcarcell ([PR#680](https://github.com/AIDASoft/podio/pull/680))
+  - Revert part of #676 because there is no implicit conversion to std::string when trying to put a parameter that can be converted to std::string, therefore it will fail with the static_assert when compiling
+
+* 2024-09-18 Mateusz Jakub Fila ([PR#679](https://github.com/AIDASoft/podio/pull/679))
+  - Fixed missing libpodioDataSourceDict printout on import podio when built without data source
+
+* 2024-09-18 jmcarcell ([PR#676](https://github.com/AIDASoft/podio/pull/676))
+  - Remove EnableIf for GenericParameters and add `static_assert` in its place to make errors easier to read and debug.
+
+* 2024-09-17 tmadlener ([PR#677](https://github.com/AIDASoft/podio/pull/677))
+  - Make sure that podio is built with all capabilities for the CI tests that use EDM4hep
+
+* 2024-09-16 jmcarcell ([PR#675](https://github.com/AIDASoft/podio/pull/675))
+  - Fix a few wrong @params in the documentation of some headers
+
+* 2024-09-12 Mateusz Jakub Fila ([PR#674](https://github.com/AIDASoft/podio/pull/674))
+  - Added `podio.data_source.CreateDataFrame` for creating RDataFrames with DataSource in python.
+
+* 2024-09-10 Mateusz Jakub Fila ([PR#671](https://github.com/AIDASoft/podio/pull/671))
+  - Fixed typos
+
+* 2024-09-10 tmadlener ([PR#670](https://github.com/AIDASoft/podio/pull/670))
+  - Strip strings to avoid having empty includes from ExtraCode that would otherwise generate a warning during code generation.
+  - Remove a debug printout from code generation
+
+* 2024-09-10 Mateusz Jakub Fila ([PR#669](https://github.com/AIDASoft/podio/pull/669))
+  - Improved documentation for the pythonizations. Test mutability of objects returned by collection subscript in python (mutable without the subscript pythonization/immutable with the pythonization)
+
+* 2024-09-10 jmcarcell ([PR#668](https://github.com/AIDASoft/podio/pull/668))
+  - Change C-style casts to static_cast and remove unnecessary semicolons
+
+* 2024-09-10 tmadlener ([PR#651](https://github.com/AIDASoft/podio/pull/651))
+  - Make it possible to pass the datamodel version (which does not have to be the schema version!) to the class generator to inject it into the podio internals. This will automatically be stored in all output files, such that this information can also be obtained from the files.
+
+* 2024-09-09 Mateusz Jakub Fila ([PR#667](https://github.com/AIDASoft/podio/pull/667))
+  - Fix pythonizations trying to import local modules as pythonizations submodules
+
+* 2024-09-06 jmcarcell ([PR#666](https://github.com/AIDASoft/podio/pull/666))
+  - Add two checks not to crash when a file doesn't exist or can't be opened and when an empty list is passed to makeReader.
+
+* 2024-09-06 tmadlener ([PR#664](https://github.com/AIDASoft/podio/pull/664))
+  - Remove pre-processor checks that became obsolete with [#662](https://github.com/AIDASoft/podio/pull/662)
+
+* 2024-09-06 Mateusz Jakub Fila ([PR#663](https://github.com/AIDASoft/podio/pull/663))
+  - Added pythonization for "freezing" class disallowing setting non-existent attributes
+
+* 2024-09-06 tmadlener ([PR#662](https://github.com/AIDASoft/podio/pull/662))
+  - Remove the cmake checks to figure out against which filesystem library to link, since all major compilers have had it properly integrated into their STLs for quite some time now. Also remove the fallback to Boost.
+
+* 2024-09-05 tmadlener ([PR#661](https://github.com/AIDASoft/podio/pull/661))
+  - Make the README point to the documentation instead of the markdown files
+
+* 2024-09-05 ANUSHKA SAXENA ([PR#660](https://github.com/AIDASoft/podio/pull/660))
+  - Added missing dependency `graphviz` for `podio-vis` functionality in the documentation build process.
+
+* 2024-09-05 tmadlener ([PR#659](https://github.com/AIDASoft/podio/pull/659))
+  - Add convenience bindings and formatting utility functionality to retrieve the podio build version from a file via python.
+
+* 2024-08-28 tmadlener ([PR#658](https://github.com/AIDASoft/podio/pull/658))
+  - Build EDM4hep with c++20 now that c++17 support has been removed from EDM4hep.
+
+* 2024-08-28 Juraj Smiesko ([PR#593](https://github.com/AIDASoft/podio/pull/593))
+  - Add a `podio::DataSource` as an `RDataSource` for working with podio (generated EDM) files and collections. This `RDataSource` exposes the podio collections directly as columns for `RDataFrames`. **We consider this fairly stable, but still in early stages, there might still be some (breaking) changes to this**
+
+* 2024-08-23 tmadlener ([PR#656](https://github.com/AIDASoft/podio/pull/656))
+  - Use a virtualenv for the documentation generation to make it more robust
+
+* 2024-08-22 jmcarcell ([PR#652](https://github.com/AIDASoft/podio/pull/652))
+  - Remove unnecessary header includes
+
+* 2024-08-21 tmadlener ([PR#654](https://github.com/AIDASoft/podio/pull/654))
+  - Use a virtualenv to intall pre-commit in CI workflow to avoid issues with underlying environment
+
+* 2024-08-21 Mateusz Jakub Fila ([PR#653](https://github.com/AIDASoft/podio/pull/653))
+  - fix typos in documentation
+
+* 2024-07-31 tmadlener ([PR#650](https://github.com/AIDASoft/podio/pull/650))
+  - Make sure that the `env.sh` script sets up the correct `PYTHONPATH`
+
+* 2024-07-31 tmadlener ([PR#649](https://github.com/AIDASoft/podio/pull/649))
+  - Introduce a thin wrapper script around `clang-tidy` for usage in `pre-commit` to make sure that the necessary include directory for SIO is available. This allows us to run clang-tidy over all files instead of having to exclude a few where it failed previously.
+
+* 2024-07-25 tmadlener ([PR#648](https://github.com/AIDASoft/podio/pull/648))
+  - Add docstrings to the `Reader` and `Writer` interface classes
+  - Make sure that `makeReader` throws an exception if multiple SIO files are passed (see [#647](https://github.com/AIDASoft/podio/issues/647))
+
+* 2024-07-25 tmadlener ([PR#640](https://github.com/AIDASoft/podio/pull/640))
+  - Make JSON dumping of subset collections only store the `ObjectID`s to the elements they are pointing to instead of duplicating the information.
+  - Add JSON conversion support to `podio::ObjectID`
+    - Use this to simplify JSON conversion code for relations in objects
+
+* 2024-07-23 jmcarcell ([PR#645](https://github.com/AIDASoft/podio/pull/645))
+  - Fix duplicated includes in generated datamodels when `ExtraCode` includes are done via `<>`.
+
+* 2024-07-22 tmadlener ([PR#644](https://github.com/AIDASoft/podio/pull/644))
+  - Switch to EL9 and c++20 for running pre-commit
+
+* 2024-07-16 tmadlener ([PR#643](https://github.com/AIDASoft/podio/pull/643))
+  - Add test files for read compatibility with v01-00
+  - Fix v00-99 root test file that was actually one with v00-17-04
+
+* 2024-07-15 jmcarcell ([PR#641](https://github.com/AIDASoft/podio/pull/641))
+  - Remove or change a few headers for objects and collections
+
+* 2024-07-12 tmadlener ([PR#639](https://github.com/AIDASoft/podio/pull/639))
+  - Improve the readability of dumped `ObjectID`s from `XXXXXXXi` to `XXXXXXXX|i` (i.e. adding a separator between the hex collection ID and the index)
+
+* 2024-07-10 jmcarcell ([PR#638](https://github.com/AIDASoft/podio/pull/638))
+  - Make ROOT load libraries without the .so extension
+
+* 2024-07-08 tmadlener ([PR#635](https://github.com/AIDASoft/podio/pull/635))
+  - Fix minor issue in the CMake config to make error message for users more useful.
+
 # v01-00-01
 
 * 2024-06-24 tmadlener ([PR#634](https://github.com/AIDASoft/podio/pull/634))
