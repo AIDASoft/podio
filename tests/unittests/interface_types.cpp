@@ -9,6 +9,9 @@
 
 #include <map>
 #include <stdexcept>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
   using WrapperT = TypeWithEnergy;
@@ -67,6 +70,10 @@ TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics]") {
   REQUIRE(counterMap[empty] == 1);
   REQUIRE(counterMap[hit] == 2);
   REQUIRE(counterMap[wrapper] == 2);
+
+  // check container of interfaces move constructor and direct initialization
+  auto interfaces = std::vector<TypeWithEnergy>{};
+  [[maybe_unused]] auto interfaces2 = std::vector<TypeWithEnergy>{std::move(interfaces)};
 }
 
 TEST_CASE("InterfaceType from immutable", "[interface-types][basics]") {
