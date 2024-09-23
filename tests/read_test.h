@@ -415,7 +415,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   // ======================= Links ==========================
-  if (fileVersion >= podio::version::Version{1, 0, 99}) {
+  if (fileVersion >= podio::version::Version{1, 1, 99}) {
     auto& links = event.get<TestLinkCollection>("links");
     const auto nLinks = std::min(clusters.size(), hits.size());
     if (links.size() != nLinks) {
