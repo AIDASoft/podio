@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v01-00-01 &mdash; PODIO  documentation</title>
+  <title>v01-01 &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -507,7 +507,7 @@
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.base_writer.BaseWriterMixin"><code class="docutils literal notranslate"><span class="pre">BaseWriterMixin</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.data_source">podio.data_source module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#podio-data-source-module">podio.data_source module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.frame">podio.frame module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.frame.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
 </ul>
@@ -631,7 +631,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">v01-00-01</li>
+      <li class="breadcrumb-item active">v01-01</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -640,7 +640,211 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="v01-00-01">
+  <section id="v01-01">
+<h1>v01-01<a class="headerlink" href="#v01-01" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2024-09-20 Leonhard Reichenbach (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/682">PR#682</a>)</p>
+<ul>
+<li><p>DataSource: implement missing GetLabel method</p></li>
+</ul>
+</li>
+<li><p>2024-09-19 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/678">PR#678</a>)</p>
+<ul>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">podio.version</span></code> module exposing <code class="docutils literal notranslate"><span class="pre">podio::version::Version</span></code> also in python.</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">version_as_str</span></code> method again, since that is handled by <code class="docutils literal notranslate"><span class="pre">Version</span></code> now.</p></li>
+</ul>
+</li>
+<li><p>2024-09-18 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/680">PR#680</a>)</p>
+<ul>
+<li><p>Revert part of #676 because there is no implicit conversion to std::string when trying to put a parameter that can be converted to std::string, therefore it will fail with the static_assert when compiling</p></li>
+</ul>
+</li>
+<li><p>2024-09-18 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/679">PR#679</a>)</p>
+<ul>
+<li><p>Fixed missing libpodioDataSourceDict printout on import podio when built without data source</p></li>
+</ul>
+</li>
+<li><p>2024-09-18 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/676">PR#676</a>)</p>
+<ul>
+<li><p>Remove EnableIf for GenericParameters and add <code class="docutils literal notranslate"><span class="pre">static_assert</span></code> in its place to make errors easier to read and debug.</p></li>
+</ul>
+</li>
+<li><p>2024-09-17 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/677">PR#677</a>)</p>
+<ul>
+<li><p>Make sure that podio is built with all capabilities for the CI tests that use EDM4hep</p></li>
+</ul>
+</li>
+<li><p>2024-09-16 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/675">PR#675</a>)</p>
+<ul>
+<li><p>Fix a few wrong &#64;params in the documentation of some headers</p></li>
+</ul>
+</li>
+<li><p>2024-09-12 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/674">PR#674</a>)</p>
+<ul>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">podio.data_source.CreateDataFrame</span></code> for creating RDataFrames with DataSource in python.</p></li>
+</ul>
+</li>
+<li><p>2024-09-10 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/671">PR#671</a>)</p>
+<ul>
+<li><p>Fixed typos</p></li>
+</ul>
+</li>
+<li><p>2024-09-10 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/670">PR#670</a>)</p>
+<ul>
+<li><p>Strip strings to avoid having empty includes from ExtraCode that would otherwise generate a warning during code generation.</p></li>
+<li><p>Remove a debug printout from code generation</p></li>
+</ul>
+</li>
+<li><p>2024-09-10 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/669">PR#669</a>)</p>
+<ul>
+<li><p>Improved documentation for the pythonizations. Test mutability of objects returned by collection subscript in python (mutable without the subscript pythonization/immutable with the pythonization)</p></li>
+</ul>
+</li>
+<li><p>2024-09-10 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/668">PR#668</a>)</p>
+<ul>
+<li><p>Change C-style casts to static_cast and remove unnecessary semicolons</p></li>
+</ul>
+</li>
+<li><p>2024-09-10 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/651">PR#651</a>)</p>
+<ul>
+<li><p>Make it possible to pass the datamodel version (which does not have to be the schema version!) to the class generator to inject it into the podio internals. This will automatically be stored in all output files, such that this information can also be obtained from the files.</p></li>
+</ul>
+</li>
+<li><p>2024-09-09 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/667">PR#667</a>)</p>
+<ul>
+<li><p>Fix pythonizations trying to import local modules as pythonizations submodules</p></li>
+</ul>
+</li>
+<li><p>2024-09-06 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/666">PR#666</a>)</p>
+<ul>
+<li><p>Add two checks not to crash when a file doesn’t exist or can’t be opened and when an empty list is passed to makeReader.</p></li>
+</ul>
+</li>
+<li><p>2024-09-06 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/664">PR#664</a>)</p>
+<ul>
+<li><p>Remove pre-processor checks that became obsolete with <a class="reference external" href="https://github.com/AIDASoft/podio/pull/662">#662</a></p></li>
+</ul>
+</li>
+<li><p>2024-09-06 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/663">PR#663</a>)</p>
+<ul>
+<li><p>Added pythonization for “freezing” class disallowing setting non-existent attributes</p></li>
+</ul>
+</li>
+<li><p>2024-09-06 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/662">PR#662</a>)</p>
+<ul>
+<li><p>Remove the cmake checks to figure out against which filesystem library to link, since all major compilers have had it properly integrated into their STLs for quite some time now. Also remove the fallback to Boost.</p></li>
+</ul>
+</li>
+<li><p>2024-09-05 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/661">PR#661</a>)</p>
+<ul>
+<li><p>Make the README point to the documentation instead of the markdown files</p></li>
+</ul>
+</li>
+<li><p>2024-09-05 ANUSHKA SAXENA (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/660">PR#660</a>)</p>
+<ul>
+<li><p>Added missing dependency <code class="docutils literal notranslate"><span class="pre">graphviz</span></code> for <code class="docutils literal notranslate"><span class="pre">podio-vis</span></code> functionality in the documentation build process.</p></li>
+</ul>
+</li>
+<li><p>2024-09-05 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/659">PR#659</a>)</p>
+<ul>
+<li><p>Add convenience bindings and formatting utility functionality to retrieve the podio build version from a file via python.</p></li>
+</ul>
+</li>
+<li><p>2024-08-28 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/658">PR#658</a>)</p>
+<ul>
+<li><p>Build EDM4hep with c++20 now that c++17 support has been removed from EDM4hep.</p></li>
+</ul>
+</li>
+<li><p>2024-08-28 Juraj Smiesko (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/593">PR#593</a>)</p>
+<ul>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">podio::DataSource</span></code> as an <code class="docutils literal notranslate"><span class="pre">RDataSource</span></code> for working with podio (generated EDM) files and collections. This <code class="docutils literal notranslate"><span class="pre">RDataSource</span></code> exposes the podio collections directly as columns for <code class="docutils literal notranslate"><span class="pre">RDataFrames</span></code>. <strong>We consider this fairly stable, but still in early stages, there might still be some (breaking) changes to this</strong></p></li>
+</ul>
+</li>
+<li><p>2024-08-23 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/656">PR#656</a>)</p>
+<ul>
+<li><p>Use a virtualenv for the documentation generation to make it more robust</p></li>
+</ul>
+</li>
+<li><p>2024-08-22 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/652">PR#652</a>)</p>
+<ul>
+<li><p>Remove unnecessary header includes</p></li>
+</ul>
+</li>
+<li><p>2024-08-21 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/654">PR#654</a>)</p>
+<ul>
+<li><p>Use a virtualenv to intall pre-commit in CI workflow to avoid issues with underlying environment</p></li>
+</ul>
+</li>
+<li><p>2024-08-21 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/653">PR#653</a>)</p>
+<ul>
+<li><p>fix typos in documentation</p></li>
+</ul>
+</li>
+<li><p>2024-07-31 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/650">PR#650</a>)</p>
+<ul>
+<li><p>Make sure that the <code class="docutils literal notranslate"><span class="pre">env.sh</span></code> script sets up the correct <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code></p></li>
+</ul>
+</li>
+<li><p>2024-07-31 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/649">PR#649</a>)</p>
+<ul>
+<li><p>Introduce a thin wrapper script around <code class="docutils literal notranslate"><span class="pre">clang-tidy</span></code> for usage in <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> to make sure that the necessary include directory for SIO is available. This allows us to run clang-tidy over all files instead of having to exclude a few where it failed previously.</p></li>
+</ul>
+</li>
+<li><p>2024-07-25 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/648">PR#648</a>)</p>
+<ul>
+<li><p>Add docstrings to the <code class="docutils literal notranslate"><span class="pre">Reader</span></code> and <code class="docutils literal notranslate"><span class="pre">Writer</span></code> interface classes</p></li>
+<li><p>Make sure that <code class="docutils literal notranslate"><span class="pre">makeReader</span></code> throws an exception if multiple SIO files are passed (see <a class="reference external" href="https://github.com/AIDASoft/podio/issues/647">#647</a>)</p></li>
+</ul>
+</li>
+<li><p>2024-07-25 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/640">PR#640</a>)</p>
+<ul>
+<li><p>Make JSON dumping of subset collections only store the <code class="docutils literal notranslate"><span class="pre">ObjectID</span></code>s to the elements they are pointing to instead of duplicating the information.</p></li>
+<li><p>Add JSON conversion support to <code class="docutils literal notranslate"><span class="pre">podio::ObjectID</span></code></p>
+<ul>
+<li><p>Use this to simplify JSON conversion code for relations in objects</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2024-07-23 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/645">PR#645</a>)</p>
+<ul>
+<li><p>Fix duplicated includes in generated datamodels when <code class="docutils literal notranslate"><span class="pre">ExtraCode</span></code> includes are done via <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code>.</p></li>
+</ul>
+</li>
+<li><p>2024-07-22 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/644">PR#644</a>)</p>
+<ul>
+<li><p>Switch to EL9 and c++20 for running pre-commit</p></li>
+</ul>
+</li>
+<li><p>2024-07-16 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/643">PR#643</a>)</p>
+<ul>
+<li><p>Add test files for read compatibility with v01-00</p></li>
+<li><p>Fix v00-99 root test file that was actually one with v00-17-04</p></li>
+</ul>
+</li>
+<li><p>2024-07-15 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/641">PR#641</a>)</p>
+<ul>
+<li><p>Remove or change a few headers for objects and collections</p></li>
+</ul>
+</li>
+<li><p>2024-07-12 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/639">PR#639</a>)</p>
+<ul>
+<li><p>Improve the readability of dumped <code class="docutils literal notranslate"><span class="pre">ObjectID</span></code>s from <code class="docutils literal notranslate"><span class="pre">XXXXXXXi</span></code> to <code class="docutils literal notranslate"><span class="pre">XXXXXXXX|i</span></code> (i.e. adding a separator between the hex collection ID and the index)</p></li>
+</ul>
+</li>
+<li><p>2024-07-10 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/638">PR#638</a>)</p>
+<ul>
+<li><p>Make ROOT load libraries without the .so extension</p></li>
+</ul>
+</li>
+<li><p>2024-07-08 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/635">PR#635</a>)</p>
+<ul>
+<li><p>Fix minor issue in the CMake config to make error message for users more useful.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v01-00-01">
 <h1>v01-00-01<a class="headerlink" href="#v01-00-01" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>2024-06-24 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/634">PR#634</a>)</p>
