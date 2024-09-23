@@ -15,7 +15,7 @@ class LinkObj {
 
 public:
   /// Constructor
-  LinkObj() : id(), data(0.0f), m_from(nullptr), m_to(nullptr) {
+  LinkObj() : id(), data(LinkData{1.0f}), m_from(nullptr), m_to(nullptr) {
   }
 
   /// Constructor from ObjectID and data (does not initialize relations yet!)
