@@ -92,7 +92,7 @@ TEST_CASE("Link basics", "[links]") {
     // Use an immediately invoked lambda to check that the implicit conversion
     // is working as desired
     [hit, cluster](TestL link) { // NOLINT(performance-unnecessary-value-param):
-                                 // We want the value here to force teh
+                                 // We want the value here to force the
                                  // conversion
       REQUIRE(link.getWeight() == 3.14f);
       REQUIRE(link.getFrom() == hit);
