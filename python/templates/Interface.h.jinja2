@@ -21,16 +21,19 @@
 
 {{ common_macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
+public:
+  /// type alias containing all the types this interface should work for in a
+  /// tuple
+  using interfaced_types = std::tuple<{{ Types | join(", ")}}>;
 
-  /// type alias containing all the types this interface should work for.
-  using InterfacedTypes = std::tuple<{{ Types | join(", ")}}>;
+private:
   /// type alias containing all the mutable types that can be used to initialize
   /// this interface
-  using InterfacedMutableTypes = podio::detail::TupleOfMutableTypes<InterfacedTypes>;
+  using InterfacedMutableTypes = podio::detail::TupleOfMutableTypes<interfaced_types>;
 
   /// template variable for determining whether type T is a valid interface type
   template<typename T>
-  constexpr static bool isInterfacedType = podio::detail::isInTuple<T, InterfacedTypes>;
+  constexpr static bool isInterfacedType = podio::detail::isInTuple<T, interfaced_types>;
 
   /// template variable for determining whether type T can be used to initialize
   /// this interface

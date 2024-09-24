@@ -1,10 +1,11 @@
 #include "catch2/catch_test_macros.hpp"
 
-#include "podio/ObjectID.h"
-
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleCluster.h"
 #include "datamodel/TypeWithEnergy.h"
+
+#include "podio/ObjectID.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #include <map>
 #include <stdexcept>
@@ -43,6 +44,10 @@ TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
   hitColl.setID(42);
   wrapper1 = hitColl.create();
   REQUIRE(wrapper1.id() == podio::ObjectID{0, 42});
+}
+
+TEST_CASE("InterfaceTypes static checks", "[interface-types][static-checks]") {
+  STATIC_REQUIRE(podio::detail::isInterfaceType<TypeWithEnergy>);
 }
 
 TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics]") {
