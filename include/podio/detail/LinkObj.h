@@ -5,6 +5,8 @@
 
 #include "podio/ObjectID.h"
 
+#include <memory>
+
 namespace podio {
 
 template <typename FromT, typename ToT>
@@ -36,16 +38,14 @@ public:
   LinkObj& operator=(const LinkObj&) = delete;
 
   /// Destructor
-  ~LinkObj() {
-    delete m_from;
-    delete m_to;
-  }
+  ~LinkObj() = default;
 
 public:
   podio::ObjectID id{};
   LinkData data{1.0f};
-  FromT* m_from{nullptr};
-  ToT* m_to{nullptr};
+
+  std::unique_ptr<FromT> m_from{nullptr};
+  std::unique_ptr<ToT> m_to{nullptr};
 };
 
 } // namespace podio

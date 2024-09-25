@@ -92,10 +92,10 @@ public:
     auto tmp = new LinkObjT(podio::ObjectID{}, m_obj->data);
     if (cloneRelations) {
       if (m_obj->m_from) {
-        tmp->m_from = new FromT(*m_obj->m_from);
+        tmp->m_from = std::make_unique<FromT>(*m_obj->m_from);
       }
       if (m_obj->m_to) {
-        tmp->m_to = new ToT(*m_obj->m_to);
+        tmp->m_to = std::make_unique<ToT>(*m_obj->m_to);
       }
     }
     return MutableLink<FromU, ToU>(podio::utils::MaybeSharedPtr(tmp, podio::utils::MarkOwned));
@@ -139,8 +139,7 @@ public:
                                  detail::isDefaultHandleType<FromU>,
                              int> = 0>
   void setFrom(FromU value) {
-    delete m_obj->m_from;
-    m_obj->m_from = new detail::GetDefaultHandleType<FromU>(value);
+    m_obj->m_from = std::make_unique<detail::GetDefaultHandleType<FromU>>(value);
   }
 
   /// Set the related-from object
@@ -184,8 +183,7 @@ public:
                                  detail::isDefaultHandleType<ToU>,
                              int> = 0>
   void setTo(ToU value) {
-    delete m_obj->m_to;
-    m_obj->m_to = new detail::GetDefaultHandleType<ToU>(value);
+    m_obj->m_to = std::make_unique<detail::GetDefaultHandleType<ToU>>(value);
   }
 
   /// Set the related-to object
