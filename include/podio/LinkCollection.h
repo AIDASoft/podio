@@ -2,12 +2,7 @@
 #define PODIO_LINKCOLLECTION_H
 
 #include "podio/detail/LinkCollectionImpl.h"
-
-// Preprocessor helper macros for concatenating tokens at preprocessing times
-// Necessary because we use __COUNTER__ below for unique names of static
-// variables for values returned by registration function calls
-#define PODIO_PP_CONCAT_IMPL(x, y) x##y
-#define PODIO_PP_CONCAT(x, y) PODIO_PP_CONCAT_IMPL(x, y)
+#include "podio/detail/PreprocessorMacros.h"
 
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0
