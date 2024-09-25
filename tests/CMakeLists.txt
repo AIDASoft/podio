@@ -29,7 +29,9 @@ endif()
 
 PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
 PODIO_ADD_SIO_IO_BLOCKS(TestDataModel "${headers}" "${sources}")
-target_sources(TestDataModelSioBlocks PRIVATE DatamodelLinks.cc)
+if (TARGET TestDataModelSioBlocks)
+  target_sources(TestDataModelSioBlocks PRIVATE DatamodelLinks.cc)
+endif()
 
 # Build the extension data model and link it against the upstream model
 PODIO_GENERATE_DATAMODEL(extension_model datalayout_extension.yaml ext_headers ext_sources
