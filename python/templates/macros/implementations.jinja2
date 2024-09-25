@@ -38,7 +38,7 @@ Mutable{{ type }} {{ full_type }}::clone(bool cloneRelations) const {
   if (cloneRelations) {
 {% for relation in one_to_one_relations %}
   if (m_obj->m_{{ relation.name }}) {
-    tmp->m_{{ relation.name }} = new {{ relation.full_type }}(*m_obj->m_{{ relation.name }});
+    tmp->m_{{ relation.name }} = std::make_unique<{{ relation.full_type }}>((*m_obj->m_{{ relation.name }}));
   }
 {% endfor %}
 {% for relation in multi_relations %}
@@ -124,8 +124,7 @@ const {{ relation.full_type }} {{ class_type }}::{{ relation.getter_name(get_syn
 {% set class_type = prefix + class.bare_type %}
 {% for relation in relations %}
 void {{ class_type }}::{{ relation.setter_name(get_syntax) }}(const {{ relation.full_type }}& value) {
-  delete m_obj->m_{{ relation.name }};
-  m_obj->m_{{ relation.name }} = new {{ relation.full_type }}(value);
+  m_obj->m_{{ relation.name }} = std::make_unique<{{ relation.full_type }}>(value);
 }
 
 {% endfor %}

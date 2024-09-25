@@ -13,6 +13,9 @@
 #include "podio/ObjectID.h"
 {% if OneToManyRelations or VectorMembers %}
 #include <vector>
+{% endif %}
+{% if OneToOneRelations %}
+#include <memory>
 {%- endif %}
 
 {{ utils.forward_decls(forward_declarations_obj) }}
@@ -42,7 +45,7 @@ public:
   podio::ObjectID id;
   {{ class.bare_type }}Data data;
 {% for relation in OneToOneRelations %}
-  {{ relation.full_type }}* m_{{ relation.name }}{nullptr};
+  std::unique_ptr<{{ relation.full_type }}> m_{{ relation.name }}{nullptr};
 {% endfor %}
 {% for relation in OneToManyRelations + VectorMembers %}
   std::vector<{{ relation.full_type }}>* m_{{ relation.name }}{nullptr};
