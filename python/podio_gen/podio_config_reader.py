@@ -172,6 +172,8 @@ class ClassDefinitionValidator:
     # it applies and also which accessor functions to generate
     required_interface_keys = required_datatype_keys + ("Members", "Types")
 
+    required_link_keys = required_datatype_keys + ("From", "To")
+
     valid_extra_code_keys = (
         "declaration",
         "implementation",
@@ -187,6 +189,7 @@ class ClassDefinitionValidator:
         expose_pod_members = datamodel.options["exposePODMembers"]
         cls._check_datatypes(datamodel, expose_pod_members, upstream_edm)
         cls._check_interfaces(datamodel, upstream_edm)
+        cls._check_links(datamodel, upstream_edm)
 
     @classmethod
     def _check_comp(cls, member, components, upstream_edm):
@@ -256,7 +259,7 @@ class ClassDefinitionValidator:
                     f"'{name}' defines an interface type with the same name "
                     "as an existing datatype"
                 )
-            cls._check_interface_fields(name, definition)
+            cls._check_required_fields(name, definition, cls.required_interface_keys, "interface")
             cls._check_interface_types(name, definition, all_types)
 
     @classmethod
@@ -270,6 +273,23 @@ class ClassDefinitionValidator:
             upstream_edm,
         )
         cls._check_relations(classname, definition, datamodel, upstream_edm)
+
+    @classmethod
+    def _check_links(cls, datamodel, upstream_edm):
+        """Check the link definitions"""
+        all_types = list(datamodel.datatypes.keys()) + list(datamodel.interfaces.keys())
+        ext_types = []
+        if upstream_edm:
+            ext_types = list(upstream_edm.datatypes.keys()) + list(upstream_edm.interfaces.keys())
+        all_types.extend(ext_types)
+
+        for name, definition in datamodel.links.items():
+            if name in all_types:
+                raise DefinitionError(
+                    f"'{name}' defines a link type with the same name as an existing datatype"
+                )
+            cls._check_required_fields(name, definition, cls.required_link_keys, "link")
+            cls._check_link_types(name, definition, all_types)
 
     @classmethod
     def _check_members(cls, classname, members, expose_pod_members, datamodel, upstream_edm):
@@ -377,17 +397,17 @@ class ClassDefinitionValidator:
                 )
 
     @classmethod
-    def _check_interface_fields(cls, name, definition):
-        """Check whether the fields of an interface definition follow the required schema"""
-        for key in cls.required_interface_keys:
+    def _check_required_fields(cls, name, definition, required_keys, cat_name):
+        """Check whether the keys in definition are **exactly** the required ones"""
+        for key in required_keys:
             if key not in definition:
                 raise DefinitionError(
-                    f"interface '{name}' does not define '{key}' field which is required"
+                    f"{cat_name} '{name}' does not define '{key}' field which is required"
                 )
 
-        invalid_keys = [k for k in definition.keys() if k not in cls.required_interface_keys]
+        invalid_keys = [k for k in definition.keys() if k not in required_keys]
         if invalid_keys:
-            raise DefinitionError(f"interface '{name}' defines invalid fields: {invalid_keys}")
+            raise DefinitionError(f"{cat_name} '{name}' defines invalid fields: {invalid_keys}")
 
     @classmethod
     def _check_interface_types(cls, name, definition, known_datatypes):
@@ -396,6 +416,16 @@ class ClassDefinitionValidator:
             if wrapped_type.full_type not in known_datatypes:
                 raise DefinitionError(
                     f"interface '{name}' tries to use Type '{wrapped_type}' which is undefined"
+                )
+
+    @classmethod
+    def _check_link_types(cls, name, definition, known_datatypes):
+        """Check whether a link really only uses known datatypes"""
+        for link_dir in ("From", "To"):
+            if definition[link_dir].full_type not in known_datatypes:
+                raise DefinitionError(
+                    f"link '{name}' tries to use undefined Type '{definition[link_dir]}' "
+                    f"as its '{link_dir}' relation"
                 )
 
     @classmethod
@@ -513,6 +543,18 @@ class PodioConfigReader:
         return interface
 
     @classmethod
+    def _read_link(cls, value):
+        """Read a link definition and put it into a more easily digestible format"""
+        link = {}
+        for category, definition in value.items():
+            if category in ("From", "To"):
+                link[category] = DataType(definition)
+            else:
+                link[category] = copy.deepcopy(definition)
+
+        return link
+
+    @classmethod
     def parse_model(cls, model_dict, package_name, upstream_edm=None, parent_path=None):
         """Parse a model from the dictionary, e.g. read from a yaml file."""
 
@@ -546,6 +588,11 @@ class PodioConfigReader:
             for klassname, value in model_dict["interfaces"].items():
                 interfaces[klassname] = cls._read_interface(value)
 
+        links = {}
+        if "links" in model_dict:
+            for klassname, value in model_dict["links"].items():
+                links[klassname] = cls._read_link(value)
+
         options = copy.deepcopy(cls.options)
         if "options" in model_dict:
             for option, value in model_dict["options"].items():
@@ -559,7 +606,7 @@ class PodioConfigReader:
 
         # If this doesn't raise an exception everything should in principle work out
         validator = ClassDefinitionValidator()
-        datamodel = DataModel(datatypes, components, interfaces, options, schema_version)
+        datamodel = DataModel(datatypes, components, interfaces, links, options, schema_version)
         validator.validate(datamodel, upstream_edm)
         return datamodel
 
