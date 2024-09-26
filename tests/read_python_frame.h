@@ -3,7 +3,8 @@
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
-#include "datamodel/LinkCollections.h"
+#include "datamodel/TestInterfaceLinkCollection.h"
+#include "datamodel/TestLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
 
 #include "podio/Frame.h"

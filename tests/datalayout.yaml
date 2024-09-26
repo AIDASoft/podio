@@ -272,3 +272,16 @@ interfaces:
     Members:
       - double energy // the energy
       - int PDG // a pdg
+
+links:
+  TestLink:
+    Description: "A link for testing"
+    Author: "Thomas Madlener"
+    From: ExampleHit
+    To: ExampleCluster
+
+  TestInterfaceLink:
+    Description: "A link with an interface type for testing"
+    Author: "Thomas Madlener"
+    From: ExampleCluster
+    To: TypeWithEnergy

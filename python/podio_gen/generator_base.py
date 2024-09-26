@@ -96,15 +96,21 @@ class ClassGeneratorBaseMixin:
                          list. This function also has to take care of filling the
                          necessary templates!
 
+    do_process_link(name: str, link: dict): do some language specific processing
+                    for a link type, populating the link dictionary further.
+                    When called only the "class" key will be populated. Return a
+                    dictionary or None. If None, this will not be put into the
+                    "links" list. This function also has to take care of filling
+                    the necessary templates!
+
     post_process(datamodel: dict): do some global post processing for which all
                  components and datatypes need to have been processed already.
                  Gets called with the dictionary that has been created in
                  pre_process and filled during the processing. The process
                  components and datatypes are accessible via the "components",
-                 "datatypes" and "interfaces" keys respectively.
+                 "datatypes", "interfaces" and "links" keys respectively.
 
     print_report(): prints a report summarizing what has been generated
-
     """
 
     def __init__(
@@ -154,6 +160,7 @@ class ClassGeneratorBaseMixin:
         datamodel["components"] = []
         datamodel["datatypes"] = []
         datamodel["interfaces"] = []
+        datamodel["links"] = []
 
         for name, component in self.datamodel.components.items():
             comp = self._process_component(name, component)
@@ -169,6 +176,11 @@ class ClassGeneratorBaseMixin:
             interf = self._process_interface(name, interface)
             if interf is not None:
                 datamodel["interfaces"].append(interf)
+
+        for name, link in self.datamodel.links.items():
+            proc_link = self._process_link(name, link)
+            if proc_link is not None:
+                datamodel["links"].append(proc_link)
 
         self.post_process(datamodel)
         if self.verbose:
@@ -200,6 +212,13 @@ class ClassGeneratorBaseMixin:
 
         return self.do_process_interface(name, interface)
 
+    def _process_link(self, name, link):
+        """Process a single link definition into a dictionary that can be used
+        in jinja2 templates and return that"""
+        link = deepcopy(link)
+        link["class"] = DataType(name)
+        return self.do_process_link(name, link)
+
     @staticmethod
     def _get_filenames_templates(template_base, name):
         """Get the list of output filenames and corresponding template names"""
@@ -217,6 +236,7 @@ class ClassGeneratorBaseMixin:
                 "Collection": "Collection",
                 "CollectionData": "CollectionData",
                 "MutableStruct": "Struct",
+                "LinkCollection": "Collection",
             }
 
             return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
@@ -227,6 +247,8 @@ class ClassGeneratorBaseMixin:
             "Interface": ("h",),
             "MutableStruct": ("jl",),
             "ParentModule": ("jl",),
+            "LinkCollection": ("h",),
+            "DatamodelLinks": ("cc",),
         }.get(template_base, ("h", "cc"))
 
         fn_templates = []

@@ -1,0 +1,17 @@
+{% import "macros/utils.jinja2" as utils %}
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_{{ class.bare_type }}Collection_H
+#define {{ package_name.upper() }}_{{ class.bare_type }}Collection_H
+
+{% for include in include_types %}
+{{ include }}
+{% endfor %}
+
+#include <podio/LinkCollection.h>
+
+{{ utils.namespace_open(class.namespace) }}
+using {{ class.bare_type }}Collection = podio::LinkCollection<{{ From }}, {{ To }}>;
+{{ utils.namespace_close(class.namespace) }}
+
+#endif

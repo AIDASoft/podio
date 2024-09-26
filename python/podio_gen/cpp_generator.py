@@ -91,7 +91,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
         return {}
 
-    def post_process(self, _):
+    def post_process(self, datamodel):
         """Do the cpp specific post processing"""
         self._write_edm_def_file()
 
@@ -99,6 +99,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             self._prepare_iorules()
             self._create_selection_xml()
 
+        if datamodel["links"]:
+            self._write_links_registration_file(datamodel["links"])
         self._write_all_collections_header()
         self._write_cmake_lists_file()
 
@@ -206,6 +208,23 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
         self._fill_templates("Interface", interface)
         return interface
+
+    def do_process_link(self, _, link):
+        """Process a link definition and generat the necessary code"""
+        link["include_types"] = []
+        for rel in ("From", "To"):
+            rel_type = link[rel]
+            include_header = f"{rel_type.bare_type}Collection"
+            if self._is_interface(rel_type.full_type):
+                # Interfaces do not have a Collection header
+                include_header = rel_type.bare_type
+            link["include_types"].append(
+                self._build_include_for_class(
+                    include_header, self._needs_include(rel_type.full_type)
+                )
+            )
+        self._fill_templates("LinkCollection", link)
+        return link
 
     def print_report(self):
         """Print a summary report about the generated code"""
@@ -517,6 +536,16 @@ have resolvable schema evolution incompatibilities:"
                     "incfolder": self.incfolder,
                     "package_name": self.package_name,
                 },
+            ),
+        )
+
+    def _write_links_registration_file(self, links):
+        """Write a .cc file that registers all the link collections that were
+        defined with this datamodel"""
+        self._write_file(
+            "DatamodelLinks.cc",
+            self._eval_template(
+                "DatamodelLinks.cc.jinja2", {"links": links, "incfolder": self.incfolder}
             ),
         )
 
