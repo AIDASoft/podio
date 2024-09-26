@@ -6,5 +6,5 @@
 {% endfor %}
 
 {% for link in links %}
-PODIO_DECLARE_LINK({{ link["From"].full_type }}, {{ link["To"].full_type }})
+PODIO_DECLARE_LINK_SIO({{ link["From"].full_type }}, {{ link["To"].full_type }})
 {% endfor %}

@@ -542,11 +542,14 @@ have resolvable schema evolution incompatibilities:"
     def _write_links_registration_file(self, links):
         """Write a .cc file that registers all the link collections that were
         defined with this datamodel"""
+        link_data = {"links": links, "incfolder": self.incfolder}
         self._write_file(
             "DatamodelLinks.cc",
-            self._eval_template(
-                "DatamodelLinks.cc.jinja2", {"links": links, "incfolder": self.incfolder}
-            ),
+            self._eval_template("DatamodelLinks.cc.jinja2", link_data),
+        )
+        self._write_file(
+            "DatamodelLinkSIOBlock.cc",
+            self._eval_template("DatamodelLinksSIOBlock.cc.jinja2", link_data),
         )
 
     def _write_edm_def_file(self):
