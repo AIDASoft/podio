@@ -301,7 +301,7 @@ TEST_CASE("LinkCollection subset collection", "[links][subset-colls]") {
     // Cannot convert into a subset collection if elements already present
     REQUIRE_THROWS_AS(links.setSubsetCollection(), std::logic_error);
 
-    // Connot convert a subset collection into a normal collection
+    // Cannot convert a subset collection into a normal collection
     REQUIRE_THROWS_AS(linkRefs.setSubsetCollection(false), std::logic_error);
   }
 
@@ -452,7 +452,7 @@ TEST_CASE("Links with interfaces", "[links][interface-types]") {
 }
 
 #ifdef PODIO_JSON_OUTPUT
-TEST_CASE("Link JSON converstion", "[links][json]") {
+TEST_CASE("Link JSON conversion", "[links][json]") {
   const auto& [links, hits, clusters] = createLinkCollections();
   const nlohmann::json json{{"links", links}};
 

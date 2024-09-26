@@ -16,7 +16,7 @@
 namespace podio {
 
 /// Generalized Link type for both Mutable and immutable (default)
-/// versions. User facing clases with the expected naming scheme are defined via
+/// versions. User facing classes with the expected naming scheme are defined via
 /// template aliases in LinkFwd.h
 template <typename FromT, typename ToT, bool Mutable>
 class LinkT {
@@ -251,7 +251,7 @@ public:
   /// and if the requested type is actually part of the Link. Will result
   /// in a compilation error if any of these conditions is not met.
   ///
-  /// @tparam T type of value (**infered!**)
+  /// @tparam T type of value (**inferred!**)
   /// @param value the element to set for this link.
   template <typename T,
             std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> &&

@@ -181,7 +181,7 @@ namespace detail {
   template <typename T>
   using hasObject_t = typename T::object_type;
 
-  /// Detector for checking the existance of a collection_type type member.
+  /// Detector for checking the existence of a collection_type type member.
   template <typename T>
   using hasCollection_t = typename T::collection_type;
 
