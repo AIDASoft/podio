@@ -1,9 +1,9 @@
 #include "catch2/catch_test_macros.hpp"
 
 #include "datamodel/ExampleHit.h"
-#include "datamodel/MutableExampleMC.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleCluster.h"
+#include "datamodel/MutableExampleMC.h"
 #include "datamodel/TypeWithEnergy.h"
 
 #include "podio/ObjectID.h"
