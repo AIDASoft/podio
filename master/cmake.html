@@ -140,6 +140,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Building a new data model library with CMake</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#exported-cmake-functions-and-macros">Exported CMake functions and macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#a-simple-example">A simple example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-advanced-data-model-generation">More advanced data model generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-usage-of-advanced-options">Example usage of Advanced options</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a><ul>
@@ -685,6 +687,32 @@ For a package developer tutorial on CMake, please have a look <a class="referenc
 </pre></div>
 </div>
 <p>For a complete example, please have a look at <a class="reference external" href="https://github.com/key4hep/EDM4hep/blob/main/edm4hep/CMakeLists.txt">EDM4hep</a></p>
+</section>
+<section id="more-advanced-data-model-generation">
+<h2>More advanced data model generation<a class="headerlink" href="#more-advanced-data-model-generation" title="Link to this heading"></a></h2>
+<p>PODIO provides additional options within the <code class="docutils literal notranslate"><span class="pre">PODIO_GENERATE_DATAMODEL</span></code> macro that allow developers to fine-tune how data models are generated and compiled:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">UPSTREAM_EDM</span></code> - use an existing EDM as an upstream dependency. This is useful when your data model extends or builds on top of another one, such as using EDM4hep in <a class="reference external" href="https://github.com/eic/EDM4eic/blob/7a627488cde0bc4e1863d3fd6bd3396fd30c7296/CMakeLists.txt#L44-L48">EDM4eic</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DEPENDS</span></code> - tells CMake that some files used to build the data model are not generated during the current build but are still required for compilation and should trigger a rebuild in case of changes, like in <a class="reference external" href="https://github.com/key4hep/EDM4hep/blob/ac83112d66f7aa3b9d4eb5859c19b987feab3ce5/edm4hep/CMakeLists.txt#L6-L8">EDM4hep</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">VERSION</span></code> - specifies the version of the datamodel (it is separate from the schema version). This will be injected into the metadata that is stored in files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OUTPUT_FOLDER</span></code> - the folder in which the output files should be placed. Defaults to <code class="docutils literal notranslate"><span class="pre">${CMAKE_CURRENT_SOURCE_DIR}</span></code> if not set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IO_BACKEND_HANDLERS</span></code> - the I/O backend handlers that should be generated. The list is passed directly to podio_class_generator.py and validated there. Default is <code class="docutils literal notranslate"><span class="pre">ROOT</span></code></p></li>
+</ol>
+</section>
+<section id="example-usage-of-advanced-options">
+<h2>Example usage of Advanced options<a class="headerlink" href="#example-usage-of-advanced-options" title="Link to this heading"></a></h2>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c"># Generate the C++ code from the YAML definition with an upstream EDM, dependencies, version, output folder, and I/O handlers</span>
+<span class="nb">PODIO_GENERATE_DATAMODEL</span><span class="p">(</span><span class="s">newdm</span><span class="w"> </span><span class="s">newdm.yaml</span><span class="w"> </span><span class="s">headers</span><span class="w"> </span><span class="s">sources</span>
+<span class="s"> </span><span class="w"> </span><span class="s"> </span><span class="w"> </span><span class="s">UPSTREAM_EDM</span><span class="w"> </span><span class="s2">&quot;EDM4hep:edm4hep&quot;</span>
+<span class="s"> </span><span class="w"> </span><span class="s"> </span><span class="w"> </span><span class="s">DEPENDS</span><span class="w"> </span><span class="s2">&quot;extra_header.h;more_extras.h&quot;</span>
+<span class="s"> </span><span class="w"> </span><span class="s"> </span><span class="w"> </span><span class="s">VERSION</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span>
+<span class="s"> </span><span class="w"> </span><span class="s"> </span><span class="w"> </span><span class="s">OUTPUT_FOLDER</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_BINARY_DIR</span><span class="o">}</span><span class="s">/generated_sources</span>
+<span class="s"> </span><span class="w"> </span><span class="s"> </span><span class="w"> </span><span class="s">IO_BACKEND_HANDLERS</span><span class="w"> </span><span class="s2">&quot;ROOT;SIO&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Another example can be found <a class="reference external" href="https://github.com/AIDASoft/podio/blob/64e87e153e8217375a167123d3567a765935333a/tests/schema_evolution/CMakeLists.tx">here</a>.</p>
+<p>You can explore all available options <a class="reference external" href="https://github.com/AIDASoft/podio/blob/cf147a00e00bfbedb2f66330b837679c0c81f6b2/cmake/podioMacros.cmake#L110-L135">here</a>.</p>
 </section>
 </section>
 
