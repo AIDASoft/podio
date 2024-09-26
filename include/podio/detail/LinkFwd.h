@@ -12,7 +12,7 @@
 namespace podio {
 namespace detail {
 
-  /// Get the collection type name for an LinkCollection
+  /// Get the collection type name for a LinkCollection
   ///
   /// @tparam FromT the From type of the link
   /// @tparam ToT the To type of the link
@@ -24,7 +24,7 @@ namespace detail {
     return std::string_view{typeName};
   }
 
-  /// Get the value type name for an LinkCollection
+  /// Get the value type name for a LinkCollection
   ///
   /// @tparam FromT the From type of the link
   /// @tparam ToT the To type of the link
@@ -35,14 +35,13 @@ namespace detail {
     return std::string_view{typeName};
   }
 
-  /// Get an SIO friendly type name for an LinkCollection (necessary for
+  /// Get an SIO friendly type name for a LinkCollection (necessary for
   /// registration in the SIOBlockFactory)
   ///
   /// @tparam FromT the From type of the link
-  /// @tparam ToT the To type of
-  /// the link
-  /// @returns a string that uniquely identifies this combination
-  /// of From and To types
+  /// @tparam ToT the To type of the link
+  /// @returns a string that uniquely identifies this combination of From and To
+  /// types
   template <typename FromT, typename ToT>
   inline const std::string& linkSIOName() {
     static auto n = std::string("LINK_FROM_") + FromT::typeName + "_TO_" + ToT::typeName;
@@ -51,8 +50,7 @@ namespace detail {
   }
 } // namespace detail
 
-// Forward declarations and typedefs used throughout the whole Link
-// business
+// Forward declarations and typedefs used throughout the whole Link business
 template <typename FromT, typename ToT>
 class LinkObj;
 
@@ -94,11 +92,11 @@ using LinkMutableCollectionIterator = LinkCollectionIteratorT<FromT, ToT, true>;
 } // namespace podio
 
 namespace std {
-/// Specialization for enabling structure bindings for Links
+/// Specialization for enabling structured bindings for Links
 template <typename F, typename T, bool M>
 struct tuple_size<podio::LinkT<F, T, M>> : std::integral_constant<size_t, 3> {};
 
-/// Specialization for enabling structure bindings for Links
+/// Specialization for enabling structured bindings for Links
 template <size_t Index, typename F, typename T, bool M>
 struct tuple_element<Index, podio::LinkT<F, T, M>> : tuple_element<Index, std::tuple<F, T, float>> {};
 } // namespace std

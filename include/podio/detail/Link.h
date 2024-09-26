@@ -17,7 +17,7 @@ namespace podio {
 
 /// Generalized Link type for both Mutable and immutable (default)
 /// versions. User facing clases with the expected naming scheme are defined via
-/// template aliases are defined just below
+/// template aliases in LinkFwd.h
 template <typename FromT, typename ToT, bool Mutable>
 class LinkT {
   // The typedefs in LinkFwd.h should make sure that at this point
@@ -76,7 +76,7 @@ public:
   /// Implicit conversion of mutable to immutable links
   template <typename FromU, typename ToU, typename = std::enable_if_t<Mutable && sameTypes<FromU, ToU>>>
   operator LinkT<FromU, ToU, false>() const {
-    return LinkT<FromU, ToU, false>(m_obj);
+    return Link<FromU, ToU>(m_obj);
   }
 
   /// Create a mutable deep-copy
