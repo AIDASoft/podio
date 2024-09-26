@@ -4,6 +4,7 @@
 #include "podio/utilities/TypeHelpers.h"
 #include <podio/CollectionBase.h>
 
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -109,9 +110,10 @@ void addMultiRelation(std::vector<RelType>& relElements, const podio::Collection
 /// @param coll The collection that holds the actual element
 /// @param id The ObjectID of the element that we are currently looking for
 template <typename T, typename InterfaceType>
-void tryAssignTo(T, InterfaceType*& relation, const podio::CollectionBase* coll, const podio::ObjectID id) {
+void tryAssignTo(T, std::unique_ptr<InterfaceType>& relation, const podio::CollectionBase* coll,
+                 const podio::ObjectID id) {
   if (const auto* typeColl = dynamic_cast<const typename T::collection_type*>(coll)) {
-    relation = new InterfaceType((*typeColl)[id.index]);
+    relation = std::make_unique<InterfaceType>((*typeColl)[id.index]);
   }
 }
 
@@ -129,7 +131,7 @@ void tryAssignTo(T, InterfaceType*& relation, const podio::CollectionBase* coll,
 /// @param coll The collection that holds the actual element
 /// @param id The ObjectID of the element that we are currently looking for
 template <typename InterfaceType>
-void addInterfaceToSingleRelation(InterfaceType*& relation, const podio::CollectionBase* coll,
+void addInterfaceToSingleRelation(std::unique_ptr<InterfaceType>& relation, const podio::CollectionBase* coll,
                                   const podio::ObjectID id) {
   std::apply([&](auto... t) { (tryAssignTo(t, relation, coll, id), ...); }, typename InterfaceType::interfaced_types{});
 }
@@ -162,12 +164,13 @@ void addInterfaceToSingleRelation(InterfaceType*& relation, const podio::Collect
 ///             necessary type casting
 /// @param id The ObjectID of the object that should be retrieved and added.
 template <typename RelType>
-void addSingleRelation(RelType*& relation, const podio::CollectionBase* coll, const podio::ObjectID id) {
+void addSingleRelation(std::unique_ptr<RelType>& relation, const podio::CollectionBase* coll,
+                       const podio::ObjectID id) {
   if constexpr (podio::detail::isInterfaceType<RelType>) {
     addInterfaceToSingleRelation(relation, coll, id);
   } else {
     const auto* typeColl = static_cast<const typename RelType::collection_type*>(coll);
-    relation = new RelType((*typeColl)[id.index]);
+    relation = std::make_unique<RelType>((*typeColl)[id.index]);
   }
 }
 

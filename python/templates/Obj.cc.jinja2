@@ -39,7 +39,7 @@
 {
 {% for relation in OneToOneRelations %}
   if (other.m_{{ relation.name }}) {
-    m_{{ relation.name }} = new {{ relation.full_type }}(*(other.m_{{ relation.name }}));
+    m_{{ relation.name }} = std::make_unique<{{ relation.full_type }}>(*(other.m_{{ relation.name }}));
   }
 {% endfor %}
 }
@@ -55,10 +55,6 @@
   }
 {% endif %}
 {%- endwith %}
-
-{% for relation in OneToOneRelations %}
-  delete m_{{ relation.name }};
-{% endfor %}
 }
 {%- endif %}
 
