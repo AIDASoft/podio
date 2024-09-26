@@ -74,6 +74,10 @@ class JuliaClassGenerator(ClassGeneratorBaseMixin):
         """Julia does not support interface types yet, so this does nothing"""
         return None
 
+    def do_process_link(self, _, __):
+        """Julia does not support interface types yet, so this does nothing"""
+        return None
+
     def get_upstream_name(self):
         """Get the name of the upstream datamodel if any"""
         if self.upstream_edm:

@@ -1,0 +1,9 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+{% for link in links %}
+#include "{{ incfolder }}{{ link['class'].bare_type }}Collection.h"
+{% endfor %}
+
+{% for link in links %}
+PODIO_DECLARE_LINK({{ link["From"].full_type }}, {{ link["To"].full_type }})
+{% endfor %}
