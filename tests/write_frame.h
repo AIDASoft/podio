@@ -15,16 +15,21 @@
 #include "datamodel/ExampleWithNamespaceCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/LinkCollections.h"
+#include "datamodel/TypeWithEnergy.h"
 
 #include "extension_model/ContainedTypeCollection.h"
 #include "extension_model/ExternalComponentTypeCollection.h"
 #include "extension_model/ExternalRelationTypeCollection.h"
 
 #include "podio/Frame.h"
+#include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #include <string>
 #include <tuple>
+#include <type_traits>
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
@@ -380,6 +385,43 @@ auto createExampleWithInterfaceCollection(const ExampleHitCollection& hits, cons
   return coll;
 }
 
+auto createLinkCollection(const ExampleHitCollection& hits, const ExampleClusterCollection& clusters) {
+  TestLinkCollection links{};
+  const auto nLinks = std::min(clusters.size(), hits.size());
+  for (size_t iA = 0; iA < nLinks; ++iA) {
+    auto link = links.create();
+    link.setWeight(0.5 * iA);
+
+    // Fill in opposite "order" to at least make sure that we uncover issues
+    // that would otherwise be masked by parallel running of indices
+    link.setFrom(hits[iA]);
+    link.setTo(clusters[nLinks - 1 - iA]);
+  }
+
+  return links;
+}
+
+auto createLinkWithInterfaceCollection(const ExampleClusterCollection& clusters, const ExampleHitCollection& hits,
+                                       const ExampleMCCollection& mcs) {
+  TestInterfaceLinkCollection links{};
+
+  auto link = links.create();
+  link.set(clusters[0]);
+  link.set(TypeWithEnergy{hits[0]});
+  link.setWeight(1.23f);
+
+  link = links.create();
+  link.set(clusters[1]);
+  link.set(TypeWithEnergy{mcs[0]});
+  link.setWeight(3.14f);
+
+  link = links.create();
+  link.set(clusters[0]);
+  link.set(TypeWithEnergy{clusters[1]});
+
+  return links;
+}
+
 podio::Frame makeFrame(int iFrame) {
   podio::Frame frame{};
 
@@ -440,6 +482,8 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createExtensionExternalRelationCollection(iFrame, hits, clusters), "extension_ExternalRelation");
 
   frame.put(createExampleWithInterfaceCollection(hits, clusters, mcps), "interface_examples");
+  frame.put(createLinkCollection(hits, clusters), "links");
+  frame.put(createLinkWithInterfaceCollection(clusters, hits, mcps), "links_with_interfaces");
 
   return frame;
 }

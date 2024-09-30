@@ -26,6 +26,12 @@ public:
   /// tuple
   using interfaced_types = std::tuple<{{ Types | join(", ")}}>;
 
+  /// Mark interfaces as always acting as default datatypes.
+  ///
+  /// @note We only detect the member typedef, not whether it is actually usable
+  /// in any meaningful way
+  using mutable_type = podio::det::nonesuch;
+
 private:
   /// type alias containing all the mutable types that can be used to initialize
   /// this interface
@@ -35,11 +41,13 @@ private:
   template<typename T>
   constexpr static bool isInterfacedType = podio::detail::isInTuple<T, interfaced_types>;
 
+public:
   /// template variable for determining whether type T can be used to initialize
   /// this interface
   template<typename T>
   constexpr static bool isInitializableFrom = isInterfacedType<T> || podio::detail::isInTuple<T, InterfacedMutableTypes>;
 
+private:
   struct Concept {
     virtual ~Concept() = default;
     virtual std::unique_ptr<Concept> clone() const = 0;
@@ -116,6 +124,8 @@ public:
     // an empty handle
     return {{ Types[0] }}::makeEmpty();
   }
+
+  static constexpr auto typeName = "{{ class.full_type }}";
 
   /// check whether the object is actually available
   bool isAvailable() const { return m_self->isAvailable(); }

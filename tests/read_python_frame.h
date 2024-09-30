@@ -3,6 +3,8 @@
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/LinkCollections.h"
+#include "datamodel/TypeWithEnergy.h"
 
 #include "podio/Frame.h"
 
@@ -93,6 +95,59 @@ int checkParameters(const podio::Frame& frame) {
   return 0;
 }
 
+int checkLinkCollection(const podio::Frame& event) {
+  const auto& links = event.get<TestLinkCollection>("links_from_python");
+  if (links.size() != 1) {
+    std::cerr << "links_from_python collection does not have the expected size (expected 2, actual " << links.size()
+              << ")" << std::endl;
+    return 1;
+  }
+  const auto& hits = event.get<ExampleHitCollection>("hits_from_python");
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters_from_python");
+
+  const auto link = links[0];
+  const auto linkHit = link.get<ExampleHit>();
+  const auto linkCluster = link.get<ExampleCluster>();
+  if (linkHit != hits[0] || linkCluster != clusters[0]) {
+    std::cerr
+        << "Contents of first link in links_from_python collection has not been persisted as expected: (expected [hit: "
+        << hits[0].id() << ", cluster: " << clusters[0].id() << "], actual [hit: " << linkHit.id()
+        << ", cluster: " << linkCluster.id() << "])" << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
+
+int checkInterfaceLinkCollection(const podio::Frame& event) {
+  const auto& links = event.get<TestInterfaceLinkCollection>("links_with_interfaces_from_python");
+  if (links.size() != 2) {
+    std::cerr << "links_with_interfaces_from_python collection does not have the expected size (expected 2, actual "
+              << links.size() << ")" << std::endl;
+    return 1;
+  }
+
+  const auto& hits = event.get<ExampleHitCollection>("hits_from_python");
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters_from_python");
+
+  auto link = links[0];
+  auto linkCluster = link.get<ExampleCluster>();
+  auto linkIface = link.get<TypeWithEnergy>();
+
+  if (!linkIface.isA<ExampleHit>() || linkIface != hits[0] || linkCluster != clusters[0]) {
+    return 1;
+  }
+
+  link = links[1];
+  linkCluster = link.getFrom();
+  linkIface = link.getTo();
+  if (!linkIface.isA<ExampleCluster>() || linkIface != clusters[0] || linkCluster != clusters[1]) {
+    return 1;
+  }
+
+  return 0;
+}
+
 template <typename ReaderT>
 int read_frame(const std::string& filename) {
   auto reader = ReaderT();
@@ -101,7 +156,8 @@ int read_frame(const std::string& filename) {
   auto event = podio::Frame(reader.readEntry("events", 0));
 
   return checkHits(event.get<ExampleHitCollection>("hits_from_python")) +
-      checkClusters(event.get<ExampleClusterCollection>("clusters_from_python")) + checkParameters(event);
+      checkClusters(event.get<ExampleClusterCollection>("clusters_from_python")) + checkLinkCollection(event) +
+      checkInterfaceLinkCollection(event) + checkParameters(event);
 }
 
 #endif // PODIO_TESTS_READ_PYTHON_FRAME_H

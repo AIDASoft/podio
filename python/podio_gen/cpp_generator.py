@@ -94,9 +94,11 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
     def post_process(self, _):
         """Do the cpp specific post processing"""
         self._write_edm_def_file()
+
         if "ROOT" in self.io_handlers:
             self._prepare_iorules()
             self._create_selection_xml()
+
         self._write_all_collections_header()
         self._write_cmake_lists_file()
 
@@ -195,7 +197,12 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
     def do_process_interface(self, _, interface):
         """Process an interface definition and generate the necessary code"""
-        interface["include_types"] = [self._build_include(t) for t in interface["Types"]]
+        interface["include_types"] = [
+            self._build_include_for_class(
+                f"{t.bare_type}Collection", self._needs_include(t.full_type)
+            )
+            for t in interface["Types"]
+        ]
 
         self._fill_templates("Interface", interface)
         return interface
@@ -217,6 +224,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         """Do the preprocessing that is necessary for the classes and Mutable classes"""
         includes = set(datatype["includes_data"])
         fwd_declarations = defaultdict(list)
+        fwd_declarations[datatype["class"].namespace] = [
+            f"{datatype['class'].bare_type}Collection"
+        ]
         includes_cc = set()
 
         for member in datatype["Members"]:

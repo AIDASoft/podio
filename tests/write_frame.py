@@ -9,9 +9,15 @@ import ROOT
 if ROOT.gSystem.Load("libTestDataModelDict") < 0:  # noqa: E402
     raise RuntimeError("Could not load TestDataModel dictionary")
 
+if ROOT.gInterpreter.LoadFile("datamodel/LinkCollections.h"):
+    raise RuntimeError("Could not load LinkCollections.h header")
+
 from ROOT import (  # pylint: disable=wrong-import-position
     ExampleHitCollection,
     ExampleClusterCollection,
+    TestLinkCollection,
+    TestInterfaceLinkCollection,
+    TypeWithEnergy,
 )  # noqa: E402
 
 from podio import Frame  # pylint: disable=wrong-import-position
@@ -37,13 +43,42 @@ def create_cluster_collection():
     return clusters
 
 
+def create_link_collection(clusters, hits):
+    """Create a collection of links"""
+    links = TestLinkCollection()
+    link = links.create()
+    link.setFrom(hits[0])
+    link.setTo(clusters[0])
+
+    return links
+
+
+def create_link_with_interface_collection(clusters, hits):
+    """Create a collection of links with an interface type"""
+    links = TestInterfaceLinkCollection()
+
+    link = links.create()
+    link.setFrom(clusters[0])
+    link.setTo(TypeWithEnergy(hits[0]))
+
+    link = links.create()
+    link.setFrom(clusters[1])
+    link.setTo(TypeWithEnergy(clusters[0]))
+
+    return links
+
+
 def create_frame():
     """Create a frame with an ExampleHit and an ExampleCluster collection"""
     frame = Frame()
     hits = create_hit_collection()
-    frame.put(hits, "hits_from_python")
+    hits = frame.put(hits, "hits_from_python")
     clusters = create_cluster_collection()
-    frame.put(clusters, "clusters_from_python")
+    clusters = frame.put(clusters, "clusters_from_python")
+    frame.put(create_link_collection(clusters, hits), "links_from_python")
+    frame.put(
+        create_link_with_interface_collection(clusters, hits), "links_with_interfaces_from_python"
+    )
 
     frame.put_parameter("an_int", 42)
     frame.put_parameter("some_floats", [1.23, 7.89, 3.14])

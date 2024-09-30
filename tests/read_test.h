@@ -12,9 +12,12 @@
 #include "datamodel/ExampleWithNamespace.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/LinkCollections.h"
+#include "datamodel/TypeWithEnergy.h"
 
 // podio specific includes
 #include "podio/Frame.h"
+#include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
 #include "podio/podioVersion.h"
 
@@ -407,6 +410,43 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     for (double d : usrDbl) {
       if (d != 42.) {
         throw std::runtime_error("Couldn't read userDoubles properly");
+      }
+    }
+  }
+
+  // ======================= Links ==========================
+  if (fileVersion >= podio::version::Version{1, 1, 99}) {
+    auto& links = event.get<TestLinkCollection>("links");
+    const auto nLinks = std::min(clusters.size(), hits.size());
+    if (links.size() != nLinks) {
+      throw std::runtime_error("LinksCollection does not have the expected size");
+    }
+    int linkIndex = 0;
+    for (auto link : links) {
+      if (!((link.getWeight() == 0.5 * linkIndex) && (link.getFrom() == hits[linkIndex]) &&
+            (link.getTo() == clusters[nLinks - 1 - linkIndex]))) {
+        throw std::runtime_error("Link does not have expected content");
+      }
+      linkIndex++;
+    }
+
+    auto& interfaceLinks = event.get<TestInterfaceLinkCollection>("links_with_interfaces");
+    if (interfaceLinks.size() != 3) {
+      throw std::runtime_error("Links with interfaces collection does not have the expected size (expected 3, actual " +
+                               std::to_string(interfaceLinks.size()) + ")");
+    }
+    {
+      auto link = interfaceLinks[0];
+      if (link.get<ExampleCluster>() != clusters[0] || link.get<TypeWithEnergy>() != hits[0]) {
+        throw std::runtime_error("Link with interface type could not be read back correctly");
+      }
+      link = interfaceLinks[1];
+      if (link.get<ExampleCluster>() != clusters[1] || link.get<TypeWithEnergy>() != mcps[0]) {
+        throw std::runtime_error("Link with interface type could not be read back correctly");
+      }
+      link = interfaceLinks[2];
+      if (link.get<ExampleCluster>() != clusters[0] || link.get<TypeWithEnergy>() != clusters[1]) {
+        throw std::runtime_error("Link with interface type could not be read back correctly");
       }
     }
   }

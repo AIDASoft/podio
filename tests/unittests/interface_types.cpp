@@ -51,7 +51,9 @@ TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
 }
 
 TEST_CASE("InterfaceTypes static checks", "[interface-types][static-checks]") {
+  using namespace std::string_view_literals;
   STATIC_REQUIRE(podio::detail::isInterfaceType<TypeWithEnergy>);
+  STATIC_REQUIRE(TypeWithEnergy::typeName == "TypeWithEnergy"sv);
 }
 
 TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics]") {

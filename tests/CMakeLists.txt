@@ -19,6 +19,7 @@ PODIO_GENERATE_DATAMODEL(datamodel datalayout.yaml headers sources
 
 # Use the cmake building blocks to add the different parts (conditionally)
 PODIO_ADD_DATAMODEL_CORE_LIB(TestDataModel "${headers}" "${sources}")
+target_sources(TestDataModel PRIVATE DatamodelLinks.cc)
 find_package(nlohmann_json 3.10)
 if (nlohmann_json_FOUND)
   message(STATUS "Found compatible version of JSON library, will add JSON support to test datamodel")
@@ -28,6 +29,9 @@ endif()
 
 PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
 PODIO_ADD_SIO_IO_BLOCKS(TestDataModel "${headers}" "${sources}")
+if (TARGET TestDataModelSioBlocks)
+  target_sources(TestDataModelSioBlocks PRIVATE DatamodelLinks.cc)
+endif()
 
 # Build the extension data model and link it against the upstream model
 PODIO_GENERATE_DATAMODEL(extension_model datalayout_extension.yaml ext_headers ext_sources
