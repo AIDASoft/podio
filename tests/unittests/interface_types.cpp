@@ -1,7 +1,9 @@
 #include "catch2/catch_test_macros.hpp"
 
+#include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleCluster.h"
+#include "datamodel/MutableExampleMC.h"
 #include "datamodel/TypeWithEnergy.h"
 
 #include "podio/ObjectID.h"
@@ -9,6 +11,8 @@
 
 #include <map>
 #include <stdexcept>
+#include <utility>
+#include <vector>
 
 TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
   using WrapperT = TypeWithEnergy;
@@ -67,6 +71,16 @@ TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics]") {
   REQUIRE(counterMap[empty] == 1);
   REQUIRE(counterMap[hit] == 2);
   REQUIRE(counterMap[wrapper] == 2);
+
+  auto mc = MutableExampleMC{};
+  mc.energy() = 3.14f;
+
+  // check container of interfaces move constructor and direct initialization
+  auto interfaces = std::vector<TypeWithEnergy>{empty, hit, mc};
+  auto interfaces2 = std::vector<TypeWithEnergy>{std::move(interfaces)};
+  REQUIRE_FALSE(interfaces2.at(0).isAvailable());
+  REQUIRE(interfaces2.at(1).isA<ExampleHit>());
+  REQUIRE(interfaces2.at(2).energy() == 3.14f);
 }
 
 TEST_CASE("InterfaceType from immutable", "[interface-types][basics]") {
