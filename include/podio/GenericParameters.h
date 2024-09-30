@@ -124,6 +124,7 @@ public:
   void clear() {
     _intMap.clear();
     _floatMap.clear();
+    _doubleMap.clear();
     _stringMap.clear();
   }
 
@@ -131,7 +132,7 @@ public:
 
   /// Check if no parameter is stored (i.e. if all internal maps are empty)
   bool empty() const {
-    return _intMap.empty() && _floatMap.empty() && _stringMap.empty();
+    return _intMap.empty() && _floatMap.empty() && _doubleMap.empty() && _stringMap.empty();
   }
 
 #if PODIO_ENABLE_SIO
