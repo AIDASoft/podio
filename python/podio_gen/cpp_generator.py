@@ -525,8 +525,10 @@ have resolvable schema evolution incompatibilities:"
 
     def _write_all_collections_header(self):
         """Write a header file that includes all collection headers"""
-
-        collection_files = (x.split("::")[-1] + "Collection.h" for x in self.datamodel.datatypes)
+        collection_files = (
+            x.split("::")[-1] + "Collection.h"
+            for x in list(self.datamodel.datatypes.keys()) + list(self.datamodel.links.keys())
+        )
         self._write_file(
             os.path.join(self.install_dir, self.package_name, f"{self.package_name}.h"),
             self._eval_template(
