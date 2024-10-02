@@ -15,6 +15,7 @@ Welcome to PODIO's documentation!
    examples.md
    frame.md
    userdata.md
+   links.md
    storage_details.md
    cmake.md
    advanced_topics.md
