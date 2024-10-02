@@ -155,6 +155,38 @@ define which `Types` can be used with this interface class, in this case the
 not allow for mutable access to their data.** They can be used in relations
 between objects, just like normal `datatypes`.
 
+## Definition of links
+Podio offers a templated `Link` class ([see here for more details](links.md))
+that allows to link two arbitrary datatypes without having to introduce a
+`OneToOneRelation` or `OneToManyRelation` inside the corresponding datatypes. In
+order to keep the full definition of a datamodel in the YAML file it is possible
+to declare `links` in the YAML file:
+
+```yaml
+    links:
+      ExampleLink:
+      Description: "A link between two (podio generated) objects"
+      Author: "It could be you"
+      From: ExampleHit
+      To: TypeWithEnergy
+```
+
+This definition will yield the following typedefs
+```cpp
+using ExampleLinkCollection = podio::LinkCollection<ExampleHit, TypeWithEnergy>;
+
+using ExampleLink = typename ExampleLinkCollection::value_type;
+// this is equivalent to
+// using ExampleLink = podio::Link<ExampleHit, TypeWithEnergy>;
+
+using MutableExampleLink = typename ExampleLinkCollection::mutable_type;
+// this is equivalent to
+// using MutableExampleLink = podio::MutableLink<ExampleHit, TypeWithEnergy>;
+```
+
+additionally, this will generate the necessary code to enable I/O for this link
+type.
+
 ### Assigning to interface types
 
 Interface types support the same functionality as normal (immutable) datatypes.
