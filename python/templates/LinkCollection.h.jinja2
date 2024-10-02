@@ -12,6 +12,9 @@
 
 {{ utils.namespace_open(class.namespace) }}
 using {{ class.bare_type }}Collection = podio::LinkCollection<{{ From }}, {{ To }}>;
+using {{ class.bare_type }} = typename {{ class.bare_type }}Collection::value_type;
+using Mutable{{ class.bare_type }} = typename {{ class.bare_type }}Collection::mutable_type;
+
 {{ utils.namespace_close(class.namespace) }}
 
 #endif
