@@ -50,6 +50,12 @@ TEST_CASE("Frame parameters", "[frame][basics]") {
   // Can't rely on an insertion order here
   REQUIRE(std::find(stringKeys.begin(), stringKeys.end(), "aString") != stringKeys.end());
   REQUIRE(std::find(stringKeys.begin(), stringKeys.end(), "someStrings") != stringKeys.end());
+
+  // Check the cases with empty vectors as parameters
+  event.putParameter("emptyVec", std::vector<int>{});
+  const auto emptyVec = event.getParameter<std::vector<int>>("emptyVec").value();
+  REQUIRE(emptyVec.empty());
+  REQUIRE_FALSE(event.getParameter<int>("emptyVec").has_value());
 }
 
 // NOTE: Due to the extremely small tasks that are done in these tests, they will

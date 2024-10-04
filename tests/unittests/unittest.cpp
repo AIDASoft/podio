@@ -1070,6 +1070,21 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   REQUIRE_FALSE(gp.get<std::vector<std::string>>("Missing"));
 }
 
+TEST_CASE("GenericParameters empty vector single value access", "[generic-parameters]") {
+  auto gp = podio::GenericParameters();
+  gp.set("empty-ints", std::vector<int>{});
+
+  // Getting the whole vector works
+  const auto maybeVec = gp.get<std::vector<int>>("empty-ints");
+  REQUIRE(maybeVec.has_value());
+  const auto& vec = maybeVec.value();
+  REQUIRE(vec.empty());
+
+  // Trying to get a single (i.e. the first) value will not work
+  const auto maybeVal = gp.get<int>("empty-ints");
+  REQUIRE_FALSE(maybeVal.has_value());
+}
+
 TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
   // Tests for making sure that generic parameters can be moved / copied correctly
   auto originalParams = podio::GenericParameters{};
