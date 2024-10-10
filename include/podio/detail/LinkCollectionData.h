@@ -34,6 +34,8 @@ public:
     if (!isSubsetColl) {
       m_data.reset(buffers.dataAsVector<LinkData>());
     }
+
+    delete buffers.references;
   }
 
   LinkCollectionData(const LinkCollectionData&) = delete;
