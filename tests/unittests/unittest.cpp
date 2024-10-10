@@ -1380,7 +1380,7 @@ TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]
 
 #if PODIO_ENABLE_RNTUPLE
 
-TEST_CASE("Relations after cloning with RNTuple", "[relations][basics]") {
+TEST_CASE("Relations after cloning with RNTuple", "[THREAD-FAIL][relations][basics]") {
   runRelationAfterCloneCheck<podio::RNTupleReader, podio::RNTupleWriter>(
       "unittests_relations_after_cloning_rntuple.root");
 }
