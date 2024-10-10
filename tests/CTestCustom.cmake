@@ -49,7 +49,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     podio-dump-legacy_sio-detailed_v00-16-06
 
     podio-dump-rntuple
-    podio-dump-rntuple-detailed
+    podio-dump-detailed-rntuple
 
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
