@@ -14,6 +14,7 @@ function(PODIO_SET_TEST_ENV test)
       PODIO_BASE=${PROJECT_SOURCE_DIR}
       ENABLE_SIO=${ENABLE_SIO}
       PODIO_BUILD_BASE=${PROJECT_BINARY_DIR}
+      LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/root_io/leak_sanitizer_suppressions.txt
   )
   set_property(TEST ${test}
     PROPERTY ENVIRONMENT "${test_environment}"

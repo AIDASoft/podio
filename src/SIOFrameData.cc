@@ -100,4 +100,13 @@ void SIOFrameData::readIdTable() {
   m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
 }
 
+SIOFrameData::~SIOFrameData() {
+  for (size_t i = 1; i < m_blocks.size(); ++i) {
+    if (m_availableBlocks[i]) {
+      auto buffers = dynamic_cast<SIOBlock*>(m_blocks[i].get())->getBuffers();
+      buffers.deleteBuffers(buffers);
+    }
+  }
+}
+
 } // namespace podio

@@ -30,6 +30,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_python_frame_sio
     read_python_frame_sio
 
+    write_python_frame_rntuple
+    read_python_frame_rntuple
+
     relation_range
 
     pyunittest
@@ -45,10 +48,16 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     podio-dump-legacy_sio_v00-16-06
     podio-dump-legacy_sio-detailed_v00-16-06
 
+    podio-dump-rntuple
+    podio-dump-detailed-rntuple
+
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
     datamodel_def_store_roundtrip_sio
     datamodel_def_store_roundtrip_sio_extension
+    datamodel_def_store_roundtrip_rntuple
+    datamodel_def_store_roundtrip_rntuple_extension
+
 
     write_old_data_root
     read_new_data_root
@@ -76,15 +85,30 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
 
-      read_sio
-      read_and_write_sio
-      write_timed_sio
-      read_timed_sio
-      read_frame_sio
-      read_interface_sio
       read_frame_legacy_sio
       read_and_write_frame_sio
       )
+  endif()
+
+  if("@USE_SANITIZER@" MATCHES "Thread")
+    set(CTEST_CUSTOM_TESTS_IGNORE
+      ${CTEST_CUSTOM_TESTS_IGNORE}
+
+      read_rntuple
+      read_interface_rntuple
+    )
+  endif()
+
+  if("@USE_SANITIZER@" MATCHES "Undefined" AND "@CMAKE_CXX_COMPILER_ID@" STREQUAL "Clang")
+    set(CTEST_CUSTOM_TESTS_IGNORE
+      ${CTEST_CUSTOM_TESTS_IGNORE}
+
+      write_rntuple
+      read_rntuple
+      write_interface_rntuple
+      read_interface_rntuple
+    )
+
   endif()
 
 endif()

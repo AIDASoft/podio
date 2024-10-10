@@ -27,7 +27,9 @@ namespace {
               podio::UserDataCollection<T>::schemaVersion,
               podio::userDataCollTypeName<T>(),
               [](podio::CollectionReadBuffers buffers, bool) {
-                return std::make_unique<UserDataCollection<T>>(std::move(*buffers.dataAsVector<T>()));
+                auto vec = std::move(*buffers.dataAsVector<T>());
+                delete static_cast<std::vector<T>*>(buffers.data);
+                return std::make_unique<UserDataCollection<T>>(std::move(vec));
               },
               [](podio::CollectionReadBuffers& buffers) {
                 buffers.data = podio::CollectionWriteBuffers::asVector<T>(buffers.data);
