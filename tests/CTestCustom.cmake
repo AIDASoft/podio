@@ -85,10 +85,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
 
-      read_sio
-      read_and_write_sio
-      write_timed_sio
-      read_timed_sio
       read_frame_legacy_sio
       read_and_write_frame_sio
       )
