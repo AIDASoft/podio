@@ -30,6 +30,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_python_frame_sio
     read_python_frame_sio
 
+    write_python_frame_rntuple
+    read_python_frame_rntuple
+
     relation_range
 
     pyunittest
@@ -45,10 +48,16 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     podio-dump-legacy_sio_v00-16-06
     podio-dump-legacy_sio-detailed_v00-16-06
 
+    podio-dump-rntuple
+    podio-dump-rntuple-detailed
+
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
     datamodel_def_store_roundtrip_sio
     datamodel_def_store_roundtrip_sio_extension
+    datamodel_def_store_roundtrip_rntuple
+    datamodel_def_store_roundtrip_rntuple_extension
+
 
     write_old_data_root
     read_new_data_root
