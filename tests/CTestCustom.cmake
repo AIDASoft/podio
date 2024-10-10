@@ -89,8 +89,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_and_write_sio
       write_timed_sio
       read_timed_sio
-      read_frame_sio
-      read_interface_sio
       read_frame_legacy_sio
       read_and_write_frame_sio
       )

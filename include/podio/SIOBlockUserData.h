@@ -47,12 +47,11 @@ public:
             .createBuffers(podio::userDataCollTypeName<BasicType>(), sio::version::major_version(version), false)
             .value();
 
-    auto* dataVec = new std::vector<BasicType>();
+    auto* dataVec = m_buffers.dataAsVector<BasicType>();
     unsigned size(0);
     device.data(size);
     dataVec->resize(size);
     podio::handlePODDataSIO(device, &(*dataVec)[0], size);
-    m_buffers.data = dataVec;
   }
 
   void write(sio::write_device& device) override {
