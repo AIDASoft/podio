@@ -99,4 +99,16 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     )
   endif()
 
+  if("@USE_SANITIZER@" MATCHES "Undefined" AND "@CMAKE_CXX_COMPILER_ID@" STREQUAL "Clang")
+    set(CTEST_CUSTOM_TESTS_IGNORE
+      ${CTEST_CUSTOM_TESTS_IGNORE}
+
+      write_rntuple
+      read_rntuple
+      write_interface_rntuple
+      read_interface_rntuple
+    )
+
+  endif()
+
 endif()
