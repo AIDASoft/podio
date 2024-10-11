@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
+from pathlib import Path
 from ROOT import gSystem
 
 gSystem.Load("libpodioRootIO")  # noqa: E402
@@ -10,6 +11,32 @@ from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-po
 from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position # noqa: E402
 
 
+def convert_to_str_paths(filenames):
+    """Converts filenames to string paths, handling both string and pathlib.Path objects and
+       iterables of such objects.
+
+    Args:
+        filenames (str, Path, or Iterable[str | Path]): A single filepath or an iterable of
+        filepaths to convert to str object(s).
+
+    Returns:
+        list[str]: A list of filepaths as strings.
+    """
+    if isinstance(filenames, (str, Path)):
+        return (str(filenames),)
+
+    if isinstance(filenames, list):
+        str_filenames = []
+        for f in filenames:
+            if isinstance(f, (str, Path)):
+                str_filenames.append(str(f))
+            else:
+                raise TypeError(f"Invalid filename type: {f} (type: {type(f)})")
+        return str_filenames
+
+    raise TypeError(f"Invalid filenames argument: {filenames} (type: {type(filenames)})")
+
+
 class Reader(BaseReaderMixin):
     """Reader class for reading podio root files."""
 
@@ -17,11 +44,9 @@ class Reader(BaseReaderMixin):
         """Create a reader that reads from the passed file(s).
 
         Args:
-            filenames (str or list[str]): file(s) to open and read data from
+            filenames (str or list[str] or Path or list[Path]): file(s) to open and read data from
         """
-        if isinstance(filenames, str):
-            filenames = (filenames,)
-
+        filenames = convert_to_str_paths(filenames)
         self._reader = podio.ROOTReader()
         self._reader.openFiles(filenames)
 
@@ -35,11 +60,9 @@ class RNTupleReader(BaseReaderMixin):
         """Create an RNTuple reader that reads from the passed file(s).
 
         Args:
-            filenames (str or list[str]): file(s) to open and read data from
+            filenames (str or list[str] or Path or list[Path]): file(s) to open and read data from
         """
-        if isinstance(filenames, str):
-            filenames = (filenames,)
-
+        filenames = convert_to_str_paths(filenames)
         self._reader = podio.RNTupleReader()
         self._reader.openFiles(filenames)
 
@@ -57,11 +80,9 @@ class LegacyReader(BaseReaderMixin):
         """Create a reader that reads from the passed file(s).
 
         Args:
-            filenames (str or list[str]): file(s) to open and read data from
+            filenames (str or list[str] or Path or list[Path]): file(s) to open and read data from
         """
-        if isinstance(filenames, str):
-            filenames = (filenames,)
-
+        filenames = convert_to_str_paths(filenames)
         self._reader = podio.ROOTLegacyReader()
         self._reader.openFiles(filenames)
         self._is_legacy = True
@@ -76,8 +97,9 @@ class Writer(BaseWriterMixin):
         """Create a writer for writing files
 
         Args:
-            filename (str): The name of the output file
+            filename (str or Path): The name of the output file
         """
+        filename = convert_to_str_paths(filename)[0]
         self._writer = podio.ROOTWriter(filename)
         super().__init__()
 
@@ -89,7 +111,8 @@ class RNTupleWriter(BaseWriterMixin):
         """Create a writer for writing files
 
         Args:
-            filename (str): The name of the output file
+            filename (str or Path): The name of the output file
         """
+        filename = convert_to_str_paths(filename)[0]
         self._writer = podio.RNTupleWriter(filename)
         super().__init__()
