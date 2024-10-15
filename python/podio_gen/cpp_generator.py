@@ -210,7 +210,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         return interface
 
     def do_process_link(self, _, link):
-        """Process a link definition and generat the necessary code"""
+        """Process a link definition and generate the necessary code"""
         link["include_types"] = []
         for rel in ("From", "To"):
             rel_type = link[rel]
