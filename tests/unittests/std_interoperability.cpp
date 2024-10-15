@@ -30,7 +30,7 @@ struct has_value_type : std::false_type {};
 template <typename T>
 struct has_value_type<T, std::void_t<typename T::value_type>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_value_type_v = has_value_type<T>::value;
+constexpr bool has_value_type_v = has_value_type<T>::value;
 
 // typename T::reference
 template <typename, typename = void>
@@ -38,7 +38,7 @@ struct has_reference : std::false_type {};
 template <typename T>
 struct has_reference<T, std::void_t<typename T::reference>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_reference_v = has_reference<T>::value;
+constexpr bool has_reference_v = has_reference<T>::value;
 
 // typename T::const_reference
 template <typename, typename = void>
@@ -46,7 +46,7 @@ struct has_const_reference : std::false_type {};
 template <typename T>
 struct has_const_reference<T, std::void_t<typename T::const_reference>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_const_reference_v = has_const_reference<T>::value;
+constexpr bool has_const_reference_v = has_const_reference<T>::value;
 
 // typename T::iterator
 template <typename, typename = void>
@@ -54,7 +54,7 @@ struct has_iterator : std::false_type {};
 template <typename T>
 struct has_iterator<T, std::void_t<typename T::iterator>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_iterator_v = has_iterator<T>::value;
+constexpr bool has_iterator_v = has_iterator<T>::value;
 
 // typename T::const_iterator
 template <typename, typename = void>
@@ -62,7 +62,7 @@ struct has_const_iterator : std::false_type {};
 template <typename T>
 struct has_const_iterator<T, std::void_t<typename T::const_iterator>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_const_iterator_v = has_const_iterator<T>::value;
+constexpr bool has_const_iterator_v = has_const_iterator<T>::value;
 
 // typename T::difference_type
 template <typename, typename = void>
@@ -70,7 +70,7 @@ struct has_difference_type : std::false_type {};
 template <typename T>
 struct has_difference_type<T, std::void_t<typename T::difference_type>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_difference_type_v = has_difference_type<T>::value;
+constexpr bool has_difference_type_v = has_difference_type<T>::value;
 
 // typename T::size_type
 template <typename, typename = void>
@@ -78,7 +78,7 @@ struct has_size_type : std::false_type {};
 template <typename T>
 struct has_size_type<T, std::void_t<typename T::size_type>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_size_type_v = has_size_type<T>::value;
+constexpr bool has_size_type_v = has_size_type<T>::value;
 
 // typename T::pointer
 template <typename, typename = void>
@@ -86,7 +86,7 @@ struct has_pointer : std::false_type {};
 template <typename T>
 struct has_pointer<T, std::void_t<typename T::pointer>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_pointer_v = has_pointer<T>::value;
+constexpr bool has_pointer_v = has_pointer<T>::value;
 
 // typename T::allocator_type
 template <typename, typename = void>
@@ -94,7 +94,7 @@ struct has_allocator_type : std::false_type {};
 template <typename T>
 struct has_allocator_type<T, std::void_t<typename T::allocator_type>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_allocator_type_v = has_allocator_type<T>::value;
+constexpr bool has_allocator_type_v = has_allocator_type<T>::value;
 
 // is_erasable_allocator_unaware
 template <typename, typename = void>
@@ -106,7 +106,7 @@ struct is_erasable_allocator_unaware<
         std::declval<std::allocator<typename T::value_type>&>(),
         std::declval<std::add_pointer_t<typename T::value_type>>()))>> : std::true_type {};
 template <typename T>
-inline constexpr bool is_erasable_allocator_unaware_v = is_erasable_allocator_unaware<T>::value;
+constexpr bool is_erasable_allocator_unaware_v = is_erasable_allocator_unaware<T>::value;
 
 // typename T::iterator_category
 template <typename, typename = void>
@@ -114,7 +114,7 @@ struct has_iterator_category : std::false_type {};
 template <typename T>
 struct has_iterator_category<T, std::void_t<typename T::iterator_category>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_iterator_category_v = has_iterator_category<T>::value;
+constexpr bool has_iterator_category_v = has_iterator_category<T>::value;
 
 // T::begin()
 template <typename, typename = void>
@@ -122,7 +122,7 @@ struct has_begin : std::false_type {};
 template <typename T>
 struct has_begin<T, std::void_t<decltype(std::declval<T>().begin())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_begin_v = has_begin<T>::value;
+constexpr bool has_begin_v = has_begin<T>::value;
 
 // T::end()
 template <typename, typename = void>
@@ -130,7 +130,7 @@ struct has_end : std::false_type {};
 template <typename T>
 struct has_end<T, std::void_t<decltype(std::declval<T>().end())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_end_v = has_end<T>::value;
+constexpr bool has_end_v = has_end<T>::value;
 
 // T::cbegin()
 template <typename, typename = void>
@@ -138,7 +138,7 @@ struct has_cbegin : std::false_type {};
 template <typename T>
 struct has_cbegin<T, std::void_t<decltype(std::declval<T>().cbegin())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_cbegin_v = has_cbegin<T>::value;
+constexpr bool has_cbegin_v = has_cbegin<T>::value;
 
 // T::cend()
 template <typename, typename = void>
@@ -146,7 +146,7 @@ struct has_cend : std::false_type {};
 template <typename T>
 struct has_cend<T, std::void_t<decltype(std::declval<T>().cend())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_cend_v = has_cend<T>::value;
+constexpr bool has_cend_v = has_cend<T>::value;
 
 // T::operator==(T)
 template <typename, typename = void>
@@ -154,7 +154,7 @@ struct has_equality_comparator : std::false_type {};
 template <typename T>
 struct has_equality_comparator<T, std::void_t<decltype(std::declval<T>() == std::declval<T>())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_equality_comparator_v = has_equality_comparator<T>::value;
+constexpr bool has_equality_comparator_v = has_equality_comparator<T>::value;
 
 // T::operator!=(T)
 template <typename, typename = void>
@@ -162,7 +162,7 @@ struct has_inequality_comparator : std::false_type {};
 template <typename T>
 struct has_inequality_comparator<T, std::void_t<decltype(std::declval<T>() != std::declval<T>())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_inequality_comparator_v = has_inequality_comparator<T>::value;
+constexpr bool has_inequality_comparator_v = has_inequality_comparator<T>::value;
 
 // T::swap(T)
 template <typename, typename = void>
@@ -170,7 +170,7 @@ struct has_swap : std::false_type {};
 template <typename T>
 struct has_swap<T, std::void_t<decltype(std::declval<T>().swap(std::declval<T>()))>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_swap_v = has_swap<T>::value;
+constexpr bool has_swap_v = has_swap<T>::value;
 
 // T::size()
 template <typename, typename = void>
@@ -178,7 +178,7 @@ struct has_size : std::false_type {};
 template <typename T>
 struct has_size<T, std::void_t<decltype(std::declval<T>().size())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_size_v = has_size<T>::value;
+constexpr bool has_size_v = has_size<T>::value;
 
 // T::max_size()
 template <typename, typename = void>
@@ -186,7 +186,7 @@ struct has_max_size : std::false_type {};
 template <typename T>
 struct has_max_size<T, std::void_t<decltype(std::declval<T>().max_size())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_max_size_v = has_max_size<T>::value;
+constexpr bool has_max_size_v = has_max_size<T>::value;
 
 // T::empty()
 template <typename, typename = void>
@@ -194,7 +194,7 @@ struct has_empty : std::false_type {};
 template <typename T>
 struct has_empty<T, std::void_t<decltype(std::declval<T>().empty())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_empty_v = has_empty<T>::value;
+constexpr bool has_empty_v = has_empty<T>::value;
 
 // T::operator*()
 template <typename, typename = void>
@@ -218,7 +218,7 @@ struct has_preincrement : std::false_type {};
 template <typename T>
 struct has_preincrement<T, std::void_t<decltype(++std::declval<T&>())>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_preincrement_v = has_preincrement<T>::value;
+constexpr bool has_preincrement_v = has_preincrement<T>::value;
 
 // T::operator++(int) (postincrement)
 template <typename, typename = void>
@@ -226,7 +226,7 @@ struct has_postincrement : std::false_type {};
 template <typename T>
 struct has_postincrement<T, std::void_t<decltype(std::declval<T&>()++)>> : std::true_type {};
 template <typename T>
-inline constexpr bool has_postincrement_v = has_postincrement<T>::value;
+constexpr bool has_postincrement_v = has_postincrement<T>::value;
 
 // *It = val
 template <typename, typename, typename = void>
@@ -235,7 +235,7 @@ template <typename T, typename Value>
 struct has_dereference_assignment<T, Value, std::void_t<decltype(*std::declval<T&>() = std::declval<Value>())>>
     : std::true_type {};
 template <typename T, typename Value>
-inline constexpr bool has_dereference_assignment_v = has_dereference_assignment<T, Value>::value;
+constexpr bool has_dereference_assignment_v = has_dereference_assignment<T, Value>::value;
 
 // *It++ = val
 template <typename, typename, typename = void>
@@ -245,7 +245,7 @@ struct has_dereference_assignment_increment<T, Value,
                                             std::void_t<decltype(*std::declval<T&>()++ = std::declval<Value>())>>
     : std::true_type {};
 template <typename T, typename Value>
-inline constexpr bool has_dereference_assignment_increment_v = has_dereference_assignment_increment<T, Value>::value;
+constexpr bool has_dereference_assignment_increment_v = has_dereference_assignment_increment<T, Value>::value;
 
 // T::push_back(Value)
 template <typename, typename, typename = void>
@@ -254,7 +254,7 @@ template <typename T, typename Value>
 struct has_push_back<T, Value, std::void_t<decltype(std::declval<T>().push_back(std::declval<Value>()))>>
     : std::true_type {};
 template <typename T, typename Value>
-inline constexpr bool has_push_back_v = has_push_back<T, Value>::value;
+constexpr bool has_push_back_v = has_push_back<T, Value>::value;
 
 // T::push_front(Value)
 template <typename, typename, typename = void>
@@ -263,7 +263,7 @@ template <typename T, typename Value>
 struct has_push_front<T, Value, std::void_t<decltype(std::declval<T>().push_front(std::declval<Value>()))>>
     : std::true_type {};
 template <typename T, typename Value>
-inline constexpr bool has_push_front_v = has_push_front<T, Value>::value;
+constexpr bool has_push_front_v = has_push_front<T, Value>::value;
 
 // T::insert(Value)
 template <typename, typename, typename, typename = void>
@@ -273,7 +273,7 @@ struct has_insert<T, Iter, Value,
                   std::void_t<decltype(std::declval<T>().insert(std::declval<Iter>(), std::declval<Value>()))>>
     : std::true_type {};
 template <typename T, typename Iter, typename Value>
-inline constexpr bool has_insert_v = has_insert<T, Iter, Value>::value;
+constexpr bool has_insert_v = has_insert<T, Iter, Value>::value;
 } // namespace traits
 
 TEST_CASE("Collection container types", "[collection][container][types][std]") {
