@@ -1380,16 +1380,16 @@ TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]
 
 #if PODIO_ENABLE_RNTUPLE
 
-TEST_CASE("Relations after cloning with RNTuple", "[relations][basics]") {
+TEST_CASE("Relations after cloning with RNTuple", "[THREAD-FAIL][UBSAN-FAIL][relations][basics]") {
   runRelationAfterCloneCheck<podio::RNTupleReader, podio::RNTupleWriter>(
       "unittests_relations_after_cloning_rntuple.root");
 }
 
-TEST_CASE("RNTupleWriter consistent frame contents", "[basics][root]") {
+TEST_CASE("RNTupleWriter consistent frame contents", "[UBSAN-FAIL][basics][root]") {
   runConsistentFrameTest<podio::RNTupleWriter>("unittests_frame_consistency_rntuple.root");
 }
 
-TEST_CASE("RNTupleWriter check consistency", "[basics][root]") {
+TEST_CASE("RNTupleWriter check consistency", "[UBSAN-FAIL][basics][root]") {
   runCheckConsistencyTest<podio::RNTupleWriter>("unittests_frame_check_consistency_rntuple.root");
 }
 

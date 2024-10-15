@@ -61,7 +61,9 @@ void {{ class_type }}::clear(bool isSubsetColl) {
   }
 
   // Normal collections manage a bit more and have to clean up a bit more
-  if (m_data) m_data->clear();
+  if (m_data) {
+    m_data->clear();
+  }
 {% if OneToManyRelations or OneToOneRelations %}
   for (auto& pointer : m_refCollections) { pointer->clear(); }
 {% endif %}
