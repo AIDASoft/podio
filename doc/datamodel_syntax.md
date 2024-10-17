@@ -165,10 +165,10 @@ to declare `links` in the YAML file:
 ```yaml
     links:
       ExampleLink:
-      Description: "A link between two (podio generated) objects"
-      Author: "It could be you"
-      From: ExampleHit
-      To: TypeWithEnergy
+        Description: "A link between two (podio generated) objects"
+        Author: "It could be you"
+        From: ExampleHit
+        To: TypeWithEnergy
 ```
 
 This definition will yield the following typedefs
