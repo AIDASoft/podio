@@ -5,9 +5,6 @@
 #include <ostream>
 #include <sstream>
 #include <tuple>
-#if __cplusplus >= 202002L
-  #include <compare>
-#endif
 
 // Some preprocessor constants and macros for the use cases where they might be
 // necessary

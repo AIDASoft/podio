@@ -108,7 +108,7 @@ struct CollectionReadBuffers {
   // field again.
   RecastFuncT recast{};
 
-  // Workaround for https://github.com/AIDASoft/podio#500
+  // Workaround for https://github.com/AIDASoft/podio/issues/500
   // We need a function that explicitly deletes the buffers, but for this we
   // need type information, so we attach a delete function at generation time
   DeleteFuncT deleteBuffers{};
