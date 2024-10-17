@@ -6,7 +6,7 @@ ROOTFrameData::ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::Ge
     m_buffers(std::move(buffers)), m_idTable(std::move(idTable)), m_parameters(std::move(params)) {
 }
 
-// Interim workaround for https://github.com/AIDASoft/podio#500
+// Interim workaround for https://github.com/AIDASoft/podio/issues/500
 ROOTFrameData::~ROOTFrameData() {
   for (auto& [_, buffer] : m_buffers) {
     buffer.deleteBuffers(buffer);

@@ -25,11 +25,9 @@
 #include "podio/Frame.h"
 #include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
-#include "podio/utilities/TypeHelpers.h"
 
 #include <string>
 #include <tuple>
-#include <type_traits>
 
 auto createMCCollection() {
   auto mcps = ExampleMCCollection();
