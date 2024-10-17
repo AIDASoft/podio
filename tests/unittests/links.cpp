@@ -1,6 +1,7 @@
 #include "catch2/catch_test_macros.hpp"
 
 #include "podio/LinkCollection.h"
+#include "podio/LinkNavigator.h"
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
@@ -473,3 +474,51 @@ TEST_CASE("Link JSON conversion", "[links][json]") {
 }
 
 #endif
+
+TEST_CASE("LinkNavigator basics", "[links]") {
+  TestLColl coll{};
+  std::vector<ExampleHit> hits(11);
+  std::vector<ExampleCluster> clusters(3);
+
+  for (size_t i = 0; i < 10; ++i) {
+    auto a = coll.create();
+    a.set(hits[i]);
+    a.set(clusters[i % 3]);
+    a.setWeight(i * 0.1f);
+  }
+
+  auto a = coll.create();
+  a.set(hits[10]);
+
+  podio::LinkNavigator nav{coll};
+
+  for (size_t i = 0; i < 10; ++i) {
+    const auto& hit = hits[i];
+    const auto assocClusters = nav.getAssociated(hit);
+    REQUIRE(assocClusters.size() == 1);
+    const auto& [cluster, weight] = assocClusters[0];
+    REQUIRE(cluster == clusters[i % 3]);
+    REQUIRE(weight == i * 0.1f);
+  }
+
+  const auto& cluster1 = clusters[0];
+  auto assocHits = nav.getAssociated(cluster1);
+  REQUIRE(assocHits.size() == 4);
+  for (size_t i = 0; i < 4; ++i) {
+    const auto& [hit, weight] = assocHits[i];
+    REQUIRE(hit == hits[i * 3]);
+    REQUIRE(weight == i * 3 * 0.1f);
+  }
+
+  const auto& cluster2 = clusters[1];
+  assocHits = nav.getAssociated(cluster2);
+  REQUIRE(assocHits.size() == 3);
+  for (size_t i = 0; i < 3; ++i) {
+    const auto& [hit, weight] = assocHits[i];
+    REQUIRE(hit == hits[i * 3 + 1]);
+    REQUIRE(weight == (i * 3 + 1) * 0.1f);
+  }
+
+  const auto [noCluster, noWeight] = nav.getAssociated(hits[10])[0];
+  REQUIRE_FALSE(noCluster.isAvailable());
+}
