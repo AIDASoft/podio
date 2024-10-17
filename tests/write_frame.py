@@ -9,9 +9,6 @@ import ROOT
 if ROOT.gSystem.Load("libTestDataModelDict") < 0:  # noqa: E402
     raise RuntimeError("Could not load TestDataModel dictionary")
 
-if ROOT.gInterpreter.LoadFile("datamodel/LinkCollections.h"):
-    raise RuntimeError("Could not load LinkCollections.h header")
-
 from ROOT import (  # pylint: disable=wrong-import-position
     ExampleHitCollection,
     ExampleClusterCollection,

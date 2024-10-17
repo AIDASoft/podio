@@ -17,6 +17,8 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/selection.xml.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/LinkCollection.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/DatamodelLinks.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/DatamodelDefinition.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/collections.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/macros/declarations.jinja2
