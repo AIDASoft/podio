@@ -219,6 +219,9 @@ std::optional<T> GenericParameters::get(const std::string& key) const {
     return it->second;
   } else {
     const auto& iv = it->second;
+    if (iv.empty()) {
+      return std::nullopt;
+    }
     return iv[0];
   }
 }

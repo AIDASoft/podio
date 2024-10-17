@@ -138,6 +138,13 @@ class FrameTest(unittest.TestCase):
         frame.put_parameter("float_as_float", 3.14, as_type="float")
         self.assertAlmostEqual(frame.get_parameter("float_as_float"), 3.14, places=5)
 
+    def test_frame_empty_parameters(self):
+        """Check that working with empty parameters works"""
+        frame = Frame()
+        frame.put_parameter("empty_param", [], as_type="int")
+        vals = frame.get_parameter("empty_param")
+        self.assertEqual(len(vals), 0)
+
 
 class FrameReadTest(unittest.TestCase):
     """Unit tests for the Frame python bindings for Frames read from file.
