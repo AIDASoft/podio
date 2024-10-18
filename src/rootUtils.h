@@ -48,7 +48,7 @@ constexpr static auto stringValueName = "GPStringValues";
  * Get the name of the key depending on the type
  */
 template <typename T>
-constexpr auto getGPKeyName() {
+consteval auto getGPKeyName() {
   if constexpr (std::is_same<T, int>::value) {
     return intKeyName;
   } else if constexpr (std::is_same<T, float>::value) {
@@ -66,7 +66,7 @@ constexpr auto getGPKeyName() {
  * Get the name of the value depending on the type
  */
 template <typename T>
-constexpr auto getGPValueName() {
+consteval auto getGPValueName() {
   if constexpr (std::is_same<T, int>::value) {
     return intValueName;
   } else if constexpr (std::is_same<T, float>::value) {
@@ -95,7 +95,7 @@ constexpr auto nParamBranches = std::tuple_size_v<podio::SupportedGenericDataTyp
 /// assumed that the integer branches start immediately after the branch for
 /// the collections
 template <typename T>
-constexpr auto getGPBranchOffsets() {
+consteval auto getGPBranchOffsets() {
   if constexpr (std::is_same_v<T, int>) {
     return GPBranchOffsets{1, 2};
   } else if constexpr (std::is_same_v<T, float>) {
