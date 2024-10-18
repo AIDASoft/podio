@@ -21,7 +21,7 @@ CollectionIDTable::CollectionIDTable(const std::vector<uint32_t>& ids, const std
 
 std::optional<const std::string> CollectionIDTable::name(uint32_t ID) const {
   std::lock_guard<std::mutex> lock{*m_mutex};
-  const auto result = std::find(begin(m_collectionIDs), end(m_collectionIDs), ID);
+  const auto result = std::ranges::find(m_collectionIDs, ID);
   const auto index = std::distance(m_collectionIDs.begin(), result);
   if (index >= static_cast<ptrdiff_t>(m_names.size())) {
     return std::nullopt;
@@ -31,7 +31,7 @@ std::optional<const std::string> CollectionIDTable::name(uint32_t ID) const {
 
 std::optional<uint32_t> CollectionIDTable::collectionID(const std::string& name) const {
   std::lock_guard<std::mutex> lock{*m_mutex};
-  const auto result = std::find(begin(m_names), end(m_names), name);
+  const auto result = std::ranges::find(m_names, name);
   const auto index = std::distance(m_names.begin(), result);
   if (index >= static_cast<ptrdiff_t>(m_collectionIDs.size())) {
     return std::nullopt;
@@ -57,7 +57,7 @@ bool CollectionIDTable::present(uint32_t collectionID) const {
 
 uint32_t CollectionIDTable::add(const std::string& name) {
   std::lock_guard<std::mutex> lock{*m_mutex};
-  const auto result = std::find(begin(m_names), end(m_names), name);
+  const auto result = std::ranges::find(m_names, name);
   uint32_t ID = 0;
   if (result == m_names.end()) {
     m_names.emplace_back(name);
