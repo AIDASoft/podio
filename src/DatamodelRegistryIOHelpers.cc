@@ -28,8 +28,8 @@ std::vector<std::tuple<std::string, std::string>> DatamodelDefinitionCollector::
 }
 
 const std::string_view DatamodelDefinitionHolder::getDatamodelDefinition(const std::string& name) const {
-  const auto it = std::find_if(m_availEDMDefs.cbegin(), m_availEDMDefs.cend(),
-                               [&name](const auto& entry) { return std::get<0>(entry) == name; });
+  const auto it =
+      std::ranges::find_if(m_availEDMDefs, [&name](const auto& entry) { return std::get<0>(entry) == name; });
 
   if (it != m_availEDMDefs.cend()) {
     return std::get<1>(*it);
