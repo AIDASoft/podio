@@ -36,7 +36,7 @@ endif()
 # ``-DCMAKE_CXX_STANDARD=<standard>`` when invoking CMake
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
 
-if(NOT CMAKE_CXX_STANDARD MATCHES "17|20")
+if(NOT CMAKE_CXX_STANDARD MATCHES "20|23")
   message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}")
 endif()
 
@@ -112,18 +112,13 @@ else()
   message(STATUS "Determined ROOT c++ standard: " ${ROOT_CXX_STANDARD})
 endif()
 
-if(ROOT_CXX_STANDARD VERSION_LESS 17)
-  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++17 or higher")
+if(ROOT_CXX_STANDARD VERSION_LESS 20)
+  message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++20 or higher")
 endif()
 if(NOT ROOT_CXX_STANDARD VERSION_EQUAL CMAKE_CXX_STANDARD)
   message(WARNING "You are trying to build podio with a different c++ standard than ROOT. C++${CMAKE_CXX_STANDARD} was required but ROOT was built with C++${ROOT_CXX_STANDARD}")
 endif()
 
-# ROOT only sets usage requirements from 6.14, so for
-# earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
-if(ROOT_VERSION VERSION_LESS 6.14)
-  set_property(TARGET ROOT::Core APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
-endif()
 list(APPEND PODIO_IO_HANDLERS ROOT)
 
 # python setup (including python package discovery and install dir)
