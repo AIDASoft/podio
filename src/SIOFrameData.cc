@@ -15,7 +15,7 @@ std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(c
     // they are in the collection id table. Hence, we cannot simply use the
     // collection ID to index into the blocks
     const auto& names = m_idTable.names();
-    const auto nameIt = std::find(std::begin(names), std::end(names), name);
+    const auto nameIt = std::ranges::find(names, name);
     // collection indices start at 1!
     const auto index = std::distance(std::begin(names), nameIt) + 1;
 
