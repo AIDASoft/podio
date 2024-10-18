@@ -59,7 +59,7 @@ namespace detail {
   struct TypeInTupleHelper : std::false_type {};
 
   template <typename T, typename... Ts>
-  struct TypeInTupleHelper<T, std::tuple<Ts...>> : std::bool_constant<(std::is_same_v<T, Ts> || ...)> {};
+  struct TypeInTupleHelper<T, std::tuple<Ts...>> : std::disjunction<std::is_same<T, Ts>...> {};
 
   /// variable template for determining whether type T is in a tuple with types
   /// Ts
@@ -269,9 +269,9 @@ namespace detail {
 // forward declaration to be able to use it below
 class CollectionBase;
 
-/// Alias template for checking whether a passed type T inherits from podio::CollectionBase
+/// Concept for checking whether a passed type T inherits from podio::CollectionBase
 template <typename T>
-static constexpr bool isCollection = std::is_base_of_v<CollectionBase, T>;
+concept collectionType = std::is_base_of_v<CollectionBase, T>;
 
 } // namespace podio
 

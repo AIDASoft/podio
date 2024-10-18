@@ -48,8 +48,8 @@ TEST_CASE("Frame parameters", "[frame][basics]") {
   const auto stringKeys = event.getParameterKeys<std::string>();
   REQUIRE(stringKeys.size() == 2);
   // Can't rely on an insertion order here
-  REQUIRE(std::find(stringKeys.begin(), stringKeys.end(), "aString") != stringKeys.end());
-  REQUIRE(std::find(stringKeys.begin(), stringKeys.end(), "someStrings") != stringKeys.end());
+  REQUIRE(std::ranges::find(stringKeys, "aString") != stringKeys.end());
+  REQUIRE(std::ranges::find(stringKeys, "someStrings") != stringKeys.end());
 }
 
 // NOTE: Due to the extremely small tasks that are done in these tests, they will
