@@ -2,7 +2,6 @@
 #define PODIO_FRAME_H
 
 #include "podio/CollectionBase.h"
-#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/FrameCategories.h" // mainly for convenience
 #include "podio/GenericParameters.h"
@@ -29,7 +28,7 @@ concept CollectionRValueType = collectionType<T> && !std::is_lvalue_reference_v<
 
 /// Concept for enabling overloads for r-values
 template <typename T>
-concept RValueType = !std ::is_lvalue_reference_v<T>;
+concept RValueType = !std::is_lvalue_reference_v<T>;
 
 namespace detail {
   /// The minimal interface for raw data types
