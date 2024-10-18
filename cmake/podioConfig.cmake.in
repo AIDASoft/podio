@@ -49,12 +49,6 @@ endif()
 if(NOT TARGET podio::podio)
   include("${CMAKE_CURRENT_LIST_DIR}/podioTargets.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/podioMacros.cmake")
-
-  # ROOT only sets usage requirements from 6.14, so for
-  # earlier versions need to hack in INTERFACE_INCLUDE_DIRECTORIES
-  if(ROOT_VERSION VERSION_LESS 6.14)
-    set_property(TARGET podio::podio APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
-  endif()
 endif()
 
 check_required_components(podio)

@@ -13,7 +13,7 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v4
       with:
-        coverity-cmake-command: 'cmake -DCMAKE_CXX_STANDARD=17  -DENABLE_SIO=ON -DENABLE_JULIA=ON -DUSE_EXTERNAL_CATCH2=OFF ..'
+        coverity-cmake-command: 'cmake -DCMAKE_CXX_STANDARD=20  -DENABLE_SIO=ON -DENABLE_JULIA=ON -DUSE_EXTERNAL_CATCH2=OFF ..'
         coverity-project: 'AIDASoft%2Fpodio'
         coverity-project-token: ${{ secrets.PODIO_COVERITY_TOKEN }}
         github-pat: ${{ secrets.READ_COVERITY_IMAGE }}
