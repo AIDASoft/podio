@@ -9,11 +9,11 @@
 
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \
-  constexpr const char* userDataTypeName<type>() {                                                                     \
+  consteval const char* userDataTypeName<type>() {                                                                     \
     return #type;                                                                                                      \
   }                                                                                                                    \
   template <>                                                                                                          \
-  constexpr const char* userDataCollTypeName<type>() {                                                                 \
+  consteval const char* userDataCollTypeName<type>() {                                                                 \
     return "podio::UserDataCollection<" #type ">";                                                                     \
   }
 
@@ -31,12 +31,12 @@ using EnableIfSupportedUserType = std::enable_if_t<detail::isInTuple<T, Supporte
 /// helper template to provide readable type names for basic types with macro
 /// PODIO_ADD_USER_TYPE(type)
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
-constexpr const char* userDataTypeName();
+consteval const char* userDataTypeName();
 
 /// Helper template to provide the fully qualified name of a UserDataCollection.
 /// Implementations are populated by the PODIO_ADD_USER_TYPE macro.
 template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
-constexpr const char* userDataCollTypeName();
+consteval const char* userDataCollTypeName();
 
 PODIO_ADD_USER_TYPE(float)
 PODIO_ADD_USER_TYPE(double)
