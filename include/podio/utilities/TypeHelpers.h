@@ -269,9 +269,9 @@ namespace detail {
 // forward declaration to be able to use it below
 class CollectionBase;
 
-/// Alias template for checking whether a passed type T inherits from podio::CollectionBase
+/// Concept for checking whether a passed type T inherits from podio::CollectionBase
 template <typename T>
-static constexpr bool isCollection = std::is_base_of_v<CollectionBase, T>;
+concept collectionType = std::is_base_of_v<CollectionBase, T>;
 
 } // namespace podio
 
