@@ -59,7 +59,7 @@ namespace detail {
   struct TypeInTupleHelper : std::false_type {};
 
   template <typename T, typename... Ts>
-  struct TypeInTupleHelper<T, std::tuple<Ts...>> : std::bool_constant<(std::is_same_v<T, Ts> || ...)> {};
+  struct TypeInTupleHelper<T, std::tuple<Ts...>> : std::disjunction<std::is_same<T, Ts>...> {};
 
   /// variable template for determining whether type T is in a tuple with types
   /// Ts
