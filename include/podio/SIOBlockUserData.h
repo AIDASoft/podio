@@ -12,13 +12,12 @@
 
 #include <algorithm>
 #include <string>
-#include <typeindex>
 
 namespace podio {
 namespace detail {
 
   /// helper function to get valid sio block names
-  template <typename BasicType, typename = podio::EnableIfSupportedUserType<BasicType>>
+  template <SupportedUserDataType BasicType>
   inline std::string sio_name() {
     std::string s = podio::userDataTypeName<BasicType>();
     std::replace(s.begin(), s.end(), ' ', '_');
@@ -26,7 +25,7 @@ namespace detail {
   }
 } // namespace detail
 
-template <typename BasicType, typename = EnableIfSupportedUserType<BasicType>>
+template <SupportedUserDataType BasicType>
 class SIOBlockUserData : public podio::SIOBlock {
 public:
   SIOBlockUserData() :
