@@ -36,7 +36,6 @@ namespace det {
   template <template <typename...> typename Op, typename... Args>
   using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
 } // namespace det
-#endif
 
 namespace detail {
 
