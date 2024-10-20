@@ -35,8 +35,8 @@ Some compilers and static code analysis tools are able to detect the accidental 
 
 For putting in parameters the basic principle is very similar, with the major difference being, that for *trivial* types `getParameter` will actually return by value.
 
-For all use cases there is some `enable_if` machinery in place to ensure that only valid collections and valid parameter types can actually be used.
-These checks also make sure that it is impossible to put in collections without handing over ownership to the `Frame`.
+For all use cases there is a concept requirement to ensure that only valid collections and valid parameter types can actually be used.
+Additional checks also make sure that it is impossible to put in collections without handing over ownership to the `Frame`.
 
 ### Usage examples for collection data
 These are a few very basic usage examples that highlight the main functionality (and potential pitfalls).
