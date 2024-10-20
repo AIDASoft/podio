@@ -34,7 +34,8 @@ namespace det {
   using detected_or = detail::detector<DefT, void, Op, Args...>;
 
   template <template <typename...> typename Op, typename... Args>
-  using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
+  constexpr bool is_detected_v = requires { typename Op<Args...>; };
+
 } // namespace det
 
 namespace detail {
