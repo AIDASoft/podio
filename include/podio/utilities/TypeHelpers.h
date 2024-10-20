@@ -2,19 +2,12 @@
 #define PODIO_UTILITIES_TYPEHELPERS_H
 
 #include <map>
-#include <string>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
 
 namespace podio {
-#if __has_include("experimental/type_traits.h")
-  #include <experimental/type_traits>
-namespace det {
-  using namespace std::experimental;
-} // namespace det
-#else
 // Implement the minimal feature set we need
 namespace det {
   namespace detail {
@@ -36,12 +29,6 @@ namespace det {
     nonesuch(const nonesuch&) = delete;
     void operator=(const nonesuch&) = delete;
   };
-
-  template <template <typename...> typename Op, typename... Args>
-  using is_detected = typename detail::detector<nonesuch, void, Op, Args...>::value_t;
-
-  template <template <typename...> typename Op, typename... Args>
-  static constexpr bool is_detected_v = is_detected<Op, Args...>::value;
 
   template <typename DefT, template <typename...> typename Op, typename... Args>
   using detected_or = detail::detector<DefT, void, Op, Args...>;
@@ -65,6 +52,7 @@ namespace detail {
   /// Ts
   template <typename T, typename Tuple>
   static constexpr bool isInTuple = TypeInTupleHelper<T, Tuple>::value;
+
 
   /// Helper struct to turn a tuple of types into a tuple of a template of types, e.g.
   ///
@@ -181,10 +169,6 @@ namespace detail {
   template <typename T>
   using hasObject_t = typename T::object_type;
 
-  /// Detector for checking the existence of a collection_type type member.
-  template <typename T>
-  using hasCollection_t = typename T::collection_type;
-
   /// Variable template for determining whether type T is a podio generated
   /// mutable handle class
   template <typename T>
@@ -194,16 +178,6 @@ namespace detail {
   /// default handle class
   template <typename T>
   constexpr static bool isDefaultHandleType = det::is_detected_v<hasMutable_t, std::remove_reference_t<T>>;
-
-  /// Variable template for determining whether type T is a podio generated
-  /// handle class.
-  ///
-  /// @note this basically just checks the existence of the mutable_type and
-  /// object_type type members, so it is rather easy to fool this check if one
-  /// wanted to. However, for our purposes we mainly need it for a static_assert
-  /// to have more understandable compilation error message.
-  template <typename T>
-  constexpr static bool isPodioType = isDefaultHandleType<T> || isMutableHandleType<T>;
 
   /// Variable template for obtaining the default handle type from any podio
   /// generated handle type.
@@ -222,11 +196,6 @@ namespace detail {
   template <typename T>
   using GetMutableHandleType =
       typename det::detected_or<std::remove_reference_t<T>, hasMutable_t, std::remove_reference_t<T>>::type;
-
-  /// Variable template for obtaining the collection type from any podio
-  /// generated handle type
-  template <typename T>
-  using GetCollectionType = det::detected_t<hasCollection_t, std::remove_reference_t<T>>;
 
   /// Helper type alias to transform a tuple of handle types to a tuple of
   /// mutable handle types.
