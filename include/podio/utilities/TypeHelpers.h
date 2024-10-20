@@ -34,7 +34,9 @@ namespace det {
   using detected_or = detail::detector<DefT, void, Op, Args...>;
 
   template <template <typename...> typename Op, typename... Args>
-  constexpr bool is_detected_v = requires { typename Op<Args...>; };
+  constexpr bool is_detected_v = requires {
+    typename Op<Args...>;
+  };
 
 } // namespace det
 
@@ -52,7 +54,6 @@ namespace detail {
   /// Ts
   template <typename T, typename Tuple>
   static constexpr bool isInTuple = TypeInTupleHelper<T, Tuple>::value;
-
 
   /// Helper struct to turn a tuple of types into a tuple of a template of types, e.g.
   ///
