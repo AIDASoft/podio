@@ -168,8 +168,7 @@ std::vector<std::tuple<std::string, std::string>> SIOBlockLibraryLoader::getLibN
 }
 
 void SIOFileTOCRecord::addRecord(const std::string& name, PositionType startPos) {
-  auto it =
-      std::find_if(m_recordMap.begin(), m_recordMap.end(), [&name](const auto& entry) { return entry.first == name; });
+  auto it = std::ranges::find(m_recordMap, name, &decltype(m_recordMap)::value_type::first);
 
   if (it == m_recordMap.end()) {
     m_recordMap.push_back({name, {startPos}});
@@ -179,8 +178,7 @@ void SIOFileTOCRecord::addRecord(const std::string& name, PositionType startPos)
 }
 
 size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
-  const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
-                               [&name](const auto& entry) { return entry.first == name; });
+  const auto it = std::ranges::find(m_recordMap, name, &decltype(m_recordMap)::value_type::first);
   if (it != m_recordMap.cend()) {
     return it->second.size();
   }
@@ -188,8 +186,7 @@ size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
 }
 
 SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(const std::string& name, unsigned iEntry) const {
-  const auto it = std::find_if(m_recordMap.cbegin(), m_recordMap.cend(),
-                               [&name](const auto& keyVal) { return keyVal.first == name; });
+  const auto it = std::ranges::find(m_recordMap, name, &decltype(m_recordMap)::value_type::first);
   if (it != m_recordMap.end()) {
     if (iEntry < it->second.size()) {
       return it->second[iEntry];
