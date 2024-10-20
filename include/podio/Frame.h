@@ -266,9 +266,8 @@ public:
   ///              is supported by GenericParameters
   /// @param key    The name under which this parameter should be stored
   /// @param values The values of the parameter. A copy will be put into the Frame
-  template <typename T>
-  requires detail::isInTuple<T, SupportedGenericDataTypes> inline void putParameter(const std::string& key,
-                                                                                    std::initializer_list<T>&& values) {
+  template <ValidGenericDataType T>
+  inline void putParameter(const std::string& key, std::initializer_list<T>&& values) {
     putParameter<std::vector<T>>(key, std::move(values));
   }
 
@@ -278,9 +277,8 @@ public:
   /// @param key The key under which the value is stored
   ///
   /// @returns   An optional holding the value if it is present
-  template <typename T>
+  template <ValidGenericDataType T>
   inline auto getParameter(const std::string& key) const {
-    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     return m_self->parameters().get<T>(key);
   }
 
@@ -299,9 +297,8 @@ public:
   /// @tparam T The desired parameter type
   ///
   /// @returns  A vector of keys for this parameter type
-  template <typename T>
+  template <ValidGenericDataType T>
   inline std::vector<std::string> getParameterKeys() const {
-    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     return m_self->parameters().getKeys<T>();
   }
 
