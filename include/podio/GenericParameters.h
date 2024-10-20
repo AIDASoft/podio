@@ -85,9 +85,8 @@ public:
   }
 
   /// Overload for catching initializer list setting for vector values
-  template <typename T>
-  requires detail::isInTuple<T, SupportedGenericDataTypes> void set(const std::string& key,
-                                                                    std::initializer_list<T>&& values) {
+  template <ValidGenericDataType T>
+  void set(const std::string& key, std::initializer_list<T>&& values) {
     set<std::vector<T>>(key, std::move(values));
   }
 
