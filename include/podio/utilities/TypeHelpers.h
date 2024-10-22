@@ -241,7 +241,7 @@ class CollectionBase;
 
 /// Concept for checking whether a passed type T inherits from podio::CollectionBase
 template <typename T>
-concept collectionType = std::is_base_of_v<CollectionBase, T>;
+concept CollectionType = std::is_base_of_v<CollectionBase, T>;
 
 } // namespace podio
 
