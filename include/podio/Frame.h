@@ -24,7 +24,7 @@ namespace podio {
 
 /// Concept for enabling overloads only for Collection r-values
 template <typename T>
-concept CollectionRValueType = collectionType<T> && !std::is_lvalue_reference_v<T>;
+concept CollectionRValueType = CollectionType<T> && !std::is_lvalue_reference_v<T>;
 
 /// Concept for enabling overloads for r-values
 template <typename T>
@@ -188,7 +188,7 @@ public:
   ///
   /// @returns      A const reference to the collection if it is available or to
   ///               an empty (static) collection
-  template <collectionType CollT>
+  template <CollectionType CollT>
   const CollT& get(const std::string& name) const;
 
   /// Get a collection pointer from the Frame by name.
@@ -371,7 +371,7 @@ template <RValueType FrameDataT>
 Frame::Frame(FrameDataT&& data) : Frame(std::make_unique<FrameDataT>(std::move(data))) {
 }
 
-template <collectionType CollT>
+template <CollectionType CollT>
 const CollT& Frame::get(const std::string& name) const {
   const auto* coll = dynamic_cast<const CollT*>(m_self->get(name));
   if (coll) {
