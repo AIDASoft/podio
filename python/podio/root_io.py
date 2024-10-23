@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
+from collections.abc import Iterable
+import os
 from pathlib import Path
 from ROOT import gSystem
 
@@ -22,19 +24,11 @@ def convert_to_str_paths(filenames):
     Returns:
         list[str]: A list of filepaths as strings.
     """
-    if isinstance(filenames, (str, Path)):
-        return (str(filenames),)
 
-    if isinstance(filenames, list):
-        str_filenames = []
-        for f in filenames:
-            if isinstance(f, (str, Path)):
-                str_filenames.append(str(f))
-            else:
-                raise TypeError(f"Invalid filename type: {f} (type: {type(f)})")
-        return str_filenames
+    if isinstance(filenames, Iterable) and not isinstance(filenames, (str, Path)):
+        return [os.fspath(fn) for fn in filenames]
 
-    raise TypeError(f"Invalid filenames argument: {filenames} (type: {type(filenames)})")
+    return [os.fspath(filenames)]
 
 
 class Reader(BaseReaderMixin):
