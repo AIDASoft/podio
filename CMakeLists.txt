@@ -89,9 +89,6 @@ if(ENABLE_DATASOURCE)
   list(APPEND root_components_needed ROOTDataFrame)
 endif()
 find_package(ROOT 6.28.04 REQUIRED COMPONENTS ${root_components_needed})
-if((ENABLE_RNTUPLE) AND (${ROOT_VERSION} VERSION_LESS 6.28.02))
-    message(FATAL_ERROR "You are trying to build podio with support for the new ROOT NTuple format, but your ROOT version is too old. Please update ROOT to at least version 6.28.02")
-endif()
 
 # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
 # before that it's an empty variable so we check if it's any number > 0
