@@ -99,8 +99,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             self._prepare_iorules()
             self._create_selection_xml()
 
-        if datamodel["links"]:
-            self._write_links_registration_file(datamodel["links"])
+        if the_links := datamodel["links"]:
+            self._write_links_registration_file(the_links)
         self._write_all_collections_header()
         self._write_cmake_lists_file()
 

@@ -34,7 +34,7 @@ version and build that automatically. This behavior is controlled via the
 `USE_EXTERNAL_CATCH2` cmake variable. It defaults to `AUTO` but can also be set
 to `ON` or `OFF` to fully control the desired behavior.
 
-### Python > 3.6
+### Python >= 3.8
 
 Check your Python version by doing:
 
