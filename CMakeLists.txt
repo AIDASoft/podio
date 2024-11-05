@@ -41,7 +41,7 @@ if(NOT CMAKE_CXX_STANDARD MATCHES "17|20")
 endif()
 
 if(CMAKE_CXX_STANDARD EQUAL 17)
-  message(WARNING "C++17 is deprecated and support for it will be removed in the future. Please use at least C++20.")
+  message(WARNING "C++17 is deprecated and support for it will be removed in v01-03. Please use at least C++20.")
 endif()
 
 # Prevent CMake falls back to the latest standard the compiler does support
