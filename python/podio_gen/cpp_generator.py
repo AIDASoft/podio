@@ -549,10 +549,11 @@ have resolvable schema evolution incompatibilities:"
             "DatamodelLinks.cc",
             self._eval_template("DatamodelLinks.cc.jinja2", link_data),
         )
-        self._write_file(
-            "DatamodelLinkSIOBlock.cc",
-            self._eval_template("DatamodelLinksSIOBlock.cc.jinja2", link_data),
-        )
+        if "SIO" in self.io_handlers:
+            self._write_file(
+                "DatamodelLinkSIOBlock.cc",
+                self._eval_template("DatamodelLinksSIOBlock.cc.jinja2", link_data),
+            )
 
     def _write_edm_def_file(self):
         """Write the edm definition to a compile time string"""
