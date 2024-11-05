@@ -75,7 +75,7 @@ class JuliaClassGenerator(ClassGeneratorBaseMixin):
         return None
 
     def do_process_link(self, _, __):
-        """Julia does not support interface types yet, so this does nothing"""
+        """Julia does not support link types yet, so this does nothing"""
         return None
 
     def get_upstream_name(self):

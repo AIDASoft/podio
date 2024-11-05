@@ -157,7 +157,7 @@ between objects, just like normal `datatypes`.
 
 ## Definition of links
 Podio offers a templated `Link` class ([see here for more details](links.md))
-that allows to link two arbitrary datatypes without having to introduce a
+that allows one to link two arbitrary datatypes without having to introduce a
 `OneToOneRelation` or `OneToManyRelation` inside the corresponding datatypes. In
 order to keep the full definition of a datamodel in the YAML file it is possible
 to declare `links` in the YAML file:
