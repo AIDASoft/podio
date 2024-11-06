@@ -8,12 +8,8 @@ from utils import convert_to_str_paths
 gSystem.Load("libpodioRootIO")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
-from podio.base_reader import (  # pylint: disable=wrong-import-position # noqa: E402
-    BaseReaderMixin,
-)
-from podio.base_writer import (  # pylint: disable=wrong-import-position # noqa: E402
-    BaseWriterMixin,
-)
+from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position # noqa: E402
+from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position # noqa: E402
 
 
 class Reader(BaseReaderMixin):
