@@ -23,7 +23,7 @@ class Reader(BaseReaderMixin):
         Args:
             filename (str or Path): File to open and read data from.
         """
-        filename = convert_to_str_paths(filename)
+        filename = convert_to_str_paths(filename)[0]
         self._reader = podio.SIOReader()
         self._reader.openFile(filename)
 
@@ -43,7 +43,7 @@ class LegacyReader(BaseReaderMixin):
         Args:
             filename (str or Path): File to open and read data from.
         """
-        filename = convert_to_str_paths(filename)
+        filename = convert_to_str_paths(filename)[0]
         self._reader = podio.SIOLegacyReader()
         self._reader.openFile(filename)
         self._is_legacy = True
@@ -60,7 +60,7 @@ class Writer(BaseWriterMixin):
         Args:
             filename (str or Path): The name of the output file.
         """
-        filename = convert_to_str_paths(filename)
+        filename = convert_to_str_paths(filename)[0]
         self._writer = podio.SIOWriter(filename)
 
         super().__init__()
