@@ -2,7 +2,8 @@
 """Python module for reading sio files containing podio Frames"""
 
 from ROOT import gSystem
-from root_io import convert_to_str_paths
+
+from utils import convert_to_str_paths
 
 if gSystem.DynamicPathName("libpodioSioIO.so", True):
     gSystem.Load("libpodioSioIO")  # noqa: 402

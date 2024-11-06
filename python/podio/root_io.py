@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
-from collections.abc import Iterable
-import os
-from pathlib import Path
 from ROOT import gSystem
+
+from utils import convert_to_str_paths
 
 gSystem.Load("libpodioRootIO")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
@@ -15,24 +14,6 @@ from podio.base_reader import (  # pylint: disable=wrong-import-position # noqa:
 from podio.base_writer import (  # pylint: disable=wrong-import-position # noqa: E402
     BaseWriterMixin,
 )
-
-
-def convert_to_str_paths(filenames):
-    """Converts filenames to string paths, handling both string and pathlib.Path objects and
-       iterables of such objects.
-
-    Args:
-        filenames (str, Path, or Iterable[str | Path]): A single filepath or an iterable of
-        filepaths to convert to str object(s).
-
-    Returns:
-        list[str]: A list of filepaths as strings.
-    """
-
-    if isinstance(filenames, Iterable) and not isinstance(filenames, (str, Path)):
-        return [os.fspath(fn) for fn in filenames]
-
-    return [os.fspath(filenames)]
 
 
 class Reader(BaseReaderMixin):
