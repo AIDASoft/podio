@@ -46,9 +46,12 @@ Reader makeReader(const std::vector<std::string>& filenames) {
     for (auto key : *file->GetListOfKeys()) {
       auto tkey = dynamic_cast<TKey*>(key);
 
-      if (tkey && std::string(tkey->GetClassName()) == "ROOT::Experimental::RNTuple") {
-        hasRNTuple = true;
-        break;
+      if (tkey) {
+        const auto className = std::string(tkey->GetClassName());
+        if (className == "ROOT::Experimental::RNTuple" || className == "ROOT::RNTuple") {
+          hasRNTuple = true;
+          break;
+        }
       }
     }
     if (hasRNTuple) {
