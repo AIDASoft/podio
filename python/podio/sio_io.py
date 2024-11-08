@@ -3,8 +3,6 @@
 
 from ROOT import gSystem
 
-from utils import convert_to_str_paths
-
 if gSystem.DynamicPathName("libpodioSioIO.so", True):
     gSystem.Load("libpodioSioIO")  # noqa: 402
 else:
@@ -13,6 +11,7 @@ from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
 from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
+from podio.utils import convert_to_str_paths  # pylint: disable=wrong-import-position # noqa: E402
 
 
 class Reader(BaseReaderMixin):
