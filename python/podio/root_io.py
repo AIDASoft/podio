@@ -8,6 +8,7 @@ from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position # noqa: E402
 from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position # noqa: E402
+from podio.utils import convert_to_str_paths  # pylint: disable=wrong-import-position # noqa: E402
 
 
 class Reader(BaseReaderMixin):
@@ -17,11 +18,9 @@ class Reader(BaseReaderMixin):
         """Create a reader that reads from the passed file(s).
 
         Args:
-            filenames (str or list[str]): file(s) to open and read data from
+            filenames (str or list[str] or Path or list[Path]): file(s) to open and read data from
         """
-        if isinstance(filenames, str):
-            filenames = (filenames,)
-
+        filenames = convert_to_str_paths(filenames)
         self._reader = podio.ROOTReader()
         self._reader.openFiles(filenames)
 
@@ -35,11 +34,9 @@ class RNTupleReader(BaseReaderMixin):
         """Create an RNTuple reader that reads from the passed file(s).
 
         Args:
-            filenames (str or list[str]): file(s) to open and read data from
+            filenames (str or list[str] or Path or list[Path]): file(s) to open and read data from
         """
-        if isinstance(filenames, str):
-            filenames = (filenames,)
-
+        filenames = convert_to_str_paths(filenames)
         self._reader = podio.RNTupleReader()
         self._reader.openFiles(filenames)
 
@@ -57,11 +54,9 @@ class LegacyReader(BaseReaderMixin):
         """Create a reader that reads from the passed file(s).
 
         Args:
-            filenames (str or list[str]): file(s) to open and read data from
+            filenames (str or list[str] or Path or list[Path]): file(s) to open and read data from
         """
-        if isinstance(filenames, str):
-            filenames = (filenames,)
-
+        filenames = convert_to_str_paths(filenames)
         self._reader = podio.ROOTLegacyReader()
         self._reader.openFiles(filenames)
         self._is_legacy = True
@@ -76,8 +71,9 @@ class Writer(BaseWriterMixin):
         """Create a writer for writing files
 
         Args:
-            filename (str): The name of the output file
+            filename (str or Path): The name of the output file
         """
+        filename = convert_to_str_paths(filename)[0]
         self._writer = podio.ROOTWriter(filename)
         super().__init__()
 
@@ -89,7 +85,8 @@ class RNTupleWriter(BaseWriterMixin):
         """Create a writer for writing files
 
         Args:
-            filename (str): The name of the output file
+            filename (str or Path): The name of the output file
         """
+        filename = convert_to_str_paths(filename)[0]
         self._writer = podio.RNTupleWriter(filename)
         super().__init__()
