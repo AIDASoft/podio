@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+"""utility functionality for podio"""
+
 import os
 from collections.abc import Iterable
 from pathlib import Path
