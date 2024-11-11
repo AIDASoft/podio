@@ -36,7 +36,7 @@ ${PODIO_BASE}/python/podio_class_generator.py \
 # more stuff
 DIFF_EXTRA_ARGS="--exclude=LinkCollections.h"
 if [ ${ENABLE_SIO} = "OFF" ]; then
-    DIFF_EXTRA_ARGS=--exclude='*SIO*'
+    DIFF_EXTRA_ARGS="${DIFF_EXTRA_ARGS} --exclude='*SIO*'"
 fi
 
 diff -ru ${OUTPUT_FOLDER}/${EDM_NAME} ${COMP_BASE_FOLDER}/${EDM_NAME} ${DIFF_EXTRA_ARGS}
