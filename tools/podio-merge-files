@@ -38,32 +38,33 @@ for f in args.files:
         raise ValueError(f"File {f} is present more than once in the input list")
     all_files.add(f)
 
-root_format = reading._determine_root_format(args.files[0])
-if root_format == reading.RootFileFormat.TTREE:
+ROOT_FORMAT = reading._determine_root_format(args.files[0])  # pylint: disable=protected-access
+if ROOT_FORMAT == reading.RootFileFormat.TTREE:
     reader = podio.root_io.Reader(args.files)
     writer = podio.root_io.Writer(args.output_file)
-elif root_format == reading.RootFileFormat.RNTUPLE:
+elif ROOT_FORMAT == reading.RootFileFormat.RNTUPLE:
     reader = podio.root_io.RNTupleReader(args.files)
     writer = podio.root_io.RNTupleWriter(args.output_file)
 else:
     raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
 
 categories = list(reader.categories)
-metadata_available = True
+is_metadata_available = True  # pylint: disable=invalid-name
 try:
     categories.remove(args.metadata_category_name)
 except ValueError:
-    metadata_available = False
+    is_metadata_available = False
 
 for category in reader.categories:
     all_frames = reader.get(category)
+    print(all_frames, len(all_frames))
     for frame in all_frames:
         writer.write_frame(frame, category)
 
 if args.metadata == "none":
     sys.exit(0)
 
-if not metadata_available:
+if not is_metadata_available:
     print(
         f"Warning: metadata category '{args.metadata_category_name}'"
         " not found in input files, it will be created"
