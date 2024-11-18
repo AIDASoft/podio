@@ -32,7 +32,7 @@ size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view d
   }
 
   // TODO: Output?
-  return std::distance(m_definitions.cbegin(), it);
+  return std::ranges::distance(m_definitions.cbegin(), it);
 }
 
 size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition,
