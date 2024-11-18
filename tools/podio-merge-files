@@ -25,6 +25,11 @@ parser.add_argument(
     default="metadata",
     help="name of the metadata category in the output file, default: metadata",
 )
+parser.add_argument(
+    "--metadata-parameter-name",
+    default="MergeInputFiles",
+    help="name of the metadata category in the output file, default: metadata",
+)
 args = parser.parse_args()
 
 all_files = set()
@@ -69,5 +74,5 @@ else:
     else:
         all_frames = reader.get(args.metadata_category_name)
 for frame in all_frames:
-    frame.put_parameter("MergeInputFiles", args.files)
+    frame.put_parameter(args.metadata_parameter_name, args.files)
     writer.write_frame(frame, args.metadata_category_name)
