@@ -18,7 +18,7 @@ parser.add_argument(
     choices=["none", "all", "first"],
     default="first",
     help="metadata to include in the output file, default: "
-         "only the one from the first file, other options: all files, none",
+    "only the one from the first file, other options: all files, none",
 )
 parser.add_argument(
     "--metadata-category-name",
@@ -59,7 +59,9 @@ if args.metadata == "none":
     sys.exit(0)
 
 if not metadata_available:
-    print(f"Warning: metadata category '{args.metadata_category_name}' not found in input files, it will be created")
+    print(
+        f"Warning: metadata category '{args.metadata_category_name}' not found in input files, it will be created"
+    )
     all_frames = [podio.Frame()]
 else:
     if args.metadata == "first":
