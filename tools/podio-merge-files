@@ -53,7 +53,7 @@ is_metadata_available = True  # pylint: disable=invalid-name
 try:
     categories.remove(args.metadata_category_name)
 except ValueError:
-    is_metadata_available = False
+    is_metadata_available = False  # pylint: disable=invalid-name
 
 for category in reader.categories:
     all_frames = reader.get(category)
