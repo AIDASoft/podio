@@ -240,8 +240,9 @@ defined using the following template structure (taking here `setFrom` as an exam
 
 ```cpp
 template <typename FromU>
-requires(Mutable&& std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT>&&
-             detail::isDefaultHandleType<FromU>) void setFrom(FromU value);
+  requires(Mutable && std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT> &&
+           detail::isDefaultHandleType<FromU>)
+void setFrom(FromU value);
 ```
 
 Compilation will fail unless the following conditions are met
