@@ -22,20 +22,7 @@ using version_type = uint32_t; // from sio/definitions
 } // namespace sio
 #endif
 
-#if PODIO_ENABLE_RNTUPLE
 namespace podio {
-class RNTupleReader;
-class RNTupleWriter;
-} // namespace podio
-#endif
-
-namespace podio {
-
-#if !defined(__CLING__)
-// cling doesn't really deal well (i.e. at all in this case) with the forward
-// declaration here and errors out, breaking e.g. python bindings.
-class ROOTReader;
-#endif
 
 /// The types which are supported in the GenericParameters
 using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
@@ -138,15 +125,6 @@ public:
 #if PODIO_ENABLE_SIO
   friend void writeGenericParameters(sio::write_device& device, const GenericParameters& parameters);
   friend void readGenericParameters(sio::read_device& device, GenericParameters& parameters, sio::version_type version);
-#endif
-
-#if PODIO_ENABLE_RNTUPLE
-  friend RNTupleReader;
-  friend RNTupleWriter;
-#endif
-
-#if !defined(__CLING__)
-  friend ROOTReader;
 #endif
 
   /// Get a reference to the internal map for a given type
