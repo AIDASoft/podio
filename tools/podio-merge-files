@@ -2,6 +2,8 @@
 """podio-merge-files tool to merge any number of podio files into one"""
 
 import argparse
+import sys
+import podio
 import podio.root_io
 from podio import reading
 
@@ -41,13 +43,29 @@ elif root_format == reading.RootFileFormat.RNTUPLE:
 else:
     raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
 
+categories = list(reader.categories)
+metadata_available = True
+try:
+    categories.remove(args.metadata_category_name)
+except ValueError:
+    metadata_available = False
 
 for category in reader.categories:
-    if category == args.metadata_category_name and args.metadata == "none":
-        continue
-    if category == args.metadata_category_name and args.metadata == "first":
-        all_frames = [reader.get(category)[0]]
-    else:
-        all_frames = reader.get(category)
+    all_frames = reader.get(category)
     for frame in all_frames:
         writer.write_frame(frame, category)
+
+if args.metadata == "none":
+    sys.exit(0)
+
+if not metadata_available:
+    print(f"Warning: metadata category '{args.metadata_category_name}' not found in input files, it will be created")
+    all_frames = [podio.Frame()]
+else:
+    if args.metadata == "first":
+        all_frames = [reader.get(args.metadata_category_name)[0]]
+    else:
+        all_frames = reader.get(args.metadata_category_name)
+for frame in all_frames:
+    frame.put_parameter("MergeInputFiles", args.files)
+    writer.write_frame(frame, args.metadata_category_name)
