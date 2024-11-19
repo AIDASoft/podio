@@ -43,5 +43,8 @@
     <class name="podio::UserDataCollection<uint32_t>"/>
     <class name="podio::UserDataCollection<uint64_t>"/>
 
+    <class name="podio::LinkData"/>
+    <class name="std::vector<podio::LinkData>"/>
+
   </selection>
 </lcgdict>
