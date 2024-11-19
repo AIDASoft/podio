@@ -20,16 +20,6 @@ parser.add_argument(
     help="metadata to include in the output file, default: "
     "only the one from the first file, other options: all files, none",
 )
-parser.add_argument(
-    "--metadata-category-name",
-    default="metadata",
-    help="name of the metadata category in the output file, default: metadata",
-)
-parser.add_argument(
-    "--metadata-parameter-name",
-    default="MergeInputFiles",
-    help="name of the metadata category in the output file, default: metadata",
-)
 args = parser.parse_args()
 
 all_files = set()
@@ -51,13 +41,12 @@ else:
 categories = list(reader.categories)
 is_metadata_available = True  # pylint: disable=invalid-name
 try:
-    categories.remove(args.metadata_category_name)
+    categories.remove("metadata")
 except ValueError:
     is_metadata_available = False  # pylint: disable=invalid-name
 
-for category in reader.categories:
+for category in categories:
     all_frames = reader.get(category)
-    print(all_frames, len(all_frames))
     for frame in all_frames:
         writer.write_frame(frame, category)
 
@@ -66,15 +55,15 @@ if args.metadata == "none":
 
 if not is_metadata_available:
     print(
-        f"Warning: metadata category '{args.metadata_category_name}'"
+        f"Warning: metadata category 'metadata'"
         " not found in input files, it will be created"
     )
     all_frames = [podio.Frame()]
 else:
     if args.metadata == "first":
-        all_frames = [reader.get(args.metadata_category_name)[0]]
+        all_frames = [reader.get("metadata")[0]]
     else:
-        all_frames = reader.get(args.metadata_category_name)
+        all_frames = reader.get("metadata")
 for frame in all_frames:
-    frame.put_parameter(args.metadata_parameter_name, args.files)
-    writer.write_frame(frame, args.metadata_category_name)
+    frame.put_parameter("MergedInputFiles", args.files)
+    writer.write_frame(frame, "metadata")
