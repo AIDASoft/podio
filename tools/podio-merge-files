@@ -41,6 +41,7 @@ else:
 categories = list(reader.categories)
 is_metadata_available = True  # pylint: disable=invalid-name
 try:
+    # All frames will be copied as they are except the metadata ones
     categories.remove("metadata")
 except ValueError:
     is_metadata_available = False  # pylint: disable=invalid-name
