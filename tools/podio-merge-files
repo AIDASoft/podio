@@ -55,10 +55,7 @@ if args.metadata == "none":
     sys.exit(0)
 
 if not is_metadata_available:
-    print(
-        "Warning: metadata category 'metadata'"
-        " not found in input files, it will be created"
-    )
+    print("Warning: metadata category 'metadata' not found in the input files, it will be created")
     all_frames = [podio.Frame()]
 else:
     if args.metadata == "first":
