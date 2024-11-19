@@ -56,7 +56,7 @@ if args.metadata == "none":
 
 if not is_metadata_available:
     print(
-        f"Warning: metadata category 'metadata'"
+        "Warning: metadata category 'metadata'"
         " not found in input files, it will be created"
     )
     all_frames = [podio.Frame()]
