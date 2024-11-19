@@ -159,10 +159,10 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
 
   // m_readerEntries contains the accumulated entries for all the readers
   // therefore, the first number that is lower or equal to the entry number
-  // is the index of the reader that contains the entry
+  // is at the index of the reader that contains the entry
   auto upper = std::ranges::upper_bound(m_readerEntries[category], entNum);
   auto localEntry = entNum - *(upper - 1);
-  auto readerIndex = upper - m_readerEntries[category].begin() - 1;
+  auto readerIndex = upper - 1 - m_readerEntries[category].begin();
 
   ROOTFrameData::BufferMap buffers;
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
