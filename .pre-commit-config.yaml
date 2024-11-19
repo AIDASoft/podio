@@ -7,12 +7,6 @@ repos:
         exclude: (doc/ReleaseNotes.md)
   - repo: local
     hooks:
-      - id: clang-tidy
-        name: clang-tidy
-        entry: .github/scripts/clang-tidy-hook
-        types: [c++]
-        exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)|podioVersion.in.h)
-        language: system
       - id: clang-format
         name: clang-format
         entry: .github/scripts/clang-format-hook
@@ -28,6 +22,12 @@ repos:
         name: flake8
         entry: 'flake8 --config=.flake8'
         types: [python]
+        language: system
+      - id: clang-tidy
+        name: clang-tidy
+        entry: .github/scripts/clang-tidy-hook
+        types: [c++]
+        exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)|podioVersion.in.h)
         language: system
   - repo: https://github.com/psf/black
     rev: 23.11.0
