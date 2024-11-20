@@ -20,11 +20,11 @@ namespace podio {
 
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
-                         const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
+                         const std::vector<root_utils::CollectionWriteInfo>& collInfo);
 
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
-                                   const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
+                                   const std::vector<root_utils::CollectionWriteInfo>& collInfo);
 
 template <typename T>
 void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericParameters& params, bool reloadBranches,
@@ -185,7 +185,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
 
   auto* collInfoBranch = root_utils::getBranch(m_metaChain.get(), root_utils::collInfoName(category));
 
-  auto collInfo = new std::vector<root_utils::CollectionWriteInfoT>();
+  auto collInfo = new std::vector<root_utils::CollectionWriteInfo>();
   if (m_fileVersion < podio::version::Version{0, 16, 4}) {
     auto oldCollInfo = new std::vector<root_utils::CollectionInfoWithoutSchemaT>();
     collInfoBranch->SetAddress(&oldCollInfo);
@@ -325,7 +325,7 @@ std::vector<std::string_view> ROOTReader::getAvailableCategories() const {
 
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
-                                   const std::vector<root_utils::CollectionWriteInfoT>& collInfo) {
+                                   const std::vector<root_utils::CollectionWriteInfo>& collInfo) {
 
   size_t collectionIndex{0};
   std::vector<root_utils::CollectionBranches> collBranches;
@@ -377,7 +377,7 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
 
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
-                         const std::vector<root_utils::CollectionWriteInfoT>& collInfo) {
+                         const std::vector<root_utils::CollectionWriteInfo>& collInfo) {
 
   size_t collectionIndex{0};
   std::vector<root_utils::CollectionBranches> collBranches;
