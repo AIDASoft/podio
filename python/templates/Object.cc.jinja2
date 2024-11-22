@@ -43,3 +43,7 @@
                       VectorMembers, use_get_syntax)}}
 
 {{ utils.namespace_close(class.namespace) }}
+
+podio::detail::rank_type podio::detail::getRank(const {{ class.namespace }}::{{ class.bare_type }}& obj) {
+  return reinterpret_cast<rank_type>(obj.m_obj.get());
+}

@@ -12,6 +12,7 @@
 {% endfor %}
 
 #include "podio/utilities/MaybeSharedPtr.h"
+#include "podio/detail/RankType.h"
 
 #include <ostream>
 #include <cstdint>
@@ -21,6 +22,10 @@
 #endif
 
 {{ utils.forward_decls(forward_declarations) }}
+
+namespace podio::detail {
+rank_type getRank(const {{ class.namespace }}::{{ class.bare_type }}& obj);
+};
 
 {{ utils.namespace_open(class.namespace) }}
 class Mutable{{ class.bare_type }};
@@ -34,9 +39,7 @@ class {{ class.bare_type }} {
   friend class {{ class.bare_type }}Collection;
   friend class {{ class.full_type }}CollectionData;
   friend class {{ class.bare_type }}CollectionIterator;
-{% for interface in using_interface_types %}
-  friend class {{ interface }};
-{% endfor %}
+  friend podio::detail::rank_type podio::detail::getRank(const {{ class.bare_type }} & obj);
 
 public:
   using mutable_type = Mutable{{ class.bare_type }};
