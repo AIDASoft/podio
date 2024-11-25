@@ -1,0 +1,35 @@
+---
+schema_version: 1
+options:
+  getSyntax: False
+  exposePODMembers: False
+  includeSubfolder: True
+
+components:
+  iextension::PolarVector:
+    Members:
+      - float r
+      - float theta
+      - float phi
+
+datatypes:
+  iextension::AnotherHit:
+    Author: "Mateusz Jakub Fila"
+    Description: "A datatype in the extension with components from the extension and an upstream datamodel"
+    Members:
+     - unsigned long long cellID       // cellID
+     - SimpleStruct aStruct            // component defined in an upstream datamodel
+     - iextension::PolarVector aVector // component defined in the extension
+     - double energy [GeV]             // measured energy deposit
+
+interfaces:
+  iextension::EnergyInterface:
+    Description: "Generic interface for types with an energy member"
+    Author: "Mateusz Jakub Fila"
+    Types:
+      - ExampleHit
+      - ExampleMC
+      - ExampleCluster
+      - iextension::AnotherHit
+    Members:
+      - double energy // the energy
