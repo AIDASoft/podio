@@ -18,7 +18,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_python_frame_root
     read_python_frame_root
     read_and_write_frame_root
-    read_partioal_root
+    read_partial_root
 
     param_reading_rdataframe
 
@@ -108,6 +108,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_rntuple
       write_interface_rntuple
       read_interface_rntuple
+      read_partial_rntuple
     )
 
   endif()
