@@ -1,0 +1,8 @@
+schema_version: 1
+
+datatypes:
+  TypeWithRenamedMember:
+    Description: "A type with a member that will be renamed"
+    Author: "Thomas Madlener"
+    Members:
+      - int oldName // the old name

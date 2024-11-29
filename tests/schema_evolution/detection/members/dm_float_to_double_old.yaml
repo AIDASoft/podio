@@ -1,0 +1,8 @@
+schema_version: 1
+
+datatypes:
+  TypeWithFloat:
+    Description: "A type with a float that will become a double"
+    Author: "Thomas Madlener"
+    Members:
+      - float f // a float to become a double

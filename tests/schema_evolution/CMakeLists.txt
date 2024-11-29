@@ -59,4 +59,6 @@ add_test(
 )
 set_property(TEST schema-evolution-script-with-failure PROPERTY WILL_FAIL)
 
+add_subdirectory(detection)
+
 add_subdirectory(root_io)
