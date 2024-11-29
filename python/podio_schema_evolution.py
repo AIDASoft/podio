@@ -205,7 +205,7 @@ class DataModelComparator:
             ]
         )
 
-        self._compare_definitions(
+        self._compare_members(
             kept_components,
             self.datamodel_new.components,
             self.datamodel_old.components,
@@ -226,14 +226,22 @@ class DataModelComparator:
             [DroppedDatatype(self.datamodel_old.datatypes[name], name) for name in dropped_types]
         )
 
-        self._compare_definitions(
+        self._compare_members(
             kept_types,
             self.datamodel_new.datatypes,
             self.datamodel_old.datatypes,
             "Members",
         )
 
-    def _compare_definitions(self, definitions, first, second, category) -> None:
+    def _compare_members(
+        self,
+        definitions,
+        first,
+        second,
+        category,
+        added_change=AddedMember,
+        dropped_change=DroppedMember,
+    ) -> None:
         """compare member definitions in old and new datamodel"""
         for name in definitions:
             # we are only interested in members not the extracode
@@ -244,10 +252,10 @@ class DataModelComparator:
             )
             # Make findings known globally
             self.detected_schema_changes.extend(
-                [AddedMember(members1[member], name) for member in added_members]
+                [added_change(members1[member], name) for member in added_members]
             )
             self.detected_schema_changes.extend(
-                [DroppedMember(members2[member], name) for member in dropped_members]
+                [dropped_change(members2[member], name) for member in dropped_members]
             )
 
             # now let's compare old and new for the kept members
