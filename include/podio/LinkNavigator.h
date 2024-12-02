@@ -39,8 +39,8 @@ namespace detail::links {
 /// collection.
 template <typename LinkCollT>
 class LinkNavigator {
-  using FromT = LinkCollT::from_type;
-  using ToT = LinkCollT::to_type;
+  using FromT = typename LinkCollT::from_type;
+  using ToT = typename LinkCollT::to_type;
 
   template <typename T>
   using WeightedObject = detail::links::WeightedObject<T>;
