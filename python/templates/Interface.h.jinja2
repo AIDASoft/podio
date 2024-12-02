@@ -60,7 +60,7 @@ private:
 {{ macros.member_getters_concept(Members, use_get_syntax) }}
     virtual const std::type_info& typeInfo() const = 0;
     virtual bool equal(const Concept* rhs) const = 0;
-    virtual podio::detail::rank_type objRank() const = 0;
+    virtual podio::detail::Rank objRank() const = 0;
   };
 
   template<typename ValueT>
@@ -89,7 +89,7 @@ private:
       return false;
     }
 
-    podio::detail::rank_type objRank() const final {
+    podio::detail::Rank objRank() const final {
       return podio::detail::getRank(m_value);
     }
 
