@@ -495,32 +495,32 @@ TEST_CASE("LinkNavigator basics", "[links]") {
 
   for (size_t i = 0; i < 10; ++i) {
     const auto& hit = hits[i];
-    const auto assocClusters = nav.getAssociated(hit);
-    REQUIRE(assocClusters.size() == 1);
-    const auto& [cluster, weight] = assocClusters[0];
+    const auto linkedClusters = nav.getLinked(hit);
+    REQUIRE(linkedClusters.size() == 1);
+    const auto& [cluster, weight] = linkedClusters[0];
     REQUIRE(cluster == clusters[i % 3]);
     REQUIRE(weight == i * 0.1f);
   }
 
   const auto& cluster1 = clusters[0];
-  auto assocHits = nav.getAssociated(cluster1);
-  REQUIRE(assocHits.size() == 4);
+  auto linkedHits = nav.getLinked(cluster1);
+  REQUIRE(linkedHits.size() == 4);
   for (size_t i = 0; i < 4; ++i) {
-    const auto& [hit, weight] = assocHits[i];
+    const auto& [hit, weight] = linkedHits[i];
     REQUIRE(hit == hits[i * 3]);
     REQUIRE(weight == i * 3 * 0.1f);
   }
 
   const auto& cluster2 = clusters[1];
-  assocHits = nav.getAssociated(cluster2);
-  REQUIRE(assocHits.size() == 3);
+  linkedHits = nav.getLinked(cluster2);
+  REQUIRE(linkedHits.size() == 3);
   for (size_t i = 0; i < 3; ++i) {
-    const auto& [hit, weight] = assocHits[i];
+    const auto& [hit, weight] = linkedHits[i];
     REQUIRE(hit == hits[i * 3 + 1]);
     REQUIRE(weight == (i * 3 + 1) * 0.1f);
   }
 
-  const auto [noCluster, noWeight] = nav.getAssociated(hits[10])[0];
+  const auto [noCluster, noWeight] = nav.getLinked(hits[10])[0];
   REQUIRE_FALSE(noCluster.isAvailable());
 }
 
@@ -543,24 +543,24 @@ TEST_CASE("LinkNavigator same types", "[links]") {
   link.setWeight(0.66f);
 
   auto navigator = podio::LinkNavigator{linkColl};
-  auto linkedClusters = navigator.getAssociatedFrom(clusters[1]);
+  auto linkedClusters = navigator.getLinkedFrom(clusters[1]);
   REQUIRE(linkedClusters.size() == 1);
   REQUIRE(linkedClusters[0].o == clusters[2]);
   REQUIRE(linkedClusters[0].weight == 0.66f);
 
-  linkedClusters = navigator.getAssociatedTo(clusters[1]);
+  linkedClusters = navigator.getLinkedTo(clusters[1]);
   REQUIRE(linkedClusters.size() == 1);
   REQUIRE(linkedClusters[0].o == clusters[0]);
   REQUIRE(linkedClusters[0].weight == 0.5f);
 
   using Catch::Matchers::UnorderedEquals;
-  using podio::detail::associations::WeightedObject;
+  using podio::detail::links::WeightedObject;
   using WeightedObjVec = std::vector<WeightedObject<ExampleCluster>>;
-  linkedClusters = navigator.getAssociatedFrom(clusters[0]);
+  linkedClusters = navigator.getLinkedFrom(clusters[0]);
   REQUIRE_THAT(linkedClusters,
                UnorderedEquals(WeightedObjVec{WeightedObject(clusters[1], 0.5f), WeightedObject{clusters[2], 0.25f}}));
 
-  linkedClusters = navigator.getAssociatedTo(clusters[2]);
+  linkedClusters = navigator.getLinkedTo(clusters[2]);
   REQUIRE_THAT(linkedClusters,
                UnorderedEquals(WeightedObjVec{WeightedObject{clusters[0], 0.25f}, WeightedObject{clusters[1], 0.66f}}));
 }
