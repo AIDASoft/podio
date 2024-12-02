@@ -1,8 +1,6 @@
 #ifndef PODIO_LINKNAVIGATOR_H
 #define PODIO_LINKNAVIGATOR_H
 
-#include "podio/detail/LinkFwd.h"
-
 #include <map>
 #include <tuple>
 #include <type_traits>
