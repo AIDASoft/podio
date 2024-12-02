@@ -12,7 +12,7 @@
 {% endfor %}
 
 #include "podio/utilities/MaybeSharedPtr.h"
-#include "podio/detail/RankType.h"
+#include "podio/detail/OrderKey.h"
 
 #include <ostream>
 #include <cstdint>
@@ -24,7 +24,7 @@
 {{ utils.forward_decls(forward_declarations) }}
 
 namespace podio::detail {
-Rank getRank(const {{ class.namespace }}::{{ class.bare_type }}& obj);
+OrderKey getOrderKey(const {{ class.namespace }}::{{ class.bare_type }}& obj);
 };
 
 {{ utils.namespace_open(class.namespace) }}
@@ -39,7 +39,7 @@ class {{ class.bare_type }} {
   friend class {{ class.bare_type }}Collection;
   friend class {{ class.full_type }}CollectionData;
   friend class {{ class.bare_type }}CollectionIterator;
-  friend podio::detail::Rank podio::detail::getRank(const {{ class.bare_type }} & obj);
+  friend podio::detail::OrderKey podio::detail::getOrderKey(const {{ class.bare_type }} & obj);
 
 public:
   using mutable_type = Mutable{{ class.bare_type }};
