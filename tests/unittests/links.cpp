@@ -502,23 +502,19 @@ TEST_CASE("LinkNavigator basics", "[links]") {
     REQUIRE(weight == i * 0.1f);
   }
 
-  const auto& cluster1 = clusters[0];
-  auto linkedHits = nav.getLinked(cluster1);
-  REQUIRE(linkedHits.size() == 4);
-  for (size_t i = 0; i < 4; ++i) {
-    const auto& [hit, weight] = linkedHits[i];
-    REQUIRE(hit == hits[i * 3]);
-    REQUIRE(weight == i * 3 * 0.1f);
-  }
+  using Catch::Matchers::UnorderedEquals;
+  using podio::detail::links::WeightedObject;
+  using WeightedHits = std::vector<WeightedObject<ExampleHit>>;
 
-  const auto& cluster2 = clusters[1];
-  linkedHits = nav.getLinked(cluster2);
-  REQUIRE(linkedHits.size() == 3);
-  for (size_t i = 0; i < 3; ++i) {
-    const auto& [hit, weight] = linkedHits[i];
-    REQUIRE(hit == hits[i * 3 + 1]);
-    REQUIRE(weight == (i * 3 + 1) * 0.1f);
-  }
+  auto linkedHits = nav.getLinked(clusters[0]);
+  REQUIRE_THAT(linkedHits,
+               UnorderedEquals(WeightedHits{WeightedObject{hits[0], 0.f}, WeightedObject{hits[3], 3 * 0.1f},
+                                            WeightedObject{hits[6], 6 * 0.1f}, WeightedObject{hits[9], 9 * 0.1f}}));
+
+  linkedHits = nav.getLinked(clusters[1]);
+  REQUIRE_THAT(linkedHits,
+               UnorderedEquals(WeightedHits{WeightedObject{hits[1], 0.1f}, WeightedObject{hits[4], 0.4f},
+                                            WeightedObject{hits[7], 0.7f}}));
 
   const auto [noCluster, noWeight] = nav.getLinked(hits[10])[0];
   REQUIRE_FALSE(noCluster.isAvailable());
