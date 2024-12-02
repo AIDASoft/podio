@@ -425,14 +425,11 @@ class DataModelComparator:
         added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
         self.heuristics_members(added_members, dropped_members, schema_changes)
 
-        added_vecmems = [c for c in schema_changes if isinstance(c, AddedVectorMember)]
-        for vmc in added_vecmems:
+        for vmc in (c for c in schema_changes if isinstance(c, AddedVectorMember)):
             self.errors.append(
                 f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member}'"
             )
-
-        dropped_vecmems = [c for c in schema_changes if isinstance(c, DroppedVectorMember)]
-        for vmc in dropped_vecmems:
+        for vmc in (c for c in schema_changes if isinstance(c, DroppedVectorMember)):
             self.errors.append(
                 f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member}'"
             )
