@@ -2,6 +2,12 @@ set(should_fail_cases
   vector_members:add_new
   vector_members:add_additional
   vector_members:rm_one
+  relations:new_single_relation
+  relations:rm_single_relation
+  relations:new_multi_relation
+  relations:rm_multi_relation
+  relations:mv_single_to_multi
+  relations:mv_multi_to_single
 )
 
 set(should_succeed_cases

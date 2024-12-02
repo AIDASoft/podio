@@ -1,0 +1,10 @@
+schema_version: 1
+
+datatypes:
+  RelatedType:
+    Description: "A type we use in the relation"
+    Author: "Thomas Madlener"
+
+  DataTypeWithNewSingleRelation:
+    Description: "Type for testing the addition of new OneToOneRelations"
+    Author: "Thomas Madlener"
