@@ -136,6 +136,40 @@ and have that compiled into the library. This is necessary if you want to use
 the python bindings, since they rely on dynamically loading the datamodel
 libraries.
 
+## The `LinkNavigator` utility
+
+`podio::LinkCollection`s store each link separately even if a given object is
+present in several links. Additionally, they don't offer any real way to look up
+objects that are linked easily (apart from manually looping and comparing
+elements). To alleviate these issues, we provide the `podio::LinkNavigator`
+utility class that facilitates navigating links and lookups. It can be
+constructed from any `podio::LinkCollection` and can then be used to retrieve
+linked objects. E.g.
+
+```cpp
+const auto& recoMcLinks = event.get<edm4hep::RecoMCParticleLinkCollection>("mcrecolinks");
+const auto linkNavigator = podio::LinkNavigator(recoMcLinks);
+
+// For podio::LinkCollections with disparate types just use getLinked
+const auto linkedRecs = linkNavigator.getLinked(mcParticle);
+// If you want to make a point about the direction use getLinked{From,To}
+// This is also necessary if the From and To type in the link collection are the same
+const auto linkedMCs = linkNavigator.getLinkedFrom(recoParticle);
+```
+
+The return type of all methods is a `std::vector<WeightedObject>`, where the
+`WeightedObject` is a simple template class that wraps the object and its
+weight. It supports structured bindings, so you can e.g. do the following
+
+```cpp
+for (const auto& [reco, weight] : linkedRecs) {
+  // do something with the reco particle and its weight
+}
+```
+
+Alternatively, you can access the object via the `o` member and the weight via
+the `weight` member.
+
 ## Implementation details
 
 In order to give a slightly easier entry to the details of the implementation
