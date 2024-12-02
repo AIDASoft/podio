@@ -24,6 +24,7 @@
 {{ utils.forward_decls(forward_declarations) }}
 
 namespace podio::detail {
+// Internal function used in less comparison operators of the datatypes and interface types
 OrderKey getOrderKey(const {{ class.namespace }}::{{ class.bare_type }}& obj);
 };
 
