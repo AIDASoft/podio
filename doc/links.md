@@ -158,7 +158,7 @@ If you want to be explicit about the lookup direction, e.g. in case you have a
 link that has the same `From` and `To` type, you can use the overloads that take
 a second *tag argument*:
 ```cpp
-const auto linkedMCs = linkNavigator.getLinked(recoParticle, podio::LookupFrom);
+const auto linkedMCs = linkNavigator.getLinked(recoParticle, podio::ReturnTo);
 ```
 
 The return type of all methods is a `std::vector<WeightedObject>`, where the
