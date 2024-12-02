@@ -369,6 +369,12 @@ class DataModelComparator:
                 f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member}'"
             )
 
+        dropped_vecmems = [c for c in schema_changes if isinstance(c, DroppedVectorMember)]
+        for vmc in dropped_vecmems:
+            self.errors.append(
+                f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member_name}'"
+            )
+
         # are the member changes actually supported/supportable?
         changed_members = [
             change for change in schema_changes if isinstance(change, ChangedMember)

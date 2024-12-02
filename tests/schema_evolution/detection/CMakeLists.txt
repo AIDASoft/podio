@@ -1,5 +1,7 @@
 set(should_fail_cases
   vector_members:add_new
+  vector_members:add_additional
+  vector_members:rm_one
 )
 
 set(should_succeed_cases
