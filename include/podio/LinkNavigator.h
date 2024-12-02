@@ -28,17 +28,17 @@ namespace detail::links {
   };
 
   /// Simple struct tag for overload selection in LinkNavigator below
-  struct LookupFromTag {};
+  struct ReturnFromTag {};
   /// Simple struct tag for overload selection in LinkNavigator below
-  struct LookupToTag {};
+  struct ReturnToTag {};
 } // namespace detail::links
 
-/// Tag variable to select the lookup of *From* objects that are linked from a
-/// *To* object in podio::LinkNavigator::getLinked
-static constexpr detail::links::LookupFromTag LookupFrom;
-/// Tag variable to select the lookup of *To* objects that are linked from a
+/// Tag variable to select the lookup of *From* objects have links with a *To*
+/// object in podio::LinkNavigator::getLinked
+static constexpr detail::links::ReturnFromTag ReturnFrom;
+/// Tag variable to select the lookup of *To* objects that have links with a
 /// *From* object in podio::LinkNavigator::getLinked
-static constexpr detail::links::LookupToTag LookupTo;
+static constexpr detail::links::ReturnToTag ReturnTo;
 
 /// A helper class to more easily handle one-to-many links.
 ///
@@ -69,7 +69,8 @@ public:
   LinkNavigator& operator=(LinkNavigator&&) = default;
   ~LinkNavigator() = default;
 
-  /// Get all the objects and weights that are linked to the passed object
+  /// Get all the *From* objects and weights that have links with the passed
+  /// object
   ///
   /// You will get this overload if you pass the podio::LookupFrom tag as second
   /// argument
@@ -78,12 +79,12 @@ public:
   /// to construct this instance of the LinkNavigator has the same From and To
   /// types.
   ///
-  /// @param object The object that is labeled *to* in the link
+  /// @param object The object that is labeled *To* in the link
   /// @param . tag variable for selecting this overload
   ///
-  /// @returns A vector of all objects and their weights that are linked to
+  /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
-  std::vector<WeightedObject<FromT>> getLinked(const ToT& object, podio::detail::links::LookupFromTag) const {
+  std::vector<WeightedObject<FromT>> getLinked(const ToT& object, podio::detail::links::ReturnFromTag) const {
     const auto& [begin, end] = m_to2from.equal_range(object);
     std::vector<WeightedObject<FromT>> result;
     result.reserve(std::distance(begin, end));
@@ -94,22 +95,24 @@ public:
     return result;
   }
 
-  /// Get all the objects and weights that are linked to the passed object
+  /// Get all the *From* objects and weights that have links with the passed
+  /// object
   ///
   /// @note This overload will automatically do the right thing (TM) in case the
   /// LinkCollection that has been passed to construct this LinkNavigator has
   /// different From and To types.
   ///
-  /// @param object The object that is labeled *to* in the link
+  /// @param object The object that is labeled *To* in the link
   ///
-  /// @returns A vector of all objects and their weights that are linked to
+  /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
   template <typename ToU = ToT>
   std::enable_if_t<!std::is_same_v<FromT, ToU>, std::vector<WeightedObject<FromT>>> getLinked(const ToT& object) const {
-    return getLinked(object, podio::LookupFrom);
+    return getLinked(object, podio::ReturnFrom);
   }
 
-  /// Get all the objects and weights that are linked to the passed object
+  /// Get all the *To* objects and weights that have links with the passed
+  /// object
   ///
   /// You will get this overload if you pass the podio::LookupTo tag as second
   /// argument
@@ -118,12 +121,12 @@ public:
   /// to construct this instance of the LinkNavigator has the same From and To
   /// types.
   ///
-  /// @param object The object that is labeled *from* in the link
+  /// @param object The object that is labeled *From* in the link
   /// @param . tag variable for selecting this overload
   ///
-  /// @returns A vector of all objects and their weights that are linked to
+  /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
-  std::vector<WeightedObject<ToT>> getLinked(const FromT& object, podio::detail::links::LookupToTag) const {
+  std::vector<WeightedObject<ToT>> getLinked(const FromT& object, podio::detail::links::ReturnToTag) const {
     const auto& [begin, end] = m_from2to.equal_range(object);
     std::vector<WeightedObject<ToT>> result;
     result.reserve(std::distance(begin, end));
@@ -134,19 +137,20 @@ public:
     return result;
   }
 
-  /// Get all the objects and weights that are linked to the passed object
+  /// Get all the *To* objects and weights that have links with the passed
+  /// object
   ///
   /// @note This overload will automatically do the right thing (TM) in case the
   /// LinkCollection that has been passed to construct this LinkNavigator has
   /// different From and To types.
   ///
-  /// @param object The object that is labeled *from* in the link
+  /// @param object The object that is labeled *From* in the link
   ///
-  /// @returns A vector of all objects and their weights that are linked to
+  /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
   template <typename FromU = FromT>
   std::enable_if_t<!std::is_same_v<FromU, ToT>, std::vector<WeightedObject<ToT>>> getLinked(const FromT& object) const {
-    return getLinked(object, podio::LookupTo);
+    return getLinked(object, podio::ReturnTo);
   }
 
 private:
