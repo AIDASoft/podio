@@ -680,7 +680,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
         link_type = {
             "Century": {
                 "Author": "Link",
-                "Description": "Redefining datatypes is bad",
+                "Description": "Linking to other datamodels is possible!",
                 "From": DataType("DataType"),
                 "To": DataType("InterfaceType"),
             }
