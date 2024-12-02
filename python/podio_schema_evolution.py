@@ -142,6 +142,50 @@ class DroppedVectorMember(SchemaChange):
         super().__init__(f"'{self.klassname}' has a dropped member '{self.member.name}")
 
 
+class AddedSingleRelation(SchemaChange):
+    """Class representing an added OneToOneRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(
+            f"'{self.klassname}' has added a one-to-one relation '{self.member.name}'"
+        )
+
+
+class DroppedSingleRelation(SchemaChange):
+    """Class representing a dropped OneToOneRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(
+            f"'{self.klassname}' has dropped a one-to-one relation '{self.member.name}'"
+        )
+
+
+class AddedMultiRelation(SchemaChange):
+    """Class representing an added OneToManyRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(
+            f"'{self.klassname}' has added a one-to-many relation '{self.member.name}'"
+        )
+
+
+class DroppedMultiRelation(SchemaChange):
+    """Class representing a dropped OneToManyRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(
+            f"'{self.klassname}' has dropped a one-to-many relation '{self.member.name}'"
+        )
+
+
 class RootIoRule:
     """A placeholder IORule class"""
 
@@ -261,6 +305,24 @@ class DataModelComparator:
             DroppedVectorMember,
         )
 
+        self._compare_members(
+            kept_types,
+            self.datamodel_new.datatypes,
+            self.datamodel_old.datatypes,
+            "OneToOneRelations",
+            AddedSingleRelation,
+            DroppedSingleRelation,
+        )
+
+        self._compare_members(
+            kept_types,
+            self.datamodel_new.datatypes,
+            self.datamodel_old.datatypes,
+            "OneToManyRelations",
+            AddedMultiRelation,
+            DroppedMultiRelation,
+        )
+
     def _compare_members(
         self,
         definitions,
@@ -372,7 +434,25 @@ class DataModelComparator:
         dropped_vecmems = [c for c in schema_changes if isinstance(c, DroppedVectorMember)]
         for vmc in dropped_vecmems:
             self.errors.append(
-                f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member_name}'"
+                f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member}'"
+            )
+
+        for rc in (c for c in schema_changes if isinstance(c, AddedSingleRelation)):
+            self.errors.append(
+                f"Forbidden schema chage in '{rc.klassname}': Added OneToOneRelation '{rc.member}'"
+            )
+        for rc in (c for c in schema_changes if isinstance(c, DroppedSingleRelation)):
+            self.errors.append(
+                f"Forbidden schema chage in '{rc.klassname}': Dropped OneToOneRelation '{rc.member}'"
+            )
+
+        for rc in (c for c in schema_changes if isinstance(c, AddedMultiRelation)):
+            self.errors.append(
+                f"Forbidden schema chage in '{rc.klassname}': Added OneToManyRelation '{rc.member}'"
+            )
+        for rc in (c for c in schema_changes if isinstance(c, DroppedMultiRelation)):
+            self.errors.append(
+                f"Forbidden schema chage in '{rc.klassname}': Dropped OneToManyRelation '{rc.member}'"
             )
 
         # are the member changes actually supported/supportable?
