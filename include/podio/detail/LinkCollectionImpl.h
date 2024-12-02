@@ -188,7 +188,7 @@ public:
   }
 
   const std::string_view getDataTypeName() const override {
-    return "float";
+    return "podio::LinkData";
   }
 
   bool isSubsetCollection() const override {
