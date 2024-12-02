@@ -544,7 +544,7 @@ TEST_CASE("LinkNavigator same types", "[links]") {
   REQUIRE(linkedClusters[0].o == clusters[2]);
   REQUIRE(linkedClusters[0].weight == 0.66f);
 
-  linkedClusters = navigator.getLinked(clusters[1], podio::ReturnTo);
+  linkedClusters = navigator.getLinked(clusters[1], podio::ReturnFrom);
   REQUIRE(linkedClusters.size() == 1);
   REQUIRE(linkedClusters[0].o == clusters[0]);
   REQUIRE(linkedClusters[0].weight == 0.5f);
