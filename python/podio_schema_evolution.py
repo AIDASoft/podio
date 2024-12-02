@@ -3,8 +3,8 @@
 Provides infrastructure for analyzing schema definitions for schema evolution
 """
 
-import yaml
 import sys
+import yaml
 
 from podio_gen.podio_config_reader import PodioConfigReader
 
