@@ -130,7 +130,7 @@ class AddedVectorMember(SchemaChange):
     def __init__(self, member, datatype):
         self.member = member
         self.klassname = datatype
-        super().__init__(f"'{self.klassname}' has added a vector member '{self.member}'")
+        super().__init__(f"'{self.klassname}' has added a VectorMember '{self.member}'")
 
 
 class DroppedVectorMember(SchemaChange):
@@ -139,7 +139,7 @@ class DroppedVectorMember(SchemaChange):
     def __init__(self, member, datatype):
         self.member = member
         self.klassname = datatype
-        super().__init__(f"'{self.klassname}' has a dropped member '{self.member.name}")
+        super().__init__(f"'{self.klassname}' has a dropped VectorMember '{self.member.name}")
 
 
 class AddedSingleRelation(SchemaChange):
@@ -148,9 +148,7 @@ class AddedSingleRelation(SchemaChange):
     def __init__(self, member, datatype):
         self.member = member
         self.klassname = datatype
-        super().__init__(
-            f"'{self.klassname}' has added a one-to-one relation '{self.member.name}'"
-        )
+        super().__init__(f"'{self.klassname}' has added a OneToOneRelation '{self.member.name}'")
 
 
 class DroppedSingleRelation(SchemaChange):
@@ -159,9 +157,7 @@ class DroppedSingleRelation(SchemaChange):
     def __init__(self, member, datatype):
         self.member = member
         self.klassname = datatype
-        super().__init__(
-            f"'{self.klassname}' has dropped a one-to-one relation '{self.member.name}'"
-        )
+        super().__init__(f"'{self.klassname}' has dropped a OneToOneRelation '{self.member.name}'")
 
 
 class AddedMultiRelation(SchemaChange):
@@ -170,9 +166,7 @@ class AddedMultiRelation(SchemaChange):
     def __init__(self, member, datatype):
         self.member = member
         self.klassname = datatype
-        super().__init__(
-            f"'{self.klassname}' has added a one-to-many relation '{self.member.name}'"
-        )
+        super().__init__(f"'{self.klassname}' has added a OneToManyRelation '{self.member.name}'")
 
 
 class DroppedMultiRelation(SchemaChange):
@@ -182,7 +176,7 @@ class DroppedMultiRelation(SchemaChange):
         self.member = member
         self.klassname = datatype
         super().__init__(
-            f"'{self.klassname}' has dropped a one-to-many relation '{self.member.name}'"
+            f"'{self.klassname}' has dropped a OneToManyRelation '{self.member.name}'"
         )
 
 
