@@ -72,7 +72,8 @@
 <li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#explicit-definition-of-methods">Explicit definition of methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#definition-of-links">Definition of links</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#assigning-to-interface-types">Assigning to interface types</a></li>
 </ul>
 </li>
@@ -123,6 +124,19 @@
 <li class="toctree-l2"><a class="reference internal" href="userdata.html#some-limitations">Some limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="userdata.html#no-relations-to-other-collections">No relations to other collections</a></li>
 <li class="toctree-l3"><a class="reference internal" href="userdata.html#limited-supported-types">Limited supported types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Linking unrelated objects with each other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="links.html#link-basics"><code class="docutils literal notranslate"><span class="pre">Link</span></code> basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="links.html#how-to-use-links">How to use <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="links.html#implementation-details">Implementation details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="links.html#file-structure">File structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
 </ul>
 </li>
 </ul>
@@ -747,11 +761,23 @@ They are broadly split along the classes that are generated for each datatype or
 <td><p>The SIO blocks that are necessary for the SIO backend</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;datatype-name&gt;SIOBlock.h</span></code>, <code class="docutils literal notranslate"><span class="pre">src/&lt;datatype-name&gt;SIOBlock.cc</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MutableStruct.jl.jinja2</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LinkCollection.h.jinja2</span></code></p></td>
+<td><p>The header that is generated for each <em>Link</em> containing effectively typedefs only</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DatamodelLinksSIOBlock.cc.jinja2</span></code></p></td>
+<td><p>The .cc file that is necessary for enabling SIO based I/O for <em>Link</em>s</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DatamodelLinks.cc.jinja2</span></code></p></td>
+<td><p>The global .cc file that is necessary to enable I/O for all <em>Link</em>s</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MutableStruct.jl.jinja2</span></code></p></td>
 <td><p>The mutable struct definitions of components and datatypes for julia</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;datatype-name&gt;Struct.jl</span></code>, <code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;component-name&gt;Struct.jl</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ParentModule.jl.jinja2</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ParentModule.jl.jinja2</span></code></p></td>
 <td><p>The constructor and collection definitions of components and datatypes in the data model are contained within a single module named after the package-name</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;/]&lt;package-name&gt;.jl</span></code></p></td>
 </tr>

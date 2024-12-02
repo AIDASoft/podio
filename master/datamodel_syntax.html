@@ -72,7 +72,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#explicit-definition-of-methods">Explicit definition of methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#definition-of-custom-interfaces">Definition of custom interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#definition-of-links">Definition of links</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#assigning-to-interface-types">Assigning to interface types</a></li>
 </ul>
 </li>
@@ -123,6 +124,19 @@
 <li class="toctree-l2"><a class="reference internal" href="userdata.html#some-limitations">Some limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="userdata.html#no-relations-to-other-collections">No relations to other collections</a></li>
 <li class="toctree-l3"><a class="reference internal" href="userdata.html#limited-supported-types">Limited supported types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Linking unrelated objects with each other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="links.html#link-basics"><code class="docutils literal notranslate"><span class="pre">Link</span></code> basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="links.html#how-to-use-links">How to use <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="links.html#implementation-details">Implementation details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="links.html#file-structure">File structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
 </ul>
 </li>
 </ul>
@@ -823,6 +837,36 @@ define which <code class="docutils literal notranslate"><span class="pre">Types<
 <code class="docutils literal notranslate"><span class="pre">ExampleHit</span></code>, <code class="docutils literal notranslate"><span class="pre">ExampleMC</span></code> or an <code class="docutils literal notranslate"><span class="pre">ExampleCluster</span></code>. <strong>NOTE: <code class="docutils literal notranslate"><span class="pre">interface</span></code> types do
 not allow for mutable access to their data.</strong> They can be used in relations
 between objects, just like normal <code class="docutils literal notranslate"><span class="pre">datatypes</span></code>.</p>
+</section>
+<section id="definition-of-links">
+<h2>Definition of links<a class="headerlink" href="#definition-of-links" title="Link to this heading"></a></h2>
+<p>Podio offers a templated <code class="docutils literal notranslate"><span class="pre">Link</span></code> class (<a class="reference internal" href="links.html"><span class="std std-doc">see here for more details</span></a>)
+that allows one to link two arbitrary datatypes without having to introduce a
+<code class="docutils literal notranslate"><span class="pre">OneToOneRelation</span></code> or <code class="docutils literal notranslate"><span class="pre">OneToManyRelation</span></code> inside the corresponding datatypes. In
+order to keep the full definition of a datamodel in the YAML file it is possible
+to declare <code class="docutils literal notranslate"><span class="pre">links</span></code> in the YAML file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">links</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ExampleLink</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;A</span><span class="nv"> </span><span class="s">link</span><span class="nv"> </span><span class="s">between</span><span class="nv"> </span><span class="s">two</span><span class="nv"> </span><span class="s">(podio</span><span class="nv"> </span><span class="s">generated)</span><span class="nv"> </span><span class="s">objects&quot;</span>
+<span class="w">        </span><span class="nt">Author</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;It</span><span class="nv"> </span><span class="s">could</span><span class="nv"> </span><span class="s">be</span><span class="nv"> </span><span class="s">you&quot;</span>
+<span class="w">        </span><span class="nt">From</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExampleHit</span>
+<span class="w">        </span><span class="nt">To</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TypeWithEnergy</span>
+</pre></div>
+</div>
+<p>This definition will yield the following typedefs</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">ExampleLinkCollection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">LinkCollection</span><span class="o">&lt;</span><span class="n">ExampleHit</span><span class="p">,</span><span class="w"> </span><span class="n">TypeWithEnergy</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">ExampleLink</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ExampleLinkCollection</span><span class="o">::</span><span class="n">value_type</span><span class="p">;</span>
+<span class="c1">// this is equivalent to</span>
+<span class="c1">// using ExampleLink = podio::Link&lt;ExampleHit, TypeWithEnergy&gt;;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">MutableExampleLink</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ExampleLinkCollection</span><span class="o">::</span><span class="n">mutable_type</span><span class="p">;</span>
+<span class="c1">// this is equivalent to</span>
+<span class="c1">// using MutableExampleLink = podio::MutableLink&lt;ExampleHit, TypeWithEnergy&gt;;</span>
+</pre></div>
+</div>
+<p>additionally, this will generate the necessary code to enable I/O for this link
+type.</p>
 <section id="assigning-to-interface-types">
 <h3>Assigning to interface types<a class="headerlink" href="#assigning-to-interface-types" title="Link to this heading"></a></h3>
 <p>Interface types support the same functionality as normal (immutable) datatypes.

@@ -70,7 +70,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#explicit-definition-of-methods">Explicit definition of methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../datamodel_syntax.html#definition-of-links">Definition of links</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../datamodel_syntax.html#assigning-to-interface-types">Assigning to interface types</a></li>
 </ul>
 </li>
@@ -121,6 +122,19 @@
 <li class="toctree-l2"><a class="reference internal" href="../../userdata.html#some-limitations">Some limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../userdata.html#no-relations-to-other-collections">No relations to other collections</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../userdata.html#limited-supported-types">Limited supported types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../links.html">Linking unrelated objects with each other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../links.html#link-basics"><code class="docutils literal notranslate"><span class="pre">Link</span></code> basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../links.html#how-to-use-links">How to use <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../links.html#implementation-details">Implementation details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../links.html#file-structure">File structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
 </ul>
 </li>
 </ul>
@@ -684,25 +698,10 @@
 <dd></dd></dl>
 
 <dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.PODIO_REGISTER_LINK_BUFFERFACTORY">
-<span class="target" id="_link_collection_8h_1a57f0e6e456e40ecf1cfd674d574b8556"></span><span class="sig-name descname"><span class="n"><span class="pre">PODIO_REGISTER_LINK_BUFFERFACTORY</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">FromT</span></span>, <span class="n"><span class="pre">ToT</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PODIO_REGISTER_LINK_BUFFERFACTORY" title="Link to this definition"></a><br /></dt>
-<dd><p>Macro for registering links at the CollectionBufferFactory by injecting the corresponding buffer creation function. </p>
-</dd></dl>
-
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.PODIO_REGISTER_LINK_SIOFACTORY">
-<span class="target" id="_link_collection_8h_1aa98217ca6eb4a339c449784bb835a281"></span><span class="sig-name descname"><span class="n"><span class="pre">PODIO_REGISTER_LINK_SIOFACTORY</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">FromT</span></span>, <span class="n"><span class="pre">ToT</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PODIO_REGISTER_LINK_SIOFACTORY" title="Link to this definition"></a><br /></dt>
-<dd><p>Macro for registering the necessary SIOBlock for a Link with the SIOBlock factory. </p>
-</dd></dl>
-
-<dl class="cpp macro">
 <dt class="sig sig-object cpp" id="c.PODIO_DECLARE_LINK">
 <span class="target" id="_link_collection_8h_1ae1bd64bb5bd5c1e1edc705d969ecfd43"></span><span class="sig-name descname"><span class="n"><span class="pre">PODIO_DECLARE_LINK</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">FromT</span></span>, <span class="n"><span class="pre">ToT</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PODIO_DECLARE_LINK" title="Link to this definition"></a><br /></dt>
 <dd><p>Main macro for declaring links. </p>
-<p>Takes care of the following things:<ul class="simple">
-<li><p>Registering the necessary buffer creation functionality with the CollectionBufferFactory. </p></li>
-</ul>
-</p>
+<p>Takes care of registering the necessary buffer creation functionality with the CollectionBufferFactory. </p>
 </dd></dl>
 
 </div>

@@ -69,7 +69,8 @@
 <li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#explicit-definition-of-methods">Explicit definition of methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamodel_syntax.html#definition-of-links">Definition of links</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="datamodel_syntax.html#assigning-to-interface-types">Assigning to interface types</a></li>
 </ul>
 </li>
@@ -120,6 +121,19 @@
 <li class="toctree-l2"><a class="reference internal" href="userdata.html#some-limitations">Some limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="userdata.html#no-relations-to-other-collections">No relations to other collections</a></li>
 <li class="toctree-l3"><a class="reference internal" href="userdata.html#limited-supported-types">Limited supported types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="links.html">Linking unrelated objects with each other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="links.html#link-basics"><code class="docutils literal notranslate"><span class="pre">Link</span></code> basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="links.html#how-to-use-links">How to use <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="links.html#implementation-details">Implementation details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="links.html#file-structure">File structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
 </ul>
 </li>
 </ul>
@@ -793,10 +807,10 @@
 </li>
       <li><a href="cpp_api/file/_maybe_shared_ptr_8h.html#c.DEFINE_COMPARISON_OPERATOR">DEFINE_COMPARISON_OPERATOR (C macro)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.DefinitionError">DefinitionError</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio_gen.html#podio_gen.cpp_generator.CPPClassGenerator.do_process_component">do_process_component() (podio_gen.cpp_generator.CPPClassGenerator method)</a>
 
       <ul>
@@ -813,6 +827,12 @@
 
       <ul>
         <li><a href="py_api/podio_gen.html#podio_gen.julia_generator.JuliaClassGenerator.do_process_interface">(podio_gen.julia_generator.JuliaClassGenerator method)</a>
+</li>
+      </ul></li>
+      <li><a href="py_api/podio_gen.html#podio_gen.cpp_generator.CPPClassGenerator.do_process_link">do_process_link() (podio_gen.cpp_generator.CPPClassGenerator method)</a>
+
+      <ul>
+        <li><a href="py_api/podio_gen.html#podio_gen.julia_generator.JuliaClassGenerator.do_process_link">(podio_gen.julia_generator.JuliaClassGenerator method)</a>
 </li>
       </ul></li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable.docstring">docstring (podio_gen.generator_utils.MemberVariable property)</a>
@@ -2090,10 +2110,10 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReader8openFileERKNSt6stringE">podio::RNTupleReader::openFile (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader8openFileERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReader8openFileERKNSt6stringE">[2]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">podio::RNTupleReader::openFiles (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">[2]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">podio::RNTupleReader::openFiles (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">[2]</a>
+</li>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReaderaSERK13RNTupleReader">podio::RNTupleReader::operator= (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReaderaSERK13RNTupleReader">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReaderaSERK13RNTupleReader">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReader9readEntryERKNSt6stringEKj">podio::RNTupleReader::readEntry (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader9readEntryERKNSt6stringEKj">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReader9readEntryERKNSt6stringEKj">[2]</a>
@@ -3023,10 +3043,6 @@
 </li>
       <li><a href="cpp_api/file/_preprocessor_macros_8h.html#c.PODIO_PP_CONCAT_IMPL">PODIO_PP_CONCAT_IMPL (C macro)</a>
 </li>
-      <li><a href="cpp_api/file/_link_collection_8h.html#c.PODIO_REGISTER_LINK_BUFFERFACTORY">PODIO_REGISTER_LINK_BUFFERFACTORY (C macro)</a>
-</li>
-      <li><a href="cpp_api/file/_link_collection_8h.html#c.PODIO_REGISTER_LINK_SIOFACTORY">PODIO_REGISTER_LINK_SIOFACTORY (C macro)</a>
-</li>
       <li>
     podio_schema_evolution
 
@@ -3125,6 +3141,8 @@
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_datatype_keys">required_datatype_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys">required_interface_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
+</li>
+      <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_link_keys">required_link_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
 </li>
       <li><a href="py_api/podio.html#podio.reading.RootFileFormat.RNTUPLE">RNTUPLE (podio.reading.RootFileFormat attribute)</a>
 </li>
