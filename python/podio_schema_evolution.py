@@ -227,6 +227,15 @@ class DataModelComparator:
     Compares two datamodels and extracts required schema evolution
     """
 
+    unsupported_changes = (
+        AddedVectorMember,
+        DroppedVectorMember,
+        AddedSingleRelation,
+        DroppedSingleRelation,
+        AddedMultiRelation,
+        DroppedMultiRelation,
+    )
+
     def __init__(self, yamlfile_new, yamlfile_old, evolution_file=None) -> None:
         self.yamlfile_new = yamlfile_new
         self.yamlfile_old = yamlfile_old
@@ -425,32 +434,8 @@ class DataModelComparator:
         added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
         self.heuristics_members(added_members, dropped_members, schema_changes)
 
-        for vmc in (c for c in schema_changes if isinstance(c, AddedVectorMember)):
-            self.errors.append(
-                f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member}'"
-            )
-        for vmc in (c for c in schema_changes if isinstance(c, DroppedVectorMember)):
-            self.errors.append(
-                f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member}'"
-            )
-
-        for rc in (c for c in schema_changes if isinstance(c, AddedSingleRelation)):
-            self.errors.append(
-                f"Forbidden schema chage in '{rc.klassname}': Added OneToOneRelation '{rc.member}'"
-            )
-        for rc in (c for c in schema_changes if isinstance(c, DroppedSingleRelation)):
-            self.errors.append(
-                f"Forbidden schema chage in '{rc.klassname}': Dropped OneToOneRelation '{rc.member}'"
-            )
-
-        for rc in (c for c in schema_changes if isinstance(c, AddedMultiRelation)):
-            self.errors.append(
-                f"Forbidden schema chage in '{rc.klassname}': Added OneToManyRelation '{rc.member}'"
-            )
-        for rc in (c for c in schema_changes if isinstance(c, DroppedMultiRelation)):
-            self.errors.append(
-                f"Forbidden schema chage in '{rc.klassname}': Dropped OneToManyRelation '{rc.member}'"
-            )
+        for change in (c for c in schema_changes if isinstance(c, self.unsupported_changes)):
+            self.errors.append(f"Unsupported schema change: {change}")
 
         # are the member changes actually supported/supportable?
         changed_members = [
