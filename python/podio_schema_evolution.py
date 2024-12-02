@@ -4,6 +4,7 @@ Provides infrastructure for analyzing schema definitions for schema evolution
 """
 
 import yaml
+import sys
 
 from podio_gen.podio_config_reader import PodioConfigReader
 
@@ -423,6 +424,9 @@ class DataModelComparator:
             print("ERRORS:")
             for error in self.errors:
                 print(f" - {error}")
+            return False
+
+        return True
 
     def read(self) -> None:
         """read datamodels from yaml files"""
@@ -482,5 +486,6 @@ if __name__ == "__main__":
     comparator = DataModelComparator(args.new, args.old, evolution_file=args.evo)
     comparator.read()
     comparator.compare()
-    comparator.print_comparison()
+    if not comparator.print_comparison():
+        sys.exit(1)
     # print(comparator.get_changed_schemata(schema_filter=root_filter))
