@@ -124,6 +124,24 @@ class RenamedMember(SchemaChange):
         )
 
 
+class AddedVectorMember(SchemaChange):
+    """Class representing an added VectorMember"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(f"'{self.klassname}' has added a vector member '{self.member}'")
+
+
+class DroppedVectorMember(SchemaChange):
+    """Class representing a dropped VectorMember"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(f"'{self.klassname}' has a dropped member '{self.member.name}")
+
+
 class RootIoRule:
     """A placeholder IORule class"""
 
@@ -234,6 +252,15 @@ class DataModelComparator:
             "Members",
         )
 
+        self._compare_members(
+            kept_types,
+            self.datamodel_new.datatypes,
+            self.datamodel_old.datatypes,
+            "VectorMembers",
+            AddedVectorMember,
+            DroppedVectorMember,
+        )
+
     def _compare_members(
         self,
         definitions,
@@ -335,6 +362,12 @@ class DataModelComparator:
         ]
         added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
         self.heuristics_members(added_members, dropped_members, schema_changes)
+
+        added_vecmems = [c for c in schema_changes if isinstance(c, AddedVectorMember)]
+        for vmc in added_vecmems:
+            self.errors.append(
+                f"Forbidden schema change in '{vmc.klassname}': Added vector member '{vmc.member}'"
+            )
 
         # are the member changes actually supported/supportable?
         changed_members = [
