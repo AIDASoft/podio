@@ -1,4 +1,5 @@
 #include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_vector.hpp"
 
 #include "podio/LinkCollection.h"
 #include "podio/LinkNavigator.h"
@@ -521,4 +522,45 @@ TEST_CASE("LinkNavigator basics", "[links]") {
 
   const auto [noCluster, noWeight] = nav.getAssociated(hits[10])[0];
   REQUIRE_FALSE(noCluster.isAvailable());
+}
+
+TEST_CASE("LinkNavigator same types", "[links]") {
+  std::vector<ExampleCluster> clusters(3);
+  auto linkColl = podio::LinkCollection<ExampleCluster, ExampleCluster>{};
+  auto link = linkColl.create();
+  link.setFrom(clusters[0]);
+  link.setTo(clusters[1]);
+  link.setWeight(0.5f);
+
+  link = linkColl.create();
+  link.setFrom(clusters[0]);
+  link.setTo(clusters[2]);
+  link.setWeight(0.25f);
+
+  link = linkColl.create();
+  link.setFrom(clusters[1]);
+  link.setTo(clusters[2]);
+  link.setWeight(0.66f);
+
+  auto navigator = podio::LinkNavigator{linkColl};
+  auto linkedClusters = navigator.getAssociatedFrom(clusters[1]);
+  REQUIRE(linkedClusters.size() == 1);
+  REQUIRE(linkedClusters[0].o == clusters[2]);
+  REQUIRE(linkedClusters[0].weight == 0.66f);
+
+  linkedClusters = navigator.getAssociatedTo(clusters[1]);
+  REQUIRE(linkedClusters.size() == 1);
+  REQUIRE(linkedClusters[0].o == clusters[0]);
+  REQUIRE(linkedClusters[0].weight == 0.5f);
+
+  using Catch::Matchers::UnorderedEquals;
+  using podio::detail::associations::WeightedObject;
+  using WeightedObjVec = std::vector<WeightedObject<ExampleCluster>>;
+  linkedClusters = navigator.getAssociatedFrom(clusters[0]);
+  REQUIRE_THAT(linkedClusters,
+               UnorderedEquals(WeightedObjVec{WeightedObject(clusters[1], 0.5f), WeightedObject{clusters[2], 0.25f}}));
+
+  linkedClusters = navigator.getAssociatedTo(clusters[2]);
+  REQUIRE_THAT(linkedClusters,
+               UnorderedEquals(WeightedObjVec{WeightedObject{clusters[0], 0.25f}, WeightedObject{clusters[1], 0.66f}}));
 }

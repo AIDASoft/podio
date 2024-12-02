@@ -5,6 +5,7 @@
 
 #include <map>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,10 @@ namespace detail::associations {
     }
     T o;          ///< The object
     float weight; ///< The weight in the association
+
+    bool operator==(const WeightedObject<T>& other) const {
+      return other.o == o && other.weight == weight;
+    }
   };
 } // namespace detail::associations
 
@@ -56,11 +61,15 @@ public:
 
   /// Get all the objects and weights that are associated to the passed object
   ///
+  /// @note This overload works always, even if the LinkCollection that was used
+  /// to construct this instance of the LinkNavigator has the same From and To
+  /// types.
+  ///
   /// @param object The object that is labeled *to* in the association
   ///
   /// @returns A vector of all objects and their weights that are associated to
   ///          the passed object
-  std::vector<WeightedObject<FromT>> getAssociated(const ToT& object) const {
+  std::vector<WeightedObject<FromT>> getAssociatedTo(const ToT& object) const {
     const auto& [begin, end] = m_to2from.equal_range(object);
     std::vector<WeightedObject<FromT>> result;
     result.reserve(std::distance(begin, end));
@@ -73,11 +82,31 @@ public:
 
   /// Get all the objects and weights that are associated to the passed object
   ///
+  /// @note This overload will automatically do the right thing (TM) in case the
+  /// LinkCollection that has been passed to construct this LinkNavigator has
+  /// different From and To types.
+  ///
+  /// @param object The object that is labeled *to* in the association
+  ///
+  /// @returns A vector of all objects and their weights that are associated to
+  ///          the passed object
+  template <typename ToU = ToT>
+  std::enable_if_t<!std::is_same_v<FromT, ToU>, std::vector<WeightedObject<FromT>>>
+  getAssociated(const ToT& object) const {
+    return getAssociatedTo(object);
+  }
+
+  /// Get all the objects and weights that are associated to the passed object
+  ///
+  /// @note This overload works always, even if the LinkCollection that was used
+  /// to construct this instance of the LinkNavigator has the same From and To
+  /// types.
+  ///
   /// @param object The object that is labeled *from* in the association
   ///
   /// @returns A vector of all objects and their weights that are associated to
   ///          the passed object
-  std::vector<WeightedObject<ToT>> getAssociated(const FromT& object) const {
+  std::vector<WeightedObject<ToT>> getAssociatedFrom(const FromT& object) const {
     const auto& [begin, end] = m_from2to.equal_range(object);
     std::vector<WeightedObject<ToT>> result;
     result.reserve(std::distance(begin, end));
@@ -86,6 +115,22 @@ public:
       result.emplace_back(it->second);
     }
     return result;
+  }
+
+  /// Get all the objects and weights that are associated to the passed object
+  ///
+  /// @note This overload will automatically do the right thing (TM) in case the
+  /// LinkCollection that has been passed to construct this LinkNavigator has
+  /// different From and To types.
+  ///
+  /// @param object The object that is labeled *from* in the association
+  ///
+  /// @returns A vector of all objects and their weights that are associated to
+  ///          the passed object
+  template <typename FromU = FromT>
+  std::enable_if_t<!std::is_same_v<FromU, ToT>, std::vector<WeightedObject<ToT>>>
+  getAssociated(const FromT& object) const {
+    return getAssociatedFrom(object);
   }
 
 private:
