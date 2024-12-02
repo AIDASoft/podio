@@ -139,15 +139,15 @@ libraries.
 ## The `LinkNavigator` utility
 
 `podio::LinkCollection`s store each link separately even if a given object is
-present in several links. Additionally, they don't offer any real way to look up
-objects that are linked easily (apart from manually looping and comparing
+present in several links. Additionally, they don't offer any really easy way to
+look up objects that are linked (apart from manually looping and comparing
 elements). To alleviate these issues, we provide the `podio::LinkNavigator`
 utility class that facilitates navigating links and lookups. It can be
 constructed from any `podio::LinkCollection` and can then be used to retrieve
 linked objects. E.g.
 
 ```cpp
-const auto& recoMcLinks = event.get<edm4hep::RecoMCParticleLinkCollection>("mcrecolinks");
+const auto& recoMcLinks = event.get<edm4hep::RecoMCParticleLinkCollection>("RecoMCLinks");
 const auto linkNavigator = podio::LinkNavigator(recoMcLinks);
 
 // For podio::LinkCollections with disparate types just use getLinked
