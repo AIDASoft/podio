@@ -152,9 +152,13 @@ const auto linkNavigator = podio::LinkNavigator(recoMcLinks);
 
 // For podio::LinkCollections with disparate types just use getLinked
 const auto linkedRecs = linkNavigator.getLinked(mcParticle);
-// If you want to make a point about the direction use getLinked{From,To}
-// This is also necessary if the From and To type in the link collection are the same
-const auto linkedMCs = linkNavigator.getLinkedFrom(recoParticle);
+```
+
+If you want to be explicit about the lookup direction, e.g. in case you have a
+link that has the same `From` and `To` type, you can use the overloads that take
+a second *tag argument*:
+```cpp
+const auto linkedMCs = linkNavigator.getLinked(recoParticle, podio::LookupFrom);
 ```
 
 The return type of all methods is a `std::vector<WeightedObject>`, where the
