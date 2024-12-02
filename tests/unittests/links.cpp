@@ -4,7 +4,7 @@
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
-#include "datamodel/LinkCollections.h"
+#include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
 
 #ifdef PODIO_JSON_OUTPUT

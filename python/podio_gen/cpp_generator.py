@@ -91,7 +91,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
         return {}
 
-    def post_process(self, _):
+    def post_process(self, datamodel):
         """Do the cpp specific post processing"""
         self._write_edm_def_file()
 
@@ -99,6 +99,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             self._prepare_iorules()
             self._create_selection_xml()
 
+        if the_links := datamodel["links"]:
+            self._write_links_registration_file(the_links)
         self._write_all_collections_header()
         self._write_cmake_lists_file()
 
@@ -206,6 +208,23 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
         self._fill_templates("Interface", interface)
         return interface
+
+    def do_process_link(self, _, link):
+        """Process a link definition and generate the necessary code"""
+        link["include_types"] = []
+        for rel in ("From", "To"):
+            rel_type = link[rel]
+            include_header = f"{rel_type.bare_type}Collection"
+            if self._is_interface(rel_type.full_type):
+                # Interfaces do not have a Collection header
+                include_header = rel_type.bare_type
+            link["include_types"].append(
+                self._build_include_for_class(
+                    include_header, self._needs_include(rel_type.full_type)
+                )
+            )
+        self._fill_templates("LinkCollection", link)
+        return link
 
     def print_report(self):
         """Print a summary report about the generated code"""
@@ -506,8 +525,10 @@ have resolvable schema evolution incompatibilities:"
 
     def _write_all_collections_header(self):
         """Write a header file that includes all collection headers"""
-
-        collection_files = (x.split("::")[-1] + "Collection.h" for x in self.datamodel.datatypes)
+        collection_files = (
+            x.split("::")[-1] + "Collection.h"
+            for x in list(self.datamodel.datatypes.keys()) + list(self.datamodel.links.keys())
+        )
         self._write_file(
             os.path.join(self.install_dir, self.package_name, f"{self.package_name}.h"),
             self._eval_template(
@@ -519,6 +540,20 @@ have resolvable schema evolution incompatibilities:"
                 },
             ),
         )
+
+    def _write_links_registration_file(self, links):
+        """Write a .cc file that registers all the link collections that were
+        defined with this datamodel"""
+        link_data = {"links": links, "incfolder": self.incfolder}
+        self._write_file(
+            "DatamodelLinks.cc",
+            self._eval_template("DatamodelLinks.cc.jinja2", link_data),
+        )
+        if "SIO" in self.io_handlers:
+            self._write_file(
+                "DatamodelLinkSIOBlock.cc",
+                self._eval_template("DatamodelLinksSIOBlock.cc.jinja2", link_data),
+            )
 
     def _write_edm_def_file(self):
         """Write the edm definition to a compile time string"""

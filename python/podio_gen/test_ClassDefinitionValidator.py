@@ -16,10 +16,10 @@ from podio_gen.podio_config_reader import (
 from podio_gen.generator_utils import DataModel, DataType
 
 
-def make_dm(components, datatypes, interfaces=None, options=None):
+def make_dm(components, datatypes, interfaces=None, links=None, options=None):
     """Small helper function to turn things into a datamodel dict as expected by
     the validator"""
-    return DataModel(datatypes, components, interfaces, options)
+    return DataModel(datatypes, components, interfaces, links, options)
 
 
 class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
@@ -76,6 +76,15 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
                 "Description": "I can be many things but only one at a time",
                 "Members": valid_datatype_members,
                 "Types": [DataType("DataType")],
+            }
+        }
+
+        self.valid_link = {
+            "LinkType": {
+                "Author": "Princess Zelda",
+                "Description": "Because we know our lore",
+                "From": DataType("DataType"),
+                "To": DataType("DataType"),
             }
         }
 
@@ -465,7 +474,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
             DefinitionError,
             "{} should allow to use to use upstream datatypes and components",
             self.validate,
-            make_dm({}, datatype, {}, self.def_opts),
+            make_dm({}, datatype, {}, options=self.def_opts),
             upstream_dm,
         )
 
@@ -528,7 +537,7 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
             interface = deepcopy(self.valid_interface)
             interface["InterfaceType"][inv_field] = ["An invalid field"]
             with self.assertRaises(DefinitionError):
-                self.validate(make_dm({}, self.valid_datatype, interface), False)
+                self.validate(make_dm({}, self.valid_datatype, interface))
 
     def test_interface_missing_fields(self):
         """Make sure that interfaces have all the required types when they pass validation"""
@@ -596,6 +605,91 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
             "{} should allow to use interface types from an upstream datamodel",
             self.validate,
             make_dm({}, datatype),
+            upstream_dm,
+        )
+
+    def test_link_valid_def(self):
+        """Make sure that a valid link definition inside a valid datamodel
+        passes"""
+        self._assert_no_exception(
+            DefinitionError,
+            "{} should not raise for a valid link type",
+            self.validate,
+            make_dm({}, self.valid_datatype, links=self.valid_link),
+        )
+
+        links = deepcopy(self.valid_link)
+        links["LinkType"]["From"] = DataType("InterfaceType")
+        self._assert_no_exception(
+            DefinitionError,
+            "{} should not raise for a valid link type",
+            self.validate,
+            make_dm({}, self.valid_datatype, self.valid_interface, links),
+        )
+
+    def test_link_invalid_fields(self):
+        """Make sure that link definitions cannot contain any superfluous fields"""
+        for inv_field in ("Members", "OneToOneRelations", "OneToManyRelations", "VectorMembers"):
+            link = deepcopy(self.valid_link)
+            link["LinkType"][inv_field] = ["A value that does not matter"]
+            with self.assertRaises(DefinitionError):
+                self.validate(make_dm({}, self.valid_datatype, links=link))
+
+    def test_link_missing_fields(self):
+        """Make sure that links need to have all the required fields"""
+        for req in ClassDefinitionValidator.required_link_keys:
+            link_type = deepcopy(self.valid_link)
+            del link_type["LinkType"][req]
+            with self.assertRaises(DefinitionError):
+                self.validate(make_dm({}, self.valid_datatype, links=link_type))
+
+    def test_link_only_defined_datatypes(self):
+        """Make sure links can only use defined datatypes"""
+        link_type = deepcopy(self.valid_link)
+        link_type["LinkType"]["From"] = DataType("NonExistantType")
+        with self.assertRaises(DefinitionError):
+            self.validate(make_dm({}, self.valid_datatype, links=link_type))
+
+        link_type = deepcopy(self.valid_link)
+        link_type["LinkType"]["To"] = DataType("NonExistantType")
+        with self.assertRaises(DefinitionError):
+            self.validate(make_dm({}, self.valid_datatype, links=link_type))
+
+    def test_link_no_redefining_datatypes(self):
+        """Make sure that a link cannot shadow / redeclare an existing datatype"""
+        link_type = {
+            "DataType": {
+                "Author": "T.B. Lee",
+                "Description": "Redefining datatypes is bad",
+                "From": DataType("DataType"),
+                "To": DataType("DataType"),
+            }
+        }
+        with self.assertRaises(DefinitionError):
+            self.validate(make_dm({}, self.valid_datatype, links=link_type))
+
+        # We can also not redefine interface types
+        link_type["InterfaceType"] = link_type.pop("DataType")
+        with self.assertRaises(DefinitionError):
+            self.validate(make_dm({}, self.valid_datatype, self.valid_interface, link_type))
+
+    def test_link_valid_upstream(self):
+        """Check that links can use upstream datatypes"""
+        upstream_dm = make_dm({}, self.valid_datatype, self.valid_interface)
+
+        link_type = {
+            "Century": {
+                "Author": "Link",
+                "Description": "Linking to other datamodels is possible!",
+                "From": DataType("DataType"),
+                "To": DataType("InterfaceType"),
+            }
+        }
+        self._assert_no_exception(
+            DefinitionError,
+            "{} links should be able to use upstream datatypes",
+            self.validate,
+            make_dm({}, {}, links=link_type),
             upstream_dm,
         )
 

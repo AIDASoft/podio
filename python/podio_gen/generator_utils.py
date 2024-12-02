@@ -302,6 +302,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
         datatypes=None,
         components=None,
         interfaces=None,
+        links=None,
         options=None,
         schema_version=None,
     ):
@@ -318,6 +319,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
         self.components = components or {}
         self.datatypes = datatypes or {}
         self.interfaces = interfaces or {}
+        self.links = links or {}
 
     def _to_json(self):
         """Return the dictionary, so that we can easily hook this into the pythons

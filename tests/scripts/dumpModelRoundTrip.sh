@@ -34,7 +34,7 @@ ${PODIO_BASE}/python/podio_class_generator.py \
 # Compare to the originally generated code, that has been used to write the data
 # file. Need to diff subfolders explicitly here because $PODIO_BASE/tests contains
 # more stuff
-DIFF_EXTRA_ARGS="--exclude=LinkCollections.h"
+DIFF_EXTRA_ARGS=""
 if [ ${ENABLE_SIO} = "OFF" ]; then
     DIFF_EXTRA_ARGS="${DIFF_EXTRA_ARGS} --exclude='*SIO*'"
 fi
