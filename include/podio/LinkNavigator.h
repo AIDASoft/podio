@@ -72,7 +72,7 @@ public:
   /// Get all the *From* objects and weights that have links with the passed
   /// object
   ///
-  /// You will get this overload if you pass the podio::LookupFrom tag as second
+  /// You will get this overload if you pass the podio::ReturnFrom tag as second
   /// argument
   ///
   /// @note This overload works always, even if the LinkCollection that was used
@@ -114,7 +114,7 @@ public:
   /// Get all the *To* objects and weights that have links with the passed
   /// object
   ///
-  /// You will get this overload if you pass the podio::LookupTo tag as second
+  /// You will get this overload if you pass the podio::ReturnTo tag as second
   /// argument
   ///
   /// @note This overload works always, even if the LinkCollection that was used
