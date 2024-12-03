@@ -1,10 +1,9 @@
 #ifndef PODIO_DETAIL_ORDERKEY_H
 #define PODIO_DETAIL_ORDERKEY_H
-#include <cstdint>
-
+#include <functional>
 namespace podio::detail {
 // Internal class allowing datatype objects to be placed in data structures like maps and sets by providing a way to
-// compare them. The comparison is based on a numeric value derived from the address of their internal data objects.
+// compare them. The comparison is based on addresses of their internal data objects.
 //
 // This class is intended to be used as the return value of internal `podio::detail::getOrderKey` free functions. These
 // functions are friends of each datatype, allowing them to access the internal data objects and define less-than
@@ -15,19 +14,14 @@ namespace podio::detail {
 // different datamodels in an interface type.
 class OrderKey {
 public:
-  OrderKey(void* orderKey) : m_orderKey(reinterpret_cast<value_type>(orderKey)) {
+  OrderKey(void* orderKey) noexcept : m_orderKey(orderKey) {
   }
-  friend bool operator<(const OrderKey& lhs, const OrderKey& rhs) {
-    return lhs.m_orderKey < rhs.m_orderKey;
+  friend bool operator<(const OrderKey& lhs, const OrderKey& rhs) noexcept {
+    return std::less<void*>{}(lhs.m_orderKey, rhs.m_orderKey);
   }
 
 private:
-#ifdef UINTPTR_MAX
-  using value_type = uintptr_t;
-#else
-  using value_type = uintmax_t;
-#endif
-  value_type m_orderKey;
+  void* m_orderKey;
 };
 } // namespace podio::detail
 
