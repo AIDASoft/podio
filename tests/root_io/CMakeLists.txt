@@ -8,6 +8,7 @@ set(root_dependent_tests
   read_and_write_frame_root.cpp
   write_interface_root.cpp
   read_interface_root.cpp
+  read_partial_root.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -17,6 +18,7 @@ if(ENABLE_RNTUPLE)
       read_python_frame_rntuple.cpp
       write_interface_rntuple.cpp
       read_interface_rntuple.cpp
+      read_partial_rntuple.cpp
      )
 endif()
 if(ENABLE_DATASOURCE)
@@ -39,13 +41,20 @@ set_tests_properties(
   read_frame_root
   read_frame_root_multiple
   read_and_write_frame_root
+  read_partial_root
 
   PROPERTIES
     DEPENDS write_frame_root
 )
 
 if(ENABLE_RNTUPLE)
-  set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
+  set_tests_properties(
+    read_rntuple
+    read_partial_rntuple
+
+    PROPERTIES
+      DEPENDS write_rntuple
+  )
   set_property(TEST read_interface_rntuple PROPERTY DEPENDS write_interface_rntuple)
 endif()
 
