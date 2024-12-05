@@ -40,6 +40,8 @@ class LinkCollection : public podio::CollectionBase {
   using CollectionDataT = podio::LinkCollectionData<FromT, ToT>;
 
 public:
+  using from_type = FromT;
+  using to_type = ToT;
   using value_type = Link<FromT, ToT>;
   using mutable_type = MutableLink<FromT, ToT>;
   using const_iterator = LinkCollectionIterator<FromT, ToT>;
