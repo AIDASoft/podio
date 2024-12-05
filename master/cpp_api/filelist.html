@@ -132,6 +132,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#the-linknavigator-utility">The <code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code> utility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../links.html#implementation-details">Implementation details</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../links.html#file-structure">File structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
@@ -279,6 +280,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_link_collection_iterator_t.html">Class podio::LinkCollectionIteratorT</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_link_collection_iterator_t.html#_CPPv4I00_bEN5podio23LinkCollectionIteratorTE"><code class="docutils literal notranslate"><span class="pre">LinkCollectionIteratorT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_link_navigator.html">Class podio::LinkNavigator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE"><code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_link_obj.html">Class podio::LinkObj</a><ul>
@@ -1143,6 +1148,8 @@
 <li class="toctree-l2"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv45podio"><code class="docutils literal notranslate"><span class="pre">podio</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv4I00EN5podiolsERNSt7ostreamERNSt7ostreamERK14LinkCollectionI5FromT3ToTE"><code class="docutils literal notranslate"><span class="pre">podio::operator&lt;&lt;()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv4I00EN5podio14LinkCollectionE"><code class="docutils literal notranslate"><span class="pre">podio::LinkCollection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv4N5podio14LinkCollection9from_typeE"><code class="docutils literal notranslate"><span class="pre">podio::LinkCollection::from_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv4N5podio14LinkCollection7to_typeE"><code class="docutils literal notranslate"><span class="pre">podio::LinkCollection::to_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv4N5podio14LinkCollection10value_typeE"><code class="docutils literal notranslate"><span class="pre">podio::LinkCollection::value_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv4N5podio14LinkCollection12mutable_typeE"><code class="docutils literal notranslate"><span class="pre">podio::LinkCollection::mutable_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="file/_link_collection_impl_8h.html#_CPPv4N5podio14LinkCollection14const_iteratorE"><code class="docutils literal notranslate"><span class="pre">podio::LinkCollection::const_iterator</span></code></a></li>
@@ -1233,6 +1240,33 @@
 <li class="toctree-l3"><a class="reference internal" href="file/_link_fwd_8h.html#_CPPv4I00EN5podio29LinkMutableCollectionIteratorE"><code class="docutils literal notranslate"><span class="pre">podio::LinkMutableCollectionIterator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="file/_link_fwd_8h.html#_CPPv4N5podio8LinkDataE"><code class="docutils literal notranslate"><span class="pre">podio::LinkData</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="file/_link_fwd_8h.html#_CPPv4N5podio8LinkData6weightE"><code class="docutils literal notranslate"><span class="pre">podio::LinkData::weight</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file/_link_navigator_8h.html">File LinkNavigator.h</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv45podio"><code class="docutils literal notranslate"><span class="pre">podio</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio10ReturnFromE"><code class="docutils literal notranslate"><span class="pre">podio::ReturnFrom</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio8ReturnToE"><code class="docutils literal notranslate"><span class="pre">podio::ReturnTo</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4I0EN5podio13LinkNavigatorE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERK9LinkCollT"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::LinkNavigator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorEv"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::LinkNavigator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERK13LinkNavigator"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::LinkNavigator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigatoraSERK13LinkNavigator"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::operator=()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERR13LinkNavigator"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::LinkNavigator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigatoraSERR13LinkNavigator"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::operator=()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigatorD0Ev"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::~LinkNavigator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromT3ToUEEENSt6vectorI14WeightedObjectI5FromTEEEEERK3ToT"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromU3ToTEEENSt6vectorI14WeightedObjectI3ToTEEEEERK5FromT"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator5FromTE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::FromT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator3ToTE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::ToT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4I0EN5podio13LinkNavigator14WeightedObjectE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::WeightedObject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator9m_from2toE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::m_from2to</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator9m_to2fromE"><code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator::m_to2from</span></code></a></li>
 </ul>
 </li>
 </ul>

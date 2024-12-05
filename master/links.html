@@ -134,6 +134,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#the-linknavigator-utility">The <code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code> utility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#implementation-details">Implementation details</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#file-structure">File structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
@@ -281,6 +282,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_link_collection_iterator_t.html">Class podio::LinkCollectionIteratorT</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_link_collection_iterator_t.html#_CPPv4I00_bEN5podio23LinkCollectionIteratorTE"><code class="docutils literal notranslate"><span class="pre">LinkCollectionIteratorT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_link_navigator.html">Class podio::LinkNavigator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE"><code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_link_obj.html">Class podio::LinkObj</a><ul>
@@ -815,6 +820,39 @@ and have that compiled into the library. This is necessary if you want to use
 the python bindings, since they rely on dynamically loading the datamodel
 libraries.</p>
 </section>
+</section>
+<section id="the-linknavigator-utility">
+<h2>The <code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code> utility<a class="headerlink" href="#the-linknavigator-utility" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">podio::LinkCollection</span></code>s store each link separately even if a given object is
+present in several links. Additionally, they don’t offer any really easy way to
+look up objects that are linked (apart from manually looping and comparing
+elements). To alleviate these issues, we provide the <code class="docutils literal notranslate"><span class="pre">podio::LinkNavigator</span></code>
+utility class that facilitates navigating links and lookups. It can be
+constructed from any <code class="docutils literal notranslate"><span class="pre">podio::LinkCollection</span></code> and can then be used to retrieve
+linked objects. E.g.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">recoMcLinks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">edm4hep</span><span class="o">::</span><span class="n">RecoMCParticleLinkCollection</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;RecoMCLinks&quot;</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">linkNavigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">LinkNavigator</span><span class="p">(</span><span class="n">recoMcLinks</span><span class="p">);</span>
+
+<span class="c1">// For podio::LinkCollections with disparate types just use getLinked</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">linkedRecs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linkNavigator</span><span class="p">.</span><span class="n">getLinked</span><span class="p">(</span><span class="n">mcParticle</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If you want to be explicit about the lookup direction, e.g. in case you have a
+link that has the same <code class="docutils literal notranslate"><span class="pre">From</span></code> and <code class="docutils literal notranslate"><span class="pre">To</span></code> type, you can use the overloads that take
+a second <em>tag argument</em>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">linkedMCs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linkNavigator</span><span class="p">.</span><span class="n">getLinked</span><span class="p">(</span><span class="n">recoParticle</span><span class="p">,</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">ReturnTo</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The return type of all methods is a <code class="docutils literal notranslate"><span class="pre">std::vector&lt;WeightedObject&gt;</span></code>, where the
+<code class="docutils literal notranslate"><span class="pre">WeightedObject</span></code> is a simple template class that wraps the object and its
+weight. It supports structured bindings, so you can e.g. do the following</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">reco</span><span class="p">,</span><span class="w"> </span><span class="n">weight</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">linkedRecs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// do something with the reco particle and its weight</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Alternatively, you can access the object via the <code class="docutils literal notranslate"><span class="pre">o</span></code> member and the weight via
+the <code class="docutils literal notranslate"><span class="pre">weight</span></code> member.</p>
 </section>
 <section id="implementation-details">
 <h2>Implementation details<a class="headerlink" href="#implementation-details" title="Link to this heading"></a></h2>

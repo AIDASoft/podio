@@ -134,6 +134,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../links.html#the-linknavigator-utility">The <code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code> utility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../links.html#implementation-details">Implementation details</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../links.html#file-structure">File structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
@@ -281,6 +282,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_link_collection_iterator_t.html">Class podio::LinkCollectionIteratorT</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_link_collection_iterator_t.html#_CPPv4I00_bEN5podio23LinkCollectionIteratorTE"><code class="docutils literal notranslate"><span class="pre">LinkCollectionIteratorT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html">Class podio::LinkNavigator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE"><code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_link_obj.html">Class podio::LinkObj</a><ul>
@@ -992,6 +997,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4I0EN5podio26isSupportedGenericDataTypeE">
 <span id="_CPPv3I0EN5podio26isSupportedGenericDataTypeE"></span><span id="_CPPv2I0EN5podio26isSupportedGenericDataTypeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1a90d864baf46bb78b899f55f34f912bb2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isSupportedGenericDataType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">isAnyOrVectorOf</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4I0EN5podio26isSupportedGenericDataTypeE" title="podio::isSupportedGenericDataType::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../file/_generic_parameters_8h.html#_CPPv4N5podio25SupportedGenericDataTypesE" title="podio::SupportedGenericDataTypes"><span class="n"><span class="pre">SupportedGenericDataTypes</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
 <dd><p>Static bool for determining if a type T is a supported GenericParameters type. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ReturnFromE">
+<span id="_CPPv3N5podio10ReturnFromE"></span><span id="_CPPv2N5podio10ReturnFromE"></span><span id="podio::ReturnFrom__detail::links::ReturnFromTag"></span><span class="target" id="namespacepodio_1acd724c8a3cd1252a73be2e8d073d2b75"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">links</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ReturnFromTag</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReturnFrom</span></span></span><br /></dt>
+<dd><p>Tag variable to select the lookup of <em>From</em> objects have links with a <em>To</em> object in podio::LinkNavigator::getLinked. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio8ReturnToE">
+<span id="_CPPv3N5podio8ReturnToE"></span><span id="_CPPv2N5podio8ReturnToE"></span><span id="podio::ReturnTo__detail::links::ReturnToTag"></span><span class="target" id="namespacepodio_1a5b39328fa250a99a538d4c2a0e969321"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">links</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ReturnToTag</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReturnTo</span></span></span><br /></dt>
+<dd><p>Tag variable to select the lookup of <em>To</em> objects that have links with a <em>From</em> object in podio::LinkNavigator::getLinked. </p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -2332,6 +2349,16 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection9from_typeE">
+<span id="_CPPv3N5podio14LinkCollection9from_typeE"></span><span id="_CPPv2N5podio14LinkCollection9from_typeE"></span><span class="target" id="classpodio_1_1_link_collection_1a310dc63218919816d8d6fdbb6a5bced3"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::FromT"><span class="n"><span class="pre">FromT</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection7to_typeE">
+<span id="_CPPv3N5podio14LinkCollection7to_typeE"></span><span id="_CPPv2N5podio14LinkCollection7to_typeE"></span><span class="target" id="classpodio_1_1_link_collection_1a8ce436cbd1cce12f336b0fa6ba0144b6"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::ToT"><span class="n"><span class="pre">ToT</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection10value_typeE">
 <span id="_CPPv3N5podio14LinkCollection10value_typeE"></span><span id="_CPPv2N5podio14LinkCollection10value_typeE"></span><span class="target" id="classpodio_1_1_link_collection_1ab15a6296c4b115c67984e693dc329e4a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_fwd_8h.html#_CPPv4I00EN5podio4LinkE" title="podio::Link"><span class="n"><span class="pre">Link</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
 <dd></dd></dl>
@@ -2733,6 +2760,139 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5podio8LinkData6weightE">
 <span id="_CPPv3N5podio8LinkData6weightE"></span><span id="_CPPv2N5podio8LinkData6weightE"></span><span id="podio::LinkData::weight__float"></span><span class="target" id="structpodio_1_1_link_data_1a46f2dc77f43650aceac7bd31d01ed547"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weight</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
 <dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio13LinkNavigatorE">
+<span id="_CPPv3I0EN5podio13LinkNavigatorE"></span><span id="_CPPv2I0EN5podio13LinkNavigatorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LinkCollT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_link_navigator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LinkNavigator</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/LinkNavigator.h&gt;</em></div>
+<p>A helper class to more easily handle one-to-many links. </p>
+<p>Internally simply populates two maps in its constructor and then queries them to retrieve objects that are linked with another.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are no guarantees on the order of the objects in these maps. Hence, there are also no guarantees on the order of the returned objects, even if there inherintly is an order to them in the underlying links collection. </p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13LinkNavigator13LinkNavigatorERK9LinkCollT">
+<span id="_CPPv3N5podio13LinkNavigator13LinkNavigatorERK9LinkCollT"></span><span id="_CPPv2N5podio13LinkNavigator13LinkNavigatorERK9LinkCollT"></span><span id="podio::LinkNavigator::LinkNavigator__LinkCollTCR"></span><span class="target" id="classpodio_1_1_link_navigator_1a3178e46fc1f30c28bff9ca5004f0c7a1"></span><span class="sig-name descname"><span class="n"><span class="pre">LinkNavigator</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE" title="podio::LinkNavigator::LinkCollT"><span class="n"><span class="pre">LinkCollT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">links</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Construct a navigator from an link collection. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13LinkNavigator13LinkNavigatorEv">
+<span id="_CPPv3N5podio13LinkNavigator13LinkNavigatorEv"></span><span id="_CPPv2N5podio13LinkNavigator13LinkNavigatorEv"></span><span id="podio::LinkNavigator::LinkNavigator"></span><span class="target" id="classpodio_1_1_link_navigator_1a7985ccf156ea82afe493c19025db90d7"></span><span class="sig-name descname"><span class="n"><span class="pre">LinkNavigator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd><p>We do only construct from a collection. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13LinkNavigator13LinkNavigatorERK13LinkNavigator">
+<span id="_CPPv3N5podio13LinkNavigator13LinkNavigatorERK13LinkNavigator"></span><span id="_CPPv2N5podio13LinkNavigator13LinkNavigatorERK13LinkNavigator"></span><span id="podio::LinkNavigator::LinkNavigator__LinkNavigatorCR"></span><span class="target" id="classpodio_1_1_link_navigator_1a0985153e40f767133e726f53792bfc4e"></span><span class="sig-name descname"><span class="n"><span class="pre">LinkNavigator</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERK13LinkNavigator" title="podio::LinkNavigator::LinkNavigator"><span class="n"><span class="pre">LinkNavigator</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13LinkNavigatoraSERK13LinkNavigator">
+<span id="_CPPv3N5podio13LinkNavigatoraSERK13LinkNavigator"></span><span id="_CPPv2N5podio13LinkNavigatoraSERK13LinkNavigator"></span><span id="podio::LinkNavigator::assign-operator__LinkNavigatorCR"></span><span class="target" id="classpodio_1_1_link_navigator_1a4d8c2896231839d0adc7ae904d0f2785"></span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE" title="podio::LinkNavigator"><span class="n"><span class="pre">LinkNavigator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE" title="podio::LinkNavigator"><span class="n"><span class="pre">LinkNavigator</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13LinkNavigator13LinkNavigatorERR13LinkNavigator">
+<span id="_CPPv3N5podio13LinkNavigator13LinkNavigatorERR13LinkNavigator"></span><span id="_CPPv2N5podio13LinkNavigator13LinkNavigatorERR13LinkNavigator"></span><span id="podio::LinkNavigator::LinkNavigator__LinkNavigatorRR"></span><span class="target" id="classpodio_1_1_link_navigator_1a676381b6f961b67e98c42dae638132c6"></span><span class="sig-name descname"><span class="n"><span class="pre">LinkNavigator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERR13LinkNavigator" title="podio::LinkNavigator::LinkNavigator"><span class="n"><span class="pre">LinkNavigator</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13LinkNavigatoraSERR13LinkNavigator">
+<span id="_CPPv3N5podio13LinkNavigatoraSERR13LinkNavigator"></span><span id="_CPPv2N5podio13LinkNavigatoraSERR13LinkNavigator"></span><span id="podio::LinkNavigator::assign-operator__LinkNavigatorRR"></span><span class="target" id="classpodio_1_1_link_navigator_1a5e740edb5a379eb6517ab1c8ff6c8a51"></span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE" title="podio::LinkNavigator"><span class="n"><span class="pre">LinkNavigator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE" title="podio::LinkNavigator"><span class="n"><span class="pre">LinkNavigator</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13LinkNavigatorD0Ev">
+<span id="_CPPv3N5podio13LinkNavigatorD0Ev"></span><span id="_CPPv2N5podio13LinkNavigatorD0Ev"></span><span id="podio::LinkNavigator::~LinkNavigator"></span><span class="target" id="classpodio_1_1_link_navigator_1a515efa5a2ee24b285bd4d14cdfcd6ed5"></span><span class="sig-name descname"><span class="n"><span class="pre">~LinkNavigator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE">
+<span id="_CPPv3NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE"></span><span id="_CPPv2NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE"></span><span id="podio::LinkNavigator::getLinked__ToTCR.podio::detail::links::ReturnFromTagC"></span><span class="target" id="classpodio_1_1_link_navigator_1a17d73abcff3d5a91fec4f55dfeeefdcc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4I0EN5podio13LinkNavigator14WeightedObjectE" title="podio::LinkNavigator::WeightedObject"><span class="n"><span class="pre">WeightedObject</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator5FromTE" title="podio::LinkNavigator::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLinked</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator3ToTE" title="podio::LinkNavigator::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">object</span></span>, <a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">links</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ReturnFromTag</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get all the <em>From</em> objects and weights that have links with the passed object. </p>
+<p>You will get this overload if you pass the podio::ReturnFrom tag as second argument</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This overload works always, even if the LinkCollection that was used to construct this instance of the LinkNavigator has the same From and To types.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – The object that is labeled <em>To</em> in the link </p></li>
+<li><p><strong>.</strong> – tag variable for selecting this overload</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A vector of all objects and their weights that have links with the passed object </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromT3ToUEEENSt6vectorI14WeightedObjectI5FromTEEEEERK3ToT">
+<span id="_CPPv3I0ENK5podio13LinkNavigator9getLinkedERK3ToT"></span><span id="_CPPv2I0ENK5podio13LinkNavigator9getLinkedERK3ToT"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToU</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator3ToTE" title="podio::LinkNavigator::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_link_navigator_1a3f3dcf657252df4002b1732a47c07963"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_if_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="o"><span class="pre">!</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator5FromTE" title="podio::LinkNavigator::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromT3ToUEEENSt6vectorI14WeightedObjectI5FromTEEEEERK3ToT" title="podio::LinkNavigator::getLinked::ToU"><span class="n"><span class="pre">ToU</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4I0EN5podio13LinkNavigator14WeightedObjectE" title="podio::LinkNavigator::WeightedObject"><span class="n"><span class="pre">WeightedObject</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator5FromTE" title="podio::LinkNavigator::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLinked</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator3ToTE" title="podio::LinkNavigator::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">object</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get all the <em>From</em> objects and weights that have links with the passed object. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This overload will automatically do the right thing (TM) in case the LinkCollection that has been passed to construct this LinkNavigator has different From and To types.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object</strong> – The object that is labeled <em>To</em> in the link</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A vector of all objects and their weights that have links with the passed object </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE">
+<span id="_CPPv3NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE"></span><span id="_CPPv2NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE"></span><span id="podio::LinkNavigator::getLinked__FromTCR.podio::detail::links::ReturnToTagC"></span><span class="target" id="classpodio_1_1_link_navigator_1a9fed367089259dc3baae5dae54e25f40"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4I0EN5podio13LinkNavigator14WeightedObjectE" title="podio::LinkNavigator::WeightedObject"><span class="n"><span class="pre">WeightedObject</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator3ToTE" title="podio::LinkNavigator::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLinked</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator5FromTE" title="podio::LinkNavigator::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">object</span></span>, <a class="reference internal" href="../file/_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">links</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ReturnToTag</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get all the <em>To</em> objects and weights that have links with the passed object. </p>
+<p>You will get this overload if you pass the podio::ReturnTo tag as second argument</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This overload works always, even if the LinkCollection that was used to construct this instance of the LinkNavigator has the same From and To types.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – The object that is labeled <em>From</em> in the link </p></li>
+<li><p><strong>.</strong> – tag variable for selecting this overload</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A vector of all objects and their weights that have links with the passed object </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromU3ToTEEENSt6vectorI14WeightedObjectI3ToTEEEEERK5FromT">
+<span id="_CPPv3I0ENK5podio13LinkNavigator9getLinkedERK5FromT"></span><span id="_CPPv2I0ENK5podio13LinkNavigator9getLinkedERK5FromT"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FromU</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator5FromTE" title="podio::LinkNavigator::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_link_navigator_1a86f447158e533515a4719f8be498ef4d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_if_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="o"><span class="pre">!</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_same_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromU3ToTEEENSt6vectorI14WeightedObjectI3ToTEEEEERK5FromT" title="podio::LinkNavigator::getLinked::FromU"><span class="n"><span class="pre">FromU</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator3ToTE" title="podio::LinkNavigator::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4I0EN5podio13LinkNavigator14WeightedObjectE" title="podio::LinkNavigator::WeightedObject"><span class="n"><span class="pre">WeightedObject</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator3ToTE" title="podio::LinkNavigator::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLinked</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/_link_navigator_8h.html#_CPPv4N5podio13LinkNavigator5FromTE" title="podio::LinkNavigator::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">object</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get all the <em>To</em> objects and weights that have links with the passed object. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This overload will automatically do the right thing (TM) in case the LinkCollection that has been passed to construct this LinkNavigator has different From and To types.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object</strong> – The object that is labeled <em>From</em> in the link</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A vector of all objects and their weights that have links with the passed object </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>

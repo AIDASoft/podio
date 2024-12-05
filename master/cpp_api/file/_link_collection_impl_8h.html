@@ -132,6 +132,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../links.html#the-linknavigator-utility">The <code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code> utility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../links.html#implementation-details">Implementation details</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../links.html#file-structure">File structure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
@@ -279,6 +280,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_link_collection_iterator_t.html">Class podio::LinkCollectionIteratorT</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_link_collection_iterator_t.html#_CPPv4I00_bEN5podio23LinkCollectionIteratorTE"><code class="docutils literal notranslate"><span class="pre">LinkCollectionIteratorT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html">Class podio::LinkNavigator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE"><code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_link_obj.html">Class podio::LinkObj</a><ul>
@@ -708,6 +713,16 @@
 <em>#include &lt;podio/detail/LinkCollectionImpl.h&gt;</em></div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection9from_typeE">
+<span id="_CPPv3N5podio14LinkCollection9from_typeE"></span><span id="_CPPv2N5podio14LinkCollection9from_typeE"></span><span class="target" id="classpodio_1_1_link_collection_1a310dc63218919816d8d6fdbb6a5bced3"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::FromT"><span class="n"><span class="pre">FromT</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection7to_typeE">
+<span id="_CPPv3N5podio14LinkCollection7to_typeE"></span><span id="_CPPv2N5podio14LinkCollection7to_typeE"></span><span class="target" id="classpodio_1_1_link_collection_1a8ce436cbd1cce12f336b0fa6ba0144b6"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">to_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::ToT"><span class="n"><span class="pre">ToT</span></span></a><br /></dt>
+<dd></dd></dl>
+
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection10value_typeE">
 <span id="_CPPv3N5podio14LinkCollection10value_typeE"></span><span id="_CPPv2N5podio14LinkCollection10value_typeE"></span><span class="target" id="classpodio_1_1_link_collection_1ab15a6296c4b115c67984e693dc329e4a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="_link_fwd_8h.html#_CPPv4I00EN5podio4LinkE" title="podio::Link"><span class="n"><span class="pre">Link</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE" title="podio::LinkCollection::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
