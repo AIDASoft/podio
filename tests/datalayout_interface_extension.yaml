@@ -22,6 +22,14 @@ datatypes:
      - iextension::PolarVector aVector // component defined in the extension
      - double energy [GeV]             // measured energy deposit
 
+  iextension::ExampleWithInterfaceRelation:
+    Description: "Datatype that uses an interface type as one of its relations"
+    Author: "Mateusz Jakub Fila"
+    OneToOneRelations:
+      - iextension::EnergyInterface singleEnergy // single relation
+    OneToManyRelations:
+      - iextension::EnergyInterface manyEnergies // multiple relations
+
 interfaces:
   iextension::EnergyInterface:
     Description: "Generic interface for types with an energy member"
