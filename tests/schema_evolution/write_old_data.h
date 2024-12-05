@@ -42,7 +42,7 @@ auto writeExampleWithNamespace() {
   return coll;
 }
 
-auto writeExamplewWithARelation() {
+auto writeExampleWithARelation() {
   ex42::ExampleWithARelationCollection coll;
   auto elem = coll.create();
   elem.number(3.14f);
@@ -56,7 +56,7 @@ podio::Frame createFrame() {
   event.put(writeSimpleStruct(), "simpleStructTest");
   event.put(writeExampleHit(), "datatypeMemberAdditionTest");
   event.put(writeExampleWithNamespace(), "componentMemberRenameTest");
-  event.put(writeExamplewWithARelation(), "floatToDoubleMemberTest");
+  event.put(writeExampleWithARelation(), "floatToDoubleMemberTest");
 
   return event;
 }
