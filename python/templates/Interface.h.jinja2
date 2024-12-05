@@ -12,6 +12,7 @@
 
 #include "podio/ObjectID.h"
 #include "podio/utilities/TypeHelpers.h"
+#include "podio/detail/OrderKey.h"
 
 #include <memory>
 #include <ostream>
@@ -59,7 +60,7 @@ private:
 {{ macros.member_getters_concept(Members, use_get_syntax) }}
     virtual const std::type_info& typeInfo() const = 0;
     virtual bool equal(const Concept* rhs) const = 0;
-    virtual const void* objAddress() const = 0;
+    virtual podio::detail::OrderKey objOrderKey() const = 0;
   };
 
   template<typename ValueT>
@@ -88,8 +89,8 @@ private:
       return false;
     }
 
-    const void* objAddress() const final {
-      return m_value.m_obj.get();
+    podio::detail::OrderKey objOrderKey() const final {
+      return podio::detail::getOrderKey(m_value);
     }
 
 {{ macros.member_getters_model(Members, use_get_syntax) }}
@@ -169,7 +170,7 @@ public:
   }
 
   friend bool operator<(const {{ class.bare_type }}& lhs, const {{ class.bare_type }}& rhs) {
-    return lhs.m_self->objAddress() < rhs.m_self->objAddress();
+    return lhs.m_self->objOrderKey() < rhs.m_self->objOrderKey();
   }
 
 {{ macros.member_getters(Members, use_get_syntax) }}

@@ -6,6 +6,10 @@
 #include "datamodel/MutableExampleMC.h"
 #include "datamodel/TypeWithEnergy.h"
 
+#include "interface_extension_model/AnotherHit.h"
+#include "interface_extension_model/EnergyInterface.h"
+#include "interface_extension_model/MutableAnotherHit.h"
+
 #include "podio/ObjectID.h"
 #include "podio/utilities/TypeHelpers.h"
 
@@ -130,4 +134,27 @@ TEST_CASE("InterfaceType getters", "[basics][interface-types][code-gen]") {
 
   TypeWithEnergy interfaceType = cluster;
   REQUIRE(interfaceType.energy() == 3.14f);
+}
+
+TEST_CASE("InterfaceType extension model", "[interface-types][extension]") {
+  using WrapperT = iextension::EnergyInterface;
+
+  auto wrapper = WrapperT::makeEmpty();
+  REQUIRE_FALSE(wrapper.isAvailable());
+
+  MutableExampleCluster cluster{};
+  cluster.energy(3.14f);
+  wrapper = cluster;
+
+  REQUIRE(wrapper.energy() == 3.14f);
+  REQUIRE(wrapper.isA<ExampleCluster>());
+  REQUIRE(wrapper.as<ExampleCluster>().energy() == 3.14f);
+
+  iextension::MutableAnotherHit hit{};
+  hit.energy(4.2f);
+  wrapper = hit;
+
+  REQUIRE(wrapper.energy() == 4.2f);
+  REQUIRE(wrapper.isA<iextension::AnotherHit>());
+  REQUIRE(wrapper.as<iextension::AnotherHit>().energy() == 4.2f);
 }

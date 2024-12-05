@@ -44,6 +44,21 @@ PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
 
+# Build the interface extension data model and link it against the upstream model
+PODIO_GENERATE_DATAMODEL(interface_extension_model datalayout_interface_extension.yaml iext_headers iext_sources
+  UPSTREAM_EDM datamodel:datalayout.yaml
+  IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
+
+PODIO_ADD_DATAMODEL_CORE_LIB(InterfaceExtensionDataModel "${iext_headers}" "${iext_sources}"
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
+target_link_libraries(InterfaceExtensionDataModel PUBLIC TestDataModel)
+
+PODIO_ADD_ROOT_IO_DICT(InterfaceExtensionDataModelDict InterfaceExtensionDataModel "${iext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model/src/selection.xml
+  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
+
+PODIO_ADD_SIO_IO_BLOCKS(InterfaceExtensionDataModel "${iext_headers}" "${iext_sources}")
+
 # Add a legacy test case based on a base executable and a version for which an
 # input file exists
 macro(ADD_PODIO_LEGACY_TEST version base_test input_file)
