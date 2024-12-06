@@ -23,6 +23,10 @@
 #include "extension_model/ExternalComponentTypeCollection.h"
 #include "extension_model/ExternalRelationTypeCollection.h"
 
+#include "interface_extension_model/AnotherHitCollection.h"
+#include "interface_extension_model/EnergyInterface.h"
+#include "interface_extension_model/ExampleWithInterfaceRelationCollection.h"
+
 #include "podio/Frame.h"
 #include "podio/LinkCollection.h"
 #include "podio/UserDataCollection.h"
@@ -421,6 +425,29 @@ auto createLinkWithInterfaceCollection(const ExampleClusterCollection& clusters,
   return links;
 }
 
+auto createAnotherHitCollection(int i) {
+  auto anotherHits = iextension::AnotherHitCollection();
+  anotherHits.create().energy(1.03 + i);
+  anotherHits.create().energy(4.15 + i);
+  return anotherHits;
+}
+
+auto createExampleWithExtensionInterfaceCollection(const ExampleHitCollection& hits,
+                                                   const iextension::AnotherHitCollection& anotherHits) {
+  auto coll = iextension::ExampleWithInterfaceRelationCollection{};
+  auto elem = coll.create();
+  elem.singleEnergy(hits[0]);
+  elem.addmanyEnergies(hits[0]);
+  elem.addmanyEnergies(anotherHits[0]);
+
+  elem = coll.create();
+  elem.singleEnergy(anotherHits[0]);
+  elem.addmanyEnergies(hits[0]);
+  elem.addmanyEnergies(anotherHits[0]);
+
+  return coll;
+}
+
 podio::Frame makeFrame(int iFrame) {
   podio::Frame frame{};
 
@@ -483,6 +510,9 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createExampleWithInterfaceCollection(hits, clusters, mcps), "interface_examples");
   frame.put(createLinkCollection(hits, clusters), "links");
   frame.put(createLinkWithInterfaceCollection(clusters, hits, mcps), "links_with_interfaces");
+
+  const auto& anotherHits = frame.put(createAnotherHitCollection(iFrame), "anotherHits");
+  frame.put(createExampleWithExtensionInterfaceCollection(hits, anotherHits), "extension_interface_relation");
 
   return frame;
 }

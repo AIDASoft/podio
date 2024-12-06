@@ -75,9 +75,9 @@ class ReaderTestCaseMixin:
     def test_available_datamodels(self):
         """Make sure that the datamodel information can be retrieved"""
         datamodels = self.reader.datamodel_definitions
-        self.assertEqual(len(datamodels), 2)
+        self.assertEqual(len(datamodels), 3)
         for model in datamodels:
-            self.assertTrue(model in ("datamodel", "extension_model"))
+            self.assertTrue(model in ("datamodel", "extension_model", "interface_extension_model"))
 
         self.assertEqual(self.reader.current_file_version("datamodel"), build_version)
 

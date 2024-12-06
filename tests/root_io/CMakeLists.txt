@@ -25,7 +25,7 @@ if(ENABLE_DATASOURCE)
       read_with_rdatasource_root.cpp
   )
 endif()
-set(root_libs TestDataModelDict ExtensionDataModelDict podio::podioRootIO podio::podioIO)
+set(root_libs TestDataModelDict ExtensionDataModelDict InterfaceExtensionDataModelDict podio::podioRootIO podio::podioIO)
 if(ENABLE_DATASOURCE)
   list(APPEND root_libs podio::podioDataSource)
 endif()
