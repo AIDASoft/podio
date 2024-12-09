@@ -1,3 +1,4 @@
+
 name: ubuntu
 
 on:
@@ -13,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["dev3/x86_64-ubuntu2204-gcc11-opt",
-              "dev4/x86_64-ubuntu2204-gcc11-opt"]
+        LCG: ["dev3/x86_64-ubuntu2404-gcc13-opt",
+              "dev4/x86_64-ubuntu2404-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -30,7 +31,7 @@ jobs:
             -DENABLE_JULIA=ON \
             -DENABLE_DATASOURCE=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
-            -DCMAKE_CXX_STANDARD=17 \
+            -DCMAKE_CXX_STANDARD=20 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=OFF \
             -DPODIO_SET_RPATH=ON \
