@@ -1,0 +1,8 @@
+schema_version: 2
+
+datatypes:
+  DataTypeWithoutVectorMembers:
+    Description: "Type for testing the addition of new VectorMembers"
+    Author: "Thomas Madlener"
+    VectorMembers:
+      - int i // an integer

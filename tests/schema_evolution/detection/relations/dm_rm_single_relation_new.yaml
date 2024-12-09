@@ -1,0 +1,10 @@
+schema_version: 2
+
+datatypes:
+  RelatedType:
+    Description: "A type we use in the relation"
+    Author: "Thomas Madlener"
+
+  DataTypeWithRemovedSingleRelation:
+    Description: "Type for testing the removal of a OneToOneRelations"
+    Author: "Thomas Madlener"

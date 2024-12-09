@@ -57,6 +57,8 @@ add_test(
     ${CMAKE_CURRENT_SOURCE_DIR}/datalayout_notpossible.yaml
     ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml
 )
-set_property(TEST schema-evolution-script-with-failure PROPERTY WILL_FAIL)
+set_property(TEST schema-evolution-script-with-failure PROPERTY WILL_FAIL true)
+
+add_subdirectory(detection)
 
 add_subdirectory(root_io)

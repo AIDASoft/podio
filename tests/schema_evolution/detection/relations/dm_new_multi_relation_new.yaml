@@ -1,0 +1,12 @@
+schema_version: 2
+
+datatypes:
+  RelatedType:
+    Description: "A type we use in the relation"
+    Author: "Thomas Madlener"
+
+  DataTypeWithNewMultiRelation:
+    Description: "Type for testing the addition of new OneToManyRelations"
+    Author: "Thomas Madlener"
+    OneToManyRelations:
+      - RelatedType rel // a new relation
