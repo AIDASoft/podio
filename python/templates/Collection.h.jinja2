@@ -22,7 +22,6 @@
 
 #include <string_view>
 #include <vector>
-#include <array>
 #include <algorithm>
 #include <ostream>
 #include <mutex>
@@ -60,7 +59,7 @@ public:
   {{ class.bare_type }}Collection& operator=({{ class.bare_type }}Collection&&) = default;
 
 //  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, uint32_t collectionID);
-  ~{{ class.bare_type }}Collection();
+  ~{{ class.bare_type }}Collection() override;
 
   constexpr static auto typeName = "{{ (class | string ).strip(':') + "Collection" }}";
   constexpr static auto valueTypeName = "{{ (class | string ).strip(':') }}";
