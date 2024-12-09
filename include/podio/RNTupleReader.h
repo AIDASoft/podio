@@ -133,10 +133,10 @@ private:
   /**
    * Read and reconstruct the generic parameters of the Frame
    */
-  GenericParameters readEventMetaData(const std::string& name, unsigned entNum);
+  GenericParameters readEventMetaData(const std::string& name, unsigned localEntry, unsigned readerIndex);
 
   template <typename T>
-  void readParams(const std::string& name, unsigned entNum, GenericParameters& params);
+  void readParams(const std::string& name, unsigned entNum, unsigned readerIndex, GenericParameters& params);
 
   std::unique_ptr<ROOT::Experimental::RNTupleReader> m_metadata{};
 
@@ -147,7 +147,12 @@ private:
   std::unordered_map<std::string, std::unique_ptr<ROOT::Experimental::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
-  std::unordered_map<std::string, int> m_entries{};
+  std::unordered_map<std::string, unsigned> m_entries{};
+  // Map category to a vector that contains at how many entries each reader starts
+  // For example, if we have 3 readers and the first one has 10 entries, the second one 20 and the third one 30
+  // then the vector will be {0, 10, 30}
+  // 60 is not needed because anything after 30 will be in the last reader
+  std::unordered_map<std::string, std::vector<unsigned>> m_readerEntries{};
   std::unordered_map<std::string, unsigned> m_totalEntries{};
 
   struct CollectionInfo {
