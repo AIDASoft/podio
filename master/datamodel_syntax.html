@@ -954,6 +954,7 @@ The podio <code class="docutils literal notranslate"><span class="pre">PODIO_GEN
 <ul class="simple">
 <li><p>The cmake macros do not handle linking against an upstream datamodel automatically. It is the users responsibility to explicitly link against the upstream datamodel.</p></li>
 <li><p>When generating two datamodels side-by-side and into the same output directory and using the <code class="docutils literal notranslate"><span class="pre">ROOT</span></code> backend, the generated <code class="docutils literal notranslate"><span class="pre">selection.xml</span></code> file might be overwritten if both datamodels are generated into the same output directory.</p></li>
+<li><p>The <a class="reference internal" href="#definition-of-custom-interfaces"><span class="xref myst">interfaces</span></a> defined in a datamodel can list the datatypes defined in an upstream datamodel only if both datamodels have the same <a class="reference internal" href="#global-options"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">getSyntax</span></code></span></a> value.</p></li>
 </ul>
 <p>Limiting this functionality to one upstream datamodel is a conscious choice to limit the potential for abuse of this feature.</p>
 </section>
