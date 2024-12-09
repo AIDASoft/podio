@@ -43,3 +43,7 @@
                       VectorMembers, use_get_syntax)}}
 
 {{ utils.namespace_close(class.namespace) }}
+
+podio::detail::OrderKey podio::detail::getOrderKey(const {{ class.namespace }}::{{ class.bare_type }}& obj) {
+  return podio::detail::OrderKey{obj.m_obj.get()};
+}

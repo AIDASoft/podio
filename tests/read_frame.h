@@ -9,6 +9,11 @@
 #include "extension_model/ExternalComponentTypeCollection.h"
 #include "extension_model/ExternalRelationTypeCollection.h"
 
+#include "interface_extension_model/AnotherHitCollection.h"
+#include "interface_extension_model/EnergyInterface.h"
+#include "interface_extension_model/ExampleWithInterfaceRelationCollection.h"
+#include "interface_extension_model/TestInterfaceLinkCollection.h"
+
 #include "podio/Frame.h"
 
 #include <iostream>
@@ -97,6 +102,45 @@ void checkInterfaceCollection(const podio::Frame& event) {
   ASSERT(iface1Rels[2] == clusters[0], "OneToManyRelations to interface not persisted correctly")
 }
 
+void checkInterfaceExtension(const podio::Frame& event) {
+  const auto& interfaceColl =
+      event.get<iextension::ExampleWithInterfaceRelationCollection>("extension_interface_relation");
+  ASSERT(interfaceColl.size() == 2, "extension_inteface_relation should have two elements")
+
+  const auto& hits = event.get<ExampleHitCollection>("hits");
+  const auto& anotherHits = event.get<iextension::AnotherHitCollection>("anotherHits");
+
+  const auto iface0 = interfaceColl[0];
+  const auto iface1 = interfaceColl[1];
+
+  ASSERT(iface0.singleEnergy() == hits[0], "OneToOneRelation singleEnergy not persisted as expected")
+  ASSERT(iface1.singleEnergy() == anotherHits[0], "OneToOneRelation singleEnergy not persisted as expected")
+
+  const auto iface0Rels = iface0.manyEnergies();
+  ASSERT(iface0Rels.size() == 2, "OneToManyRelation to interface does not have the expected number of related elements")
+  ASSERT(iface0Rels[0] == hits[0], "OneToManyRelations to interface not persisted correctly")
+  ASSERT(iface0Rels[1] == anotherHits[0], "OneToManyRelations to interface not persisted correctly")
+
+  const auto iface1Rels = iface1.manyEnergies();
+  ASSERT(iface1Rels.size() == 2, "OneToManyRelation to interface does not have the expected number of related elements")
+  ASSERT(iface1Rels[0] == hits[0], "OneToManyRelations to interface not persisted correctly")
+  ASSERT(iface1Rels[1] == anotherHits[0], "OneToManyRelations to interface not persisted correctly")
+
+  const auto& linkColl = event.get<iextension::TestInterfaceLinkCollection>("extension_interface_links");
+  ASSERT(linkColl.size() == 3, "extension_interface_links should have three elements")
+  auto link = linkColl[0];
+  ASSERT(link.get<ExampleHit>() == hits[0], "Link to interface 'FROM' not persisted correctly");
+  ASSERT(link.get<iextension::EnergyInterface>() == anotherHits[0], "Link to interface 'TO' not persisted correctly");
+  ASSERT(link.getWeight() == 1.23f, "Link to interface weight not persisted correctly");
+  link = linkColl[1];
+  ASSERT(link.get<ExampleHit>() == hits[1], "Link to interface 'FROM' not persisted correctly");
+  ASSERT(link.get<iextension::EnergyInterface>() == anotherHits[1], "Link to interface 'TO' not persisted correctly");
+  ASSERT(link.getWeight() == 3.14f, "Link to interface weight not persisted correctly");
+  link = linkColl[2];
+  ASSERT(link.get<ExampleHit>() == hits[0], "Link to interface 'FROM' not persisted correctly");
+  ASSERT(link.get<iextension::EnergyInterface>() == hits[1], "Link to interface 'TO' not persisted correctly");
+}
+
 template <typename ReaderT>
 int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   auto reader = ReaderT();
@@ -182,6 +226,9 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     // Interface tests once they are present
     if (reader.currentFileVersion() >= podio::version::Version{0, 99, 99}) {
       checkInterfaceCollection(otherFrame);
+    }
+    if (reader.currentFileVersion() >= podio::version::Version{1, 1, 0}) {
+      checkInterfaceExtension(otherFrame);
     }
   }
 

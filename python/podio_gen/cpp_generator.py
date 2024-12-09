@@ -340,9 +340,10 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                         self._build_include_for_class(relation.bare_type, include_from)
                     )
                     for int_type in relation.interface_types:
+                        int_type_include_from = self._needs_include(int_type.full_type)
                         includes_cc.add(
                             self._build_include_for_class(
-                                int_type.bare_type + "Collection", include_from
+                                int_type.bare_type + "Collection", int_type_include_from
                             )
                         )
                 else:

@@ -5,6 +5,7 @@ install
 tests/src
 tests/datamodel
 tests/extension_model
+tests/interface_extension_model
 tests/datamodeljulia
 tests/unittests/Project.toml
 tests/unittests/Manifest.toml

@@ -47,6 +47,13 @@ EXPECTED_EXTENSION_COLL_NAMES = {
     "interface_examples",
 }
 
+# The expected collections from the interface extension (only present in the other_events category)
+EXPECTED_INTERFACE_EXTENSION_COLL_NAMES = {
+    "anotherHits",
+    "extension_interface_relation",
+    "extension_interface_links",
+}
+
 # The expected parameter names in each frame
 EXPECTED_PARAM_NAMES = {
     "anInt",
@@ -167,7 +174,9 @@ class FrameReadTest(unittest.TestCase):
         self.assertEqual(set(self.event.getAvailableCollections()), EXPECTED_COLL_NAMES)
         self.assertEqual(
             set(self.other_event.getAvailableCollections()),
-            EXPECTED_COLL_NAMES.union(EXPECTED_EXTENSION_COLL_NAMES),
+            EXPECTED_COLL_NAMES.union(EXPECTED_EXTENSION_COLL_NAMES).union(
+                EXPECTED_INTERFACE_EXTENSION_COLL_NAMES
+            ),
         )
 
         # Not going over all collections here, as that should all be covered by the
