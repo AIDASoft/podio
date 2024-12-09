@@ -51,6 +51,7 @@ EXPECTED_EXTENSION_COLL_NAMES = {
 EXPECTED_INTERFACE_EXTENSION_COLL_NAMES = {
     "anotherHits",
     "extension_interface_relation",
+    "extension_interface_links",
 }
 
 # The expected parameter names in each frame

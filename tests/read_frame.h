@@ -12,6 +12,7 @@
 #include "interface_extension_model/AnotherHitCollection.h"
 #include "interface_extension_model/EnergyInterface.h"
 #include "interface_extension_model/ExampleWithInterfaceRelationCollection.h"
+#include "interface_extension_model/TestInterfaceLinkCollection.h"
 
 #include "podio/Frame.h"
 
@@ -124,6 +125,20 @@ void checkInterfaceExtension(const podio::Frame& event) {
   ASSERT(iface1Rels.size() == 2, "OneToManyRelation to interface does not have the expected number of related elements")
   ASSERT(iface1Rels[0] == hits[0], "OneToManyRelations to interface not persisted correctly")
   ASSERT(iface1Rels[1] == anotherHits[0], "OneToManyRelations to interface not persisted correctly")
+
+  const auto& linkColl = event.get<iextension::TestInterfaceLinkCollection>("extension_interface_links");
+  ASSERT(linkColl.size() == 3, "extension_interface_links should have three elements")
+  auto link = linkColl[0];
+  ASSERT(link.get<ExampleHit>() == hits[0], "Link to interface 'FROM' not persisted correctly");
+  ASSERT(link.get<iextension::EnergyInterface>() == anotherHits[0], "Link to interface 'TO' not persisted correctly");
+  ASSERT(link.getWeight() == 1.23f, "Link to interface weight not persisted correctly");
+  link = linkColl[1];
+  ASSERT(link.get<ExampleHit>() == hits[1], "Link to interface 'FROM' not persisted correctly");
+  ASSERT(link.get<iextension::EnergyInterface>() == anotherHits[1], "Link to interface 'TO' not persisted correctly");
+  ASSERT(link.getWeight() == 3.14f, "Link to interface weight not persisted correctly");
+  link = linkColl[2];
+  ASSERT(link.get<ExampleHit>() == hits[0], "Link to interface 'FROM' not persisted correctly");
+  ASSERT(link.get<iextension::EnergyInterface>() == hits[1], "Link to interface 'TO' not persisted correctly");
 }
 
 template <typename ReaderT>

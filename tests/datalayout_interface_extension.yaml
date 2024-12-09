@@ -41,3 +41,9 @@ interfaces:
       - iextension::AnotherHit
     Members:
       - double energy // the energy
+links:
+  iextension::TestInterfaceLink:
+    Description: "A link with an interface type for testing"
+    Author: "Mateusz Jakub Fila"
+    From: ExampleHit
+    To: iextension::EnergyInterface

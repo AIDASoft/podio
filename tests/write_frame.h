@@ -26,6 +26,7 @@
 #include "interface_extension_model/AnotherHitCollection.h"
 #include "interface_extension_model/EnergyInterface.h"
 #include "interface_extension_model/ExampleWithInterfaceRelationCollection.h"
+#include "interface_extension_model/TestInterfaceLinkCollection.h"
 
 #include "podio/Frame.h"
 #include "podio/LinkCollection.h"
@@ -425,6 +426,27 @@ auto createLinkWithInterfaceCollection(const ExampleClusterCollection& clusters,
   return links;
 }
 
+auto createLinkWithExtensionInterfaceCollection(const ExampleHitCollection& hits,
+                                                const iextension::AnotherHitCollection& anotherHits) {
+  auto links = iextension::TestInterfaceLinkCollection();
+
+  auto link = links.create();
+  link.set(hits[0]);
+  link.set(iextension::EnergyInterface(anotherHits[0]));
+  link.setWeight(1.23f);
+
+  link = links.create();
+  link.set(hits[1]);
+  link.set(iextension::EnergyInterface(anotherHits[1]));
+  link.setWeight(3.14f);
+
+  link = links.create();
+  link.set(hits[0]);
+  link.set(iextension::EnergyInterface(hits[1]));
+
+  return links;
+}
+
 auto createAnotherHitCollection(int i) {
   auto anotherHits = iextension::AnotherHitCollection();
   anotherHits.create().energy(1.03 + i);
@@ -513,6 +535,7 @@ podio::Frame makeFrame(int iFrame) {
 
   const auto& anotherHits = frame.put(createAnotherHitCollection(iFrame), "anotherHits");
   frame.put(createExampleWithExtensionInterfaceCollection(hits, anotherHits), "extension_interface_relation");
+  frame.put(createLinkWithExtensionInterfaceCollection(hits, anotherHits), "extension_interface_links");
 
   return frame;
 }
