@@ -1,6 +1,7 @@
 #include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleHit.h"
+#include <algorithm>
 #include <catch2/catch_test_macros.hpp>
 #include <cstddef>
 #include <iterator>
@@ -1179,6 +1180,89 @@ TEST_CASE("Collection as range", "[collection][ranges][std]") {
 }
 #endif
 
+TEST_CASE("Collection and std algorithms", "[collection][iterator][std]") {
+  auto coll = CollectionType();
+  coll.create().cellID(1);
+  coll.create().cellID(5);
+  coll.create().cellID(2);
+  coll.create().cellID(2);
+  coll.create().cellID(3);
+
+  // std::find_if
+  auto it = std::find_if(std::cbegin(coll), std::cend(coll), [](const auto& x) { return x.cellID() == 5; });
+  REQUIRE(it != std::cend(coll));
+  REQUIRE(it == ++std::cbegin(coll));
+  it = std::find_if(std::cbegin(coll), std::cend(coll), [](const auto& x) { return x.cellID() == 0; });
+  REQUIRE(it == std::cend(coll));
+
+  // std::count_if
+  REQUIRE(2 == std::count_if(std::cbegin(coll), std::cend(coll), [](const auto& x) { return x.cellID() > 2; }));
+
+  // std::copy_if
+  auto subcoll = CollectionType{};
+  subcoll.setSubsetCollection();
+  std::copy_if(std::begin(coll), std::end(coll), std::back_inserter(subcoll),
+               [](const auto& x) { return x.cellID() > 2; });
+  REQUIRE(subcoll.size() == 2);
+  REQUIRE(subcoll[0].cellID() == 5);
+  REQUIRE(subcoll[1].cellID() == 3);
+
+  // Algorithms requiring iterator category not supported by collection iterators
+  // are not checked here as their compilation and results are unspecified
+}
+
+#if (__cplusplus >= 202002L)
+
+// helper concept for unsupported algorithm compilation test
+template <typename T>
+concept is_range_adjacent_findable = requires(T coll) {
+  std::ranges::adjacent_find(coll, [](const auto& a, const auto& b) { return a.cellID() == b.cellID(); });
+};
+
+// helper concept for unsupported algorithm compilation test
+template <typename T>
+concept is_range_sortable = requires(T coll) {
+  std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); });
+};
+
+// helper concept for unsupported algorithm compilation test
+template <typename T>
+concept is_range_fillable = requires(T coll) {
+  std::ranges::fill(coll, typename T::value_type{});
+};
+
+TEST_CASE("Collection and std ranges algorithms", "[collection][ranges][std]") {
+  auto coll = CollectionType();
+  coll.create().cellID(1);
+  coll.create().cellID(5);
+  coll.create().cellID(2);
+  coll.create().cellID(2);
+  coll.create().cellID(3);
+
+  // std::ranges_find_if
+  auto it = std::ranges::find_if(coll, [](const auto& x) { return x.cellID() == 5; });
+  REQUIRE(it != std::end(coll));
+  REQUIRE(it == ++std::begin(coll));
+  it = std::ranges::find_if(coll, [](const auto& x) { return x.cellID() == 0; });
+  REQUIRE(it == std::end(coll));
+
+  // std::ranges::count_if
+  REQUIRE(2 == std::ranges::count_if(coll, [](const auto& x) { return x.cellID() > 2; }));
+
+  // std::ranges_copy_if
+  auto subcoll = CollectionType{};
+  subcoll.setSubsetCollection();
+  std::ranges::copy_if(coll, std::back_inserter(subcoll), [](const auto& x) { return x.cellID() > 2; });
+  REQUIRE(subcoll.size() == 2);
+  REQUIRE(subcoll[0].cellID() == 5);
+  REQUIRE(subcoll[1].cellID() == 3);
+
+  // check that algorithms requiring unsupported iterator concepts won't compile
+  DOCUMENTED_STATIC_FAILURE(is_range_adjacent_findable<CollectionType>);
+  DOCUMENTED_STATIC_FAILURE(is_range_sortable<CollectionType>);
+  DOCUMENTED_STATIC_FAILURE(is_range_fillable<CollectionType>);
+}
+#endif
 
 #undef DOCUMENTED_STATIC_FAILURE
 #undef DOCUMENTED_FAILURE

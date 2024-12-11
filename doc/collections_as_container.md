@@ -189,10 +189,34 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 
 ## Collection and standard algorithms
 
-Most of the standard algorithms require the iterators to be at least *InputIterator*. The iterators of PODIO collection don't fulfil this requirement, therefore they are not compatible with standard algorithms according to the specification.
+Most of the standard algorithms require iterators to meet specific named requirements, such as [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator), [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator), or [*LegacyRandomAccessIterator*](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator). These requirements are not always strictly enforced at compile time, making it essential to understand the allowed iterator category when using standard algorithms.
 
-In practice, some algorithms may still compile with the collections depending on the implementation of a given algorithm. In general, the standard **algorithms mutating a collection will give wrong results**, while the standard algorithms not mutating a collection in principle should give correct results if they compile.
+The iterators of PODIO collections conform to the [**LegacyInputIterator**](https://en.cppreference.com/w/cpp/named_req/InputIterator) named requirement, therefore are guaranteed to work with any algorithm requiring [**LegacyIterator**](https://en.cppreference.com/w/cpp/named_req/Iterator) or [**LegacyInputIterator**](https://en.cppreference.com/w/cpp/named_req/InputIterator).
+
+Algorithms requiring a different iterator category may compile but do not guarantee correct results. An important case are mutating algorithms requiring the iterators to be [*writable*](https://en.cppreference.com/w/cpp/iterator), or [*LegacyOutputIterator*](https://en.cppreference.com/w/cpp/named_req/OutputIterator) or *mutable*, which are not compatible and will produce incorrect results.
+
+For example:
+```c++
+std::find_if(std::begin(collection), std::end(collection), predicate ); // requires InputIterator -> OK
+std::adjacent_find(std::begin(collection), std::end(collection), predicate ); // requires ForwardIterator -> might compile, unspecified result
+std::fill(std::begin(collection), std::end(collection), value ); // requires ForwardIterator and writable -> might compile, wrong result
+std::::sort(std::begin(collection), std::end(collection)); // requires RandomAccessIterator and Swappable -> might compile, wrong result
+```
 
 ## Standard range algorithms
 
-The standard range algorithm use constrains to operate at least on `std::input_iterator`s and `std::ranges::input_range`s. The iterators of PODIO collection don't model these concepts, therefore can't be used with standard range algorithms. The range algorithms won't compile with PODIO `Collection` iterators.
+The arguments of standard range algorithms are checked at compile time and must fulfil certain iterator concepts, such as `std::input_iterator` or `std::ranges::input_range`.
+
+The iterators of PODIO collections model the `std::input_iterator` concept, so range algorithms that require this iterator type will work correctly with PODIO iterators. If an algorithm compiles, it is guaranteed to work as expected.
+
+In particular, the PODIO collections' iterators do not fulfil the `std::output_iterator` concept, and as a result, mutating algorithms relying on this iterator type will not compile.
+
+Similarly the collections themselves model the `std::input_range` concept and can be used in the range algorithms that require that concept. The algorithms requiring unsupported range concept, such as `std::output_range`, won't compile.
+
+For example:
+```c++
+std::ranges::find_if(collection, predicate ); // requires input_range -> OK
+std::ranges::adjacent_find(collection, predicate ); // requires forward_range -> won't compile
+std::ranges::fill(collection, value ); // requires output_range -> won't compile
+std::ranges::sort(collection); // requires random_access_range and sortable -> won't compile
+```
