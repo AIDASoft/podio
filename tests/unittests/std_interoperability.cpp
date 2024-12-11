@@ -411,7 +411,7 @@ TEST_CASE("Collection AllocatorAwareContainer types", "[collection][container][t
 }
 // TODO add tests for AllocatorAwareContainer statements and expressions
 
-TEST_CASE("Collection and iterator concepts") {
+TEST_CASE("Collection and iterator concepts", "[collection][container][iterator][std]") {
 #if (__cplusplus >= 202002L)
 
   SECTION("input_or_output_iterator") {

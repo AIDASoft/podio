@@ -66,6 +66,7 @@ The PODIO Collections currently are not checked against expression and statement
 The C++ specifies a set of named requirements for iterators. Starting with C++20 the standard specifies also iterator concepts. The requirements imposed by the concepts and named requirements are similar but not identical.
 
 In the following tables a convention from `Collection` is used: `iterator` stands for PODIO `MutableCollectionIterator` and `const_iterator` stands for PODIO `CollectionIterator`.
+
 ### Iterator summary
 
 | Named requirement | `iterator` | `const_iterator` |
@@ -80,12 +81,12 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 
 | Concept | `iterator` | `const_iterator` |
 |---------|------------------------|------------------------------|
-| `std::indirectly_readable` | ✔️ yes / ✔️ yes |
+| `std::indirectly_readable` | ✔️ yes | ✔️ yes |
 | `std::indirectly_writable` | ❌ no | ❌ no |
 | `std::weakly_incrementable` | ✔️ yes | ✔️ yes |
 | `std::incrementable` | ✔️ yes | ✔️ yes |
 | `std::input_or_output_iterator` | ✔️ yes | ✔️ yes |
-| `std::input_iterator` | ✔️ yes / ✔️ yes |
+| `std::input_iterator` | ✔️ yes | ✔️ yes |
 | `std::output_iterator` | ❌ no | ❌ no |
 | `std::forward_iterator` | ❌ no | ❌ no |
 | `std::bidirectional_iterator` | ❌ no | ❌ no |
