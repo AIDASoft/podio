@@ -171,6 +171,22 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `std::counted_iterator` | ✔️ yes | `operator->` not defined as it requires `std::contiguous_iterator` |
 
 
+## Collection as a *range*
+
+| Concept | Fulfilled by Collection? |
+|---------|--------------------------|
+| `std::ranges::range` | ✔️ yes |
+| `std::ranges::borrowed_range` | ❌ no |
+| `std::ranges::sized_range` | ✔️ yes |
+| `std::ranges::input_range` | ✔️ yes |
+| `std::ranges::output_range` | ❌ no |
+| `std::ranges::forward_range` | ❌ no |
+| `std::ranges::bidirectional_range` | ❌ no |
+| `std::ranges::random_access_range` | ❌ no |
+| `std::ranges::contiguous_range` | ❌ no |
+| `std::ranges::common_range` | ✔️ yes |
+| `std::ranges::viewable_range` | ✔️ yes |
+
 ## Collection and standard algorithms
 
 Most of the standard algorithms require the iterators to be at least *InputIterator*. The iterators of PODIO collection don't fulfil this requirement, therefore they are not compatible with standard algorithms according to the specification.

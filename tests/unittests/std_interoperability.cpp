@@ -6,6 +6,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <ranges>
 #include <stdexcept>
 #include <type_traits>
 
@@ -1143,6 +1144,41 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
   }
 #endif
 }
+
+#if (__cplusplus >= 202002L)
+TEST_CASE("Collection as range", "[collection][ranges][std]") {
+  CollectionType coll;
+  coll.create();
+
+  // std::ranges::range
+  STATIC_REQUIRE(std::ranges::range<CollectionType>);
+  // std::range::borrowed_range
+  DOCUMENTED_STATIC_FAILURE(std::ranges::borrowed_range<CollectionType>);
+  // std::range::sized_range
+  STATIC_REQUIRE(std::ranges::sized_range<CollectionType>);
+  REQUIRE(std::ranges::size(coll) == 1);
+  REQUIRE(std::ranges::size(coll) ==
+          static_cast<decltype(std::ranges::size(coll))>(std::ranges::distance(std::begin(coll), std::end(coll))));
+  // std::ranges::input_range
+  STATIC_REQUIRE(std::ranges::input_range<CollectionType>);
+  // std::range::output_range
+  DOCUMENTED_STATIC_FAILURE(std::ranges::output_range<CollectionType, CollectionType::value_type>);
+  DOCUMENTED_STATIC_FAILURE(std::ranges::output_range<CollectionType, CollectionType::value_type::mutable_type>);
+  // std::range::forward_range
+  DOCUMENTED_STATIC_FAILURE(std::ranges::forward_range<CollectionType>);
+  // std::range::bidirectional_range
+  DOCUMENTED_STATIC_FAILURE(std::ranges::bidirectional_range<CollectionType>);
+  // std::range::random_access_range
+  DOCUMENTED_STATIC_FAILURE(std::ranges::random_access_range<CollectionType>);
+  // std::range::contiguous_range
+  DOCUMENTED_STATIC_FAILURE(std::ranges::contiguous_range<CollectionType>);
+  // std::range::common_range
+  STATIC_REQUIRE(std::ranges::common_range<CollectionType>);
+  // std::range::viewable_range
+  STATIC_REQUIRE(std::ranges::viewable_range<CollectionType>);
+}
+#endif
+
 
 #undef DOCUMENTED_STATIC_FAILURE
 #undef DOCUMENTED_FAILURE
