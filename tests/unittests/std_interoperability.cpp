@@ -571,14 +571,14 @@ TEST_CASE("Collection and iterator concepts", "[collection][container][iterator]
     // const_iterator
     DOCUMENTED_STATIC_FAILURE(std::forward_iterator<const_iterator>);
     // {
-    //   REQUIRE(iterator{} == iterator{});
+    //   REQUIRE(const_iterator{} == const_iterator{});
     //   auto coll = CollectionType();
     //   coll.create();
-    //   auto i = coll.begin();
-    //   auto j = coll.begin();
+    //   auto i = coll.cbegin();
+    //   auto j = coll.cbegin();
     //   REQUIRE(i == j);
     //   REQUIRE(++i == ++j);
-    //   i = coll.begin();
+    //   i = coll.cbegin();
     //   REQUIRE(((void)[](auto x) { ++x; }(i), *i) == *i);
     //   Pointers and references obtained from a forward iterator into a range remain valid while the range exists.
     //   Is this even unit-testable?
