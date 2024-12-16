@@ -577,7 +577,7 @@ TEST_CASE("Collection and iterator concepts", "[collection][container][iterator]
     //   auto i = coll.begin();
     //   auto j = coll.begin();
     //   REQUIRE(i == j);
-    //   REQUIRE(++i == ++j);W
+    //   REQUIRE(++i == ++j);
     //   i = coll.begin();
     //   REQUIRE(((void)[](auto x) { ++x; }(i), *i) == *i);
     //   Pointers and references obtained from a forward iterator into a range remain valid while the range exists.
