@@ -3,6 +3,7 @@
 Provides infrastructure for analyzing schema definitions for schema evolution
 """
 
+import sys
 import yaml
 
 from podio_gen.podio_config_reader import PodioConfigReader
@@ -123,6 +124,62 @@ class RenamedMember(SchemaChange):
         )
 
 
+class AddedVectorMember(SchemaChange):
+    """Class representing an added VectorMember"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(f"'{self.klassname}' has added a VectorMember '{self.member}'")
+
+
+class DroppedVectorMember(SchemaChange):
+    """Class representing a dropped VectorMember"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(f"'{self.klassname}' has a dropped VectorMember '{self.member.name}")
+
+
+class AddedSingleRelation(SchemaChange):
+    """Class representing an added OneToOneRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(f"'{self.klassname}' has added a OneToOneRelation '{self.member.name}'")
+
+
+class DroppedSingleRelation(SchemaChange):
+    """Class representing a dropped OneToOneRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(f"'{self.klassname}' has dropped a OneToOneRelation '{self.member.name}'")
+
+
+class AddedMultiRelation(SchemaChange):
+    """Class representing an added OneToManyRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(f"'{self.klassname}' has added a OneToManyRelation '{self.member.name}'")
+
+
+class DroppedMultiRelation(SchemaChange):
+    """Class representing a dropped OneToManyRelation"""
+
+    def __init__(self, member, datatype):
+        self.member = member
+        self.klassname = datatype
+        super().__init__(
+            f"'{self.klassname}' has dropped a OneToManyRelation '{self.member.name}'"
+        )
+
+
 class RootIoRule:
     """A placeholder IORule class"""
 
@@ -163,6 +220,15 @@ class DataModelComparator:
     """
     Compares two datamodels and extracts required schema evolution
     """
+
+    unsupported_changes = (
+        AddedVectorMember,
+        DroppedVectorMember,
+        AddedSingleRelation,
+        DroppedSingleRelation,
+        AddedMultiRelation,
+        DroppedMultiRelation,
+    )
 
     def __init__(self, yamlfile_new, yamlfile_old, evolution_file=None) -> None:
         self.yamlfile_new = yamlfile_new
@@ -205,7 +271,7 @@ class DataModelComparator:
             ]
         )
 
-        self._compare_definitions(
+        self._compare_members(
             kept_components,
             self.datamodel_new.components,
             self.datamodel_old.components,
@@ -226,14 +292,49 @@ class DataModelComparator:
             [DroppedDatatype(self.datamodel_old.datatypes[name], name) for name in dropped_types]
         )
 
-        self._compare_definitions(
+        self._compare_members(
             kept_types,
             self.datamodel_new.datatypes,
             self.datamodel_old.datatypes,
             "Members",
         )
 
-    def _compare_definitions(self, definitions, first, second, category) -> None:
+        self._compare_members(
+            kept_types,
+            self.datamodel_new.datatypes,
+            self.datamodel_old.datatypes,
+            "VectorMembers",
+            AddedVectorMember,
+            DroppedVectorMember,
+        )
+
+        self._compare_members(
+            kept_types,
+            self.datamodel_new.datatypes,
+            self.datamodel_old.datatypes,
+            "OneToOneRelations",
+            AddedSingleRelation,
+            DroppedSingleRelation,
+        )
+
+        self._compare_members(
+            kept_types,
+            self.datamodel_new.datatypes,
+            self.datamodel_old.datatypes,
+            "OneToManyRelations",
+            AddedMultiRelation,
+            DroppedMultiRelation,
+        )
+
+    def _compare_members(
+        self,
+        definitions,
+        first,
+        second,
+        category,
+        added_change=AddedMember,
+        dropped_change=DroppedMember,
+    ) -> None:
         """compare member definitions in old and new datamodel"""
         for name in definitions:
             # we are only interested in members not the extracode
@@ -244,10 +345,10 @@ class DataModelComparator:
             )
             # Make findings known globally
             self.detected_schema_changes.extend(
-                [AddedMember(members1[member], name) for member in added_members]
+                [added_change(members1[member], name) for member in added_members]
             )
             self.detected_schema_changes.extend(
-                [DroppedMember(members2[member], name) for member in dropped_members]
+                [dropped_change(members2[member], name) for member in dropped_members]
             )
 
             # now let's compare old and new for the kept members
@@ -326,6 +427,9 @@ class DataModelComparator:
         ]
         added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
         self.heuristics_members(added_members, dropped_members, schema_changes)
+
+        for change in (c for c in schema_changes if isinstance(c, self.unsupported_changes)):
+            self.errors.append(f"Unsupported schema change: {change}")
 
         # are the member changes actually supported/supportable?
         changed_members = [
@@ -415,6 +519,9 @@ class DataModelComparator:
             print("ERRORS:")
             for error in self.errors:
                 print(f" - {error}")
+            return False
+
+        return True
 
     def read(self) -> None:
         """read datamodels from yaml files"""
@@ -474,5 +581,6 @@ if __name__ == "__main__":
     comparator = DataModelComparator(args.new, args.old, evolution_file=args.evo)
     comparator.read()
     comparator.compare()
-    comparator.print_comparison()
+    if not comparator.print_comparison():
+        sys.exit(1)
     # print(comparator.get_changed_schemata(schema_filter=root_filter))

@@ -1,0 +1,6 @@
+schema_version: 1
+
+datatypes:
+  DataTypeWithoutVectorMembers:
+    Description: "Type for testing the addition of new VectorMembers"
+    Author: "Thomas Madlener"

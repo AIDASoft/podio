@@ -1,0 +1,9 @@
+schema_version: 1
+
+datatypes:
+  DataTypeWithSomeVectorMember:
+    Description: "Type for testing the removal of one VectorMember"
+    Author: "Thomas Madlener"
+    VectorMembers:
+      - float f // a float
+      - double d // some doubles never hurt

@@ -1,0 +1,9 @@
+schema_version: 2
+
+datatypes:
+  DataTypeWithOneVectorMember:
+    Description: "Type for testing the addition of new VectorMembers"
+    Author: "Thomas Madlener"
+    VectorMembers:
+      - float f // a float
+      - int i // an additional float

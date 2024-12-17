@@ -1,0 +1,12 @@
+schema_version: 2
+
+datatypes:
+  RelatedType:
+    Description: "A type we use in the relation"
+    Author: "Thomas Madlener"
+
+  DataTypeWithRelationMigration:
+    Description: "Type for testing the move from a OneToMany to a OneToOne relation"
+    Author: "Thomas Madlener"
+    OneToOneRelations:
+      - RelatedType rel // a relation
