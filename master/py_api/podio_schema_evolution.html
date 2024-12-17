@@ -645,6 +645,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedComponent"><code class="docutils literal notranslate"><span class="pre">AddedComponent</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedDatatype"><code class="docutils literal notranslate"><span class="pre">AddedDatatype</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedMember"><code class="docutils literal notranslate"><span class="pre">AddedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedMultiRelation"><code class="docutils literal notranslate"><span class="pre">AddedMultiRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedSingleRelation"><code class="docutils literal notranslate"><span class="pre">AddedSingleRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedVectorMember"><code class="docutils literal notranslate"><span class="pre">AddedVectorMember</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.ChangedMember"><code class="docutils literal notranslate"><span class="pre">ChangedMember</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator"><code class="docutils literal notranslate"><span class="pre">DataModelComparator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.compare"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.compare()</span></code></a></li>
@@ -654,11 +657,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.print_comparison"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.print_comparison()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.read"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.read()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.read_evolution_file"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.read_evolution_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.unsupported_changes"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.unsupported_changes</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedComponent"><code class="docutils literal notranslate"><span class="pre">DroppedComponent</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedDatatype"><code class="docutils literal notranslate"><span class="pre">DroppedDatatype</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedMember"><code class="docutils literal notranslate"><span class="pre">DroppedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedMultiRelation"><code class="docutils literal notranslate"><span class="pre">DroppedMultiRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedSingleRelation"><code class="docutils literal notranslate"><span class="pre">DroppedSingleRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedVectorMember"><code class="docutils literal notranslate"><span class="pre">DroppedVectorMember</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.RenamedDataType"><code class="docutils literal notranslate"><span class="pre">RenamedDataType</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.RenamedMember"><code class="docutils literal notranslate"><span class="pre">RenamedMember</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.RootIoRule"><code class="docutils literal notranslate"><span class="pre">RootIoRule</span></code></a></li>
@@ -720,6 +727,27 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.AddedMultiRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">AddedMultiRelation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.AddedMultiRelation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
+<p>Class representing an added OneToManyRelation</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.AddedSingleRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">AddedSingleRelation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.AddedSingleRelation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
+<p>Class representing an added OneToOneRelation</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.AddedVectorMember">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">AddedVectorMember</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.AddedVectorMember" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
+<p>Class representing an added VectorMember</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="podio_schema_evolution.ChangedMember">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">ChangedMember</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_member</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.ChangedMember" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
@@ -776,6 +804,11 @@
 <dd><p>read and parse evolution file</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.unsupported_changes">
+<span class="sig-name descname"><span class="pre">unsupported_changes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'podio_schema_evolution.AddedVectorMember'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedVectorMember'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.AddedSingleRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedSingleRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.AddedMultiRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedMultiRelation'&gt;)</span></em><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.unsupported_changes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -797,6 +830,27 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">DroppedMember</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">definition_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DroppedMember" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
 <p>Class representing a dropped member</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.DroppedMultiRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">DroppedMultiRelation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DroppedMultiRelation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
+<p>Class representing a dropped OneToManyRelation</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.DroppedSingleRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">DroppedSingleRelation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DroppedSingleRelation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
+<p>Class representing a dropped OneToOneRelation</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.DroppedVectorMember">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">DroppedVectorMember</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DroppedVectorMember" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></p>
+<p>Class representing a dropped VectorMember</p>
 </dd></dl>
 
 <dl class="py class">
