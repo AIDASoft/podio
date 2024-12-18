@@ -1,8 +1,10 @@
 #include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleHit.h"
-#include <algorithm>
+
 #include <catch2/catch_test_macros.hpp>
+
+#include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <limits>
