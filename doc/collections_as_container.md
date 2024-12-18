@@ -201,7 +201,7 @@ For example:
 std::find_if(std::begin(collection), std::end(collection), predicate ); // requires InputIterator -> OK
 std::adjacent_find(std::begin(collection), std::end(collection), predicate ); // requires ForwardIterator -> might compile, unspecified result
 std::fill(std::begin(collection), std::end(collection), value ); // requires ForwardIterator and writable -> might compile, wrong result
-std::::sort(std::begin(collection), std::end(collection)); // requires RandomAccessIterator and Swappable -> might compile, wrong result
+std::sort(std::begin(collection), std::end(collection)); // requires RandomAccessIterator and Swappable -> might compile, wrong result
 ```
 
 ## Standard range algorithms
