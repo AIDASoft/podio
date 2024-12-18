@@ -1215,24 +1215,6 @@ TEST_CASE("Collection and std algorithms", "[collection][iterator][std]") {
 
 #if (__cplusplus >= 202002L)
 
-// helper concept for unsupported algorithm compilation test
-template <typename T>
-concept is_range_adjacent_findable = requires(T coll) {
-  std::ranges::adjacent_find(coll, [](const auto& a, const auto& b) { return a.cellID() == b.cellID(); });
-};
-
-// helper concept for unsupported algorithm compilation test
-template <typename T>
-concept is_range_sortable = requires(T coll) {
-  std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); });
-};
-
-// helper concept for unsupported algorithm compilation test
-template <typename T>
-concept is_range_fillable = requires(T coll) {
-  std::ranges::fill(coll, typename T::value_type{});
-};
-
 TEST_CASE("Collection and std ranges algorithms", "[collection][ranges][std]") {
   auto coll = CollectionType();
   coll.create().cellID(1);
@@ -1258,13 +1240,34 @@ TEST_CASE("Collection and std ranges algorithms", "[collection][ranges][std]") {
   REQUIRE(subcoll.size() == 2);
   REQUIRE(subcoll[0].cellID() == 5);
   REQUIRE(subcoll[1].cellID() == 3);
+}
 
+// helper concept for unsupported algorithm compilation test
+template <typename T>
+concept is_range_adjacent_findable = requires(T coll) {
+  std::ranges::adjacent_find(coll, [](const auto& a, const auto& b) { return a.cellID() == b.cellID(); });
+};
+
+// helper concept for unsupported algorithm compilation test
+template <typename T>
+concept is_range_sortable = requires(T coll) {
+  std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); });
+};
+
+// helper concept for unsupported algorithm compilation test
+template <typename T>
+concept is_range_fillable = requires(T coll) {
+  std::ranges::fill(coll, typename T::value_type{});
+};
+
+TEST_CASE("Collection and unsupported std ranges algorithms", "[collection][ranges][std]") {
   // check that algorithms requiring unsupported iterator concepts won't compile
   DOCUMENTED_STATIC_FAILURE(is_range_adjacent_findable<CollectionType>);
   DOCUMENTED_STATIC_FAILURE(is_range_sortable<CollectionType>);
   DOCUMENTED_STATIC_FAILURE(is_range_fillable<CollectionType>);
 }
-#endif
+
+#endif // __cplusplus >= 202002L
 
 #undef DOCUMENTED_STATIC_FAILURE
 #undef DOCUMENTED_FAILURE
