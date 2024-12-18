@@ -167,9 +167,9 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `std::back_insert_iterator` | ❗ attention | Compatible only with SubsetCollections, otherwise throws `std::invalid_argument` |
 | `std::front_insert_iterator` | ❌ no | `push_front` not defined |
 | `std::insert_iterator` | ❌ no | `insert` not defined |
-| `std::const_iterator` (C++23) | ❌ no | C++23 not supported yet |
+| `std::const_iterator` (C++23) | ❗ attention | `operator->` not defined as `iterator`'s and `const_iterator`'s `operator->` are non-`const`. |
 | `std::move_iterator` | ✔️ yes | Limited usefulness since dereference returns `reference` type not rvalue reference (`&&`) |
-| `std::counted_iterator` | ✔️ yes | `operator->` not defined as it requires `std::contiguous_iterator` |
+| `std::counted_iterator` | ❗ attention | `operator->` not defined as it requires `std::contiguous_iterator` |
 
 
 ## Collection as a *range*

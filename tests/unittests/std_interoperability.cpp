@@ -993,10 +993,40 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     // TODO add runtime checks here
   }
 
+#if (__cplusplus >= 202302L)
   SECTION("Const iterator") {
-    // C++23 required
-    DOCUMENTED_STATIC_FAILURE((__cplusplus >= 202302L));
+    // iterator
+    STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
+    STATIC_REQUIRE(std::input_iterator<iterator>);
+    // make_const_iterator(iterator) gives basic_const_iterator not our iterator or our const_iterator
+    STATIC_REQUIRE(std::is_same_v<std::const_iterator<iterator>, std::basic_const_iterator<iterator>>);
+    {
+      auto coll = CollectionType();
+      coll.create().cellID(42);
+      auto cit = std::make_const_iterator(std::begin(coll));
+      REQUIRE((*cit).cellID() == 42);
+      // can't -> because iterators' -> is non-const
+      DOCUMENTED_STATIC_FAILURE(traits::has_member_of_pointer_v<std::const_iterator<iterator>>);
+      // REQUIRE(cit->cellID() == 42)
+      // REQUIRE(counted.base()->cellID() == 42);
+    }
+    // const_iterator
+    STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<const_iterator>::iterator_category>);
+    STATIC_REQUIRE(std::input_iterator<const_iterator>);
+    // make_const_iterator(iterator) gives basic_const_iterator not our iterator or our const_iterator
+    STATIC_REQUIRE(std::is_same_v<std::const_iterator<const_iterator>, std::basic_const_iterator<const_iterator>>);
+    {
+      auto coll = CollectionType();
+      coll.create().cellID(42);
+      auto cit = std::make_const_iterator(std::cbegin(coll));
+      REQUIRE((*cit).cellID() == 42);
+      // can't -> because const_iterators' -> is non-const
+      DOCUMENTED_STATIC_FAILURE(traits::has_member_of_pointer_v<std::const_iterator<const_iterator>>);
+      // REQUIRE(cit->cellID() == 42)
+      // REQUIRE(counted.base()->cellID() == 42);
+    }
   }
+#endif
 
   SECTION("Move iterator") {
     // iterator
