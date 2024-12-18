@@ -1,0 +1,2 @@
+# Ignore race conditions in libROOTNTuple
+race:ROOTNTuple
