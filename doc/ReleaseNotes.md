@@ -1,3 +1,98 @@
+# v01-02
+
+* 2024-12-17 Thomas Madlener ([PR#715](https://github.com/AIDASoft/podio/pull/715))
+  - Improve the schema changes that `podio_schema_evolution.py` detects and reports on
+    - Addition / removal of `VectorMembers`, `OneToOneRelations` and `OneToManyRelations`
+  - Make the script exit with a non-zero exit code in case an unsupported schema change is detected
+  - Add a test setup and some tests for testing the schema evolution script and make sure it detects unsupported changes
+
+* 2024-12-09 jmcarcell ([PR#716](https://github.com/AIDASoft/podio/pull/716))
+  - Mark the collection destructor with override and remove `#include <array>`
+
+* 2024-12-09 Mateusz Jakub Fila ([PR#714](https://github.com/AIDASoft/podio/pull/714))
+  - Added possibility to use in the interfaces the datatypes from different podio-based datamodels
+
+* 2024-12-05 tmadlener ([PR#646](https://github.com/AIDASoft/podio/pull/646))
+  - Add a `LinkNavigator` utility class that facilitates the lookup of linked objects
+
+* 2024-12-02 Thomas Madlener ([PR#710](https://github.com/AIDASoft/podio/pull/710))
+  - Make sure that the weights of the links end up as a `vector<LinkData>` in the ROOT files instead of a `vector<float>`
+
+* 2024-12-02 tmadlener ([PR#691](https://github.com/AIDASoft/podio/pull/691))
+  - Introduce a new `links` category into the YAML grammar to automate the declaration of Links.
+
+* 2024-11-20 Thomas Madlener ([PR#709](https://github.com/AIDASoft/podio/pull/709))
+  - Remove an option from `.clang-tidy` that has been removed from newer versions of `clang-tidy` (>= 18)
+
+* 2024-11-20 jmcarcell ([PR#681](https://github.com/AIDASoft/podio/pull/681))
+  - Add a tool to merge several podio files into a single one:
+    - Metadata for every event can be saved or not
+    - The same format as the first input file will be used (TTree or RNTuple)
+    - Metadata about the input file names will be saved
+
+* 2024-11-19 jmcarcell ([PR#707](https://github.com/AIDASoft/podio/pull/707))
+  - Run clang-tidy at the end of pre-commit since other failures are more likely and clang-tidy takes a long time.
+
+* 2024-11-18 jmcarcell ([PR#706](https://github.com/AIDASoft/podio/pull/706))
+  - Remove unnecessary code in GenericParameters.h
+
+* 2024-11-11 jmcarcell ([PR#704](https://github.com/AIDASoft/podio/pull/704))
+  - Fix tests when SIO is OFF
+
+* 2024-11-08 Thomas Madlener ([PR#702](https://github.com/AIDASoft/podio/pull/702))
+  - Make sure that `makeReader` still recognizes files with RNTuple inside after they have been marked non-experimental in ROOT.
+
+* 2024-11-08 jmcarcell ([PR#700](https://github.com/AIDASoft/podio/pull/700))
+  - Add a deprecation warning when building with C++17 before removing support for it in https://github.com/AIDASoft/podio/pull/698
+
+* 2024-11-08 Victor Schwan ([PR#699](https://github.com/AIDASoft/podio/pull/699))
+  - add compatibility with pathlib.Path objects in root_io and sio_io
+
+* 2024-11-08 tmadlener ([PR#693](https://github.com/AIDASoft/podio/pull/693))
+  - Fix small issue in `GenericParameters` where trying to access a single element of a parameter that was stored as an empty vector resulted in a crash. Instead make this return an empty optional now.
+
+* 2024-10-17 Thomas Madlener ([PR#697](https://github.com/AIDASoft/podio/pull/697))
+  - Temporarily set the `JULIA_DEPOT_PATH` to a writable directory to make CI pass.
+
+* 2024-10-17 jmcarcell ([PR#696](https://github.com/AIDASoft/podio/pull/696))
+  - Remove some includes and fix a couple of URLs
+
+* 2024-10-15 tmadlener ([PR#695](https://github.com/AIDASoft/podio/pull/695))
+  - Fix minor memory leaks of consumed buffers in `LinkCollection`s and `UserDataCollection`s and in `SIOBlockUserData`
+  - Enable some more complete I/O tests using SIO and RNTuple
+
+* 2024-10-15 jmcarcell ([PR#694](https://github.com/AIDASoft/podio/pull/694))
+  - Remove unnecessary `inline` in `std_interoperability.cpp` since the variables are only used in that file.
+
+* 2024-09-30 Leonhard Reichenbach ([PR#692](https://github.com/AIDASoft/podio/pull/692))
+  - GenericParameters.h: added missing clear and empty check for double map
+
+* 2024-09-30 Mateusz Jakub Fila ([PR#683](https://github.com/AIDASoft/podio/pull/683))
+  - Using enable if instead of static_assert in interface type construct to avoid errors with direct initialization of contianers of interface types
+
+* 2024-09-27 tmadlener ([PR#690](https://github.com/AIDASoft/podio/pull/690))
+  - Switch to software stacks with a newer version of ROOT for building and testing EDM4hep in CI, because we need a newer version of ROOT to run all the backwards compatibility tests in EDM4hep.
+
+* 2024-09-26 tmadlener ([PR#689](https://github.com/AIDASoft/podio/pull/689))
+  - Use a `unique_ptr` to manage the OneToOneRelation pointers in the `Obj` classes.
+
+* 2024-09-26 ANUSHKA SAXENA ([PR#685](https://github.com/AIDASoft/podio/pull/685))
+  - Add advanced CMake usage for `PODIO_GENERATE_DATAMODEL` to docs
+
+* 2024-09-24 tmadlener ([PR#688](https://github.com/AIDASoft/podio/pull/688))
+  - Make sure that we pick up the correct version of `pylint` in the CI for pre-commit.
+
+* 2024-09-24 tmadlener ([PR#673](https://github.com/AIDASoft/podio/pull/673))
+  - Rework the I/O  handling for relations. This is mainly removing the differences in handling of interface and regular datatypes in relations.
+    - Remove the conditional code generation from the jinja2 templates and add functionality that dispatches to the correct handling depending on a (c++) type check
+  - Expose an `interfaced_types` member type for interface types and add a type helper to check whether a type is an interface type
+
+* 2024-09-23 tmadlener ([PR#687](https://github.com/AIDASoft/podio/pull/687))
+  - Make sure the `ROOT_INCLUDE_PATH` in the test environment points to the correct place.
+
+* 2024-09-23 Benedikt Hegner ([PR#684](https://github.com/AIDASoft/podio/pull/684))
+  - Finally removing deprecated ROOTFrame[Reader,Writer] and SIOFrame[Reader,Writer] classes (announced removal was v01-00)
+
 # v01-01
 
 * 2024-09-20 Leonhard Reichenbach ([PR#682](https://github.com/AIDASoft/podio/pull/682))
