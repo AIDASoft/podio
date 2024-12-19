@@ -17,8 +17,7 @@ DatamodelRegistry& DatamodelRegistry::mutInstance() {
 
 size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition,
                                             const podio::RelationNameMapping& relationNames) {
-  const auto it = std::find_if(m_definitions.cbegin(), m_definitions.cend(),
-                               [&name](const auto& kvPair) { return kvPair.first == name; });
+  const auto it = std::ranges::find(m_definitions, name, &decltype(m_definitions)::value_type::first);
 
   if (it == m_definitions.cend()) {
     int index = m_definitions.size();
@@ -32,7 +31,7 @@ size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view d
   }
 
   // TODO: Output?
-  return std::distance(m_definitions.cbegin(), it);
+  return std::ranges::distance(m_definitions.cbegin(), it);
 }
 
 size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition,
@@ -44,8 +43,7 @@ size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view d
 }
 
 const std::string_view DatamodelRegistry::getDatamodelDefinition(std::string_view name) const {
-  const auto it = std::find_if(m_definitions.cbegin(), m_definitions.cend(),
-                               [&name](const auto& kvPair) { return kvPair.first == name; });
+  const auto it = std::ranges::find(m_definitions, name, &decltype(m_definitions)::value_type::first);
   if (it == m_definitions.cend()) {
     std::cerr << "PODIO WARNING: Cannot find the definition for the EDM with the name " << name << std::endl;
     static constexpr std::string_view emptyDef = "{}"; // valid empty JSON

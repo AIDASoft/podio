@@ -30,7 +30,7 @@ jobs:
           cmake -DENABLE_SIO=ON \
             -DENABLE_JULIA=OFF \
             -DCMAKE_INSTALL_PREFIX=../install \
-            -DCMAKE_CXX_STANDARD=17 \
+            -DCMAKE_CXX_STANDARD=20 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=AUTO \
             -DENABLE_RNTUPLE=ON \
