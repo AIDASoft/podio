@@ -749,23 +749,23 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // *r = o
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_v<iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(traits::has_dereference_assignment_v<iterator, CollectionType::value_type::mutable_type>);
+    STATIC_REQUIRE(traits::has_dereference_assignment_v<iterator, CollectionType::mutable_type>);
     {
       auto coll = CollectionType{};
       auto item = coll.create(13ull, 0., 0., 0., 0.);
       REQUIRE(coll.begin()->cellID() == 13ull);
-      auto new_item = CollectionType::value_type::mutable_type{42ull, 0., 0., 0., 0.};
+      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
       *coll.begin() = new_item;
       DOCUMENTED_FAILURE(coll.begin()->cellID() == 42ull);
     }
     // const_iterator
     STATIC_REQUIRE(traits::has_dereference_assignment_v<const_iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(traits::has_dereference_assignment_v<const_iterator, CollectionType::value_type::mutable_type>);
+    STATIC_REQUIRE(traits::has_dereference_assignment_v<const_iterator, CollectionType::mutable_type>);
     {
       auto coll = CollectionType{};
       auto item = coll.create(13ull, 0., 0., 0., 0.);
       REQUIRE(coll.cbegin()->cellID() == 13ull);
-      auto new_item = CollectionType::value_type::mutable_type{42ull, 0., 0., 0., 0.};
+      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
       *coll.cbegin() = new_item;
       DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 42ull);
       new_item.cellID(44ull);
@@ -793,13 +793,13 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type>);
     DOCUMENTED_STATIC_FAILURE(
-        traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type::mutable_type>);
+        traits::has_dereference_assignment_increment_v<iterator, CollectionType::mutable_type>);
     // TODO add runtime check for assignment validity like in '*r = o' case
     // const_iterator
     DOCUMENTED_STATIC_FAILURE(
         traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type>);
     DOCUMENTED_STATIC_FAILURE(
-        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type::mutable_type>);
+        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::mutable_type>);
     // TODO add runtime check for assignment validity like in '*r = o' case
 
     // iterator_category - not strictly necessary but advised
@@ -852,7 +852,7 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     // insert immutable to not-SubsetCollection
     REQUIRE_THROWS_AS(it = CollectionType::value_type{}, std::invalid_argument);
     // insert mutable (implicit cast to immutable) to not-SubsetCollection
-    REQUIRE_THROWS_AS(it = CollectionType::value_type::mutable_type{}, std::invalid_argument);
+    REQUIRE_THROWS_AS(it = CollectionType::mutable_type{}, std::invalid_argument);
     auto subColl = CollectionType{};
     subColl.setSubsetCollection(true);
     auto subIt = std::back_inserter(subColl);
