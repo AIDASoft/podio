@@ -892,8 +892,7 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     }
     // const_iterator
     STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(
-        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::mutable_type>);
+    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::mutable_type>);
     {
       auto coll = CollectionType{};
       auto item = coll.create(13ull, 0., 0., 0., 0.);
