@@ -792,8 +792,7 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // *r++ = o
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type>);
-    DOCUMENTED_STATIC_FAILURE(
-        traits::has_dereference_assignment_increment_v<iterator, CollectionType::mutable_type>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::mutable_type>);
     // TODO add runtime check for assignment validity like in '*r = o' case
     // const_iterator
     DOCUMENTED_STATIC_FAILURE(
