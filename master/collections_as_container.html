@@ -226,6 +226,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#standard-range-algorithms">Standard range algorithms</a></li>
 </ul>
@@ -708,7 +709,7 @@
 <p>The PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code>s interface was designed to mimic the standard <em>Container</em> interface, in particular <code class="docutils literal notranslate"><span class="pre">std::vector</span></code>. Perfect compliance with the <em>Container</em> is not achieved as the <code class="docutils literal notranslate"><span class="pre">Collection</span></code>s are concerned with additional semantics such as mutable/immutable element access, associations and relations, and IO which that are not part of <em>Container</em>.</p>
 <p>On the implementation level most of the differences with respect to the <em>Container</em> comes from the fact that in order to satisfy the additional semantics a <code class="docutils literal notranslate"><span class="pre">Collection</span></code> doesn’t directly store <a class="reference internal" href="design.html#the-user-layer"><span class="std std-ref">user layer objects</span></a>. Instead, <a class="reference internal" href="design.html#the-internal-data-layer"><span class="std std-ref">data layer objects</span></a> are stored and user layer objects are constructed and returned when needed. Similarly, the <code class="docutils literal notranslate"><span class="pre">Collection</span></code> iterators operate on the user layer objects but don’t expose <code class="docutils literal notranslate"><span class="pre">Collection</span></code>’s storage directly to the users. Instead, they construct and return user layer objects when needed.
 In other words, a <code class="docutils literal notranslate"><span class="pre">Collection</span></code> utilizes the user layer type as a reference type instead of using plain references (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code> or <code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code>) to stored data layer types.</p>
-<p>As a consequence some of the <strong>standard algorithms may not work</strong> with PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code> iterators.  See <a class="reference internal" href="#collection-and-standard-algorithms"><span class="xref myst">standard algorithm documentation</span></a> below.</p>
+<p>As a consequence some of the <strong>standard algorithms may not work</strong> with PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code> iterators. See <a class="reference internal" href="#collection-and-standard-algorithms"><span class="xref myst">standard algorithm documentation</span></a> below.</p>
 <p>The following tables list the compliance of a PODIO generated collection with the <em>Container</em> named requirement, stating which member types, interfaces, or concepts are fulfilled and which are not. Additionally, there are some comments explaining missing parts or pointing out differences in behaviour.</p>
 <section id="container-types">
 <h2>Container Types<a class="headerlink" href="#container-types" title="Link to this heading"></a></h2>
@@ -744,19 +745,19 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <td><p>Iterator whose <code class="docutils literal notranslate"><span class="pre">value_type</span></code> is <code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
 <td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> convertible to <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
 <td><p>❌ no</p></td>
-<td><p>Defined as podio <code class="docutils literal notranslate"><span class="pre">MutableCollectionIterator</span></code>. <code class="docutils literal notranslate"><span class="pre">iterator::value_type</span></code> not defined, not <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>), not convertible to <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
+<td><p>Defined as podio <code class="docutils literal notranslate"><span class="pre">MutableCollectionIterator</span></code>. Not <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>), not convertible to <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
 <td><p>Constant iterator whose <code class="docutils literal notranslate"><span class="pre">value_type</span></code> is <code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
 <td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a></p></td>
 <td><p>❌ no</p></td>
-<td><p>Defined as podio <code class="docutils literal notranslate"><span class="pre">CollectionIterator</span></code>. <code class="docutils literal notranslate"><span class="pre">const_iterator::value_type</span></code> not defined, not <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>Defined as podio <code class="docutils literal notranslate"><span class="pre">CollectionIterator</span></code>. Not <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a> (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">difference_type</span></code></p></td>
 <td><p>Signed integer</p></td>
 <td><p>Must be the same as <code class="docutils literal notranslate"><span class="pre">std::iterator_traits::difference_type</span></code> for <code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::difference_type</span></code> not defined</p></td>
+<td><p>✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">size_type</span></code></p></td>
 <td><p>Unsigned integer</p></td>
@@ -871,7 +872,7 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a.max_size()</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">size_type</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">b.size()</span></code> where b is the largest possible container</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b.size()</span></code> where <code class="docutils literal notranslate"><span class="pre">b</span></code> is the largest possible container</p></td>
 <td><p>✔️ yes</p></td>
 <td><p></p></td>
 </tr>
@@ -927,12 +928,12 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator">LegacyIterator</a></p></td>
-<td><p>❌ no (<a class="reference internal" href="#legacyiterator"><span class="xref myst">see below</span></a>)</p></td>
-<td><p>❌ no (<a class="reference internal" href="#legacyiterator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>✔️ yes (<a class="reference internal" href="#legacyiterator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>✔️ yes (<a class="reference internal" href="#legacyiterator"><span class="xref myst">see below</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a></p></td>
-<td><p>❌ no (<a class="reference internal" href="#legacyinputiterator"><span class="xref myst">see below</span></a>)</p></td>
-<td><p>❌ no (<a class="reference internal" href="#legacyinputiterator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>✔️ yes (<a class="reference internal" href="#legacyinputiterator"><span class="xref myst">see below</span></a>)</p></td>
+<td><p>✔️ yes (<a class="reference internal" href="#legacyinputiterator"><span class="xref myst">see below</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a></p></td>
 <td><p>❌ no (<a class="reference internal" href="#legacyforwarditerator"><span class="xref myst">see below</span></a>)</p></td>
@@ -965,28 +966,28 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::indirectly_readable</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::indirectly_writable</span></code></p></td>
 <td><p>❌ no</p></td>
 <td><p>❌ no</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::weakly_incrementable</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::incrementable</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::input_or_output_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::output_iterator</span></code></p></td>
 <td><p>❌ no</p></td>
@@ -1022,40 +1023,40 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/CopyConstructible"><em>CopyConstructible</em></a></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Move constructor and copy constructor not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/CopyAssignable"><em>CopyAssignable</em></a></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Move assignment and copy assignment not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Destructible"><em>Destructible</em></a></p></td>
 <td><p>✔️ yes / ✔️ yes</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Swappable"><em>Swappable</em></a></p></td>
-<td><p>❌ no / ❌ no</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::value_type</span></code> (Until C++20 )</p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::difference_type</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::reference</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::pointer</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::iterator_traits::iterator_category</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -1095,7 +1096,7 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator"><em>LegacyIterator</em></a></p></td>
-<td><p>❌ no / ❌ no</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
 <td><p><a class="reference internal" href="#legacyiterator"><span class="xref myst">See above</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/EqualityComparable"><em>EqualityComparable</em></a></p></td>
@@ -1123,8 +1124,8 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*i</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code>, convertible to <code class="docutils literal notranslate"><span class="pre">value_type</span></code></p></td>
 <td><p></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code> and <code class="docutils literal notranslate"><span class="pre">value_type</span></code> not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i-&gt;m</span></code></p></td>
 <td><p></p></td>
@@ -1141,14 +1142,14 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(void)r++</span></code></p></td>
 <td><p></p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">(void)++r</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Post-increment not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*r++</span></code></p></td>
 <td><p>Convertible to <code class="docutils literal notranslate"><span class="pre">value_type</span></code></p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">value_type</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">*r;</span> <span class="pre">++r;</span> <span class="pre">return</span> <span class="pre">x;</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Post-increment and <code class="docutils literal notranslate"><span class="pre">value_type</span></code> not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -1165,24 +1166,24 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><em>LegacyInputIterator</em></a></p></td>
-<td><p>❌ no / ❌ no</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
 <td><p><a class="reference internal" href="#legacyinputiterator"><span class="xref myst">See above</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/DefaultConstructible"><em>DefaultConstructible</em></a></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Value initialization not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p>If <em>mutable</em> iterator then <code class="docutils literal notranslate"><span class="pre">reference</span></code> same as <code class="docutils literal notranslate"><span class="pre">value_type&amp;</span></code> or <code class="docutils literal notranslate"><span class="pre">value_type&amp;&amp;</span></code>, otherwise same as <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">value_type&amp;</span></code> or <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">value_type&amp;&amp;</span></code></p></td>
 <td><p>❌ no / ❌ no</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code> and <code class="docutils literal notranslate"><span class="pre">value_type</span></code> not defined</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code> type is not a reference (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code> or <code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">Multipass guarantee</a></p></td>
 <td><p>❌ no / ❌ no</p></td>
-<td><p>Copy constructor not defined</p></td>
+<td><p>References from dereferencing equal iterators aren’t bound to the same object</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">Singular iterators</a></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Value initialization not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -1199,14 +1200,14 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">i++</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">It</span></code></p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">It</span> <span class="pre">ip</span> <span class="pre">=</span> <span class="pre">i;</span> <span class="pre">++i;</span> <span class="pre">return</span> <span class="pre">ip;</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Post-increment not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*i++</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">reference</span></code></p></td>
 <td><p></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Post-increment and <code class="docutils literal notranslate"><span class="pre">reference</span></code> not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -1222,7 +1223,7 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator"><em>LegacyIterator</em></a></p></td>
-<td><p>❌ no / ❌ no</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
 <td><p><a class="reference internal" href="#legacyiterator"><span class="xref myst">See above</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Is pointer type or class type</p></td>
@@ -1256,14 +1257,14 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">r++</span></code></p></td>
 <td><p>Convertible to <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">It&amp;</span></code></p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">It</span> <span class="pre">temp</span> <span class="pre">=</span> <span class="pre">r;</span> <span class="pre">++r;</span> <span class="pre">return</span> <span class="pre">temp;</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Post-increment not defined</p></td>
+<td><p>✔️ yes / ✔️ yes</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*r++</span> <span class="pre">=</span> <span class="pre">o</span></code></p></td>
 <td><p></p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">*r</span> <span class="pre">=</span> <span class="pre">o;</span> <span class="pre">++r;</span></code></p></td>
-<td><p>❌ no / ❌ no</p></td>
-<td><p>Post-increment not defined</p></td>
+<td><p>❗ attention / ❗ attention</p></td>
+<td><p>Defined but an assignment doesn’t modify objects inside collection</p></td>
 </tr>
 </tbody>
 </table>
@@ -1295,29 +1296,92 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <td><p>❌ no</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">insert</span></code> not defined</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::const_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <em>LegacyInputIterator</em> or <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::const_iterator</span></code> (C++23)</p></td>
+<td><p>❗ attention</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">operator-&gt;</span></code> not defined as <code class="docutils literal notranslate"><span class="pre">iterator</span></code>’s and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>’s <code class="docutils literal notranslate"><span class="pre">operator-&gt;</span></code> are non-<code class="docutils literal notranslate"><span class="pre">const</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::move_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <em>LegacyInputIterator</em> or <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code></p></td>
+<td><p>✔️ yes</p></td>
+<td><p>Limited usefulness since dereference returns <code class="docutils literal notranslate"><span class="pre">reference</span></code> type not rvalue reference (<code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::counted_iterator</span></code></p></td>
+<td><p>❗ attention</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">operator-&gt;</span></code> not defined as it requires <code class="docutils literal notranslate"><span class="pre">std::contiguous_iterator</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="collection-as-a-range">
+<h2>Collection as a <em>range</em><a class="headerlink" href="#collection-as-a-range" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Fulfilled by Collection?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::range</span></code></p></td>
+<td><p>✔️ yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::borrowed_range</span></code></p></td>
 <td><p>❌ no</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <code class="docutils literal notranslate"><span class="pre">std::input_or_output_iterator</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::sized_range</span></code></p></td>
+<td><p>✔️ yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::input_range</span></code></p></td>
+<td><p>✔️ yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::output_range</span></code></p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::forward_range</span></code></p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::bidirectional_range</span></code></p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::random_access_range</span></code></p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::contiguous_range</span></code></p></td>
+<td><p>❌ no</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::common_range</span></code></p></td>
+<td><p>✔️ yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::viewable_range</span></code></p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="collection-and-standard-algorithms">
 <h2>Collection and standard algorithms<a class="headerlink" href="#collection-and-standard-algorithms" title="Link to this heading"></a></h2>
-<p>Most of the standard algorithms require the iterators to be at least <em>InputIterator</em>. The iterators of PODIO collection don’t fulfil this requirement, therefore they are not compatible with standard algorithms according to the specification.</p>
-<p>In practice, some algorithms may still compile with the collections depending on the implementation of a given algorithm. In general, the standard <strong>algorithms mutating a collection will give wrong results</strong>, while the standard algorithms not mutating a collection in principle should give correct results if they compile.</p>
+<p>Most of the standard algorithms require iterators to meet specific named requirements, such as <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><em>LegacyInputIterator</em></a>, <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a>, or <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator"><em>LegacyRandomAccessIterator</em></a>. These requirements are not always strictly enforced at compile time, making it essential to understand the allowed iterator category when using standard algorithms.</p>
+<p>The iterators of PODIO collections conform to the <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><strong>LegacyInputIterator</strong></a> named requirement, therefore are guaranteed to work with any algorithm requiring <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator"><strong>LegacyIterator</strong></a> or <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><strong>LegacyInputIterator</strong></a>.</p>
+<p>Algorithms requiring a different iterator category may compile but do not guarantee correct results. An important case are mutating algorithms requiring the iterators to be <a class="reference external" href="https://en.cppreference.com/w/cpp/iterator"><em>writable</em></a>, or <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/OutputIterator"><em>LegacyOutputIterator</em></a> or <em>mutable</em>, which are not compatible and will produce incorrect results.</p>
+<p>For example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires InputIterator -&gt; OK</span>
+<span class="n">std</span><span class="o">::</span><span class="n">adjacent_find</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires ForwardIterator -&gt; might compile, unspecified result</span>
+<span class="n">std</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires ForwardIterator and writable -&gt; might compile, wrong result</span>
+<span class="n">std</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">collection</span><span class="p">));</span><span class="w"> </span><span class="c1">// requires RandomAccessIterator and Swappable -&gt; might compile, wrong result</span>
+</pre></div>
+</div>
 </section>
 <section id="standard-range-algorithms">
 <h2>Standard range algorithms<a class="headerlink" href="#standard-range-algorithms" title="Link to this heading"></a></h2>
-<p>The standard range algorithm use constrains to operate at least on <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code>s and <code class="docutils literal notranslate"><span class="pre">std::ranges::input_range</span></code>s. The iterators of PODIO collection don’t model these concepts, therefore can’t be used with standard range algorithms. The range algorithms won’t compile with PODIO <code class="docutils literal notranslate"><span class="pre">Collection</span></code> iterators.</p>
+<p>The arguments of standard range algorithms are checked at compile time and must fulfil certain iterator concepts, such as <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code> or <code class="docutils literal notranslate"><span class="pre">std::ranges::input_range</span></code>.</p>
+<p>The iterators of PODIO collections model the <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code> concept, so range algorithms that require this iterator type will work correctly with PODIO iterators. If an algorithm compiles, it is guaranteed to work as expected.</p>
+<p>In particular, the PODIO collections’ iterators do not fulfil the <code class="docutils literal notranslate"><span class="pre">std::output_iterator</span></code> concept, and as a result, mutating algorithms relying on this iterator type will not compile.</p>
+<p>Similarly the collections themselves model the <code class="docutils literal notranslate"><span class="pre">std::input_range</span></code> concept and can be used in the range algorithms that require that concept. The algorithms requiring unsupported range concept, such as <code class="docutils literal notranslate"><span class="pre">std::output_range</span></code>, won’t compile.</p>
+<p>For example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires input_range -&gt; OK</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">adjacent_find</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires forward_range -&gt; won&#39;t compile</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires output_range -&gt; won&#39;t compile</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">collection</span><span class="p">);</span><span class="w"> </span><span class="c1">// requires random_access_range and sortable -&gt; won&#39;t compile</span>
+</pre></div>
+</div>
 </section>
 </section>
 
