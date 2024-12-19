@@ -48,7 +48,7 @@ constexpr static auto stringValueName = "GPStringValues";
  * Get the name of the key depending on the type
  */
 template <typename T>
-constexpr auto getGPKeyName() {
+consteval auto getGPKeyName() {
   if constexpr (std::is_same<T, int>::value) {
     return intKeyName;
   } else if constexpr (std::is_same<T, float>::value) {
@@ -66,7 +66,7 @@ constexpr auto getGPKeyName() {
  * Get the name of the value depending on the type
  */
 template <typename T>
-constexpr auto getGPValueName() {
+consteval auto getGPValueName() {
   if constexpr (std::is_same<T, int>::value) {
     return intValueName;
   } else if constexpr (std::is_same<T, float>::value) {
@@ -95,7 +95,7 @@ constexpr auto nParamBranches = std::tuple_size_v<podio::SupportedGenericDataTyp
 /// assumed that the integer branches start immediately after the branch for
 /// the collections
 template <typename T>
-constexpr auto getGPBranchOffsets() {
+consteval auto getGPBranchOffsets() {
   if constexpr (std::is_same_v<T, int>) {
     return GPBranchOffsets{1, 2};
   } else if constexpr (std::is_same_v<T, float>) {
@@ -290,7 +290,7 @@ inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strin
   // to make string copies inside the first lambda, transform them to lowercase
   // and then use operator< of std::string, which would be effectively
   // hand-writing what is happening below.
-  std::sort(strings.begin(), strings.end(), [](const auto& lhs, const auto& rhs) {
+  std::ranges::sort(strings, [](const auto& lhs, const auto& rhs) {
     return std::lexicographical_compare(
         lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
         [](const auto& cl, const auto& cr) { return std::tolower(cl) < std::tolower(cr); });
@@ -338,8 +338,8 @@ inline bool checkConsistentColls(const std::vector<std::string>& existingColls,
 inline std::tuple<std::vector<std::string>, std::vector<std::string>>
 getInconsistentColls(std::vector<std::string> existingColls, std::vector<std::string> candidateColls) {
   // Need sorted ranges for set_difference
-  std::sort(existingColls.begin(), existingColls.end());
-  std::sort(candidateColls.begin(), candidateColls.end());
+  std::ranges::sort(existingColls);
+  std::ranges::sort(candidateColls);
 
   std::vector<std::string> onlyInExisting{};
   std::set_difference(existingColls.begin(), existingColls.end(), candidateColls.begin(), candidateColls.end(),
