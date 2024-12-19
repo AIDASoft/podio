@@ -45,6 +45,7 @@ A Collection is identified by an ID.
 class {{ class.bare_type }}Collection : public podio::CollectionBase {
 public:
   using value_type = {{ class.bare_type }};
+  using mutable_type = Mutable{{ class.bare_type }};
   using const_iterator = {{ class.bare_type }}CollectionIterator;
   using iterator = {{ class.bare_type }}MutableCollectionIterator;
   using difference_type = ptrdiff_t;
