@@ -10,6 +10,14 @@
 
 #include <memory>
 
+// Adjust for the move of this out of ROOT v7 in
+// https://github.com/root-project/root/pull/17281
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
+using ROOT::RException;
+#else
+using ROOT::Experimental::RException;
+#endif
+
 namespace podio {
 
 template <typename T>
@@ -90,7 +98,7 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
       auto edmVersionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
       auto edmVersion = edmVersionView(0);
       edmVersions.emplace_back(name, podio::version::Version{edmVersion[0], edmVersion[1], edmVersion[2]});
-    } catch (const ROOT::Experimental::RException&) {
+    } catch (const RException&) {
     }
   }
   m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm), std::move(edmVersions));
@@ -104,7 +112,7 @@ unsigned RNTupleReader::getEntries(const std::string& name) {
     for (auto& filename : m_filenames) {
       try {
         m_readers[name].emplace_back(ROOT::Experimental::RNTupleReader::Open(name, filename));
-      } catch (const ROOT::Experimental::RException& e) {
+      } catch (const RException& e) {
         std::cout << "Category " << name << " not found in file " << filename << std::endl;
       }
     }
