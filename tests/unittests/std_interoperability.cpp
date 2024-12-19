@@ -500,14 +500,14 @@ TEST_CASE("Collection and iterator concepts", "[collection][container][iterator]
 TEST_CASE("Collection and unsupported iterator concepts", "[collection][container][iterator][std]") {
   // std::indirectly_writable
   DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<iterator, CollectionType::value_type>);
-  DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<iterator, CollectionType::value_type::mutable_type>);
+  DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<iterator, CollectionType::mutable_type>);
   DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<const_iterator, CollectionType::value_type>);
-  DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<const_iterator, CollectionType::value_type::mutable_type>);
+  DOCUMENTED_STATIC_FAILURE(std::indirectly_writable<const_iterator, CollectionType::mutable_type>);
   // std::output_iterator
   DOCUMENTED_STATIC_FAILURE(std::output_iterator<iterator, CollectionType::value_type>);
-  DOCUMENTED_STATIC_FAILURE(std::output_iterator<iterator, CollectionType::value_type::mutable_type>);
+  DOCUMENTED_STATIC_FAILURE(std::output_iterator<iterator, CollectionType::mutable_type>);
   DOCUMENTED_STATIC_FAILURE(std::output_iterator<const_iterator, CollectionType::value_type>);
-  DOCUMENTED_STATIC_FAILURE(std::output_iterator<const_iterator, CollectionType::value_type::mutable_type>);
+  DOCUMENTED_STATIC_FAILURE(std::output_iterator<const_iterator, CollectionType::mutable_type>);
   // std::forward_iterator
   DOCUMENTED_STATIC_FAILURE(std::forward_iterator<iterator>);
   DOCUMENTED_STATIC_FAILURE(std::forward_iterator<const_iterator>);
@@ -881,24 +881,24 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // *r++ = o
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type::mutable_type>);
+    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::mutable_type>);
     {
       auto coll = CollectionType{};
       auto item = coll.create(13ull, 0., 0., 0., 0.);
       REQUIRE(coll.begin()->cellID() == 13ull);
-      auto new_item = CollectionType::value_type::mutable_type{42ull, 0., 0., 0., 0.};
+      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
       *coll.begin()++ = new_item;
       DOCUMENTED_FAILURE(coll.begin()->cellID() == 42ull);
     }
     // const_iterator
     STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type>);
     STATIC_REQUIRE(
-        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type::mutable_type>);
+        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::mutable_type>);
     {
       auto coll = CollectionType{};
       auto item = coll.create(13ull, 0., 0., 0., 0.);
       REQUIRE(coll.cbegin()->cellID() == 13ull);
-      auto new_item = CollectionType::value_type::mutable_type{42ull, 0., 0., 0., 0.};
+      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
       *coll.cbegin()++ = new_item;
       DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 42ull);
       new_item.cellID(44ull);
@@ -1103,7 +1103,7 @@ TEST_CASE("Collection as range", "[collection][ranges][std]") {
   STATIC_REQUIRE(std::ranges::input_range<CollectionType>);
   // std::range::output_range
   DOCUMENTED_STATIC_FAILURE(std::ranges::output_range<CollectionType, CollectionType::value_type>);
-  DOCUMENTED_STATIC_FAILURE(std::ranges::output_range<CollectionType, CollectionType::value_type::mutable_type>);
+  DOCUMENTED_STATIC_FAILURE(std::ranges::output_range<CollectionType, CollectionType::mutable_type>);
   // std::range::forward_range
   DOCUMENTED_STATIC_FAILURE(std::ranges::forward_range<CollectionType>);
   // std::range::bidirectional_range
