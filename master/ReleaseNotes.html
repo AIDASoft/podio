@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v01-01 &mdash; PODIO  documentation</title>
+  <title>v01-02 &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -691,7 +691,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">v01-01</li>
+      <li class="breadcrumb-item active">v01-02</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -700,7 +700,170 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="v01-01">
+  <section id="v01-02">
+<h1>v01-02<a class="headerlink" href="#v01-02" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2024-12-17 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/715">PR#715</a>)</p>
+<ul>
+<li><p>Improve the schema changes that <code class="docutils literal notranslate"><span class="pre">podio_schema_evolution.py</span></code> detects and reports on</p>
+<ul>
+<li><p>Addition / removal of <code class="docutils literal notranslate"><span class="pre">VectorMembers</span></code>, <code class="docutils literal notranslate"><span class="pre">OneToOneRelations</span></code> and <code class="docutils literal notranslate"><span class="pre">OneToManyRelations</span></code></p></li>
+</ul>
+</li>
+<li><p>Make the script exit with a non-zero exit code in case an unsupported schema change is detected</p></li>
+<li><p>Add a test setup and some tests for testing the schema evolution script and make sure it detects unsupported changes</p></li>
+</ul>
+</li>
+<li><p>2024-12-09 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/716">PR#716</a>)</p>
+<ul>
+<li><p>Mark the collection destructor with override and remove <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;array&gt;</span></code></p></li>
+</ul>
+</li>
+<li><p>2024-12-09 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/714">PR#714</a>)</p>
+<ul>
+<li><p>Added possibility to use in the interfaces the datatypes from different podio-based datamodels</p></li>
+</ul>
+</li>
+<li><p>2024-12-05 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/646">PR#646</a>)</p>
+<ul>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code> utility class that facilitates the lookup of linked objects</p></li>
+</ul>
+</li>
+<li><p>2024-12-02 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/710">PR#710</a>)</p>
+<ul>
+<li><p>Make sure that the weights of the links end up as a <code class="docutils literal notranslate"><span class="pre">vector&lt;LinkData&gt;</span></code> in the ROOT files instead of a <code class="docutils literal notranslate"><span class="pre">vector&lt;float&gt;</span></code></p></li>
+</ul>
+</li>
+<li><p>2024-12-02 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/691">PR#691</a>)</p>
+<ul>
+<li><p>Introduce a new <code class="docutils literal notranslate"><span class="pre">links</span></code> category into the YAML grammar to automate the declaration of Links.</p></li>
+</ul>
+</li>
+<li><p>2024-11-20 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/709">PR#709</a>)</p>
+<ul>
+<li><p>Remove an option from <code class="docutils literal notranslate"><span class="pre">.clang-tidy</span></code> that has been removed from newer versions of <code class="docutils literal notranslate"><span class="pre">clang-tidy</span></code> (&gt;= 18)</p></li>
+</ul>
+</li>
+<li><p>2024-11-20 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/681">PR#681</a>)</p>
+<ul>
+<li><p>Add a tool to merge several podio files into a single one:</p>
+<ul>
+<li><p>Metadata for every event can be saved or not</p></li>
+<li><p>The same format as the first input file will be used (TTree or RNTuple)</p></li>
+<li><p>Metadata about the input file names will be saved</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2024-11-19 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/707">PR#707</a>)</p>
+<ul>
+<li><p>Run clang-tidy at the end of pre-commit since other failures are more likely and clang-tidy takes a long time.</p></li>
+</ul>
+</li>
+<li><p>2024-11-18 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/706">PR#706</a>)</p>
+<ul>
+<li><p>Remove unnecessary code in GenericParameters.h</p></li>
+</ul>
+</li>
+<li><p>2024-11-11 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/704">PR#704</a>)</p>
+<ul>
+<li><p>Fix tests when SIO is OFF</p></li>
+</ul>
+</li>
+<li><p>2024-11-08 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/702">PR#702</a>)</p>
+<ul>
+<li><p>Make sure that <code class="docutils literal notranslate"><span class="pre">makeReader</span></code> still recognizes files with RNTuple inside after they have been marked non-experimental in ROOT.</p></li>
+</ul>
+</li>
+<li><p>2024-11-08 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/700">PR#700</a>)</p>
+<ul>
+<li><p>Add a deprecation warning when building with C++17 before removing support for it in https://github.com/AIDASoft/podio/pull/698</p></li>
+</ul>
+</li>
+<li><p>2024-11-08 Victor Schwan (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/699">PR#699</a>)</p>
+<ul>
+<li><p>add compatibility with pathlib.Path objects in root_io and sio_io</p></li>
+</ul>
+</li>
+<li><p>2024-11-08 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/693">PR#693</a>)</p>
+<ul>
+<li><p>Fix small issue in <code class="docutils literal notranslate"><span class="pre">GenericParameters</span></code> where trying to access a single element of a parameter that was stored as an empty vector resulted in a crash. Instead make this return an empty optional now.</p></li>
+</ul>
+</li>
+<li><p>2024-10-17 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/697">PR#697</a>)</p>
+<ul>
+<li><p>Temporarily set the <code class="docutils literal notranslate"><span class="pre">JULIA_DEPOT_PATH</span></code> to a writable directory to make CI pass.</p></li>
+</ul>
+</li>
+<li><p>2024-10-17 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/696">PR#696</a>)</p>
+<ul>
+<li><p>Remove some includes and fix a couple of URLs</p></li>
+</ul>
+</li>
+<li><p>2024-10-15 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/695">PR#695</a>)</p>
+<ul>
+<li><p>Fix minor memory leaks of consumed buffers in <code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code>s and <code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code>s and in <code class="docutils literal notranslate"><span class="pre">SIOBlockUserData</span></code></p></li>
+<li><p>Enable some more complete I/O tests using SIO and RNTuple</p></li>
+</ul>
+</li>
+<li><p>2024-10-15 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/694">PR#694</a>)</p>
+<ul>
+<li><p>Remove unnecessary <code class="docutils literal notranslate"><span class="pre">inline</span></code> in <code class="docutils literal notranslate"><span class="pre">std_interoperability.cpp</span></code> since the variables are only used in that file.</p></li>
+</ul>
+</li>
+<li><p>2024-09-30 Leonhard Reichenbach (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/692">PR#692</a>)</p>
+<ul>
+<li><p>GenericParameters.h: added missing clear and empty check for double map</p></li>
+</ul>
+</li>
+<li><p>2024-09-30 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/683">PR#683</a>)</p>
+<ul>
+<li><p>Using enable if instead of static_assert in interface type construct to avoid errors with direct initialization of contianers of interface types</p></li>
+</ul>
+</li>
+<li><p>2024-09-27 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/690">PR#690</a>)</p>
+<ul>
+<li><p>Switch to software stacks with a newer version of ROOT for building and testing EDM4hep in CI, because we need a newer version of ROOT to run all the backwards compatibility tests in EDM4hep.</p></li>
+</ul>
+</li>
+<li><p>2024-09-26 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/689">PR#689</a>)</p>
+<ul>
+<li><p>Use a <code class="docutils literal notranslate"><span class="pre">unique_ptr</span></code> to manage the OneToOneRelation pointers in the <code class="docutils literal notranslate"><span class="pre">Obj</span></code> classes.</p></li>
+</ul>
+</li>
+<li><p>2024-09-26 ANUSHKA SAXENA (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/685">PR#685</a>)</p>
+<ul>
+<li><p>Add advanced CMake usage for <code class="docutils literal notranslate"><span class="pre">PODIO_GENERATE_DATAMODEL</span></code> to docs</p></li>
+</ul>
+</li>
+<li><p>2024-09-24 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/688">PR#688</a>)</p>
+<ul>
+<li><p>Make sure that we pick up the correct version of <code class="docutils literal notranslate"><span class="pre">pylint</span></code> in the CI for pre-commit.</p></li>
+</ul>
+</li>
+<li><p>2024-09-24 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/673">PR#673</a>)</p>
+<ul>
+<li><p>Rework the I/O  handling for relations. This is mainly removing the differences in handling of interface and regular datatypes in relations.</p>
+<ul>
+<li><p>Remove the conditional code generation from the jinja2 templates and add functionality that dispatches to the correct handling depending on a (c++) type check</p></li>
+</ul>
+</li>
+<li><p>Expose an <code class="docutils literal notranslate"><span class="pre">interfaced_types</span></code> member type for interface types and add a type helper to check whether a type is an interface type</p></li>
+</ul>
+</li>
+<li><p>2024-09-23 tmadlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/687">PR#687</a>)</p>
+<ul>
+<li><p>Make sure the <code class="docutils literal notranslate"><span class="pre">ROOT_INCLUDE_PATH</span></code> in the test environment points to the correct place.</p></li>
+</ul>
+</li>
+<li><p>2024-09-23 Benedikt Hegner (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/684">PR#684</a>)</p>
+<ul>
+<li><p>Finally removing deprecated ROOTFrame[Reader,Writer] and SIOFrame[Reader,Writer] classes (announced removal was v01-00)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v01-01">
 <h1>v01-01<a class="headerlink" href="#v01-01" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>2024-09-20 Leonhard Reichenbach (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/682">PR#682</a>)</p>
