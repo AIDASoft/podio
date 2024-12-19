@@ -72,6 +72,7 @@ private:
 
 public:
   using value_type = typename std::vector<BasicType>::value_type;
+  using mutable_type = value_type;
   using const_iterator = typename std::vector<BasicType>::const_iterator;
   using iterator = typename std::vector<BasicType>::iterator;
   using difference_type = typename std::vector<BasicType>::difference_type;
