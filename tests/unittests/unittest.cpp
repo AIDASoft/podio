@@ -206,6 +206,20 @@ TEST_CASE("Looping", "[basics]") {
   }
 }
 
+TEST_CASE("Reverse iterators", "[basics]") {
+  auto coll = ExampleHitCollection();
+  coll.create();
+  coll.create();
+  auto it = std::rbegin(coll);
+  (*it).energy(43);
+  (*++it).energy(42);
+  REQUIRE((*it).energy() == 42);
+  REQUIRE((*--it).energy() == 43);
+  auto cit = std::crbegin(coll);
+  REQUIRE((*it).energy() == 43);
+  REQUIRE((*++it).energy() == 42);
+}
+
 TEST_CASE("Notebook", "[basics]") {
   auto hits = ExampleHitCollection();
   for (unsigned i = 0; i < 12; ++i) {
