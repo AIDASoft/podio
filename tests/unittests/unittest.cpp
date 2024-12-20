@@ -220,7 +220,6 @@ TEST_CASE("Reverse iterators", "[basics]") {
   REQUIRE((*++it).energy() == 42);
 }
 
-
 TEST_CASE("Notebook", "[basics]") {
   auto hits = ExampleHitCollection();
   for (unsigned i = 0; i < 12; ++i) {
