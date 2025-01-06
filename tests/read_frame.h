@@ -15,6 +15,7 @@
 #include "interface_extension_model/TestInterfaceLinkCollection.h"
 
 #include "podio/Frame.h"
+#include "podio/Reader.h"
 
 #include <iostream>
 
@@ -269,14 +270,17 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   return 0;
 }
 
-// /// Check that reading only a subset of collections works as expected
 template <typename ReaderT>
-int test_read_frame_limited(const std::string& inputFile) {
-  auto reader = ReaderT();
-  reader.openFile(inputFile);
+int test_read_frame_limited(ReaderT& reader) {
   const std::vector<std::string> collsToRead = {"mcparticles", "clusters"};
 
-  const auto event = podio::Frame(reader.readNextEntry("events", collsToRead));
+  const auto event = [&]() {
+    if constexpr (std::is_same_v<ReaderT, podio::Reader>) {
+      return podio::Frame(reader.readFrame("events", 1, collsToRead));
+    } else {
+      return podio::Frame(reader.readEntry("events", 1, collsToRead));
+    }
+  }();
 
   const auto& availColls = event.getAvailableCollections();
 
@@ -308,7 +312,7 @@ int test_read_frame_limited(const std::string& inputFile) {
     return 1;
   }
 
-  const auto& clusters = event.get<ExampleClusterCollection>("clusters");
+  const auto& clusters = event.template get<ExampleClusterCollection>("clusters");
   const auto clu0 = clusters[0];
   const auto hits = clu0.Hits();
   if (hits.size() != 1 || hits[0].isAvailable()) {
@@ -317,6 +321,15 @@ int test_read_frame_limited(const std::string& inputFile) {
   }
 
   return 0;
+}
+
+/// Check that reading only a subset of collections works as expected
+template <typename ReaderT>
+int test_read_frame_limited(const std::string& inputFile) {
+  auto reader = ReaderT();
+  reader.openFile(inputFile);
+
+  return test_read_frame_limited(reader);
 }
 
 #endif // PODIO_TESTS_READ_FRAME_H

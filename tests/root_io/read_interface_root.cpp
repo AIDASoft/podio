@@ -1,11 +1,9 @@
+#include "read_frame.h"
 #include "read_interface.h"
 
+#include "podio/Reader.h"
+
 int main(int, char**) {
-
   auto reader = podio::makeReader("example_frame_interface.root");
-  if (read_frames(reader)) {
-    return 1;
-  }
-
-  return 0;
+  return read_frames(reader) + test_read_frame_limited(reader);
 }
