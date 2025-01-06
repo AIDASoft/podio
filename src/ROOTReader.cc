@@ -12,6 +12,7 @@
 #include "TChain.h"
 #include "TClass.h"
 
+#include <algorithm>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -78,18 +79,21 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
   return params;
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name,
+                                                         const std::vector<std::string>& collsToRead) {
   auto& catInfo = getCategoryInfo(name);
-  return readEntry(catInfo);
+  return readEntry(catInfo, collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum,
+                                                     const std::vector<std::string>& collsToRead) {
   auto& catInfo = getCategoryInfo(name);
   catInfo.entry = entNum;
-  return readEntry(catInfo);
+  return readEntry(catInfo, collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo,
+                                                     const std::vector<std::string>& collsToRead) {
   if (!catInfo.chain) {
     return nullptr;
   }
@@ -109,6 +113,9 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
 
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, catInfo.storedClasses[i].first) == collsToRead.end()) {
+      continue;
+    }
     buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i, reloadBranches, localEntry));
   }
 
