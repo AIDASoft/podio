@@ -138,11 +138,13 @@ std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
   return cats;
 }
 
-std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name) {
-  return readEntry(name, m_entries[name]);
+std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name,
+                                                            const std::vector<std::string>& collsToRead) {
+  return readEntry(name, m_entries[name], collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum) {
+std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum,
+                                                        const std::vector<std::string>& collsToRead) {
   if (m_totalEntries.find(category) == m_totalEntries.end()) {
     getEntries(category);
   }
@@ -179,6 +181,9 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   const auto& collInfo = m_collectionInfo[category];
 
   for (size_t i = 0; i < collInfo.id.size(); ++i) {
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, collInfo.name[i]) == collsToRead.end()) {
+      continue;
+    }
     const auto& collType = collInfo.type[i];
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
     auto maybeBuffers =

@@ -19,10 +19,6 @@
 
 namespace podio {
 
-/**
-This class has the function to read available data from disk
-and to prepare collections and buffers.
-**/
 /// The RNTupleReader can be used to read files that have been written with the
 /// RNTuple backend.
 ///
@@ -61,20 +57,26 @@ public:
   /// Read the next data entry for a given category.
   ///
   /// @param name The category name for which to read the next entry
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category exists and if there are still entries left to read.
   ///          Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name);
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
+                                                      const std::vector<std::string>& collsToRead = {});
 
   /// Read the desired data entry for a given category.
   ///
   /// @param name  The category name for which to read the next entry
   /// @param entry The entry number to read
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category and the desired entry exist. Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry);
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
+                                                  const std::vector<std::string>& collsToRead = {});
 
   /// Get the names of all the available Frame categories in the current file(s).
   ///
