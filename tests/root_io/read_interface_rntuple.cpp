@@ -1,10 +1,9 @@
+#include "read_frame.h"
 #include "read_interface.h"
 
 int main(int, char**) {
   auto reader = podio::makeReader("example_from_rntuple_interface.root");
-  if (read_frames(reader)) {
-    return 1;
-  }
+  return read_frames(reader) + test_read_frame_limited(reader);
 
   return 0;
 }

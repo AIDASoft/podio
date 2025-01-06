@@ -22,8 +22,8 @@ private:
   struct ReaderConcept {
     virtual ~ReaderConcept() = default;
 
-    virtual podio::Frame readNextFrame(const std::string& name) = 0;
-    virtual podio::Frame readFrame(const std::string& name, size_t index) = 0;
+    virtual podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>&) = 0;
+    virtual podio::Frame readFrame(const std::string& name, size_t index, const std::vector<std::string>&) = 0;
     virtual size_t getEntries(const std::string& name) const = 0;
     virtual podio::version::Version currentFileVersion() const = 0;
     virtual std::optional<podio::version::Version> currentFileVersion(const std::string& name) const = 0;
@@ -44,16 +44,17 @@ private:
 
     ~ReaderModel() = default;
 
-    podio::Frame readNextFrame(const std::string& name) override {
-      auto maybeFrame = m_reader->readNextEntry(name);
+    podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>& collsToRead) override {
+      auto maybeFrame = m_reader->readNextEntry(name, collsToRead);
       if (maybeFrame) {
         return maybeFrame;
       }
       throw std::runtime_error("Failed reading category " + name + " (reading beyond bounds?)");
     }
 
-    podio::Frame readFrame(const std::string& name, size_t index) override {
-      auto maybeFrame = m_reader->readEntry(name, index);
+    podio::Frame readFrame(const std::string& name, size_t index,
+                           const std::vector<std::string>& collsToRead) override {
+      auto maybeFrame = m_reader->readEntry(name, index, collsToRead);
       if (maybeFrame) {
         return maybeFrame;
       }
@@ -105,46 +106,55 @@ public:
   /// Read the next frame of a given category
   ///
   /// @param name The category name for which to read the next frame
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns A fully constructed Frame with the contents read from file
   ///
   /// @throws std::invalid_argument in case the category is not available or in
   ///         case no more entries are available
-  podio::Frame readNextFrame(const std::string& name) {
-    return m_self->readNextFrame(name);
+  podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>& collsToRead = {}) {
+    return m_self->readNextFrame(name, collsToRead);
   }
 
   /// Read the next frame of the "events" category
   ///
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
+  ///
   /// @returns A fully constructed Frame with the contents read from file
   ///
   /// @throws std::invalid_argument in case no (more) events are available
-  podio::Frame readNextEvent() {
-    return readNextFrame(podio::Category::Event);
+  podio::Frame readNextEvent(const std::vector<std::string>& collsToRead = {}) {
+    return readNextFrame(podio::Category::Event, collsToRead);
   }
 
   /// Read a specific frame for a given category
   ///
   /// @param name  The category name for which to read the next entry
   /// @param index The entry number to read
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns A fully constructed Frame with the contents read from file
   ///
   /// @throws std::invalid_argument in case the category is not available or in
   ///         case the specified entry is not available
-  podio::Frame readFrame(const std::string& name, size_t index) {
-    return m_self->readFrame(name, index);
+  podio::Frame readFrame(const std::string& name, size_t index, const std::vector<std::string>& collsToRead = {}) {
+    return m_self->readFrame(name, index, collsToRead);
   }
 
   /// Read a specific frame of the "events" category
   ///
   /// @param index The event number to read
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns A fully constructed Frame with the contents read from file
   ///
   /// @throws std::invalid_argument in case the desired event is not available
-  podio::Frame readEvent(size_t index) {
-    return readFrame(podio::Category::Event, index);
+  podio::Frame readEvent(size_t index, const std::vector<std::string>& collsToRead = {}) {
+    return readFrame(podio::Category::Event, index, collsToRead);
   }
 
   /// Get the number of entries for the given name
