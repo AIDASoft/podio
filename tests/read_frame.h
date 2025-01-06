@@ -1,6 +1,7 @@
 #ifndef PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithInterfaceRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "read_test.h"
@@ -274,7 +275,7 @@ template <typename ReaderT>
 int test_read_frame_limited(ReaderT& reader) {
   const std::vector<std::string> collsToRead = {"mcparticles", "clusters"};
 
-  const auto event = [&]() {
+  auto event = [&]() {
     if constexpr (std::is_same_v<ReaderT, podio::Reader>) {
       return podio::Frame(reader.readFrame("events", 1, collsToRead));
     } else {
@@ -317,6 +318,17 @@ int test_read_frame_limited(ReaderT& reader) {
   const auto hits = clu0.Hits();
   if (hits.size() != 1 || hits[0].isAvailable()) {
     std::cerr << "Hit in clusters are available but shouldn't be" << std::endl;
+    return 1;
+  }
+
+  const auto& newHits = [&]() -> auto const& {
+    auto mutHits = ExampleHitCollection();
+    mutHits.create();
+    return event.put(std::move(mutHits), "hits");
+  }();
+
+  if (newHits.size() != 1) {
+    std::cerr << "Adding new collection with same name as available from data (but not read) doesn't work" << std::endl;
     return 1;
   }
 
