@@ -6,5 +6,6 @@
 int main() {
   const std::string inputFile = "example_rntuple.root";
 
-  return read_frames<podio::RNTupleReader>(inputFile) + test_frame_aux_info<podio::RNTupleReader>(inputFile);
+  return read_frames<podio::RNTupleReader>(inputFile) + test_frame_aux_info<podio::RNTupleReader>(inputFile) +
+      test_read_frame_limited<podio::RNTupleReader>(inputFile);
 }
