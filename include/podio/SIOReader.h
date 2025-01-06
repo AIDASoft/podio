@@ -37,21 +37,39 @@ public:
 
   /// Read the next data entry for a given category.
   ///
+  /// @note Given how the SIO files are currently layed out it is in fact not
+  /// possible to only read a subset of a Frame. Rather the subset of
+  /// collections to read will be an artificial limit on the returned
+  /// SIOFrameData. Limiting the collections to read will not improve I/O
+  /// performance.
+  ///
   /// @param name The category name for which to read the next entry
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category exists and if there are still entries left to read.
   ///          Otherwise a nullptr
-  std::unique_ptr<podio::SIOFrameData> readNextEntry(const std::string& name);
+  std::unique_ptr<podio::SIOFrameData> readNextEntry(const std::string& name,
+                                                     const std::vector<std::string>& collsToRead = {});
 
   /// Read the desired data entry for a given category.
   ///
+  /// @note Given how the SIO files are currently layed out it is in fact not
+  /// possible to only read a subset of a Frame. Rather the subset of
+  /// collections to read will be an artificial limit on the returned
+  /// SIOFrameData. Limiting the collections to read will not improve I/O
+  /// performance.
+  ///
   /// @param name  The category name for which to read the next entry
   /// @param entry The entry number to read
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category and the desired entry exist. Otherwise a nullptr
-  std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name, const unsigned entry);
+  std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name, const unsigned entry,
+                                                 const std::vector<std::string>& collsToRead = {});
 
   /// Get the number of entries for the given name
   ///

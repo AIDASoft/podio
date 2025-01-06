@@ -35,11 +35,13 @@ public:
   /// tableBuffer containing the necessary information for unpacking the
   /// collections. The two size parameters denote the uncompressed size of the
   /// respective buffers.
-  SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize) :
+  SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize,
+               std::vector<std::string> limitColls = {}) :
       m_recBuffer(std::move(collBuffers)),
       m_tableBuffer(std::move(tableBuffer)),
       m_dataSize(dataSize),
-      m_tableSize(tableSize) {
+      m_tableSize(tableSize),
+      m_limitColls(std::move(limitColls)) {
   }
 
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
@@ -79,6 +81,10 @@ private:
   std::vector<short> m_subsetCollectionBits{};
 
   podio::GenericParameters m_parameters{};
+
+  /// The collections that should be made available for a Frame constructed from
+  /// this (if non-empty)
+  std::vector<std::string> m_limitColls{};
 };
 } // namespace podio
 
