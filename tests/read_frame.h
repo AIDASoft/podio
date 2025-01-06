@@ -180,14 +180,14 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   }
 
   if (reader.getEntries(podio::Category::Event) != 10) {
-    std::cerr << "Could not read back the number of events correctly. "
-              << "(expected:" << 10 << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;
+    std::cerr << "Could not read back the number of events correctly. " << "(expected:" << 10
+              << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;
     return 1;
   }
 
   if (reader.getEntries(podio::Category::Event) != reader.getEntries("other_events")) {
-    std::cerr << "Could not read back the number of events correctly. "
-              << "(expected:" << 10 << ", actual: " << reader.getEntries("other_events") << ")" << std::endl;
+    std::cerr << "Could not read back the number of events correctly. " << "(expected:" << 10
+              << ", actual: " << reader.getEntries("other_events") << ")" << std::endl;
     return 1;
   }
 
@@ -264,6 +264,46 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
       std::cerr << "Trying to read a specific entry that does not exist should return a nullptr" << std::endl;
       return 1;
     }
+  }
+
+  return 0;
+}
+
+// /// Check that reading only a subset of collections works as expected
+template <typename ReaderT>
+int test_read_frame_limited(const std::string& inputFile) {
+  auto reader = ReaderT();
+  reader.openFile(inputFile);
+  const std::vector<std::string> collsToRead = {"mcparticles", "clusters"};
+
+  const auto event = podio::Frame(reader.readNextEntry("events", collsToRead));
+
+  const auto& availColls = event.getAvailableCollections();
+
+  const bool validColls =
+      std::set(availColls.begin(), availColls.end()) != std::set(collsToRead.begin(), collsToRead.end());
+
+  if (validColls) {
+    std::cerr << "The available collections are not as expected" << std::endl;
+    return 1;
+  }
+
+  if (!event.get("mcparticles")) {
+    std::cerr << "Collection 'mcparticles' should be available" << std::endl;
+    return 1;
+  }
+
+  if (event.get("hits")) {
+    std::cerr << "Collection 'hits' is available, but should not be" << std::endl;
+    return 1;
+  }
+
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters");
+  const auto clu0 = clusters[0];
+  const auto hits = clu0.Hits();
+  if (hits.size() != 1 || hits[0].isAvailable()) {
+    std::cerr << "Hit in clusters are available but shouldn't be" << std::endl;
+    return 1;
   }
 
   return 0;
