@@ -320,6 +320,22 @@ int test_read_frame_limited(ReaderT& reader) {
     return 1;
   }
 
+  // Check that nothing breaks if we pass in an unavailable collection name
+  const auto emptyEvent = [&]() {
+    if constexpr (std::is_same_v<ReaderT, podio::Reader>) {
+      return podio::Frame(reader.readFrame("events", 1, {"no-collection-with-this-name", "orThisOne"}));
+    } else {
+      return podio::Frame(reader.readEntry("events", 1, {"no-collection-with-this-name", "orThisOne"}));
+    }
+  }();
+
+  if (!emptyEvent.getAvailableCollections().empty()) {
+    std::cerr << "Trying to read collection names that are unavailable should not break, but should also not give a "
+                 "meaningful event"
+              << std::endl;
+    return 1;
+  }
+
   return 0;
 }
 
