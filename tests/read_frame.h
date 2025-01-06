@@ -285,6 +285,16 @@ int test_read_frame_limited(const std::string& inputFile) {
 
   if (validColls) {
     std::cerr << "The available collections are not as expected" << std::endl;
+    std::cerr << "expected: ";
+    for (const auto& c : std::set(collsToRead.begin(), collsToRead.end())) {
+      std::cerr << c << " ";
+    }
+    std::cerr << "\nactual: ";
+    for (const auto& c : std::set(availColls.begin(), availColls.end())) {
+      std::cerr << c << " ";
+    }
+    std::cerr << std::endl;
+
     return 1;
   }
 
