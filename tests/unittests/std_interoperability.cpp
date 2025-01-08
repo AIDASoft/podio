@@ -1170,15 +1170,12 @@ concept is_range_adjacent_findable = requires(T coll) {
 
 // helper concept for unsupported algorithm compilation test
 template <typename T>
-concept is_range_sortable = requires(T coll) {
-  std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); });
-};
+concept is_range_sortable =
+    requires(T coll) { std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); }); };
 
 // helper concept for unsupported algorithm compilation test
 template <typename T>
-concept is_range_fillable = requires(T coll) {
-  std::ranges::fill(coll, typename T::value_type{});
-};
+concept is_range_fillable = requires(T coll) { std::ranges::fill(coll, typename T::value_type{}); };
 
 TEST_CASE("Collection and unsupported std ranges algorithms", "[collection][ranges][std]") {
   // check that algorithms requiring unsupported iterator concepts won't compile
