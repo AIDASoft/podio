@@ -228,7 +228,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
     }
   }
 
-  std::sort(brNames.begin(), brNames.end());
+  std::ranges::sort(brNames);
   brNames.erase(std::unique(brNames.begin(), brNames.end()), brNames.end());
   return brNames;
 }

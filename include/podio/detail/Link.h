@@ -74,7 +74,8 @@ public:
   }
 
   /// Implicit conversion of mutable to immutable links
-  template <typename FromU, typename ToU, typename = std::enable_if_t<Mutable && sameTypes<FromU, ToU>>>
+  template <typename FromU, typename ToU>
+    requires Mutable && sameTypes<FromU, ToU>
   operator LinkT<FromU, ToU, false>() const {
     return Link<FromU, ToU>(m_obj);
   }
@@ -87,7 +88,8 @@ public:
   ///
   /// @returns A mutable deep-copy of this link which is independent of the
   ///          original one
-  template <typename FromU = FromT, typename ToU = ToT, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
+  template <typename FromU = FromT, typename ToU = ToT>
+    requires sameTypes<FromU, ToU>
   MutableLink<FromU, ToU> clone(bool cloneRelations = true) const {
     auto tmp = new LinkObjT(podio::ObjectID{}, m_obj->data);
     if (cloneRelations) {
@@ -102,7 +104,8 @@ public:
   }
 
   /// Create an empty Link handle
-  template <bool Mut = Mutable, typename = std::enable_if_t<!Mut && !Mutable>>
+  template <bool Mut = Mutable>
+    requires(!Mut && !Mutable)
   static Link<FromT, ToT> makeEmpty() {
     return {nullptr};
   }
@@ -116,7 +119,8 @@ public:
   }
 
   /// Set the weight of the link
-  template <bool Mut = Mutable, typename = std::enable_if_t<Mut && Mutable>>
+  template <bool Mut = Mutable>
+    requires(Mut && Mutable)
   void setWeight(float value) {
     m_obj->data.weight = value;
   }
@@ -134,10 +138,9 @@ public:
   /// @note All setFrom overloads are equivalent and the correct one is selected
   /// at compile time. We need to differentiate between the handles, only to
   /// make the python bindings work
-  template <typename FromU,
-            std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT> &&
-                                 detail::isDefaultHandleType<FromU>,
-                             int> = 0>
+  template <typename FromU>
+    requires(Mutable && std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT> &&
+             detail::isDefaultHandleType<FromU>)
   void setFrom(FromU value) {
     m_obj->m_from = std::make_unique<detail::GetDefaultHandleType<FromU>>(value);
   }
@@ -147,10 +150,9 @@ public:
   /// @note All setFrom overloads are equivalent and the correct one is selected
   /// at compile time. We need to differentiate between the handles, only to
   /// make the python bindings work
-  template <typename FromU,
-            std::enable_if_t<Mutable && std::is_same_v<detail::GetMutableHandleType<FromT>, FromU> &&
-                                 detail::isMutableHandleType<FromU>,
-                             int> = 0>
+  template <typename FromU>
+    requires(Mutable && std::is_same_v<detail::GetMutableHandleType<FromT>, FromU> &&
+             detail::isMutableHandleType<FromU>)
   void setFrom(FromU value) {
     setFrom(detail::GetDefaultHandleType<FromU>(value));
   }
@@ -160,7 +162,8 @@ public:
   /// @note All setFrom overloads are equivalent and the correct one is selected
   /// at compile time. We need this overload to allow for an implicit conversion
   /// to interface types in case the relation contains an interface type.
-  template <typename FromU, std::enable_if_t<Mutable && detail::isInterfaceInitializableFrom<FromT, FromU>, int> = 0>
+  template <typename FromU>
+    requires(Mutable && detail::isInterfaceInitializableFrom<FromT, FromU>)
   void setFrom(FromU value) {
     setFrom(FromT(value));
   }
@@ -178,10 +181,8 @@ public:
   /// @note All setTo overloads are equivalent and the correct one is selected
   /// at compile time. We need to differentiate between the handles, only to
   /// make the python bindings work
-  template <typename ToU,
-            std::enable_if_t<Mutable && std::is_same_v<detail::GetDefaultHandleType<ToU>, ToT> &&
-                                 detail::isDefaultHandleType<ToU>,
-                             int> = 0>
+  template <typename ToU>
+    requires(Mutable && std::is_same_v<detail::GetDefaultHandleType<ToU>, ToT> && detail::isDefaultHandleType<ToU>)
   void setTo(ToU value) {
     m_obj->m_to = std::make_unique<detail::GetDefaultHandleType<ToU>>(value);
   }
@@ -191,10 +192,8 @@ public:
   /// @note All setTo overloads are equivalent and the correct one is selected
   /// at compile time. We need to differentiate between the handles, only to
   /// make the python bindings work
-  template <typename ToU,
-            std::enable_if_t<Mutable && std::is_same_v<detail::GetMutableHandleType<ToT>, ToU> &&
-                                 detail::isMutableHandleType<ToU>,
-                             int> = 0>
+  template <typename ToU>
+    requires(Mutable && std::is_same_v<detail::GetMutableHandleType<ToT>, ToU> && detail::isMutableHandleType<ToU>)
   void setTo(ToU value) {
     setTo(detail::GetDefaultHandleType<ToU>(value));
   }
@@ -204,7 +203,8 @@ public:
   /// @note All setTo overloads are equivalent and the correct one is selected
   /// at compile time. We need this overload to allow for an implicit conversion
   /// to interface types in case the relation contains an interface type.
-  template <typename ToU, std::enable_if_t<Mutable && detail::isInterfaceInitializableFrom<ToT, ToU>, int> = 0>
+  template <typename ToU>
+    requires(Mutable && detail::isInterfaceInitializableFrom<ToT, ToU>)
   void setTo(ToU value) {
     setTo(ToT(value));
   }
@@ -217,7 +217,8 @@ public:
   ///
   /// @tparam T the desired type
   /// @returns T the element of the Link
-  template <typename T, typename = std::enable_if_t<!std::is_same_v<ToT, FromT> && isFromOrToT<T>>>
+  template <typename T>
+    requires(!std::is_same_v<ToT, FromT> && isFromOrToT<T>)
   T get() const {
     if constexpr (std::is_same_v<T, FromT>) {
       return getFrom();
@@ -235,7 +236,8 @@ public:
   ///   - 0: The From element of the Link
   ///   - 1: The To element of the Link
   ///   - 2: The weight of the Link
-  template <size_t Index, typename = std::enable_if_t<(Index < 3)>>
+  template <size_t Index>
+    requires(Index < 3)
   auto get() const {
     if constexpr (Index == 0) {
       return getFrom();
@@ -253,11 +255,10 @@ public:
   ///
   /// @tparam T type of value (**inferred!**)
   /// @param value the element to set for this link.
-  template <typename T,
-            std::enable_if_t<Mutable && !std::is_same_v<ToT, FromT> &&
-                                 (isMutableFromOrToT<T> || detail::isInterfaceInitializableFrom<ToT, T> ||
-                                  detail::isInterfaceInitializableFrom<FromT, T>),
-                             int> = 0>
+  template <typename T>
+    requires(Mutable && !std::is_same_v<ToT, FromT> &&
+             (isMutableFromOrToT<T> || detail::isInterfaceInitializableFrom<ToT, T> ||
+              detail::isInterfaceInitializableFrom<FromT, T>))
   void set(T value) {
     if constexpr (std::is_same_v<T, FromT>) {
       setFrom(std::move(value));
@@ -296,12 +297,14 @@ public:
     return !(*this == other);
   }
 
-  template <typename FromU, typename ToU, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
+  template <typename FromU, typename ToU>
+    requires sameTypes<FromU, ToU>
   bool operator==(const LinkT<FromU, ToU, !Mutable>& other) const {
     return m_obj == other.m_obj;
   }
 
-  template <typename FromU, typename ToU, typename = std::enable_if_t<sameTypes<FromU, ToU>>>
+  template <typename FromU, typename ToU>
+    requires sameTypes<FromU, ToU>
   bool operator!=(const LinkT<FromU, ToU, !Mutable>& other) const {
     return !(*this == other);
   }
@@ -320,7 +323,8 @@ private:
   explicit LinkT(podio::utils::MaybeSharedPtr<LinkObjT> obj) : m_obj(std::move(obj)) {
   }
 
-  template <bool Mut = Mutable, typename = std::enable_if_t<!Mut && !Mutable>>
+  template <bool Mut = Mutable>
+    requires(!Mut && !Mutable)
   LinkT(LinkObjT* obj) : m_obj(podio::utils::MaybeSharedPtr<LinkObjT>(obj)) {
   }
 

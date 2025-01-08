@@ -18,9 +18,9 @@ use a recent LCG or Key4hep stack release.
 
 On Mac OS or Ubuntu, you need to install the following software.
 
-### ROOT 6.08.06
+### ROOT 6.28.04
 
-Install ROOT 6.08.06 (or later) and set up your ROOT environment:
+Install ROOT 6.28.04 (or later) built with c++20 support and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
 

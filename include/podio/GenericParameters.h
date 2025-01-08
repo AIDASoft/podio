@@ -31,10 +31,9 @@ using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
 template <typename T>
 static constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, SupportedGenericDataTypes>;
 
-/// Alias template to be used for enabling / disabling template overloads that
-/// should only be present for actually supported data types
+/// Concept to be used for templates that should only be present for actually supported data types
 template <typename T>
-using EnableIfValidGenericDataType = typename std::enable_if_t<isSupportedGenericDataType<T>>;
+concept ValidGenericDataType = isSupportedGenericDataType<T>;
 
 /// GenericParameters objects allow one to store generic named parameters of type
 ///  int, float and string or vectors of these types.
@@ -68,11 +67,11 @@ public:
 
   ~GenericParameters() = default;
 
-  template <typename T>
+  template <ValidGenericDataType T>
   std::optional<T> get(const std::string& key) const;
 
   /// Store (a copy of) the passed value under the given key
-  template <typename T>
+  template <ValidGenericDataType T>
   void set(const std::string& key, T value);
 
   /// Overload for catching const char* setting for string values
@@ -86,7 +85,7 @@ public:
   }
 
   /// Overload for catching initializer list setting for vector values
-  template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
+  template <ValidGenericDataType T>
   void set(const std::string& key, std::initializer_list<T>&& values) {
     set<std::vector<T>>(key, std::move(values));
   }
@@ -96,15 +95,15 @@ public:
   void loadFrom(VecLike<std::string> keys, VecLike<std::vector<T>> values);
 
   /// Get the number of elements stored under the given key for a type
-  template <typename T, typename = EnableIfValidGenericDataType<T>>
+  template <ValidGenericDataType T>
   size_t getN(const std::string& key) const;
 
   /// Get all available keys for a given type
-  template <typename T>
+  template <ValidGenericDataType T>
   std::vector<std::string> getKeys() const;
 
   /// Get all the available values for a given type
-  template <typename T>
+  template <ValidGenericDataType T>
   std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> getKeysAndValues() const;
 
   /// erase all elements
@@ -181,9 +180,8 @@ private:
   mutable MutexPtr m_doubleMtx{nullptr}; ///< The mutex guarding the double map
 };
 
-template <typename T>
+template <ValidGenericDataType T>
 std::optional<T> GenericParameters::get(const std::string& key) const {
-  static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
   const auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
   std::lock_guard lock{mtx};
@@ -204,9 +202,8 @@ std::optional<T> GenericParameters::get(const std::string& key) const {
   }
 }
 
-template <typename T>
+template <ValidGenericDataType T>
 void GenericParameters::set(const std::string& key, T value) {
-  static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
   auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
 
@@ -221,7 +218,7 @@ void GenericParameters::set(const std::string& key, T value) {
   }
 }
 
-template <typename T, typename>
+template <ValidGenericDataType T>
 size_t GenericParameters::getN(const std::string& key) const {
   const auto& map = getMap<T>();
   auto& mtx = getMutex<T>();
@@ -232,9 +229,8 @@ size_t GenericParameters::getN(const std::string& key) const {
   return 0;
 }
 
-template <typename T>
+template <ValidGenericDataType T>
 std::vector<std::string> GenericParameters::getKeys() const {
-  static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
   std::vector<std::string> keys;
   const auto& map = getMap<T>();
   keys.reserve(map.size());
@@ -247,9 +243,8 @@ std::vector<std::string> GenericParameters::getKeys() const {
   return keys;
 }
 
-template <typename T>
+template <ValidGenericDataType T>
 std::tuple<std::vector<std::string>, std::vector<std::vector<T>>> GenericParameters::getKeysAndValues() const {
-  static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
   std::vector<std::vector<T>> values;
   std::vector<std::string> keys;
   auto& mtx = getMutex<T>();

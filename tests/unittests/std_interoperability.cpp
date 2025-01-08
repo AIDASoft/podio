@@ -413,7 +413,6 @@ TEST_CASE("Collection AllocatorAwareContainer types", "[collection][container][t
 }
 // TODO add tests for AllocatorAwareContainer statements and expressions
 
-#if (__cplusplus >= 202002L)
 TEST_CASE("Collection and iterator concepts", "[collection][container][iterator][std]") {
 
   SECTION("input_or_output_iterator") {
@@ -521,7 +520,6 @@ TEST_CASE("Collection and unsupported iterator concepts", "[collection][containe
   DOCUMENTED_STATIC_FAILURE(std::contiguous_iterator<iterator>);
   DOCUMENTED_STATIC_FAILURE(std::contiguous_iterator<const_iterator>);
 }
-#endif // __cplusplus >= 202002L
 
 TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
   // the checks are duplicated for iterator and const_iterator as expectations on them are slightly different
@@ -563,13 +561,11 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
         // const_iterator
         STATIC_REQUIRE(std::is_swappable_v<const_iterator&>);
 
-#if (__cplusplus < 202002L)
         // std::iterator_traits<It>::value_type (required prior to C++20)
         // iterator
         STATIC_REQUIRE(traits::has_value_type_v<std::iterator_traits<iterator>>);
         // const_iterator
         STATIC_REQUIRE(traits::has_value_type_v<std::iterator_traits<const_iterator>>);
-#endif
         // std::iterator_traits<It>::difference_type
         // iterator
         STATIC_REQUIRE(traits::has_difference_type_v<std::iterator_traits<iterator>>);
@@ -930,18 +926,14 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
     DOCUMENTED_STATIC_FAILURE(
         std::is_base_of_v<std::bidirectional_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
-#if (__cplusplus >= 202002L)
     DOCUMENTED_STATIC_FAILURE(std::bidirectional_iterator<iterator>);
-#endif
     // TODO add runtime checks here
     // const_iterator
     STATIC_REQUIRE(traits::has_const_iterator_v<CollectionType>);
     STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<const_iterator>>);
     DOCUMENTED_STATIC_FAILURE(
         std::is_base_of_v<std::bidirectional_iterator_tag, std::iterator_traits<const_iterator>::iterator_category>);
-#if (__cplusplus >= 202002L)
     DOCUMENTED_STATIC_FAILURE(std::bidirectional_iterator<iterator>);
-#endif
     // TODO add runtime checks here
   }
   SECTION("Back inserter") {
@@ -1032,9 +1024,7 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
     STATIC_REQUIRE(traits::has_iterator_category_v<std::iterator_traits<iterator>>);
     STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
-#if (__cplusplus >= 202002L)
     STATIC_REQUIRE(std::input_iterator<iterator>);
-#endif
     STATIC_REQUIRE(std::is_same_v<iterator::reference, std::move_iterator<iterator>::reference>);
     // const_iterator
     STATIC_REQUIRE(traits::has_iterator_v<CollectionType>);
@@ -1046,7 +1036,6 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     STATIC_REQUIRE(std::is_same_v<const_iterator::reference, std::move_iterator<const_iterator>::reference>);
   }
 
-#if (__cplusplus >= 202002L)
   SECTION("Counted iterator") {
     // iterator
     STATIC_REQUIRE(std::input_or_output_iterator<iterator>);
@@ -1081,10 +1070,8 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
       REQUIRE(++counted == std::default_sentinel);
     }
   }
-#endif
 }
 
-#if (__cplusplus >= 202002L)
 TEST_CASE("Collection as range", "[collection][ranges][std]") {
   CollectionType coll;
   coll.create();
@@ -1116,7 +1103,6 @@ TEST_CASE("Collection as range", "[collection][ranges][std]") {
   // std::range::viewable_range
   STATIC_REQUIRE(std::ranges::viewable_range<CollectionType>);
 }
-#endif
 
 TEST_CASE("Collection and std algorithms", "[collection][iterator][std]") {
   auto coll = CollectionType();
@@ -1148,8 +1134,6 @@ TEST_CASE("Collection and std algorithms", "[collection][iterator][std]") {
   // Algorithms requiring iterator category not supported by collection iterators
   // are not checked here as their compilation and results are unspecified
 }
-
-#if (__cplusplus >= 202002L)
 
 TEST_CASE("Collection and std ranges algorithms", "[collection][ranges][std]") {
   auto coll = CollectionType();
@@ -1186,15 +1170,12 @@ concept is_range_adjacent_findable = requires(T coll) {
 
 // helper concept for unsupported algorithm compilation test
 template <typename T>
-concept is_range_sortable = requires(T coll) {
-  std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); });
-};
+concept is_range_sortable =
+    requires(T coll) { std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); }); };
 
 // helper concept for unsupported algorithm compilation test
 template <typename T>
-concept is_range_fillable = requires(T coll) {
-  std::ranges::fill(coll, typename T::value_type{});
-};
+concept is_range_fillable = requires(T coll) { std::ranges::fill(coll, typename T::value_type{}); };
 
 TEST_CASE("Collection and unsupported std ranges algorithms", "[collection][ranges][std]") {
   // check that algorithms requiring unsupported iterator concepts won't compile
@@ -1202,8 +1183,6 @@ TEST_CASE("Collection and unsupported std ranges algorithms", "[collection][rang
   DOCUMENTED_STATIC_FAILURE(is_range_sortable<CollectionType>);
   DOCUMENTED_STATIC_FAILURE(is_range_fillable<CollectionType>);
 }
-
-#endif // __cplusplus >= 202002L
 
 #undef DOCUMENTED_STATIC_FAILURE
 #undef DOCUMENTED_FAILURE

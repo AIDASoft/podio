@@ -2,7 +2,6 @@
 #define PODIO_FRAME_H
 
 #include "podio/CollectionBase.h"
-#include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/FrameCategories.h" // mainly for convenience
 #include "podio/GenericParameters.h"
@@ -23,17 +22,13 @@
 
 namespace podio {
 
-/// Alias template for enabling overloads only for Collections
+/// Concept for enabling overloads only for Collection r-values
 template <typename T>
-using EnableIfCollection = typename std::enable_if_t<isCollection<T>>;
+concept CollectionRValueType = CollectionType<T> && !std::is_lvalue_reference_v<T>;
 
-/// Alias template for enabling overloads only for Collection r-values
+/// Concept for enabling overloads for r-values
 template <typename T>
-using EnableIfCollectionRValue = typename std::enable_if_t<isCollection<T> && !std::is_lvalue_reference_v<T>>;
-
-/// Alias template for enabling overloads for r-values
-template <typename T>
-using EnableIfRValue = typename std::enable_if_t<!std ::is_lvalue_reference_v<T>>;
+concept RValueType = !std::is_lvalue_reference_v<T>;
 
 namespace detail {
   /// The minimal interface for raw data types
@@ -165,7 +160,7 @@ public:
   /// @tparam FrameDataT Arbitrary data container that provides access to the
   ///                    collection buffers as well as the metadata, when
   ///                    requested by the Frame.
-  template <typename FrameDataT, typename = EnableIfRValue<FrameDataT>>
+  template <RValueType FrameDataT>
   Frame(FrameDataT&&);
 
   /// A Frame is move-only
@@ -193,7 +188,7 @@ public:
   ///
   /// @returns      A const reference to the collection if it is available or to
   ///               an empty (static) collection
-  template <typename CollT, typename = EnableIfCollection<CollT>>
+  template <CollectionType CollT>
   const CollT& get(const std::string& name) const;
 
   /// Get a collection pointer from the Frame by name.
@@ -218,7 +213,7 @@ public:
   ///
   /// @returns      A const reference to the collection that has just been
   ///               inserted
-  template <typename CollT, typename = EnableIfCollectionRValue<CollT>>
+  template <CollectionRValueType CollT>
   const CollT& put(CollT&& coll, const std::string& name);
 
   /// (Destructively) move a collection into the Frame.
@@ -234,7 +229,7 @@ public:
   ///              is supported by GenericParameters
   /// @param key   The name under which this parameter should be stored
   /// @param value The value of the parameter. A copy will be put into the Frame
-  template <typename T, typename = podio::EnableIfValidGenericDataType<T>>
+  template <ValidGenericDataType T>
   inline void putParameter(const std::string& key, T value) {
     m_self->parameters().set(key, std::move(value));
   }
@@ -271,7 +266,7 @@ public:
   ///              is supported by GenericParameters
   /// @param key    The name under which this parameter should be stored
   /// @param values The values of the parameter. A copy will be put into the Frame
-  template <typename T, typename = std::enable_if_t<detail::isInTuple<T, SupportedGenericDataTypes>>>
+  template <ValidGenericDataType T>
   inline void putParameter(const std::string& key, std::initializer_list<T>&& values) {
     putParameter<std::vector<T>>(key, std::move(values));
   }
@@ -282,9 +277,8 @@ public:
   /// @param key The key under which the value is stored
   ///
   /// @returns   An optional holding the value if it is present
-  template <typename T>
+  template <ValidGenericDataType T>
   inline auto getParameter(const std::string& key) const {
-    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     return m_self->parameters().get<T>(key);
   }
 
@@ -303,9 +297,8 @@ public:
   /// @tparam T The desired parameter type
   ///
   /// @returns  A vector of keys for this parameter type
-  template <typename T>
+  template <ValidGenericDataType T>
   inline std::vector<std::string> getParameterKeys() const {
-    static_assert(podio::isSupportedGenericDataType<T>, "Unsupported parameter type");
     return m_self->parameters().getKeys<T>();
   }
 
@@ -374,11 +367,11 @@ template <typename FrameDataT>
 Frame::Frame(std::unique_ptr<FrameDataT> data) : m_self(std::make_unique<FrameModel<FrameDataT>>(std::move(data))) {
 }
 
-template <typename FrameDataT, typename>
+template <RValueType FrameDataT>
 Frame::Frame(FrameDataT&& data) : Frame(std::make_unique<FrameDataT>(std::move(data))) {
 }
 
-template <typename CollT, typename>
+template <CollectionType CollT>
 const CollT& Frame::get(const std::string& name) const {
   const auto* coll = dynamic_cast<const CollT*>(m_self->get(name));
   if (coll) {
@@ -400,7 +393,7 @@ inline void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::s
   }
 }
 
-template <typename CollT, typename>
+template <CollectionRValueType CollT>
 const CollT& Frame::put(CollT&& coll, const std::string& name) {
   const auto* retColl = static_cast<const CollT*>(m_self->put(std::make_unique<CollT>(std::move(coll)), name));
   if (retColl) {

@@ -102,7 +102,8 @@ private:
 
 public:
   // {{ class.bare_type }} can only be initialized with one of the following types (and their Mutable counter parts): {{ Types | join(", ") }}
-  template<typename ValueT, typename = std::enable_if_t<isInitializableFrom<ValueT>>>
+  template<typename ValueT>
+  requires isInitializableFrom<ValueT>
   {{ class.bare_type }}(ValueT value) :
     m_self(std::make_unique<Model<podio::detail::GetDefaultHandleType<ValueT>>>(value)) {
   }

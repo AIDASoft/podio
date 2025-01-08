@@ -236,27 +236,27 @@ default handle types. This is ensured through `static_assert`s in the
 `GetDefaultHandleType` helper templates are used to retrieve the correct type
 from any `FromT` regardless of whether it is a mutable or a default handle type
 With this in mind, effectively all mutating operations on `Link`s are
-defined using [*SFINAE*](https://en.cppreference.com/w/cpp/language/sfinae)
-using the following template structure (taking here `setFrom` as an example)
+defined using the following template structure (taking here `setFrom` as an example)
 
 ```cpp
-template <typename FromU,
-          typename = std::enable_if_t<Mutable &&
-                                      std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT>>>
+template <typename FromU>
+  requires(Mutable && std::is_same_v<detail::GetDefaultHandleType<FromU>, FromT> &&
+           detail::isDefaultHandleType<FromU>)
 void setFrom(FromU value);
 ```
 
-This is a SFINAE friendly way to ensure that this definition is only viable if
-the following conditions are met
-- The object this method is called on has to be `Mutable`. (first part inside the `std::enable_if`)
-- The passed in `value` is either a `Mutable` or default class of type `FromT`. (second part inside the `std::enable_if`)
+Compilation will fail unless the following conditions are met
+- The object this method is called on has to be `Mutable`.
+- The passed in `value` is either a `Mutable` or default class of type `FromT`.
 
 In some cases the template signature looks like this
 
 ```cpp
-template<bool Mut = Mutable,
-         typename = std::enable_if<Mut && Mutable>>
-void setWeight(float weight);
+template <bool Mut = Mutable>
+  requires(Mut && Mutable)
+void setWeight(float value) {
+  m_obj->data.weight = value;
+}
 ```
 
 The reason to have a defaulted `bool` template parameter here is the same as the
