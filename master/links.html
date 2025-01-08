@@ -350,7 +350,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html">Class podio::SIOBlockUserData</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I00EN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">SIOBlockUserData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I_21SupportedUserDataTypeEN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">SIOBlockUserData</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_collection_i_d_table_block.html">Class podio::SIOCollectionIDTableBlock</a><ul>
@@ -921,24 +921,24 @@ default handle types. This is ensured through <code class="docutils literal notr
 <code class="docutils literal notranslate"><span class="pre">GetDefaultHandleType</span></code> helper templates are used to retrieve the correct type
 from any <code class="docutils literal notranslate"><span class="pre">FromT</span></code> regardless of whether it is a mutable or a default handle type
 With this in mind, effectively all mutating operations on <code class="docutils literal notranslate"><span class="pre">Link</span></code>s are
-defined using <a class="reference external" href="https://en.cppreference.com/w/cpp/language/sfinae"><em>SFINAE</em></a>
-using the following template structure (taking here <code class="docutils literal notranslate"><span class="pre">setFrom</span></code> as an example)</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FromU</span><span class="p">,</span>
-<span class="w">          </span><span class="k">typename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;</span><span class="n">Mutable</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">                                      </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">detail</span><span class="o">::</span><span class="n">GetDefaultHandleType</span><span class="o">&lt;</span><span class="n">FromU</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">FromT</span><span class="o">&gt;&gt;&gt;</span>
+defined using the following template structure (taking here <code class="docutils literal notranslate"><span class="pre">setFrom</span></code> as an example)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">FromU</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">requires</span><span class="p">(</span><span class="n">Mutable</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">detail</span><span class="o">::</span><span class="n">GetDefaultHandleType</span><span class="o">&lt;</span><span class="n">FromU</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">FromT</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">           </span><span class="n">detail</span><span class="o">::</span><span class="n">isDefaultHandleType</span><span class="o">&lt;</span><span class="n">FromU</span><span class="o">&gt;</span><span class="p">)</span>
 <span class="kt">void</span><span class="w"> </span><span class="n">setFrom</span><span class="p">(</span><span class="n">FromU</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>This is a SFINAE friendly way to ensure that this definition is only viable if
-the following conditions are met</p>
+<p>Compilation will fail unless the following conditions are met</p>
 <ul class="simple">
-<li><p>The object this method is called on has to be <code class="docutils literal notranslate"><span class="pre">Mutable</span></code>. (first part inside the <code class="docutils literal notranslate"><span class="pre">std::enable_if</span></code>)</p></li>
-<li><p>The passed in <code class="docutils literal notranslate"><span class="pre">value</span></code> is either a <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> or default class of type <code class="docutils literal notranslate"><span class="pre">FromT</span></code>. (second part inside the <code class="docutils literal notranslate"><span class="pre">std::enable_if</span></code>)</p></li>
+<li><p>The object this method is called on has to be <code class="docutils literal notranslate"><span class="pre">Mutable</span></code>.</p></li>
+<li><p>The passed in <code class="docutils literal notranslate"><span class="pre">value</span></code> is either a <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> or default class of type <code class="docutils literal notranslate"><span class="pre">FromT</span></code>.</p></li>
 </ul>
 <p>In some cases the template signature looks like this</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="kt">bool</span><span class="w"> </span><span class="n">Mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Mutable</span><span class="p">,</span>
-<span class="w">         </span><span class="k">typename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">enable_if</span><span class="o">&lt;</span><span class="n">Mut</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">Mutable</span><span class="o">&gt;&gt;</span>
-<span class="kt">void</span><span class="w"> </span><span class="n">setWeight</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">weight</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">bool</span><span class="w"> </span><span class="n">Mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Mutable</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">requires</span><span class="p">(</span><span class="n">Mut</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">Mutable</span><span class="p">)</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">setWeight</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">m_obj</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">.</span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The reason to have a defaulted <code class="docutils literal notranslate"><span class="pre">bool</span></code> template parameter here is the same as the

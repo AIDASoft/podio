@@ -350,7 +350,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html">Class podio::SIOBlockUserData</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I00EN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">SIOBlockUserData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I_21SupportedUserDataTypeEN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">SIOBlockUserData</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_collection_i_d_table_block.html">Class podio::SIOCollectionIDTableBlock</a><ul>
@@ -740,8 +740,8 @@ This is mandated by the interface for collection data (simplified here for bette
 <p>In both cases, if you passed in a named variable, the user is left with a <em>moved-from object</em>, which has to be in a <em>valid but indefinite</em> state, and cannot be used afterwards.
 Some compilers and static code analysis tools are able to detect the accidental usage of <em>moved-from</em> objects.</p>
 <p>For putting in parameters the basic principle is very similar, with the major difference being, that for <em>trivial</em> types <code class="docutils literal notranslate"><span class="pre">getParameter</span></code> will actually return by value.</p>
-<p>For all use cases there is some <code class="docutils literal notranslate"><span class="pre">enable_if</span></code> machinery in place to ensure that only valid collections and valid parameter types can actually be used.
-These checks also make sure that it is impossible to put in collections without handing over ownership to the <code class="docutils literal notranslate"><span class="pre">Frame</span></code>.</p>
+<p>For all use cases there is a concept requirement to ensure that only valid collections and valid parameter types can actually be used.
+Additional checks also make sure that it is impossible to put in collections without handing over ownership to the <code class="docutils literal notranslate"><span class="pre">Frame</span></code>.</p>
 <section id="usage-examples-for-collection-data">
 <h3>Usage examples for collection data<a class="headerlink" href="#usage-examples-for-collection-data" title="Link to this heading"></a></h3>
 <p>These are a few very basic usage examples that highlight the main functionality (and potential pitfalls).</p>
