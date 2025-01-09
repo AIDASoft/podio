@@ -8,6 +8,7 @@
 
 #include <ROOT/RError.hxx>
 
+#include <algorithm>
 #include <memory>
 
 // Adjust for the move of this out of ROOT v7 in
@@ -21,20 +22,21 @@ using ROOT::Experimental::RException;
 namespace podio {
 
 template <typename T>
-void RNTupleReader::readParams(const std::string& name, unsigned entNum, GenericParameters& params) {
-  auto keyView = m_readers[name][0]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
-  auto valueView = m_readers[name][0]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
+void RNTupleReader::readParams(const std::string& name, unsigned localEntry, unsigned readerIndex,
+                               GenericParameters& params) {
+  auto keyView = m_readers[name][readerIndex]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
+  auto valueView = m_readers[name][readerIndex]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
-  params.loadFrom(keyView(entNum), valueView(entNum));
+  params.loadFrom(keyView(localEntry), valueView(localEntry));
 }
 
-GenericParameters RNTupleReader::readEventMetaData(const std::string& name, unsigned entNum) {
+GenericParameters RNTupleReader::readEventMetaData(const std::string& name, unsigned localEntry, unsigned readerIndex) {
   GenericParameters params;
 
-  readParams<int>(name, entNum, params);
-  readParams<float>(name, entNum, params);
-  readParams<double>(name, entNum, params);
-  readParams<std::string>(name, entNum, params);
+  readParams<int>(name, localEntry, readerIndex, params);
+  readParams<float>(name, localEntry, readerIndex, params);
+  readParams<double>(name, localEntry, readerIndex, params);
+  readParams<std::string>(name, localEntry, readerIndex, params);
 
   return params;
 }
@@ -109,15 +111,19 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
 unsigned RNTupleReader::getEntries(const std::string& name) {
   if (m_readers.find(name) == m_readers.end()) {
+    m_readerEntries[name].reserve(m_filenames.size() + 1);
+    m_readerEntries[name].push_back(0);
     for (auto& filename : m_filenames) {
       try {
         m_readers[name].emplace_back(ROOT::Experimental::RNTupleReader::Open(name, filename));
+        m_readerEntries[name].push_back(m_readerEntries[name].back() + m_readers[name].back()->GetNEntries());
       } catch (const RException& e) {
         std::cout << "Category " << name << " not found in file " << filename << std::endl;
       }
     }
-    m_totalEntries[name] = std::accumulate(m_readers[name].begin(), m_readers[name].end(), 0,
-                                           [](int total, auto& reader) { return total + reader->GetNEntries(); });
+    m_totalEntries[name] = m_readerEntries[name].back();
+    // The last entry is not needed since it's the total number of entries
+    m_readerEntries[name].pop_back();
   }
   return m_totalEntries[name];
 }
@@ -151,15 +157,22 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
 
   m_entries[category] = entNum + 1;
 
+  // m_readerEntries contains the accumulated entries for all the readers
+  // therefore, the first number that is lower or equal to the entry number
+  // is at the index of the reader that contains the entry
+  auto upper = std::ranges::upper_bound(m_readerEntries[category], entNum);
+  auto localEntry = entNum - *(upper - 1);
+  auto readerIndex = upper - 1 - m_readerEntries[category].begin();
+
   ROOTFrameData::BufferMap buffers;
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   // We need to create a non-bare entry here, because the entries for the
   // parameters are not explicitly (re)set and we need them default initialized.
   // In principle we would only need a bare entry for the collection data, since
   // we set all the fields there in any case.
-  auto dentry = m_readers[category][0]->GetModel().CreateEntry();
+  auto dentry = m_readers[category][readerIndex]->GetModel().CreateEntry();
 #else
-  auto dentry = m_readers[category][0]->GetModel()->GetDefaultEntry();
+  auto dentry = m_readers[category][readerIndex]->GetModel()->GetDefaultEntry();
 #endif
 
   for (size_t i = 0; i < m_collectionInfo[category].id.size(); ++i) {
@@ -219,9 +232,9 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     buffers.emplace(m_collectionInfo[category].name[i], std::move(collBuffers));
   }
 
-  m_readers[category][0]->LoadEntry(entNum, *dentry);
+  m_readers[category][readerIndex]->LoadEntry(localEntry, *dentry);
 
-  auto parameters = readEventMetaData(category, entNum);
+  auto parameters = readEventMetaData(category, localEntry, readerIndex);
 
   return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[category], std::move(parameters));
 }
