@@ -63,6 +63,9 @@ public:
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category exists and if there are still entries left to read.
   ///          Otherwise a nullptr
+  ///
+  /// @throws std::invalid_argument in case collsToRead contains collection
+  /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
                                                       const std::vector<std::string>& collsToRead = {});
 
@@ -75,6 +78,9 @@ public:
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category and the desired entry exist. Otherwise a nullptr
+  ///
+  /// @throws std::invalid_argument in case collsToRead contains collection
+  /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
                                                   const std::vector<std::string>& collsToRead = {});
 
