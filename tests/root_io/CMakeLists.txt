@@ -9,6 +9,7 @@ set(root_dependent_tests
   write_interface_root.cpp
   read_interface_root.cpp
   read_glob.cpp
+  selected_colls_roundtrip_root.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -18,6 +19,7 @@ if(ENABLE_RNTUPLE)
       read_python_frame_rntuple.cpp
       write_interface_rntuple.cpp
       read_interface_rntuple.cpp
+      selected_colls_roundtrip_rntuple.cpp
      )
 endif()
 if(ENABLE_DATASOURCE)
@@ -41,6 +43,7 @@ set_tests_properties(
   read_frame_root_multiple
   read_and_write_frame_root
   read_glob
+  selected_colls_roundtrip_root
 
   PROPERTIES
     DEPENDS write_frame_root
@@ -51,7 +54,13 @@ PODIO_SET_TEST_ENV(read_python_multiple)
 set_property(TEST read_python_multiple PROPERTY DEPENDS write_frame_root)
 
 if(ENABLE_RNTUPLE)
-  set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
+  set_tests_properties(
+    read_rntuple
+    selected_colls_roundtrip_rntuple
+
+    PROPERTIES
+      DEPENDS write_rntuple
+  )
   set_property(TEST read_interface_rntuple PROPERTY DEPENDS write_interface_rntuple)
 endif()
 

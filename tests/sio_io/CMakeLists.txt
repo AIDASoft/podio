@@ -5,6 +5,7 @@ set(sio_dependent_tests
   read_python_frame_sio.cpp
   write_interface_sio.cpp
   read_interface_sio.cpp
+  selected_colls_roundtrip_sio.cpp
 )
 set(sio_libs podio::podioSioIO podio::podioIO)
 foreach( sourcefile ${sio_dependent_tests} )
@@ -14,6 +15,7 @@ endforeach()
 set_tests_properties(
   read_frame_sio
   read_and_write_frame_sio
+  selected_colls_roundtrip_sio
 
   PROPERTIES
     DEPENDS
