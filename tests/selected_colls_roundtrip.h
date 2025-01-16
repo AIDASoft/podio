@@ -1,3 +1,5 @@
+#include "read_test.h"
+
 #include <podio/Frame.h>
 
 #include <algorithm>
@@ -24,10 +26,13 @@
 /// be called by backend specific tests
 
 /// The collection names that will be written into the new file
-const std::vector<std::string> collectionSelection = {"mcparticles", "links", "userInts", "hits"};
+const std::vector<std::string> collectionSelection = {"mcparticles", "links", "userInts", "hits", "clusters"};
 
 /// The collections to select in the second round
-const std::vector<std::string> roundTripSelection = {"hits", "userInts"};
+const std::vector<std::string> roundTripSelection = {"hits", "userInts", "mcparticles"};
+
+/// Collections that were available originally and shouldn't be any longer
+const std::vector<std::string> droppedCollections = {"moreMCs", "userDoubles", "info", "refs", "hitRefs"};
 
 /// Write a new file containing only a few selected collections and only one
 /// event
@@ -71,6 +76,21 @@ int readSelectedFileFull(const std::string& filename) {
     return 1;
   }
 
+  for (const auto& name : droppedCollections) {
+    if (event.get(name)) {
+      std::cerr << "The frame contained a dropped collection: " << name << std::endl;
+      return 1;
+    }
+  }
+
+  checkMCParticleCollection(event, reader.currentFileVersion());
+  checkHitCollection(event, 0);
+  const auto& hits = event.get<ExampleHitCollection>("hits");
+  checkClusterCollection(event, hits);
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters");
+  checkIntUserDataCollection(event, 0);
+  checkLinkCollection(event, hits, clusters);
+
   return 0;
 }
 
@@ -89,6 +109,10 @@ int readSelectedFilePartial(const std::string& filename) {
         << roundTripSelection << ", actual " << event.getAvailableCollections() << ")" << std::endl;
     return 1;
   }
+
+  checkMCParticleCollection(event, reader.currentFileVersion());
+  checkHitCollection(event, 0);
+  checkIntUserDataCollection(event, 0);
 
   return 0;
 }
