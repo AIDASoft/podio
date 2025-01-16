@@ -146,6 +146,21 @@ void checkMCParticleCollection(const podio::Frame& event, const podio::version::
   }
 }
 
+void checkLinkCollection(const podio::Frame& event, const ExampleHitCollection& hits,
+                         const ExampleClusterCollection& clusters) {
+  const auto& links = event.get<TestLinkCollection>("links");
+  const auto nLinks = std::min(clusters.size(), hits.size());
+  ASSERT(links.size() == nLinks, "LinksColelction does not have the expected size");
+
+  int linkIndex = 0;
+  for (auto link : links) {
+    ASSERT((link.getWeight() == 0.5 * linkIndex) && (link.getFrom() == hits[linkIndex]) &&
+               (link.getTo() == clusters[nLinks - 1 - linkIndex]),
+           "Link does not have expected content");
+    linkIndex++;
+  }
+}
+
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
   if (actual != expected) {
@@ -453,20 +468,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   // ======================= Links ==========================
   if (fileVersion >= podio::version::Version{1, 1, 99}) {
-    auto& links = event.get<TestLinkCollection>("links");
-    const auto nLinks = std::min(clusters.size(), hits.size());
-    if (links.size() != nLinks) {
-      throw std::runtime_error("LinksCollection does not have the expected size");
-    }
-    int linkIndex = 0;
-    for (auto link : links) {
-      if (!((link.getWeight() == 0.5 * linkIndex) && (link.getFrom() == hits[linkIndex]) &&
-            (link.getTo() == clusters[nLinks - 1 - linkIndex]))) {
-        throw std::runtime_error("Link does not have expected content");
-      }
-      linkIndex++;
-    }
-
+    checkLinkCollection(event, hits, clusters);
     auto& interfaceLinks = event.get<TestInterfaceLinkCollection>("links_with_interfaces");
     if (interfaceLinks.size() != 3) {
       throw std::runtime_error("Links with interfaces collection does not have the expected size (expected 3, actual " +
