@@ -158,6 +158,16 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     }
   }
 
+  const auto& collInfo = m_collectionInfo[category];
+  // Make sure to not silently ignore non-existant but requested collections
+  if (!collsToRead.empty()) {
+    for (const auto& name : collsToRead) {
+      if (std::ranges::find(collInfo.name, name) == collInfo.name.end()) {
+        throw std::invalid_argument(name + " is not available from Frame");
+      }
+    }
+  }
+
   m_entries[category] = entNum + 1;
 
   // m_readerEntries contains the accumulated entries for all the readers
@@ -177,8 +187,6 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
 #else
   auto dentry = m_readers[category][readerIndex]->GetModel()->GetDefaultEntry();
 #endif
-
-  const auto& collInfo = m_collectionInfo[category];
 
   for (size_t i = 0; i < collInfo.id.size(); ++i) {
     if (!collsToRead.empty() && std::ranges::find(collsToRead, collInfo.name[i]) == collsToRead.end()) {

@@ -7,6 +7,26 @@
 #include <iterator>
 
 namespace podio {
+
+SIOFrameData::SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer,
+                           std::size_t tableSize, std::vector<std::string> limitColls) :
+    m_recBuffer(std::move(collBuffers)),
+    m_tableBuffer(std::move(tableBuffer)),
+    m_dataSize(dataSize),
+    m_tableSize(tableSize),
+    m_limitColls(std::move(limitColls)) {
+  readIdTable();
+  // Assuming here that the idTable only contains the collections that are
+  // also available
+  if (!m_limitColls.empty()) {
+    for (const auto& name : m_limitColls) {
+      if (std::ranges::find(m_idTable.names(), name) == m_idTable.names().end()) {
+        throw std::invalid_argument(name + " is not available from Frame");
+      }
+    }
+  }
+}
+
 std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(const std::string& name) {
   unpackBuffers();
 
