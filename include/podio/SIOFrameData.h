@@ -32,15 +32,15 @@ public:
   /// tableBuffer containing the necessary information for unpacking the
   /// collections. The two size parameters denote the uncompressed size of the
   /// respective buffers.
+  ///
+  /// In case the limitColls contain a collection name that is not available
+  /// from the idTable names this throws an exception
   SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize,
                std::vector<std::string> limitColls = {});
 
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
 
   podio::CollectionIDTable getIDTable() {
-    if (m_idTable.empty()) {
-      readIdTable();
-    }
     return {m_idTable.ids(), m_idTable.names()};
   }
 

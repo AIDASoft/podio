@@ -78,10 +78,6 @@ void SIOFrameData::unpackBuffers() {
     return;
   }
 
-  if (m_idTable.empty()) {
-    readIdTable();
-  }
-
   createBlocks();
 
   sio::zlib_compression compressor;
