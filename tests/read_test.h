@@ -12,6 +12,7 @@
 #include "datamodel/ExampleWithNamespace.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/MutableExampleHit.h"
 #include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TestLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
@@ -29,6 +30,71 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
+
+#define ASSERT(condition, msg)                                                                                         \
+  if (!(condition)) {                                                                                                  \
+    throw std::runtime_error(msg);                                                                                     \
+  }
+
+void checkIntUserDataCollection(const podio::Frame& event, int eventNum) {
+  auto& usrInts = event.get<podio::UserDataCollection<uint64_t>>("userInts");
+  ASSERT(usrInts.size() == static_cast<unsigned>(eventNum + 1), "userInts collection does not have the expected size")
+
+  auto& uivec = usrInts.vec();
+  int myInt = 0;
+  for (int iu : uivec) {
+    ASSERT(iu == myInt++, "userInts contents not as expected");
+  }
+
+  myInt = 0;
+  for (int iu : usrInts) {
+    ASSERT(iu == myInt++, "userInts contents not as expected");
+  }
+}
+
+void checkHitCollection(const podio::Frame& event, int eventNum) {
+  const auto& hits = event.get<ExampleHitCollection>("hits");
+
+  ASSERT(hits.size() == 2, "size of hits collection not as expected");
+
+  const auto expectedHit1 = ExampleHit(0xbadULL, 0., 0., 0., 23. + eventNum);
+  const auto expectedHit2 = ExampleHit(0xcaffeeULL, 1., 0., 0., 12. + eventNum);
+
+  const auto compareHits = [](const ExampleHit& hitA, const ExampleHit& hitB) {
+    return hitA.cellID() == hitB.cellID() && hitA.energy() == hitB.energy() && hitA.x() == hitB.x() &&
+        hitA.y() == hitB.y() && hitA.z() == hitB.z();
+  };
+
+  auto hit1 = hits[0];
+  ASSERT(compareHits(hit1, expectedHit1), "first hit in hits not as expected");
+  auto hit2 = hits[1];
+  ASSERT(compareHits(hit2, expectedHit2), "second hit in hits not as expected");
+}
+
+void checkClusterCollection(const podio::Frame& event, const ExampleHitCollection& hits) {
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters");
+  ASSERT(clusters.size() == 3, "size of clusters collection not as expected");
+
+  auto clu0 = clusters[0];
+  auto clu1 = clusters[1];
+  auto cluster = clusters[2];
+  ASSERT(clu0.Hits().size() == 1, "first cluster should only have one hit");
+  ASSERT(clu1.Hits().size() == 1, "second cluster should only have one hit");
+  ASSERT(cluster.Hits().size() == 2, "third cluster should have two hits");
+  ASSERT(cluster.Clusters().size() == 2, "third cluster should have two clusters");
+  ASSERT(cluster.Clusters(0) == clu0, "first cluster of third cluster not as expected");
+  ASSERT(cluster.Clusters(1) == clu1, "second cluster of third cluster not as expected");
+
+  auto hit1 = hits[0];
+  auto hit2 = hits[1];
+  ASSERT(clu0.Hits(0) == hit1, "hit related to first cluster not as expected");
+  ASSERT(clu0.energy() == hit1.energy(), "energy of first cluster not as expected");
+  ASSERT(clu1.Hits(0) == hit2, "hit related to second cluster not as expected");
+  ASSERT(clu1.energy() == hit2.energy(), "energy of second cluster not as expected");
+  ASSERT(cluster.Hits(0) == hit1, "first hit related to third cluster not as expected");
+  ASSERT(cluster.Hits(1) == hit2, "second hit related to third cluster not as expected");
+  ASSERT(cluster.energy() == hit1.energy() + hit2.energy(), "energy of third cluster not as expected");
+}
 
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
@@ -75,7 +141,8 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
-  // read collection meta data
+  checkHitCollection(event, eventNum);
+
   auto& hits = event.get<ExampleHitCollection>("hits");
 
   if (fileVersion > podio::version::Version{0, 14, 0}) {
@@ -88,15 +155,9 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
+  checkClusterCollection(event, hits);
+
   auto& clusters = event.get<ExampleClusterCollection>("clusters");
-  if (clusters.isValid()) {
-    auto cluster = clusters[0];
-    for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i != end; ++i) {
-      std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
-    }
-  } else {
-    throw std::runtime_error("Collection 'clusters' should be present");
-  }
 
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
     // Read the mcParticleRefs before reading any of the other collections that
@@ -380,27 +441,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
-    auto& usrInts = event.get<podio::UserDataCollection<uint64_t>>("userInts");
-
-    if (usrInts.size() != static_cast<unsigned>(eventNum + 1)) {
-      throw std::runtime_error("Could not read all userInts properly (expected: " + std::to_string(eventNum + 1) +
-                               ", actual: " + std::to_string(usrInts.size()) + ")");
-    }
-
-    auto& uivec = usrInts.vec();
-    int myInt = 0;
-    for (int iu : uivec) {
-      if (iu != myInt++) {
-        throw std::runtime_error("Couldn't read userInts properly");
-      }
-    }
-
-    myInt = 0;
-    for (int iu : usrInts) {
-      if (iu != myInt++) {
-        throw std::runtime_error("Couldn't read userInts properly");
-      }
-    }
+    checkIntUserDataCollection(event, eventNum);
 
     auto& usrDbl = event.get<podio::UserDataCollection<double>>("userDoubles");
     if (usrDbl.size() != 100) {
