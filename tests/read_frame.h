@@ -19,6 +19,7 @@
 #include "podio/Reader.h"
 
 #include <iostream>
+#include <stdexcept>
 
 void processExtensions(const podio::Frame& event, int iEvent, podio::version::Version) {
   const auto& extColl = event.get<extension::ContainedTypeCollection>("extension_Contained");
@@ -332,19 +333,25 @@ int test_read_frame_limited(ReaderT& reader) {
     return 1;
   }
 
-  // Check that nothing breaks if we pass in an unavailable collection name
-  const auto emptyEvent = [&]() {
+  // Check that we get the expected exception if trying to read a non-existant
+  // collection
+  try {
     if constexpr (std::is_same_v<ReaderT, podio::Reader>) {
-      return podio::Frame(reader.readFrame("events", 1, {"no-collection-with-this-name", "orThisOne"}));
+      reader.readFrame("events", 1, {"no-collection-with-this-name", "orThisOne"});
     } else {
-      return podio::Frame(reader.readEntry("events", 1, {"no-collection-with-this-name", "orThisOne"}));
+      reader.readEntry("events", 1, {"no-collection-with-this-name", "orThisOne"});
     }
-  }();
-
-  if (!emptyEvent.getAvailableCollections().empty()) {
-    std::cerr << "Trying to read collection names that are unavailable should not break, but should also not give a "
-                 "meaningful event"
-              << std::endl;
+    // if we haven't gotten an exception before we fail
+    std::cerr << "Attempting to read non-existant collections should result in an exception" << std::endl;
+    return 1;
+  } catch (std::invalid_argument& ex) {
+    if (ex.what() != std::string("no-collection-with-this-name is not available from Frame")) {
+      std::cerr << "Exception message for attempting to limit to non-existant collections not as expected: "
+                << ex.what() << std::endl;
+      return 1;
+    }
+  } catch (...) {
+    std::cerr << "Attempting to read a non-existant collection didn't yield the correct exception" << std::endl;
     return 1;
   }
 

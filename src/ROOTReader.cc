@@ -101,6 +101,15 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
     return nullptr;
   }
 
+  // Make sure to not silently ignore non-existant but requested collections
+  if (!collsToRead.empty()) {
+    for (const auto& name : collsToRead) {
+      if (std::ranges::find(catInfo.storedClasses, name, &detail::NamedCollInfo::name) == catInfo.storedClasses.end()) {
+        throw std::invalid_argument(name + " is not available from Frame");
+      }
+    }
+  }
+
   // After switching trees in the chain, branch pointers get invalidated so
   // they need to be reassigned.
   // NOTE: root 6.22/06 requires that we get completely new branches here,
