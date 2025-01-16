@@ -96,6 +96,56 @@ void checkClusterCollection(const podio::Frame& event, const ExampleHitCollectio
   ASSERT(cluster.energy() == hit1.energy() + hit2.energy(), "energy of third cluster not as expected");
 }
 
+void checkMCParticleCollection(const podio::Frame& event, const podio::version::Version fileVersion) {
+  const auto& mcps = event.get<ExampleMCCollection>("mcparticles");
+  ASSERT(mcps.size() == 10, "mcparticles collection does not have the correct size");
+
+  auto mcp = mcps[0];
+  ASSERT(mcp.daughters().size() == 4, "first mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[2], "daughter relation 0 for mcparticle 0 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[3], "daughter relation 1 for mcparticle 0 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[4], "daughter relation 2 for mcparticle 0 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[5], "daughter relation 3 for mcparticle 0 not as expected");
+
+  mcp = mcps[1];
+  ASSERT(mcp.daughters().size() == 4, "second mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[2], "daughter relation 0 for mcparticle 1 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[3], "daughter relation 1 for mcparticle 1 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[4], "daughter relation 2 for mcparticle 1 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[5], "daughter relation 3 for mcparticle 1 not as expected");
+
+  mcp = mcps[2];
+  ASSERT(mcp.daughters().size() == 4, "third mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[6], "daughter relation 0 for mcparticle 2 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[7], "daughter relation 1 for mcparticle 2 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[8], "daughter relation 2 for mcparticle 2 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[9], "daughter relation 3 for mcparticle 2 not as expected");
+
+  mcp = mcps[3];
+  ASSERT(mcp.daughters().size() == 4, "fourth mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[6], "daughter relation 0 for mcparticle 3 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[7], "daughter relation 1 for mcparticle 3 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[8], "daughter relation 2 for mcparticle 3 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[9], "daughter relation 3 for mcparticle 3 not as expected");
+
+  // spot check some parent relations as well
+  mcp = mcps[4];
+  ASSERT(mcp.parents().size() == 2, "fivth mc particle does not have the expected number of parents");
+  // Bugged writing before this version
+  if (fileVersion >= podio::version::Version(1, 2, 0)) {
+    ASSERT(mcp.parents(0) == mcps[0], "parent relation 0 for mcparticle 4 is not as expected");
+    ASSERT(mcp.parents(1) == mcps[1], "parent relation 0 for mcparticle 4 is not as expected");
+  }
+
+  mcp = mcps[7];
+  ASSERT(mcp.parents().size() == 2, "eigth mc particle does not have the expected number of parents");
+  // Bugged writing before this version
+  if (fileVersion >= podio::version::Version(1, 2, 1)) {
+    ASSERT(mcp.parents(0) == mcps[2], "parent relation 0 for mcparticle 8 is not as expected");
+    ASSERT(mcp.parents(1) == mcps[3], "parent relation 0 for mcparticle 8 is not as expected");
+  }
+}
+
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
   if (actual != expected) {
@@ -185,66 +235,11 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
+  checkMCParticleCollection(event, fileVersion);
+
   auto& mcps = event.get<ExampleMCCollection>("mcparticles");
   if (!mcps.isValid()) {
     throw std::runtime_error("Collection 'mcparticles' should be present");
-  }
-
-  // check that we can retrieve the correct parent daughter relation
-  // set in write_test.h :
-  //-------- print relations for debugging:
-  for (auto p : mcps) {
-    std::cout << " particle " << p.getObjectID().index << " has daughters: ";
-    for (auto it = p.daughters_begin(), end = p.daughters_end(); it != end; ++it) {
-      std::cout << " " << it->getObjectID().index;
-    }
-    std::cout << "  and parents: ";
-    for (auto it = p.parents_begin(), end = p.parents_end(); it != end; ++it) {
-      std::cout << " " << it->getObjectID().index;
-    }
-    std::cout << std::endl;
-  }
-
-  // particle 0 has particles 2,3,4 and 5 as daughters:
-  auto p = mcps[0];
-
-  auto d0 = p.daughters(0);
-  auto d1 = p.daughters(1);
-  auto d2 = p.daughters(2);
-  auto d3 = p.daughters(3);
-
-  if (d0 != mcps[2]) {
-    throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 ");
-  }
-  if (d1 != mcps[3]) {
-    throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 ");
-  }
-  if (d2 != mcps[4]) {
-    throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 ");
-  }
-  if (d3 != mcps[5]) {
-    throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 ");
-  }
-
-  // particle 3 has particles 6,7,8 and 9 as daughters:
-  p = mcps[3];
-
-  d0 = p.daughters(0);
-  d1 = p.daughters(1);
-  d2 = p.daughters(2);
-  d3 = p.daughters(3);
-
-  if (d0 != mcps[6]) {
-    throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 ");
-  }
-  if (d1 != mcps[7]) {
-    throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 ");
-  }
-  if (d2 != mcps[8]) {
-    throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 ");
-  }
-  if (d3 != mcps[9]) {
-    throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 ");
   }
 
   // Check the MCParticle subset collection only if it is technically possible

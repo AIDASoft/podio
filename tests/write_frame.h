@@ -78,7 +78,7 @@ auto createMCCollection() {
     for (auto p : mc.daughters()) {
       int dIndex = p.getObjectID().index;
       auto d = mcps[dIndex];
-      d.addparents(p);
+      d.addparents(mc);
     }
   }
 
