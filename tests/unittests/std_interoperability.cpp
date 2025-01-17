@@ -561,11 +561,6 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
         // const_iterator
         STATIC_REQUIRE(std::is_swappable_v<const_iterator&>);
 
-        // std::iterator_traits<It>::value_type (required prior to C++20)
-        // iterator
-        STATIC_REQUIRE(traits::has_value_type_v<std::iterator_traits<iterator>>);
-        // const_iterator
-        STATIC_REQUIRE(traits::has_value_type_v<std::iterator_traits<const_iterator>>);
         // std::iterator_traits<It>::difference_type
         // iterator
         STATIC_REQUIRE(traits::has_difference_type_v<std::iterator_traits<iterator>>);

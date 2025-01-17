@@ -101,7 +101,6 @@ In the following tables a convention from `Collection` is used: `iterator` stand
 | [*CopyAssignable*](https://en.cppreference.com/w/cpp/named_req/CopyAssignable) | ✔️ yes / ✔️ yes | |
 | [*Destructible*](https://en.cppreference.com/w/cpp/named_req/Destructible) | ✔️ yes / ✔️ yes | |
 | [*Swappable*](https://en.cppreference.com/w/cpp/named_req/Swappable) | ✔️ yes / ✔️ yes | |
-| `std::iterator_traits::value_type` (Until C++20 ) | ✔️ yes / ✔️ yes | |
 | `std::iterator_traits::difference_type` | ✔️ yes / ✔️ yes | |
 | `std::iterator_traits::reference` | ✔️ yes / ✔️ yes | |
 | `std::iterator_traits::pointer` | ✔️ yes / ✔️ yes | |
