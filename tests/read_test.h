@@ -12,7 +12,6 @@
 #include "datamodel/ExampleWithNamespace.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
-#include "datamodel/MutableExampleHit.h"
 #include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TestLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
