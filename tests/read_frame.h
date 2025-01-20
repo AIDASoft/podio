@@ -18,11 +18,6 @@
 
 #include <iostream>
 
-#define ASSERT(condition, msg)                                                                                         \
-  if (!(condition)) {                                                                                                  \
-    throw std::runtime_error(msg);                                                                                     \
-  }
-
 void processExtensions(const podio::Frame& event, int iEvent, podio::version::Version) {
   const auto& extColl = event.get<extension::ContainedTypeCollection>("extension_Contained");
   ASSERT(extColl.isValid(), "extension_Contained collection should be present")

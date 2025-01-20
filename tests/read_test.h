@@ -30,6 +30,136 @@
 #include <stdexcept>
 #include <vector>
 
+#define ASSERT(condition, msg)                                                                                         \
+  if (!(condition)) {                                                                                                  \
+    throw std::runtime_error(msg);                                                                                     \
+  }
+
+void checkIntUserDataCollection(const podio::Frame& event, int eventNum) {
+  auto& usrInts = event.get<podio::UserDataCollection<uint64_t>>("userInts");
+  ASSERT(usrInts.size() == static_cast<unsigned>(eventNum + 1), "userInts collection does not have the expected size")
+
+  auto& uivec = usrInts.vec();
+  int myInt = 0;
+  for (int iu : uivec) {
+    ASSERT(iu == myInt++, "userInts contents not as expected");
+  }
+
+  myInt = 0;
+  for (int iu : usrInts) {
+    ASSERT(iu == myInt++, "userInts contents not as expected");
+  }
+}
+
+void checkHitCollection(const podio::Frame& event, int eventNum) {
+  const auto& hits = event.get<ExampleHitCollection>("hits");
+
+  ASSERT(hits.size() == 2, "size of hits collection not as expected");
+
+  const auto expectedHit1 = ExampleHit(0xbadULL, 0., 0., 0., 23. + eventNum);
+  const auto expectedHit2 = ExampleHit(0xcaffeeULL, 1., 0., 0., 12. + eventNum);
+
+  const auto compareHits = [](const ExampleHit& hitA, const ExampleHit& hitB) {
+    return hitA.cellID() == hitB.cellID() && hitA.energy() == hitB.energy() && hitA.x() == hitB.x() &&
+        hitA.y() == hitB.y() && hitA.z() == hitB.z();
+  };
+
+  auto hit1 = hits[0];
+  ASSERT(compareHits(hit1, expectedHit1), "first hit in hits not as expected");
+  auto hit2 = hits[1];
+  ASSERT(compareHits(hit2, expectedHit2), "second hit in hits not as expected");
+}
+
+void checkClusterCollection(const podio::Frame& event, const ExampleHitCollection& hits) {
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters");
+  ASSERT(clusters.size() == 3, "size of clusters collection not as expected");
+
+  auto clu0 = clusters[0];
+  auto clu1 = clusters[1];
+  auto cluster = clusters[2];
+  ASSERT(clu0.Hits().size() == 1, "first cluster should only have one hit");
+  ASSERT(clu1.Hits().size() == 1, "second cluster should only have one hit");
+  ASSERT(cluster.Hits().size() == 2, "third cluster should have two hits");
+  ASSERT(cluster.Clusters().size() == 2, "third cluster should have two clusters");
+  ASSERT(cluster.Clusters(0) == clu0, "first cluster of third cluster not as expected");
+  ASSERT(cluster.Clusters(1) == clu1, "second cluster of third cluster not as expected");
+
+  auto hit1 = hits[0];
+  auto hit2 = hits[1];
+  ASSERT(clu0.Hits(0) == hit1, "hit related to first cluster not as expected");
+  ASSERT(clu0.energy() == hit1.energy(), "energy of first cluster not as expected");
+  ASSERT(clu1.Hits(0) == hit2, "hit related to second cluster not as expected");
+  ASSERT(clu1.energy() == hit2.energy(), "energy of second cluster not as expected");
+  ASSERT(cluster.Hits(0) == hit1, "first hit related to third cluster not as expected");
+  ASSERT(cluster.Hits(1) == hit2, "second hit related to third cluster not as expected");
+  ASSERT(cluster.energy() == hit1.energy() + hit2.energy(), "energy of third cluster not as expected");
+}
+
+void checkMCParticleCollection(const podio::Frame& event, const podio::version::Version fileVersion) {
+  const auto& mcps = event.get<ExampleMCCollection>("mcparticles");
+  ASSERT(mcps.size() == 10, "mcparticles collection does not have the correct size");
+
+  auto mcp = mcps[0];
+  ASSERT(mcp.daughters().size() == 4, "first mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[2], "daughter relation 0 for mcparticle 0 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[3], "daughter relation 1 for mcparticle 0 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[4], "daughter relation 2 for mcparticle 0 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[5], "daughter relation 3 for mcparticle 0 not as expected");
+
+  mcp = mcps[1];
+  ASSERT(mcp.daughters().size() == 4, "second mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[2], "daughter relation 0 for mcparticle 1 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[3], "daughter relation 1 for mcparticle 1 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[4], "daughter relation 2 for mcparticle 1 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[5], "daughter relation 3 for mcparticle 1 not as expected");
+
+  mcp = mcps[2];
+  ASSERT(mcp.daughters().size() == 4, "third mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[6], "daughter relation 0 for mcparticle 2 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[7], "daughter relation 1 for mcparticle 2 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[8], "daughter relation 2 for mcparticle 2 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[9], "daughter relation 3 for mcparticle 2 not as expected");
+
+  mcp = mcps[3];
+  ASSERT(mcp.daughters().size() == 4, "fourth mc particle does not have the expected number of daughters");
+  ASSERT(mcp.daughters(0) == mcps[6], "daughter relation 0 for mcparticle 3 not as expected");
+  ASSERT(mcp.daughters(1) == mcps[7], "daughter relation 1 for mcparticle 3 not as expected");
+  ASSERT(mcp.daughters(2) == mcps[8], "daughter relation 2 for mcparticle 3 not as expected");
+  ASSERT(mcp.daughters(3) == mcps[9], "daughter relation 3 for mcparticle 3 not as expected");
+
+  // spot check some parent relations as well
+  mcp = mcps[4];
+  ASSERT(mcp.parents().size() == 2, "fivth mc particle does not have the expected number of parents");
+  // Bugged writing before this version
+  if (fileVersion >= podio::version::Version(1, 2, 0)) {
+    ASSERT(mcp.parents(0) == mcps[0], "parent relation 0 for mcparticle 4 is not as expected");
+    ASSERT(mcp.parents(1) == mcps[1], "parent relation 0 for mcparticle 4 is not as expected");
+  }
+
+  mcp = mcps[7];
+  ASSERT(mcp.parents().size() == 2, "eigth mc particle does not have the expected number of parents");
+  // Bugged writing before this version
+  if (fileVersion >= podio::version::Version(1, 2, 1)) {
+    ASSERT(mcp.parents(0) == mcps[2], "parent relation 0 for mcparticle 8 is not as expected");
+    ASSERT(mcp.parents(1) == mcps[3], "parent relation 0 for mcparticle 8 is not as expected");
+  }
+}
+
+void checkLinkCollection(const podio::Frame& event, const ExampleHitCollection& hits,
+                         const ExampleClusterCollection& clusters) {
+  const auto& links = event.get<TestLinkCollection>("links");
+  const auto nLinks = std::min(clusters.size(), hits.size());
+  ASSERT(links.size() == nLinks, "LinksColelction does not have the expected size");
+
+  int linkIndex = 0;
+  for (auto link : links) {
+    ASSERT((link.getWeight() == 0.5 * linkIndex) && (link.getFrom() == hits[linkIndex]) &&
+               (link.getTo() == clusters[nLinks - 1 - linkIndex]),
+           "Link does not have expected content");
+    linkIndex++;
+  }
+}
+
 template <typename FixedWidthT>
 bool check_fixed_width_value(FixedWidthT actual, FixedWidthT expected, const std::string& type) {
   if (actual != expected) {
@@ -75,7 +205,8 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
-  // read collection meta data
+  checkHitCollection(event, eventNum);
+
   auto& hits = event.get<ExampleHitCollection>("hits");
 
   if (fileVersion > podio::version::Version{0, 14, 0}) {
@@ -88,15 +219,9 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
+  checkClusterCollection(event, hits);
+
   auto& clusters = event.get<ExampleClusterCollection>("clusters");
-  if (clusters.isValid()) {
-    auto cluster = clusters[0];
-    for (auto i = cluster.Hits_begin(), end = cluster.Hits_end(); i != end; ++i) {
-      std::cout << "  Referenced hit has an energy of " << i->energy() << std::endl;
-    }
-  } else {
-    throw std::runtime_error("Collection 'clusters' should be present");
-  }
 
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
     // Read the mcParticleRefs before reading any of the other collections that
@@ -124,66 +249,11 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
+  checkMCParticleCollection(event, fileVersion);
+
   auto& mcps = event.get<ExampleMCCollection>("mcparticles");
   if (!mcps.isValid()) {
     throw std::runtime_error("Collection 'mcparticles' should be present");
-  }
-
-  // check that we can retrieve the correct parent daughter relation
-  // set in write_test.h :
-  //-------- print relations for debugging:
-  for (auto p : mcps) {
-    std::cout << " particle " << p.getObjectID().index << " has daughters: ";
-    for (auto it = p.daughters_begin(), end = p.daughters_end(); it != end; ++it) {
-      std::cout << " " << it->getObjectID().index;
-    }
-    std::cout << "  and parents: ";
-    for (auto it = p.parents_begin(), end = p.parents_end(); it != end; ++it) {
-      std::cout << " " << it->getObjectID().index;
-    }
-    std::cout << std::endl;
-  }
-
-  // particle 0 has particles 2,3,4 and 5 as daughters:
-  auto p = mcps[0];
-
-  auto d0 = p.daughters(0);
-  auto d1 = p.daughters(1);
-  auto d2 = p.daughters(2);
-  auto d3 = p.daughters(3);
-
-  if (d0 != mcps[2]) {
-    throw std::runtime_error(" error: 1. daughter of particle 0 is not particle 2 ");
-  }
-  if (d1 != mcps[3]) {
-    throw std::runtime_error(" error: 2. daughter of particle 0 is not particle 3 ");
-  }
-  if (d2 != mcps[4]) {
-    throw std::runtime_error(" error: 3. daughter of particle 0 is not particle 4 ");
-  }
-  if (d3 != mcps[5]) {
-    throw std::runtime_error(" error: 4. daughter of particle 0 is not particle 5 ");
-  }
-
-  // particle 3 has particles 6,7,8 and 9 as daughters:
-  p = mcps[3];
-
-  d0 = p.daughters(0);
-  d1 = p.daughters(1);
-  d2 = p.daughters(2);
-  d3 = p.daughters(3);
-
-  if (d0 != mcps[6]) {
-    throw std::runtime_error(" error: 1. daughter of particle 3 is not particle 6 ");
-  }
-  if (d1 != mcps[7]) {
-    throw std::runtime_error(" error: 2. daughter of particle 3 is not particle 7 ");
-  }
-  if (d2 != mcps[8]) {
-    throw std::runtime_error(" error: 3. daughter of particle 3 is not particle 8 ");
-  }
-  if (d3 != mcps[9]) {
-    throw std::runtime_error(" error: 4. daughter of particle 3 is not particle 9 ");
   }
 
   // Check the MCParticle subset collection only if it is technically possible
@@ -380,27 +450,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
-    auto& usrInts = event.get<podio::UserDataCollection<uint64_t>>("userInts");
-
-    if (usrInts.size() != static_cast<unsigned>(eventNum + 1)) {
-      throw std::runtime_error("Could not read all userInts properly (expected: " + std::to_string(eventNum + 1) +
-                               ", actual: " + std::to_string(usrInts.size()) + ")");
-    }
-
-    auto& uivec = usrInts.vec();
-    int myInt = 0;
-    for (int iu : uivec) {
-      if (iu != myInt++) {
-        throw std::runtime_error("Couldn't read userInts properly");
-      }
-    }
-
-    myInt = 0;
-    for (int iu : usrInts) {
-      if (iu != myInt++) {
-        throw std::runtime_error("Couldn't read userInts properly");
-      }
-    }
+    checkIntUserDataCollection(event, eventNum);
 
     auto& usrDbl = event.get<podio::UserDataCollection<double>>("userDoubles");
     if (usrDbl.size() != 100) {
@@ -417,20 +467,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   // ======================= Links ==========================
   if (fileVersion >= podio::version::Version{1, 1, 99}) {
-    auto& links = event.get<TestLinkCollection>("links");
-    const auto nLinks = std::min(clusters.size(), hits.size());
-    if (links.size() != nLinks) {
-      throw std::runtime_error("LinksCollection does not have the expected size");
-    }
-    int linkIndex = 0;
-    for (auto link : links) {
-      if (!((link.getWeight() == 0.5 * linkIndex) && (link.getFrom() == hits[linkIndex]) &&
-            (link.getTo() == clusters[nLinks - 1 - linkIndex]))) {
-        throw std::runtime_error("Link does not have expected content");
-      }
-      linkIndex++;
-    }
-
+    checkLinkCollection(event, hits, clusters);
     auto& interfaceLinks = event.get<TestInterfaceLinkCollection>("links_with_interfaces");
     if (interfaceLinks.size() != 3) {
       throw std::runtime_error("Links with interfaces collection does not have the expected size (expected 3, actual " +
