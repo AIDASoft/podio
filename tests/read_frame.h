@@ -183,13 +183,13 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   }
 
   if (reader.getEntries(podio::Category::Event) != 10) {
-    std::cerr << "Could not read back the number of events correctly. " << "(expected:" << 10
+    std::cerr << "Could not read back the number of events correctly. (expected: " << 10
               << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;
     return 1;
   }
 
   if (reader.getEntries(podio::Category::Event) != reader.getEntries("other_events")) {
-    std::cerr << "Could not read back the number of events correctly. " << "(expected:" << 10
+    std::cerr << "Could not read back the number of events correctly. (expected: " << 10
               << ", actual: " << reader.getEntries("other_events") << ")" << std::endl;
     return 1;
   }
