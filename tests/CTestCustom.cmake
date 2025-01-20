@@ -23,6 +23,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
     write_frame_root
     read_frame_root
+    selected_colls_roundtrip_root
 
     write_interface_root
     read_interface_root
@@ -96,6 +97,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       read_rntuple
       read_interface_rntuple
+      selected_colls_roundtrip_rntuple
     )
   endif()
 
@@ -107,6 +109,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_rntuple
       write_interface_rntuple
       read_interface_rntuple
+      selected_colls_roundtrip_rntuple
     )
 
   endif()
