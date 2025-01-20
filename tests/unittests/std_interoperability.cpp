@@ -1,7 +1,9 @@
 #include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/MutableExampleHit.h"
+
 #include "podio/LinkCollection.h"
+#include "podio/RelationRange.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -1193,6 +1195,17 @@ TEST_CASE("LinkCollection and range concepts", "[links][iterator][std]") {
   STATIC_REQUIRE(std::ranges::sized_range<link_collection>);
   STATIC_REQUIRE(std::ranges::common_range<link_collection>);
   STATIC_REQUIRE(std::ranges::viewable_range<link_collection>);
+}
+
+TEST_CASE("RelationRange as range", "[relations][ranges][std]") {
+  using relation_range = podio::RelationRange<ExampleHit>;
+
+  STATIC_REQUIRE(std::ranges::contiguous_range<relation_range>);
+  STATIC_REQUIRE(std::ranges::sized_range<relation_range>);
+  STATIC_REQUIRE(std::ranges::common_range<relation_range>);
+  STATIC_REQUIRE(std::ranges::viewable_range<relation_range>);
+  STATIC_REQUIRE(std::ranges::view<relation_range>);
+  STATIC_REQUIRE(std::ranges::borrowed_range<relation_range>);
 }
 
 #undef DOCUMENTED_STATIC_FAILURE
