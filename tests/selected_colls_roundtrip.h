@@ -1,3 +1,6 @@
+#ifndef PODIO_TESTS_SELECTED_COLLS_ROUNDTRIP_H // NOLINT(llvm-header-guard): folder structure not suitable
+#define PODIO_TESTS_SELECTED_COLLS_ROUNDTRIP_H // NOLINT(llvm-header-guard): folder structure not suitable
+
 #include "read_test.h"
 
 #include <podio/Frame.h>
@@ -123,3 +126,5 @@ int do_roundtrip(const std::string& originalFile, const std::string& outputFile)
 
   return readSelectedFileFull<ReaderT>(outputFile) + readSelectedFilePartial<ReaderT>(outputFile);
 }
+
+#endif // PODIO_TESTS_SELECTED_COLLS_ROUNDTRIP_H
