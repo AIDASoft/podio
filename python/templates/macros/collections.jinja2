@@ -29,7 +29,7 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
 {{ _relation_index_handling(relation) }}
     for (const auto& it : (*m_rel_{{ relation.name }}_tmp[i])) {
       if (it.getObjectID().index == podio::ObjectID::untracked) {
-        throw std::runtime_error("Trying to persistify untracked object");
+        throw std::runtime_error("Trying to persistify relation to untracked object");
       }
       m_refCollections[{{ index }}]->emplace_back(it.getObjectID());
     }
