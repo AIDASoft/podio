@@ -29,7 +29,7 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
 {{ _relation_index_handling(relation) }}
     for (const auto& it : (*m_rel_{{ relation.name }}_tmp[i])) {
       if (it.getObjectID().index == podio::ObjectID::untracked) {
-        throw std::runtime_error("Trying to persistify untracked object");
+        throw std::runtime_error("Trying to persistify relation \"{{ relation.name }}\" that points to untracked object");
       }
       m_refCollections[{{ index }}]->emplace_back(it.getObjectID());
     }
@@ -48,7 +48,7 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
     if (obj->m_{{ relation.name }}) {
       m_refCollections[{{ real_index }}]->emplace_back(obj->m_{{ relation.name }}->getObjectID());
     } else {
-       m_refCollections[{{ real_index }}]->push_back({podio::ObjectID::invalid, 0});
+      m_refCollections[{{ real_index }}]->push_back({podio::ObjectID::invalid, 0});
     }
   }
 {% endmacro %}
