@@ -8,6 +8,7 @@ set(root_dependent_tests
   read_and_write_frame_root.cpp
   write_interface_root.cpp
   read_interface_root.cpp
+  read_glob.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -39,6 +40,7 @@ set_tests_properties(
   read_frame_root
   read_frame_root_multiple
   read_and_write_frame_root
+  read_glob
 
   PROPERTIES
     DEPENDS write_frame_root
