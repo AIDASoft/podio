@@ -24,6 +24,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_frame_root
     read_frame_root
     read_glob
+    read_python_multiple
 
     write_interface_root
     read_interface_root

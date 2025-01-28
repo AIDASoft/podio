@@ -50,32 +50,41 @@ def _determine_root_format(filename):
     return RootFileFormat.RNTUPLE
 
 
-def get_reader(filename):
-    """Get an appropriate reader for the passed file.
+def get_reader(filenames):
+    """Get an appropriate reader for the passed files.
+    The reader is inferred from the first file if multiple are given.
+    All files are assumed to be of the same I/O format.
 
     Args:
-        filename (str): The input file
+        filenames (str or list[str]): The input file(s)
 
     Returns:
         root_io.[Legacy]Reader, sio_io.[Legacy]Reader: an initialized reader that
-            is able to process the input file.
+            is able to process the input file(s).
 
     Raises:
-        ValueError: If the file cannot be recognized, or if podio has not been
+        ValueError: If the files cannot be recognized, or if podio has not been
             built with the necessary backend I/O support
+        IndexError: If filenames is an empty list
     """
+
+    if isinstance(filenames, str):
+        filename = filenames
+    else:
+        filename = filenames[0]
+
     if filename.endswith(".sio"):
         if _is_frame_sio_file(filename):
-            return sio_io.Reader(filename)
-        return sio_io.LegacyReader(filename)
+            return sio_io.Reader(filenames)
+        return sio_io.LegacyReader(filenames)
 
     if filename.endswith(".root"):
         root_flavor = _determine_root_format(filename)
         if root_flavor == RootFileFormat.TTREE:
-            return root_io.Reader(filename)
+            return root_io.Reader(filenames)
         if root_flavor == RootFileFormat.RNTUPLE:
-            return root_io.RNTupleReader(filename)
+            return root_io.RNTupleReader(filenames)
         if root_flavor == RootFileFormat.LEGACY:
-            return root_io.LegacyReader(filename)
+            return root_io.LegacyReader(filenames)
 
     raise ValueError("file must end on .root or .sio")

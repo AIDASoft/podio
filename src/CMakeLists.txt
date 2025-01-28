@@ -70,6 +70,7 @@ SET(core_headers
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/DatamodelRegistryIOHelpers.h
   ${PROJECT_SOURCE_DIR}/include/podio/GenericParameters.h
   ${PROJECT_SOURCE_DIR}/include/podio/LinkCollection.h
+  ${PROJECT_SOURCE_DIR}/include/podio/utilities/Glob.h
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
