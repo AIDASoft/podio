@@ -1,5 +1,4 @@
 #include "podio/Reader.h"
-// #include "podio/ROOTReader.h"
 #if PODIO_ENABLE_DATASOURCE
   #include "podio/DataSource.h"
 #endif
