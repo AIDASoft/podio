@@ -12,10 +12,8 @@
 #include <vector>
 
 #include <ROOT/RNTuple.hxx>
+#include <ROOT/RNTupleReader.hxx>
 #include <RVersion.h>
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
-  #include <ROOT/RNTupleReader.hxx>
-#endif
 
 namespace podio {
 
