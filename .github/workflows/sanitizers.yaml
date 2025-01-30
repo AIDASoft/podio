@@ -32,7 +32,7 @@ jobs:
       - uses: cvmfs-contrib/github-action-cvmfs@v4
       - uses: aidasoft/run-lcg-view@v4
         with:
-          release-platform: LCG_105/x86_64-el9-${{ matrix.compiler }}-opt
+          release-platform: LCG_106b/x86_64-el9-${{ matrix.compiler }}-opt
           run: |
             echo "::group::Run CMake"
             mkdir build
