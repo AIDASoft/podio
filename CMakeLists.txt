@@ -82,13 +82,15 @@ option(ENABLE_JULIA      "Enable Julia support. When enabled, Julia datamodels w
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(root_components_needed RIO Tree)
+set(root_min_version 6.28.04)
 if(ENABLE_RNTUPLE)
   list(APPEND root_components_needed ROOTNTuple)
+  set(root_min_version 6.32)
 endif()
 if(ENABLE_DATASOURCE)
   list(APPEND root_components_needed ROOTDataFrame)
 endif()
-find_package(ROOT 6.28.04 REQUIRED COMPONENTS ${root_components_needed})
+find_package(ROOT ${root_min_version} REQUIRED COMPONENTS ${root_components_needed})
 
 # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
 # before that it's an empty variable so we check if it's any number > 0
