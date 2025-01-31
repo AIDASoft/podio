@@ -89,6 +89,24 @@ class ReaderTestCaseMixin:
         with self.assertRaises(KeyError):
             self.reader.current_file_version("non-existant-model")
 
+    def test_limited_collections(self):
+        """Make sure only reading a subset of collections works"""
+        # We only do bare checks here as more extensive tests are already done
+        # on the c++ side
+        event = self.reader.get("events", ["hits", "info", "links"])[0]
+        self.assertEqual(set(event.getAvailableCollections()), {"hits", "info", "links"})
+
+    def test_invalid_limited_collections(self):
+        """Ensure that requesting non existant collections raises a value error"""
+        with self.assertRaises(ValueError):
+            events = self.reader.get("events", ["non-existent-collection"])
+            _ = events[0]
+
+        with self.assertRaises(ValueError):
+            events = self.reader.get("events", ["non-existent-collection"])
+            for _ in events:
+                pass
+
 
 class LegacyReaderTestCaseMixin:
     """Common test cases for the legacy readers python bindings.
