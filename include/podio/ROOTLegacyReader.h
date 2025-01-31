@@ -75,20 +75,23 @@ public:
   /// Read the next data entry from which a Frame can be constructed.
   ///
   /// @note the category name has to be "events" in this case, as only that
-  /// category is available for legacy files.
+  /// category is available for legacy files. Also the collections to read
+  /// argument will be ignored.
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if there
   ///          are still entries left to read. Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string&);
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string&, const std::vector<std::string>& = {});
 
   /// Read the desired data entry from which a Frame can be constructed.
   ///
   /// @note the category name has to be "events" in this case, as only that
-  /// category is available for legacy files.
+  /// category is available for legacy files. Also the collections to read
+  /// argument will be ignored.
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          desired entry exists. Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string&, const unsigned entry);
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string&, const unsigned entry,
+                                                  const std::vector<std::string>& = {});
 
   /// Get the number of entries for the given name
   ///
