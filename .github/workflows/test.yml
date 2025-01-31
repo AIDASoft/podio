@@ -16,8 +16,9 @@ jobs:
         LCG: ["dev3/x86_64-el9-clang16-opt",
               "dev4/x86_64-el9-clang16-opt",
               "dev4/x86_64-el9-gcc13-opt",
-              "LCG_105/x86_64-el9-clang16-opt",
-              "LCG_105/x86_64-el9-gcc13-opt"]
+              "LCG_106b/x86_64-el9-clang16-opt",
+              "LCG_106b/x86_64-el9-gcc13-opt",
+              "LCG_104/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -31,7 +32,7 @@ jobs:
           cd build
           cmake -DENABLE_SIO=ON \
             -DENABLE_JULIA=ON \
-            -DENABLE_RNTUPLE=ON \
+            -DENABLE_RNTUPLE=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DENABLE_DATASOURCE=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=20 \
