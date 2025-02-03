@@ -318,6 +318,15 @@ TEST_CASE("LinkCollection subset collection", "[links][subset-colls]") {
 TEST_CASE("LinkCollection basics", "[links]") {
   REQUIRE(podio::detail::linkCollTypeName<ExampleCluster, ExampleHit>() ==
           "podio::LinkCollection<ExampleCluster,ExampleHit>");
+
+  auto links = TestLColl{};
+  auto link = links.create();
+  REQUIRE(link.id().collectionID == 0);
+
+  links.setID(42);
+  for (auto l : links) {
+    REQUIRE(l.id().collectionID == 42);
+  }
 }
 
 auto createLinkCollections(const size_t nElements = 3u) {
