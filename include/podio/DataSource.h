@@ -23,12 +23,25 @@ public:
   ///
   /// @brief Construct the podio::DataSource from the provided file.
   ///
-  explicit DataSource(const std::string& filePath, int nEvents = -1);
+  /// @param filePath Path to the file that should be read
+  /// @param nEvents Number of events to process (optional, defaults to -1 for
+  ///                all events)
+  /// @param collsToRead The collections that should be made available (optional,
+  ///                    defaults to empty vector for all collections)
+  ///
+  explicit DataSource(const std::string& filePath, int nEvents = -1, const std::vector<std::string>& collsToRead = {});
 
   ///
   /// @brief Construct the podio::DataSource from the provided file list.
   ///
-  explicit DataSource(const std::vector<std::string>& filePathList, int nEvents = -1);
+  /// @param filePathList Paths to the files that should be read
+  /// @param nEvents Number of events to process (optional, defaults to -1 for
+  ///                all events)
+  /// @param collsToRead The collections that should be made available (optional,
+  ///                    defaults to empty vector for all collections)
+  ///
+  explicit DataSource(const std::vector<std::string>& filePathList, int nEvents = -1,
+                      const std::vector<std::string>& collsToRead = {});
 
   ///
   /// @brief Inform the podio::DataSource of the desired level of parallelism.
@@ -139,7 +152,7 @@ private:
   ///
   /// @param[in] nEvents Number of events.
   ///
-  void SetupInput(int nEvents);
+  void SetupInput(int nEvents, const std::vector<std::string>& collsToRead);
 };
 
 ///
@@ -147,18 +160,25 @@ private:
 ///
 /// @param[in] filePathList  List of file paths from which the RDataFrame
 ///                          will be created.
+/// @param[in] collsToRead   List of collection names that should be made
+///                          available
+///
 /// @return                  RDataFrame created from input file list.
 ///
-ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList);
+ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList,
+                                 const std::vector<std::string>& collsToRead = {});
 
 ///
 /// @brief Create RDataFrame from a Podio file or glob pattern matching multiple Podio files.
 ///
 /// @param[in] filePath  File path from which the RDataFrame will be created.
 ///                      The file path can include glob patterns to match multiple files.
+/// @param[in] collsToRead   List of collection names that should be made
+///                          available
+///
 /// @return              RDataFrame created from input file list.
 ///
-ROOT::RDataFrame CreateDataFrame(const std::string& filePath);
+ROOT::RDataFrame CreateDataFrame(const std::string& filePath, const std::vector<std::string>& collsToRead = {});
 } // namespace podio
 
 #endif /* PODIO_DATASOURCE_H */
