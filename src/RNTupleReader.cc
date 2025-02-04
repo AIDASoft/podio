@@ -138,11 +138,13 @@ std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
   return cats;
 }
 
-std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name) {
-  return readEntry(name, m_entries[name]);
+std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name,
+                                                            const std::vector<std::string>& collsToRead) {
+  return readEntry(name, m_entries[name], collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum) {
+std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum,
+                                                        const std::vector<std::string>& collsToRead) {
   if (m_totalEntries.find(category) == m_totalEntries.end()) {
     getEntries(category);
   }
@@ -156,6 +158,16 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     }
   }
 
+  const auto& collInfo = m_collectionInfo[category];
+  // Make sure to not silently ignore non-existant but requested collections
+  if (!collsToRead.empty()) {
+    for (const auto& name : collsToRead) {
+      if (std::ranges::find(collInfo.name, name) == collInfo.name.end()) {
+        throw std::invalid_argument(name + " is not available from Frame");
+      }
+    }
+  }
+
   m_entries[category] = entNum + 1;
 
   // m_readerEntries contains the accumulated entries for all the readers
@@ -166,19 +178,16 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   auto readerIndex = upper - 1 - m_readerEntries[category].begin();
 
   ROOTFrameData::BufferMap buffers;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   // We need to create a non-bare entry here, because the entries for the
   // parameters are not explicitly (re)set and we need them default initialized.
   // In principle we would only need a bare entry for the collection data, since
   // we set all the fields there in any case.
   auto dentry = m_readers[category][readerIndex]->GetModel().CreateEntry();
-#else
-  auto dentry = m_readers[category][readerIndex]->GetModel()->GetDefaultEntry();
-#endif
-
-  const auto& collInfo = m_collectionInfo[category];
 
   for (size_t i = 0; i < collInfo.id.size(); ++i) {
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, collInfo.name[i]) == collsToRead.end()) {
+      continue;
+    }
     const auto& collType = collInfo.type[i];
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
     auto maybeBuffers =
@@ -194,40 +203,24 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     if (collInfo.isSubsetCollection[i]) {
       auto brName = root_utils::subsetBranch(collInfo.name[i]);
       auto vec = new std::vector<podio::ObjectID>;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
       dentry->BindRawPtr(brName, vec);
-#else
-      dentry->CaptureValueUnsafe(brName, vec);
-#endif
       collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
     } else {
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
       dentry->BindRawPtr(collInfo.name[i], collBuffers.data);
-#else
-      dentry->CaptureValueUnsafe(collInfo.name[i], collBuffers.data);
-#endif
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
       for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
         const auto relName = relVecNames.relations[j];
         auto vec = new std::vector<podio::ObjectID>;
         const auto brName = root_utils::refBranch(collInfo.name[i], relName);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
         dentry->BindRawPtr(brName, vec);
-#else
-        dentry->CaptureValueUnsafe(brName, vec);
-#endif
         collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
       }
 
       for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
         const auto vecName = relVecNames.vectorMembers[j];
         const auto brName = root_utils::vecBranch(collInfo.name[i], vecName);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
         dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
-#else
-        dentry->CaptureValueUnsafe(brName, collBuffers.vectorMembers->at(j).second);
-#endif
       }
     }
 

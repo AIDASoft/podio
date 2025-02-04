@@ -28,6 +28,10 @@ namespace detail {
   // vector
   using CollectionInfo = std::tuple<std::string, bool, SchemaVersionT, size_t>;
 
+  struct NamedCollInfo {
+    std::string name{};
+    CollectionInfo info{};
+  };
 } // namespace detail
 
 class CollectionBase;
@@ -74,20 +78,32 @@ public:
   /// Read the next data entry for a given category.
   ///
   /// @param name The category name for which to read the next entry
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///             not provided (or empty) all collections will be read
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category exists and if there are still entries left to read.
   ///          Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name);
+  ///
+  /// @throws std::invalid_argument in case collsToRead contains collection
+  /// names that are not available
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
+                                                      const std::vector<std::string>& collsToRead = {});
 
   /// Read the desired data entry for a given category.
   ///
   /// @param name  The category name for which to read the next entry
   /// @param entry The entry number to read
+  /// @param collsToRead (optional) the collection names that should be read. If
+  ///              not provided (or empty) all collections will be read
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category and the desired entry exist. Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry);
+  ///
+  /// @throws std::invalid_argument in case collsToRead contains collection
+  /// names that are not available
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
+                                                  const std::vector<std::string>& collsToRead = {});
 
   /// Get the number of entries for the given name
   ///
@@ -146,12 +162,12 @@ private:
     /// constructor from chain for more convenient map insertion
     CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
     }
-    std::unique_ptr<TChain> chain{nullptr};                                      ///< The TChain with the data
-    unsigned entry{0};                                                           ///< The next entry to read
-    std::vector<std::pair<std::string, detail::CollectionInfo>> storedClasses{}; ///< The stored collections in this
-                                                                                 ///< category
-    std::vector<root_utils::CollectionBranches> branches{};                      ///< The branches for this category
-    std::shared_ptr<CollectionIDTable> table{nullptr}; ///< The collection ID table for this category
+    std::unique_ptr<TChain> chain{nullptr};                 ///< The TChain with the data
+    unsigned entry{0};                                      ///< The next entry to read
+    std::vector<detail::NamedCollInfo> storedClasses{};     ///< The stored collections in this
+                                                            ///< category
+    std::vector<root_utils::CollectionBranches> branches{}; ///< The branches for this category
+    std::shared_ptr<CollectionIDTable> table{nullptr};      ///< The collection ID table for this category
   };
 
   /// Initialize the passed CategoryInfo by setting up the necessary branches,
@@ -174,7 +190,8 @@ private:
   /// Read the data entry specified in the passed CategoryInfo, and increase the
   /// counter afterwards. In case the requested entry is larger than the
   /// available number of entries, return a nullptr.
-  std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTReader::CategoryInfo& catInfo);
+  std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTReader::CategoryInfo& catInfo,
+                                                  const std::vector<std::string>& collsToRead);
 
   /// Get / read the buffers at index iColl in the passed category information
   podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl, bool reloadBranches,

@@ -35,17 +35,21 @@ class BaseReaderMixin:
         """
         return self._categories
 
-    def get(self, category):
+    def get(self, category, coll_names=None):
         """Get an iterator with access functionality for a given category.
 
         Args:
             category (str): The name of the desired category
+            coll_names (list[str]): The list of collections to read (optional,
+                all available collections will by default)
 
         Returns:
             FrameCategoryIterator: The iterator granting access to all Frames of the
                 desired category
         """
-        return FrameCategoryIterator(self._reader, category)
+        if self.is_legacy and coll_names:
+            raise ValueError("Legacy readers do not support selective reading")
+        return FrameCategoryIterator(self._reader, category, coll_names)
 
     @property
     def is_legacy(self):

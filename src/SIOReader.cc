@@ -26,7 +26,8 @@ void SIOReader::openFile(const std::string& filename) {
   readEDMDefinitions(); // Potentially could do this lazily
 }
 
-std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(const std::string& name) {
+std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(const std::string& name,
+                                                       const std::vector<std::string>& collsToRead) {
   // Skip to where the next record of this name starts in the file, based on
   // how many times we have already read this name
   //
@@ -44,14 +45,15 @@ std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(const std::string& name) 
   m_nameCtr[name]++;
 
   return std::make_unique<SIOFrameData>(std::move(dataBuffer), dataInfo._uncompressed_length, std::move(tableBuffer),
-                                        tableInfo._uncompressed_length);
+                                        tableInfo._uncompressed_length, collsToRead);
 }
 
-std::unique_ptr<SIOFrameData> SIOReader::readEntry(const std::string& name, const unsigned entry) {
+std::unique_ptr<SIOFrameData> SIOReader::readEntry(const std::string& name, const unsigned entry,
+                                                   const std::vector<std::string>& collsToRead) {
   // NOTE: Will create or overwrite the entry counter
   //       All checks are done in the following function
   m_nameCtr[name] = entry;
-  return readNextEntry(name);
+  return readNextEntry(name, collsToRead);
 }
 
 std::vector<std::string_view> SIOReader::getAvailableCategories() const {

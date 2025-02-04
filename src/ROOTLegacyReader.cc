@@ -17,14 +17,16 @@
 
 namespace podio {
 
-std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(const std::string& name) {
+std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(const std::string& name,
+                                                               const std::vector<std::string>&) {
   if (name != m_categoryName) {
     return nullptr;
   }
   return readEntry();
 }
 
-std::unique_ptr<podio::ROOTFrameData> ROOTLegacyReader::readEntry(const std::string& name, unsigned entry) {
+std::unique_ptr<podio::ROOTFrameData> ROOTLegacyReader::readEntry(const std::string& name, unsigned entry,
+                                                                  const std::vector<std::string>&) {
   if (name != m_categoryName) {
     return nullptr;
   }

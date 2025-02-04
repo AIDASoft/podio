@@ -7,6 +7,26 @@
 #include <iterator>
 
 namespace podio {
+
+SIOFrameData::SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer,
+                           std::size_t tableSize, std::vector<std::string> limitColls) :
+    m_recBuffer(std::move(collBuffers)),
+    m_tableBuffer(std::move(tableBuffer)),
+    m_dataSize(dataSize),
+    m_tableSize(tableSize),
+    m_limitColls(std::move(limitColls)) {
+  readIdTable();
+  // Assuming here that the idTable only contains the collections that are
+  // also available
+  if (!m_limitColls.empty()) {
+    for (const auto& name : m_limitColls) {
+      if (std::ranges::find(m_idTable.names(), name) == m_idTable.names().end()) {
+        throw std::invalid_argument(name + " is not available from Frame");
+      }
+    }
+  }
+}
+
 std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(const std::string& name) {
   unpackBuffers();
 
@@ -18,6 +38,10 @@ std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(c
     const auto nameIt = std::ranges::find(names, name);
     // collection indices start at 1!
     const auto index = std::distance(std::begin(names), nameIt) + 1;
+    // This collection is not available (artificially!)
+    if (m_availableBlocks[index] == 0) {
+      return std::nullopt;
+    }
 
     // Mark this block as consumed
     m_availableBlocks[index] = 0;
@@ -38,11 +62,8 @@ std::vector<std::string> SIOFrameData::getAvailableCollections() {
   std::vector<std::string> collections;
   for (size_t i = 1; i < m_blocks.size(); ++i) {
     if (m_availableBlocks[i]) {
-      // We have to get the collID of this collection in the idTable as there is
-      // no guarantee that it coincides with the index in the blocks.
-      // Additionally, collection indices start at 1
-      const auto collID = m_idTable.ids()[i - 1];
-      collections.push_back(m_idTable.name(collID).value());
+      const auto name = m_idTable.names()[i - 1];
+      collections.push_back(name);
     }
   }
 
@@ -57,16 +78,28 @@ void SIOFrameData::unpackBuffers() {
     return;
   }
 
-  if (m_idTable.empty()) {
-    readIdTable();
-  }
-
   createBlocks();
 
   sio::zlib_compression compressor;
   sio::buffer uncBuffer{m_dataSize};
   compressor.uncompress(m_recBuffer.span(), uncBuffer);
   sio::api::read_blocks(uncBuffer.span(), m_blocks);
+
+  if (m_limitColls.empty()) {
+    return;
+  }
+
+  // In order to save on memory and to not litter the rest of the implementation
+  // with similar checks, we immediately throw away all collections that should
+  // not become available
+  for (size_t i = 1; i < m_blocks.size(); ++i) {
+    const auto name = m_idTable.names()[i - 1];
+    if (std::ranges::find(m_limitColls, name) == m_limitColls.end()) {
+      auto buffers = dynamic_cast<SIOBlock*>(m_blocks[i].get())->getBuffers();
+      buffers.deleteBuffers(buffers);
+      m_availableBlocks[i] = 0;
+    }
+  }
 }
 
 void SIOFrameData::createBlocks() {

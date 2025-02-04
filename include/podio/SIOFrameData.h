@@ -4,13 +4,10 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
-#include "podio/SIOBlock.h"
 
 #include <sio/buffer.h>
 #include <sio/definitions.h>
 
-#include <memory>
-#include <numeric>
 #include <optional>
 #include <string>
 #include <vector>
@@ -35,19 +32,15 @@ public:
   /// tableBuffer containing the necessary information for unpacking the
   /// collections. The two size parameters denote the uncompressed size of the
   /// respective buffers.
-  SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize) :
-      m_recBuffer(std::move(collBuffers)),
-      m_tableBuffer(std::move(tableBuffer)),
-      m_dataSize(dataSize),
-      m_tableSize(tableSize) {
-  }
+  ///
+  /// In case the limitColls contain a collection name that is not available
+  /// from the idTable names this throws an exception
+  SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio::buffer&& tableBuffer, std::size_t tableSize,
+               std::vector<std::string> limitColls = {});
 
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
 
   podio::CollectionIDTable getIDTable() {
-    if (m_idTable.empty()) {
-      readIdTable();
-    }
     return {m_idTable.ids(), m_idTable.names()};
   }
 
@@ -79,6 +72,10 @@ private:
   std::vector<short> m_subsetCollectionBits{};
 
   podio::GenericParameters m_parameters{};
+
+  /// The collections that should be made available for a Frame constructed from
+  /// this (if non-empty)
+  std::vector<std::string> m_limitColls{};
 };
 } // namespace podio
 

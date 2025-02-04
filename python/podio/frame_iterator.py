@@ -11,15 +11,18 @@ class FrameCategoryIterator:
     reader as well as accessing specific entries
     """
 
-    def __init__(self, reader, category):
+    def __init__(self, reader, category, coll_names=None):
         """Construct the iterator from the reader and the category.
 
         Args:
             reader (Reader): Any podio reader offering access to Frames
             category (str): The category name of the Frames to be iterated over
+            coll_names (list[str]): The list of collections to read (optional,
+                all available collections will by default)
         """
         self._reader = reader
         self._category = category
+        self._coll_names = coll_names or []
 
     def __iter__(self):
         """The trivial implementation for the iterator protocol."""
@@ -27,9 +30,12 @@ class FrameCategoryIterator:
 
     def __next__(self):
         """Get the next available Frame or stop."""
-        frame_data = self._reader.readNextEntry(self._category)
-        if frame_data:
-            return Frame(std.move(frame_data))
+        try:
+            frame_data = self._reader.readNextEntry(self._category, self._coll_names)
+            if frame_data:
+                return Frame(std.move(frame_data))
+        except std.invalid_argument as e:
+            raise ValueError(e.what()) from e
 
         raise StopIteration
 
@@ -52,7 +58,7 @@ class FrameCategoryIterator:
             raise IndexError
 
         try:
-            frame_data = self._reader.readEntry(self._category, entry)
+            frame_data = self._reader.readEntry(self._category, entry, self._coll_names)
         except std.bad_function_call:
             print(
                 "Error: Unable to read an entry of the input file. This can "
@@ -62,6 +68,8 @@ class FrameCategoryIterator:
                 "library folder with your data model\n"
             )
             raise
+        except std.invalid_argument as e:
+            raise ValueError(e.what()) from e
 
         if frame_data:
             return Frame(std.move(frame_data))

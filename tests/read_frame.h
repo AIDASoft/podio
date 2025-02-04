@@ -1,6 +1,7 @@
 #ifndef PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_READ_FRAME_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithInterfaceRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "read_test.h"
@@ -15,8 +16,10 @@
 #include "interface_extension_model/TestInterfaceLinkCollection.h"
 
 #include "podio/Frame.h"
+#include "podio/Reader.h"
 
 #include <iostream>
+#include <stdexcept>
 
 void processExtensions(const podio::Frame& event, int iEvent, podio::version::Version) {
   const auto& extColl = event.get<extension::ContainedTypeCollection>("extension_Contained");
@@ -180,14 +183,14 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   }
 
   if (reader.getEntries(podio::Category::Event) != 10) {
-    std::cerr << "Could not read back the number of events correctly. "
-              << "(expected:" << 10 << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;
+    std::cerr << "Could not read back the number of events correctly. (expected: " << 10
+              << ", actual: " << reader.getEntries(podio::Category::Event) << ")" << std::endl;
     return 1;
   }
 
   if (reader.getEntries(podio::Category::Event) != reader.getEntries("other_events")) {
-    std::cerr << "Could not read back the number of events correctly. "
-              << "(expected:" << 10 << ", actual: " << reader.getEntries("other_events") << ")" << std::endl;
+    std::cerr << "Could not read back the number of events correctly. (expected: " << 10
+              << ", actual: " << reader.getEntries("other_events") << ")" << std::endl;
     return 1;
   }
 
@@ -267,6 +270,101 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   }
 
   return 0;
+}
+
+template <typename ReaderT>
+int test_read_frame_limited(ReaderT& reader) {
+  const std::vector<std::string> collsToRead = {"mcparticles", "clusters"};
+
+  auto event = [&]() {
+    if constexpr (std::is_same_v<ReaderT, podio::Reader>) {
+      return podio::Frame(reader.readFrame("events", 1, collsToRead));
+    } else {
+      return podio::Frame(reader.readEntry("events", 1, collsToRead));
+    }
+  }();
+
+  const auto& availColls = event.getAvailableCollections();
+
+  const bool validColls =
+      std::set(availColls.begin(), availColls.end()) != std::set(collsToRead.begin(), collsToRead.end());
+
+  if (validColls) {
+    std::cerr << "The available collections are not as expected" << std::endl;
+    std::cerr << "expected: ";
+    for (const auto& c : std::set(collsToRead.begin(), collsToRead.end())) {
+      std::cerr << c << " ";
+    }
+    std::cerr << "\nactual: ";
+    for (const auto& c : std::set(availColls.begin(), availColls.end())) {
+      std::cerr << c << " ";
+    }
+    std::cerr << std::endl;
+
+    return 1;
+  }
+
+  if (!event.get("mcparticles")) {
+    std::cerr << "Collection 'mcparticles' should be available" << std::endl;
+    return 1;
+  }
+
+  if (event.get("hits")) {
+    std::cerr << "Collection 'hits' is available, but should not be" << std::endl;
+    return 1;
+  }
+
+  const auto& clusters = event.template get<ExampleClusterCollection>("clusters");
+  const auto clu0 = clusters[0];
+  const auto hits = clu0.Hits();
+  if (hits.size() != 1 || hits[0].isAvailable()) {
+    std::cerr << "Hit in clusters are available but shouldn't be" << std::endl;
+    return 1;
+  }
+
+  const auto& newHits = [&]() -> auto const& {
+    auto mutHits = ExampleHitCollection();
+    mutHits.create();
+    return event.put(std::move(mutHits), "hits");
+  }();
+
+  if (newHits.size() != 1) {
+    std::cerr << "Adding new collection with same name as available from data (but not read) doesn't work" << std::endl;
+    return 1;
+  }
+
+  // Check that we get the expected exception if trying to read a non-existant
+  // collection
+  try {
+    if constexpr (std::is_same_v<ReaderT, podio::Reader>) {
+      reader.readFrame("events", 1, {"no-collection-with-this-name", "orThisOne"});
+    } else {
+      reader.readEntry("events", 1, {"no-collection-with-this-name", "orThisOne"});
+    }
+    // if we haven't gotten an exception before we fail
+    std::cerr << "Attempting to read non-existant collections should result in an exception" << std::endl;
+    return 1;
+  } catch (std::invalid_argument& ex) {
+    if (ex.what() != std::string("no-collection-with-this-name is not available from Frame")) {
+      std::cerr << "Exception message for attempting to limit to non-existant collections not as expected: "
+                << ex.what() << std::endl;
+      return 1;
+    }
+  } catch (...) {
+    std::cerr << "Attempting to read a non-existant collection didn't yield the correct exception" << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
+
+/// Check that reading only a subset of collections works as expected
+template <typename ReaderT>
+int test_read_frame_limited(const std::string& inputFile) {
+  auto reader = ReaderT();
+  reader.openFile(inputFile);
+
+  return test_read_frame_limited(reader);
 }
 
 #endif // PODIO_TESTS_READ_FRAME_H
