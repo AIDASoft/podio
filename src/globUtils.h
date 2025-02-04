@@ -83,7 +83,7 @@ std::vector<std::string> podio::detail::expand_glob(const std::string& pattern) 
 #else
 
 std::vector<std::string> podio::detail::expand_glob(const std::string& pattern) {
-  if is_glob_pattern (pattern) {
+  if (is_glob_pattern(pattern)) {
     throw std::system_error("Glob expansion is not supported on this platform")
   }
   return {pattern};
