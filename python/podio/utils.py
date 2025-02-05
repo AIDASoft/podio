@@ -5,11 +5,10 @@ import os
 from collections.abc import Iterable
 from pathlib import Path
 
-from ROOT import gInterpreter
+import ROOT
 
-if gInterpreter.LoadFile("podio/podioVersion.h") != 0:  # noqa: E402
+if ROOT.gInterpreter.LoadFile("podio/podioVersion.h") != 0:  # noqa: E402
     raise ImportError("Cannot find the podio/podioVersion.h header")
-import ROOT.podio.utils  # noqa: E402 # pylint: disable=wrong-import-position
 
 
 def convert_to_str_paths(filenames):
