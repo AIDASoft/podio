@@ -1,10 +1,10 @@
 #include "podio/DataSource.h"
 #include "podio/Reader.h"
+#include "podio/utilities/Glob.h"
 
 // podio
 #include <podio/FrameCategories.h>
 
-#include "globUtils.h"
 // ROOT
 #include <TFile.h>
 
@@ -14,7 +14,7 @@
 #include <memory>
 
 namespace podio {
-DataSource::DataSource(const std::string& filePath, int nEvents) : DataSource(detail::expand_glob(filePath), nEvents) {
+DataSource::DataSource(const std::string& filePath, int nEvents) : DataSource(utils::expand_glob(filePath), nEvents) {
 }
 
 DataSource::DataSource(const std::vector<std::string>& filePathList, int nEvents) :
