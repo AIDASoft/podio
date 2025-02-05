@@ -8,6 +8,8 @@
   #include "podio/SIOReader.h"
 #endif
 
+#include "podio/utilities/Glob.h"
+
 #include "TFile.h"
 #include "TKey.h"
 #include <memory>
@@ -19,7 +21,7 @@ Reader::Reader(std::unique_ptr<T> reader) : m_self(std::make_unique<ReaderModel<
 }
 
 Reader makeReader(const std::string& filename) {
-  return makeReader(std::vector<std::string>{filename});
+  return makeReader(utils::expand_glob(filename));
 }
 
 Reader makeReader(const std::vector<std::string>& filenames) {

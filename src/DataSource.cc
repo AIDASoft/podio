@@ -1,5 +1,6 @@
 #include "podio/DataSource.h"
 #include "podio/Reader.h"
+#include "podio/utilities/Glob.h"
 
 // podio
 #include <podio/FrameCategories.h>
@@ -13,9 +14,7 @@
 #include <memory>
 
 namespace podio {
-DataSource::DataSource(const std::string& filePath, int nEvents) : m_nSlots{1} {
-  m_filePathList.emplace_back(filePath);
-  SetupInput(nEvents);
+DataSource::DataSource(const std::string& filePath, int nEvents) : DataSource(utils::expand_glob(filePath), nEvents) {
 }
 
 DataSource::DataSource(const std::vector<std::string>& filePathList, int nEvents) :

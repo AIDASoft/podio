@@ -10,3 +10,7 @@ if ROOT.gSystem.Load("libTestDataModelDict") < 0:
 rdf = CreateDataFrame("example_frame.root")
 
 assert rdf.Count().GetValue() == 10
+
+rdf = CreateDataFrame("example_frame_?.root")
+
+assert rdf.Count().GetValue() == 20

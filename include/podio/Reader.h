@@ -206,12 +206,13 @@ public:
   }
 };
 
-/// Create a Reader is able to read the file
+/// Create a Reader that is able to read the file or files matching a glob pattern
 ///
 /// This will inspect the filename as well as peek at the file contents to
 /// instantiate the correct low level reader to open and read the file
 ///
-/// @param filename The (path to the) file to read from
+/// @param filename The (path to the) file to read from.
+///                 The file path can include glob patterns to match multiple files.
 ///
 /// @returns A Reader that has been initialized and that can be used for reading
 ///          data from the passed file
