@@ -46,10 +46,6 @@ set_tests_properties(
     DEPENDS write_frame_root
 )
 
-add_test(NAME read_python_glob COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_glob.py)
-PODIO_SET_TEST_ENV(read_python_glob)
-set_property(TEST read_python_glob PROPERTY DEPENDS write_frame_root)
-
 if(ENABLE_RNTUPLE)
   set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
   set_property(TEST read_interface_rntuple PROPERTY DEPENDS write_interface_rntuple)

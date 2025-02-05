@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Module for general reading functionality."""
 
-from glob import glob
-
 from ROOT import TFile
 
 from podio import root_io
@@ -52,42 +50,32 @@ def _determine_root_format(filename):
     return RootFileFormat.RNTUPLE
 
 
-def get_reader(filenames):
-    """Get an appropriate reader for the passed files.
-    The reader is inferred from the first file if multiple are given.
-    All files are assumed to be of the same I/O format.
+def get_reader(filename):
+    """Get an appropriate reader for the passed file.
 
     Args:
-        filenames (str or list[str]): The input file(s)
+        filename (str): The input file
 
     Returns:
         root_io.[Legacy]Reader, sio_io.[Legacy]Reader: an initialized reader that
-            is able to process the input files.
+            is able to process the input file.
 
     Raises:
-        ValueError: If the files cannot be recognized, or if podio has not been
+        ValueError: If the file cannot be recognized, or if podio has not been
             built with the necessary backend I/O support
     """
-    if isinstance(filenames, str):
-        expanded_filenames = glob(filenames)
-        if not expanded_filenames:
-            filenames = [filenames]
-        else:
-            filenames = expanded_filenames
-    filename = filenames[0]
-
     if filename.endswith(".sio"):
         if _is_frame_sio_file(filename):
-            return sio_io.Reader(filenames)
-        return sio_io.LegacyReader(filenames)
+            return sio_io.Reader(filename)
+        return sio_io.LegacyReader(filename)
 
     if filename.endswith(".root"):
         root_flavor = _determine_root_format(filename)
         if root_flavor == RootFileFormat.TTREE:
-            return root_io.Reader(filenames)
+            return root_io.Reader(filename)
         if root_flavor == RootFileFormat.RNTUPLE:
-            return root_io.RNTupleReader(filenames)
+            return root_io.RNTupleReader(filename)
         if root_flavor == RootFileFormat.LEGACY:
-            return root_io.LegacyReader(filenames)
+            return root_io.LegacyReader(filename)
 
     raise ValueError("file must end on .root or .sio")
