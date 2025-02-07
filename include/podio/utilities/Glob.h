@@ -3,6 +3,13 @@
 #include <string>
 #include <vector>
 
+/**Support for glob expansion.*/
+#if __has_include(<glob.h>)
+  #define PODIO_HAS_GLOB_SUPPORT 1
+#else
+  #define PODIO_HAS_GLOB_SUPPORT 0
+#endif
+
 namespace podio::utils {
 /**
  * @brief Expands a given glob pattern into a list of matching file paths.
