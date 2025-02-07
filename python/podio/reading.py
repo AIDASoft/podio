@@ -52,6 +52,7 @@ def _determine_root_format(filename):
 
 def get_reader(filenames):
     """Get an appropriate reader for the passed files.
+
     The reader is inferred from the first file if multiple are given.
     All files are assumed to be of the same I/O format.
 

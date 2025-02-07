@@ -5,10 +5,7 @@ import os
 from collections.abc import Iterable
 from pathlib import Path
 
-import ROOT
-
-if ROOT.gInterpreter.LoadFile("podio/podioVersion.h") != 0:  # noqa: E402
-    raise ImportError("Cannot find the podio/podioVersion.h header")
+from ROOT import podio
 
 
 def convert_to_str_paths(filenames):
@@ -50,7 +47,7 @@ def expand_glob(pattern):
         cppyy.gbl.std.runtime_error: If no matches are found or if there is an error during glob
         expansion.
     """
-    return [str(x) for x in ROOT.podio.utils.expand_glob(pattern)]
+    return [str(x) for x in podio.utils.expand_glob(pattern)]
 
 
-is_glob_pattern = ROOT.podio.utils.is_glob_pattern
+is_glob_pattern = podio.utils.is_glob_pattern

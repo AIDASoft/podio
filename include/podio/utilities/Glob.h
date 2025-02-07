@@ -1,4 +1,4 @@
-#ifndef PODIO_UTILITIES_GLOB_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
+#ifndef PODIO_UTILITIES_GLOB_H
 #define PODIO_UTILITIES_GLOB_H
 #include <string>
 #include <vector>
@@ -9,7 +9,7 @@ namespace podio::utils {
  *
  * This function takes a glob pattern as input and returns a vector of strings
  * containing the paths that match the pattern. It supports standard glob rules
- * extended with tilde expansion and brace expansion If the pattern doesn't
+ * extended with tilde expansion and brace expansion. If the pattern doesn't
  * contain any wildcards then it is placed in the returned vector as is. Paths
  * that cannot be accessed are displayed on std::cerr, but the expansion process
  * is not aborted. On platforms without <glob.h> no expansion is done and vector
