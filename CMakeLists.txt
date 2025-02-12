@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 #--- Project name --------------------------------------------------------------
-project(podio)
+project(podio LANGUAGES CXX)
 
 #--- Version -------------------------------------------------------------------
 SET( ${PROJECT_NAME}_VERSION_MAJOR 1 )
