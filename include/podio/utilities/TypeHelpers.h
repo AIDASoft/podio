@@ -40,6 +40,11 @@ namespace det {
 
 namespace detail {
 
+  // A helper variable template that is always false, used for static_asserts
+  // and other compile-time checks that should always fail.
+  template <typename T>
+  inline constexpr bool always_false = false;
+
   /// Helper struct to determine whether a given type T is in a tuple of types
   /// that act as a type list in this case
   template <typename T, typename>

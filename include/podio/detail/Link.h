@@ -272,7 +272,7 @@ public:
                          !detail::isInterfaceInitializableFrom<FromT, T>) {
       setTo(std::move(value));
     } else {
-      static_assert(false, "Argument type is ambiguous, can't determine link direction");
+      static_assert(detail::always_false<T>, "Argument type is ambiguous, can't determine link direction");
     }
   }
 
