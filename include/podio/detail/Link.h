@@ -5,6 +5,7 @@
 #include "podio/detail/LinkObj.h"
 #include "podio/utilities/MaybeSharedPtr.h"
 #include "podio/utilities/TypeHelpers.h"
+#include <type_traits>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -262,8 +263,16 @@ public:
   void set(T value) {
     if constexpr (std::is_same_v<T, FromT>) {
       setFrom(std::move(value));
-    } else {
+    } else if constexpr (std::is_same_v<T, ToT>) {
       setTo(std::move(value));
+    } else if constexpr (detail::isInterfaceInitializableFrom<FromT, T> &&
+                         !detail::isInterfaceInitializableFrom<ToT, T>) {
+      setFrom(std::move(value));
+    } else if constexpr (detail::isInterfaceInitializableFrom<ToT, T> &&
+                         !detail::isInterfaceInitializableFrom<FromT, T>) {
+      setTo(std::move(value));
+    } else {
+      static_assert(detail::always_false<T>, "Argument type is ambiguous, can't determine link direction");
     }
   }
 

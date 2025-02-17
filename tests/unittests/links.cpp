@@ -460,6 +460,21 @@ TEST_CASE("Links with interfaces", "[links][interface-types]") {
   link.set(hit);
   REQUIRE(link.get<TypeWithEnergy>() == hit);
   REQUIRE(link.get<ExampleCluster>() == cluster);
+
+  // Check determining `set` direction for a link going in a reverse direction
+  using ReverseInterfaceLinkCollection =
+      podio::LinkCollection<TestInterfaceLinkCollection::to_type, TestInterfaceLinkCollection::from_type>;
+  auto rColl = ReverseInterfaceLinkCollection{};
+  auto rLink = rColl.create();
+
+  rLink.set(cluster);
+  rLink.set(iface);
+  REQUIRE(rLink.get<TypeWithEnergy>() == iface);
+  REQUIRE(rLink.get<ExampleCluster>() == cluster);
+
+  rLink.set(hit);
+  REQUIRE(rLink.get<TypeWithEnergy>() == hit);
+  REQUIRE(rLink.get<ExampleCluster>() == cluster);
 }
 
 #ifdef PODIO_JSON_OUTPUT
