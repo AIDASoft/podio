@@ -828,11 +828,15 @@ this file</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.base_reader.BaseReaderMixin.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.base_reader.BaseReaderMixin.get" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coll_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.base_reader.BaseReaderMixin.get" title="Link to this definition"></a></dt>
 <dd><p>Get an iterator with access functionality for a given category.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>category</strong> (<em>str</em>) – The name of the desired category</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>category</strong> (<em>str</em>) – The name of the desired category</p></li>
+<li><p><strong>coll_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – The list of collections to read (optional,
+all available collections will by default)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -1176,7 +1180,7 @@ pretty much face-value and there are only limited checks for this.</p></li>
 <p>Module defining the Frame iterator used by the Reader interface</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="podio.frame_iterator.FrameCategoryIterator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio.frame_iterator.</span></span><span class="sig-name descname"><span class="pre">FrameCategoryIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.frame_iterator.FrameCategoryIterator" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio.frame_iterator.</span></span><span class="sig-name descname"><span class="pre">FrameCategoryIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coll_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.frame_iterator.FrameCategoryIterator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Iterator for iterating over all Frames of a given category available from a
 reader as well as accessing specific entries</p>
@@ -1186,6 +1190,8 @@ reader as well as accessing specific entries</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reader</strong> (<a class="reference internal" href="#podio.root_io.Reader" title="podio.root_io.Reader"><em>Reader</em></a>) – Any podio reader offering access to Frames</p></li>
 <li><p><strong>category</strong> (<em>str</em>) – The category name of the Frames to be iterated over</p></li>
+<li><p><strong>coll_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – The list of collections to read (optional,
+all available collections will by default)</p></li>
 </ul>
 </dd>
 </dl>
