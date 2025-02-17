@@ -46,5 +46,8 @@
     <class name="podio::LinkData"/>
     <class name="std::vector<podio::LinkData>"/>
 
+    <function name="podio::utils::is_glob_pattern"/>
+    <function name="podio::utils::expand_glob"/>
+
   </selection>
 </lcgdict>

@@ -152,9 +152,10 @@ private:
 ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList);
 
 ///
-/// @brief Create RDataFrame from a Podio file.
+/// @brief Create RDataFrame from a Podio file or glob pattern matching multiple Podio files.
 ///
 /// @param[in] filePath  File path from which the RDataFrame will be created.
+///                      The file path can include glob patterns to match multiple files.
 /// @return              RDataFrame created from input file list.
 ///
 ROOT::RDataFrame CreateDataFrame(const std::string& filePath);

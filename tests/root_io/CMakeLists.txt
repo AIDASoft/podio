@@ -8,6 +8,7 @@ set(root_dependent_tests
   read_and_write_frame_root.cpp
   write_interface_root.cpp
   read_interface_root.cpp
+  read_glob.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -39,10 +40,15 @@ set_tests_properties(
   read_frame_root
   read_frame_root_multiple
   read_and_write_frame_root
+  read_glob
 
   PROPERTIES
     DEPENDS write_frame_root
 )
+
+add_test(NAME read_python_multiple COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_multiple.py)
+PODIO_SET_TEST_ENV(read_python_multiple)
+set_property(TEST read_python_multiple PROPERTY DEPENDS write_frame_root)
 
 if(ENABLE_RNTUPLE)
   set_property(TEST read_rntuple PROPERTY DEPENDS write_rntuple)
