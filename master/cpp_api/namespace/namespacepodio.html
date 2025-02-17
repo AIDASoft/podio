@@ -589,6 +589,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.utils">podio.utils module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.utils.convert_to_str_paths"><code class="docutils literal notranslate"><span class="pre">convert_to_str_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.utils.expand_glob"><code class="docutils literal notranslate"><span class="pre">expand_glob()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.version">podio.version module</a><ul>
@@ -831,10 +832,10 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio15CreateDataFrameERKNSt6stringE">
 <span id="_CPPv3N5podio15CreateDataFrameERKNSt6stringE"></span><span id="_CPPv2N5podio15CreateDataFrameERKNSt6stringE"></span><span id="podio::CreateDataFrame__ssCR"></span><span class="target" id="namespacepodio_1a1df2b4ab7e7041c92403dd872e34e80e"></span><a class="reference internal" href="namespace_r_o_o_t.html#_CPPv44ROOT" title="ROOT"><span class="n"><span class="pre">ROOT</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">RDataFrame</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateDataFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filePath</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Create RDataFrame from a Podio file. </p>
+<dd><p>Create RDataFrame from a Podio file or glob pattern matching multiple Podio files. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filePath</strong> – <strong>[in]</strong> File path from which the RDataFrame will be created. </p>
+<dd class="field-odd"><p><strong>filePath</strong> – <strong>[in]</strong> File path from which the RDataFrame will be created. The file path can include glob patterns to match multiple files. </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>RDataFrame created from input file list. </p>
@@ -883,11 +884,11 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10makeReaderERKNSt6stringE">
 <span id="_CPPv3N5podio10makeReaderERKNSt6stringE"></span><span id="_CPPv2N5podio10makeReaderERKNSt6stringE"></span><span id="podio::makeReader__ssCR"></span><span class="target" id="namespacepodio_1aa546cdbe466a1d66229ff9caf2311be9"></span><a class="reference internal" href="../class/classpodio_1_1_reader.html#_CPPv4N5podio6ReaderE" title="podio::Reader"><span class="n"><span class="pre">Reader</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">makeReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Create a Reader is able to read the file. </p>
+<dd><p>Create a Reader that is able to read the file or files matching a glob pattern. </p>
 <p>This will inspect the filename as well as peek at the file contents to instantiate the correct low level reader to open and read the file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> – The (path to the) file to read from</p>
+<dd class="field-odd"><p><strong>filename</strong> – The (path to the) file to read from. The file path can include glob patterns to match multiple files.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A Reader that has been initialized and that can be used for reading data from the passed file </p>
@@ -6205,6 +6206,39 @@
 <span id="_CPPv3N5podio5utilsE"></span><span id="_CPPv2N5podio5utilsE"></span><span id="podio::utils"></span><span class="target" id="namespacepodio_1_1utils"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">utils</span></span></span><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio5utils11expand_globERKNSt6stringE">
+<span id="_CPPv3N5podio5utils11expand_globERKNSt6stringE"></span><span id="_CPPv2N5podio5utils11expand_globERKNSt6stringE"></span><span id="podio::utils::expand_glob__ssCR"></span><span class="target" id="namespacepodio_1_1utils_1a46d529dc5d3b2895c1a5cc90f054295f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">expand_glob</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pattern</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Expands a given glob pattern into a list of matching file paths. </p>
+<p>This function takes a glob pattern as input and returns a vector of strings containing the paths that match the pattern. It supports standard glob rules extended with tilde expansion and brace expansion. If the pattern doesn’t contain any wildcards then it is placed in the returned vector as is. Paths that cannot be accessed are displayed on std::cerr, but the expansion process is not aborted. On platforms without &lt;glob.h&gt; no expansion is done and vector containing the original pattern is returned</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pattern</strong> – The glob pattern to expand. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – If no matches are found or if there is an error during glob expansion. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A vector of strings containing the matching file paths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio5utils15is_glob_patternERKNSt6stringE">
+<span id="_CPPv3N5podio5utils15is_glob_patternERKNSt6stringE"></span><span id="_CPPv2N5podio5utils15is_glob_patternERKNSt6stringE"></span><span id="podio::utils::is_glob_pattern__ssCR"></span><span class="target" id="namespacepodio_1_1utils_1a3bde61e04fce4257a82e7f49b69f02f5"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_glob_pattern</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pattern</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Checks if a given pattern is a glob pattern. </p>
+<p>This function determines whether the provided pattern contains any standard glob or brace expansion wildcards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pattern</strong> – The pattern to check. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>true if the pattern is a glob pattern, false otherwise. </p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN5podio5utils4swapEvR14MaybeSharedPtrI1TER14MaybeSharedPtrI1TE">
 <span id="_CPPv3I0EN5podio5utils4swapER14MaybeSharedPtrI1TER14MaybeSharedPtrI1TE"></span><span id="_CPPv2I0EN5podio5utils4swapER14MaybeSharedPtrI1TER14MaybeSharedPtrI1TE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1_1utils_1abcb9d34add3c614c1f790a8f24e2cc8f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">swap</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1utils_1_1_maybe_shared_ptr.html#_CPPv4I0EN5podio5utils14MaybeSharedPtrE" title="podio::utils::MaybeSharedPtr"><span class="n"><span class="pre">MaybeSharedPtr</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_maybe_shared_ptr_8h.html#_CPPv4I0EN5podio5utils4swapEvR14MaybeSharedPtrI1TER14MaybeSharedPtrI1TE" title="podio::utils::swap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="../class/classpodio_1_1utils_1_1_maybe_shared_ptr.html#_CPPv4I0EN5podio5utils14MaybeSharedPtrE" title="podio::utils::MaybeSharedPtr"><span class="n"><span class="pre">MaybeSharedPtr</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_maybe_shared_ptr_8h.html#_CPPv4I0EN5podio5utils4swapEvR14MaybeSharedPtrI1TER14MaybeSharedPtrI1TE" title="podio::utils::swap::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><br /></dt>

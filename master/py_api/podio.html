@@ -589,6 +589,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio.utils">podio.utils module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio.utils.convert_to_str_paths"><code class="docutils literal notranslate"><span class="pre">convert_to_str_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio.utils.expand_glob"><code class="docutils literal notranslate"><span class="pre">expand_glob()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio.version">podio.version module</a><ul>
@@ -1218,15 +1219,17 @@ reader as well as accessing specific entries</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="podio.reading.get_reader">
-<span class="sig-prename descclassname"><span class="pre">podio.reading.</span></span><span class="sig-name descname"><span class="pre">get_reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.reading.get_reader" title="Link to this definition"></a></dt>
-<dd><p>Get an appropriate reader for the passed file.</p>
+<span class="sig-prename descclassname"><span class="pre">podio.reading.</span></span><span class="sig-name descname"><span class="pre">get_reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.reading.get_reader" title="Link to this definition"></a></dt>
+<dd><p>Get an appropriate reader for the passed files.</p>
+<p>The reader is inferred from the first file if multiple are given.
+All files are assumed to be of the same I/O format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The input file</p>
+<dd class="field-odd"><p><strong>filenames</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The input file(s)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>an initialized reader that</dt><dd><p>is able to process the input file.</p>
+<dt>an initialized reader that</dt><dd><p>is able to process the input file(s).</p>
 </dd>
 </dl>
 </p>
@@ -1235,8 +1238,11 @@ reader as well as accessing specific entries</p>
 <dd class="field-odd"><p>root_io.[Legacy]<a class="reference internal" href="#podio.root_io.Reader" title="podio.root_io.Reader">Reader</a>, sio_io.[Legacy]<a class="reference internal" href="#podio.root_io.Reader" title="podio.root_io.Reader">Reader</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the file cannot be recognized, or if podio has not been
-    built with the necessary backend I/O support</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the files cannot be recognized, or if podio has not been
+    built with the necessary backend I/O support</p></li>
+<li><p><strong>IndexError</strong> – If filenames is an empty list</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1380,6 +1386,35 @@ Frame based I/O into Frames for a more seamless transition.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="podio.utils.expand_glob">
+<span class="sig-prename descclassname"><span class="pre">podio.utils.</span></span><span class="sig-name descname"><span class="pre">expand_glob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.utils.expand_glob" title="Link to this definition"></a></dt>
+<dd><p>Expands a given glob pattern into a list of matching file paths.</p>
+<p>This function takes a glob pattern as input and returns a list of strings
+containing the paths that match the pattern. It supports standard glob rules
+extended with tilde expansion and brace expansion. If the pattern doesn’t
+contain any wildcards, it is placed in the returned list as is. Paths that
+cannot be accessed are displayed on stderr, but the expansion process is not
+aborted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – The glob pattern to expand.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of strings containing the matching file paths.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>cppyy.gbl.std.runtime_error</strong> – If no matches are found or if there is an error during glob</p></li>
+<li><p><strong>expansion.</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
