@@ -41,13 +41,8 @@ void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& ca
                                ROOT::Experimental::REntry* entry) {
   auto& paramStorage = getParamStorage<T>(catInfo);
   paramStorage = params.getKeysAndValues<T>();
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   entry->BindRawPtr(root_utils::getGPKeyName<T>(), &paramStorage.keys);
   entry->BindRawPtr(root_utils::getGPValueName<T>(), &paramStorage.values);
-#else
-  entry->CaptureValueUnsafe(root_utils::getGPKeyName<T>(), &paramStorage.keys);
-  entry->CaptureValueUnsafe(root_utils::getGPValueName<T>(), &paramStorage.values);
-#endif
 }
 
 void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -99,11 +94,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     }
   }
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   auto entry = m_categories[category].writer->GetModel().CreateBareEntry();
-#else
-  auto entry = m_categories[category].writer->GetModel()->CreateBareEntry();
-#endif
 
   ROOT::Experimental::RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
@@ -111,21 +102,13 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   for (const auto& [name, coll] : collections) {
     auto collBuffers = coll->getBuffers();
     if (collBuffers.vecPtr) {
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
       entry->BindRawPtr(name, static_cast<void*>(collBuffers.vecPtr));
-#else
-      entry->CaptureValueUnsafe(name, static_cast<void*>(collBuffers.vecPtr));
-#endif
     }
 
     if (coll->isSubsetCollection()) {
       auto& refColl = (*collBuffers.references)[0];
       const auto brName = root_utils::subsetBranch(name);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
       entry->BindRawPtr(brName, refColl.get());
-#else
-      entry->CaptureValueUnsafe(brName, refColl.get());
-#endif
 
     } else {
 
@@ -134,11 +117,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
         int i = 0;
         for (auto& c : (*refColls)) {
           const auto brName = root_utils::refBranch(name, relVecNames.relations[i]);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
           entry->BindRawPtr(brName, c.get());
-#else
-          entry->CaptureValueUnsafe(brName, c.get());
-#endif
           ++i;
         }
       }
@@ -149,11 +128,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
           const auto typeName = "vector<" + type + ">";
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
           auto ptr = *static_cast<std::vector<int>**>(vec);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
           entry->BindRawPtr(brName, ptr);
-#else
-          entry->CaptureValueUnsafe(brName, ptr);
-#endif
           ++i;
         }
       }
@@ -177,11 +152,7 @@ std::unique_ptr<ROOT::Experimental::RNTupleModel>
 RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& collections) {
   auto model = ROOT::Experimental::RNTupleModel::CreateBare();
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 31, 0)
   using ROOT::Experimental::RFieldBase;
-#else
-  using ROOT::Experimental::Detail::RFieldBase;
-#endif
 
   for (auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel

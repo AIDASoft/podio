@@ -12,5 +12,5 @@ int main(int argc, char* argv[]) {
   }
 
   return read_frames<podio::SIOReader>(inputFile, assertBuildVersion) +
-      test_frame_aux_info<podio::SIOReader>(inputFile);
+      test_frame_aux_info<podio::SIOReader>(inputFile) + test_read_frame_limited<podio::SIOReader>(inputFile);
 }

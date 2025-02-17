@@ -18,11 +18,13 @@ use a recent LCG or Key4hep stack release.
 
 On Mac OS or Ubuntu, you need to install the following software.
 
-### ROOT 6.28.04
+### ROOT 6.28.04 (6.32 for RNTuple support)
 
 Install ROOT 6.28.04 (or later) built with c++20 support and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
+
+If you want to build with RNTuple support, you will need 6.32 at least.
 
 ### Catch2 v3 (optional)
 

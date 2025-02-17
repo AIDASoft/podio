@@ -12,16 +12,17 @@
 #include "TChain.h"
 #include "TClass.h"
 
+#include <algorithm>
 #include <stdexcept>
 #include <unordered_map>
 
 namespace podio {
 
-std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
 
-std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfoT>& collInfo);
 
@@ -78,23 +79,35 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
   return params;
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name,
+                                                         const std::vector<std::string>& collsToRead) {
   auto& catInfo = getCategoryInfo(name);
-  return readEntry(catInfo);
+  return readEntry(catInfo, collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum,
+                                                     const std::vector<std::string>& collsToRead) {
   auto& catInfo = getCategoryInfo(name);
   catInfo.entry = entNum;
-  return readEntry(catInfo);
+  return readEntry(catInfo, collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo) {
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo,
+                                                     const std::vector<std::string>& collsToRead) {
   if (!catInfo.chain) {
     return nullptr;
   }
   if (catInfo.entry >= catInfo.chain->GetEntries()) {
     return nullptr;
+  }
+
+  // Make sure to not silently ignore non-existant but requested collections
+  if (!collsToRead.empty()) {
+    for (const auto& name : collsToRead) {
+      if (std::ranges::find(catInfo.storedClasses, name, &detail::NamedCollInfo::name) == catInfo.storedClasses.end()) {
+        throw std::invalid_argument(name + " is not available from Frame");
+      }
+    }
   }
 
   // After switching trees in the chain, branch pointers get invalidated so
@@ -109,7 +122,10 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
 
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
-    buffers.emplace(catInfo.storedClasses[i].first, getCollectionBuffers(catInfo, i, reloadBranches, localEntry));
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, catInfo.storedClasses[i].name) == collsToRead.end()) {
+      continue;
+    }
+    buffers.emplace(catInfo.storedClasses[i].name, getCollectionBuffers(catInfo, i, reloadBranches, localEntry));
   }
 
   auto parameters = readEntryParameters(catInfo, reloadBranches, localEntry);
@@ -120,8 +136,8 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
 
 podio::CollectionReadBuffers ROOTReader::getCollectionBuffers(ROOTReader::CategoryInfo& catInfo, size_t iColl,
                                                               bool reloadBranches, unsigned int localEntry) {
-  const auto& name = catInfo.storedClasses[iColl].first;
-  const auto& [collType, isSubsetColl, schemaVersion, index] = catInfo.storedClasses[iColl].second;
+  const auto& name = catInfo.storedClasses[iColl].name;
+  const auto& [collType, isSubsetColl, schemaVersion, index] = catInfo.storedClasses[iColl].info;
   auto& branches = catInfo.branches[index];
 
   const auto& bufferFactory = podio::CollectionBufferFactory::instance();
@@ -307,14 +323,14 @@ std::vector<std::string_view> ROOTReader::getAvailableCategories() const {
   return cats;
 }
 
-std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfoT>& collInfo) {
 
   size_t collectionIndex{0};
   std::vector<root_utils::CollectionBranches> collBranches;
   collBranches.reserve(collInfo.size() + 1);
-  std::vector<std::pair<std::string, detail::CollectionInfo>> storedClasses;
+  std::vector<detail::NamedCollInfo> storedClasses;
   storedClasses.reserve(collInfo.size());
 
   for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
@@ -359,14 +375,14 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
   return {std::move(collBranches), storedClasses};
 }
 
-std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<std::pair<std::string, detail::CollectionInfo>>>
+std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionWriteInfoT>& collInfo) {
 
   size_t collectionIndex{0};
   std::vector<root_utils::CollectionBranches> collBranches;
   collBranches.reserve(collInfo.size() + 1);
-  std::vector<std::pair<std::string, detail::CollectionInfo>> storedClasses;
+  std::vector<detail::NamedCollInfo> storedClasses;
   storedClasses.reserve(collInfo.size());
 
   for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {

@@ -25,6 +25,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     read_frame_root
     read_glob
     read_python_multiple
+    selected_colls_roundtrip_root
 
     write_interface_root
     read_interface_root
@@ -98,6 +99,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       read_rntuple
       read_interface_rntuple
+      selected_colls_roundtrip_rntuple
     )
   endif()
 
@@ -109,6 +111,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_rntuple
       write_interface_rntuple
       read_interface_rntuple
+      selected_colls_roundtrip_rntuple
     )
 
   endif()

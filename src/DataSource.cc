@@ -14,15 +14,17 @@
 #include <memory>
 
 namespace podio {
-DataSource::DataSource(const std::string& filePath, int nEvents) : DataSource(utils::expand_glob(filePath), nEvents) {
+DataSource::DataSource(const std::string& filePath, int nEvents, const std::vector<std::string>& collNames) :
+    DataSource(utils::expand_glob(filePath), nEvents, collNames) {
 }
 
-DataSource::DataSource(const std::vector<std::string>& filePathList, int nEvents) :
+DataSource::DataSource(const std::vector<std::string>& filePathList, int nEvents,
+                       const std::vector<std::string>& collNames) :
     m_nSlots{1}, m_filePathList{filePathList} {
-  SetupInput(nEvents);
+  SetupInput(nEvents, collNames);
 }
 
-void DataSource::SetupInput(int nEvents) {
+void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsToRead) {
   if (m_filePathList.empty()) {
     throw std::runtime_error("podio::DataSource: No input files provided!");
   }
@@ -35,7 +37,7 @@ void DataSource::SetupInput(int nEvents) {
   unsigned int nEventsInFiles = 0;
   auto podioReader = podio::makeReader(m_filePathList);
   nEventsInFiles = podioReader.getEntries(podio::Category::Event);
-  frame = podioReader.readFrame(podio::Category::Event, 0);
+  frame = podioReader.readFrame(podio::Category::Event, 0, collsToRead);
 
   // Determine over how many events to run
   if (nEventsInFiles <= 0) {
@@ -172,14 +174,15 @@ std::string DataSource::GetTypeName(std::string_view columnName) const {
   return m_columnTypes.at(typeIndex);
 }
 
-ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList) {
-  ROOT::RDataFrame rdf(std::make_unique<DataSource>(filePathList));
+ROOT::RDataFrame CreateDataFrame(const std::vector<std::string>& filePathList,
+                                 const std::vector<std::string>& collsToRead) {
+  ROOT::RDataFrame rdf(std::make_unique<DataSource>(filePathList, -1, collsToRead));
 
   return rdf;
 }
 
-ROOT::RDataFrame CreateDataFrame(const std::string& filePath) {
-  ROOT::RDataFrame rdf(std::make_unique<DataSource>(filePath));
+ROOT::RDataFrame CreateDataFrame(const std::string& filePath, const std::vector<std::string>& collsToRead) {
+  ROOT::RDataFrame rdf(std::make_unique<DataSource>(filePath, -1, collsToRead));
 
   return rdf;
 }
