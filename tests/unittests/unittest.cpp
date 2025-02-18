@@ -2,10 +2,13 @@
 #include <cstdint>
 #include <filesystem>
 #include <map>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "catch2/catch_test_macros.hpp"
@@ -461,7 +464,7 @@ TEST_CASE("ExtraCode declarationFile in component", "[basics][code-gen]") {
   REQUIRE(value.reset() == 0);
 }
 
-TEST_CASE("AssociativeContainer", "[basics]") {
+TEST_CASE("AssociativeContainer", "[basics][hash]") {
   auto clu1 = MutableExampleCluster();
   auto clu2 = MutableExampleCluster();
   auto clu3 = MutableExampleCluster();
@@ -494,6 +497,34 @@ TEST_CASE("AssociativeContainer", "[basics]") {
   cMap[clu3] = 42;
 
   REQUIRE(cMap[clu3] == 42);
+
+  // unordered associative containers
+
+  std::unordered_set<ExampleCluster> cUnorderedSet;
+  cUnorderedSet.insert(clu1);
+  cUnorderedSet.insert(clu2);
+  cUnorderedSet.insert(clu3);
+  cUnorderedSet.insert(clu4);
+  cUnorderedSet.insert(clu5);
+  cUnorderedSet.insert(clu1);
+  cUnorderedSet.insert(clu2);
+  cUnorderedSet.insert(clu3);
+  cUnorderedSet.insert(clu4);
+  cUnorderedSet.insert(clu5);
+
+  REQUIRE(cUnorderedSet.size() == 5);
+  std::unordered_map<ExampleCluster, int> cUnorderedMap;
+  cUnorderedMap[clu1] = 1;
+  cUnorderedMap[clu2] = 2;
+  cUnorderedMap[clu3] = 3;
+  cUnorderedMap[clu4] = 4;
+  cUnorderedMap[clu5] = 5;
+
+  REQUIRE(cUnorderedMap[clu3] == 3);
+
+  cUnorderedMap[clu3] = 42;
+
+  REQUIRE(cUnorderedMap[clu3] == 42);
 }
 
 TEST_CASE("Equality", "[basics]") {
