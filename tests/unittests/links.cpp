@@ -13,7 +13,11 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include <map>
+#include <set>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 
 // Test datatypes (spelling them out here explicitly to make sure that
 // assumptions about typedefs actually hold)
@@ -154,6 +158,64 @@ TEST_CASE("Link basics", "[links]") {
   }
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+TEST_CASE("Links associative containers", "[links][hash]") {
+  ExampleHit hit1, hit2;
+  ExampleCluster cluster1, cluster2;
+  TestMutL link1, link2, link3, link4;
+  link1.set(hit1);
+  link1.set(cluster1);
+  link1.setWeight(1.0);
+  link2.set(hit2);
+  link2.set(cluster2);
+  link2.setWeight(2.0);
+  link3.set(hit1);
+  link3.set(cluster2);
+  link3.setWeight(3.0);
+  link4.set(hit1);
+  link4.set(cluster1);
+  link4.setWeight(4.0);
+
+  std::set<TestL> linkSet;
+  linkSet.insert(link1);
+  linkSet.insert(link2);
+  linkSet.insert(link2);
+  linkSet.insert(link3);
+  linkSet.insert(link4);
+  linkSet.insert(link4);
+  REQUIRE(linkSet.size() == 4);
+
+  std::map<TestL, int> linkMap;
+  linkMap[link1]++;
+  linkMap[link2]++;
+  linkMap[link2]++;
+  linkMap[link3]++;
+  linkMap[link4]++;
+  REQUIRE(linkMap[link1] == 1);
+  REQUIRE(linkMap[link2] == 2);
+  REQUIRE(linkMap[link3] == 1);
+  REQUIRE(linkMap[link4] == 1);
+
+  // unordered associative containers
+  std::set<TestL> linkUnorderedSet;
+  linkUnorderedSet.insert(link1);
+  linkUnorderedSet.insert(link2);
+  linkUnorderedSet.insert(link2);
+  linkUnorderedSet.insert(link3);
+  linkUnorderedSet.insert(link4);
+  linkUnorderedSet.insert(link4);
+  REQUIRE(linkUnorderedSet.size() == 4);
+
+  std::map<TestL, int> linkUnorderedMap;
+  linkUnorderedMap[link1]++;
+  linkUnorderedMap[link2]++;
+  linkUnorderedMap[link2]++;
+  linkUnorderedMap[link3]++;
+  linkUnorderedMap[link4]++;
+  REQUIRE(linkUnorderedMap[link1] == 1);
+  REQUIRE(linkUnorderedMap[link2] == 2);
+  REQUIRE(linkUnorderedMap[link3] == 1);
+  REQUIRE(linkUnorderedMap[link4] == 1);
+}
 
 TEST_CASE("Links templated accessors", "[links]") {
   // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few

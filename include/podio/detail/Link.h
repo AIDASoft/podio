@@ -5,13 +5,14 @@
 #include "podio/detail/LinkObj.h"
 #include "podio/utilities/MaybeSharedPtr.h"
 #include "podio/utilities/TypeHelpers.h"
-#include <type_traits>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
 #endif
 
+#include <functional>
 #include <ostream>
+#include <type_traits>
 #include <utility> // std::swap
 
 namespace podio {
@@ -33,6 +34,7 @@ class LinkT {
   friend LinkCollection<FromT, ToT>;
   friend LinkCollectionIteratorT<FromT, ToT, Mutable>;
   friend LinkT<FromT, ToT, !Mutable>;
+  friend std::hash<LinkT>;
 
   /// Helper member variable to check whether FromU and ToU can be used for this
   /// Link. We need this to make SFINAE trigger in some cases below
@@ -366,5 +368,12 @@ void to_json(nlohmann::json& j, const podio::LinkT<FromT, ToT, false>& link) {
 #endif
 
 } // namespace podio
+
+template <typename FromT, typename ToT, bool Mutable>
+struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
+  std::size_t operator()(const podio::LinkT<FromT, ToT, Mutable>& obj) const {
+    return std::hash<typename podio::LinkT<FromT, ToT, Mutable>::LinkObjT>{}(obj.get());
+  }
+};
 
 #endif // PODIO_DETAIL_LINK_H
