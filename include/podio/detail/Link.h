@@ -372,7 +372,7 @@ void to_json(nlohmann::json& j, const podio::LinkT<FromT, ToT, false>& link) {
 template <typename FromT, typename ToT, bool Mutable>
 struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
   std::size_t operator()(const podio::LinkT<FromT, ToT, Mutable>& obj) const {
-    return std::hash<typename podio::LinkT<FromT, ToT, Mutable>::LinkObjT>{}(obj.get());
+    return std::hash<typename podio::LinkT<FromT, ToT, Mutable>::LinkObjT*>{}(obj.m_obj.get());
   }
 };
 
