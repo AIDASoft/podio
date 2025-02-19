@@ -158,6 +158,46 @@ TEST_CASE("Link basics", "[links]") {
   }
 }
 
+TEST_CASE("Links hash", "[links][hash]") {
+  auto hit1 = ExampleHit();
+  auto cluster1 = ExampleCluster();
+  auto link1 = TestMutL();
+  link1.set(hit1);
+  link1.set(cluster1);
+  auto hash1 = std::hash<TestMutL>{}(link1);
+  // rehashing should give the same result
+  auto rehash = std::hash<TestMutL>{}(link1);
+  REQUIRE(rehash == hash1);
+
+  // same object should have the same hash
+  auto link2 = link1;
+  auto hash2 = std::hash<TestMutL>{}(link2);
+  REQUIRE(link2 == link1);
+  REQUIRE(hash2 == hash1);
+
+  // different objects should have different hashes
+  auto different_link = TestMutL();
+  auto hash_different = std::hash<TestMutL>{}(different_link);
+  REQUIRE(different_link != link1);
+  REQUIRE(hash_different != hash1);
+
+  // podio specific:
+  // changing  properties doesn't change hash as long as the same object is used
+  auto another_hit = ExampleHit();
+  link1.setWeight(3.14);
+  link1.set(another_hit);
+  auto hash_mod = std::hash<TestMutL>{}(link1);
+  REQUIRE(link1 == link2);
+  REQUIRE(hash_mod == hash2);
+
+  // podio specific:
+  // mutable and immutable objects should have the same hash
+  auto immutable_link = TestL(link1);
+  auto hash_immutable = std::hash<TestL>{}(immutable_link);
+  REQUIRE(immutable_link == link1);
+  REQUIRE(hash_immutable == hash1);
+}
+
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 TEST_CASE("Links associative containers", "[links][hash]") {
   ExampleHit hit1, hit2;
