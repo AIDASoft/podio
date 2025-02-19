@@ -3,7 +3,6 @@
 
 #include "podio/CollectionIDTable.h"
 #include "podio/utilities/RootHelpers.h"
-#include "podio/utilities/TypeHelpers.h"
 
 #include "TBranch.h"
 #include "TTree.h"
