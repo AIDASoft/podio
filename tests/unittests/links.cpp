@@ -157,6 +157,7 @@ TEST_CASE("Link basics", "[links]") {
     REQUIRE(link != newLink);
   }
 }
+
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 TEST_CASE("Links associative containers", "[links][hash]") {
   ExampleHit hit1, hit2;
@@ -174,47 +175,51 @@ TEST_CASE("Links associative containers", "[links][hash]") {
   link4.set(hit1);
   link4.set(cluster1);
   link4.setWeight(4.0);
+  auto link5 = link2;
 
   std::set<TestL> linkSet;
   linkSet.insert(link1);
   linkSet.insert(link2);
-  linkSet.insert(link2);
   linkSet.insert(link3);
   linkSet.insert(link4);
   linkSet.insert(link4);
+  linkSet.insert(link5);
   REQUIRE(linkSet.size() == 4);
 
   std::map<TestL, int> linkMap;
   linkMap[link1]++;
   linkMap[link2]++;
-  linkMap[link2]++;
   linkMap[link3]++;
   linkMap[link4]++;
+  linkMap[link5]++;
   REQUIRE(linkMap[link1] == 1);
   REQUIRE(linkMap[link2] == 2);
   REQUIRE(linkMap[link3] == 1);
   REQUIRE(linkMap[link4] == 1);
+  REQUIRE(linkMap[link5] == 2);
 
   // unordered associative containers
   std::set<TestL> linkUnorderedSet;
   linkUnorderedSet.insert(link1);
   linkUnorderedSet.insert(link2);
-  linkUnorderedSet.insert(link2);
   linkUnorderedSet.insert(link3);
   linkUnorderedSet.insert(link4);
   linkUnorderedSet.insert(link4);
+  linkUnorderedSet.insert(link5);
   REQUIRE(linkUnorderedSet.size() == 4);
 
   std::map<TestL, int> linkUnorderedMap;
   linkUnorderedMap[link1]++;
   linkUnorderedMap[link2]++;
-  linkUnorderedMap[link2]++;
   linkUnorderedMap[link3]++;
   linkUnorderedMap[link4]++;
+  linkUnorderedMap[link5]++;
+
   REQUIRE(linkUnorderedMap[link1] == 1);
   REQUIRE(linkUnorderedMap[link2] == 2);
   REQUIRE(linkUnorderedMap[link3] == 1);
   REQUIRE(linkUnorderedMap[link4] == 1);
+  REQUIRE(linkUnorderedMap[link5] == 2);
 }
 
 TEST_CASE("Links templated accessors", "[links]") {

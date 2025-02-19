@@ -549,6 +549,7 @@ TEST_CASE("AssociativeContainer", "[basics][hash]") {
   cUnorderedSet.insert(clu5);
 
   REQUIRE(cUnorderedSet.size() == 5);
+
   std::unordered_map<ExampleCluster, int> cUnorderedMap;
   cUnorderedMap[clu1] = 1;
   cUnorderedMap[clu2] = 2;
