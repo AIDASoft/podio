@@ -61,6 +61,29 @@ TEST_CASE("InterfaceTypes static checks", "[interface-types][static-checks]") {
   STATIC_REQUIRE(TypeWithEnergy::typeName == "TypeWithEnergy"sv);
 }
 
+TEST_CASE("InterfaceTypes hash", "[interface-types][hash]") {
+  auto hit = ExampleHit();
+  auto wrapper1 = TypeWithEnergy(hit);
+  auto hash1 = std::hash<TypeWithEnergy>{}(wrapper1);
+
+  // rehashing should give the same result
+  auto rehash = std::hash<TypeWithEnergy>{}(wrapper1);
+  REQUIRE(rehash == hash1);
+
+  // same object should have the same hash
+  auto wrapper2 = wrapper1;
+  auto hash2 = std::hash<TypeWithEnergy>{}(wrapper2);
+  REQUIRE(wrapper2 == wrapper1);
+  REQUIRE(hash2 == hash1);
+
+  // different objects should have different hashes
+  auto different_hit = ExampleHit();
+  auto different_wrapper = TypeWithEnergy(different_hit);
+  auto hash_different = std::hash<TypeWithEnergy>{}(different_wrapper);
+  REQUIRE(different_wrapper != wrapper1);
+  REQUIRE(hash_different != hash1);
+}
+
 TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics][hash]") {
   // Make sure that interface types can be used with STL map and set
   std::map<TypeWithEnergy, int> counterMap{};
