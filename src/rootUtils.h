@@ -106,7 +106,7 @@ consteval auto getGPBranchOffsets() {
   } else if constexpr (std::is_same_v<T, std::string>) {
     return GPBranchOffsets{7, 8};
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(sizeof(T) && false, "Unsupported type for generic parameters");
   }
 }
 
