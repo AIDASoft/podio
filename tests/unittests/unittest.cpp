@@ -1,6 +1,7 @@
 // STL
 #include <cstdint>
 #include <filesystem>
+#include <functional>
 #include <map>
 #include <set>
 #include <sstream>
@@ -462,6 +463,41 @@ TEST_CASE("ExtraCode declarationFile in component", "[basics][code-gen]") {
   value.x = 1;
   REQUIRE(value.negate() == -1);
   REQUIRE(value.reset() == 0);
+}
+
+TEST_CASE("Datatype object hash", "[hash]") {
+  auto hit1 = MutableExampleHit();
+  auto hash1 = std::hash<MutableExampleHit>{}(hit1);
+
+  // rehashing should give the same result
+  auto rehash = std::hash<MutableExampleHit>{}(hit1);
+  REQUIRE(rehash == hash1);
+
+  // same object should have the same hash
+  auto hit2 = hit1;
+  auto hash2 = std::hash<MutableExampleHit>{}(hit2);
+  REQUIRE(hit2 == hit1);
+  REQUIRE(hash2 == hash1);
+
+  // different objects should have different hashes
+  auto different_hit = MutableExampleHit();
+  auto hash_different = std::hash<MutableExampleHit>{}(different_hit);
+  REQUIRE(different_hit != hit1);
+  REQUIRE(hash_different != hash1);
+
+  // podio specific:
+  // changing  properties doesn't change hash as long as the same object is used
+  hit1.energy(42);
+  auto hash_mod = std::hash<MutableExampleHit>{}(hit1);
+  REQUIRE(hit1 == hit2);
+  REQUIRE(hash_mod == hash2);
+
+  // podio specific:
+  // mutable and immutable objects should have the same hash
+  auto immutable_hit = ExampleHit(hit1);
+  auto hash_immutable = std::hash<ExampleHit>{}(immutable_hit);
+  REQUIRE(immutable_hit == hit1);
+  REQUIRE(hash_immutable == hash1);
 }
 
 TEST_CASE("AssociativeContainer", "[basics][hash]") {

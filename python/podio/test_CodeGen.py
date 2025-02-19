@@ -3,6 +3,7 @@
 
 import unittest
 import ROOT
+import cppyy
 from ROOT import ExampleMCCollection, MutableExampleMC
 from ROOT import nsp
 from pythonizations import load_pythonizations  # pylint: disable=import-error
@@ -69,3 +70,49 @@ class AttributeCreationTest(unittest.TestCase):
         self.assertEqual(component.x, 1)
         with self.assertRaises(AttributeError):
             component.not_existing_attribute = 0
+
+
+class HashTest(unittest.TestCase):
+    """Hash object test"""
+
+    def test_hash(self):
+        collection = nsp.EnergyInNamespaceCollection()
+        obj1 = collection.create()
+        hash1 = hash(obj1)
+        # same object same hash
+        self.assertEqual(hash(obj1), hash1)
+        obj2 = obj1
+        # same object same hash
+        self.assertEqual(obj2, obj1)
+        self.assertEqual(hash(obj2), hash(obj1))
+        # different objects different hash
+        obj_different = collection.create()
+        self.assertNotEqual(obj_different, obj1)
+        self.assertNotEqual(hash(obj_different), hash(obj1))
+        # changing the object does not change the hash
+        obj1.energy = 3.14
+        self.assertEqual(hash(obj1), hash1)
+        # mutable and immutable objects have same hashes
+        obj_immutable = nsp.EnergyInNamespace(obj1)
+        self.assertEqual(obj_immutable, obj1)
+        self.assertEqual(hash(obj_immutable), hash(obj1))
+        # python hash is same as cpp hash
+        self.assertEqual(hash(obj1), cppyy.gbl.std.hash[nsp.EnergyInNamespace]()(obj1))
+
+    def test_sets_and_dicts(self):
+        collection = nsp.EnergyInNamespaceCollection()
+        obj1 = collection.create()
+        obj2 = collection.create()
+        obj3 = collection.create()
+        # test set
+        test_set = {obj1, obj2, obj3, obj3, obj3}
+        self.assertEqual(len(test_set), 3)
+        self.assertIn(obj1, test_set)
+        self.assertIn(obj2, test_set)
+        self.assertIn(obj3, test_set)
+        # test dictionary
+        test_dict = {obj1: 1, obj2: 2, obj3: 3}
+        self.assertEqual(len(test_dict), 3)
+        self.assertEqual(test_dict[obj1], 1)
+        self.assertEqual(test_dict[obj2], 2)
+        self.assertEqual(test_dict[obj3], 3)
