@@ -59,7 +59,7 @@ consteval auto getGPKeyName() {
   } else if constexpr (std::is_same<T, std::string>::value) {
     return stringKeyName;
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(sizeof(T) && false, "Unsupported type for generic parameters");
   }
 }
 
@@ -77,7 +77,7 @@ consteval auto getGPValueName() {
   } else if constexpr (std::is_same<T, std::string>::value) {
     return stringValueName;
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(sizeof(T) && false, "Unsupported type for generic parameters");
   }
 }
 
