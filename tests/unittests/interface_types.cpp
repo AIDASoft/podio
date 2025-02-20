@@ -66,6 +66,10 @@ TEST_CASE("InterfaceTypes hash", "[interface-types][hash]") {
   auto wrapper1 = TypeWithEnergy(hit);
   auto hash1 = std::hash<TypeWithEnergy>{}(wrapper1);
 
+  // podio specific:
+  // interface and interfaced datatype objects have the same hash
+  REQUIRE(hash1 == std::hash<ExampleHit>{}(hit));
+
   // rehashing should give the same result
   auto rehash = std::hash<TypeWithEnergy>{}(wrapper1);
   REQUIRE(rehash == hash1);
