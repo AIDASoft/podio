@@ -34,11 +34,11 @@ ${PODIO_BASE}/python/podio_class_generator.py \
 # Compare to the originally generated code, that has been used to write the data
 # file. Need to diff subfolders explicitly here because $PODIO_BASE/tests contains
 # more stuff
-DIFF_EXTRA_ARGS=""
+DIFF_EXTRA_ARGS=()
 if [ ${ENABLE_SIO} = "OFF" ]; then
-    DIFF_EXTRA_ARGS="${DIFF_EXTRA_ARGS} --exclude='*SIO*'"
+    DIFF_EXTRA_ARGS+=(--exclude "*SIO*")
 fi
 
-diff -ru ${OUTPUT_FOLDER}/${EDM_NAME} ${COMP_BASE_FOLDER}/${EDM_NAME} ${DIFF_EXTRA_ARGS}
-diff -ru ${OUTPUT_FOLDER}/src ${COMP_BASE_FOLDER}/src ${DIFF_EXTRA_ARGS}
+diff -ru ${OUTPUT_FOLDER}/${EDM_NAME} ${COMP_BASE_FOLDER}/${EDM_NAME} "${DIFF_EXTRA_ARGS[@]}"
+diff -ru ${OUTPUT_FOLDER}/src ${COMP_BASE_FOLDER}/src "${DIFF_EXTRA_ARGS[@]}"
 diff -u ${OUTPUT_FOLDER}/podio_generated_files.cmake ${COMP_BASE_FOLDER}/podio_generated_files.cmake
