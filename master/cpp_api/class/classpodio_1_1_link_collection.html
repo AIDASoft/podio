@@ -228,7 +228,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#standard-range-algorithms">Standard range algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">C++ API documentation</a><ul class="current">
@@ -753,6 +753,16 @@
 <span id="_CPPv3N5podio14LinkCollection9size_typeE"></span><span id="_CPPv2N5podio14LinkCollection9size_typeE"></span><span class="target" id="classpodio_1_1_link_collection_1ae64e6c586b33da2e047e8bd48e1a1b99"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4N5podio14LinkCollection9size_typeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection22const_reverse_iteratorE">
+<span id="_CPPv3N5podio14LinkCollection22const_reverse_iteratorE"></span><span id="_CPPv2N5podio14LinkCollection22const_reverse_iteratorE"></span><span class="target" id="classpodio_1_1_link_collection_1a8439afed0b4cf783516b2d31ab705d8b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_reverse_iterator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reverse_iterator</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection14const_iteratorE" title="podio::LinkCollection::const_iterator"><span class="n"><span class="pre">const_iterator</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio14LinkCollection22const_reverse_iteratorE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection16reverse_iteratorE">
+<span id="_CPPv3N5podio14LinkCollection16reverse_iteratorE"></span><span id="_CPPv2N5podio14LinkCollection16reverse_iteratorE"></span><span class="target" id="classpodio_1_1_link_collection_1a58fd6b11482ae04aa91b67572072e32c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reverse_iterator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">reverse_iterator</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection8iteratorE" title="podio::LinkCollection::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio14LinkCollection16reverse_iteratorE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -889,6 +899,36 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection3endEv">
 <span id="_CPPv3N5podio14LinkCollection3endEv"></span><span id="_CPPv2N5podio14LinkCollection3endEv"></span><span id="podio::LinkCollection::end"></span><span class="target" id="classpodio_1_1_link_collection_1a5bb3344d5fb79457233f0937ae9bc28c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection8iteratorE" title="podio::LinkCollection::iterator"><span class="n"><span class="pre">iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio14LinkCollection3endEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection6rbeginEv">
+<span id="_CPPv3N5podio14LinkCollection6rbeginEv"></span><span id="_CPPv2N5podio14LinkCollection6rbeginEv"></span><span id="podio::LinkCollection::rbegin"></span><span class="target" id="classpodio_1_1_link_collection_1a3f2e7edc6e4bef6d649a062749c1d7f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection16reverse_iteratorE" title="podio::LinkCollection::reverse_iterator"><span class="n"><span class="pre">reverse_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rbegin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio14LinkCollection6rbeginEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio14LinkCollection6rbeginEv">
+<span id="_CPPv3NK5podio14LinkCollection6rbeginEv"></span><span id="_CPPv2NK5podio14LinkCollection6rbeginEv"></span><span id="podio::LinkCollection::rbeginC"></span><span class="target" id="classpodio_1_1_link_collection_1a2ffcdc45233b40eaa13ef5af103bbdc4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection22const_reverse_iteratorE" title="podio::LinkCollection::const_reverse_iterator"><span class="n"><span class="pre">const_reverse_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rbegin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio14LinkCollection6rbeginEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio14LinkCollection7crbeginEv">
+<span id="_CPPv3NK5podio14LinkCollection7crbeginEv"></span><span id="_CPPv2NK5podio14LinkCollection7crbeginEv"></span><span id="podio::LinkCollection::crbeginC"></span><span class="target" id="classpodio_1_1_link_collection_1a9ef098b0e8b837bdb2559f7c9371df03"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection22const_reverse_iteratorE" title="podio::LinkCollection::const_reverse_iterator"><span class="n"><span class="pre">const_reverse_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">crbegin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio14LinkCollection7crbeginEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14LinkCollection4rendEv">
+<span id="_CPPv3N5podio14LinkCollection4rendEv"></span><span id="_CPPv2N5podio14LinkCollection4rendEv"></span><span id="podio::LinkCollection::rend"></span><span class="target" id="classpodio_1_1_link_collection_1ab18f1690aee5e390c3af6c40f8a92cd9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection16reverse_iteratorE" title="podio::LinkCollection::reverse_iterator"><span class="n"><span class="pre">reverse_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rend</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio14LinkCollection4rendEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio14LinkCollection4rendEv">
+<span id="_CPPv3NK5podio14LinkCollection4rendEv"></span><span id="_CPPv2NK5podio14LinkCollection4rendEv"></span><span id="podio::LinkCollection::rendC"></span><span class="target" id="classpodio_1_1_link_collection_1aee344f08e174c0415f18c651ffc85a9e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection22const_reverse_iteratorE" title="podio::LinkCollection::const_reverse_iterator"><span class="n"><span class="pre">const_reverse_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rend</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio14LinkCollection4rendEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio14LinkCollection5crendEv">
+<span id="_CPPv3NK5podio14LinkCollection5crendEv"></span><span id="_CPPv2NK5podio14LinkCollection5crendEv"></span><span id="podio::LinkCollection::crendC"></span><span class="target" id="classpodio_1_1_link_collection_1a62094e57be4057c47d5be19eb37eef31"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection22const_reverse_iteratorE" title="podio::LinkCollection::const_reverse_iterator"><span class="n"><span class="pre">const_reverse_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">crend</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio14LinkCollection5crendEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">

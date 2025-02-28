@@ -228,7 +228,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#standard-range-algorithms">Standard range algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cpp_api/api.html">C++ API documentation</a><ul>
@@ -995,16 +995,16 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <td><p>❌ no</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::forward_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes (see note below)</p></td>
+<td><p>✔️ yes (see note below)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::bidirectional_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes (see note below)</p></td>
+<td><p>✔️ yes (see note below)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::random_access_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes (see note below)</p></td>
+<td><p>✔️ yes (see note below)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::contiguous_iterator</span></code></p></td>
 <td><p>❌ no</p></td>
@@ -1012,6 +1012,12 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The collections’ iterators fulfil the <code class="docutils literal notranslate"><span class="pre">std::forward_iterator</span></code> except that the pointers obtained with <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code> remain valid only as long as the iterator itself is valid instead of as long as the range remains valid. In practice, this means a <code class="docutils literal notranslate"><span class="pre">ptr</span></code> obtained with <code class="docutils literal notranslate"><span class="pre">auto*</span> <span class="pre">ptr</span> <span class="pre">=</span> <span class="pre">it.operator-&gt;();</span></code> is valid only as long as <code class="docutils literal notranslate"><span class="pre">it</span></code> is valid.
+The values obtained immediately through <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code> (for instance, <code class="docutils literal notranslate"><span class="pre">auto&amp;</span> <span class="pre">e</span> <span class="pre">=</span> <span class="pre">it-&gt;energy();</span></code>) behave as expected for <code class="docutils literal notranslate"><span class="pre">std::forward_iterator</span></code>, as their validity is tied to the collection’s validity.
+Despite the exception, the collection iterators are made to still report themselves as fulfilling the forward iterator requirements since the problematic usage (<code class="docutils literal notranslate"><span class="pre">auto*</span> <span class="pre">ptr</span> <span class="pre">=</span> <span class="pre">it.operator-&gt;();</span></code>) is rare in normal scenarios.</p>
+</div>
 </section>
 <section id="legacyiterator">
 <h3>LegacyIterator<a class="headerlink" href="#legacyiterator" title="Link to this heading"></a></h3>
@@ -1278,8 +1284,8 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::reverse_iterator</span></code></p></td>
-<td><p>❌ no</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code> not <em>LegacyBidirectionalIterator</em> or <code class="docutils literal notranslate"><span class="pre">std::bidirectional_iterator</span></code></p></td>
+<td><p>❗ attention</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">operator-&gt;</span></code> not defined as <code class="docutils literal notranslate"><span class="pre">iterator</span></code>’s and <code class="docutils literal notranslate"><span class="pre">const_iterator</span></code>’s <code class="docutils literal notranslate"><span class="pre">operator-&gt;</span></code> are non-<code class="docutils literal notranslate"><span class="pre">const</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::back_insert_iterator</span></code></p></td>
 <td><p>❗ attention</p></td>
@@ -1333,13 +1339,13 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 <td><p>❌ no</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::forward_range</span></code></p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::bidirectional_range</span></code></p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::random_access_range</span></code></p></td>
-<td><p>❌ no</p></td>
+<td><p>✔️ yes</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::ranges::contiguous_range</span></code></p></td>
 <td><p>❌ no</p></td>
@@ -1366,15 +1372,16 @@ In other words, a <code class="docutils literal notranslate"><span class="pre">C
 </pre></div>
 </div>
 </section>
-<section id="standard-range-algorithms">
-<h2>Standard range algorithms<a class="headerlink" href="#standard-range-algorithms" title="Link to this heading"></a></h2>
+<section id="collection-and-standard-range-algorithms">
+<h2>Collection and standard range algorithms<a class="headerlink" href="#collection-and-standard-range-algorithms" title="Link to this heading"></a></h2>
 <p>The arguments of standard range algorithms are checked at compile time and must fulfil certain iterator concepts, such as <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code> or <code class="docutils literal notranslate"><span class="pre">std::ranges::input_range</span></code>.</p>
-<p>The iterators of PODIO collections model the <code class="docutils literal notranslate"><span class="pre">std::input_iterator</span></code> concept, so range algorithms that require this iterator type will work correctly with PODIO iterators. If an algorithm compiles, it is guaranteed to work as expected.</p>
+<p>The iterators of PODIO collections model the <code class="docutils literal notranslate"><span class="pre">std::random_access_iterator</span></code> concept, so range algorithms that require this iterator type will work correctly with PODIO iterators. If an algorithm compiles, it is guaranteed to work as expected.</p>
 <p>In particular, the PODIO collections’ iterators do not fulfil the <code class="docutils literal notranslate"><span class="pre">std::output_iterator</span></code> concept, and as a result, mutating algorithms relying on this iterator type will not compile.</p>
-<p>Similarly the collections themselves model the <code class="docutils literal notranslate"><span class="pre">std::input_range</span></code> concept and can be used in the range algorithms that require that concept. The algorithms requiring unsupported range concept, such as <code class="docutils literal notranslate"><span class="pre">std::output_range</span></code>, won’t compile.</p>
+<p>Similarly the collections themselves model the <code class="docutils literal notranslate"><span class="pre">std::random_access_range</span></code> concept and can be used in the range algorithms that require that concept. The algorithms requiring unsupported range concept, such as <code class="docutils literal notranslate"><span class="pre">std::output_range</span></code>, won’t compile.</p>
 <p>For example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires input_range -&gt; OK</span>
-<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">adjacent_find</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires forward_range -&gt; won&#39;t compile</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">adjacent_find</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires forward_range -&gt; OK</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">views</span><span class="o">::</span><span class="n">reverse</span><span class="p">(</span><span class="n">collection</span><span class="p">);</span><span class="w"> </span><span class="c1">//requires bidirectional_range -&gt; OK</span>
 <span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires output_range -&gt; won&#39;t compile</span>
 <span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">collection</span><span class="p">);</span><span class="w"> </span><span class="c1">// requires random_access_range and sortable -&gt; won&#39;t compile</span>
 </pre></div>
