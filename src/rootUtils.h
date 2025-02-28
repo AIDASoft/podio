@@ -3,7 +3,6 @@
 
 #include "podio/CollectionIDTable.h"
 #include "podio/utilities/RootHelpers.h"
-#include "podio/utilities/TypeHelpers.h"
 
 #include "TBranch.h"
 #include "TTree.h"
@@ -59,7 +58,7 @@ consteval auto getGPKeyName() {
   } else if constexpr (std::is_same<T, std::string>::value) {
     return stringKeyName;
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
   }
 }
 
@@ -77,7 +76,7 @@ consteval auto getGPValueName() {
   } else if constexpr (std::is_same<T, std::string>::value) {
     return stringValueName;
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
   }
 }
 
@@ -106,7 +105,7 @@ consteval auto getGPBranchOffsets() {
   } else if constexpr (std::is_same_v<T, std::string>) {
     return GPBranchOffsets{7, 8};
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(sizeof(T) == 0, "Unsupported type for generic parameters");
   }
 }
 
