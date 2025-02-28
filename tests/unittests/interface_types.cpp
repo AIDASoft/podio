@@ -15,6 +15,7 @@
 
 #include <map>
 #include <stdexcept>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -60,7 +61,34 @@ TEST_CASE("InterfaceTypes static checks", "[interface-types][static-checks]") {
   STATIC_REQUIRE(TypeWithEnergy::typeName == "TypeWithEnergy"sv);
 }
 
-TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics]") {
+TEST_CASE("InterfaceTypes hash", "[interface-types][hash]") {
+  auto hit = ExampleHit();
+  auto wrapper1 = TypeWithEnergy(hit);
+  auto hash1 = std::hash<TypeWithEnergy>{}(wrapper1);
+
+  // podio specific:
+  // interface and interfaced datatype objects have the same hash
+  REQUIRE(hash1 == std::hash<ExampleHit>{}(hit));
+
+  // rehashing should give the same result
+  auto rehash = std::hash<TypeWithEnergy>{}(wrapper1);
+  REQUIRE(rehash == hash1);
+
+  // same object should have the same hash
+  auto wrapper2 = wrapper1;
+  auto hash2 = std::hash<TypeWithEnergy>{}(wrapper2);
+  REQUIRE(wrapper2 == wrapper1);
+  REQUIRE(hash2 == hash1);
+
+  // different objects should have different hashes
+  auto different_hit = ExampleHit();
+  auto different_wrapper = TypeWithEnergy(different_hit);
+  auto hash_different = std::hash<TypeWithEnergy>{}(different_wrapper);
+  REQUIRE(different_wrapper != wrapper1);
+  REQUIRE(hash_different != hash1);
+}
+
+TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics][hash]") {
   // Make sure that interface types can be used with STL map and set
   std::map<TypeWithEnergy, int> counterMap{};
 
@@ -87,6 +115,15 @@ TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics]") {
   REQUIRE_FALSE(interfaces2.at(0).isAvailable());
   REQUIRE(interfaces2.at(1).isA<ExampleHit>());
   REQUIRE(interfaces2.at(2).energy() == 3.14f);
+
+  // unordered associative containers
+  std::unordered_map<TypeWithEnergy, int> counterUnorderedMap{};
+  counterUnorderedMap[empty]++;
+  counterUnorderedMap[wrapper]++;
+  counterUnorderedMap[hit]++;
+  REQUIRE(counterUnorderedMap[empty] == 1);
+  REQUIRE(counterUnorderedMap[hit] == 2);
+  REQUIRE(counterUnorderedMap[wrapper] == 2);
 }
 
 TEST_CASE("InterfaceType from immutable", "[interface-types][basics]") {

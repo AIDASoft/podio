@@ -13,7 +13,11 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include <map>
+#include <set>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 
 // Test datatypes (spelling them out here explicitly to make sure that
 // assumptions about typedefs actually hold)
@@ -153,7 +157,110 @@ TEST_CASE("Link basics", "[links]") {
     REQUIRE(link != newLink);
   }
 }
+
+TEST_CASE("Links hash", "[links][hash]") {
+  auto hit1 = ExampleHit();
+  auto cluster1 = ExampleCluster();
+  auto link1 = TestMutL();
+  link1.set(hit1);
+  link1.set(cluster1);
+  auto hash1 = std::hash<TestMutL>{}(link1);
+  // rehashing should give the same result
+  auto rehash = std::hash<TestMutL>{}(link1);
+  REQUIRE(rehash == hash1);
+
+  // same object should have the same hash
+  auto link2 = link1;
+  auto hash2 = std::hash<TestMutL>{}(link2);
+  REQUIRE(link2 == link1);
+  REQUIRE(hash2 == hash1);
+
+  // different objects should have different hashes
+  auto different_link = TestMutL();
+  auto hash_different = std::hash<TestMutL>{}(different_link);
+  REQUIRE(different_link != link1);
+  REQUIRE(hash_different != hash1);
+
+  // podio specific:
+  // changing  properties doesn't change hash as long as the same object is used
+  auto another_hit = ExampleHit();
+  link1.setWeight(3.14);
+  link1.set(another_hit);
+  auto hash_mod = std::hash<TestMutL>{}(link1);
+  REQUIRE(link1 == link2);
+  REQUIRE(hash_mod == hash2);
+
+  // podio specific:
+  // mutable and immutable objects should have the same hash
+  auto immutable_link = TestL(link1);
+  auto hash_immutable = std::hash<TestL>{}(immutable_link);
+  REQUIRE(immutable_link == link1);
+  REQUIRE(hash_immutable == hash1);
+}
+
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+TEST_CASE("Links associative containers", "[links][hash]") {
+  ExampleHit hit1, hit2;
+  ExampleCluster cluster1, cluster2;
+  TestMutL link1, link2, link3, link4;
+  link1.set(hit1);
+  link1.set(cluster1);
+  link1.setWeight(1.0);
+  link2.set(hit2);
+  link2.set(cluster2);
+  link2.setWeight(2.0);
+  link3.set(hit1);
+  link3.set(cluster2);
+  link3.setWeight(3.0);
+  link4.set(hit1);
+  link4.set(cluster1);
+  link4.setWeight(4.0);
+  auto link5 = link2;
+
+  std::set<TestL> linkSet;
+  linkSet.insert(link1);
+  linkSet.insert(link2);
+  linkSet.insert(link3);
+  linkSet.insert(link4);
+  linkSet.insert(link4);
+  linkSet.insert(link5);
+  REQUIRE(linkSet.size() == 4);
+
+  std::map<TestL, int> linkMap;
+  linkMap[link1]++;
+  linkMap[link2]++;
+  linkMap[link3]++;
+  linkMap[link4]++;
+  linkMap[link5]++;
+  REQUIRE(linkMap[link1] == 1);
+  REQUIRE(linkMap[link2] == 2);
+  REQUIRE(linkMap[link3] == 1);
+  REQUIRE(linkMap[link4] == 1);
+  REQUIRE(linkMap[link5] == 2);
+
+  // unordered associative containers
+  std::set<TestL> linkUnorderedSet;
+  linkUnorderedSet.insert(link1);
+  linkUnorderedSet.insert(link2);
+  linkUnorderedSet.insert(link3);
+  linkUnorderedSet.insert(link4);
+  linkUnorderedSet.insert(link4);
+  linkUnorderedSet.insert(link5);
+  REQUIRE(linkUnorderedSet.size() == 4);
+
+  std::map<TestL, int> linkUnorderedMap;
+  linkUnorderedMap[link1]++;
+  linkUnorderedMap[link2]++;
+  linkUnorderedMap[link3]++;
+  linkUnorderedMap[link4]++;
+  linkUnorderedMap[link5]++;
+
+  REQUIRE(linkUnorderedMap[link1] == 1);
+  REQUIRE(linkUnorderedMap[link2] == 2);
+  REQUIRE(linkUnorderedMap[link3] == 1);
+  REQUIRE(linkUnorderedMap[link4] == 1);
+  REQUIRE(linkUnorderedMap[link5] == 2);
+}
 
 TEST_CASE("Links templated accessors", "[links]") {
   // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few

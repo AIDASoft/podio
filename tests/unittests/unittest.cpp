@@ -1,11 +1,15 @@
 // STL
 #include <cstdint>
 #include <filesystem>
+#include <functional>
 #include <map>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "catch2/catch_test_macros.hpp"
@@ -461,7 +465,42 @@ TEST_CASE("ExtraCode declarationFile in component", "[basics][code-gen]") {
   REQUIRE(value.reset() == 0);
 }
 
-TEST_CASE("AssociativeContainer", "[basics]") {
+TEST_CASE("Datatype object hash", "[hash]") {
+  auto hit1 = MutableExampleHit();
+  auto hash1 = std::hash<MutableExampleHit>{}(hit1);
+
+  // rehashing should give the same result
+  auto rehash = std::hash<MutableExampleHit>{}(hit1);
+  REQUIRE(rehash == hash1);
+
+  // same object should have the same hash
+  auto hit2 = hit1;
+  auto hash2 = std::hash<MutableExampleHit>{}(hit2);
+  REQUIRE(hit2 == hit1);
+  REQUIRE(hash2 == hash1);
+
+  // different objects should have different hashes
+  auto different_hit = MutableExampleHit();
+  auto hash_different = std::hash<MutableExampleHit>{}(different_hit);
+  REQUIRE(different_hit != hit1);
+  REQUIRE(hash_different != hash1);
+
+  // podio specific:
+  // changing  properties doesn't change hash as long as the same object is used
+  hit1.energy(42);
+  auto hash_mod = std::hash<MutableExampleHit>{}(hit1);
+  REQUIRE(hit1 == hit2);
+  REQUIRE(hash_mod == hash2);
+
+  // podio specific:
+  // mutable and immutable objects should have the same hash
+  auto immutable_hit = ExampleHit(hit1);
+  auto hash_immutable = std::hash<ExampleHit>{}(immutable_hit);
+  REQUIRE(immutable_hit == hit1);
+  REQUIRE(hash_immutable == hash1);
+}
+
+TEST_CASE("AssociativeContainer", "[basics][hash]") {
   auto clu1 = MutableExampleCluster();
   auto clu2 = MutableExampleCluster();
   auto clu3 = MutableExampleCluster();
@@ -494,6 +533,35 @@ TEST_CASE("AssociativeContainer", "[basics]") {
   cMap[clu3] = 42;
 
   REQUIRE(cMap[clu3] == 42);
+
+  // unordered associative containers
+
+  std::unordered_set<ExampleCluster> cUnorderedSet;
+  cUnorderedSet.insert(clu1);
+  cUnorderedSet.insert(clu2);
+  cUnorderedSet.insert(clu3);
+  cUnorderedSet.insert(clu4);
+  cUnorderedSet.insert(clu5);
+  cUnorderedSet.insert(clu1);
+  cUnorderedSet.insert(clu2);
+  cUnorderedSet.insert(clu3);
+  cUnorderedSet.insert(clu4);
+  cUnorderedSet.insert(clu5);
+
+  REQUIRE(cUnorderedSet.size() == 5);
+
+  std::unordered_map<ExampleCluster, int> cUnorderedMap;
+  cUnorderedMap[clu1] = 1;
+  cUnorderedMap[clu2] = 2;
+  cUnorderedMap[clu3] = 3;
+  cUnorderedMap[clu4] = 4;
+  cUnorderedMap[clu5] = 5;
+
+  REQUIRE(cUnorderedMap[clu3] == 3);
+
+  cUnorderedMap[clu3] = 42;
+
+  REQUIRE(cUnorderedMap[clu3] == 42);
 }
 
 TEST_CASE("Equality", "[basics]") {

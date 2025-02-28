@@ -61,6 +61,7 @@ private:
     virtual const std::type_info& typeInfo() const = 0;
     virtual bool equal(const Concept* rhs) const = 0;
     virtual podio::detail::OrderKey objOrderKey() const = 0;
+    virtual size_t objHash() const = 0;
   };
 
   template<typename ValueT>
@@ -92,6 +93,8 @@ private:
     podio::detail::OrderKey objOrderKey() const final {
       return podio::detail::getOrderKey(m_value);
     }
+
+    size_t objHash() const final {return std::hash<ValueT>{}(m_value); }
 
 {{ macros.member_getters_model(Members, use_get_syntax) }}
 
@@ -180,8 +183,17 @@ public:
     value.m_self->print(os);
     return os;
   }
+
+  friend std::hash<{{ class.bare_type }}>;
 };
 
 {{ utils.namespace_close(class.namespace) }}
+
+template<>
+struct std::hash<{{ class.full_type }}> {
+  std::size_t operator()(const {{ class.full_type }}& obj) const {
+    return obj.m_self->objHash();
+  }
+};
 
 #endif

@@ -103,6 +103,8 @@
 
   const podio::ObjectID getObjectID() const;
 
+  friend std::hash<{{ full_type }}>;
+
   friend void swap({{ full_type }}& a, {{ full_type }}& b) {
     using std::swap;
     swap(a.m_obj, b.m_obj); // swap out the internal pointers
@@ -143,4 +145,15 @@
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ prefix }}{{ type }}& value);
 #endif
+{% endmacro %}
+
+{% macro std_hash(class, prefix='') %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+
+template<>
+struct std::hash<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
+  std::size_t operator()(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& obj) const {
+    return std::hash<{{ namespace }}{{ class.bare_type }}Obj*>{}(obj.m_obj.get());
+  }
+};
 {% endmacro %}
