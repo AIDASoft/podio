@@ -159,10 +159,10 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 
 | Expression | Return type | Semantics | Fulfilled by `iterator`/`const_iterator`? | Comment |
 |------------|-------------|-----------|-------------------------------------------|---------|
-| `*r = o` | | | ❗ attention / ❗ attention | Defined but an assignment doesn't modify objects inside collection |
+| `*r = o` | | | ❌ no / ❌ no  | Not defined |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
 | `r++` | Convertible to `const It&` | Same as `It temp = r; ++r; return temp;` | ✔️ yes / ✔️ yes | |
-| `*r++ = o` | | Same as `*r = o; ++r;`| ❗ attention / ❗ attention | Defined but an assignment doesn't modify objects inside collection |
+| `*r++ = o` | | Same as `*r = o; ++r;`| ❌ no / ❌ no  | Not defined |
 
 ## Collection iterators and standard iterator adaptors
 
