@@ -71,8 +71,8 @@
   {{  full_type }}(const {{  full_type }}& other) = default;
 
   /// copy-assignment operator
-  {{  full_type }}& operator=({{ full_type }} other) &;
-  {{  full_type }}& operator=({{ full_type }} other) && = delete;
+  {{  full_type }}& operator=({{ full_type }} other) &; // Rebind this to other's internal object
+  {{  full_type }}& operator=({{ full_type }} other) && = delete; // Prevent rebinding temporary as the changes wouldn't persist
 
   /// create a mutable deep-copy of the object with identical relations
   /// if cloneRelations=false, the relations are not cloned and will be empty
