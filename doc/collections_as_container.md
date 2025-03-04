@@ -199,7 +199,7 @@ Most of the standard algorithms require iterators to meet specific named require
 
 The iterators of PODIO collections conform to the [**LegacyInputIterator**](https://en.cppreference.com/w/cpp/named_req/InputIterator) named requirement, therefore are guaranteed to work with any algorithm requiring [**LegacyIterator**](https://en.cppreference.com/w/cpp/named_req/Iterator) or [**LegacyInputIterator**](https://en.cppreference.com/w/cpp/named_req/InputIterator).
 
-Algorithms requiring a different iterator category may compile but do not guarantee correct results. An important case are mutating algorithms requiring the iterators to be [*writable*](https://en.cppreference.com/w/cpp/iterator), or [*LegacyOutputIterator*](https://en.cppreference.com/w/cpp/named_req/OutputIterator) or *mutable*, which are not compatible and will produce incorrect results.
+Algorithms requiring a different iterator category may compile but do not guarantee correct results. An important case are mutating algorithms requiring the iterators to be [*writable*](https://en.cppreference.com/w/cpp/iterator), or [*LegacyOutputIterator*](https://en.cppreference.com/w/cpp/named_req/OutputIterator) or *mutable*, which are not compatible. In these particular cases, they most likely won't compile. If they do compile, they will produce incorrect results.
 
 For example:
 ```c++
