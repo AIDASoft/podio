@@ -5,6 +5,7 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
+#include "podio/podioVersion.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
@@ -13,6 +14,7 @@
 #include "TClass.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -163,7 +165,7 @@ ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& categor
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     // Use the id table as proxy to check whether this category has been
     // initialized already
-    if (it->second.table == nullptr) {
+    if (it->second.branches.empty()) {
       initCategory(it->second, category);
     }
     return it->second;
@@ -177,17 +179,11 @@ ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& categor
 }
 
 void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category) {
-  catInfo.table = std::make_shared<podio::CollectionIDTable>();
-  auto* table = catInfo.table.get();
-  auto* tableBranch = root_utils::getBranch(m_metaChain.get(), root_utils::idTableName(category));
-  tableBranch->SetAddress(&table);
-  tableBranch->GetEntry(0);
 
   auto* collInfoBranch = root_utils::getBranch(m_metaChain.get(), root_utils::collInfoName(category));
 
   auto collInfo = new std::vector<root_utils::CollectionWriteInfo>();
-
-  if (m_fileVersion >= podio::version::Version{1, 1, 0}) {
+  if (m_fileVersion >= podio::version::Version{1, 2, 99}) {
     collInfoBranch->SetAddress(&collInfo);
     collInfoBranch->GetEntry(0);
   } else {
@@ -212,6 +208,26 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
       collInfo->emplace_back(id, std::move(typeName), isSubsetColl, schemaVersion);
     }
     delete collInfoOld;
+  }
+
+  // Recreate the idTable form the collection info if necessary, otherwise read
+  // it directly
+  if (m_fileVersion >= podio::version::Version{1, 2, 99}) {
+    std::vector<uint32_t> ids;
+    ids.reserve(collInfo->size());
+    std::vector<std::string> names;
+    names.reserve(collInfo->size());
+    for (const auto& [id, _1, _2, _3, name] : *collInfo) {
+      ids.emplace_back(id);
+      names.emplace_back(name);
+    }
+    catInfo.table = std::make_shared<podio::CollectionIDTable>(std::move(ids), std::move(names));
+  } else {
+    catInfo.table = std::make_shared<podio::CollectionIDTable>();
+    auto* table = catInfo.table.get();
+    auto* tableBranch = root_utils::getBranch(m_metaChain.get(), root_utils::idTableName(category));
+    tableBranch->SetAddress(&table);
+    tableBranch->GetEntry(0);
   }
 
   // For backwards compatibility make it possible to read the index based files
@@ -251,7 +267,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
 
   for (int i = 0; i < branches->GetEntries(); ++i) {
     const std::string name = branches->At(i)->GetName();
-    const auto fUnder = name.find(root_utils::idTableName(""));
+    const auto fUnder = name.find(root_utils::collInfoName(""));
     if (fUnder != std::string::npos) {
       brNames.emplace_back(name.substr(0, fUnder));
     }
@@ -346,7 +362,7 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
   std::vector<detail::NamedCollInfo> storedClasses;
   storedClasses.reserve(collInfo.size());
 
-  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
     const auto name = idTable.name(collID).value();
@@ -398,7 +414,7 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
   std::vector<detail::NamedCollInfo> storedClasses;
   storedClasses.reserve(collInfo.size());
 
-  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion] : collInfo) {
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
     const auto name = idTable.name(collID).value();
