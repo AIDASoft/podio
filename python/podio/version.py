@@ -42,4 +42,4 @@ def parse(*args):
 # The version with which podio has been built.
 # Same as defined in C++ as static constexpr podio::version::build_version
 # See: https://github.com/key4hep/key4hep-spack/issues/670
-build_version = __version__
+build_version = parse(__version__)
