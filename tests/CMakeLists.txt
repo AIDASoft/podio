@@ -76,6 +76,8 @@ set(root_legacy_test_versions
   v00-16-06
   v00-99
   v01-00
+  v01-01
+  v01-02
 )
 
 add_subdirectory(root_io)
