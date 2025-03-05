@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Module that facilitates working with the podio::version::Version"""
 
-from podio import __version__
+from podio import __version__  # pylint: disable=wrong-import-order
 
 import ROOT
 
