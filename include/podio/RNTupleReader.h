@@ -5,6 +5,7 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/RootHelpers.h"
 
 #include <string>
 #include <string_view>
@@ -171,15 +172,15 @@ private:
   std::unordered_map<std::string, std::vector<unsigned>> m_readerEntries{};
   std::unordered_map<std::string, unsigned> m_totalEntries{};
 
-  struct CollectionInfo {
-    std::vector<unsigned int> id{};
-    std::vector<std::string> name{};
-    std::vector<std::string> type{};
-    std::vector<short> isSubsetCollection{};
-    std::vector<SchemaVersionT> schemaVersion{};
-  };
+  // struct CollectionInfo {
+  //   std::vector<unsigned int> id{};
+  //   std::vector<std::string> name{};
+  //   std::vector<std::string> type{};
+  //   std::vector<short> isSubsetCollection{};
+  //   std::vector<SchemaVersionT> schemaVersion{};
+  // };
 
-  std::unordered_map<std::string, CollectionInfo> m_collectionInfo{};
+  std::unordered_map<std::string, std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
 
   std::vector<std::string> m_availableCategories{};
 

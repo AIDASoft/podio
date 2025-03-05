@@ -2,6 +2,7 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
 #include "TFile.h"
@@ -92,14 +93,13 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     auto model = createModels(collections);
     catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
 
+    catInfo.collInfo.reserve(collections.size());
     for (const auto& [name, coll] : collections) {
-      catInfo.ids.emplace_back(coll->getID());
-      catInfo.types.emplace_back(coll->getTypeName());
-      catInfo.subsetCollections.emplace_back(coll->isSubsetCollection());
-      catInfo.schemaVersions.emplace_back(coll->getSchemaVersion());
+      catInfo.collInfo.emplace_back(coll->getID(), std::string(coll->getTypeName()), coll->isSubsetCollection(),
+                                    coll->getSchemaVersion(), name);
     }
   } else {
-    if (!root_utils::checkConsistentColls(catInfo.names, collsToWrite)) {
+    if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
       throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.names, collsToWrite));
     }
@@ -260,16 +260,9 @@ void RNTupleWriter::finish() {
   }
 
   for (auto& [category, collInfo] : m_categories) {
-    auto idField = metadata->MakeField<std::vector<unsigned int>>({root_utils::idTableName(category)});
-    *idField = collInfo.ids;
-    auto collectionNameField = metadata->MakeField<std::vector<std::string>>({root_utils::collectionName(category)});
-    *collectionNameField = collInfo.names;
-    auto collectionTypeField = metadata->MakeField<std::vector<std::string>>({root_utils::collInfoName(category)});
-    *collectionTypeField = collInfo.types;
-    auto subsetCollectionField = metadata->MakeField<std::vector<short>>({root_utils::subsetCollection(category)});
-    *subsetCollectionField = collInfo.subsetCollections;
-    auto schemaVersionField = metadata->MakeField<std::vector<SchemaVersionT>>({"schemaVersion_" + category});
-    *schemaVersionField = collInfo.schemaVersions;
+    auto collInfoField =
+        metadata->MakeField<std::vector<root_utils::CollectionWriteInfo>>({root_utils::collInfoName(category)});
+    *collInfoField = collInfo.collInfo;
   }
 
   metadata->Freeze();
