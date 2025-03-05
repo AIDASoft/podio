@@ -103,11 +103,10 @@ private:
   /// Helper struct to group together all necessary state to write / process a
   /// given category. Created during the first writing of a category
   struct CategoryInfo {
-    TTree* tree{nullptr};                                     ///< The TTree to which this category is written
-    std::vector<root_utils::CollectionBranches> branches{};   ///< The branches for this category
+    TTree* tree{nullptr};                                    ///< The TTree to which this category is written
+    std::vector<root_utils::CollectionBranches> branches{};  ///< The branches for this category
     std::vector<root_utils::CollectionWriteInfo> collInfo{}; ///< Collection info for this category
-    podio::CollectionIDTable idTable{};                       ///< The collection id table for this category
-    std::vector<std::string> collsToWrite{};                  ///< The collections to write for this category
+    std::vector<std::string> collsToWrite{};                 ///< The collections to write for this category
 
     // Storage for the keys & values of all the parameters of this category
     // (resp. at least the current entry)
