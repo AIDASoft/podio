@@ -37,7 +37,7 @@ public:
 
   /// Read the next data entry for a given category.
   ///
-  /// @note Given how the SIO files are currently layed out it is in fact not
+  /// @note Given how the SIO files are currently laid out it is in fact not
   /// possible to only read a subset of a Frame. Rather the subset of
   /// collections to read will be an artificial limit on the returned
   /// SIOFrameData. Limiting the collections to read will not improve I/O
@@ -55,7 +55,7 @@ public:
 
   /// Read the desired data entry for a given category.
   ///
-  /// @note Given how the SIO files are currently layed out it is in fact not
+  /// @note Given how the SIO files are currently laid out it is in fact not
   /// possible to only read a subset of a Frame. Rather the subset of
   /// collections to read will be an artificial limit on the returned
   /// SIOFrameData. Limiting the collections to read will not improve I/O

@@ -1,8 +1,8 @@
 # *Detection* tests for `podio_schema_evolution.py`
 
-This folder contains small and targetted test cases to ensure that the
+This folder contains small and targeted test cases to ensure that the
 `podio_schema_evolution.py` script reliably detects schema changes that are not
-trivial. These test cases only deal with detecting these occurences! Whether the
+trivial. These test cases only deal with detecting these occurrences! Whether the
 detected schema evolution steps are supported by podio (yet) are not really
 interesting here and they (will be) tested in another place.
 
