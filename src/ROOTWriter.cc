@@ -56,7 +56,7 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
   } else {
     // Make sure that the category contents are consistent with the initial
     // frame in the category
-    if (!root_utils::checkConsistentColls(catInfo.collsToWrite, collsToWrite)) {
+    if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
       throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.collsToWrite, collsToWrite));
     }

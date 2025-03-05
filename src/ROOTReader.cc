@@ -213,15 +213,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
   // Recreate the idTable form the collection info if necessary, otherwise read
   // it directly
   if (m_fileVersion >= podio::version::Version{1, 2, 99}) {
-    std::vector<uint32_t> ids;
-    ids.reserve(collInfo->size());
-    std::vector<std::string> names;
-    names.reserve(collInfo->size());
-    for (const auto& [id, _1, _2, _3, name] : *collInfo) {
-      ids.emplace_back(id);
-      names.emplace_back(name);
-    }
-    catInfo.table = std::make_shared<podio::CollectionIDTable>(std::move(ids), std::move(names));
+    catInfo.table = root_utils::makeCollIdTable(*collInfo);
   } else {
     catInfo.table = std::make_shared<podio::CollectionIDTable>();
     auto* table = catInfo.table.get();

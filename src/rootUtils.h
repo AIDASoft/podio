@@ -287,26 +287,22 @@ inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable
  * can have random order wrt each other, but the assumption is that each vector
  * only contains unique names.
  */
-inline bool checkConsistentColls(const std::vector<std::string>& existingColls,
+inline bool checkConsistentColls(const std::vector<root_utils::CollectionWriteInfo>& collInfo,
                                  const std::vector<std::string>& candidateColls) {
-  if (existingColls.size() != candidateColls.size()) {
+  if (collInfo.size() != candidateColls.size()) {
     return false;
   }
 
-  // Since we are guaranteed to have unique names here, we can just look for
-  // collisions brute force, which seems to be quickest approach for vector
-  // sizes we typically have (few hundred). We can take advantage of the fact
-  // that the existingColls are ordered (alphabetically and case-insensitive),
-  // so we can do a binary_search
   for (const auto& id : candidateColls) {
-    if (!std::binary_search(existingColls.begin(), existingColls.end(), id, [](const auto& lhs, const auto& rhs) {
+    std::ranges::binary_search(
+        collInfo, id,
+        [](const auto& lhs, const auto& rhs) {
           return lhs.size() == rhs.size() &&
               std::lexicographical_compare(
                      lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
                      [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
-        })) {
-      return false;
-    }
+        },
+        &root_utils::CollectionWriteInfo::name);
   }
 
   return true;
@@ -360,6 +356,19 @@ inline std::string getInconsistentCollsMsg(const std::vector<std::string>& exist
   }
 
   return sstr.str();
+}
+
+inline std::shared_ptr<podio::CollectionIDTable> makeCollIdTable(const std::vector<CollectionWriteInfo>& collInfo) {
+  std::vector<uint32_t> ids{};
+  ids.reserve(collInfo.size());
+  std::vector<std::string> names{};
+  names.reserve(collInfo.size());
+  for (const auto& [id, _1, _2, _3, name] : collInfo) {
+    ids.emplace_back(id);
+    names.emplace_back(name);
+  }
+
+  return std::make_shared<podio::CollectionIDTable>(std::move(ids), std::move(names));
 }
 
 } // namespace podio::root_utils
