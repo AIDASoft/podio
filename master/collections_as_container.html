@@ -1248,8 +1248,8 @@ Despite the exception, the collection iterators are made to still report themsel
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">*r</span> <span class="pre">=</span> <span class="pre">o</span></code></p></td>
 <td><p></p></td>
 <td><p></p></td>
-<td><p>❗ attention / ❗ attention</p></td>
-<td><p>Defined but an assignment doesn’t modify objects inside collection</p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Not defined</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">++r</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">It&amp;</span></code></p></td>
@@ -1266,8 +1266,8 @@ Despite the exception, the collection iterators are made to still report themsel
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*r++</span> <span class="pre">=</span> <span class="pre">o</span></code></p></td>
 <td><p></p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">*r</span> <span class="pre">=</span> <span class="pre">o;</span> <span class="pre">++r;</span></code></p></td>
-<td><p>❗ attention / ❗ attention</p></td>
-<td><p>Defined but an assignment doesn’t modify objects inside collection</p></td>
+<td><p>❌ no / ❌ no</p></td>
+<td><p>Not defined</p></td>
 </tr>
 </tbody>
 </table>
@@ -1363,7 +1363,7 @@ Despite the exception, the collection iterators are made to still report themsel
 <h2>Collection and standard algorithms<a class="headerlink" href="#collection-and-standard-algorithms" title="Link to this heading"></a></h2>
 <p>Most of the standard algorithms require iterators to meet specific named requirements, such as <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><em>LegacyInputIterator</em></a>, <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator"><em>LegacyForwardIterator</em></a>, or <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator"><em>LegacyRandomAccessIterator</em></a>. These requirements are not always strictly enforced at compile time, making it essential to understand the allowed iterator category when using standard algorithms.</p>
 <p>The iterators of PODIO collections conform to the <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><strong>LegacyInputIterator</strong></a> named requirement, therefore are guaranteed to work with any algorithm requiring <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/Iterator"><strong>LegacyIterator</strong></a> or <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/InputIterator"><strong>LegacyInputIterator</strong></a>.</p>
-<p>Algorithms requiring a different iterator category may compile but do not guarantee correct results. An important case are mutating algorithms requiring the iterators to be <a class="reference external" href="https://en.cppreference.com/w/cpp/iterator"><em>writable</em></a>, or <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/OutputIterator"><em>LegacyOutputIterator</em></a> or <em>mutable</em>, which are not compatible and will produce incorrect results.</p>
+<p>Algorithms requiring a different iterator category may compile but do not guarantee correct results. An important case are mutating algorithms requiring the iterators to be <a class="reference external" href="https://en.cppreference.com/w/cpp/iterator"><em>writable</em></a>, or <a class="reference external" href="https://en.cppreference.com/w/cpp/named_req/OutputIterator"><em>LegacyOutputIterator</em></a> or <em>mutable</em>, which are not compatible. In these particular cases, they most likely won’t compile. If they do compile, they will produce incorrect results.</p>
 <p>For example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires InputIterator -&gt; OK</span>
 <span class="n">std</span><span class="o">::</span><span class="n">adjacent_find</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span><span class="w"> </span><span class="n">predicate</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// requires ForwardIterator -&gt; might compile, unspecified result</span>
