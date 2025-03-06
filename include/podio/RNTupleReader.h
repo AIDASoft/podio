@@ -172,14 +172,7 @@ private:
   std::unordered_map<std::string, std::vector<unsigned>> m_readerEntries{};
   std::unordered_map<std::string, unsigned> m_totalEntries{};
 
-  // struct CollectionInfo {
-  //   std::vector<unsigned int> id{};
-  //   std::vector<std::string> name{};
-  //   std::vector<std::string> type{};
-  //   std::vector<short> isSubsetCollection{};
-  //   std::vector<SchemaVersionT> schemaVersion{};
-  // };
-
+  /// Map each category to the collections that have been written and are available
   std::unordered_map<std::string, std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
 
   std::vector<std::string> m_availableCategories{};

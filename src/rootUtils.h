@@ -358,6 +358,8 @@ inline std::string getInconsistentCollsMsg(const std::vector<std::string>& exist
   return sstr.str();
 }
 
+/// Create a collection id table from the information in the
+/// CollectionWriteInfos
 inline std::shared_ptr<podio::CollectionIDTable> makeCollIdTable(const std::vector<CollectionWriteInfo>& collInfo) {
   std::vector<uint32_t> ids{};
   ids.reserve(collInfo.size());
