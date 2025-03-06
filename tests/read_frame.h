@@ -225,7 +225,7 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     if (reader.currentFileVersion() >= podio::version::Version{0, 99, 99}) {
       checkInterfaceCollection(otherFrame);
     }
-    if (reader.currentFileVersion() >= podio::version::Version{1, 1, 0}) {
+    if (reader.currentFileVersion() >= podio::version::Version{1, 2, 0}) {
       checkInterfaceExtension(otherFrame);
     }
   }
