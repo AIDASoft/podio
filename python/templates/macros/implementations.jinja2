@@ -13,7 +13,7 @@
 }
 {% endif %}
 
-{{  full_type }}& {{ full_type }}::operator=({{ full_type }} other) {
+{{  full_type }}& {{ full_type }}::operator=({{ full_type }} other) & {
   swap(*this, other);
   return *this;
 }

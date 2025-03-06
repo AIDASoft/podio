@@ -1064,29 +1064,10 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // *r = o
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_v<iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(traits::has_dereference_assignment_v<iterator, CollectionType::mutable_type>);
-    {
-      auto coll = CollectionType{};
-      auto item = coll.create(13ull, 0., 0., 0., 0.);
-      REQUIRE(coll.begin()->cellID() == 13ull);
-      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
-      *coll.begin() = new_item;
-      DOCUMENTED_FAILURE(coll.begin()->cellID() == 42ull);
-    }
+    DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_v<iterator, CollectionType::mutable_type>);
     // const_iterator
-    STATIC_REQUIRE(traits::has_dereference_assignment_v<const_iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(traits::has_dereference_assignment_v<const_iterator, CollectionType::mutable_type>);
-    {
-      auto coll = CollectionType{};
-      auto item = coll.create(13ull, 0., 0., 0., 0.);
-      REQUIRE(coll.cbegin()->cellID() == 13ull);
-      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
-      *coll.cbegin() = new_item;
-      DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 42ull);
-      new_item.cellID(44ull);
-      *coll.cbegin() = static_cast<CollectionType::value_type>(new_item);
-      DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 44ull);
-    }
+    DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_v<const_iterator, CollectionType::value_type>);
+    DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_v<const_iterator, CollectionType::mutable_type>);
 
     // ++r
     // iterator
@@ -1107,29 +1088,13 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // *r++ = o
     // iterator
     DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::mutable_type>);
-    {
-      auto coll = CollectionType{};
-      auto item = coll.create(13ull, 0., 0., 0., 0.);
-      REQUIRE(coll.begin()->cellID() == 13ull);
-      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
-      *coll.begin()++ = new_item;
-      DOCUMENTED_FAILURE(coll.begin()->cellID() == 42ull);
-    }
+    DOCUMENTED_STATIC_FAILURE(traits::has_dereference_assignment_increment_v<iterator, CollectionType::mutable_type>);
+
     // const_iterator
-    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type>);
-    STATIC_REQUIRE(traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::mutable_type>);
-    {
-      auto coll = CollectionType{};
-      auto item = coll.create(13ull, 0., 0., 0., 0.);
-      REQUIRE(coll.cbegin()->cellID() == 13ull);
-      auto new_item = CollectionType::mutable_type{42ull, 0., 0., 0., 0.};
-      *coll.cbegin()++ = new_item;
-      DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 42ull);
-      new_item.cellID(44ull);
-      *coll.cbegin()++ = static_cast<CollectionType::value_type>(new_item);
-      DOCUMENTED_FAILURE(coll.cbegin()->cellID() == 44ull);
-    }
+    DOCUMENTED_STATIC_FAILURE(
+        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::value_type>);
+    DOCUMENTED_STATIC_FAILURE(
+        traits::has_dereference_assignment_increment_v<const_iterator, CollectionType::mutable_type>);
 
     // iterator_category - not strictly necessary but advised
     // Derived either from:

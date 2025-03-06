@@ -70,11 +70,12 @@ public:
   /// Copy constructor
   LinkT(const LinkT& other) = default;
 
-  /// Assignment operator
-  LinkT& operator=(LinkT other) {
+  /// Assignment operators
+  LinkT& operator=(LinkT other) & {
     swap(*this, other);
     return *this;
   }
+  LinkT& operator=(LinkT other) && = delete; // Prevent rebinding temporary as the changes wouldn't persist
 
   /// Implicit conversion of mutable to immutable links
   template <typename FromU, typename ToU>
