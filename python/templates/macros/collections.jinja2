@@ -153,7 +153,7 @@ void {{ class.bare_type }}Collection::print(std::ostream& os, bool flush) const 
 {% macro create_buffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, schemaVersion) %}
 
 {% if schemaVersion == -1 %}
-podio::CollectionReadBuffers createBuffers(bool isSubset) {
+podio::CollectionReadBuffers create{{ class.bare_type }}Buffers(bool isSubset) {
 {% else %}
 podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
 {% endif %}
