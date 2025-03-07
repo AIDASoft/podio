@@ -25,7 +25,7 @@ set(PODIO_IO_HANDLERS "@PODIO_IO_HANDLERS@")
 
 include(CMakeFindDependencyMacro)
 find_dependency(ROOT @ROOT_VERSION@)
-if(@REQUIRE_PYTHON_VERSION@)
+if(NOT "@REQUIRE_PYTHON_VERSION@" STREQUAL "")
   find_dependency(Python @REQUIRE_PYTHON_VERSION@ COMPONENTS Interpreter)
 else()
   find_dependency(Python COMPONENTS Interpreter)
