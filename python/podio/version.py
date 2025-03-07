@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Module that facilitates working with the podio::version::Version"""
 
+from podio import __version__  # pylint: disable=wrong-import-order
+
 import ROOT
 
 # NOTE: It is necessary that this can be found on the ROOT_INCLUDE_PATH
@@ -37,5 +39,7 @@ def parse(*args):
     return ver
 
 
-# The version with which podio has been built. Same as __version__
-build_version = podio.version.build_version
+# The version with which podio has been built.
+# Same as defined in C++ as static constexpr podio::version::build_version
+# See: https://github.com/key4hep/key4hep-spack/issues/670
+build_version = parse(__version__)
