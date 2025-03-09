@@ -20,7 +20,7 @@ namespace detail {
   template <typename FromT, typename ToT>
   inline const std::string_view linkCollTypeName() {
     const static std::string typeName =
-        std::string("podio::LinkCollection<") + FromT::typeName + "," + ToT::typeName + ">";
+        std::string("podio::LinkCollection<") + std::string(FromT::typeName) + "," + std::string(ToT::typeName) + ">";
     return std::string_view{typeName};
   }
 
@@ -31,7 +31,8 @@ namespace detail {
   /// @returns a type string that is a valid c++ template instantiation
   template <typename FromT, typename ToT>
   inline const std::string_view linkTypeName() {
-    const static std::string typeName = std::string("podio::Link<") + FromT::typeName + "," + ToT::typeName + ">";
+    const static std::string typeName =
+        std::string("podio::Link<") + std::string(FromT::typeName) + "," + std::string(ToT::typeName) + ">";
     return std::string_view{typeName};
   }
 
@@ -44,7 +45,7 @@ namespace detail {
   /// types
   template <typename FromT, typename ToT>
   inline const std::string& linkSIOName() {
-    static auto n = std::string("LINK_FROM_") + FromT::typeName + "_TO_" + ToT::typeName;
+    static auto n = std::string("LINK_FROM_") + std::string(FromT::typeName) + "_TO_" + std::string(ToT::typeName);
     std::replace(n.begin(), n.end(), ':', '_');
     return n;
   }
