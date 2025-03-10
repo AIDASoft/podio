@@ -412,27 +412,7 @@ void to_json(nlohmann::json& j, const podio::LinkCollection<FromT, ToT>& collect
   }
 }
 #endif
-namespace detail {
-  /// Get the collection type name for a LinkCollection
-  ///
-  /// @tparam FromT the From type of the link
-  /// @tparam ToT the To type of the link
-  /// @returns a type string that is a valid c++ template instantiation
-  template <typename FromT, typename ToT>
-  [[deprecated("Use LinkCollection<FromT, ToT>::typeName instead")]] inline const std::string_view linkCollTypeName() {
-    return LinkCollection<FromT, ToT>::typeName;
-  }
 
-  /// Get the value type name for a LinkCollection
-  ///
-  /// @tparam FromT the From type of the link
-  /// @tparam ToT the To type of the link
-  /// @returns a type string that is a valid c++ template instantiation
-  template <typename FromT, typename ToT>
-  [[deprecated("Use LinkCollection<FromT, ToT>::valueTypeName instead")]] inline const std::string_view linkTypeName() {
-    return LinkCollection<FromT, ToT>::valueTypeName;
-  }
-} // namespace detail
 } // namespace podio
 
 #endif // PODIO_DETAIL_LINKCOLLECTIONIMPL_H
