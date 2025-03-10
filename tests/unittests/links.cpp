@@ -239,7 +239,7 @@ TEST_CASE("Links associative containers", "[links][hash]") {
   REQUIRE(linkMap[link5] == 2);
 
   // unordered associative containers
-  std::set<TestL> linkUnorderedSet;
+  std::unordered_set<TestL> linkUnorderedSet;
   linkUnorderedSet.insert(link1);
   linkUnorderedSet.insert(link2);
   linkUnorderedSet.insert(link3);
@@ -248,7 +248,7 @@ TEST_CASE("Links associative containers", "[links][hash]") {
   linkUnorderedSet.insert(link5);
   REQUIRE(linkUnorderedSet.size() == 4);
 
-  std::map<TestL, int> linkUnorderedMap;
+  std::unordered_map<TestL, int> linkUnorderedMap;
   linkUnorderedMap[link1]++;
   linkUnorderedMap[link2]++;
   linkUnorderedMap[link3]++;
