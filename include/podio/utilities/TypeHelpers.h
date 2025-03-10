@@ -1,7 +1,10 @@
 #ifndef PODIO_UTILITIES_TYPEHELPERS_H
 #define PODIO_UTILITIES_TYPEHELPERS_H
 
+#include <concepts>
+#include <iterator>
 #include <map>
+#include <ranges>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
@@ -242,9 +245,61 @@ namespace detail {
 // forward declaration to be able to use it below
 class CollectionBase;
 
-/// Concept for checking whether a passed type T inherits from podio::CollectionBase
+/// Concept for checking whether a passed type T is a collection
 template <typename T>
-concept CollectionType = std::is_base_of_v<CollectionBase, T>;
+concept CollectionType = requires(T t, const T ct) {
+  // general concepts
+  requires !std::is_abstract_v<T>;
+  requires std::derived_from<T, CollectionBase>;
+  requires std::default_initializable<T>;
+  requires std::destructible<T>;
+  requires std::movable<T>;
+  requires std::move_constructible<T>;
+  requires std::ranges::random_access_range<T>;
+  // typeName's
+  // { T::typeName } -> std::convertible_to<std::string_view>;
+  // { std::bool_constant<(T::typeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
+  // { T::valueTypeName } -> std::convertible_to<std::string_view>;
+  // { std::bool_constant<(T::valueTypeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
+  // { T::dataTypeName } -> std::convertible_to<std::string_view>;
+  // { std::bool_constant<(T::dataTypeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
+  // typedefs
+  typename T::value_type;
+  typename T::mutable_type;
+  requires std::convertible_to<typename T::mutable_type, typename T::value_type>;
+  typename T::difference_type;
+  requires std::signed_integral<typename T::difference_type>;
+  typename T::size_type;
+  requires std::unsigned_integral<typename T::size_type>;
+  typename T::const_iterator;
+  requires std::random_access_iterator<typename T::const_iterator>;
+  typename T::iterator;
+  requires std::random_access_iterator<typename T::iterator>;
+  typename T::const_reverse_iterator;
+  requires std::random_access_iterator<typename T::const_reverse_iterator>;
+  typename T::reverse_iterator;
+  requires std::random_access_iterator<typename T::reverse_iterator>;
+  // member functions
+  { t.create() } -> std::convertible_to<typename T::mutable_type>;
+  { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::mutable_type>>>()) };
+  { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::value_type>>>()) };
+  { t.begin() } -> std::same_as<typename T::iterator>;
+  { t.cbegin() } -> std::same_as<typename T::const_iterator>;
+  { ct.begin() } -> std::same_as<typename T::const_iterator>;
+  { t.end() } -> std::same_as<typename T::iterator>;
+  { t.cend() } -> std::same_as<typename T::const_iterator>;
+  { ct.end() } -> std::same_as<typename T::const_iterator>;
+  { t.rbegin() } -> std::same_as<typename T::reverse_iterator>;
+  { t.crbegin() } -> std::same_as<typename T::const_reverse_iterator>;
+  { ct.rbegin() } -> std::same_as<typename T::const_reverse_iterator>;
+  { t.rend() } -> std::same_as<typename T::reverse_iterator>;
+  { t.crend() } -> std::same_as<typename T::const_reverse_iterator>;
+  { ct.rend() } -> std::same_as<typename T::const_reverse_iterator>;
+  { t[std::declval<typename T::size_type>()] } -> std::convertible_to<typename T::mutable_type>;
+  { ct[std::declval<typename T::size_type>()] } -> std::convertible_to<typename T::value_type>;
+  { t.at(std::declval<typename T::size_type>()) } -> std::convertible_to<typename T::mutable_type>;
+  { ct.at(std::declval<typename T::size_type>()) } -> std::convertible_to<typename T::value_type>;
+};
 
 namespace utils {
   template <typename... T>
