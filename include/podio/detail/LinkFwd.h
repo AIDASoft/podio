@@ -12,28 +12,10 @@
 namespace podio {
 namespace detail {
 
-  /// Get the collection type name for a LinkCollection
-  ///
-  /// @tparam FromT the From type of the link
-  /// @tparam ToT the To type of the link
-  /// @returns a type string that is a valid c++ template instantiation
-  template <typename FromT, typename ToT>
-  inline const std::string_view linkCollTypeName() {
-    const static std::string typeName =
-        std::string("podio::LinkCollection<") + FromT::typeName + "," + ToT::typeName + ">";
-    return std::string_view{typeName};
-  }
-
-  /// Get the value type name for a LinkCollection
-  ///
-  /// @tparam FromT the From type of the link
-  /// @tparam ToT the To type of the link
-  /// @returns a type string that is a valid c++ template instantiation
-  template <typename FromT, typename ToT>
-  inline const std::string_view linkTypeName() {
-    const static std::string typeName = std::string("podio::Link<") + FromT::typeName + "," + ToT::typeName + ">";
-    return std::string_view{typeName};
-  }
+  constexpr std::string_view link_coll_name_prefix = "podio::LinkCollection<";
+  constexpr std::string_view link_name_prefix = "podio::LinkCollection<";
+  constexpr std::string_view link_name_infix = ",";
+  constexpr std::string_view link_name_suffix = ">";
 
   /// Get an SIO friendly type name for a LinkCollection (necessary for
   /// registration in the SIOBlockFactory)
@@ -44,7 +26,7 @@ namespace detail {
   /// types
   template <typename FromT, typename ToT>
   inline const std::string& linkSIOName() {
-    static auto n = std::string("LINK_FROM_") + FromT::typeName + "_TO_" + ToT::typeName;
+    static auto n = std::string("LINK_FROM_") + std::string(FromT::typeName) + "_TO_" + std::string(ToT::typeName);
     std::replace(n.begin(), n.end(), ':', '_');
     return n;
   }
