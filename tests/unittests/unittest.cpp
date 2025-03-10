@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "catch2/catch_test_macros.hpp"
@@ -410,6 +411,19 @@ TEST_CASE("UserDataCollection print", "[basics]") {
   coll.print(sstr);
 
   REQUIRE(sstr.str() == "[1, 2, 3]");
+}
+
+TEST_CASE("UserDataCollection access", "[basics]") {
+  auto coll = podio::UserDataCollection<int32_t>();
+  auto& x = coll.create();
+  x = 42;
+  REQUIRE(coll.size() == 1);
+  REQUIRE(coll.at(0) == 42);
+  coll.at(0) = 43;
+  REQUIRE(coll[0] == 43);
+  coll[0] = 44;
+  REQUIRE(std::as_const(coll).at(0) == 44);
+  REQUIRE(std::as_const(coll)[0] == 44);
 }
 
 /*
