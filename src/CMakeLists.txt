@@ -33,15 +33,16 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
   target_include_directories(${dictname} PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
+  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree ROOT::ROOTVecOps)
   if(ENABLE_RNTUPLE)
     target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
   endif()
-  PODIO_GENERATE_DICTIONARY(${dictname} ${headers} SELECTION ${selection}
+  PODIO_GENERATE_DICTIONARY(${dictname} ${headers} "${ROOT_INCLUDE_DIRS}/ROOT/RVec.hxx" SELECTION ${selection}
     OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dictname}${CMAKE_SHARED_LIBRARY_SUFFIX}
     )
   # prevent generating dictionary twice
   set_target_properties(${dictname}-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  target_compile_options(${dictname} PRIVATE "-Wno-effc++")
   target_sources(${dictname} PRIVATE ${dictname}.cxx)
 ENDFUNCTION()
 

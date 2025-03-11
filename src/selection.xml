@@ -31,6 +31,7 @@
     <class name="podio::version::Version"/>
     <class name="podio::ObjectID"/>
     <class name="vector<podio::ObjectID>"/>
+    <class name="ROOT::VecOps::RVec<podio::ObjectID>"/>
 
     <class name="podio::UserDataCollection<float>"/>
     <class name="podio::UserDataCollection<double>"/>
@@ -45,6 +46,7 @@
 
     <class name="podio::LinkData"/>
     <class name="std::vector<podio::LinkData>"/>
+    <class name="ROOT::VecOps::RVec<podio::LinkData>"/>
 
     <function name="podio::utils::is_glob_pattern"/>
     <function name="podio::utils::expand_glob"/>
