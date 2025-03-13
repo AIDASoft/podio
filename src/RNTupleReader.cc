@@ -4,11 +4,13 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
+#include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
 #include <ROOT/RError.hxx>
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 
 // Adjust for the move of this out of ROOT v7 in
@@ -48,27 +50,11 @@ bool RNTupleReader::initCategory(const std::string& category) {
   // Assume that the metadata is the same in all files
   auto filename = m_filenames[0];
 
-  auto& collInfo = m_collectionInfo[category];
+  auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
+      {root_utils::collInfoName(category)});
 
-  auto id = m_metadata_readers[filename]->GetView<std::vector<unsigned int>>(root_utils::idTableName(category));
-  collInfo.id = id(0);
-
-  auto collectionName =
-      m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collectionName(category));
-  collInfo.name = collectionName(0);
-
-  auto collectionType =
-      m_metadata_readers[filename]->GetView<std::vector<std::string>>(root_utils::collInfoName(category));
-  collInfo.type = collectionType(0);
-
-  auto subsetCollection =
-      m_metadata_readers[filename]->GetView<std::vector<short>>(root_utils::subsetCollection(category));
-  collInfo.isSubsetCollection = subsetCollection(0);
-
-  auto schemaVersion = m_metadata_readers[filename]->GetView<std::vector<SchemaVersionT>>("schemaVersion_" + category);
-  collInfo.schemaVersion = schemaVersion(0);
-
-  m_idTables[category] = std::make_shared<CollectionIDTable>(collInfo.id, collInfo.name);
+  m_collectionInfo[category] = collInfo(0);
+  m_idTables[category] = root_utils::makeCollIdTable(collInfo(0));
 
   return true;
 }
@@ -162,7 +148,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   // Make sure to not silently ignore non-existant but requested collections
   if (!collsToRead.empty()) {
     for (const auto& name : collsToRead) {
-      if (std::ranges::find(collInfo.name, name) == collInfo.name.end()) {
+      if (std::ranges::find(collInfo, name, &root_utils::CollectionWriteInfo::name) == collInfo.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
     }
@@ -184,47 +170,46 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   // we set all the fields there in any case.
   auto dentry = m_readers[category][readerIndex]->GetModel().CreateEntry();
 
-  for (size_t i = 0; i < collInfo.id.size(); ++i) {
-    if (!collsToRead.empty() && std::ranges::find(collsToRead, collInfo.name[i]) == collsToRead.end()) {
+  for (const auto& coll : collInfo) {
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
       continue;
     }
-    const auto& collType = collInfo.type[i];
+    const auto& collType = coll.dataType;
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    auto maybeBuffers =
-        bufferFactory.createBuffers(collType, collInfo.schemaVersion[i], collInfo.isSubsetCollection[i]);
+    auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
     auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
     if (!maybeBuffers) {
-      std::cout << "WARNING: Buffers couldn't be created for collection " << collInfo.name[i] << " of type "
-                << collInfo.type[i] << " and schema version " << collInfo.schemaVersion[i] << std::endl;
+      std::cout << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
+                << " and schema version " << coll.schemaVersion << std::endl;
       return nullptr;
     }
 
-    if (collInfo.isSubsetCollection[i]) {
-      auto brName = root_utils::subsetBranch(collInfo.name[i]);
+    if (coll.isSubset) {
+      auto brName = root_utils::subsetBranch(coll.name);
       auto vec = new std::vector<podio::ObjectID>;
       dentry->BindRawPtr(brName, vec);
       collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
     } else {
-      dentry->BindRawPtr(collInfo.name[i], collBuffers.data);
+      dentry->BindRawPtr(coll.name, collBuffers.data);
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
       for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
         const auto relName = relVecNames.relations[j];
         auto vec = new std::vector<podio::ObjectID>;
-        const auto brName = root_utils::refBranch(collInfo.name[i], relName);
+        const auto brName = root_utils::refBranch(coll.name, relName);
         dentry->BindRawPtr(brName, vec);
         collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
       }
 
       for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
         const auto vecName = relVecNames.vectorMembers[j];
-        const auto brName = root_utils::vecBranch(collInfo.name[i], vecName);
+        const auto brName = root_utils::vecBranch(coll.name, vecName);
         dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
       }
     }
 
-    buffers.emplace(collInfo.name[i], std::move(collBuffers));
+    buffers.emplace(coll.name, std::move(collBuffers));
   }
 
   m_readers[category][readerIndex]->LoadEntry(localEntry, *dentry);
