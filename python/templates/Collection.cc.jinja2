@@ -60,7 +60,13 @@ std::size_t {{ collection_type }}::size() const {
 }
 
 std::size_t {{ collection_type }}::max_size() const {
-  return m_storage.entries.max_size();
+  const auto maxStorage = m_storage.entries.max_size();
+  if (!m_isSubsetColl) {
+    // non-subset collections shouldn't have more elements than the maximum index of ObjectID
+    const auto maxIndex = std::numeric_limits<decltype(podio::ObjectID::index)>::max();
+    return std::min<size_t>(maxIndex, maxStorage);
+  }
+  return maxStorage;
 }
 
 bool {{ collection_type }}::empty() const {
