@@ -1,6 +1,7 @@
 #ifndef PODIO_DETAIL_LINKCOLLECTIONIMPL_H
 #define PODIO_DETAIL_LINKCOLLECTIONIMPL_H
 
+#include "podio/ObjectID.h"
 #include "podio/detail/Link.h"
 #include "podio/detail/LinkCollectionData.h"
 #include "podio/detail/LinkCollectionIterator.h"
@@ -137,7 +138,13 @@ public:
 
   /// maximal number of elements in the collection
   std::size_t max_size() const override {
-    return m_storage.entries.max_size();
+    const auto maxStorage = m_storage.entries.max_size();
+    if (!m_isSubsetColl) {
+      // non-subset collections shouldn't have more elements than the maximum index of ObjectID
+      const auto maxIndex = std::numeric_limits<decltype(ObjectID::index)>::max();
+      return std::min<size_t>(maxIndex, maxStorage);
+    }
+    return maxStorage;
   }
 
   /// Is the collection empty
