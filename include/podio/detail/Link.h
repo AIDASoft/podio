@@ -4,7 +4,9 @@
 #include "podio/detail/LinkFwd.h"
 #include "podio/detail/LinkObj.h"
 #include "podio/utilities/MaybeSharedPtr.h"
+#include "podio/utilities/StaticConcatenate.h"
 #include "podio/utilities/TypeHelpers.h"
+#include <string_view>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -58,6 +60,9 @@ public:
   using value_type = podio::Link<FromT, ToT>;
   using collection_type = podio::LinkCollection<FromT, ToT>;
 
+  static constexpr std::string_view typeName =
+      utils::static_concatenate_v<detail::link_name_prefix, FromT::typeName, detail::link_name_infix, ToT::typeName,
+                                  detail::link_name_suffix>;
   /// Constructor
   LinkT() : m_obj(new LinkObjT{}, podio::utils::MarkOwned) {
   }

@@ -130,7 +130,7 @@ public:
     return {{ Types[0] }}::makeEmpty();
   }
 
-  static constexpr auto typeName = "{{ class.full_type }}";
+  static constexpr std::string_view typeName = "{{ class.full_type }}";
 
   /// check whether the object is actually available
   bool isAvailable() const { return m_self->isAvailable(); }
