@@ -4,6 +4,7 @@
         <class name="{{ namespace }}{{ full_name }}" ClassVersion="{{ version }}"/>
 {% if vector %}
         <class name="std::vector<{{ namespace }}{{ full_name }}>" ClassVersion="{{ version }}"/>
+        <class name="ROOT::VecOps::RVec<{{ namespace }}{{ full_name }}>" ClassVersion="{{ version }}"/>
 {%- endif -%}
 {%- endmacro -%}
 
