@@ -14,14 +14,14 @@ namespace podio::detail {
 /// from different datamodels in an interface type.
 class OrderKey {
 public:
-  OrderKey(void* orderKey) noexcept : m_orderKey(orderKey) {
+  OrderKey(const void* orderKey) noexcept : m_orderKey(orderKey) {
   }
   friend bool operator<(const OrderKey& lhs, const OrderKey& rhs) noexcept {
-    return std::less<void*>{}(lhs.m_orderKey, rhs.m_orderKey);
+    return std::less<const void*>{}(lhs.m_orderKey, rhs.m_orderKey);
   }
 
 private:
-  void* m_orderKey;
+  const void* m_orderKey;
 };
 } // namespace podio::detail
 
