@@ -61,8 +61,8 @@ void doTestExampleMC(ExampleMCCollection const& collection) {
   // Empty
   ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
                    "RelationRange of empty collection is not empty")
-  // Equivalent but potentially quicker way of checking an empty collection
-  ASSERT_CONDITION(collection[7].daughters().empty() && collection[7].parents().empty(),
+  // checking with bool operator
+  ASSERT_CONDITION(!collection[7].daughters() || !collection[7].parents(),
                    "RelationRange of empty collection is not empty")
 
   // alternatively check if a loop is entered
@@ -96,12 +96,32 @@ void doTestExampleMC(ExampleMCCollection const& collection) {
     ASSERT_EQUAL(p.PDG(), expectedPDG[index], "ExampleMC daughters range points to wrong particle (by PDG)")
     index++;
   }
+  // front and back, cbegin and cend
+  ASSERT_EQUAL(collection[2].daughters().front().PDG(), expectedPDG.front(),
+               "ExampleMC daughters front points to wrong particle (by PDG)")
+  ASSERT_EQUAL(collection[2].daughters().back().PDG(), expectedPDG.back(),
+               "ExampleMC daughters back points to wrong particle (by PDG)")
+  ASSERT_EQUAL(collection[2].daughters().cbegin()->PDG(), expectedPDG.front(),
+               "ExampleMC daughters cbegin points to wrong particle (by PDG)")
+  ASSERT_EQUAL((collection[2].daughters().cend() - 1)->PDG(), expectedPDG.back(),
+               "ExampleMC daughters cend points to wrong particle (by PDG)")
+
   expectedPDG = {8, 6};
   index = 0;
   for (const auto& p : collection[2].parents()) {
     ASSERT_EQUAL(p.PDG(), expectedPDG[index], "ExampleMC parents range points to wrong particle (by PDG)")
     index++;
   }
+
+  // front and back, cbegin and cend
+  ASSERT_EQUAL(collection[2].parents().front().PDG(), expectedPDG.front(),
+               "ExampleMC parents front points to wrong particle (by PDG)")
+  ASSERT_EQUAL(collection[2].parents().back().PDG(), expectedPDG.back(),
+               "ExampleMC parents back points to wrong particle (by PDG)")
+  ASSERT_EQUAL(collection[2].parents().cbegin()->PDG(), expectedPDG.front(),
+               "ExampleMC parents cbegin points to wrong particle (by PDG)")
+  ASSERT_EQUAL((collection[2].parents().cend() - 1)->PDG(), expectedPDG.back(),
+               "ExampleMC parents cend points to wrong particle (by PDG)")
 
   // Indexed access with range check
   const auto parents = collection[2].parents();
