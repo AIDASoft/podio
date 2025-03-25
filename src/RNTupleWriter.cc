@@ -9,6 +9,16 @@
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
+#include <ROOT/RVersion.hxx>
+
+// Adjust for the API stabilization of RNTuple
+// https://github.com/root-project/root/pull/17804
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
+using ROOT::RNTupleWriteOptions;
+#else
+using ROOT::Experimental::RNTupleWriteOptions;
+#endif
+
 namespace podio {
 
 RNTupleWriter::RNTupleWriter(const std::string& filename) :
@@ -96,7 +106,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
 
   auto entry = m_categories[category].writer->GetModel().CreateBareEntry();
 
-  ROOT::Experimental::RNTupleWriteOptions options;
+  RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
 
   for (const auto& [name, coll] : collections) {
