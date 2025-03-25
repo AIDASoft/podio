@@ -46,7 +46,7 @@ jobs:
           echo "::endgroup::"
           echo "::group::Build"
           ninja -k0
-          echo "::endgroup"
+          echo "::endgroup::"
           echo "::group::Julia StaticArrays Package Install"
           julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
