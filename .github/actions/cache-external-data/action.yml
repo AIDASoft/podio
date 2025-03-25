@@ -1,0 +1,12 @@
+name: "Cache External Data"
+description: "Caches external data that we fetch via CMake"
+inputs:
+  stack:
+    description: The storage key for the cache
+    required: True
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        echo "NOW=$(data +'%Y-%m-%d')" >> $GITHUB_ENV
