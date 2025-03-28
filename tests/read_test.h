@@ -129,7 +129,7 @@ void checkMCParticleCollection(const podio::Frame& event, const podio::version::
 
   // spot check some parent relations as well
   mcp = mcps[4];
-  ASSERT(mcp.parents().size() == 2, "fivth mc particle does not have the expected number of parents");
+  ASSERT(mcp.parents().size() == 2, "fifth mc particle does not have the expected number of parents");
   // Bugged writing before this version
   if (fileVersion >= podio::version::Version(1, 2, 0)) {
     ASSERT(mcp.parents(0) == mcps[0], "parent relation 0 for mcparticle 4 is not as expected");
@@ -137,7 +137,7 @@ void checkMCParticleCollection(const podio::Frame& event, const podio::version::
   }
 
   mcp = mcps[7];
-  ASSERT(mcp.parents().size() == 2, "eigth mc particle does not have the expected number of parents");
+  ASSERT(mcp.parents().size() == 2, "eighth mc particle does not have the expected number of parents");
   // Bugged writing before this version
   if (fileVersion >= podio::version::Version(1, 2, 1)) {
     ASSERT(mcp.parents(0) == mcps[2], "parent relation 0 for mcparticle 8 is not as expected");
@@ -149,7 +149,7 @@ void checkLinkCollection(const podio::Frame& event, const ExampleHitCollection& 
                          const ExampleClusterCollection& clusters) {
   const auto& links = event.get<TestLinkCollection>("links");
   const auto nLinks = std::min(clusters.size(), hits.size());
-  ASSERT(links.size() == nLinks, "LinksColelction does not have the expected size");
+  ASSERT(links.size() == nLinks, "LinksCollection does not have the expected size");
 
   int linkIndex = 0;
   for (auto link : links) {

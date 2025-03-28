@@ -64,7 +64,7 @@ void addInterfaceToMultiRelation(std::vector<InterfaceType>& relElements, const 
 /// This functionality has been lifted from the jinja2 templates, where we now
 /// only call it, because we need a template deduction context for making if
 /// constexpr work as expected, such that we can dispatch to different
-/// implementatoins depending on whether the relation is to an interface type or
+/// implementations depending on whether the relation is to an interface type or
 /// to a regular type.
 ///
 /// @note It is expected that the following pre-conditions are met:
@@ -120,7 +120,7 @@ void tryAssignTo(T, std::unique_ptr<InterfaceType>& relation, const podio::Colle
 /// Helper function for handling interface type relations in OneToOneRelations
 ///
 /// This function tries all types that are interfaced by the InterfaceType and
-/// that assigns the one thta matches to the relation. The main work happens in
+/// that assigns the one that matches to the relation. The main work happens in
 /// tryAssignTo, this simply wraps everything in a std::apply over all
 /// interfaced_types.
 ///
@@ -146,7 +146,7 @@ void addInterfaceToSingleRelation(std::unique_ptr<InterfaceType>& relation, cons
 /// This functionality has been lifted from the jinja2 templates, where we now
 /// only call it, because we need a template deduction context for making if
 /// constexpr work as expected, such that we can dispatch to different
-/// implementatoins depending on whether the relation is to an interface type or
+/// implementations depending on whether the relation is to an interface type or
 /// to a regular type.
 ///
 /// @note It is expected that the following pre-conditions are met:

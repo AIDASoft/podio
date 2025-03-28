@@ -31,7 +31,7 @@ If you want to build with RNTuple support, you will need 6.32 at least.
 Podio uses [Catch2 v3](https://github.com/catchorg/Catch2/tree/devel) for some
 unittests. By default it will look for a suitable external version of this
 library already installed (an available on the `CMAKE_PREFIX_PATH`) and use that
-if possible. In case no suitable version is found podio will fetch a copmatible
+if possible. In case no suitable version is found podio will fetch a compatible
 version and build that automatically. This behavior is controlled via the
 `USE_EXTERNAL_CATCH2` cmake variable. It defaults to `AUTO` but can also be set
 to `ON` or `OFF` to fully control the desired behavior.
