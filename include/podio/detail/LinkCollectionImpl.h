@@ -15,9 +15,11 @@
 #include "podio/ICollectionProvider.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/MaybeSharedPtr.h"
+#include "podio/utilities/StaticConcatenate.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <iterator>
+#include <string_view>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -211,16 +213,24 @@ public:
     return m_storage.getCollectionBuffers(m_isSubsetColl);
   }
 
+  constexpr static std::string_view typeName =
+      podio::utils::static_concatenate_v<podio::detail::link_coll_name_prefix, FromT::typeName,
+                                         podio::detail::link_name_infix, ToT::typeName,
+                                         podio::detail::link_name_suffix>;
+
+  constexpr static std::string_view valueTypeName = value_type::typeName;
+  constexpr static std::string_view dataTypeName = "podio::LinkData";
+
   const std::string_view getTypeName() const override {
-    return podio::detail::linkCollTypeName<FromT, ToT>();
+    return typeName;
   }
 
   const std::string_view getValueTypeName() const override {
-    return podio::detail::linkTypeName<FromT, ToT>();
+    return valueTypeName;
   }
 
   const std::string_view getDataTypeName() const override {
-    return "podio::LinkData";
+    return dataTypeName;
   }
 
   bool isSubsetCollection() const override {
@@ -336,7 +346,7 @@ namespace detail {
   template <typename FromT, typename ToT>
   podio::CollectionReadBuffers createLinkBuffers(bool subsetColl) {
     auto readBuffers = podio::CollectionReadBuffers{};
-    readBuffers.type = podio::detail::linkCollTypeName<FromT, ToT>();
+    readBuffers.type = podio::LinkCollection<FromT, ToT>::typeName;
     readBuffers.schemaVersion = podio::LinkCollection<FromT, ToT>::schemaVersion;
     readBuffers.data = subsetColl ? nullptr : new LinkDataContainer();
 

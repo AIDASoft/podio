@@ -21,7 +21,7 @@ public:
       SIOBlock(podio::detail::linkSIOName<FromT, ToT>(),
                sio::version::encode_version(LinkCollection<FromT, ToT>::schemaVersion, 0)) {
     podio::SIOBlockFactory::instance().registerBlockForCollection(
-        std::string(podio::detail::linkTypeName<FromT, ToT>()), this);
+        std::string(podio::LinkCollection<FromT, ToT>::valueTypeName), this);
   }
 
   LinkSIOBlock(const std::string& name) :
@@ -32,7 +32,7 @@ public:
     auto& bufferFactory = podio::CollectionBufferFactory::instance();
     // TODO:
     // - Error handling of empty optional
-    auto maybeBuffers = bufferFactory.createBuffers(std::string(podio::detail::linkCollTypeName<FromT, ToT>()),
+    auto maybeBuffers = bufferFactory.createBuffers(std::string(podio::LinkCollection<FromT, ToT>::typeName),
                                                     sio::version::major_version(version), m_subsetColl);
     m_buffers = maybeBuffers.value();
 
