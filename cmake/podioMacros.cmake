@@ -322,15 +322,17 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
     ${CORE_LIB}
     podio::podio
     ROOT::Core
+    ROOT::ROOTVecOps
     )
   target_include_directories(${dict_name} PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
-  PODIO_GENERATE_DICTIONARY(${dict_name} ${HEADERS} SELECTION ${selectionfile}
+  PODIO_GENERATE_DICTIONARY(${dict_name} ${HEADERS} "${ROOT_INCLUDE_DIRS}/ROOT/RVec.hxx" SELECTION ${selectionfile}
     OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dict_name}${CMAKE_SHARED_LIBRARY_SUFFIX}
     )
   set_target_properties(${dict_name}-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  target_compile_options(${dict_name} PRIVATE "-Wno-effc++")
   add_dependencies(${dict_name} ${CORE_LIB})
 endfunction()
 
