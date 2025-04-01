@@ -1,5 +1,5 @@
-#ifndef PODIO_TOOLS_ARGPARSEUTILS_H
-#define PODIO_TOOLS_ARGPARSEUTILS_H
+#ifndef PODIO_TOOLS_ARGPARSEUTILS_H // NOLINT(llvm-header-guard): folder structure not suitable
+#define PODIO_TOOLS_ARGPARSEUTILS_H // NOLINT(llvm-header-guard): folder structure not suitable
 
 #include <algorithm>
 #include <iostream>
