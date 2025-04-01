@@ -19,7 +19,7 @@ void printTable(const std::vector<std::tuple<Types...>>& rows, const std::vector
   // Transform all elements into strings first to determine column widths
   std::vector<std::vector<std::string>> stringRows;
   stringRows.reserve(rows.size());
-  std::transform(rows.begin(), rows.end(), std::back_inserter(stringRows), [&nCols](const auto& elem) {
+  std::ranges::transform(rows, std::back_inserter(stringRows), [&nCols](const auto& elem) {
     std::vector<std::string> strs;
     strs.reserve(nCols);
     std::apply([&strs](auto&&... args) { (strs.emplace_back(fmt::format("{}", args)), ...); }, elem);
