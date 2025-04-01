@@ -204,13 +204,22 @@ void printFrameDetailed(const podio::Frame& frame) {
 
 void printGeneralInfo(const podio::Reader& reader, const std::string& filename) {
   fmt::print("input file: {}\n", filename);
-  fmt::print("datamodel model definitions stored in this file: {}\n\n", reader.getAvailableDatamodels());
+  fmt::print("            (written with podio version: {})\n\n", reader.currentFileVersion());
+  fmt::print("datamodel model definitions stored in this file:\n");
+  for (const auto& modelName : reader.getAvailableDatamodels()) {
+    const auto modelVersion = reader.currentFileVersion(modelName);
+    if (modelVersion) {
+      fmt::print(" - {} ({})\n", modelName, modelVersion.value());
+    } else {
+      fmt::print(" - {}\n", modelName);
+    }
+  }
 
   std::vector<std::tuple<std::string, size_t>> rows{};
   for (const auto& cat : reader.getAvailableCategories()) {
     rows.emplace_back(cat, reader.getEntries(std::string(cat)));
   }
-  fmt::print("Frame categories in this file:\nName\tEntries\n");
+  fmt::print("\nFrame categories in this file:\n");
   printTable(rows, {"Name", "Entries"});
 }
 

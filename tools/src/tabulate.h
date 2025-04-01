@@ -42,7 +42,6 @@ void printTable(const std::vector<std::tuple<Types...>>& rows, const std::vector
     fmt::print("{:<{}}  ", headers[iCol], colWidths[iCol]);
   }
   fmt::print("\n");
-  std::cout << '\n';
   for (size_t iCol = 0; iCol < nCols; ++iCol) {
     fmt::print("{:->{}}  ", "", colWidths[iCol]);
   }
