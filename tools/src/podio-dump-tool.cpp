@@ -84,8 +84,8 @@ std::vector<size_t> parseEventRange(const std::string& evtRange) {
   } else {
     std::vector<size_t> events;
     events.reserve(splitRange.size());
-    std::transform(splitRange.begin(), splitRange.end(), std::back_inserter(events),
-                   [](const auto& elem) { return parseSizeOrExit(elem); });
+    std::ranges::transform(splitRange, std::back_inserter(events),
+                           [](const auto& elem) { return parseSizeOrExit(elem); });
 
     return events;
   }
