@@ -49,7 +49,7 @@ root_utils::ParamStorage<T>& RNTupleWriter::getParamStorage(CategoryInfo& catInf
 }
 
 template <typename T>
-void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo, REntry* entry) {
+void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo, ROOT::REntry* entry) {
   auto& paramStorage = getParamStorage<T>(catInfo);
   paramStorage = params.getKeysAndValues<T>();
   entry->BindRawPtr(root_utils::getGPKeyName<T>(), &paramStorage.keys);
@@ -90,7 +90,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   if (new_category) {
     // Now we have enough info to populate the rest
     auto model = createModels(collections);
-    catInfo.writer = ROOT::Experimental::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+    catInfo.writer = ROOT::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
 
     for (const auto& [name, coll] : collections) {
       catInfo.ids.emplace_back(coll->getID());
@@ -159,8 +159,9 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   m_categories[category].writer->Fill(*entry);
 }
 
-std::unique_ptr<RNTupleModel> RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& collections) {
-  auto model = RNTupleModel::CreateBare();
+std::unique_ptr<ROOT::RNTupleModel>
+RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& collections) {
+  auto model = ROOT::RNTupleModel::CreateBare();
 
   for (auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel
@@ -235,7 +236,7 @@ RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(const std::string& c
 }
 
 void RNTupleWriter::finish() {
-  auto metadata = RNTupleModel::Create();
+  auto metadata = ROOT::RNTupleModel::Create();
 
   auto podioVersion = podio::version::build_version;
   auto versionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
@@ -272,8 +273,7 @@ void RNTupleWriter::finish() {
   }
 
   metadata->Freeze();
-  auto metadataWriter =
-      ROOT::Experimental::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
+  auto metadataWriter = ROOT::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
 
   metadataWriter->Fill();
 
