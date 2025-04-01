@@ -14,8 +14,10 @@
 // Adjust for the API stabilization of RNTuple
 // https://github.com/root-project/root/pull/17804
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
+using ROOT::RFieldBase;
 using ROOT::RNTupleWriteOptions;
 #else
+using ROOT::Experimental::RFieldBase;
 using ROOT::Experimental::RNTupleWriteOptions;
 #endif
 
@@ -159,8 +161,6 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
 
 std::unique_ptr<RNTupleModel> RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& collections) {
   auto model = RNTupleModel::CreateBare();
-
-  using ROOT::Experimental::RFieldBase;
 
   for (auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel
