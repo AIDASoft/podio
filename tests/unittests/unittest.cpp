@@ -57,6 +57,7 @@
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/MutableExampleWithExternalExtraCode.h"
 #include "datamodel/StructWithExtraCode.h"
+#include "datamodel/datamodel.h"
 
 #include "podio/UserDataCollection.h"
 
@@ -1551,4 +1552,43 @@ TEST_CASE("Clone empty relations", "[relations][basics]") {
   REQUIRE(clonedImmCluster.Hits().size() == 1);
   clonedImmCluster.addHits(ExampleHit());
   REQUIRE(clonedImmCluster.Hits().size() == 2);
+}
+
+template <typename T>
+void addCollectionType(std::vector<std::string>& collectionTypes) {
+  collectionTypes.push_back(std::string(T::typeName));
+}
+
+template <typename... T>
+void addCollectionTypeAll(datamodel::datamodelTypeList<T...>&&, std::vector<std::string>& collectionTypes) {
+  (addCollectionType<T>(collectionTypes), ...);
+}
+
+TEST_CASE("Add type lists", "[basics]") {
+  std::vector<std::string> collectionTypes;
+  addCollectionTypeAll(datamodel::datamodelDataTypes{}, collectionTypes);
+  REQUIRE(collectionTypes ==
+          std::vector<std::string>{"EventInfoCollection",
+                                   "ExampleHitCollection",
+                                   "ExampleMCCollection",
+                                   "ExampleClusterCollection",
+                                   "ExampleReferencingTypeCollection",
+                                   "ExampleWithVectorMemberCollection",
+                                   "ExampleWithOneRelationCollection",
+                                   "ExampleWithArrayComponentCollection",
+                                   "ExampleWithComponentCollection",
+                                   "ExampleForCyclicDependency1Collection",
+                                   "ExampleForCyclicDependency2Collection",
+                                   "ex42::ExampleWithNamespaceCollection",
+                                   "ex42::ExampleWithARelationCollection",
+                                   "ExampleWithDifferentNamespaceRelationsCollection",
+                                   "ExampleWithArrayCollection",
+                                   "ExampleWithFixedWidthIntegersCollection",
+                                   "ExampleWithUserInitCollection",
+                                   "ExampleWithInterfaceRelationCollection",
+                                   "ExampleWithExternalExtraCodeCollection",
+                                   "nsp::EnergyInNamespaceCollection"});
+  std::vector<std::string> linkTypes;
+  addCollectionTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
+  REQUIRE(linkTypes == std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>", "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"});
 }
