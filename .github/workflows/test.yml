@@ -7,6 +7,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -22,13 +26,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v4
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
           echo "::group::Run CMake"
           export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
-          mkdir build install
+          mkdir -p build install
           cd build
           cmake -DENABLE_SIO=ON \
             -DENABLE_JULIA=ON \
@@ -43,7 +48,7 @@ jobs:
           echo "::endgroup::"
           echo "::group::Build"
           ninja -k0
-          echo "::endgroup"
+          echo "::endgroup::"
           echo "::group::Julia StaticArrays Package Install"
           julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
