@@ -4,7 +4,7 @@ target_link_libraries(podio-dump-tool PRIVATE podio::podio podio::podioIO fmt::f
 install(TARGETS podio-dump-tool EXPORT podioTargets DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump.py DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump-legacy DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/json-to-yaml DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-vis DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(ENABLE_RNTUPLE)
@@ -80,7 +80,7 @@ if(BUILD_TESTING)
     set(_name podio-dump-legacy_${name}_${version})
     ExternalData_Add_Test(legacy_test_cases
       NAME ${_name}
-      COMMAND ./podio-dump.py ${ARGN} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
+      COMMAND ./podio-dump-legacy ${ARGN} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
     )
     PODIO_SET_TEST_ENV(${_name})
 
