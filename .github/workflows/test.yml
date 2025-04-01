@@ -26,7 +26,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: key4hep/key4hep-actions/cache-external-data@cache-external-data
+    - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v4
       with:
         release-platform: ${{ matrix.LCG }}
