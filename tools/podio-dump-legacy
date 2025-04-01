@@ -169,14 +169,15 @@ def parse_entry_range(ent_string):
 if __name__ == "__main__":
     import argparse
 
-    _epilog = (
-        "NOTE: This is a legacy implementation in python. A newer version based on a c++ implementation is available. "
-        "That version is much faster, but does not handle pre-release version files."
+    _EPILOG = (
+        "NOTE: This is a legacy implementation in python. A newer version based on a c++ "
+        "implementation is available. That version is much faster, but does not handle pre-release"
+        " version files."
     )
 
     # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
     parser = argparse.ArgumentParser(
-        description="Dump contents of a podio file to stdout.", epilog=_epilog
+        description="Dump contents of a podio file to stdout.", epilog=_EPILOG
     )
     parser.add_argument("inputfile", help="Name of the file to dump content from")
     parser.add_argument(

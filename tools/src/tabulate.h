@@ -1,3 +1,6 @@
+#ifndef PODIO_TOOLS_TABULATE_H // NOLINT(llvm-header-guard): folder structure not suitable
+#define PODIO_TOOLS_TABULATE_H // NOLINT(llvm-header-guard): folder structure not suitable
+
 #include <fmt/core.h>
 
 #include <algorithm>
@@ -55,3 +58,5 @@ void printTable(const std::vector<std::tuple<Types...>>& rows, const std::vector
     fmt::print("\n");
   }
 }
+
+#endif // PODIO_TOOLS_TABULATE_H
