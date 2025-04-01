@@ -1590,5 +1590,7 @@ TEST_CASE("Add type lists", "[basics]") {
                                    "nsp::EnergyInNamespaceCollection"});
   std::vector<std::string> linkTypes;
   addCollectionTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
-  REQUIRE(linkTypes == std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>", "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"});
+  REQUIRE(linkTypes ==
+          std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
+                                   "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"});
 }
