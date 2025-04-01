@@ -136,23 +136,25 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
 }
 
 template <typename T>
-std::string getTypeString() {
+consteval const std::string_view getTypeString() {
+  using namespace std::string_view_literals;
   if constexpr (std::is_same_v<T, int>) {
-    return "int";
+    return "int"sv;
   } else if constexpr (std::is_same_v<T, float>) {
-    return "float";
+    return "float"sv;
   } else if constexpr (std::is_same_v<T, double>) {
-    return "double";
+    return "double"sv;
   } else if constexpr (std::is_same_v<T, std::string>) {
-    return "std::string";
+    return "std::string"sv;
   }
 
-  return "unknown";
+  return "unknown"sv;
 }
 
 template <typename T>
-void getParameterOverview(const podio::Frame& frame, std::vector<std::tuple<std::string, std::string, size_t>>& rows) {
-  const auto typeString = getTypeString<T>();
+void getParameterOverview(const podio::Frame& frame,
+                          std::vector<std::tuple<std::string, std::string_view, size_t>>& rows) {
+  constexpr auto typeString = getTypeString<T>();
   for (const auto& parKey : podio::utils::sortAlphabeticaly(frame.getParameterKeys<T>())) {
     rows.emplace_back(parKey, typeString, frame.getParameter<std::vector<T>>(parKey)->size());
   }
@@ -172,7 +174,7 @@ void printFrameOverview(const podio::Frame& frame) {
   printTable(rows, {"Name", "ValueType", "Size", "ID"});
 
   fmt::println("\nParameters:");
-  std::vector<std::tuple<std::string, std::string, size_t>> paramRows{};
+  std::vector<std::tuple<std::string, std::string_view, size_t>> paramRows{};
   getParameterOverview<int>(frame, paramRows);
   getParameterOverview<float>(frame, paramRows);
   getParameterOverview<double>(frame, paramRows);
