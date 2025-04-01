@@ -36,7 +36,7 @@ jobs:
           release-platform: LCG_106b/x86_64-el9-${{ matrix.compiler }}-opt
           run: |
             echo "::group::Run CMake"
-            mkdir build
+            mkdir -p build
             cd build
             cmake -DCMAKE_BUILD_TYPE=Debug \
               -DUSE_SANITIZER=${{ matrix.sanitizer }} \

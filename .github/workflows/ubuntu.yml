@@ -26,7 +26,7 @@ jobs:
         run: |
           echo "::group::Run CMake"
           export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
-          mkdir build install
+          mkdir -p build install
           cd build
           cmake -DENABLE_SIO=ON \
             -DENABLE_JULIA=ON \

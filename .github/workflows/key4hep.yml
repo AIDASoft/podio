@@ -26,7 +26,7 @@ jobs:
         view-path: /cvmfs/${{ matrix.release }}
         run: |
           echo "::group::Run CMake"
-          mkdir build install
+          mkdir -p build install
           cd build
           cmake -DENABLE_SIO=ON \
             -DENABLE_JULIA=OFF \
