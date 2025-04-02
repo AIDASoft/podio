@@ -280,7 +280,7 @@ concept CollectionType = requires(T t, const T ct) {
   typename T::reverse_iterator;
   requires std::random_access_iterator<typename T::reverse_iterator>;
   // member functions
-  { t.create() } -> std::convertible_to<typename T::mutable_type>;
+  requires std::same_as<std::remove_cvref_t<decltype(t.create())>, typename T::mutable_type>;
   { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::mutable_type>>>()) };
   { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::value_type>>>()) };
   { t.begin() } -> std::same_as<typename T::iterator>;
@@ -295,10 +295,14 @@ concept CollectionType = requires(T t, const T ct) {
   { t.rend() } -> std::same_as<typename T::reverse_iterator>;
   { t.crend() } -> std::same_as<typename T::const_reverse_iterator>;
   { ct.rend() } -> std::same_as<typename T::const_reverse_iterator>;
-  { t[std::declval<typename T::size_type>()] } -> std::convertible_to<typename T::mutable_type>;
-  { ct[std::declval<typename T::size_type>()] } -> std::convertible_to<typename T::value_type>;
-  { t.at(std::declval<typename T::size_type>()) } -> std::convertible_to<typename T::mutable_type>;
-  { ct.at(std::declval<typename T::size_type>()) } -> std::convertible_to<typename T::value_type>;
+  requires std::same_as<std::remove_cvref_t<decltype(t[std::declval<typename T::size_type>()])>,
+                        typename T::mutable_type>;
+  requires std::same_as<std::remove_cvref_t<decltype(ct[std::declval<typename T::size_type>()])>,
+                        typename T::value_type>;
+  requires std::same_as<std::remove_cvref_t<decltype(t.at(std::declval<typename T::size_type>()))>,
+                        typename T::mutable_type>;
+  requires std::same_as<std::remove_cvref_t<decltype(ct.at(std::declval<typename T::size_type>()))>,
+                        typename T::value_type>;
 };
 
 namespace utils {
