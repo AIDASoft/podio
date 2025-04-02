@@ -257,12 +257,12 @@ concept CollectionType = requires(T t, const T ct) {
   requires std::move_constructible<T>;
   requires std::ranges::random_access_range<T>;
   // typeName's
-  // { T::typeName } -> std::convertible_to<std::string_view>;
-  // { std::bool_constant<(T::typeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
-  // { T::valueTypeName } -> std::convertible_to<std::string_view>;
-  // { std::bool_constant<(T::valueTypeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
-  // { T::dataTypeName } -> std::convertible_to<std::string_view>;
-  // { std::bool_constant<(T::dataTypeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
+  { T::typeName } -> std::convertible_to<std::string_view>;
+  { std::bool_constant<(T::typeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
+  { T::valueTypeName } -> std::convertible_to<std::string_view>;
+  { std::bool_constant<(T::valueTypeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
+  { T::dataTypeName } -> std::convertible_to<std::string_view>;
+  { std::bool_constant<(T::dataTypeName, true)>() } -> std::same_as<std::true_type>; // ~is annotated with constexpr
   // typedefs
   typename T::value_type;
   typename T::mutable_type;
