@@ -254,7 +254,7 @@ concept CollectionType = requires(T t, const T ct) {
   requires std::default_initializable<T>;
   requires std::destructible<T>;
   requires std::movable<T>;
-  requires std::move_constructible<T>;
+  requires !std::copyable<T>;
   requires std::ranges::random_access_range<T>;
   // typeName's
   { T::typeName } -> std::convertible_to<std::string_view>;
