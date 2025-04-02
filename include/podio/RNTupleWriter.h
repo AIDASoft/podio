@@ -10,10 +10,19 @@
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleWriter.hxx>
+#include <ROOT/RVersion.hxx>
 
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
+namespace ROOT {
+using REntry = ROOT::Experimental::REntry;
+using RNTupleModel = ROOT::Experimental::RNTupleModel;
+using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
+} // namespace ROOT
+#endif
 
 namespace podio {
 
@@ -98,12 +107,11 @@ public:
   checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
 
 private:
-  std::unique_ptr<ROOT::Experimental::RNTupleModel>
-  createModels(const std::vector<root_utils::StoreCollection>& collections);
+  std::unique_ptr<ROOT::RNTupleModel> createModels(const std::vector<root_utils::StoreCollection>& collections);
 
   /// Helper struct to group all the necessary information for one category.
   struct CategoryInfo {
-    std::unique_ptr<ROOT::Experimental::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
+    std::unique_ptr<ROOT::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
 
     // The following are assumed to run in parallel!
     std::vector<uint32_t> ids{};                  ///< The ids of all collections
@@ -122,7 +130,7 @@ private:
   CategoryInfo& getCategoryInfo(const std::string& category);
 
   template <typename T>
-  void fillParams(const GenericParameters& params, CategoryInfo& catInfo, ROOT::Experimental::REntry* entry);
+  void fillParams(const GenericParameters& params, CategoryInfo& catInfo, ROOT::REntry* entry);
 
   template <typename T>
   root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
