@@ -13,7 +13,7 @@ namespace podio {
 namespace detail {
 
   constexpr std::string_view link_coll_name_prefix = "podio::LinkCollection<";
-  constexpr std::string_view link_name_prefix = "podio::LinkCollection<";
+  constexpr std::string_view link_name_prefix = "podio::Link<";
   constexpr std::string_view link_name_infix = ",";
   constexpr std::string_view link_name_suffix = ">";
 
