@@ -60,22 +60,29 @@ auto getArgumentValueOrExit(const std::vector<std::string>& argv, std::vector<st
   return argv[index + 1];
 }
 
-std::vector<size_t> parseEventRange(const std::string& evtRange) {
-  const auto splitRange = splitString(evtRange, ',');
-  const auto parseError = [&evtRange]() {
-    fmt::println(stderr, "'{}' canot be parsed into a list of entries", evtRange);
+std::vector<size_t> parseEventRange(const std::string_view evtRange) {
+  auto parseError = [&evtRange]() {
+    fmt::println(stderr, "'{}' cannot be parsed into a list of entries", evtRange);
     std::exit(1);
   };
 
-  if (splitRange.size() == 1) {
-    const auto colonSplitRange = splitString(evtRange, ':');
-    if (colonSplitRange.size() == 1) {
-      return {parseSizeOrExit(splitRange[0])};
-    } else if (colonSplitRange.size() == 2) {
-      // we have two numbers signifying an inclusive range
-      const auto start = parseSizeOrExit(colonSplitRange[0]);
-      const auto end = parseSizeOrExit(colonSplitRange[1]);
-      std::vector<size_t> events(end - start + 1);
+  // Split by ',' and transform into a range of string views
+  auto splitRange = evtRange | std::views::split(',') |
+      std::views::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+
+  if (std::ranges::distance(splitRange) == 1) {
+    // Only one entry, check if it's a range (start:end)
+    auto colonSplitRange = evtRange | std::views::split(':') |
+        std::views::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+
+    const auto it = std::ranges::begin(colonSplitRange);
+
+    if (std::ranges::distance(colonSplitRange) == 1) {
+      return {parseSizeOrExit(*it)};
+    } else if (std::ranges::distance(colonSplitRange) == 2) {
+      size_t start = parseSizeOrExit(*it);
+      size_t stop = parseSizeOrExit(*std::ranges::next(it));
+      std::vector<size_t> events(stop - start + 1);
       std::iota(events.begin(), events.end(), start);
       return events;
     } else {
@@ -83,10 +90,8 @@ std::vector<size_t> parseEventRange(const std::string& evtRange) {
     }
   } else {
     std::vector<size_t> events;
-    events.reserve(splitRange.size());
-    std::ranges::transform(splitRange, std::back_inserter(events),
-                           [](const auto& elem) { return parseSizeOrExit(elem); });
-
+    events.reserve(std::ranges::distance(splitRange));
+    std::ranges::transform(splitRange, std::back_inserter(events), parseSizeOrExit);
     return events;
   }
 
