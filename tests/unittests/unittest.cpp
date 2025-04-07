@@ -1594,14 +1594,14 @@ TEST_CASE("Add type lists", "[basics]") {
   std::vector<std::string> linkTypes;
   addTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
   REQUIRE_THAT(linkTypes,
-               UnorderedEquals(std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
-                                                        "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"}));
+               UnorderedEquals(std::vector<std::string>{"podio::Link<ExampleHit,ExampleCluster>",
+                                                        "podio::Link<ExampleCluster,TypeWithEnergy>"}));
 
   std::vector<std::string> interfaceTypes;
   addTypeAll(datamodel::datamodelInterfaceTypes{}, interfaceTypes);
   REQUIRE_THAT(linkTypes,
-               UnorderedEquals(std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
-                                                        "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"}));
+               UnorderedEquals(std::vector<std::string>{"podio::Link<ExampleHit,ExampleCluster>",
+                                                        "podio::Link<ExampleCluster,TypeWithEnergy>"}));
 
   std::vector<std::string> extensionDataTypes;
   addTypeAll(extension_model::extension_modelDataTypes{}, extensionDataTypes);
