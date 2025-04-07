@@ -540,6 +540,7 @@ have resolvable schema evolution incompatibilities:"
                     "package_name": self.package_name,
                     "datatypes": self.datamodel.datatypes,
                     "links": self.datamodel.links,
+                    "interfaces": self.datamodel.interfaces,
                 },
             ),
         )

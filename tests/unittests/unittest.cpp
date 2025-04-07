@@ -1556,54 +1556,59 @@ TEST_CASE("Clone empty relations", "[relations][basics]") {
 }
 
 template <typename T>
-void addCollectionType(std::vector<std::string>& collectionTypes) {
+void addType(std::vector<std::string>& collectionTypes) {
   collectionTypes.push_back(std::string(T::typeName));
 }
 
 template <typename... T>
-void addCollectionTypeAll(podio::utils::TypeList<T...>&&, std::vector<std::string>& collectionTypes) {
-  (addCollectionType<T>(collectionTypes), ...);
+void addTypeAll(podio::utils::TypeList<T...>&&, std::vector<std::string>& collectionTypes) {
+  (addType<T>(collectionTypes), ...);
 }
 
 TEST_CASE("Add type lists", "[basics]") {
   using Catch::Matchers::UnorderedEquals;
 
   std::vector<std::string> collectionTypes;
-  addCollectionTypeAll(datamodel::datamodelDataTypes{}, collectionTypes);
+  addTypeAll(datamodel::datamodelDataTypes{}, collectionTypes);
   REQUIRE_THAT(collectionTypes,
-               UnorderedEquals(std::vector<std::string>{"EventInfoCollection",
-                                                        "ExampleHitCollection",
-                                                        "ExampleMCCollection",
-                                                        "ExampleClusterCollection",
-                                                        "ExampleReferencingTypeCollection",
-                                                        "ExampleWithVectorMemberCollection",
-                                                        "ExampleWithOneRelationCollection",
-                                                        "ExampleWithArrayComponentCollection",
-                                                        "ExampleWithComponentCollection",
-                                                        "ExampleForCyclicDependency1Collection",
-                                                        "ExampleForCyclicDependency2Collection",
-                                                        "ex42::ExampleWithNamespaceCollection",
-                                                        "ex42::ExampleWithARelationCollection",
-                                                        "ExampleWithDifferentNamespaceRelationsCollection",
-                                                        "ExampleWithArrayCollection",
-                                                        "ExampleWithFixedWidthIntegersCollection",
-                                                        "ExampleWithUserInitCollection",
-                                                        "ExampleWithInterfaceRelationCollection",
-                                                        "ExampleWithExternalExtraCodeCollection",
-                                                        "nsp::EnergyInNamespaceCollection"}));
+               UnorderedEquals(std::vector<std::string>{"EventInfo",
+                                                        "ExampleHit",
+                                                        "ExampleMC",
+                                                        "ExampleCluster",
+                                                        "ExampleReferencingType",
+                                                        "ExampleWithVectorMember",
+                                                        "ExampleWithOneRelation",
+                                                        "ExampleWithArrayComponent",
+                                                        "ExampleWithComponent",
+                                                        "ExampleForCyclicDependency1",
+                                                        "ExampleForCyclicDependency2",
+                                                        "ex42::ExampleWithNamespace",
+                                                        "ex42::ExampleWithARelation",
+                                                        "ExampleWithDifferentNamespaceRelations",
+                                                        "ExampleWithArray",
+                                                        "ExampleWithFixedWidthIntegers",
+                                                        "ExampleWithUserInit",
+                                                        "ExampleWithInterfaceRelation",
+                                                        "ExampleWithExternalExtraCode",
+                                                        "nsp::EnergyInNamespace"}));
   std::vector<std::string> linkTypes;
-  addCollectionTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
+  addTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
+  REQUIRE_THAT(linkTypes,
+               UnorderedEquals(std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
+                                                        "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"}));
+
+  std::vector<std::string> interfaceTypes;
+  addTypeAll(datamodel::datamodelInterfaceTypes{}, interfaceTypes);
   REQUIRE_THAT(linkTypes,
                UnorderedEquals(std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
                                                         "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"}));
 
   std::vector<std::string> extensionDataTypes;
-  addCollectionTypeAll(extension_model::extension_modelDataTypes{}, extensionDataTypes);
+  addTypeAll(extension_model::extension_modelDataTypes{}, extensionDataTypes);
   REQUIRE_THAT(extensionDataTypes,
-               UnorderedEquals(std::vector<std::string>{"extension::ContainedTypeCollection",
-                                                        "extension::ExternalComponentTypeCollection",
-                                                        "extension::ExternalRelationTypeCollection"}));
+               UnorderedEquals(std::vector<std::string>{"extension::ContainedType", "extension::ExternalComponentType",
+                                                        "extension::ExternalRelationType"}));
   std::vector<std::string> extensionLinkTypes;
-  addCollectionTypeAll(extension_model::extension_modelLinkTypes{}, extensionLinkTypes);
+  addTypeAll(extension_model::extension_modelLinkTypes{}, extensionLinkTypes);
   REQUIRE_THAT(extensionLinkTypes, UnorderedEquals(std::vector<std::string>{}));
 }
