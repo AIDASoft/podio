@@ -22,7 +22,7 @@ struct fmt::formatter<podio::version::Version> : ostream_formatter {};
 struct ParsedArgs {
   std::string inputFile{};
   std::string category{"events"};
-  std::vector<size_t> events = std::vector<size_t>(1, 0);
+  std::vector<size_t> events{0};
   std::string dumpEDM{};
   bool detailed{false};
 };
