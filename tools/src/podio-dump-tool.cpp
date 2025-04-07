@@ -13,8 +13,11 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <ranges>
 #include <string>
 #include <tuple>
+
+namespace rv = std::ranges::views;
 
 template <>
 struct fmt::formatter<podio::version::Version> : ostream_formatter {};
@@ -67,13 +70,13 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
   };
 
   // Split by ',' and transform into a range of string views
-  auto splitRange = evtRange | std::views::split(',') |
-      std::views::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+  auto splitRange = evtRange | rv::split(',') |
+      rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
 
   if (std::ranges::distance(splitRange) == 1) {
     // Only one entry, check if it's a range (start:end)
-    auto colonSplitRange = evtRange | std::views::split(':') |
-        std::views::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+    auto colonSplitRange = evtRange | rv::split(':') |
+        rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
 
     const auto it = std::ranges::begin(colonSplitRange);
 
