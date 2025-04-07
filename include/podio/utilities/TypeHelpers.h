@@ -246,6 +246,11 @@ class CollectionBase;
 template <typename T>
 concept CollectionType = std::is_base_of_v<CollectionBase, T>;
 
+namespace utils {
+  template <typename... T>
+  struct TypeList {};
+} // namespace utils
+
 } // namespace podio
 
 #endif // PODIO_UTILITIES_TYPEHELPERS_H

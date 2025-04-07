@@ -58,6 +58,7 @@
 #include "datamodel/MutableExampleWithExternalExtraCode.h"
 #include "datamodel/StructWithExtraCode.h"
 #include "datamodel/datamodel.h"
+#include "extension_model/extension_model.h"
 
 #include "podio/UserDataCollection.h"
 
@@ -1560,7 +1561,7 @@ void addCollectionType(std::vector<std::string>& collectionTypes) {
 }
 
 template <typename... T>
-void addCollectionTypeAll(datamodel::datamodelTypeList<T...>&&, std::vector<std::string>& collectionTypes) {
+void addCollectionTypeAll(podio::utils::TypeList<T...>&&, std::vector<std::string>& collectionTypes) {
   (addCollectionType<T>(collectionTypes), ...);
 }
 
@@ -1595,4 +1596,14 @@ TEST_CASE("Add type lists", "[basics]") {
   REQUIRE_THAT(linkTypes,
                UnorderedEquals(std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
                                                         "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"}));
+
+  std::vector<std::string> extensionDataTypes;
+  addCollectionTypeAll(extension_model::extension_modelDataTypes{}, extensionDataTypes);
+  REQUIRE_THAT(extensionDataTypes,
+               UnorderedEquals(std::vector<std::string>{"extension::ContainedTypeCollection",
+                                                        "extension::ExternalComponentTypeCollection",
+                                                        "extension::ExternalRelationTypeCollection"}));
+  std::vector<std::string> extensionLinkTypes;
+  addCollectionTypeAll(extension_model::extension_modelLinkTypes{}, extensionLinkTypes);
+  REQUIRE_THAT(extensionLinkTypes, UnorderedEquals(std::vector<std::string>{}));
 }

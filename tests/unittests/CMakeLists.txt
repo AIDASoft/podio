@@ -41,7 +41,7 @@ endif()
 
 find_package(Threads REQUIRED)
 add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp)
-target_link_libraries(unittest_podio PUBLIC TestDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
+target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 if (ENABLE_SIO)
   target_link_libraries(unittest_podio PRIVATE podio::podioSioIO)
 endif()

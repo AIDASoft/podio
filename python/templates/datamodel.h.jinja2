@@ -3,22 +3,21 @@
 #ifndef {{ package_name.upper() }}_{{ package_name }}_H
 #define {{ package_name.upper() }}_{{ package_name }}_H
 
+#include "podio/utilities/TypeHelpers.h"
+
 {% for name in includes %}
 #include "{{ incfolder }}{{ name }}"
 {% endfor %}
 
 namespace {{ package_name }} {
 
-template <typename... Types>
-struct {{ package_name }}TypeList {};
-
-using {{ package_name }}DataTypes = {{ package_name }}TypeList<
+using {{ package_name }}DataTypes = podio::utils::TypeList<
 {% for name in datatypes %}
   {{ name }}Collection{% if not loop.last %},{% endif %}
 {% endfor %}
 >;
 
-using {{ package_name }}LinkTypes = {{ package_name }}TypeList<
+using {{ package_name }}LinkTypes = podio::utils::TypeList<
 {% for name in links %}
   {{ name }}Collection{% if not loop.last %},{% endif %}
 {% endfor %}
