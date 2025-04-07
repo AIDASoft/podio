@@ -32,23 +32,17 @@ inline std::vector<std::string> splitString(const std::string& str, const char d
 }
 
 inline size_t parseSizeOrExit(const std::string& str) {
-  const auto parseError = [&str]() {
-    std::cerr << "'" << str << "' cannot be parsed into an integer number" << std::endl;
-    std::exit(1);
-  };
-
   try {
     std::size_t pos{};
-    auto number = std::stoll(str, &pos);
+    const auto number = std::stoull(str, &pos);
     if (pos != str.size()) {
       throw std::invalid_argument("");
     }
     return number;
-  } catch (const std::invalid_argument& err) {
-    parseError();
+  } catch (const std::invalid_argument&) {
+    std::cerr << "'" << str << "' cannot be parsed into an integer number" << std::endl;
+    std::exit(1);
   }
-
-  return -1;
 }
 
 #endif // PODIO_TOOLS_ARGPARSEUTILS_H
