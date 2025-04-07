@@ -64,8 +64,8 @@ auto getArgumentValueOrExit(const std::vector<std::string>& argv, std::vector<st
 }
 
 std::vector<size_t> parseEventRange(const std::string_view evtRange) {
-  auto parseError = [&evtRange]() {
-    fmt::println(stderr, "'{}' cannot be parsed into a list of entries", evtRange);
+  auto parseError = [evtRange]() {
+    fmt::println(stderr, "error: argument -e/--entries: '{}' cannot be parsed into a list of entries", evtRange);
     std::exit(1);
   };
 
@@ -79,12 +79,13 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
         rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
 
     const auto it = std::ranges::begin(colonSplitRange);
+    const auto nextIt = std::ranges::next(it);
 
     if (std::ranges::distance(colonSplitRange) == 1) {
       return {parseSizeOrExit(*it)};
-    } else if (std::ranges::distance(colonSplitRange) == 2) {
+    } else if (std::ranges::distance(colonSplitRange) == 2 && !(*nextIt).empty()) {
       size_t start = parseSizeOrExit(*it);
-      size_t stop = parseSizeOrExit(*std::ranges::next(it));
+      size_t stop = parseSizeOrExit(*nextIt);
       std::vector<size_t> events(stop - start + 1);
       std::iota(events.begin(), events.end(), start);
       return events;
