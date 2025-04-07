@@ -89,6 +89,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_rntuple
       read_interface_rntuple
       selected_colls_roundtrip_rntuple
+
+      podio-dump-rntuple
+      podio-dump-detailed-rntuple
+
+      datamodel_def_store_roundtrip_rntuple
+      datamodel_def_store_roundtrip_rntuple_extension
     )
   endif()
 
@@ -101,6 +107,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       write_interface_rntuple
       read_interface_rntuple
       selected_colls_roundtrip_rntuple
+
+      podio-dump-rntuple
+      podio-dump-detailed-rntuple
+
+      datamodel_def_store_roundtrip_rntuple
+      datamodel_def_store_roundtrip_rntuple_extension
     )
 
   endif()
