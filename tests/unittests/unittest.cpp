@@ -1565,32 +1565,34 @@ void addCollectionTypeAll(datamodel::datamodelTypeList<T...>&&, std::vector<std:
 }
 
 TEST_CASE("Add type lists", "[basics]") {
+  using Catch::Matchers::UnorderedEquals;
+
   std::vector<std::string> collectionTypes;
   addCollectionTypeAll(datamodel::datamodelDataTypes{}, collectionTypes);
-  REQUIRE(collectionTypes ==
-          std::vector<std::string>{"EventInfoCollection",
-                                   "ExampleHitCollection",
-                                   "ExampleMCCollection",
-                                   "ExampleClusterCollection",
-                                   "ExampleReferencingTypeCollection",
-                                   "ExampleWithVectorMemberCollection",
-                                   "ExampleWithOneRelationCollection",
-                                   "ExampleWithArrayComponentCollection",
-                                   "ExampleWithComponentCollection",
-                                   "ExampleForCyclicDependency1Collection",
-                                   "ExampleForCyclicDependency2Collection",
-                                   "ex42::ExampleWithNamespaceCollection",
-                                   "ex42::ExampleWithARelationCollection",
-                                   "ExampleWithDifferentNamespaceRelationsCollection",
-                                   "ExampleWithArrayCollection",
-                                   "ExampleWithFixedWidthIntegersCollection",
-                                   "ExampleWithUserInitCollection",
-                                   "ExampleWithInterfaceRelationCollection",
-                                   "ExampleWithExternalExtraCodeCollection",
-                                   "nsp::EnergyInNamespaceCollection"});
+  REQUIRE_THAT(collectionTypes,
+               UnorderedEquals(std::vector<std::string>{"EventInfoCollection",
+                                                        "ExampleHitCollection",
+                                                        "ExampleMCCollection",
+                                                        "ExampleClusterCollection",
+                                                        "ExampleReferencingTypeCollection",
+                                                        "ExampleWithVectorMemberCollection",
+                                                        "ExampleWithOneRelationCollection",
+                                                        "ExampleWithArrayComponentCollection",
+                                                        "ExampleWithComponentCollection",
+                                                        "ExampleForCyclicDependency1Collection",
+                                                        "ExampleForCyclicDependency2Collection",
+                                                        "ex42::ExampleWithNamespaceCollection",
+                                                        "ex42::ExampleWithARelationCollection",
+                                                        "ExampleWithDifferentNamespaceRelationsCollection",
+                                                        "ExampleWithArrayCollection",
+                                                        "ExampleWithFixedWidthIntegersCollection",
+                                                        "ExampleWithUserInitCollection",
+                                                        "ExampleWithInterfaceRelationCollection",
+                                                        "ExampleWithExternalExtraCodeCollection",
+                                                        "nsp::EnergyInNamespaceCollection"}));
   std::vector<std::string> linkTypes;
   addCollectionTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
-  REQUIRE(linkTypes ==
-          std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
-                                   "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"});
+  REQUIRE_THAT(linkTypes,
+               UnorderedEquals(std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
+                                                        "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"}));
 }
