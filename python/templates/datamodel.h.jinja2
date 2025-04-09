@@ -3,8 +3,32 @@
 #ifndef {{ package_name.upper() }}_{{ package_name }}_H
 #define {{ package_name.upper() }}_{{ package_name }}_H
 
+#include "podio/utilities/TypeHelpers.h"
+
 {% for name in includes %}
 #include "{{ incfolder }}{{ name }}"
 {% endfor %}
+
+namespace {{ package_name }} {
+
+using {{ package_name }}DataTypes = podio::utils::TypeList<
+{% for name in datatypes %}
+  {{ name }}{% if not loop.last %},{% endif %}
+{% endfor %}
+>;
+
+using {{ package_name }}LinkTypes = podio::utils::TypeList<
+{% for name in links %}
+  {{ name }}{% if not loop.last %},{% endif %}
+{% endfor %}
+>;
+
+using {{ package_name }}InterfaceTypes = podio::utils::TypeList<
+{% for name in interfaces %}
+  {{ name }}{% if not loop.last %},{% endif %}
+{% endfor %}
+>;
+
+}
 
 #endif // {{ package_name.upper() }}_{{ package_name }}_H

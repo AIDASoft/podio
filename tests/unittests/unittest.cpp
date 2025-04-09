@@ -57,6 +57,8 @@
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/MutableExampleWithExternalExtraCode.h"
 #include "datamodel/StructWithExtraCode.h"
+#include "datamodel/datamodel.h"
+#include "extension_model/extension_model.h"
 
 #include "podio/UserDataCollection.h"
 
@@ -1551,4 +1553,62 @@ TEST_CASE("Clone empty relations", "[relations][basics]") {
   REQUIRE(clonedImmCluster.Hits().size() == 1);
   clonedImmCluster.addHits(ExampleHit());
   REQUIRE(clonedImmCluster.Hits().size() == 2);
+}
+
+template <typename T>
+void addType(std::vector<std::string>& collectionTypes) {
+  collectionTypes.push_back(std::string(T::typeName));
+}
+
+template <typename... T>
+void addTypeAll(podio::utils::TypeList<T...>&&, std::vector<std::string>& collectionTypes) {
+  (addType<T>(collectionTypes), ...);
+}
+
+TEST_CASE("Add type lists", "[basics][code-gen]") {
+  using Catch::Matchers::UnorderedEquals;
+
+  std::vector<std::string> collectionTypes;
+  addTypeAll(datamodel::datamodelDataTypes{}, collectionTypes);
+  REQUIRE_THAT(collectionTypes,
+               UnorderedEquals(std::vector<std::string>{"EventInfo",
+                                                        "ExampleHit",
+                                                        "ExampleMC",
+                                                        "ExampleCluster",
+                                                        "ExampleReferencingType",
+                                                        "ExampleWithVectorMember",
+                                                        "ExampleWithOneRelation",
+                                                        "ExampleWithArrayComponent",
+                                                        "ExampleWithComponent",
+                                                        "ExampleForCyclicDependency1",
+                                                        "ExampleForCyclicDependency2",
+                                                        "ex42::ExampleWithNamespace",
+                                                        "ex42::ExampleWithARelation",
+                                                        "ExampleWithDifferentNamespaceRelations",
+                                                        "ExampleWithArray",
+                                                        "ExampleWithFixedWidthIntegers",
+                                                        "ExampleWithUserInit",
+                                                        "ExampleWithInterfaceRelation",
+                                                        "ExampleWithExternalExtraCode",
+                                                        "nsp::EnergyInNamespace"}));
+  std::vector<std::string> linkTypes;
+  addTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
+  REQUIRE_THAT(linkTypes,
+               UnorderedEquals(std::vector<std::string>{"podio::Link<ExampleHit,ExampleCluster>",
+                                                        "podio::Link<ExampleCluster,TypeWithEnergy>"}));
+
+  std::vector<std::string> interfaceTypes;
+  addTypeAll(datamodel::datamodelInterfaceTypes{}, interfaceTypes);
+  REQUIRE_THAT(linkTypes,
+               UnorderedEquals(std::vector<std::string>{"podio::Link<ExampleHit,ExampleCluster>",
+                                                        "podio::Link<ExampleCluster,TypeWithEnergy>"}));
+
+  std::vector<std::string> extensionDataTypes;
+  addTypeAll(extension_model::extension_modelDataTypes{}, extensionDataTypes);
+  REQUIRE_THAT(extensionDataTypes,
+               UnorderedEquals(std::vector<std::string>{"extension::ContainedType", "extension::ExternalComponentType",
+                                                        "extension::ExternalRelationType"}));
+  std::vector<std::string> extensionLinkTypes;
+  addTypeAll(extension_model::extension_modelLinkTypes{}, extensionLinkTypes);
+  REQUIRE_THAT(extensionLinkTypes, UnorderedEquals(std::vector<std::string>{}));
 }
