@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""Tiny script to ingest a json string and dump it as a yaml string"""
+
+import sys
+import json
+import yaml
+
+
+def main():
+    """Main, read json from stdin and dump yaml to stdout"""
+    input_data = sys.stdin.read()
+    model_def = json.loads(input_data)
+    print(yaml.dump(model_def, sort_keys=False, default_flow_style=False))
+
+
+if __name__ == "__main__":
+    main()

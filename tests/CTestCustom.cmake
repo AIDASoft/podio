@@ -40,27 +40,16 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
     pyunittest
 
-    podio-dump-help
     podio-dump-root
     podio-dump-detailed-root
     podio-dump-legacy_root_v00-16-06
     podio-dump-legacy_root-detailed_v00-16-06
 
-    podio-dump-sio
-    podio-dump-detailed-sio
     podio-dump-legacy_sio_v00-16-06
     podio-dump-legacy_sio-detailed_v00-16-06
 
-    podio-dump-rntuple
-    podio-dump-detailed-rntuple
-
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
-    datamodel_def_store_roundtrip_sio
-    datamodel_def_store_roundtrip_sio_extension
-    datamodel_def_store_roundtrip_rntuple
-    datamodel_def_store_roundtrip_rntuple_extension
-
 
     write_old_data_root
     read_new_data_root
@@ -100,6 +89,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_rntuple
       read_interface_rntuple
       selected_colls_roundtrip_rntuple
+
+      podio-dump-rntuple
+      podio-dump-detailed-rntuple
+
+      datamodel_def_store_roundtrip_rntuple
+      datamodel_def_store_roundtrip_rntuple_extension
     )
   endif()
 
@@ -112,6 +107,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       write_interface_rntuple
       read_interface_rntuple
       selected_colls_roundtrip_rntuple
+
+      podio-dump-rntuple
+      podio-dump-detailed-rntuple
+
+      datamodel_def_store_roundtrip_rntuple
+      datamodel_def_store_roundtrip_rntuple_extension
     )
 
   endif()

@@ -21,7 +21,7 @@ OUTPUT_FOLDER=${INPUT_FILE}.dumped_${EDM_NAME}
 mkdir -p ${OUTPUT_FOLDER}
 
 # Dump the model to a yaml file
-${PODIO_BASE}/tools/podio-dump --dump-edm ${EDM_NAME} ${INPUT_FILE} > ${DUMPED_MODEL}
+${PODIO_BUILD_BASE}/tools/podio-dump --dump-edm ${EDM_NAME} ${INPUT_FILE} > ${DUMPED_MODEL}
 
 # Regenerate the code via the class generator and the freshly dumped model
 ${PODIO_BASE}/python/podio_class_generator.py \
