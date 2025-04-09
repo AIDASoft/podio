@@ -136,7 +136,7 @@ if(ENABLE_SIO)
     )
 
   PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" sio_selection.xml)
-  target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS} ${PODIO_FS_LIBS})
+  target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS})
   target_compile_definitions(podioSioIO PUBLIC PODIO_ENABLE_SIO=1)
 
   LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
