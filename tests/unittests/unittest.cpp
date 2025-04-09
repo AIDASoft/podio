@@ -1565,7 +1565,7 @@ void addTypeAll(podio::utils::TypeList<T...>&&, std::vector<std::string>& collec
   (addType<T>(collectionTypes), ...);
 }
 
-TEST_CASE("Add type lists", "[basics]") {
+TEST_CASE("Add type lists", "[basics][code-gen]") {
   using Catch::Matchers::UnorderedEquals;
 
   std::vector<std::string> collectionTypes;
