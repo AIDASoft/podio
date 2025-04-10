@@ -1,6 +1,7 @@
 #ifndef PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 #define PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 
+#include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/RootHelpers.h"
@@ -199,6 +200,10 @@ inline std::string subsetBranch(const std::string& name) {
   return name + "_objIdx";
 }
 
+inline std::string getStorageTypeName(const podio::CollectionBase* coll) {
+  return "std::vector<" + std::string(coll->getDataTypeName()) + ">";
+}
+
 /**
  * Reset all the branches that by getting them from the TTree again
  */
@@ -365,7 +370,7 @@ inline std::shared_ptr<podio::CollectionIDTable> makeCollIdTable(const std::vect
   ids.reserve(collInfo.size());
   std::vector<std::string> names{};
   names.reserve(collInfo.size());
-  for (const auto& [id, _1, _2, _3, name] : collInfo) {
+  for (const auto& [id, _1, _2, _3, name, _5] : collInfo) {
     ids.emplace_back(id);
     names.emplace_back(name);
   }

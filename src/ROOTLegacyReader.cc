@@ -178,7 +178,7 @@ unsigned ROOTLegacyReader::getEntries(const std::string& name) const {
 void ROOTLegacyReader::createCollectionBranches(const std::vector<root_utils::CollectionWriteInfo>& collInfo) {
   size_t collectionIndex{0};
 
-  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _] : collInfo) {
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _, __] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
     const auto name = m_table->name(collID).value();
