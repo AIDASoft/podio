@@ -13,8 +13,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        image: ["el9", "ubuntu2204"]
+        cvmfs_repo: ["sw.hsf.org", "sw-nightlies.hsf.org"]
         include:
-          - release: "sw-nightlies.hsf.org/key4hep"
+          - image: "ubuntu2404"
+            cvmfs_repo: "sw-nightlies.hsf.org"
 
     steps:
     - uses: actions/checkout@v4
@@ -22,8 +25,8 @@ jobs:
     - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v4
       with:
-        container: el9
-        view-path: /cvmfs/${{ matrix.release }}
+        container: ${{ matrix.image }}
+        view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
         run: |
           echo "::group::Run CMake"
           mkdir -p build install
