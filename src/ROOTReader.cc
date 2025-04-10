@@ -354,7 +354,7 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
   std::vector<detail::NamedCollInfo> storedClasses;
   storedClasses.reserve(collInfo.size());
 
-  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _] : collInfo) {
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _, __] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
     const auto name = idTable.name(collID).value();
@@ -406,7 +406,7 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
   std::vector<detail::NamedCollInfo> storedClasses;
   storedClasses.reserve(collInfo.size());
 
-  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _] : collInfo) {
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _, __] : collInfo) {
     // We only write collections that are in the collectionIDTable, so no need
     // to check here
     const auto name = idTable.name(collID).value();

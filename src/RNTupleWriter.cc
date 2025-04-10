@@ -96,7 +96,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     catInfo.collInfo.reserve(collections.size());
     for (const auto& [name, coll] : collections) {
       catInfo.collInfo.emplace_back(coll->getID(), std::string(coll->getTypeName()), coll->isSubsetCollection(),
-                                    coll->getSchemaVersion(), name);
+                                    coll->getSchemaVersion(), name, root_utils::getStorageTypeName(coll));
     }
   } else {
     if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
