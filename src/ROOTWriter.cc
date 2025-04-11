@@ -32,7 +32,6 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
   // Use the TTree as proxy here to decide whether this category has already
   // been initialized
   if (catInfo.tree == nullptr) {
-    catInfo.idTable = frame.getCollectionIDTableForWrite();
     catInfo.collsToWrite = podio::utils::sortAlphabeticaly(collsToWrite);
     catInfo.tree = new TTree(category.c_str(), (category + " data tree").c_str());
     catInfo.tree->SetDirectory(m_file.get());
@@ -54,11 +53,10 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
   // collections
   if (catInfo.branches.empty()) {
     initBranches(catInfo, collections, const_cast<podio::GenericParameters&>(frame.getParameters()));
-
   } else {
     // Make sure that the category contents are consistent with the initial
     // frame in the category
-    if (!root_utils::checkConsistentColls(catInfo.collsToWrite, collsToWrite)) {
+    if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
       throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.collsToWrite, collsToWrite));
     }
@@ -120,8 +118,8 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
     }
 
     catInfo.branches.emplace_back(std::move(branches));
-    catInfo.collInfo.emplace_back(catInfo.idTable.collectionID(name).value(), std::string(coll->getTypeName()),
-                                  coll->isSubsetCollection(), coll->getSchemaVersion());
+    catInfo.collInfo.emplace_back(coll->getID(), std::string(coll->getTypeName()), coll->isSubsetCollection(),
+                                  coll->getSchemaVersion(), name, root_utils::getStorageTypeName(coll));
   }
 
   fillParams(catInfo, parameters);
@@ -175,7 +173,6 @@ void ROOTWriter::finish() {
 
   // Store the collection id table and collection info for reading in the meta tree
   for (/*const*/ auto& [category, info] : m_categories) {
-    metaTree->Branch(root_utils::idTableName(category).c_str(), &info.idTable);
     metaTree->Branch(root_utils::collInfoName(category).c_str(), &info.collInfo);
   }
 
