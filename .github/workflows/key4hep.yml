@@ -27,6 +27,7 @@ jobs:
       with:
         container: ${{ matrix.image }}
         view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
+        ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
         run: |
           echo "::group::Run CMake"
           mkdir -p build install
