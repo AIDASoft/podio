@@ -82,11 +82,11 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
   for (auto& filename : filenames) {
     if (m_metadata_readers.find(filename) == m_metadata_readers.end()) {
-      m_metadata_readers[filename] = ROOT::Experimental::RNTupleReader::Open(root_utils::metaTreeName, filename);
+      m_metadata_readers[filename] = ROOT::RNTupleReader::Open(root_utils::metaTreeName, filename);
     }
   }
 
-  m_metadata = ROOT::Experimental::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
+  m_metadata = ROOT::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
 
   auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
   auto version = versionView(0);
@@ -116,7 +116,7 @@ unsigned RNTupleReader::getEntries(const std::string& name) {
     m_readerEntries[name].push_back(0);
     for (auto& filename : m_filenames) {
       try {
-        m_readers[name].emplace_back(ROOT::Experimental::RNTupleReader::Open(name, filename));
+        m_readers[name].emplace_back(ROOT::RNTupleReader::Open(name, filename));
         m_readerEntries[name].push_back(m_readerEntries[name].back() + m_readers[name].back()->GetNEntries());
       } catch (const RException& e) {
         std::cout << "Category " << name << " not found in file " << filename << std::endl;
