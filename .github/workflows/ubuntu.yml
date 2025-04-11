@@ -23,6 +23,7 @@ jobs:
     - uses: tmadlener/run-lcg-view@ccache
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-ubuntu-${{ matrix.LCG }}
         run: |
           echo "::group::Run CMake"
           export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"

@@ -33,6 +33,7 @@ jobs:
       - uses: tmadlener/run-lcg-view@ccache
         with:
           release-platform: ${{ matrix.LCG }}
+          ccache-key: ccache-edm4hep-${{ matrix.LCG }}
           run: |
             STARTDIR=$(pwd)
             echo "::group::Build Catch2"
