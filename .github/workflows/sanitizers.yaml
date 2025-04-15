@@ -33,7 +33,7 @@ jobs:
       - uses: key4hep/key4hep-actions/cache-external-data@main
       - uses: aidasoft/run-lcg-view@v4
         with:
-          release-platform: LCG_106b/x86_64-el9-${{ matrix.compiler }}-opt
+          release-platform: LCG_107/x86_64-el9-${{ matrix.compiler }}-opt
           run: |
             echo "::group::Run CMake"
             mkdir -p build
