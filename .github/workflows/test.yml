@@ -27,9 +27,10 @@ jobs:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: key4hep/key4hep-actions/cache-external-data@main
-    - uses: aidasoft/run-lcg-view@v4
+    - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-el9-${{ matrix.LCG }}
         run: |
           echo "::group::Run CMake"
           export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
@@ -41,6 +42,7 @@ jobs:
             -DENABLE_DATASOURCE=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=OFF \
             -DPODIO_USE_CLANG_FORMAT=AUTO \

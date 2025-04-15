@@ -7,23 +7,31 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        image: ["el9"] # , "ubuntu2204"]  # see https://github.com/AIDASoft/podio/issues/765
+        cvmfs_repo: ["sw.hsf.org", "sw-nightlies.hsf.org"]
         include:
-          - release: "sw-nightlies.hsf.org/key4hep"
+          - image: "ubuntu2404"
+            cvmfs_repo: "sw-nightlies.hsf.org"
 
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: key4hep/key4hep-actions/cache-external-data@main
-    - uses: aidasoft/run-lcg-view@v4
+    - uses: aidasoft/run-lcg-view@v5
       with:
-        container: el9
-        view-path: /cvmfs/${{ matrix.release }}
+        container: ${{ matrix.image }}
+        view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
+        ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
         run: |
           echo "::group::Run CMake"
           mkdir -p build install
@@ -33,6 +41,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=20 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DUSE_EXTERNAL_CATCH2=AUTO \
             -DENABLE_RNTUPLE=ON \
             -DENABLE_DATASOURCE=ON \

@@ -7,6 +7,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -30,9 +34,10 @@ jobs:
           path: catch2
           ref: v3.4.0
       - uses: cvmfs-contrib/github-action-cvmfs@v4
-      - uses: aidasoft/run-lcg-view@v4
+      - uses: aidasoft/run-lcg-view@v5
         with:
           release-platform: ${{ matrix.LCG }}
+          ccache-key: ccache-edm4hep-${{ matrix.LCG }}
           run: |
             STARTDIR=$(pwd)
             echo "::group::Build Catch2"
@@ -51,6 +56,7 @@ jobs:
               -DENABLE_RNTUPLE=ON \
               -DCMAKE_INSTALL_PREFIX=../install \
               -DCMAKE_CXX_STANDARD=20 \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
               -DUSE_EXTERNAL_CATCH2=ON \
               -DBUILD_TESTING=OFF\
@@ -68,6 +74,7 @@ jobs:
             mkdir build && cd build
             cmake -DCMAKE_CXX_STANDARD=20 \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DUSE_EXTERNAL_CATCH2=ON \
               -G Ninja ..
             ninja -k0
