@@ -15,13 +15,17 @@
 #include <ROOT/RNTupleReader.hxx>
 #include <RVersion.h>
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
-namespace ROOT {
-using RNTupleReader = ROOT::Experimental::RNTupleReader;
-} // namespace ROOT
-#endif
-
 namespace podio {
+
+/// Introduce a new namespace instead of potentially opening and polluting the
+/// ROOT namespace
+namespace root_compat {
+#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
+  using RNTupleReader = ROOT::Experimental::RNTupleReader;
+#else
+  using RNTupleReader = ROOT::RNTupleReader;
+#endif
+} // namespace root_compat
 
 /// The RNTupleReader can be used to read files that have been written with the
 /// RNTuple backend.
@@ -150,13 +154,13 @@ private:
   template <typename T>
   void readParams(const std::string& name, unsigned entNum, unsigned readerIndex, GenericParameters& params);
 
-  std::unique_ptr<ROOT::RNTupleReader> m_metadata{};
+  std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
 
   podio::version::Version m_fileVersion{};
   DatamodelDefinitionHolder m_datamodelHolder{};
 
-  std::unordered_map<std::string, std::vector<std::unique_ptr<ROOT::RNTupleReader>>> m_readers{};
-  std::unordered_map<std::string, std::unique_ptr<ROOT::RNTupleReader>> m_metadata_readers{};
+  std::unordered_map<std::string, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
+  std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
   std::unordered_map<std::string, unsigned> m_entries{};
