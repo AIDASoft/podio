@@ -27,7 +27,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: key4hep/key4hep-actions/cache-external-data@main
-    - uses: tmadlener/run-lcg-view@ccache
+    - uses: aidasoft/run-lcg-view@v5
       with:
         container: ${{ matrix.image }}
         view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
