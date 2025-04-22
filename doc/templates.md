@@ -124,22 +124,22 @@ Defined in [`python/generator_utils.py`](/python/generator_utils.py).
 The string representation gives the definition of the member, including a potentially present description string.
 In principle all members are accessible in the templates, however, the most important ones are:
 
-| field         | description                                                                                                                                                                 |
-|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`        | The name of the member                                                                                                                                                      |
-| `namespace`   | The (potentially empty) namespace of the member                                                                                                                             |
-| `bare_type`   | The type of the member without namespace                                                                                                                                    |
-| `full_type`   | The full, namespace qualified, type of the member, essentially `{{ namespace }}::{{ bare_type }}`                                                                           |
-| `description` | The (optional) description string of the member                                                                                                                             |
-| `is_builtin`  | Flag for indicating that a member is a builtin type                                                                                                                         |
-| `is_array`    | Flag for indicating that a member is a `std::array`                                                                                                                         |
-| `array_type`  | The type of the array if the member is a `std::array`                                                                                                                       |
-| `array_size`  | The size of the array if the member is a `std::array`                                                                                                                       |
-| `getter_name` | Method for generating the correct name for getter functions, depending on the `getSyntax` option in the yaml definition file.                                               |
-| `setter_name` | Method for generating the correct name for setter functions, depending on the `getSyntax` option in the yaml definition file and on whether the member is a relation or not |
-| `signature`   | The signature of a data member that can be used in function signatures, corresponds to `{{ full_type }} {{ name }}`                                                         |
-| `jl_imports`  | Import required for `StaticArrays: MVector`                                                                                                                                 |
-| `julia_type`  | Equivalent julia type for the c++ type                                                                                                                                      |
+| field         | description                                                                                                                                                                      |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`        | The name of the member                                                                                                                                                           |
+| `namespace`   | The (potentially empty) namespace of the member                                                                                                                                  |
+| `bare_type`   | The type of the member without namespace                                                                                                                                         |
+| `full_type`   | The full, namespace qualified, type of the member, essentially `{{ namespace }}::{{ bare_type }}`                                                                                |
+| `description` | The (optional) description string of the member                                                                                                                                  |
+| `is_builtin`  | Flag for indicating that a member is a builtin type                                                                                                                              |
+| `is_array`    | Flag for indicating that a member is a `std::array`                                                                                                                              |
+| `array_type`  | The type of the array if the member is a `std::array`                                                                                                                            |
+| `array_size`  | The size of the array if the member is a `std::array`                                                                                                                            |
+| `getter_name` | Method for generating the correct name for getter functions, depending on the `getSyntax` option in the yaml definition file.                                                    |
+| `setter_name` | Method for generating the correct name for setter functions, depending on the `getSyntax` option in the yaml definition file and on whether the member is a relation or not      |
+| `signature`   | The signature of a data member that can be used in function signatures, corresponds to `const {{ full_type }}& {{ name }}` if it is a builtin type, otherwise is passed by value |
+| `jl_imports`  | Import required for `StaticArrays: MVector`                                                                                                                                      |
+| `julia_type`  | Equivalent julia type for the c++ type                                                                                                                                           |
 
 ### `DataType`
 Defined in [`python/generator_utils.py`](/python/generator_utils.py).

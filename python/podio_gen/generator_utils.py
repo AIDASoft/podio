@@ -213,7 +213,7 @@ class MemberVariable:
     @property
     def signature(self):
         """Get the signature for this member variable to be used in function definitions"""
-        return f"const {self.full_type}{'&' if '::' in self.full_type and self.full_type.split('::', 1)[0] != 'std' else ''} {self.name}"
+        return f"const {self.full_type}{'' if self.is_builtin else '&'} {self.name}"
 
     @property
     def docstring(self):
