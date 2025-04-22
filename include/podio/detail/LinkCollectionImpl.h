@@ -359,7 +359,7 @@ namespace detail {
       }
     };
 
-    readBuffers.deleteBuffers = [](podio::CollectionReadBuffers& buffers) {
+    readBuffers.deleteBuffers = [](const podio::CollectionReadBuffers& buffers) {
       if (buffers.data) {
         // If we have data then we are not a subset collection and we have
         // to clean up all type erased buffers by casting them back to

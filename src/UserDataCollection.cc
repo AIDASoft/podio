@@ -34,7 +34,7 @@ namespace {
               [](podio::CollectionReadBuffers& buffers) {
                 buffers.data = podio::CollectionWriteBuffers::asVector<T>(buffers.data);
               },
-              [](podio::CollectionReadBuffers& buffers) { delete static_cast<std::vector<T>*>(buffers.data); }};
+              [](const podio::CollectionReadBuffers& buffers) { delete static_cast<std::vector<T>*>(buffers.data); }};
         });
 
     // For now passing the same schema version for from and current versions

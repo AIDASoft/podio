@@ -63,7 +63,7 @@ public:
     if (m_data) {
       m_data->clear();
     }
-    for (auto& pointer : m_refCollections) {
+    for (const auto& pointer : m_refCollections) {
       pointer->clear();
     }
     if (m_rel_from) {
@@ -80,14 +80,14 @@ public:
       m_rel_to->clear();
     }
 
-    for (auto& obj : entries) {
+    for (const auto& obj : entries) {
       delete obj;
     }
     entries.clear();
   }
 
   void prepareForWrite(bool isSubsetColl) {
-    for (auto& pointer : m_refCollections) {
+    for (const auto& pointer : m_refCollections) {
       pointer->clear();
     }
 
