@@ -32,7 +32,7 @@ public:
   {{ obj_type }}(const {{ obj_type }}&);
   /// constructor from ObjectID and {{ class.bare_type }}Data
   /// does not initialize the internal relation containers
-  {{ obj_type }}(const podio::ObjectID id, {{ class.bare_type }}Data data);
+  {{ obj_type }}(const podio::ObjectID& id, const {{ class.bare_type }}Data& data);
   /// No assignment operator
   {{ obj_type }}& operator=(const {{ obj_type }}&) = delete;
 {% if is_trivial_type %}
