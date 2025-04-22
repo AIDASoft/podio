@@ -137,7 +137,7 @@ In principle all members are accessible in the templates, however, the most impo
 | `array_size`  | The size of the array if the member is a `std::array`                                                                                                                            |
 | `getter_name` | Method for generating the correct name for getter functions, depending on the `getSyntax` option in the yaml definition file.                                                    |
 | `setter_name` | Method for generating the correct name for setter functions, depending on the `getSyntax` option in the yaml definition file and on whether the member is a relation or not      |
-| `signature`   | The signature of a data member that can be used in function signatures, corresponds to `const {{ full_type }}& {{ name }}` if it is a builtin type, otherwise is passed by value |
+| `signature`   | The signature of a data member that can be used in function signatures, corresponds to `const {{ full_type }}& {{ name }}` if it is not a builtin type, otherwise is passed by value |
 | `jl_imports`  | Import required for `StaticArrays: MVector`                                                                                                                                      |
 | `julia_type`  | Equivalent julia type for the c++ type                                                                                                                                           |
 
