@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_106/x86_64-el9-gcc13-opt",
+        LCG: ["LCG_107/x86_64-el9-gcc13-opt",
               "dev4/x86_64-el9-gcc14-opt",
               "dev3/x86_64-el9-clang16-opt"]
     steps:

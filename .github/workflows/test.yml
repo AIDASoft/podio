@@ -20,9 +20,9 @@ jobs:
         LCG: ["dev3/x86_64-el9-clang16-opt",
               "dev4/x86_64-el9-clang16-opt",
               "dev4/x86_64-el9-gcc13-opt",
-              "LCG_106b/x86_64-el9-clang16-opt",
-              "LCG_106b/x86_64-el9-gcc13-opt",
-              "LCG_104/x86_64-el9-gcc13-opt"]
+              "LCG_107/x86_64-el9-clang16-opt",
+              "LCG_107/x86_64-el9-gcc13-opt",  # root 6.34.02 !minimal root version for RNTuple
+              "LCG_104/x86_64-el9-gcc13-opt"]  # root 6.28.04 !minimal root version check
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4

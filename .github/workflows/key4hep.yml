@@ -43,7 +43,7 @@ jobs:
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DUSE_EXTERNAL_CATCH2=AUTO \
-            -DENABLE_RNTUPLE=ON \
+            -DENABLE_RNTUPLE=OFF \
             -DENABLE_DATASOURCE=ON \
             -G Ninja ..
           echo "::endgroup::"
