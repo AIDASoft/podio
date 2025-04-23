@@ -35,7 +35,7 @@ jobs:
           cd build
           cmake .. -DENABLE_SIO=ON \
             -DENABLE_JULIA=ON \
-            -DENABLE_RNTUPLE=OFF \
+            -DENABLE_RNTUPLE=ON \
             -DENABLE_DATASOURCE=ON \
             -DCMAKE_CXX_STANDARD=20 \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror "\
