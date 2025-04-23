@@ -81,12 +81,16 @@ set(root_components_needed RIO Tree)
 set(root_min_version 6.28.04)
 if(ENABLE_RNTUPLE)
   list(APPEND root_components_needed ROOTNTuple)
-  set(root_min_version 6.34)
+  set(root_min_version 6.32)
 endif()
 if(ENABLE_DATASOURCE)
   list(APPEND root_components_needed ROOTDataFrame)
 endif()
 find_package(ROOT ${root_min_version} REQUIRED COMPONENTS ${root_components_needed})
+
+if(ENABLE_RNTUPLE AND ROOT_VERSION VERSION_LESS 6.34)
+  message(WARNING "You are building RNTuple support against a version of ROOT that does not yet guarantee RNTuple backwards compatibility")
+endif()
 
 # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
 # before that it's an empty variable so we check if it's any number > 0
