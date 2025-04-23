@@ -7,6 +7,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -31,9 +35,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v4
       - uses: key4hep/key4hep-actions/cache-external-data@main
-      - uses: aidasoft/run-lcg-view@v4
+      - uses: aidasoft/run-lcg-view@v5
         with:
           release-platform: LCG_107/x86_64-el9-${{ matrix.compiler }}-opt
+          ccache-key: ccache-sanitizers-el9-${{ matrix.compiler }}-${{ matrix.sanitizer }}
           run: |
             echo "::group::Run CMake"
             mkdir -p build
