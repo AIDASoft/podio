@@ -51,7 +51,7 @@ message(STATUS "Setting C++ standard: '${CMAKE_CXX_STANDARD}'.")
 
 set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 
-option(PODIO_SET_RPATH "Link libraries with built-in RPATH (run-time search path)" OFF)
+option(PODIO_SET_RPATH "Link libraries with built-in RPATH (run-time search path)" ON)
 include(cmake/podioBuild.cmake)
 podio_set_compiler_flags()
 podio_set_rpath()
