@@ -70,19 +70,21 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
   };
 
   // Split by ',' and transform into a range of string views
-  auto splitRange = evtRange | rv::split(',') |
-      rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+  auto splitRange = evtRange | rv::split(',') | rv::transform([](auto&& subrange) {
+                      return std::string_view(&*subrange.begin(), std::ranges::distance(subrange));
+                    });
 
   if (std::ranges::distance(splitRange) == 1) {
     // Only one entry, check if it's a range (start:end)
-    auto colonSplitRange = evtRange | rv::split(':') |
-        rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+    auto colonSplitRange = evtRange | rv::split(':') | rv::transform([](auto&& subrange) {
+                             return std::string_view(&*subrange.begin(), std::ranges::distance(subrange));
+                           });
 
     const auto it = std::ranges::begin(colonSplitRange);
     const auto nextIt = std::ranges::next(it);
 
     if (std::ranges::distance(colonSplitRange) == 1) {
-      return {parseSizeOrExit(*it)};
+      return std::vector<size_t>{parseSizeOrExit(*it)};
     } else if (std::ranges::distance(colonSplitRange) == 2 && !(*nextIt).empty()) {
       size_t start = parseSizeOrExit(*it);
       size_t stop = parseSizeOrExit(*nextIt);
