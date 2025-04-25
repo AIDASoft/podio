@@ -1342,7 +1342,17 @@ TEST_CASE("Collection as range", "[collection][ranges][std]") {
   // std::range::common_range
   STATIC_REQUIRE(std::ranges::common_range<CollectionType>);
   // std::range::viewable_range
+  // special handling of gcc 11
+#if defined(__GNUC__)
+  #if __GNUC__ < 12
+  auto view = std::ranges::ref_view(coll);
+  STATIC_REQUIRE(std::ranges::viewable_range<decltype(view)>);
+  #else
   STATIC_REQUIRE(std::ranges::viewable_range<CollectionType>);
+  #endif
+#else
+  STATIC_REQUIRE(std::ranges::viewable_range<CollectionType>);
+#endif
 }
 
 TEST_CASE("Collection and std algorithms", "[collection][iterator][std]") {
@@ -1568,7 +1578,18 @@ TEST_CASE("LinkCollection and range concepts", "[links][ranges][std]") {
   STATIC_REQUIRE(std::ranges::random_access_range<link_collection>);
   STATIC_REQUIRE(std::ranges::sized_range<link_collection>);
   STATIC_REQUIRE(std::ranges::common_range<link_collection>);
+  // Dance around gcc11 issue
+#if defined(__GNUC__)
+  #if __GNUC__ < 12
+  auto coll = link_collection{};
+  auto view = std::ranges::ref_view(coll);
+  STATIC_REQUIRE(std::ranges::viewable_range<decltype(view)>);
+  #else
   STATIC_REQUIRE(std::ranges::viewable_range<link_collection>);
+  #endif
+#else
+  STATIC_REQUIRE(std::ranges::viewable_range<link_collection>);
+#endif
 }
 
 TEST_CASE("RelationRange as range", "[relations][ranges][std]") {
