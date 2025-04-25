@@ -261,16 +261,6 @@ public:
   }
 
   void prepareForWrite() const override {
-    // TODO: Replace this double locking pattern with an atomic and only one
-    // lock. Problem: std::atomic is not default movable
-    {
-      std::lock_guard lock{*m_storageMtx};
-      // If the collection has been prepared already there is nothing to do
-      if (m_isPrepared) {
-        return;
-      }
-    }
-
     std::lock_guard lock{*m_storageMtx};
     // by the time we acquire the lock another thread might have already
     // succeeded, so we need to check again now
