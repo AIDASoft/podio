@@ -1341,11 +1341,12 @@ TEST_CASE("Collection as range", "[collection][ranges][std][GCC11-FAIL]") {
   DOCUMENTED_STATIC_FAILURE(std::ranges::contiguous_range<CollectionType>);
   // std::range::common_range
   STATIC_REQUIRE(std::ranges::common_range<CollectionType>);
-#if defined(__GNUC__)
-  #if __GNUC__ >= 12
-  // std::range::viewable_range
+#if defined(__GNUC__) && __GNUC__ < 12
+  // gcc 11 does not yet implement a fix for:
+  // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2415r2.html
+  DOCUMENTED_STATIC_FAILURE(std::ranges::viewable_range<CollectionType>);
+#else
   STATIC_REQUIRE(std::ranges::viewable_range<CollectionType>);
-  #endif
 #endif
 }
 
@@ -1572,10 +1573,12 @@ TEST_CASE("LinkCollection and range concepts", "[links][ranges][std]") {
   STATIC_REQUIRE(std::ranges::random_access_range<link_collection>);
   STATIC_REQUIRE(std::ranges::sized_range<link_collection>);
   STATIC_REQUIRE(std::ranges::common_range<link_collection>);
-#if defined(__GNUC__)
-  #if __GNUC__ >= 12
+#if defined(__GNUC__) && __GNUC__ < 12
+  // gcc 11 does not yet implement a fix for:
+  // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2415r2.html
+  DOCUMENTED_STATIC_FAILURE(std::ranges::viewable_range<link_collection>);
+#else
   STATIC_REQUIRE(std::ranges::viewable_range<link_collection>);
-  #endif
 #endif
 }
 
