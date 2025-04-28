@@ -74,7 +74,6 @@ else()
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
-      DL_PATHS ${CMAKE_CURRENT_BINARY_DIR}:${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
         PROPERTIES
         ENVIRONMENT
         PODIO_SIOBLOCK_PATH=${PROJECT_BINARY_DIR}/tests
