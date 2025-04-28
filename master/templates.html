@@ -998,7 +998,7 @@ In principle all members are accessible in the templates, however, the most impo
 <td><p>Method for generating the correct name for setter functions, depending on the <code class="docutils literal notranslate"><span class="pre">getSyntax</span></code> option in the yaml definition file and on whether the member is a relation or not</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">signature</span></code></p></td>
-<td><p>The signature of a data member that can be used in function signatures, corresponds to <code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">full_type</span> <span class="pre">}}</span> <span class="pre">{{</span> <span class="pre">name</span> <span class="pre">}}</span></code></p></td>
+<td><p>The signature of a data member that can be used in function signatures, corresponds to <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">{{</span> <span class="pre">full_type</span> <span class="pre">}}&amp;</span> <span class="pre">{{</span> <span class="pre">name</span> <span class="pre">}}</span></code> if it is not a builtin type, otherwise is passed by value</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jl_imports</span></code></p></td>
 <td><p>Import required for <code class="docutils literal notranslate"><span class="pre">StaticArrays:</span> <span class="pre">MVector</span></code></p></td>
