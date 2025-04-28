@@ -1313,7 +1313,7 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
   }
 }
 
-TEST_CASE("Collection as range", "[collection][ranges][std][GCC11-FAIL]") {
+TEST_CASE("Collection as range", "[collection][ranges][std]") {
   CollectionType coll;
   coll.create();
 
