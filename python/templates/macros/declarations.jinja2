@@ -28,7 +28,7 @@
 {% macro member_setters(members, get_syntax) %}
 {% for member in members %}
   /// Set the {{ member.docstring }}
-  void {{ member.setter_name(get_syntax) }}({{ member.full_type }} value);
+  void {{ member.setter_name(get_syntax) }}({{ member.signature }});
 {% if member.is_array %}
   void {{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value);
 {% endif %}

@@ -86,7 +86,7 @@ Mutable{{ type }} {{ full_type }}::clone(bool cloneRelations) const {
 {% macro member_setters(class, members, get_syntax, prefix='') %}
 {% set class_type = prefix + class.bare_type %}
 {% for member in members %}
-void {{ class_type }}::{{ member.setter_name(get_syntax) }}({{ member.full_type }} value) { m_obj->data.{{ member.name }} = value; }
+void {{ class_type }}::{{ member.setter_name(get_syntax) }}({{ member.signature }}) { m_obj->data.{{ member.name }} = {{ member.name }}; }
 {% if member.is_array %}
 void {{ class_type }}::{{ member.setter_name(get_syntax) }}(size_t i, {{ member.array_type }} value) { m_obj->data.{{ member.name }}.at(i) = value; }
 {% endif %}
