@@ -55,10 +55,6 @@ if (NOT FORCE_RUN_ALL_TESTS)
   elseif(USE_SANITIZER MATCHES "Undefined")
     set(filter_tests "~[UBSAN-FAIL]")
   endif()
-
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS_EQUAL 11)
-    list(APPEND filter_tests "~[GCC11-FAIL]")
-  endif()
 endif()
 
 if (USE_SANITIZER MATCHES "Memory(WithOrigin)?")

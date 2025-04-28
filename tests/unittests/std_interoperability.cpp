@@ -1341,8 +1341,12 @@ TEST_CASE("Collection as range", "[collection][ranges][std][GCC11-FAIL]") {
   DOCUMENTED_STATIC_FAILURE(std::ranges::contiguous_range<CollectionType>);
   // std::range::common_range
   STATIC_REQUIRE(std::ranges::common_range<CollectionType>);
+#if defined(__GNUC__)
+  #if __GNUC__ >= 12
   // std::range::viewable_range
   STATIC_REQUIRE(std::ranges::viewable_range<CollectionType>);
+  #endif
+#endif
 }
 
 TEST_CASE("Collection and std algorithms", "[collection][iterator][std]") {
@@ -1559,7 +1563,7 @@ TEST_CASE("LinkCollectionIterator and iterator concepts", "[links][iterators][st
   }
 }
 
-TEST_CASE("LinkCollection and range concepts", "[links][ranges][std][GCC11-FAIL]") {
+TEST_CASE("LinkCollection and range concepts", "[links][ranges][std]") {
   using link_collection = podio::LinkCollection<ExampleHit, ExampleHit>;
 
   STATIC_REQUIRE(std::ranges::input_range<link_collection>);
@@ -1568,7 +1572,11 @@ TEST_CASE("LinkCollection and range concepts", "[links][ranges][std][GCC11-FAIL]
   STATIC_REQUIRE(std::ranges::random_access_range<link_collection>);
   STATIC_REQUIRE(std::ranges::sized_range<link_collection>);
   STATIC_REQUIRE(std::ranges::common_range<link_collection>);
+#if defined(__GNUC__)
+  #if __GNUC__ >= 12
   STATIC_REQUIRE(std::ranges::viewable_range<link_collection>);
+  #endif
+#endif
 }
 
 TEST_CASE("RelationRange as range", "[relations][ranges][std]") {
