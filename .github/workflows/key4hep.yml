@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ["el9", "ubuntu2204"]
+        image: ["el9"]
         cvmfs_repo: ["sw.hsf.org", "sw-nightlies.hsf.org"]
         include:
           - image: "ubuntu2404"
