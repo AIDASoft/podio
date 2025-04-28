@@ -1,8 +1,4 @@
-if(CMAKE_CXX_STANDARD GREATER_EQUAL 20)
-  set(CATCH2_MIN_VERSION 3.4)
-else()
-  set(CATCH2_MIN_VERSION 3.3)
-endif()
+set(CATCH2_MIN_VERSION 3.4.0)
 if(USE_EXTERNAL_CATCH2)
   if (USE_EXTERNAL_CATCH2 STREQUAL AUTO)
     find_package(Catch2 ${CATCH2_MIN_VERSION})
@@ -21,7 +17,7 @@ if(NOT Catch2_FOUND)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.4.0
+    GIT_TAG        v${CATCH2_MIN_VERSION}
     )
   FetchContent_MakeAvailable(Catch2)
   set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras ${CMAKE_MODULE_PATH})
