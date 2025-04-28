@@ -22,6 +22,8 @@ jobs:
         include:
           - image: "ubuntu2404"
             cvmfs_repo: "sw-nightlies.hsf.org"
+          - image: "ubuntu2204"
+            cvmfs_repo: "sw.hsf.org"
 
     steps:
     - uses: actions/checkout@v4
