@@ -22,7 +22,7 @@ jobs:
         include:
           - image: "ubuntu2404"
             cvmfs_repo: "sw-nightlies.hsf.org"
-          - image: "ubuntu2204"
+          - image: "ubuntu2204"  # gcc-11 compatibility
             cvmfs_repo: "sw.hsf.org"
 
     steps:
