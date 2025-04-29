@@ -2,7 +2,9 @@
 #define PODIO_UTILITIES_MISCHELPERS_H
 
 #include <algorithm>
+#include <ranges>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace podio::utils {
@@ -27,6 +29,27 @@ inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strin
   });
   return strings;
 }
+
+/// Split a string (view) at the delimiter and return a range of views
+///
+/// @param str The string to split
+/// @param delim The delimeter at which to split
+///
+/// @returns A range of views into the original view
+inline auto splitString(const std::string_view str, const char delim) {
+  namespace rv = std::ranges::views;
+
+  return str | rv::split(delim) |
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 12
+      // gcc 11 is missing a string_view constructor that takes the range
+      // iterators directly, so we construct from a char* and a size
+      rv::transform(
+             [](auto&& subrange) { return std::string_view(&*subrange.begin(), std::ranges::distance(subrange)); });
+#else
+      rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+#endif
+}
+
 } // namespace podio::utils
 
 #endif // PODIO_UTILITIES_MISCHELPERS_H

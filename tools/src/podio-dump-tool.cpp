@@ -17,8 +17,6 @@
 #include <string>
 #include <tuple>
 
-namespace rv = std::ranges::views;
-
 template <>
 struct fmt::formatter<podio::version::Version> : ostream_formatter {};
 
@@ -69,20 +67,18 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
     std::exit(1);
   };
 
-  // Split by ',' and transform into a range of string views
-  auto splitRange = evtRange | rv::split(',') |
-      rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+  // Split by ',' to see if we have to handle multiple events
+  auto splitRange = podio::utils::splitString(evtRange, ',');
 
   if (std::ranges::distance(splitRange) == 1) {
     // Only one entry, check if it's a range (start:end)
-    auto colonSplitRange = evtRange | rv::split(':') |
-        rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
+    auto colonSplitRange = podio::utils::splitString(evtRange, ':');
 
     const auto it = std::ranges::begin(colonSplitRange);
     const auto nextIt = std::ranges::next(it);
 
     if (std::ranges::distance(colonSplitRange) == 1) {
-      return {parseSizeOrExit(*it)};
+      return std::vector<size_t>{parseSizeOrExit(*it)};
     } else if (std::ranges::distance(colonSplitRange) == 2 && !(*nextIt).empty()) {
       size_t start = parseSizeOrExit(*it);
       size_t stop = parseSizeOrExit(*nextIt);

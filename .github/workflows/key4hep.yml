@@ -17,11 +17,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ["el9"] # , "ubuntu2204"]  # see https://github.com/AIDASoft/podio/issues/765
+        image: ["el9"]
         cvmfs_repo: ["sw.hsf.org", "sw-nightlies.hsf.org"]
         include:
           - image: "ubuntu2404"
             cvmfs_repo: "sw-nightlies.hsf.org"
+          - image: "ubuntu2204"  # gcc-11 compatibility
+            cvmfs_repo: "sw.hsf.org"
 
     steps:
     - uses: actions/checkout@v4
@@ -45,6 +47,7 @@ jobs:
             -DUSE_EXTERNAL_CATCH2=AUTO \
             -DENABLE_RNTUPLE=ON \
             -DENABLE_DATASOURCE=ON \
+            -DPODIO_SET_RPATH=ON \
             -G Ninja ..
           echo "::endgroup::"
           echo "::group::Build"
