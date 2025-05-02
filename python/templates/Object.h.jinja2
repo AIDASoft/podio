@@ -83,7 +83,9 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 // and https://github.com/AIDASoft/podio/issues/770
 #if defined(__clang__)
 #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wdeprecated-redundant-constexpr-static-def"
+#pragma clang diagnostic ignored "-Wdeprecated"
 constexpr std::string_view {{ class.full_type }}::typeName;
 #pragma clang diagnostic pop
 #elif defined(__GNUC__)
