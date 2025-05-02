@@ -78,4 +78,19 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 
 {{ macros.std_hash(class) }}
 
+// This is needed to avoid triggering opening every library in LD_LIBRARY_PATH
+// until it's fixed in ROOT. See https://github.com/root-project/root/issues/18489
+// and https://github.com/AIDASoft/podio/issues/770
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-redundant-constexpr-static-def"
+constexpr std::string_view {{ class.full_type }}::typeName;
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated"
+constexpr std::string_view {{ class.full_type }}::typeName;
+#pragma GCC diagnostic pop
+#endif
+
 #endif
