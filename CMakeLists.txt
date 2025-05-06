@@ -176,7 +176,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__version__.py.in
 
 
 #--- add license files ---------------------------------------------------------
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NOTICE
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
         DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 #--- project specific subdirectories -------------------------------------------
