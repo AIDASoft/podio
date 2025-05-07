@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct podio::RNTupleReader::CollectionInfo &mdash; PODIO  documentation</title>
+  <title>Struct podio::root_utils::CollectionWriteInfo &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct podio::RNTupleWriter::CategoryInfo" href="structpodio_1_1_r_n_tuple_writer_1_1_category_info.html" />
-    <link rel="prev" title="Struct podio::LinkData" href="structpodio_1_1_link_data.html" /> 
+    <link rel="next" title="Struct podio::root_utils::ParamStorage" href="structpodio_1_1root__utils_1_1_param_storage.html" />
+    <link rel="prev" title="Struct podio::root_utils::CollectionBranches" href="structpodio_1_1root__utils_1_1_collection_branches.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -424,10 +424,6 @@
 <li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_link_data.html#_CPPv4N5podio8LinkDataE"><code class="docutils literal notranslate"><span class="pre">LinkData</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Struct podio::RNTupleReader::CollectionInfo</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N5podio13RNTupleReader14CollectionInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionInfo</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="structpodio_1_1_r_n_tuple_writer_1_1_category_info.html">Struct podio::RNTupleWriter::CategoryInfo</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_r_n_tuple_writer_1_1_category_info.html#_CPPv4N5podio13RNTupleWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
 </ul>
@@ -482,6 +478,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Struct podio::root_utils::CollectionWriteInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N5podio10root_utils19CollectionWriteInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionWriteInfo</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="structpodio_1_1root__utils_1_1_param_storage.html">Struct podio::root_utils::ParamStorage</a><ul>
@@ -709,7 +709,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">C++ API documentation</a></li>
           <li class="breadcrumb-item"><a href="../structlist.html">Struct list</a></li>
-      <li class="breadcrumb-item active">Struct podio::RNTupleReader::CollectionInfo</li>
+      <li class="breadcrumb-item active">Struct podio::root_utils::CollectionWriteInfo</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -718,37 +718,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-podio-rntuplereader-collectioninfo">
-<h1>Struct podio::RNTupleReader::CollectionInfo<a class="headerlink" href="#struct-podio-rntuplereader-collectioninfo" title="Link to this heading"></a></h1>
+  <section id="struct-podio-root-utils-collectionwriteinfo">
+<h1>Struct podio::root_utils::CollectionWriteInfo<a class="headerlink" href="#struct-podio-root-utils-collectionwriteinfo" title="Link to this heading"></a></h1>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleReader14CollectionInfoE">
-<span id="_CPPv3N5podio13RNTupleReader14CollectionInfoE"></span><span id="_CPPv2N5podio13RNTupleReader14CollectionInfoE"></span><span id="podio::RNTupleReader::CollectionInfo"></span><span class="target" id="structpodio_1_1_r_n_tuple_reader_1_1_collection_info"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionInfo</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils19CollectionWriteInfoE">
+<span id="_CPPv3N5podio10root_utils19CollectionWriteInfoE"></span><span id="_CPPv2N5podio10root_utils19CollectionWriteInfoE"></span><span id="podio::root_utils::CollectionWriteInfo"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_write_info"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionWriteInfo</span></span></span><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleReader14CollectionInfo2idE">
-<span id="_CPPv3N5podio13RNTupleReader14CollectionInfo2idE"></span><span id="_CPPv2N5podio13RNTupleReader14CollectionInfo2idE"></span><span id="podio::RNTupleReader::CollectionInfo::id__std::vector:unsigned-i:"></span><span class="target" id="structpodio_1_1_r_n_tuple_reader_1_1_collection_info_1a494a8e427a08353a729180172a78eaaa"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils19CollectionWriteInfo12collectionIDE">
+<span id="_CPPv3N5podio10root_utils19CollectionWriteInfo12collectionIDE"></span><span id="_CPPv2N5podio10root_utils19CollectionWriteInfo12collectionIDE"></span><span id="podio::root_utils::CollectionWriteInfo::collectionID__uint32_t"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_write_info_1a065c26d62690f1093a3875a063ae08af"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">collectionID</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">static_cast</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>collection id </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleReader14CollectionInfo4nameE">
-<span id="_CPPv3N5podio13RNTupleReader14CollectionInfo4nameE"></span><span id="_CPPv2N5podio13RNTupleReader14CollectionInfo4nameE"></span><span id="podio::RNTupleReader::CollectionInfo::name__std::vector:ss:"></span><span class="target" id="structpodio_1_1_r_n_tuple_reader_1_1_collection_info_1a35e5959801455c9f91a0d8680bf6a32f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils19CollectionWriteInfo8dataTypeE">
+<span id="_CPPv3N5podio10root_utils19CollectionWriteInfo8dataTypeE"></span><span id="_CPPv2N5podio10root_utils19CollectionWriteInfo8dataTypeE"></span><span id="podio::root_utils::CollectionWriteInfo::dataType__ss"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_write_info_1aed9088b3e9d58e950b8c6c8dc4a63178"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dataType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The fully qualified data type of the collection. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleReader14CollectionInfo4typeE">
-<span id="_CPPv3N5podio13RNTupleReader14CollectionInfo4typeE"></span><span id="_CPPv2N5podio13RNTupleReader14CollectionInfo4typeE"></span><span id="podio::RNTupleReader::CollectionInfo::type__std::vector:ss:"></span><span class="target" id="structpodio_1_1_r_n_tuple_reader_1_1_collection_info_1a8c5c5731b1c83cf8a19b5359b01edd5d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils19CollectionWriteInfo8isSubsetE">
+<span id="_CPPv3N5podio10root_utils19CollectionWriteInfo8isSubsetE"></span><span id="_CPPv2N5podio10root_utils19CollectionWriteInfo8isSubsetE"></span><span id="podio::root_utils::CollectionWriteInfo::isSubset__b"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_write_info_1af16684689c705f396460b5a1fd8c1a56"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isSubset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>Whether this collection is a subset collection or not. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleReader14CollectionInfo18isSubsetCollectionE">
-<span id="_CPPv3N5podio13RNTupleReader14CollectionInfo18isSubsetCollectionE"></span><span id="_CPPv2N5podio13RNTupleReader14CollectionInfo18isSubsetCollectionE"></span><span id="podio::RNTupleReader::CollectionInfo::isSubsetCollection__std::vector:short:"></span><span class="target" id="structpodio_1_1_r_n_tuple_reader_1_1_collection_info_1a0b17d6f4e73010f97dcbcf113a731e4d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isSubsetCollection</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils19CollectionWriteInfo13schemaVersionE">
+<span id="_CPPv3N5podio10root_utils19CollectionWriteInfo13schemaVersionE"></span><span id="_CPPv2N5podio10root_utils19CollectionWriteInfo13schemaVersionE"></span><span id="podio::root_utils::CollectionWriteInfo::schemaVersion__unsigned-i"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_write_info_1a6810b8e661f74be410e6d3d5420d7daa"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">schemaVersion</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The schema version of the collection type. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleReader14CollectionInfo13schemaVersionE">
-<span id="_CPPv3N5podio13RNTupleReader14CollectionInfo13schemaVersionE"></span><span id="_CPPv2N5podio13RNTupleReader14CollectionInfo13schemaVersionE"></span><span id="podio::RNTupleReader::CollectionInfo::schemaVersion__std::vector:SchemaVersionT:"></span><span class="target" id="structpodio_1_1_r_n_tuple_reader_1_1_collection_info_1a08559dbf1e1b48a74da13b15b5cdf6b7"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/_schema_evolution_8h.html#_CPPv4N5podio14SchemaVersionTE" title="podio::SchemaVersionT"><span class="n"><span class="pre">SchemaVersionT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">schemaVersion</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils19CollectionWriteInfo4nameE">
+<span id="_CPPv3N5podio10root_utils19CollectionWriteInfo4nameE"></span><span id="_CPPv2N5podio10root_utils19CollectionWriteInfo4nameE"></span><span id="podio::root_utils::CollectionWriteInfo::name__ss"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_write_info_1acb56bc2ae8ba191025e02e09bcb50e3e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The name of the collection. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10root_utils19CollectionWriteInfo11storageTypeE">
+<span id="_CPPv3N5podio10root_utils19CollectionWriteInfo11storageTypeE"></span><span id="_CPPv2N5podio10root_utils19CollectionWriteInfo11storageTypeE"></span><span id="podio::root_utils::CollectionWriteInfo::storageType__ss"></span><span class="target" id="structpodio_1_1root__utils_1_1_collection_write_info_1addfc8546e2692bf214c3148665ea8a4c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">storageType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>The type in which the data is actually stored. </p>
+</dd></dl>
 
 </div>
 </dd></dl>

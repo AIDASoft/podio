@@ -424,10 +424,6 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_link_data.html#_CPPv4N5podio8LinkDataE"><code class="docutils literal notranslate"><span class="pre">LinkData</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_info.html">Struct podio::RNTupleReader::CollectionInfo</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_info.html#_CPPv4N5podio13RNTupleReader14CollectionInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionInfo</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html">Struct podio::RNTupleWriter::CategoryInfo</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html#_CPPv4N5podio13RNTupleWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
 </ul>
@@ -482,6 +478,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_write_info.html">Struct podio::root_utils::CollectionWriteInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_collection_write_info.html#_CPPv4N5podio10root_utils19CollectionWriteInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionWriteInfo</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1root__utils_1_1_param_storage.html">Struct podio::root_utils::ParamStorage</a><ul>
@@ -784,19 +784,26 @@ name of <code class="docutils literal notranslate"><span class="pre">GP&lt;Type&
 <li><p>The complete datamodel definitions for each datamodel that was encountered
 when writing the file</p></li>
 </ul>
-<p>And the following information once per category</p>
+<p>And the following information once per category for each collection in that category</p>
 <ul class="simple">
-<li><p>The mapping of collection names to collection IDs</p></li>
-<li><p>The types of all the stored collections</p></li>
-<li><p>The schema version of all stored collections</p></li>
-<li><p>Which collections are stored as subset collections</p></li>
+<li><p>The collection ID</p></li>
+<li><p>The collection name</p></li>
+<li><p>The collection type</p></li>
+<li><p>Whether the collection is a subset collection</p></li>
+<li><p>The collection schema version</p></li>
+<li><p>The collection storage type (which is different from the collection type and
+describes the format in which the data is actually stored rather than how it
+can be accessed in memory)</p></li>
 </ul>
-<p>Here the <code class="docutils literal notranslate"><span class="pre">TTree</span></code> based and <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code> based backends differ slightly in the way
-these data are stored exactly. The <code class="docutils literal notranslate"><span class="pre">TTree</span></code> based backend stores the data in a
-slightly more structured way, taking advantage of ROOTs capabilities to stream
-out more complex object, e.g. the <code class="docutils literal notranslate"><span class="pre">podio::CollectionIDTable</span></code> is streamed as a
-whole. The <code class="docutils literal notranslate"><span class="pre">RNTuple</span></code> based backend on the other hand, destructures the
-information into separate fields that run in parallel.</p>
+<p>From a technical point of view this information is stored as a
+<code class="docutils literal notranslate"><span class="pre">std::vector&lt;podio::root_utils::CollectionWriteInfo&gt;</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The exact details of how this information is stored in podio files has changed
+several times. The readers provided by podio handle these changes transparently,
+but other readers might have to adapt for these changes. <strong>Notable changes
+happened before v01-00, and v01-03.</strong></p>
+</div>
 </section>
 </section>
 <section id="sio">
