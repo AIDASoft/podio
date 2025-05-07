@@ -117,12 +117,9 @@ private:
   struct CategoryInfo {
     std::unique_ptr<root_compat::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
 
-    // The following are assumed to run in parallel!
-    std::vector<uint32_t> ids{};                  ///< The ids of all collections
-    std::vector<std::string> names{};             ///< The names of all collections
-    std::vector<std::string> types{};             ///< The types of all collections
-    std::vector<short> subsetCollections{};       ///< The flags identifying the subcollections
-    std::vector<SchemaVersionT> schemaVersions{}; ///< The schema versions of all collections
+    /// Collection info for this category
+    std::vector<root_utils::CollectionWriteInfo> collInfo{};
+    std::vector<std::string> names{}; ///< The names of all collections to write
 
     // Storage for the keys & values of all the parameters of this category
     // (resp. at least the current entry)

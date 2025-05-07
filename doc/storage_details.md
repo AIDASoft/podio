@@ -62,23 +62,29 @@ there will be the following branches per supported type
 
 The podio related metadata, stored in the `podio_metadata` `TTree` (or
 `RNTupleModel`) contains the following general information once per file
-
 - The version of podio that has been used to write this file
 - The complete datamodel definitions for each datamodel that was encountered
   when writing the file
 
-And the following information once per category
-- The mapping of collection names to collection IDs
-- The types of all the stored collections
-- The schema version of all stored collections
-- Which collections are stored as subset collections
+And the following information once per category for each collection in that category
+- The collection ID
+- The collection name
+- The collection type
+- Whether the collection is a subset collection
+- The collection schema version
+- The collection storage type (which is different from the collection type and
+  describes the format in which the data is actually stored rather than how it
+  can be accessed in memory)
 
-Here the `TTree` based and `RNTuple` based backends differ slightly in the way
-these data are stored exactly. The `TTree` based backend stores the data in a
-slightly more structured way, taking advantage of ROOTs capabilities to stream
-out more complex object, e.g. the `podio::CollectionIDTable` is streamed as a
-whole. The `RNTuple` based backend on the other hand, destructures the
-information into separate fields that run in parallel.
+From a technical point of view this information is stored as a
+`std::vector<podio::root_utils::CollectionWriteInfo>`.
+
+```{note}
+The exact details of how this information is stored in podio files has changed
+several times. The readers provided by podio handle these changes transparently,
+but other readers might have to adapt for these changes. **Notable changes
+happened before v01-00, and v01-03.**
+```
 
 ## SIO
 
