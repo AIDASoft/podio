@@ -250,7 +250,8 @@ void RNTupleWriter::finish() {
     }
   }
 
-  const auto edmField = metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  const auto edmField =
+      metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   *edmField = std::move(edmDefinitions);
 
   const auto availableCategoriesField = metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
@@ -265,7 +266,8 @@ void RNTupleWriter::finish() {
   }
 
   metadata->Freeze();
-  const auto metadataWriter = root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
+  const auto metadataWriter =
+      root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
 
   metadataWriter->Fill();
 
