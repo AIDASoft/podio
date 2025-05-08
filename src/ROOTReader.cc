@@ -187,7 +187,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
   auto* collInfoBranch = root_utils::getBranch(m_metaChain.get(), root_utils::collInfoName(category));
 
   auto collInfo = std::vector<root_utils::CollectionWriteInfo>();
-  auto collInfoPtr = &collInfo;
+  auto* collInfoPtr = &collInfo;
   if (m_fileVersion >= podio::version::Version{1, 2, 99}) {
     collInfoBranch->SetAddress(&collInfoPtr);
     collInfoBranch->GetEntry(0);
@@ -195,7 +195,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
     auto collInfoOld = std::vector<root_utils::CollectionWriteInfoT>();
     if (m_fileVersion < podio::version::Version{0, 16, 4}) {
       auto collInfoReallyOld = std::vector<root_utils::CollectionInfoWithoutSchemaT>();
-      auto tmpPtr = &collInfoReallyOld;
+      auto* tmpPtr = &collInfoReallyOld;
       collInfoBranch->SetAddress(&tmpPtr);
       collInfoBranch->GetEntry(0);
       collInfoOld.reserve(collInfoReallyOld.size());
@@ -204,7 +204,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
         collInfo.emplace_back(collID, std::move(collType), isSubsetColl, 1u);
       }
     } else {
-      auto tmpPtr = &collInfoOld;
+      auto* tmpPtr = &collInfoOld;
       collInfoBranch->SetAddress(&tmpPtr);
       collInfoBranch->GetEntry(0);
     }
@@ -291,16 +291,15 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     }
   }
 
-  podio::version::Version* versionPtr{nullptr};
+  auto* versionPtr = &m_fileVersion;
   if (auto* versionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::versionBranchName)) {
     versionBranch->SetAddress(&versionPtr);
     versionBranch->GetEntry(0);
   }
-  m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
 
   if (auto* edmDefBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmDefBranchName)) {
     auto datamodelDefs = DatamodelDefinitionHolder::MapType{};
-    auto datamodelDefsPtr = &datamodelDefs;
+    auto* datamodelDefsPtr = &datamodelDefs;
     edmDefBranch->SetAddress(&datamodelDefsPtr);
     edmDefBranch->GetEntry(0);
 
@@ -308,7 +307,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     for (const auto& [name, _] : datamodelDefs) {
       if (auto* edmVersionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmVersionBranchName(name))) {
         const auto edmVersion = podio::version::Version{};
-        auto tmpPtr = &edmVersion;
+        auto* tmpPtr = &edmVersion;
         edmVersionBranch->SetAddress(&tmpPtr);
         edmVersionBranch->GetEntry(0);
         edmVersions.emplace_back(name, edmVersion);
