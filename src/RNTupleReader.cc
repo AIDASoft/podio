@@ -52,7 +52,7 @@ bool RNTupleReader::initCategory(const std::string& category) {
     return false;
   }
   // Assume that the metadata is the same in all files
-  const auto filename = m_filenames[0];
+  const auto& filename = m_filenames[0];
 
   auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
       {root_utils::collInfoName(category)});
