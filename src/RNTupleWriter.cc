@@ -286,7 +286,7 @@ RNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, co
     return root_utils::getInconsistentColls(it->second.names, collsToWrite);
   }
 
-  return {{}, collsToWrite};
+  return {std::vector<std::string>{}, collsToWrite};
 }
 
 } // namespace podio
