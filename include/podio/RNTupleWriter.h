@@ -2,7 +2,6 @@
 #define PODIO_RNTUPLEWRITER_H
 
 #include "podio/Frame.h"
-#include "podio/SchemaEvolution.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 

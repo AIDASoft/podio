@@ -2,7 +2,6 @@
 #define PODIO_RNTUPLEREADER_H
 
 #include "podio/ROOTFrameData.h"
-#include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
@@ -150,10 +149,11 @@ private:
   /**
    * Read and reconstruct the generic parameters of the Frame
    */
-  GenericParameters readEventMetaData(const std::string& name, unsigned localEntry, unsigned readerIndex);
+  GenericParameters readEventMetaData(const std::string& name, const unsigned localEntry, const unsigned readerIndex);
 
   template <typename T>
-  void readParams(const std::string& name, unsigned entNum, unsigned readerIndex, GenericParameters& params);
+  void readParams(const std::string& name, const unsigned entNum, const unsigned readerIndex,
+                  GenericParameters& params);
 
   std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
 

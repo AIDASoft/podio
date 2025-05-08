@@ -40,7 +40,7 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
   std::vector<root_utils::StoreCollection> collections;
   collections.reserve(catInfo.collsToWrite.size());
   for (const auto& name : catInfo.collsToWrite) {
-    auto* coll = frame.getCollectionForWrite(name);
+    const auto* coll = frame.getCollectionForWrite(name);
     if (!coll) {
       // Make sure all collections that we want to write are actually available
       // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
@@ -68,11 +68,11 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
 }
 
 ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(const std::string& category) {
-  if (auto it = m_categories.find(category); it != m_categories.end()) {
+  if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
 
-  auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
+  const auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
   return it->second;
 }
 
@@ -81,7 +81,7 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
   catInfo.branches.reserve(collections.size() + root_utils::nParamBranches); // collections + parameters
 
   // First collections
-  for (auto& [name, coll] : collections) {
+  for (const auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel
     // definition
     m_datamodelCollector.registerDatamodelDefinition(coll, name);
@@ -90,7 +90,7 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
     const auto buffers = coll->getBuffers();
     // For subset collections we only fill one references branch
     if (coll->isSubsetCollection()) {
-      auto& refColl = (*buffers.references)[0];
+      const auto& refColl = (*buffers.references)[0];
       const auto brName = root_utils::subsetBranch(name);
       branches.refs.push_back(catInfo.tree->Branch(brName.c_str(), refColl.get()));
     } else {
@@ -99,17 +99,17 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
       branches.data = catInfo.tree->Branch(name.c_str(), bufferDataType.c_str(), buffers.data);
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
-      if (auto refColls = buffers.references) {
-        int i = 0;
-        for (auto& c : (*refColls)) {
+      if (const auto refColls = buffers.references) {
+        size_t i = 0;
+        for (const auto& c : (*refColls)) {
           const auto brName = root_utils::refBranch(name, relVecNames.relations[i++]);
           branches.refs.push_back(catInfo.tree->Branch(brName.c_str(), c.get()));
         }
       }
 
-      if (auto vmInfo = buffers.vectorMembers) {
-        int i = 0;
-        for (auto& [type, vec] : (*vmInfo)) {
+      if (const auto vmInfo = buffers.vectorMembers) {
+        size_t i = 0;
+        for (const auto& [type, vec] : (*vmInfo)) {
           const auto typeName = "vector<" + type + ">";
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i++]);
           branches.vecs.push_back(catInfo.tree->Branch(brName.c_str(), typeName.c_str(), vec));
@@ -141,7 +141,7 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
 void ROOTWriter::resetBranches(CategoryInfo& categoryInfo,
                                const std::vector<root_utils::StoreCollection>& collections) {
   size_t iColl = 0;
-  for (auto& [_, coll] : collections) {
+  for (const auto& [_, coll] : collections) {
     const auto& collBranches = categoryInfo.branches[iColl];
     root_utils::setCollectionAddresses(coll->getBuffers(), collBranches);
     iColl++;
@@ -172,7 +172,7 @@ void ROOTWriter::finish() {
   metaTree->SetDirectory(m_file.get());
 
   // Store the collection id table and collection info for reading in the meta tree
-  for (/*const*/ auto& [category, info] : m_categories) {
+  for (auto& [category, info] : m_categories) {
     metaTree->Branch(root_utils::collInfoName(category).c_str(), &info.collInfo);
   }
 
@@ -186,7 +186,7 @@ void ROOTWriter::finish() {
   // Collect the (build) versions of the generated datamodels where available
   DatamodelDefinitionHolder::VersionList edmVersions;
   for (const auto& [name, _] : edmDefinitions) {
-    auto edmVersion = podio::DatamodelRegistry::instance().getDatamodelVersion(name);
+    const auto edmVersion = podio::DatamodelRegistry::instance().getDatamodelVersion(name);
     if (edmVersion) {
       edmVersions.emplace_back(name, edmVersion.value());
     }

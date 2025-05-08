@@ -1,6 +1,5 @@
 #include "podio/RNTupleWriter.h"
 #include "podio/DatamodelRegistry.h"
-#include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
@@ -67,7 +66,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
 
   // Use the writer as proxy to check whether this category has been initialized
   // already and do so if not
-  const bool new_category = (catInfo.writer == nullptr);
+  const bool new_category = catInfo.writer == nullptr;
   if (new_category) {
     // This is the minimal information that we need for now
     catInfo.names = podio::utils::sortAlphabeticaly(collsToWrite);
@@ -78,7 +77,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   // Only loop over the collections that were requested in the first Frame of
   // this category
   for (const auto& name : catInfo.names) {
-    auto* coll = frame.getCollectionForWrite(name);
+    const auto* coll = frame.getCollectionForWrite(name);
     if (!coll) {
       // Make sure all collections that we want to write are actually available
       // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
@@ -105,37 +104,37 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     }
   }
 
-  auto entry = m_categories[category].writer->GetModel().CreateBareEntry();
+  const auto entry = m_categories[category].writer->GetModel().CreateBareEntry();
 
   RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
 
   for (const auto& [name, coll] : collections) {
-    auto collBuffers = coll->getBuffers();
+    const auto collBuffers = coll->getBuffers();
     if (collBuffers.vecPtr) {
       entry->BindRawPtr(name, static_cast<void*>(collBuffers.vecPtr));
     }
 
     if (coll->isSubsetCollection()) {
-      auto& refColl = (*collBuffers.references)[0];
+      const auto& refColl = (*collBuffers.references)[0];
       const auto brName = root_utils::subsetBranch(name);
       entry->BindRawPtr(brName, refColl.get());
 
     } else {
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
-      if (auto refColls = collBuffers.references) {
-        int i = 0;
-        for (auto& c : (*refColls)) {
+      if (const auto refColls = collBuffers.references) {
+        size_t i = 0;
+        for (const auto& c : *refColls) {
           const auto brName = root_utils::refBranch(name, relVecNames.relations[i]);
           entry->BindRawPtr(brName, c.get());
           ++i;
         }
       }
 
-      if (auto vmInfo = collBuffers.vectorMembers) {
-        int i = 0;
-        for (auto& [type, vec] : (*vmInfo)) {
+      if (const auto vmInfo = collBuffers.vectorMembers) {
+        size_t i = 0;
+        for (const auto& [type, vec] : *vmInfo) {
           const auto typeName = "vector<" + type + ">";
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
           auto ptr = *static_cast<std::vector<int>**>(vec);
@@ -163,7 +162,7 @@ std::unique_ptr<root_compat::RNTupleModel>
 RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& collections) {
   auto model = root_compat::RNTupleModel::CreateBare();
 
-  for (auto& [name, coll] : collections) {
+  for (const auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel
     // definition
     m_datamodelCollector.registerDatamodelDefinition(coll, name);
@@ -171,33 +170,33 @@ RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& coll
     const auto collBuffers = coll->getBuffers();
 
     if (collBuffers.vecPtr) {
-      auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
+      const auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
       auto field = RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
     }
 
     if (coll->isSubsetCollection()) {
       const auto brName = root_utils::subsetBranch(name);
-      auto collClassName = "vector<podio::ObjectID>";
+      const auto collClassName = "vector<podio::ObjectID>";
       auto field = RFieldBase::Create(brName, collClassName).Unwrap();
       model->AddField(std::move(field));
     } else {
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
-      if (auto refColls = collBuffers.references) {
-        int i = 0;
-        for (auto& c [[maybe_unused]] : (*refColls)) {
+      if (const auto refColls = collBuffers.references) {
+        size_t i = 0;
+        for (const auto& c [[maybe_unused]] : *refColls) {
           const auto brName = root_utils::refBranch(name, relVecNames.relations[i]);
-          auto collClassName = "vector<podio::ObjectID>";
+          const auto collClassName = "vector<podio::ObjectID>";
           auto field = RFieldBase::Create(brName, collClassName).Unwrap();
           model->AddField(std::move(field));
           ++i;
         }
       }
 
-      if (auto vminfo = collBuffers.vectorMembers) {
-        int i = 0;
-        for (auto& [type, vec] : (*vminfo)) {
+      if (const auto vminfo = collBuffers.vectorMembers) {
+        size_t i = 0;
+        for (const auto& [type, vec] : *vminfo) {
           const auto typeName = "vector<" + type + ">";
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
           auto field = RFieldBase::Create(brName, typeName).Unwrap();
@@ -227,46 +226,48 @@ RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& coll
 }
 
 RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(const std::string& category) {
-  if (auto it = m_categories.find(category); it != m_categories.end()) {
+  if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
 
-  auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
+  const auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
   return it->second;
 }
 
 void RNTupleWriter::finish() {
   auto metadata = root_compat::RNTupleModel::Create();
 
-  auto podioVersion = podio::version::build_version;
+  const auto podioVersion = podio::version::build_version;
   auto versionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
   *versionField = {podioVersion.major, podioVersion.minor, podioVersion.patch};
 
-  auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
+  const auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
   for (const auto& [name, _] : edmDefinitions) {
-    auto edmVersion = DatamodelRegistry::instance().getDatamodelVersion(name);
+    const auto edmVersion = DatamodelRegistry::instance().getDatamodelVersion(name);
     if (edmVersion) {
-      auto edmVersionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name).c_str());
+      const auto edmVersionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
       *edmVersionField = {edmVersion->major, edmVersion->minor, edmVersion->patch};
     }
   }
 
-  auto edmField = metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  const auto edmField =
+      metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   *edmField = std::move(edmDefinitions);
 
-  auto availableCategoriesField = metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
-  for (auto& [c, _] : m_categories) {
+  const auto availableCategoriesField = metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
+  for (const auto& [c, _] : m_categories) {
     availableCategoriesField->push_back(c);
   }
 
-  for (auto& [category, collInfo] : m_categories) {
-    auto collInfoField =
+  for (const auto& [category, collInfo] : m_categories) {
+    const auto collInfoField =
         metadata->MakeField<std::vector<root_utils::CollectionWriteInfo>>({root_utils::collInfoName(category)});
     *collInfoField = collInfo.collInfo;
   }
 
   metadata->Freeze();
-  auto metadataWriter = root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
+  const auto metadataWriter =
+      root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
 
   metadataWriter->Fill();
 

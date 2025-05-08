@@ -14,9 +14,13 @@
 #include "TClass.h"
 
 #include <algorithm>
-#include <cstdint>
+#include <memory>
 #include <stdexcept>
+#include <string>
+#include <tuple>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace podio {
 
@@ -182,41 +186,42 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
 
   auto* collInfoBranch = root_utils::getBranch(m_metaChain.get(), root_utils::collInfoName(category));
 
-  auto collInfo = new std::vector<root_utils::CollectionWriteInfo>();
+  auto collInfo = std::vector<root_utils::CollectionWriteInfo>();
+  auto* collInfoPtr = &collInfo;
   if (m_fileVersion >= podio::version::Version{1, 2, 99}) {
-    collInfoBranch->SetAddress(&collInfo);
+    collInfoBranch->SetAddress(&collInfoPtr);
     collInfoBranch->GetEntry(0);
   } else {
-    auto collInfoOld = new std::vector<root_utils::CollectionWriteInfoT>();
+    auto collInfoOld = std::vector<root_utils::CollectionWriteInfoT>();
     if (m_fileVersion < podio::version::Version{0, 16, 4}) {
-      auto collInfoReallyOld = new std::vector<root_utils::CollectionInfoWithoutSchemaT>();
-      collInfoBranch->SetAddress(&collInfoReallyOld);
+      auto collInfoReallyOld = std::vector<root_utils::CollectionInfoWithoutSchemaT>();
+      auto* tmpPtr = &collInfoReallyOld;
+      collInfoBranch->SetAddress(&tmpPtr);
       collInfoBranch->GetEntry(0);
-      collInfoOld->reserve(collInfoReallyOld->size());
-      for (auto& [collID, collType, isSubsetColl] : *collInfoReallyOld) {
+      collInfoOld.reserve(collInfoReallyOld.size());
+      for (const auto& [collID, collType, isSubsetColl] : collInfoReallyOld) {
         // Manually set the schema version to 1
-        collInfo->emplace_back(collID, std::move(collType), isSubsetColl, 1u);
+        collInfo.emplace_back(collID, std::move(collType), isSubsetColl, 1u);
       }
-      delete collInfoReallyOld;
     } else {
-      collInfoBranch->SetAddress(&collInfoOld);
+      auto* tmpPtr = &collInfoOld;
+      collInfoBranch->SetAddress(&tmpPtr);
       collInfoBranch->GetEntry(0);
     }
     // "Convert" to new style
-    collInfo->reserve(collInfoOld->size());
-    for (auto& [id, typeName, isSubsetColl, schemaVersion] : *collInfoOld) {
-      collInfo->emplace_back(id, std::move(typeName), isSubsetColl, schemaVersion);
+    collInfo.reserve(collInfoOld.size());
+    for (const auto& [id, typeName, isSubsetColl, schemaVersion] : collInfoOld) {
+      collInfo.emplace_back(id, std::move(typeName), isSubsetColl, schemaVersion);
     }
-    delete collInfoOld;
   }
 
   // Recreate the idTable form the collection info if necessary, otherwise read
   // it directly
   if (m_fileVersion >= podio::version::Version{1, 2, 99}) {
-    catInfo.table = root_utils::makeCollIdTable(*collInfo);
+    catInfo.table = root_utils::makeCollIdTable(collInfo);
   } else {
     catInfo.table = std::make_shared<podio::CollectionIDTable>();
-    auto* table = catInfo.table.get();
+    const auto* table = catInfo.table.get();
     auto* tableBranch = root_utils::getBranch(m_metaChain.get(), root_utils::idTableName(category));
     tableBranch->SetAddress(&table);
     tableBranch->GetEntry(0);
@@ -226,12 +231,11 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
   // from older versions
   if (m_fileVersion < podio::version::Version{0, 16, 99}) {
     std::tie(catInfo.branches, catInfo.storedClasses) =
-        createCollectionBranchesIndexBased(catInfo.chain.get(), *catInfo.table, *collInfo);
+        createCollectionBranchesIndexBased(catInfo.chain.get(), *catInfo.table, collInfo);
   } else {
     std::tie(catInfo.branches, catInfo.storedClasses) =
-        createCollectionBranches(catInfo.chain.get(), *catInfo.table, *collInfo);
+        createCollectionBranches(catInfo.chain.get(), *catInfo.table, collInfo);
   }
-  delete collInfo;
 
   // Finally set up the branches for the parameters
   if (m_fileVersion < podio::version::Version{0, 99, 99}) {
@@ -253,12 +257,12 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
 }
 
 std::vector<std::string> getAvailableCategories(TChain* metaChain) {
-  auto* branches = metaChain->GetListOfBranches();
+  const auto* branches = metaChain->GetListOfBranches();
   std::vector<std::string> brNames;
   brNames.reserve(branches->GetEntries());
 
-  for (int i = 0; i < branches->GetEntries(); ++i) {
-    const std::string name = branches->At(i)->GetName();
+  for (const auto branch : *branches) {
+    const std::string name = branch->GetName();
     const auto fUnder = name.find(root_utils::collInfoName(""));
     if (fUnder != std::string::npos) {
       brNames.emplace_back(name.substr(0, fUnder));
@@ -287,32 +291,30 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     }
   }
 
-  podio::version::Version* versionPtr{nullptr};
+  auto* versionPtr = &m_fileVersion;
   if (auto* versionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::versionBranchName)) {
     versionBranch->SetAddress(&versionPtr);
     versionBranch->GetEntry(0);
   }
-  m_fileVersion = versionPtr ? *versionPtr : podio::version::Version{0, 0, 0};
-  delete versionPtr;
 
   if (auto* edmDefBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmDefBranchName)) {
-    auto* datamodelDefs = new DatamodelDefinitionHolder::MapType{};
-    edmDefBranch->SetAddress(&datamodelDefs);
+    auto datamodelDefs = DatamodelDefinitionHolder::MapType{};
+    auto* datamodelDefsPtr = &datamodelDefs;
+    edmDefBranch->SetAddress(&datamodelDefsPtr);
     edmDefBranch->GetEntry(0);
 
     DatamodelDefinitionHolder::VersionList edmVersions{};
-    for (const auto& [name, _] : *datamodelDefs) {
+    for (const auto& [name, _] : datamodelDefs) {
       if (auto* edmVersionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmVersionBranchName(name))) {
-        auto* edmVersion = new podio::version::Version{};
-        edmVersionBranch->SetAddress(&edmVersion);
+        const auto edmVersion = podio::version::Version{};
+        auto* tmpPtr = &edmVersion;
+        edmVersionBranch->SetAddress(&tmpPtr);
         edmVersionBranch->GetEntry(0);
-        edmVersions.emplace_back(name, *edmVersion);
-        delete edmVersion;
+        edmVersions.emplace_back(name, edmVersion);
       }
     }
 
-    m_datamodelHolder = DatamodelDefinitionHolder(std::move(*datamodelDefs), std::move(edmVersions));
-    delete datamodelDefs;
+    m_datamodelHolder = DatamodelDefinitionHolder(std::move(datamodelDefs), std::move(edmVersions));
   }
 
   // Do some work up front for setting up categories and setup all the chains
@@ -320,7 +322,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   // demand when the category is first read
   m_availCategories = ::podio::getAvailableCategories(m_metaChain.get());
   for (const auto& cat : m_availCategories) {
-    auto [it, _] = m_categories.try_emplace(cat, std::make_unique<TChain>(cat.c_str()));
+    const auto [it, _] = m_categories.try_emplace(cat, std::make_unique<TChain>(cat.c_str()));
     for (const auto& fn : filenames) {
       it->second.chain->Add(fn.c_str());
     }
@@ -328,7 +330,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
 }
 
 unsigned ROOTReader::getEntries(const std::string& name) const {
-  if (auto it = m_categories.find(name); it != m_categories.end()) {
+  if (const auto it = m_categories.find(name); it != m_categories.end()) {
     return it->second.chain->GetEntries();
   }
 
@@ -362,12 +364,12 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
     const auto collectionClass = TClass::GetClass(collType.c_str());
     // Need the collection here to setup all the branches. Have to manage the
     // temporary collection ourselves
-    auto collection =
+    const auto collection =
         std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
     root_utils::CollectionBranches branches{};
     if (isSubsetColl) {
       // Only one branch will exist and we can trivially get its name
-      auto brName = root_utils::refBranch(name, 0);
+      const auto brName = root_utils::refBranch(name, 0);
       branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
       branches.refNames.emplace_back(std::move(brName));
     } else {
@@ -377,13 +379,13 @@ createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable
 
       const auto buffers = collection->getBuffers();
       for (size_t i = 0; i < buffers.references->size(); ++i) {
-        auto brName = root_utils::refBranch(name, i);
+        const auto brName = root_utils::refBranch(name, i);
         branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
         branches.refNames.emplace_back(std::move(brName));
       }
 
       for (size_t i = 0; i < buffers.vectorMembers->size(); ++i) {
-        auto brName = root_utils::vecBranch(name, i);
+        const auto brName = root_utils::vecBranch(name, i);
         branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
         branches.vecNames.emplace_back(std::move(brName));
       }
@@ -414,7 +416,7 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
     root_utils::CollectionBranches branches{};
     if (isSubsetColl) {
       // Only one branch will exist and we can trivially get its name
-      auto brName = root_utils::subsetBranch(name);
+      const auto brName = root_utils::subsetBranch(name);
       branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
       branches.refNames.emplace_back(std::move(brName));
     } else {
@@ -424,12 +426,12 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
       for (const auto& relName : relVecNames.relations) {
-        auto brName = root_utils::refBranch(name, relName);
+        const auto brName = root_utils::refBranch(name, relName);
         branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
         branches.refNames.emplace_back(std::move(brName));
       }
       for (const auto& vecName : relVecNames.vectorMembers) {
-        auto brName = root_utils::refBranch(name, vecName);
+        const auto brName = root_utils::refBranch(name, vecName);
         branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
         branches.vecNames.emplace_back(std::move(brName));
       }
