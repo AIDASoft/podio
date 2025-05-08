@@ -1,7 +1,6 @@
 #include "podio/RNTupleReader.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
-#include "podio/CollectionIDTable.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
 #include "podio/utilities/RootHelpers.h"
@@ -11,7 +10,11 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iostream>
 #include <memory>
+#include <string>
+#include <tuple>
+#include <vector>
 
 // Adjust for the move of this out of ROOT v7 in
 // https://github.com/root-project/root/pull/17281
@@ -24,7 +27,7 @@ using ROOT::Experimental::RException;
 namespace podio {
 
 template <typename T>
-void RNTupleReader::readParams(const std::string& name, unsigned localEntry, unsigned readerIndex,
+void RNTupleReader::readParams(const std::string& name, const unsigned localEntry, const unsigned readerIndex,
                                GenericParameters& params) {
   auto keyView = m_readers[name][readerIndex]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto valueView = m_readers[name][readerIndex]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
@@ -32,7 +35,7 @@ void RNTupleReader::readParams(const std::string& name, unsigned localEntry, uns
   params.loadFrom(keyView(localEntry), valueView(localEntry));
 }
 
-GenericParameters RNTupleReader::readEventMetaData(const std::string& name, unsigned localEntry, unsigned readerIndex) {
+GenericParameters RNTupleReader::readEventMetaData(const std::string& name, const unsigned localEntry, const unsigned readerIndex) {
   GenericParameters params;
 
   readParams<int>(name, localEntry, readerIndex, params);
@@ -44,11 +47,11 @@ GenericParameters RNTupleReader::readEventMetaData(const std::string& name, unsi
 }
 
 bool RNTupleReader::initCategory(const std::string& category) {
-  if (std::find(m_availableCategories.begin(), m_availableCategories.end(), category) == m_availableCategories.end()) {
+  if (std::ranges::find(m_availableCategories, category) == m_availableCategories.end()) {
     return false;
   }
   // Assume that the metadata is the same in all files
-  auto filename = m_filenames[0];
+  const auto filename = m_filenames[0];
 
   auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
       {root_utils::collInfoName(category)});
@@ -66,7 +69,7 @@ void RNTupleReader::openFile(const std::string& filename) {
 void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
-  for (auto& filename : filenames) {
+  for (const auto& filename : filenames) {
     if (m_metadata_readers.find(filename) == m_metadata_readers.end()) {
       m_metadata_readers[filename] = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename);
     }
@@ -75,7 +78,7 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   m_metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
 
   auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
-  auto version = versionView(0);
+  const auto version = versionView(0);
 
   m_fileVersion = podio::version::Version{version[0], version[1], version[2]};
 
@@ -85,7 +88,7 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   for (const auto& [name, _] : edm) {
     try {
       auto edmVersionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
-      auto edmVersion = edmVersionView(0);
+      const auto edmVersion = edmVersionView(0);
       edmVersions.emplace_back(name, podio::version::Version{edmVersion[0], edmVersion[1], edmVersion[2]});
     } catch (const RException&) {
     }
@@ -100,7 +103,7 @@ unsigned RNTupleReader::getEntries(const std::string& name) {
   if (m_readers.find(name) == m_readers.end()) {
     m_readerEntries[name].reserve(m_filenames.size() + 1);
     m_readerEntries[name].push_back(0);
-    for (auto& filename : m_filenames) {
+    for (const auto& filename : m_filenames) {
       try {
         m_readers[name].emplace_back(root_compat::RNTupleReader::Open(name, filename));
         m_readerEntries[name].push_back(m_readerEntries[name].back() + m_readers[name].back()->GetNEntries());
@@ -159,16 +162,16 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   // m_readerEntries contains the accumulated entries for all the readers
   // therefore, the first number that is lower or equal to the entry number
   // is at the index of the reader that contains the entry
-  auto upper = std::ranges::upper_bound(m_readerEntries[category], entNum);
-  auto localEntry = entNum - *(upper - 1);
-  auto readerIndex = upper - 1 - m_readerEntries[category].begin();
+  const auto upper = std::ranges::upper_bound(m_readerEntries[category], entNum);
+  const auto localEntry = entNum - *(upper - 1);
+  const auto readerIndex = upper - 1 - m_readerEntries[category].begin();
 
   ROOTFrameData::BufferMap buffers;
   // We need to create a non-bare entry here, because the entries for the
   // parameters are not explicitly (re)set and we need them default initialized.
   // In principle we would only need a bare entry for the collection data, since
   // we set all the fields there in any case.
-  auto dentry = m_readers[category][readerIndex]->GetModel().CreateEntry();
+  const auto dentry = m_readers[category][readerIndex]->GetModel().CreateEntry();
 
   for (const auto& coll : collInfo) {
     if (!collsToRead.empty() && std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
@@ -176,8 +179,8 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     }
     const auto& collType = coll.dataType;
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
-    auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
+    const auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
+    const auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
     if (!maybeBuffers) {
       std::cout << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
@@ -186,8 +189,8 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     }
 
     if (coll.isSubset) {
-      auto brName = root_utils::subsetBranch(coll.name);
-      auto vec = new std::vector<podio::ObjectID>;
+      const auto brName = root_utils::subsetBranch(coll.name);
+      const auto vec = new std::vector<podio::ObjectID>;
       dentry->BindRawPtr(brName, vec);
       collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
     } else {
@@ -196,7 +199,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
       for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
         const auto relName = relVecNames.relations[j];
-        auto vec = new std::vector<podio::ObjectID>;
+        const auto vec = new std::vector<podio::ObjectID>;
         const auto brName = root_utils::refBranch(coll.name, relName);
         dentry->BindRawPtr(brName, vec);
         collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);

@@ -1,7 +1,6 @@
 #ifndef PODIO_ROOTWRITER_H
 #define PODIO_ROOTWRITER_H
 
-#include "podio/CollectionIDTable.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 
