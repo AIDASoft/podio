@@ -35,7 +35,8 @@ void RNTupleReader::readParams(const std::string& name, const unsigned localEntr
   params.loadFrom(keyView(localEntry), valueView(localEntry));
 }
 
-GenericParameters RNTupleReader::readEventMetaData(const std::string& name, const unsigned localEntry, const unsigned readerIndex) {
+GenericParameters RNTupleReader::readEventMetaData(const std::string& name, const unsigned localEntry,
+                                                   const unsigned readerIndex) {
   GenericParameters params;
 
   readParams<int>(name, localEntry, readerIndex, params);
