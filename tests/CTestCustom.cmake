@@ -53,6 +53,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
     write_old_data_root
     read_new_data_root
+
+    read_with_rdatasource_root
+    read_python_with_rdatasource_root
   )
 
   foreach(version in @root_legacy_test_versions@)

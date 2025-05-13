@@ -52,6 +52,7 @@ jobs:
               -DENABLE_SIO=ON \
               -DENABLE_JULIA=ON \
               -DENABLE_RNTUPLE=ON \
+              -DENABLE_DATASOURCE=ON \
               -G Ninja ..
             echo "::endgroup::"
             echo "::group::Build"
