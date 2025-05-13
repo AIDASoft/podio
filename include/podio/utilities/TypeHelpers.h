@@ -276,7 +276,9 @@ concept CollectionType = !std::is_abstract_v<T> && std::derived_from<T, Collecti
       typename T::reverse_iterator;
       requires std::random_access_iterator<typename T::reverse_iterator>;
       // member functions
-      requires std::same_as<std::remove_cvref_t<decltype(t.create())>, typename T::mutable_type>;
+      requires std::same_as<std::remove_reference_t<decltype(t.create())>,
+                            typename T::mutable_type>; // UserDataCollection::create() returns reference which has to be
+                                                       // stripped to be same as expected typedef
       { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::mutable_type>>>()) };
       { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::value_type>>>()) };
       { t.begin() } -> std::same_as<typename T::iterator>;
@@ -291,11 +293,13 @@ concept CollectionType = !std::is_abstract_v<T> && std::derived_from<T, Collecti
       { t.rend() } -> std::same_as<typename T::reverse_iterator>;
       { t.crend() } -> std::same_as<typename T::const_reverse_iterator>;
       { ct.rend() } -> std::same_as<typename T::const_reverse_iterator>;
-      requires std::same_as<std::remove_cvref_t<decltype(t[std::declval<typename T::size_type>()])>,
+      // UserDataCollection element access returns by reference or const reference which has to be stripped to be same
+      // as expected typedef
+      requires std::same_as<std::remove_reference_t<decltype(t[std::declval<typename T::size_type>()])>,
                             typename T::mutable_type>;
       requires std::same_as<std::remove_cvref_t<decltype(ct[std::declval<typename T::size_type>()])>,
                             typename T::value_type>;
-      requires std::same_as<std::remove_cvref_t<decltype(t.at(std::declval<typename T::size_type>()))>,
+      requires std::same_as<std::remove_reference_t<decltype(t.at(std::declval<typename T::size_type>()))>,
                             typename T::mutable_type>;
       requires std::same_as<std::remove_cvref_t<decltype(ct.at(std::declval<typename T::size_type>()))>,
                             typename T::value_type>;
