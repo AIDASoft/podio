@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "catch2/catch_test_macros.hpp"
@@ -23,6 +24,7 @@
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0
@@ -390,6 +392,15 @@ TEST_CASE("thread-safe prepareForWrite", "[basics][multithread]") {
   }
 }
 
+TEST_CASE("UserDataCollection collection concept", "[concepts]") {
+  // check each type in tuple
+  std::apply(
+      []<typename... Ts>(Ts...) {
+        ([]<typename T>(T) { STATIC_REQUIRE(podio::CollectionType<podio::UserDataCollection<T>>); }(Ts{}), ...);
+      },
+      podio::SupportedUserDataTypes{});
+}
+
 TEST_CASE("UserDataCollection print", "[basics]") {
   auto coll = podio::UserDataCollection<int32_t>();
   coll.push_back(1);
@@ -400,6 +411,19 @@ TEST_CASE("UserDataCollection print", "[basics]") {
   coll.print(sstr);
 
   REQUIRE(sstr.str() == "[1, 2, 3]");
+}
+
+TEST_CASE("UserDataCollection access", "[basics]") {
+  auto coll = podio::UserDataCollection<int32_t>();
+  auto& x = coll.create();
+  x = 42;
+  REQUIRE(coll.size() == 1);
+  REQUIRE(coll.at(0) == 42);
+  coll.at(0) = 43;
+  REQUIRE(coll[0] == 43);
+  coll[0] = 44;
+  REQUIRE(std::as_const(coll).at(0) == 44);
+  REQUIRE(std::as_const(coll)[0] == 44);
 }
 
 /*
@@ -607,6 +631,11 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
   REQUIRE(ex.comp().i == 42);
   REQUIRE(ex.comp().arr[0] == 1.2);
   REQUIRE(ex.comp().arr[1] == 3.4);
+}
+
+TEST_CASE("Collection concepts", "[collections][concepts]") {
+  STATIC_REQUIRE(podio::CollectionType<ExampleClusterCollection>);
+  STATIC_REQUIRE(podio::CollectionType<ExampleHitCollection>);
 }
 
 TEST_CASE("Collection size and empty", "[basics][collections]") {

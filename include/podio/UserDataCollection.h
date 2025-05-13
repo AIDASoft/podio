@@ -206,6 +206,10 @@ public:
 
   // ----- some wrappers for std::vector and access to the complete std::vector (if really needed)
 
+  typename std::vector<BasicType>::reference create() {
+    return _vec.emplace_back();
+  }
+
   iterator begin() {
     return _vec.begin();
   }
@@ -249,6 +253,13 @@ public:
   }
   typename std::vector<BasicType>::const_reference operator[](size_t idx) const {
     return _vec[idx];
+  }
+
+  typename std::vector<BasicType>::reference at(size_t idx) {
+    return _vec.at(idx);
+  }
+  typename std::vector<BasicType>::const_reference at(size_t idx) const {
+    return _vec.at(idx);
   }
 
   void resize(size_t count) {
