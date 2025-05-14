@@ -188,7 +188,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
 
   auto collInfo = std::vector<root_utils::CollectionWriteInfo>();
   auto* collInfoPtr = &collInfo;
-  if (m_fileVersion >= podio::version::Version{1, 3, 0}) {
+  if (m_fileVersion >= podio::version::Version{1, 2, 999}) {
     collInfoBranch->SetAddress(&collInfoPtr);
     collInfoBranch->GetEntry(0);
   } else {
@@ -217,7 +217,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category
 
   // Recreate the idTable form the collection info if necessary, otherwise read
   // it directly
-  if (m_fileVersion >= podio::version::Version{1, 3, 0}) {
+  if (m_fileVersion >= podio::version::Version{1, 2, 999}) {
     catInfo.table = root_utils::makeCollIdTable(collInfo);
   } else {
     catInfo.table = std::make_shared<podio::CollectionIDTable>();
