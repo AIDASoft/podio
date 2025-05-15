@@ -1,3 +1,192 @@
+# v01-03
+
+* 2025-05-14 jmcarcell ([PR#780](https://github.com/AIDASoft/podio/pull/780))
+  - Read the collection information starting with version 1.2.999 to maintain compatibility with the files produced with podio 1.2.99
+  - Bump the version to 1.2.999
+
+* 2025-05-13 jmcarcell ([PR#779](https://github.com/AIDASoft/podio/pull/779))
+  - Ignore the datasource tests when using the address sanitizer since the tests that create their input files are also ignored
+  - Enable `-DENABLE_DATASOURCE` when building with sanitizer (although all the related tests will be ignored)
+
+* 2025-05-13 jmcarcell ([PR#775](https://github.com/AIDASoft/podio/pull/775))
+  - Define `typeName` outside of each object class, in addition to the existing definition inside the class.
+
+* 2025-05-13 Mateusz Jakub Fila ([PR#758](https://github.com/AIDASoft/podio/pull/758))
+  - Formalize expected collection interface with a concept
+  - Add `at` and `create` to `UserDataCollection`
+
+* 2025-05-08 jmcarcell ([PR#777](https://github.com/AIDASoft/podio/pull/777))
+  Clean up the ROOT readers and writers
+    - Add const where possible
+    - Use functions from `std::ranges` when possible
+    - Do not use `new` and `delete` when it's not needed (`ROOTReader.cc`)
+    - Clean up includes
+    - Change some indexes to size_t instead of int to avoid implicit conversions (doesn't change anything)
+
+* 2025-05-07 Thomas Madlener ([PR#711](https://github.com/AIDASoft/podio/pull/711))
+  - Store the collection information in a proper `struct` instead of using a `tuple` to facilitate access for non podio based backends (e.g. Julia)
+  - Harmonize the format of RNTuple and TTree based ROOT backends
+    - Both now store the collection information into the `podio_metadata` TTree / Model as a `vector<podio::root_utils::CollectionWriteInfo>`, which contains all the necessary information for reading a collection.
+    - The collection ID and the name are part of this struct, so the `CollectionIDTable` is no longer written separately.
+  - **This is a breaking change in the format if you rely on reading the metadata about the stored collections.**
+
+* 2025-04-29 Thomas Madlener ([PR#773](https://github.com/AIDASoft/podio/pull/773))
+  - Make sure compilation with gcc11 is possible again and add a workflow based on LCG_107 and Ubuntu 22 to check compatibility in CI
+
+* 2025-04-28 Thomas Madlener ([PR#774](https://github.com/AIDASoft/podio/pull/774))
+  - Cleanup some no longer necessary cmake checks
+
+* 2025-04-28 jmcarcell ([PR#767](https://github.com/AIDASoft/podio/pull/767))
+  - Pass by const reference in the object constructor and member setters. Decide based on the the `is_builtin` member in python, that excludes containers of builtin types and datamodel types.
+  - Add const when possible for other function parameters
+  - Update the documentation for the `signature` member.
+
+* 2025-04-25 jmcarcell ([PR#771](https://github.com/AIDASoft/podio/pull/771))
+  - Remove double locking in `prepareForWrite`; acquire the lock only once
+
+* 2025-04-23 Thomas Madlener ([PR#769](https://github.com/AIDASoft/podio/pull/769))
+  - Make sure that the sanitizer build workflows also use ccache and avoid concurrent runs on the same git ref
+
+* 2025-04-23 Thomas Madlener ([PR#768](https://github.com/AIDASoft/podio/pull/768))
+  - Keep RNTuple support enabled for ROOT 6.32, but emit a warning at CMake stage
+
+* 2025-04-22 Thomas Madlener ([PR#757](https://github.com/AIDASoft/podio/pull/757))
+  - Make sure that podio RNTuple readers and writers work with ROOT 6.34 and later versions.
+   - **Bump the minimum required version of ROOT for RNTuple support to 6.34**. That is where the file format has been stabilized, but the API has only moved out of the `Experimental` namespace in 6.36.
+
+* 2025-04-15 Thomas Madlener ([PR#764](https://github.com/AIDASoft/podio/pull/764))
+  - Use `ccache` in CI to speed up workflows
+  - Add more workflows based on Key4hep
+  - Cancel concurrent workflows for changes pushed before they finished
+
+* 2025-04-09 Thomas Madlener ([PR#763](https://github.com/AIDASoft/podio/pull/763))
+  - Remove a leftover empty CMake variable. The corresponding code has been removed in [#662](https://github.com/AIDASoft/podio/pull/662).
+
+* 2025-04-09 jmcarcell ([PR#761](https://github.com/AIDASoft/podio/pull/761))
+  - Generate in `datamodel.h` additional lists with all the data and link types
+  - Add tests using this functionality
+
+* 2025-04-08 jmcarcell ([PR#762](https://github.com/AIDASoft/podio/pull/762))
+  - Fix `podio::Link::typeName` that was wrongly including "Collection"
+
+* 2025-04-01 Thomas Madlener ([PR#756](https://github.com/AIDASoft/podio/pull/756))
+  - Cache *ExternalData* fetched by CMake to avoid failing CI due to potentially flaky or overloaded inrastructure
+
+* 2025-04-01 Mateusz Jakub Fila ([PR#748](https://github.com/AIDASoft/podio/pull/748))
+  - Change type of `typeName` members to `std::string_view`. Add utility to concatenate `std::string_view`s at compile time.
+  - Add `typeName` static member to link collections. `typeName` can be checked at compilation time.
+  - Deprecate `linkCollTypeName` and `linkTypeName` helper functions.
+
+* 2025-03-28 Mateusz Jakub Fila ([PR#759](https://github.com/AIDASoft/podio/pull/759))
+  - Fix a few more typos readmes, docstrings, assert messages
+
+* 2025-03-26 Mateusz Jakub Fila ([PR#755](https://github.com/AIDASoft/podio/pull/755))
+  - allow `^` in units in datamodel definitions
+
+* 2025-03-26 Mateusz Jakub Fila ([PR#754](https://github.com/AIDASoft/podio/pull/754))
+  - Add `front`, `back`, `cbegin`, `cend` and `operator bool` to the `RelationRange` so it has all the methods from `std::ranges::view_interface`
+
+* 2025-03-25 Mateusz Jakub Fila ([PR#752](https://github.com/AIDASoft/podio/pull/752))
+  - Update `max_size` reported by collections to include limit due to `ObjectID` index type
+
+* 2025-03-21 jmcarcell ([PR#751](https://github.com/AIDASoft/podio/pull/751))
+  - Add const to void* in OrderKey.h
+
+* 2025-03-10 Mateusz Jakub Fila ([PR#749](https://github.com/AIDASoft/podio/pull/749))
+  - Fix typo in tests so the usage of links with unordered associative containers is actually tested
+
+* 2025-03-10 scott snyder ([PR#747](https://github.com/AIDASoft/podio/pull/747))
+  - Fix a build issue when the python version used is different than the one found by default by cmake.
+
+* 2025-03-10 jmcarcell ([PR#746](https://github.com/AIDASoft/podio/pull/746))
+  - Support Unity builds Add missing include guards and make sure some functions such as `createBuffer` have a different name for each collection.
+
+* 2025-03-07 Thomas Madlener ([PR#745](https://github.com/AIDASoft/podio/pull/745))
+  - Fix the (potential) import error for `podio.version.build_version` by not relying on ROOTs JIT, but rather parsing the python `__version__` into the correct type.
+
+* 2025-03-06 Thomas Madlener ([PR#744](https://github.com/AIDASoft/podio/pull/744))
+  - Add v01-01 and v01-02 input root files for backwards compatibility checks
+
+* 2025-03-06 Mateusz Jakub Fila ([PR#743](https://github.com/AIDASoft/podio/pull/743))
+  - Prevent error-prone copy-assignment to temporary datatype and link objects. The compilation error instead of unexpected behaviour when by mistake using the podio collection iterators as "LegacyOutputIterator" is more very likely (e.g. `std::fill` will most likely not compile instead compiling but giving wrong results)
+
+* 2025-02-28 Mateusz Jakub Fila ([PR#738](https://github.com/AIDASoft/podio/pull/738))
+  - Add `std::hash` for podio datatype objects, interfaces and links. Datatypes, interfaces and links can be used in unordered associative containers such as `std::unordered_set` or `std::unordered_map`
+
+* 2025-02-28 Mateusz Jakub Fila ([PR#720](https://github.com/AIDASoft/podio/pull/720))
+  - Collection iterators fulfill `forward_iterator`, `bidirectional_iterator` and `random_access_iterator`concepts. The collections can be used with more categories of range algorithms - up to `random_access_range`, for example `std::adjacent_find`, `std::lower_bound`, `std::fold_right`, and more views like `std::ranges::views::reverse`. 
+  - `LinkCollection` and its iterators fulfill concepts up to `random_access_range` and `random_access_iterator`.
+  - Add reverse iterator methods to Collections, `LinkCollection` and `UserDataCollection`.
+  - **CollectionIterators of generated datamodels now define `operator<=>` instead of `operator!=`. This will require at least c++20 to compile, but should not affect existing behavior.**
+
+* 2025-02-21 Mateusz Jakub Fila ([PR#742](https://github.com/AIDASoft/podio/pull/742))
+  - Fixed argument resolution in the roundtrip test to prevent failures when SIO is not present.
+
+* 2025-02-20 jmcarcell ([PR#741](https://github.com/AIDASoft/podio/pull/741))
+  - Remove warning about C++17 that is now obsolete
+
+* 2025-02-19 Dmitry Kalinkin ([PR#733](https://github.com/AIDASoft/podio/pull/733))
+  - Added `std::hash<podio::ObjectID>` specialization to allow `std::unordered_map<podio::ObjectID, T>`
+
+* 2025-02-18 Mateusz Jakub Fila ([PR#737](https://github.com/AIDASoft/podio/pull/737))
+  - Replace  `sizeof(T) == 0` with `always_false` to fail static assertions in `constexpr if`
+
+* 2025-02-17 Mateusz Jakub Fila ([PR#736](https://github.com/AIDASoft/podio/pull/736))
+  - fix setting link with interface without specifying link direction
+
+* 2025-02-17 Mateusz Jakub Fila ([PR#729](https://github.com/AIDASoft/podio/pull/729))
+  - POSIX glob patterns can be used in `makeReader` and `CreateDataSource`. Added standalone helper `podio::utilities::expand_glob`to resolve globs.
+  - Added passing a list of files to `get_reader`
+
+* 2025-02-12 jmcarcell ([PR#734](https://github.com/AIDASoft/podio/pull/734))
+  - Add LANGUAGES CXX to CMakeLists.txt to disable checks for a C compiler
+
+* 2025-02-04 Thomas Madlener ([PR#732](https://github.com/AIDASoft/podio/pull/732))
+  - Make sure that `isValid` works the same for `LinkCollection` as it does for other collections
+  - Make sure to set the `collectionID` for all links in a collection
+
+* 2025-01-31 Thomas Madlener ([PR#730](https://github.com/AIDASoft/podio/pull/730))
+  - Switch to a `LCG_106b` for the sanitizer workflows in CI to pick up a newer version of ROOT.
+  - Swtich to `LCG_106b` for tests with RNTuple
+  - Add an `LCG_104` (root v6.28.04) based workflow for ensuring compatibility with the minimal version of ROOT
+
+* 2025-01-21 Dmitry Kalinkin ([PR#728](https://github.com/AIDASoft/podio/pull/728))
+  - Improved exception message for the case when relation to untracked object is to be persisted.
+
+* 2025-01-21 Mateusz Jakub Fila ([PR#727](https://github.com/AIDASoft/podio/pull/727))
+  - Make `RelationRange` fulfill the `std::ranges::view` and `std::ranges::borrowed_range` concepts
+
+* 2025-01-20 Thomas Madlener ([PR#724](https://github.com/AIDASoft/podio/pull/724))
+  - Start to refactor the read tests partially to break up the large `processEvent` function into smaller more manageable chunks.
+  - Fix a small logic bug in the creation of the test files
+
+* 2025-01-17 Mateusz Jakub Fila ([PR#726](https://github.com/AIDASoft/podio/pull/726))
+  - Removed redundant check for C++20
+  - Removed iterator test that is no longer required in C++
+
+* 2025-01-17 Mateusz Jakub Fila ([PR#725](https://github.com/AIDASoft/podio/pull/725))
+  - Updated `LinkCollectionIterator` to fulifl the same iterator concept and iterator category as other collection iterators. `LinkCollection` fulfills the same range concepts as other collections. Algorithms like `std::ranges::find` or `std::count` are supported.
+
+* 2025-01-16 Thomas Madlener ([PR#723](https://github.com/AIDASoft/podio/pull/723))
+  - Replace several repeated map lookups with a single lookup inside RNTupleReader
+
+* 2025-01-09 jmcarcell ([PR#708](https://github.com/AIDASoft/podio/pull/708))
+  - Add support for reading several RNtuple files
+
+* 2025-01-08 jmcarcell ([PR#698](https://github.com/AIDASoft/podio/pull/698))
+  - **Make podio require c++20 and remove compatibility with c++17**
+  - Simplify template code by using `concept` and `require` when possible. In some places like the `UserDataCollection` and `GenericParameters` it seems that cppyy (3.1.2 with ROOT 6.32.06) doesn't like `requires` nor `concept` so they can't be changed for now.
+  - Use `consteval` when possible which, unlike `constexpr`, guarantees evaluation at compile-time
+  - Remove checks for versions above or below C++20 for the standard
+  - Use algorithms from std::ranges like `std::ranges::find` and `std::ranges::sort`
+  - Remove the ubuntu workflows since they are built on C++17
+
+* 2025-01-07 Thomas Madlener ([PR#719](https://github.com/AIDASoft/podio/pull/719))
+  - Make sure that the `RNTupleReader` still builds with ROOT > 6.34
+
+* 2024-12-19 Mateusz Jakub Fila ([PR#718](https://github.com/AIDASoft/podio/pull/718))
+  - Add `mutable_type` typedef to collection to simplify inferring mutable type. Add `mutable_type` typedef to user collection for compatibility with other collections.
+
 # v01-02
 
 * 2024-12-17 Thomas Madlener ([PR#715](https://github.com/AIDASoft/podio/pull/715))
