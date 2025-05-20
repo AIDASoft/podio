@@ -208,7 +208,7 @@ public:
   /// @returns       A const reference to the collection if it is available or to
   ///                an empty (static) collection
   template <CollectionType CollT>
-  const CollT& get(const CollT::value_type& object) const;
+  const CollT& get(const typename CollT::value_type& object) const;
 
   /// Get the collection pointer to which the passed object belongs from the
   /// Frame.
@@ -406,7 +406,7 @@ const CollT& Frame::get(const std::string& name) const {
 }
 
 template <CollectionType CollT>
-const CollT& Frame::get(const CollT::value_type& object) const {
+const CollT& Frame::get(const typename CollT::value_type& object) const {
   const auto name = m_self->getIDTable().name(object.id().collectionID);
   return get<CollT>(name.value_or(""));
 }
