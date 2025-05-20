@@ -444,10 +444,9 @@ TEST_CASE("Frame get from object", "[frame][basics]") {
   REQUIRE(frameClusters[0] == objectClusters[0]);
 
   const auto* collPtr = event.get(cluster);
+  STATIC_REQUIRE(std::is_same_v<decltype(collPtr), const ExampleClusterCollection*>);
   REQUIRE(collPtr != nullptr);
-  const auto* clusterCollPtr = dynamic_cast<const ExampleClusterCollection*>(collPtr);
-  REQUIRE(clusterCollPtr != nullptr);
-  REQUIRE((*clusterCollPtr)[0] == cluster);
+  REQUIRE((*collPtr)[0] == cluster);
 }
 
 TEST_CASE("EIC-Jana2 cleanup use case", "[memory-management][492][174]") {

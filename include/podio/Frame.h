@@ -220,7 +220,7 @@ public:
   /// @returns A const pointer to a collection if it is available or a nullptr
   ///          if it is not
   template <ObjectType O>
-  inline const podio::CollectionBase* get(const O& object) const;
+  inline const typename O::collection_type* get(const O& object) const;
 
   /// (Destructively) move a collection into the Frame and get a reference to
   /// the inserted collection back for further use.
@@ -416,9 +416,9 @@ inline const podio::CollectionBase* Frame::get(const std::string& name) const {
 }
 
 template <ObjectType O>
-inline const podio::CollectionBase* Frame::get(const O& object) const {
+inline const typename O::collection_type* Frame::get(const O& object) const {
   const auto name = m_self->getIDTable().name(object.id().collectionID);
-  return get(name.value_or(""));
+  return dynamic_cast<const typename O::collection_type*>(get(name.value_or("")));
 }
 
 inline void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {
