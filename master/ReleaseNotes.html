@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v01-02 &mdash; PODIO  documentation</title>
+  <title>v01-03 &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -705,7 +705,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">v01-02</li>
+      <li class="breadcrumb-item active">v01-03</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -714,7 +714,304 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="v01-02">
+  <section id="v01-03">
+<h1>v01-03<a class="headerlink" href="#v01-03" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2025-05-14 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/780">PR#780</a>)</p>
+<ul>
+<li><p>Read the collection information starting with version 1.2.999 to maintain compatibility with the files produced with podio 1.2.99</p></li>
+<li><p>Bump the version to 1.2.999</p></li>
+</ul>
+</li>
+<li><p>2025-05-13 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/779">PR#779</a>)</p>
+<ul>
+<li><p>Ignore the datasource tests when using the address sanitizer since the tests that create their input files are also ignored</p></li>
+<li><p>Enable <code class="docutils literal notranslate"><span class="pre">-DENABLE_DATASOURCE</span></code> when building with sanitizer (although all the related tests will be ignored)</p></li>
+</ul>
+</li>
+<li><p>2025-05-13 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/775">PR#775</a>)</p>
+<ul>
+<li><p>Define <code class="docutils literal notranslate"><span class="pre">typeName</span></code> outside of each object class, in addition to the existing definition inside the class.</p></li>
+</ul>
+</li>
+<li><p>2025-05-13 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/758">PR#758</a>)</p>
+<ul>
+<li><p>Formalize expected collection interface with a concept</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">at</span></code> and <code class="docutils literal notranslate"><span class="pre">create</span></code> to <code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-05-08 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/777">PR#777</a>)
+Clean up the ROOT readers and writers</p>
+<ul>
+<li><p>Add const where possible</p></li>
+<li><p>Use functions from <code class="docutils literal notranslate"><span class="pre">std::ranges</span></code> when possible</p></li>
+<li><p>Do not use <code class="docutils literal notranslate"><span class="pre">new</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code> when it’s not needed (<code class="docutils literal notranslate"><span class="pre">ROOTReader.cc</span></code>)</p></li>
+<li><p>Clean up includes</p></li>
+<li><p>Change some indexes to size_t instead of int to avoid implicit conversions (doesn’t change anything)</p></li>
+</ul>
+</li>
+<li><p>2025-05-07 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/711">PR#711</a>)</p>
+<ul>
+<li><p>Store the collection information in a proper <code class="docutils literal notranslate"><span class="pre">struct</span></code> instead of using a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> to facilitate access for non podio based backends (e.g. Julia)</p></li>
+<li><p>Harmonize the format of RNTuple and TTree based ROOT backends</p>
+<ul>
+<li><p>Both now store the collection information into the <code class="docutils literal notranslate"><span class="pre">podio_metadata</span></code> TTree / Model as a <code class="docutils literal notranslate"><span class="pre">vector&lt;podio::root_utils::CollectionWriteInfo&gt;</span></code>, which contains all the necessary information for reading a collection.</p></li>
+<li><p>The collection ID and the name are part of this struct, so the <code class="docutils literal notranslate"><span class="pre">CollectionIDTable</span></code> is no longer written separately.</p></li>
+</ul>
+</li>
+<li><p><strong>This is a breaking change in the format if you rely on reading the metadata about the stored collections.</strong></p></li>
+</ul>
+</li>
+<li><p>2025-04-29 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/773">PR#773</a>)</p>
+<ul>
+<li><p>Make sure compilation with gcc11 is possible again and add a workflow based on LCG_107 and Ubuntu 22 to check compatibility in CI</p></li>
+</ul>
+</li>
+<li><p>2025-04-28 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/774">PR#774</a>)</p>
+<ul>
+<li><p>Cleanup some no longer necessary cmake checks</p></li>
+</ul>
+</li>
+<li><p>2025-04-28 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/767">PR#767</a>)</p>
+<ul>
+<li><p>Pass by const reference in the object constructor and member setters. Decide based on the the <code class="docutils literal notranslate"><span class="pre">is_builtin</span></code> member in python, that excludes containers of builtin types and datamodel types.</p></li>
+<li><p>Add const when possible for other function parameters</p></li>
+<li><p>Update the documentation for the <code class="docutils literal notranslate"><span class="pre">signature</span></code> member.</p></li>
+</ul>
+</li>
+<li><p>2025-04-25 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/771">PR#771</a>)</p>
+<ul>
+<li><p>Remove double locking in <code class="docutils literal notranslate"><span class="pre">prepareForWrite</span></code>; acquire the lock only once</p></li>
+</ul>
+</li>
+<li><p>2025-04-23 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/769">PR#769</a>)</p>
+<ul>
+<li><p>Make sure that the sanitizer build workflows also use ccache and avoid concurrent runs on the same git ref</p></li>
+</ul>
+</li>
+<li><p>2025-04-23 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/768">PR#768</a>)</p>
+<ul>
+<li><p>Keep RNTuple support enabled for ROOT 6.32, but emit a warning at CMake stage</p></li>
+</ul>
+</li>
+<li><p>2025-04-22 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/757">PR#757</a>)</p>
+<ul>
+<li><p>Make sure that podio RNTuple readers and writers work with ROOT 6.34 and later versions.</p></li>
+<li><p><strong>Bump the minimum required version of ROOT for RNTuple support to 6.34</strong>. That is where the file format has been stabilized, but the API has only moved out of the <code class="docutils literal notranslate"><span class="pre">Experimental</span></code> namespace in 6.36.</p></li>
+</ul>
+</li>
+<li><p>2025-04-15 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/764">PR#764</a>)</p>
+<ul>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">ccache</span></code> in CI to speed up workflows</p></li>
+<li><p>Add more workflows based on Key4hep</p></li>
+<li><p>Cancel concurrent workflows for changes pushed before they finished</p></li>
+</ul>
+</li>
+<li><p>2025-04-09 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/763">PR#763</a>)</p>
+<ul>
+<li><p>Remove a leftover empty CMake variable. The corresponding code has been removed in <a class="reference external" href="https://github.com/AIDASoft/podio/pull/662">#662</a>.</p></li>
+</ul>
+</li>
+<li><p>2025-04-09 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/761">PR#761</a>)</p>
+<ul>
+<li><p>Generate in <code class="docutils literal notranslate"><span class="pre">datamodel.h</span></code> additional lists with all the data and link types</p></li>
+<li><p>Add tests using this functionality</p></li>
+</ul>
+</li>
+<li><p>2025-04-08 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/762">PR#762</a>)</p>
+<ul>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">podio::Link::typeName</span></code> that was wrongly including “Collection”</p></li>
+</ul>
+</li>
+<li><p>2025-04-01 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/756">PR#756</a>)</p>
+<ul>
+<li><p>Cache <em>ExternalData</em> fetched by CMake to avoid failing CI due to potentially flaky or overloaded inrastructure</p></li>
+</ul>
+</li>
+<li><p>2025-04-01 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/748">PR#748</a>)</p>
+<ul>
+<li><p>Change type of <code class="docutils literal notranslate"><span class="pre">typeName</span></code> members to <code class="docutils literal notranslate"><span class="pre">std::string_view</span></code>. Add utility to concatenate <code class="docutils literal notranslate"><span class="pre">std::string_view</span></code>s at compile time.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">typeName</span></code> static member to link collections. <code class="docutils literal notranslate"><span class="pre">typeName</span></code> can be checked at compilation time.</p></li>
+<li><p>Deprecate <code class="docutils literal notranslate"><span class="pre">linkCollTypeName</span></code> and <code class="docutils literal notranslate"><span class="pre">linkTypeName</span></code> helper functions.</p></li>
+</ul>
+</li>
+<li><p>2025-03-28 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/759">PR#759</a>)</p>
+<ul>
+<li><p>Fix a few more typos readmes, docstrings, assert messages</p></li>
+</ul>
+</li>
+<li><p>2025-03-26 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/755">PR#755</a>)</p>
+<ul>
+<li><p>allow <code class="docutils literal notranslate"><span class="pre">^</span></code> in units in datamodel definitions</p></li>
+</ul>
+</li>
+<li><p>2025-03-26 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/754">PR#754</a>)</p>
+<ul>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">front</span></code>, <code class="docutils literal notranslate"><span class="pre">back</span></code>, <code class="docutils literal notranslate"><span class="pre">cbegin</span></code>, <code class="docutils literal notranslate"><span class="pre">cend</span></code> and <code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">bool</span></code> to the <code class="docutils literal notranslate"><span class="pre">RelationRange</span></code> so it has all the methods from <code class="docutils literal notranslate"><span class="pre">std::ranges::view_interface</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-03-25 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/752">PR#752</a>)</p>
+<ul>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">max_size</span></code> reported by collections to include limit due to <code class="docutils literal notranslate"><span class="pre">ObjectID</span></code> index type</p></li>
+</ul>
+</li>
+<li><p>2025-03-21 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/751">PR#751</a>)</p>
+<ul>
+<li><p>Add const to void* in OrderKey.h</p></li>
+</ul>
+</li>
+<li><p>2025-03-10 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/749">PR#749</a>)</p>
+<ul>
+<li><p>Fix typo in tests so the usage of links with unordered associative containers is actually tested</p></li>
+</ul>
+</li>
+<li><p>2025-03-10 scott snyder (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/747">PR#747</a>)</p>
+<ul>
+<li><p>Fix a build issue when the python version used is different than the one found by default by cmake.</p></li>
+</ul>
+</li>
+<li><p>2025-03-10 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/746">PR#746</a>)</p>
+<ul>
+<li><p>Support Unity builds Add missing include guards and make sure some functions such as <code class="docutils literal notranslate"><span class="pre">createBuffer</span></code> have a different name for each collection.</p></li>
+</ul>
+</li>
+<li><p>2025-03-07 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/745">PR#745</a>)</p>
+<ul>
+<li><p>Fix the (potential) import error for <code class="docutils literal notranslate"><span class="pre">podio.version.build_version</span></code> by not relying on ROOTs JIT, but rather parsing the python <code class="docutils literal notranslate"><span class="pre">__version__</span></code> into the correct type.</p></li>
+</ul>
+</li>
+<li><p>2025-03-06 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/744">PR#744</a>)</p>
+<ul>
+<li><p>Add v01-01 and v01-02 input root files for backwards compatibility checks</p></li>
+</ul>
+</li>
+<li><p>2025-03-06 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/743">PR#743</a>)</p>
+<ul>
+<li><p>Prevent error-prone copy-assignment to temporary datatype and link objects. The compilation error instead of unexpected behaviour when by mistake using the podio collection iterators as “LegacyOutputIterator” is more very likely (e.g. <code class="docutils literal notranslate"><span class="pre">std::fill</span></code> will most likely not compile instead compiling but giving wrong results)</p></li>
+</ul>
+</li>
+<li><p>2025-02-28 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/738">PR#738</a>)</p>
+<ul>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">std::hash</span></code> for podio datatype objects, interfaces and links. Datatypes, interfaces and links can be used in unordered associative containers such as <code class="docutils literal notranslate"><span class="pre">std::unordered_set</span></code> or <code class="docutils literal notranslate"><span class="pre">std::unordered_map</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-02-28 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/720">PR#720</a>)</p>
+<ul>
+<li><p>Collection iterators fulfill <code class="docutils literal notranslate"><span class="pre">forward_iterator</span></code>, <code class="docutils literal notranslate"><span class="pre">bidirectional_iterator</span></code> and <code class="docutils literal notranslate"><span class="pre">random_access_iterator</span></code>concepts. The collections can be used with more categories of range algorithms - up to <code class="docutils literal notranslate"><span class="pre">random_access_range</span></code>, for example <code class="docutils literal notranslate"><span class="pre">std::adjacent_find</span></code>, <code class="docutils literal notranslate"><span class="pre">std::lower_bound</span></code>, <code class="docutils literal notranslate"><span class="pre">std::fold_right</span></code>, and more views like <code class="docutils literal notranslate"><span class="pre">std::ranges::views::reverse</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code> and its iterators fulfill concepts up to <code class="docutils literal notranslate"><span class="pre">random_access_range</span></code> and <code class="docutils literal notranslate"><span class="pre">random_access_iterator</span></code>.</p></li>
+<li><p>Add reverse iterator methods to Collections, <code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code> and <code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code>.</p></li>
+<li><p><strong>CollectionIterators of generated datamodels now define <code class="docutils literal notranslate"><span class="pre">operator&lt;=&gt;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">operator!=</span></code>. This will require at least c++20 to compile, but should not affect existing behavior.</strong></p></li>
+</ul>
+</li>
+<li><p>2025-02-21 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/742">PR#742</a>)</p>
+<ul>
+<li><p>Fixed argument resolution in the roundtrip test to prevent failures when SIO is not present.</p></li>
+</ul>
+</li>
+<li><p>2025-02-20 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/741">PR#741</a>)</p>
+<ul>
+<li><p>Remove warning about C++17 that is now obsolete</p></li>
+</ul>
+</li>
+<li><p>2025-02-19 Dmitry Kalinkin (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/733">PR#733</a>)</p>
+<ul>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">std::hash&lt;podio::ObjectID&gt;</span></code> specialization to allow <code class="docutils literal notranslate"><span class="pre">std::unordered_map&lt;podio::ObjectID,</span> <span class="pre">T&gt;</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-02-18 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/737">PR#737</a>)</p>
+<ul>
+<li><p>Replace  <code class="docutils literal notranslate"><span class="pre">sizeof(T)</span> <span class="pre">==</span> <span class="pre">0</span></code> with <code class="docutils literal notranslate"><span class="pre">always_false</span></code> to fail static assertions in <code class="docutils literal notranslate"><span class="pre">constexpr</span> <span class="pre">if</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-02-17 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/736">PR#736</a>)</p>
+<ul>
+<li><p>fix setting link with interface without specifying link direction</p></li>
+</ul>
+</li>
+<li><p>2025-02-17 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/729">PR#729</a>)</p>
+<ul>
+<li><p>POSIX glob patterns can be used in <code class="docutils literal notranslate"><span class="pre">makeReader</span></code> and <code class="docutils literal notranslate"><span class="pre">CreateDataSource</span></code>. Added standalone helper <code class="docutils literal notranslate"><span class="pre">podio::utilities::expand_glob</span></code>to resolve globs.</p></li>
+<li><p>Added passing a list of files to <code class="docutils literal notranslate"><span class="pre">get_reader</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-02-12 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/734">PR#734</a>)</p>
+<ul>
+<li><p>Add LANGUAGES CXX to CMakeLists.txt to disable checks for a C compiler</p></li>
+</ul>
+</li>
+<li><p>2025-02-04 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/732">PR#732</a>)</p>
+<ul>
+<li><p>Make sure that <code class="docutils literal notranslate"><span class="pre">isValid</span></code> works the same for <code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code> as it does for other collections</p></li>
+<li><p>Make sure to set the <code class="docutils literal notranslate"><span class="pre">collectionID</span></code> for all links in a collection</p></li>
+</ul>
+</li>
+<li><p>2025-01-31 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/730">PR#730</a>)</p>
+<ul>
+<li><p>Switch to a <code class="docutils literal notranslate"><span class="pre">LCG_106b</span></code> for the sanitizer workflows in CI to pick up a newer version of ROOT.</p></li>
+<li><p>Swtich to <code class="docutils literal notranslate"><span class="pre">LCG_106b</span></code> for tests with RNTuple</p></li>
+<li><p>Add an <code class="docutils literal notranslate"><span class="pre">LCG_104</span></code> (root v6.28.04) based workflow for ensuring compatibility with the minimal version of ROOT</p></li>
+</ul>
+</li>
+<li><p>2025-01-21 Dmitry Kalinkin (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/728">PR#728</a>)</p>
+<ul>
+<li><p>Improved exception message for the case when relation to untracked object is to be persisted.</p></li>
+</ul>
+</li>
+<li><p>2025-01-21 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/727">PR#727</a>)</p>
+<ul>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">RelationRange</span></code> fulfill the <code class="docutils literal notranslate"><span class="pre">std::ranges::view</span></code> and <code class="docutils literal notranslate"><span class="pre">std::ranges::borrowed_range</span></code> concepts</p></li>
+</ul>
+</li>
+<li><p>2025-01-20 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/724">PR#724</a>)</p>
+<ul>
+<li><p>Start to refactor the read tests partially to break up the large <code class="docutils literal notranslate"><span class="pre">processEvent</span></code> function into smaller more manageable chunks.</p></li>
+<li><p>Fix a small logic bug in the creation of the test files</p></li>
+</ul>
+</li>
+<li><p>2025-01-17 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/726">PR#726</a>)</p>
+<ul>
+<li><p>Removed redundant check for C++20</p></li>
+<li><p>Removed iterator test that is no longer required in C++</p></li>
+</ul>
+</li>
+<li><p>2025-01-17 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/725">PR#725</a>)</p>
+<ul>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">LinkCollectionIterator</span></code> to fulifl the same iterator concept and iterator category as other collection iterators. <code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code> fulfills the same range concepts as other collections. Algorithms like <code class="docutils literal notranslate"><span class="pre">std::ranges::find</span></code> or <code class="docutils literal notranslate"><span class="pre">std::count</span></code> are supported.</p></li>
+</ul>
+</li>
+<li><p>2025-01-16 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/723">PR#723</a>)</p>
+<ul>
+<li><p>Replace several repeated map lookups with a single lookup inside RNTupleReader</p></li>
+</ul>
+</li>
+<li><p>2025-01-09 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/708">PR#708</a>)</p>
+<ul>
+<li><p>Add support for reading several RNtuple files</p></li>
+</ul>
+</li>
+<li><p>2025-01-08 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/698">PR#698</a>)</p>
+<ul>
+<li><p><strong>Make podio require c++20 and remove compatibility with c++17</strong></p></li>
+<li><p>Simplify template code by using <code class="docutils literal notranslate"><span class="pre">concept</span></code> and <code class="docutils literal notranslate"><span class="pre">require</span></code> when possible. In some places like the <code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code> and <code class="docutils literal notranslate"><span class="pre">GenericParameters</span></code> it seems that cppyy (3.1.2 with ROOT 6.32.06) doesn’t like <code class="docutils literal notranslate"><span class="pre">requires</span></code> nor <code class="docutils literal notranslate"><span class="pre">concept</span></code> so they can’t be changed for now.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">consteval</span></code> when possible which, unlike <code class="docutils literal notranslate"><span class="pre">constexpr</span></code>, guarantees evaluation at compile-time</p></li>
+<li><p>Remove checks for versions above or below C++20 for the standard</p></li>
+<li><p>Use algorithms from std::ranges like <code class="docutils literal notranslate"><span class="pre">std::ranges::find</span></code> and <code class="docutils literal notranslate"><span class="pre">std::ranges::sort</span></code></p></li>
+<li><p>Remove the ubuntu workflows since they are built on C++17</p></li>
+</ul>
+</li>
+<li><p>2025-01-07 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/719">PR#719</a>)</p>
+<ul>
+<li><p>Make sure that the <code class="docutils literal notranslate"><span class="pre">RNTupleReader</span></code> still builds with ROOT &gt; 6.34</p></li>
+</ul>
+</li>
+<li><p>2024-12-19 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/718">PR#718</a>)</p>
+<ul>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">mutable_type</span></code> typedef to collection to simplify inferring mutable type. Add <code class="docutils literal notranslate"><span class="pre">mutable_type</span></code> typedef to user collection for compatibility with other collections.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v01-02">
 <h1>v01-02<a class="headerlink" href="#v01-02" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>2024-12-17 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/715">PR#715</a>)</p>
