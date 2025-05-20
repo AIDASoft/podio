@@ -152,6 +152,20 @@ class FrameTest(unittest.TestCase):
         vals = frame.get_parameter("empty_param")
         self.assertEqual(len(vals), 0)
 
+    def test_frame_get_collection_from_object(self):
+        """Check that using an object (handle) to get a collection works"""
+        frame = Frame()
+        hits = ExampleHitCollection()
+        hit = hits.create()
+
+        with self.assertRaises(ReferenceError):
+            invalidHits = frame.get(hit)
+            _ = invalidHits[0]
+
+        hits = frame.put(hits, "hits")
+        hitsFromHit = frame.get(hit)
+        self.assertEqual(hit, hitsFromHit[0])
+
 
 class FrameReadTest(unittest.TestCase):
     """Unit tests for the Frame python bindings for Frames read from file.
