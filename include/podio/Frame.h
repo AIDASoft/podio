@@ -199,6 +199,29 @@ public:
   ///          if it is not
   const podio::CollectionBase* get(const std::string& name) const;
 
+  /// Get the collection to which the passed object belongs from the Frame.
+  ///
+  /// @tparam CollT  The type of the desired collection
+  /// @param  object The object for which the collection it belongs to should
+  ///                be retrieved
+  ///
+  /// @returns       A const reference to the collection if it is available or to
+  ///                an empty (static) collection
+  template <CollectionType CollT>
+  const CollT& get(const CollT::value_type& object) const;
+
+  /// Get the collection pointer to which the passed object belongs from the
+  /// Frame.
+  ///
+  /// @tparam O      The type of the object
+  /// @param  object The object for which the collection it belongs to should
+  ///                be retrieved
+  ///
+  /// @returns A const pointer to a collection if it is available or a nullptr
+  ///          if it is not
+  template <ObjectType O>
+  inline const podio::CollectionBase* get(const O& object) const;
+
   /// (Destructively) move a collection into the Frame and get a reference to
   /// the inserted collection back for further use.
   ///
@@ -382,8 +405,20 @@ const CollT& Frame::get(const std::string& name) const {
   return emptyColl;
 }
 
+template <CollectionType CollT>
+const CollT& Frame::get(const CollT::value_type& object) const {
+  const auto name = m_self->getIDTable().name(object.id().collectionID);
+  return get<CollT>(name.value_or(""));
+}
+
 inline const podio::CollectionBase* Frame::get(const std::string& name) const {
   return m_self->get(name);
+}
+
+template <ObjectType O>
+inline const podio::CollectionBase* Frame::get(const O& object) const {
+  const auto name = m_self->getIDTable().name(object.id().collectionID);
+  return get(name.value_or(""));
 }
 
 inline void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {

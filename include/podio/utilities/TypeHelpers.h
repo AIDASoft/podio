@@ -245,6 +245,11 @@ namespace detail {
 // forward declaration to be able to use it below
 class CollectionBase;
 
+/// Concept for checking whether a passed type T is (or can be) a podio
+/// generated handle class
+template <typename T>
+concept ObjectType = detail::isMutableHandleType<T> || detail::isDefaultHandleType<T>;
+
 /// Concept for checking whether a passed type T is a collection
 template <typename T>
 concept CollectionType = !std::is_abstract_v<T> && std::derived_from<T, CollectionBase> &&
