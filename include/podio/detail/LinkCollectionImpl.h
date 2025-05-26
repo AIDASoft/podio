@@ -85,19 +85,19 @@ public:
   }
 
   /// Returns the immutable object of given index
-  value_type operator[](size_t index) const {
+  value_type operator[](std::size_t index) const {
     return value_type(m_storage.entries[index]);
   }
   /// Returns the mutable object of given index
-  mutable_type operator[](size_t index) {
+  mutable_type operator[](std::size_t index) {
     return mutable_type(podio::utils::MaybeSharedPtr(m_storage.entries[index]));
   }
   /// Returns the immutable object of given index
-  value_type at(size_t index) const {
+  value_type at(std::size_t index) const {
     return value_type(m_storage.entries.at(index));
   }
   /// Returns the mutable object of given index
-  mutable_type at(size_t index) {
+  mutable_type at(std::size_t index) {
     return mutable_type(podio::utils::MaybeSharedPtr(m_storage.at(index)));
   }
 
