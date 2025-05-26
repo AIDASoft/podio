@@ -85,19 +85,19 @@ public:
   }
 
   /// Returns the immutable object of given index
-  value_type operator[](unsigned int index) const {
+  value_type operator[](std::size_t index) const {
     return value_type(m_storage.entries[index]);
   }
   /// Returns the mutable object of given index
-  mutable_type operator[](unsigned int index) {
+  mutable_type operator[](std::size_t index) {
     return mutable_type(podio::utils::MaybeSharedPtr(m_storage.entries[index]));
   }
   /// Returns the immutable object of given index
-  value_type at(unsigned int index) const {
+  value_type at(std::size_t index) const {
     return value_type(m_storage.entries.at(index));
   }
   /// Returns the mutable object of given index
-  mutable_type at(unsigned int index) {
+  mutable_type at(std::size_t index) {
     return mutable_type(podio::utils::MaybeSharedPtr(m_storage.at(index)));
   }
 
@@ -248,7 +248,7 @@ public:
     m_isSubsetColl = setSubset;
   }
 
-  void setID(unsigned id) override {
+  void setID(uint32_t id) override {
     m_collectionID = id;
     if (!m_isSubsetColl) {
       std::ranges::for_each(m_storage.entries, [id](auto* obj) { obj->id = {obj->id.index, id}; });
@@ -256,7 +256,7 @@ public:
     m_isValid = true;
   }
 
-  unsigned getID() const override {
+  uint32_t getID() const override {
     return m_collectionID;
   }
 
