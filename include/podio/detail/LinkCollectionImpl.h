@@ -93,11 +93,11 @@ public:
     return mutable_type(podio::utils::MaybeSharedPtr(m_storage.entries[index]));
   }
   /// Returns the immutable object of given index
-  value_type at(unsigned int index) const {
+  value_type at(size_t index) const {
     return value_type(m_storage.entries.at(index));
   }
   /// Returns the mutable object of given index
-  mutable_type at(unsigned int index) {
+  mutable_type at(size_t index) {
     return mutable_type(podio::utils::MaybeSharedPtr(m_storage.at(index)));
   }
 
