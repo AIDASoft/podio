@@ -248,7 +248,7 @@ public:
     m_isSubsetColl = setSubset;
   }
 
-  void setID(unsigned id) override {
+  void setID(uint32_t id) override {
     m_collectionID = id;
     if (!m_isSubsetColl) {
       std::ranges::for_each(m_storage.entries, [id](auto* obj) { obj->id = {obj->id.index, id}; });
@@ -256,7 +256,7 @@ public:
     m_isValid = true;
   }
 
-  unsigned getID() const override {
+  uint32_t getID() const override {
     return m_collectionID;
   }
 
