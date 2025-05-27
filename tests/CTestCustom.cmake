@@ -91,6 +91,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       read_rntuple
       read_interface_rntuple
+      read_interface_default_rntuple
       selected_colls_roundtrip_rntuple
 
       podio-dump-rntuple
@@ -108,6 +109,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       write_rntuple
       read_rntuple
       write_interface_rntuple
+      write_interface_default_rntuple
       read_interface_rntuple
       selected_colls_roundtrip_rntuple
 
