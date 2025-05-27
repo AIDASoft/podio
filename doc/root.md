@@ -55,7 +55,8 @@ By default, TTrees are written. To explicitly select an output backend, provide
 the type:
 
 ```cpp
-auto writer = podio::makeWriter(filename, "rntuple");  // Use RNTuple
+auto ttreeWriter = podio::makeWriter(filename, "root");       // Use TTree
+auto rntupleWriter = podio::makeWriter(filename, "rntuple");  // Use RNTuple
 ```
 
 The format can also be set by the environment variable `PODIO_WRITE_RNTUPLE`. If
