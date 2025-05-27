@@ -16,7 +16,7 @@ The preferred way to read any ROOT file is with the generic reader factory:
 #include <podio/Reader.h>
 
 auto reader = podio::makeReader(filename);
-auto events = reader.getEvents();
+auto event = reader.getNextEvent();
 ```
 
 Here, `filename` can also be a vector of strings or [POSIX glob pattern](https://www.man7.org/linux/man-pages/man7/glob.7.html) (on platforms supporting `glob.h`), allowing you to read multiple
@@ -59,11 +59,11 @@ auto ttreeWriter = podio::makeWriter(filename, "root");       // Use TTree
 auto rntupleWriter = podio::makeWriter(filename, "rntuple");  // Use RNTuple
 ```
 
-The format can also be set by the environment variable `PODIO_WRITE_RNTUPLE`. If
+The format can also be set by the environment variable `PODIO_DEFAULT_WRITE_RNTUPLE`. If
 the environment variable is set, RNTuples will be the default.
 
 **File extensions:**  
-- `.root`: Uses the default backend (TTree or RNTuple if `PODIO_WRITE_RNTUPLE`
+- `.root`: Uses the default backend (TTree or RNTuple if `PODIO_DEFAULT_WRITE_RNTUPLE`
   is set), unless specified.
 - `.sio`: Uses the SIO writer.
 - Other extensions are not allowed.
