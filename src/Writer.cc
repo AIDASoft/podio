@@ -24,7 +24,7 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
     return str;
   };
 
-  const char* defaultTypeRNTuple = std::getenv("PODIO_WRITE_RNTUPLE");
+  const char* defaultTypeRNTuple = std::getenv("PODIO_DEFAULT_WRITE_RNTUPLE");
 
   if ((type == "default" && !defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "root") {
     return Writer{std::make_unique<ROOTWriter>(filename)};
