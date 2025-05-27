@@ -62,7 +62,7 @@ auto rntupleWriter = podio::makeWriter(filename, "rntuple");  // Use RNTuple
 The format can also be set by the environment variable `PODIO_DEFAULT_WRITE_RNTUPLE`. If
 the environment variable is set, RNTuples will be the default.
 
-**File extensions:**  
+**File extensions:**
 - `.root`: Uses the default backend (TTree or RNTuple if `PODIO_DEFAULT_WRITE_RNTUPLE`
   is set), unless specified.
 - `.sio`: Uses the SIO writer.
