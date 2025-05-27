@@ -19,7 +19,7 @@ auto reader = podio::makeReader(filename);
 auto events = reader.getEvents();
 ```
 
-Here, `filename` can also be a vector of strings, allowing you to read multiple
+Here, `filename` can also be a vector of strings or [POSIX glob pattern](https://www.man7.org/linux/man-pages/man7/glob.7.html) (on platforms supporting `glob.h`), allowing you to read multiple
 files at once. This will automatically inspect the first file to select the
 appropriate backend, creating either a TTree or RNTuple reader as needed. Mixing
 TTree or RNTuples with the same reader is not supported.
