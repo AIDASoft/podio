@@ -78,7 +78,7 @@ podio::ROOTWriter writer(filename);           // For TTree output
 podio::RNTupleWriter rntupleWriter(filename); // For RNTuple output
 ```
 
-### Notes
+```{note}
 Note that the generic readers and writers have methods that are not available in
 the backend-specific classes. For example, the generic reader has a
 `readNextEvent()` method that reads the next `podio::Frame` in the category of
@@ -86,6 +86,7 @@ events, while using the backend-specific readers, one would use `readNextEntry`
 and pass the category and build a Frame with the result. Similarly, the generic
 writer has a `writeEvent()` method that writes a `podio::Frame` in the category
 used for events.
+```
 
 ## Python
 
