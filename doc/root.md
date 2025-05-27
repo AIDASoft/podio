@@ -30,9 +30,9 @@ Alternatively, you can instantiate format-specific readers directly:
 #include <podio/ROOTReader.h>     // For TTrees
 #include <podio/RNTupleReader.h>  // For RNTuples
 
-auto ttreeReader = podio::ROOTReader(); // For TTree files (.root)
-ttreeReader.openFile(filename);         // Open a TTree file
-auto rntupleReader = podio::RNTupleReader();
+auto ttreeReader = podio::ROOTReader();       // For TTree files (.root)
+ttreeReader.openFile(filename);               // Open a TTree file
+auto rntupleReader = podio::RNTupleReader();  // For RNTuple files (.root)
 
 for (size_t i = 0; i < ttreeReader.getEntries(podio::Category::Event); ++i) {
   auto frame = podio::Frame(ttreeReader.readNextEntry(podio::Category::Event));
@@ -126,5 +126,5 @@ from podio.root_io import RNTupleWriter  # For RNTuples
 writer = Writer(filename)                # For TTree output (.root)
 rntuple_writer = RNTupleWriter(filename) # For RNTuple output (.root)
 
-writer.write(frame, category)
+writer.write_frame(frame, category)
 ```
