@@ -163,10 +163,10 @@ public:
 
   /// Frame constructor from (almost) arbitrary raw data.
   ///
-  /// @tparam FrameDataT Arbitrary data container that provides access to the
-  ///                    collection buffers as well as the metadata, when
-  ///                    requested by the Frame. The unique_ptr has to be checked
-  ///                    for validity before calling this constructor.
+  /// @tparam FrameData Arbitrary data container that provides access to the
+  ///                   collection buffers as well as the metadata, when
+  ///                   requested by the Frame. The unique_ptr has to be checked
+  ///                   for validity before calling this constructor.
   ///
   /// @throws std::invalid_argument if the passed pointer is a nullptr.
   template <FrameDataType FrameData>
@@ -177,9 +177,9 @@ public:
   /// This r-value overload is mainly present for enabling the python bindings,
   /// where cppyy seems to strip the std::unique_ptr somewhere in the process
   ///
-  /// @tparam FrameDataT Arbitrary data container that provides access to the
-  ///                    collection buffers as well as the metadata, when
-  ///                    requested by the Frame.
+  /// @tparam FrameData Arbitrary data container that provides access to the
+  ///                   collection buffers as well as the metadata, when
+  ///                   requested by the Frame.
   template <RValueFrameDataType FrameData>
   Frame(FrameData&&);
 
