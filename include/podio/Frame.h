@@ -31,11 +31,18 @@ concept RValueType = !std::is_lvalue_reference_v<T>;
 template <typename T>
 concept CollectionRValueType = CollectionType<T> && RValueType<T>;
 
+/// Concept encoding the minimal interface a type has to provide to usable as
+/// raw data from which a Frame can be constructed.
+///
+/// Since the Frame either locks on raw data access, or is guaranteed to only
+/// run on a single thread when doing so (e.g. constructors) none of these have
+/// to be thread-safe either, even though implementations might be able to
+/// provide reasonable guarantees anyway.
 template <typename T>
-concept FrameDataType = requires(T t, const T ct) {
-  { ct.getIDTable() } -> std::same_as<podio::CollectionIDTable>;
+concept FrameDataType = requires(T t) {
+  { t.getIDTable() } -> std::same_as<podio::CollectionIDTable>;
   { t.getCollectionBuffers(std::string{}) } -> std::same_as<std::optional<podio::CollectionReadBuffers>>;
-  { ct.getAvailableCollections() } -> std::same_as<std::vector<std::string>>;
+  { t.getAvailableCollections() } -> std::same_as<std::vector<std::string>>;
   { t.getParameters() } -> std::same_as<std::unique_ptr<podio::GenericParameters>>;
 };
 
