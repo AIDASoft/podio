@@ -24,7 +24,13 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
     return str;
   };
 
-  const char* defaultTypeRNTuple = std::getenv("PODIO_DEFAULT_WRITE_RNTUPLE");
+  const char* defaultTypeRNTupleEnv = std::getenv("PODIO_DEFAULT_WRITE_RNTUPLE");
+  bool defaultTypeRNTuple;
+  if (!defaultTypeRNTupleEnv || std::string(defaultTypeRNTupleEnv).empty()) {
+    defaultTypeRNTuple = false;
+  } else {
+    defaultTypeRNTuple = true;
+  }
 
   if ((type == "default" && !defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "root") {
     return Writer{std::make_unique<ROOTWriter>(filename)};
