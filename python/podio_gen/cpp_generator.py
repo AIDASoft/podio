@@ -452,9 +452,14 @@ have resolvable schema evolution incompatibilities:"
                 if isinstance(schema_change, RenamedMember):
                     # find out the type of the renamed member
                     component = self.datamodel.components[type_name]
+                    member_type = None
                     for member in component["Members"]:
                         if member.name == schema_change.member_name_new:
                             member_type = member.full_type
+                    if member_type is None:
+                        raise ValueError(
+                            f"Could not find type for renamed member {schema_change.member_name_new} in {type_name}"
+                        )
 
                     iorule = RootIoRule()
                     iorule.sourceClass = type_name

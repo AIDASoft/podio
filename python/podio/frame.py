@@ -13,6 +13,10 @@ import ROOT
 # in environments with *ancient* podio versions
 if ROOT.gInterpreter.LoadFile("podio/Frame.h") == 0:  # noqa: E402
     from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
+else:
+    raise ImportError(
+        "Could not load podio/Frame.h. Make sure it is available on ROOT_INCLUDE_PATH."
+    )
 
 
 # This is the list of supported types for the GenericParameters in both c++ and

@@ -5,6 +5,7 @@ NOTE: This is a legacy implementation in python. A newer version implemented in
 c++ is available that is much faster.
 """
 
+import argparse
 import sys
 import json
 import yaml
@@ -167,8 +168,6 @@ def parse_entry_range(ent_string):
 
 
 if __name__ == "__main__":
-    import argparse
-
     _EPILOG = (
         "NOTE: This is a legacy implementation in python. A newer version based on a c++ "
         "implementation is available. That version is much faster, but does not handle pre-release"

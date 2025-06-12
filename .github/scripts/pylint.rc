@@ -59,6 +59,7 @@ disable=line-too-long,
         useless-suppression,
         trailing-whitespace,
         suppressed-message,
+        too-many-positional-arguments,
 
 
 [REPORTS]
