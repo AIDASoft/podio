@@ -458,7 +458,8 @@ have resolvable schema evolution incompatibilities:"
                             member_type = member.full_type
                     if member_type is None:
                         raise ValueError(
-                            f"Could not find type for renamed member {schema_change.member_name_new} in {type_name}"
+                            "Could not find type for renamed member"
+                            f"{schema_change.member_name_new} in {type_name}"
                         )
 
                     iorule = RootIoRule()
