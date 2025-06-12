@@ -1014,11 +1014,15 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
     // iterator
     STATIC_REQUIRE(traits::has_equality_comparator_v<iterator>);
     STATIC_REQUIRE(std::is_default_constructible_v<iterator>);
-    { REQUIRE(iterator{} == iterator{}); }
+    {
+      REQUIRE(iterator{} == iterator{});
+    }
     // const_iterator
     STATIC_REQUIRE(traits::has_equality_comparator_v<const_iterator>);
     STATIC_REQUIRE(std::is_default_constructible_v<const_iterator>);
-    { REQUIRE(const_iterator{} == const_iterator{}); }
+    {
+      REQUIRE(const_iterator{} == const_iterator{});
+    }
 
     // i++
     // iterator
@@ -1420,8 +1424,9 @@ TEST_CASE("Collection and std ranges algorithms", "[collection][ranges][std]") {
 
 // helper concept for unsupported algorithm compilation test
 template <typename T>
-concept is_range_sortable =
-    requires(T coll) { std::ranges::sort(coll, [](const auto& a, const auto& b) { return a.cellID() < b.cellID(); }); };
+concept is_range_sortable = requires(T coll) {
+  std::ranges::sort(coll, [](const auto & a, const auto & b) { return a.cellID() < b.cellID(); });
+};
 
 // helper concept for unsupported algorithm compilation test
 template <typename T>
