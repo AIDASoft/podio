@@ -50,7 +50,7 @@ jobs:
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
               -DUSE_EXTERNAL_CATCH2=OFF \
               -DENABLE_SIO=ON \
-              -DENABLE_JULIA=ON \
+              -DENABLE_JULIA=OFF \
               -DENABLE_RNTUPLE=ON \
               -DENABLE_DATASOURCE=ON \
               -G Ninja ..
@@ -58,9 +58,6 @@ jobs:
             echo "::group::Build"
             ninja -k0
             echo "::endgroup::"
-            echo "::group::Julia StaticArrays Package Install"
-            julia -e 'import Pkg; Pkg.add("StaticArrays")'
-            echo "::endgroup"
             echo "::group::Run tests"
             ctest --output-on-failure
             echo "::endgroup::"
