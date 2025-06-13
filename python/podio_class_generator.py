@@ -5,6 +5,7 @@
 import os
 import subprocess
 import re
+import argparse
 
 from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_utils import DefinitionError
@@ -87,8 +88,6 @@ def parse_version(version_str):
 
 
 if __name__ == "__main__":
-    import argparse
-
     # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
     parser = argparse.ArgumentParser(
         description="Given a description yaml file this script generates "
