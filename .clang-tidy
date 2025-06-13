@@ -27,8 +27,6 @@ Checks: -*,
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 CheckOptions:
-  - key:             modernize-use-override.IgnoreDestructors
-    value:           '1'
   - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
     value:           '1'
   - key:             readability-braces-around-statements.ShortStatementLines

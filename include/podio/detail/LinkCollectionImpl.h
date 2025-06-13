@@ -68,7 +68,7 @@ public:
   LinkCollection(LinkCollection&&) = default;
   LinkCollection& operator=(LinkCollection&&) = default;
 
-  ~LinkCollection() {
+  ~LinkCollection() override {
     // Need to tell the storage how to clean up
     m_storage.clear(m_isSubsetColl);
   }
