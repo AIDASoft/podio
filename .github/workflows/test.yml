@@ -26,6 +26,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
+      with:
+        cvmfs_ubuntu_deb_location: https://ecsft.cern.ch/dist/cvmfs/cvmfs-2.12.7/cvmfs_2.12.7~1+ubuntu24.04_amd64.deb
     - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v5
       with:
