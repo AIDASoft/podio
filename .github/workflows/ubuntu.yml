@@ -24,13 +24,13 @@ jobs:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: key4hep/key4hep-actions/cache-external-data@main
-    - uses: aidasoft/run-lcg-view@v5
+    - uses: tmadlener/run-lcg-view@podman
       with:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-ubuntu-${{ matrix.LCG }}
+        container-runtime: podman
         run: |
           echo "::group::Run CMake"
-          export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
           mkdir -p build install
           cd build
           cmake -DENABLE_SIO=ON \
