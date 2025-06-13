@@ -35,6 +35,8 @@ jobs:
         view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
         ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
         run: |
+          echo "::group::Run k4_local_repo"
+          k4_local_repo
           echo "::group::Run CMake"
           mkdir -p build install
           cd build

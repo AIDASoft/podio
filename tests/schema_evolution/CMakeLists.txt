@@ -29,7 +29,7 @@ function(PODIO_CREATE_READ_NEW_DATA_TEST sourcefile additional_libs)
     PROPERTY ENVIRONMENT
     LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests/schema_evolution:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
     PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}
-    ROOT_INCLUDE_PATH=${PROJECT_BINARY_DIR}/tests/schema_evolution/datamodel_new:${PROJECT_SOURCE_DIR}/include
+    ROOT_INCLUDE_PATH=${PROJECT_BINARY_DIR}/tests/schema_evolution/datamodel_new:${PROJECT_SOURCE_DIR}/include:$ENV{ROOT_INCLUDE_PATH}
   )
 endfunction()
 
