@@ -9,6 +9,7 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
+#include <concepts>
 #include <initializer_list>
 #include <memory>
 #include <mutex>
@@ -22,13 +23,31 @@
 
 namespace podio {
 
-/// Concept for enabling overloads only for Collection r-values
-template <typename T>
-concept CollectionRValueType = CollectionType<T> && !std::is_lvalue_reference_v<T>;
-
 /// Concept for enabling overloads for r-values
 template <typename T>
 concept RValueType = !std::is_lvalue_reference_v<T>;
+
+/// Concept for enabling overloads only for Collection r-values
+template <typename T>
+concept CollectionRValueType = CollectionType<T> && RValueType<T>;
+
+/// Concept encoding the minimal interface a type has to provide to usable as
+/// raw data from which a Frame can be constructed.
+///
+/// Since the Frame either locks on raw data access, or is guaranteed to only
+/// run on a single thread when doing so (e.g. constructors) none of these have
+/// to be thread-safe either, even though implementations might be able to
+/// provide reasonable guarantees anyway.
+template <typename T>
+concept FrameDataType = requires(T t) {
+  { t.getIDTable() } -> std::same_as<podio::CollectionIDTable>;
+  { t.getCollectionBuffers(std::string{}) } -> std::same_as<std::optional<podio::CollectionReadBuffers>>;
+  { t.getAvailableCollections() } -> std::same_as<std::vector<std::string>>;
+  { t.getParameters() } -> std::same_as<std::unique_ptr<podio::GenericParameters>>;
+};
+
+template <typename T>
+concept RValueFrameDataType = FrameDataType<T> && RValueType<T>;
 
 namespace detail {
   /// The minimal interface for raw data types
@@ -52,10 +71,11 @@ namespace detail {
       return std::make_unique<podio::GenericParameters>();
     }
   };
+  static_assert(FrameDataType<EmptyFrameData>, "EmptyFrameData should match FrameDataType concept");
 } // namespace detail
 
-template <typename FrameDataT>
-std::optional<podio::CollectionReadBuffers> unpack(FrameDataT* data, const std::string& name) {
+template <FrameDataType FrameData>
+std::optional<podio::CollectionReadBuffers> unpack(FrameData* data, const std::string& name) {
   return data->getCollectionBuffers(name);
 }
 
@@ -143,25 +163,25 @@ public:
 
   /// Frame constructor from (almost) arbitrary raw data.
   ///
-  /// @tparam FrameDataT Arbitrary data container that provides access to the
-  ///                    collection buffers as well as the metadata, when
-  ///                    requested by the Frame. The unique_ptr has to be checked
-  ///                    for validity before calling this constructor.
+  /// @tparam FrameData Arbitrary data container that provides access to the
+  ///                   collection buffers as well as the metadata, when
+  ///                   requested by the Frame. The unique_ptr has to be checked
+  ///                   for validity before calling this constructor.
   ///
   /// @throws std::invalid_argument if the passed pointer is a nullptr.
-  template <typename FrameDataT>
-  Frame(std::unique_ptr<FrameDataT>);
+  template <FrameDataType FrameData>
+  Frame(std::unique_ptr<FrameData>);
 
   /// Frame constructor from (almost) arbitrary raw data.
   ///
   /// This r-value overload is mainly present for enabling the python bindings,
   /// where cppyy seems to strip the std::unique_ptr somewhere in the process
   ///
-  /// @tparam FrameDataT Arbitrary data container that provides access to the
-  ///                    collection buffers as well as the metadata, when
-  ///                    requested by the Frame.
-  template <RValueType FrameDataT>
-  Frame(FrameDataT&&);
+  /// @tparam FrameData Arbitrary data container that provides access to the
+  ///                   collection buffers as well as the metadata, when
+  ///                   requested by the Frame.
+  template <RValueFrameDataType FrameData>
+  Frame(FrameData&&);
 
   /// A Frame is move-only
   Frame(const Frame&) = delete;
@@ -363,12 +383,12 @@ public:
 inline Frame::Frame() : Frame(std::make_unique<detail::EmptyFrameData>()) {
 }
 
-template <typename FrameDataT>
-Frame::Frame(std::unique_ptr<FrameDataT> data) : m_self(std::make_unique<FrameModel<FrameDataT>>(std::move(data))) {
+template <FrameDataType FrameData>
+Frame::Frame(std::unique_ptr<FrameData> data) : m_self(std::make_unique<FrameModel<FrameData>>(std::move(data))) {
 }
 
-template <RValueType FrameDataT>
-Frame::Frame(FrameDataT&& data) : Frame(std::make_unique<FrameDataT>(std::move(data))) {
+template <RValueFrameDataType FrameData>
+Frame::Frame(FrameData&& data) : Frame(std::make_unique<FrameData>(std::move(data))) {
 }
 
 template <CollectionType CollT>

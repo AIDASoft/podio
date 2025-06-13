@@ -40,7 +40,7 @@ public:
 
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
 
-  podio::CollectionIDTable getIDTable() {
+  podio::CollectionIDTable getIDTable() const {
     return {m_idTable.ids(), m_idTable.names()};
   }
 
