@@ -13,6 +13,7 @@ Welcome to PODIO's documentation!
    design.md
    datamodel_syntax.md
    examples.md
+   reading_writing.md
    frame.md
    userdata.md
    links.md
