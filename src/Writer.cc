@@ -8,6 +8,7 @@
   #include "podio/SIOWriter.h"
 #endif
 
+#include <cstdlib>
 #include <memory>
 
 namespace podio {
@@ -19,13 +20,21 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
   };
 
   auto lower = [](std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::ranges::transform(str, str.begin(), [](unsigned char c) { return std::tolower(c); });
     return str;
   };
 
-  if ((type == "default" && endsWith(filename, ".root")) || lower(type) == "root") {
+  const char* defaultTypeRNTupleEnv = std::getenv("PODIO_DEFAULT_WRITE_RNTUPLE");
+  bool defaultTypeRNTuple;
+  if (!defaultTypeRNTupleEnv || std::string(defaultTypeRNTupleEnv).empty()) {
+    defaultTypeRNTuple = false;
+  } else {
+    defaultTypeRNTuple = true;
+  }
+
+  if ((type == "default" && !defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "root") {
     return Writer{std::make_unique<ROOTWriter>(filename)};
-  } else if (lower(type) == "rntuple") {
+  } else if ((type == "default" && defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "rntuple") {
 #if PODIO_ENABLE_RNTUPLE
     return Writer{std::make_unique<RNTupleWriter>(filename)};
 #else
