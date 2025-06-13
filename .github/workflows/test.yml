@@ -31,6 +31,7 @@ jobs:
       with:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-el9-${{ matrix.LCG }}
+        container-runtime: podman
         run: |
           echo "::group::Run CMake"
           # export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
