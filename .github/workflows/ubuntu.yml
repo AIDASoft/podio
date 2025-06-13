@@ -49,6 +49,8 @@ jobs:
           ninja -k0
           echo "::endgroup"
           echo "::group::Julia StaticArrays Package Install"
+          # Temporary workaround for https://its.cern.ch/jira/browse/SPI-2838
+          JULIA_DEPOT_PATH=$(pwd)/.julia julia -e 'import Pkg'
           julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
           echo "::group::Run tests"
