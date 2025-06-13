@@ -724,6 +724,75 @@
 <span id="_CPPv3I00EN5podio7LinkObjE"></span><span id="_CPPv2I00EN5podio7LinkObjE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FromT</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_link_obj"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LinkObj</span></span></span><br /></dt>
 <dd><div class="docutils container">
 <em>#include &lt;podio/detail/LinkObj.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObj7LinkObjEv">
+<span id="_CPPv3N5podio7LinkObj7LinkObjEv"></span><span id="_CPPv2N5podio7LinkObj7LinkObjEv"></span><span id="podio::LinkObj::LinkObj"></span><span class="target" id="classpodio_1_1_link_obj_1a1616ad01e2c5a7054f0f39a670a6dd52"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LinkObj</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObj7LinkObjEKN5podio8ObjectIDE8LinkData">
+<span id="_CPPv3N5podio7LinkObj7LinkObjEKN5podio8ObjectIDE8LinkData"></span><span id="_CPPv2N5podio7LinkObj7LinkObjEKN5podio8ObjectIDE8LinkData"></span><span id="podio::LinkObj::LinkObj__podio::ObjectIDC.LinkData"></span><span class="target" id="classpodio_1_1_link_obj_1a3090db979a01b2e7c2354502acf635f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LinkObj</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_object_i_d.html#_CPPv4N5podio8ObjectIDE" title="podio::ObjectID"><span class="n"><span class="pre">ObjectID</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">id_</span></span>, <a class="reference internal" href="_link_fwd_8h.html#_CPPv4N5podio8LinkDataE" title="podio::LinkData"><span class="n"><span class="pre">LinkData</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">data_</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Constructor from ObjectID and data (does not initialize relations yet!) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObj7LinkObjERK7LinkObj">
+<span id="_CPPv3N5podio7LinkObj7LinkObjERK7LinkObj"></span><span id="_CPPv2N5podio7LinkObj7LinkObjERK7LinkObj"></span><span id="podio::LinkObj::LinkObj__LinkObjCR"></span><span class="target" id="classpodio_1_1_link_obj_1a7902bc34f799c069238e222c79af0d5a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LinkObj</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_obj.html#_CPPv4N5podio7LinkObj7LinkObjERK7LinkObj" title="podio::LinkObj::LinkObj"><span class="n"><span class="pre">LinkObj</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Copy constructor (deep-copy of relations) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObjaSERK7LinkObj">
+<span id="_CPPv3N5podio7LinkObjaSERK7LinkObj"></span><span id="_CPPv2N5podio7LinkObjaSERK7LinkObj"></span><span id="podio::LinkObj::assign-operator__LinkObjCR"></span><span class="target" id="classpodio_1_1_link_obj_1a5735cea582685ea52dba68826e69f1c0"></span><a class="reference internal" href="../class/classpodio_1_1_link_obj.html#_CPPv4I00EN5podio7LinkObjE" title="podio::LinkObj"><span class="n"><span class="pre">LinkObj</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_link_obj.html#_CPPv4I00EN5podio7LinkObjE" title="podio::LinkObj"><span class="n"><span class="pre">LinkObj</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd><p>No assignment operator. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObjD0Ev">
+<span id="_CPPv3N5podio7LinkObjD0Ev"></span><span id="_CPPv2N5podio7LinkObjD0Ev"></span><span id="podio::LinkObj::~LinkObj"></span><span class="target" id="classpodio_1_1_link_obj_1a1536225e37e3b90013dfbf54fea1cde0"></span><span class="sig-name descname"><span class="n"><span class="pre">~LinkObj</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObj2idE">
+<span id="_CPPv3N5podio7LinkObj2idE"></span><span id="_CPPv2N5podio7LinkObj2idE"></span><span id="podio::LinkObj::id__podio::ObjectID"></span><span class="target" id="classpodio_1_1_link_obj_1a9d59bf09fe59c2406142ea3b37936a89"></span><a class="reference internal" href="_collection_base_8h.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_object_i_d.html#_CPPv4N5podio8ObjectIDE" title="podio::ObjectID"><span class="n"><span class="pre">ObjectID</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObj4dataE">
+<span id="_CPPv3N5podio7LinkObj4dataE"></span><span id="_CPPv2N5podio7LinkObj4dataE"></span><span id="podio::LinkObj::data__LinkData"></span><span class="target" id="classpodio_1_1_link_obj_1a73f0d138c18ea5145b11d4163379016e"></span><a class="reference internal" href="_link_fwd_8h.html#_CPPv4N5podio8LinkDataE" title="podio::LinkData"><span class="n"><span class="pre">LinkData</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">1.0f</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObj6m_fromE">
+<span id="_CPPv3N5podio7LinkObj6m_fromE"></span><span id="_CPPv2N5podio7LinkObj6m_fromE"></span><span id="podio::LinkObj::m_from__std::unique_ptr:FromT:"></span><span class="target" id="classpodio_1_1_link_obj_1ae3f7b50f752c3dec801e9436c958a4a7"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_link_obj.html#_CPPv4I00EN5podio7LinkObjE" title="podio::LinkObj::FromT"><span class="n"><span class="pre">FromT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m_from</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7LinkObj4m_toE">
+<span id="_CPPv3N5podio7LinkObj4m_toE"></span><span id="_CPPv2N5podio7LinkObj4m_toE"></span><span id="podio::LinkObj::m_to__std::unique_ptr:ToT:"></span><span class="target" id="classpodio_1_1_link_obj_1a23ccaa0ba1ba442522b89a0882179ae6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_link_obj.html#_CPPv4I00EN5podio7LinkObjE" title="podio::LinkObj::ToT"><span class="n"><span class="pre">ToT</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m_to</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classpodio_1_1_link_obj_1a6174111d6a64a979807b5150f7e47969"></span><span class="sig-name descname"><span class="pre">friend</span> <span class="pre">Link&lt;</span> <span class="pre">FromT,</span> <span class="pre">ToT</span> <span class="pre">&gt;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classpodio_1_1_link_obj_1ae0dccbc3449de220ea3161af8d7b907d"></span><span class="sig-name descname"><span class="pre">friend</span> <span class="pre">MutableLink&lt;</span> <span class="pre">FromT,</span> <span class="pre">ToT</span> <span class="pre">&gt;</span></span></dt>
+<dd></dd></dl>
+
+</div>
 </dd></dl>
 
 </dd></dl>
