@@ -35,11 +35,6 @@
 {{ class_selection(class, postfix='Collection') }}
 {% endfor %}
 
-        <!-- previous schema components and pods -->
-{% for class in old_schema_components %}
-{{ class_selection(class) }}
-{% endfor %}
-
     </selection>
 
 {% for iorule in iorules %}
