@@ -42,7 +42,7 @@ private:
     ReaderModel(ReaderModel&&) = default;
     ReaderModel& operator=(ReaderModel&&) = default;
 
-    ~ReaderModel() = default;
+    ~ReaderModel() override = default;
 
     podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>& collsToRead) override {
       auto maybeFrame = m_reader->readNextEntry(name, collsToRead);

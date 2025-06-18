@@ -87,7 +87,7 @@ class Frame {
   struct FrameModel final : FrameConcept, public ICollectionProvider {
 
     FrameModel(std::unique_ptr<FrameDataT> data);
-    ~FrameModel() = default;
+    ~FrameModel() override = default;
     FrameModel(const FrameModel&) = delete;
     FrameModel& operator=(const FrameModel&) = delete;
     FrameModel(FrameModel&&) = default;
