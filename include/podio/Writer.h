@@ -38,7 +38,7 @@ private:
     WriterModel(WriterModel&&) = default;
     WriterModel& operator=(WriterModel&&) = default;
 
-    ~WriterModel() = default;
+    ~WriterModel() override = default;
 
     void writeFrame(const podio::Frame& frame, const std::string& category,
                     const std::vector<std::string>& collections) override {
