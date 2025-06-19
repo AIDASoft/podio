@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Design and Implementation Details &mdash; PODIO  documentation</title>
+  <title>ROOT Support in Podio &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data Models and Data Model Definitions" href="datamodel_syntax.html" />
-    <link rel="prev" title="Introduction" href="doc.html" /> 
+    <link rel="next" title="The Frame concept" href="frame.html" />
+    <link rel="prev" title="Examples for Supported Interface" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,16 +50,16 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="doc.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc.html#quick-start">Quick-start</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Design and Implementation Details</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#layout-of-objects">Layout of Objects</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-user-layer">The User Layer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-internal-data-layer">The Internal Data Layer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-pod-layer">The POD Layer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-collections">The Collections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#vectorization-support-notebook-pattern">Vectorization support / notebook pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design and Implementation Details</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="design.html#layout-of-objects">Layout of Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="design.html#the-user-layer">The User Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design.html#the-internal-data-layer">The Internal Data Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design.html#the-pod-layer">The POD Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design.html#the-collections">The Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="design.html#vectorization-support-notebook-pattern">Vectorization support / notebook pattern</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#handling-mutability">Handling mutability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design.html#handling-mutability">Handling mutability</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="datamodel_syntax.html">Data Models and Data Model Definitions</a><ul>
@@ -100,15 +100,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reading_writing.html">ROOT Support in Podio</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reading_writing.html#c">C++</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="reading_writing.html#reading">Reading</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ROOT Support in Podio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#c">C++</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reading">Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing">Writing</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="reading_writing.html#python">Python</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="reading_writing.html#id1">Reading</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reading_writing.html#id2">Writing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python">Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Writing</a></li>
 </ul>
 </li>
 </ul>
@@ -720,7 +720,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Design and Implementation Details</li>
+      <li class="breadcrumb-item active">ROOT Support in Podio</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -729,67 +729,123 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="design-and-implementation-details">
-<h1>Design and Implementation Details<a class="headerlink" href="#design-and-implementation-details" title="Link to this heading"></a></h1>
-<p>The driving considerations for the PODIO design are:</p>
-<ol class="arabic simple">
-<li><p>the concrete data are contained within plain-old-data structures (PODs)</p></li>
-<li><p>user-exposed data types are concrete and do not use inheritance</p></li>
-<li><p>The C++ and Python interface should look as close as possible</p></li>
-<li><p>The user does not do any explicit memory management</p></li>
-<li><p>Classes are generated using a higher-level abstraction and code generators</p></li>
-</ol>
-<p>The following sections give some more technical details and explanations for the design choices.
-More concrete implementation details can be found in the doxygen documentation.</p>
-<section id="layout-of-objects">
-<h2>Layout of Objects<a class="headerlink" href="#layout-of-objects" title="Link to this heading"></a></h2>
-<p>The data model is based on four different kind of objects and layers, namely</p>
-<ol class="arabic simple">
-<li><p>user visible (physics) classes (e.g. <code class="docutils literal notranslate"><span class="pre">Hit</span></code>). These act as transparent references to the underlying data,</p></li>
-<li><p>a transient object knowing about all data for a certain physics object, including inter-object relations (e.g. <code class="docutils literal notranslate"><span class="pre">HitObject</span></code>),</p></li>
-<li><p>a plain-old-data (POD) type holding the persistent object information (e.g. <code class="docutils literal notranslate"><span class="pre">HitData</span></code>), and</p></li>
-<li><p>a user-visible collection containing the physics objects (e.g. <code class="docutils literal notranslate"><span class="pre">HitCollection</span></code>).</p></li>
-</ol>
-<p>These layers are described in the following.</p>
-<section id="the-user-layer">
-<h3>The User Layer<a class="headerlink" href="#the-user-layer" title="Link to this heading"></a></h3>
-<p>The user visible objects (e.g. <code class="docutils literal notranslate"><span class="pre">Hit</span></code>) act as light-weight references to the underlying data, and provide the necessary user interface. They come in two flavors, mutable and immutable, where the mutable classes are easily recognizable by their name (e.g. <code class="docutils literal notranslate"><span class="pre">MutableHit</span></code>).
-Mutable classes are implicitly converted to immutable ones if necessary, so that interfaces that require only reading access to the data should always use the immutable classes. Only in cases where explicit mutability of the objects is required should mutable classes appear in interface definitions.</p>
-<p>For each of the data-members and <code class="docutils literal notranslate"><span class="pre">OneToOneRelations</span></code> declared in the data model definition, corresponding getters (and setters for the mutable classes) are generated.
-For each of the <code class="docutils literal notranslate"><span class="pre">OneToManyRelations</span></code> and <code class="docutils literal notranslate"><span class="pre">VectorMembers</span></code> a vector-like interface is provided.</p>
-<p>With the chosen interface, the code written in C++ and Python looks almost identical, if taking proper advantage of the <code class="docutils literal notranslate"><span class="pre">auto</span></code> keyword.</p>
+  <section id="root-support-in-podio">
+<h1>ROOT Support in Podio<a class="headerlink" href="#root-support-in-podio" title="Link to this heading"></a></h1>
+<p>Podio supports ROOT file I/O through multiple backends in both C++ and Python
+for ROOT TTrees and ROOT RNTuples. Below are the recommended approaches for
+reading and writing these files, as well as additional notes to guide usage.</p>
+<section id="c">
+<h2>C++<a class="headerlink" href="#c" title="Link to this heading"></a></h2>
+<p>Podio provides generic and format-specific I/O interfaces for ROOT files.</p>
+<section id="reading">
+<h3>Reading<a class="headerlink" href="#reading" title="Link to this heading"></a></h3>
+<p>The preferred way to read any ROOT file is with the generic reader factory:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/Reader.h&gt;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeReader</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="n">getNextEvent</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">filename</span></code> can also be a vector of strings or <a class="reference external" href="https://www.man7.org/linux/man-pages/man7/glob.7.html">POSIX glob pattern</a> (on platforms supporting <code class="docutils literal notranslate"><span class="pre">glob.h</span></code>), allowing you to read multiple
+files at once. This will automatically inspect the first file to select the
+appropriate backend, creating either a TTree or RNTuple reader as needed. Mixing
+TTree or RNTuples with the same reader is not supported.</p>
+<p>Alternatively, you can instantiate format-specific readers directly:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ROOTReader.h&gt;</span><span class="c1">     // For TTrees</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/RNTupleReader.h&gt;</span><span class="c1">  // For RNTuples</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">ttreeReader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">ROOTReader</span><span class="p">();</span><span class="w">       </span><span class="c1">// For TTree files (.root)</span>
+<span class="n">ttreeReader</span><span class="p">.</span><span class="n">openFile</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w">               </span><span class="c1">// Open a TTree file</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">rntupleReader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">RNTupleReader</span><span class="p">();</span><span class="w">  </span><span class="c1">// For RNTuple files (.root)</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ttreeReader</span><span class="p">.</span><span class="n">getEntries</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">Category</span><span class="o">::</span><span class="n">Event</span><span class="p">);</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">Frame</span><span class="p">(</span><span class="n">ttreeReader</span><span class="p">.</span><span class="n">readNextEntry</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">Category</span><span class="o">::</span><span class="n">Event</span><span class="p">));</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
-<section id="the-internal-data-layer">
-<h3>The Internal Data Layer<a class="headerlink" href="#the-internal-data-layer" title="Link to this heading"></a></h3>
-<p>The internal objects give access to the object data, i.e. the POD, and the references to other objects.
-These objects inherit from <code class="docutils literal notranslate"><span class="pre">podio::ObjBase</span></code>, which takes care of object identification (<code class="docutils literal notranslate"><span class="pre">podio::ObjectID</span></code>), and object-ownership. The <code class="docutils literal notranslate"><span class="pre">ObjectID</span></code> consists of the index of the object and an ID of the collection it belongs to. If the object does not belong to a collection yet, the data object owns the POD containing the real data, otherwise the POD is owned by the respective collection. For details about the inter-object references and their handling within the data objects please see below.</p>
+<section id="writing">
+<h3>Writing<a class="headerlink" href="#writing" title="Link to this heading"></a></h3>
+<p>For writing, use the generic writer factory:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/Writer.h&gt;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+<span class="n">writer</span><span class="p">.</span><span class="n">writeFrame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">Category</span><span class="o">::</span><span class="n">Event</span><span class="p">,</span><span class="w"> </span><span class="n">collsToWrite</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>By default, TTrees are written. To explicitly select an output backend, provide
+the type:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">ttreeWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;root&quot;</span><span class="p">);</span><span class="w">       </span><span class="c1">// Use TTree</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">rntupleWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rntuple&quot;</span><span class="p">);</span><span class="w">  </span><span class="c1">// Use RNTuple</span>
+</pre></div>
+</div>
+<p>The format can also be set by the environment variable <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code>. If
+the environment variable is set <strong>to a non-empty string</strong>, RNTuples will be the default.</p>
+<p><strong>File extensions:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.root</span></code>: Uses the default backend (TTree or RNTuple if <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code>
+is set to a non-empty string), unless specified.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.sio</span></code>: Uses the SIO writer.</p></li>
+<li><p>Other extensions are not allowed.</p></li>
+</ul>
+<p>Specific writers for each backend are also available:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ROOTWriter.h&gt;</span><span class="c1">     // For TTree output</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/RNTupleWriter.h&gt;</span><span class="c1">  // For RNTuple output</span>
+
+<span class="n">podio</span><span class="o">::</span><span class="n">ROOTWriter</span><span class="w"> </span><span class="nf">writer</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w">           </span><span class="c1">// For TTree output</span>
+<span class="n">podio</span><span class="o">::</span><span class="n">RNTupleWriter</span><span class="w"> </span><span class="nf">rntupleWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w"> </span><span class="c1">// For RNTuple output</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the generic readers and writers have methods that are not available in
+the backend-specific classes. For example, the generic reader has a
+<code class="docutils literal notranslate"><span class="pre">readNextEvent()</span></code> method that reads the next <code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> in the category of
+events, while using the backend-specific readers, one would use <code class="docutils literal notranslate"><span class="pre">readNextEntry</span></code>
+and pass the category and build a Frame with the result. Similarly, the generic
+writer has a <code class="docutils literal notranslate"><span class="pre">writeEvent()</span></code> method that writes a <code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> in the category
+used for events.</p>
+</div>
 </section>
-<section id="the-pod-layer">
-<h3>The POD Layer<a class="headerlink" href="#the-pod-layer" title="Link to this heading"></a></h3>
-<p>The plain-old-data (POD) contain just the data declared in the <code class="docutils literal notranslate"><span class="pre">Members</span></code> section of the datamodel definition as well as some bookkeeping data for data types with <code class="docutils literal notranslate"><span class="pre">OneToManyRelations</span></code> or <code class="docutils literal notranslate"><span class="pre">VectorMembers</span></code>. Ownership and lifetime of the PODs is managed by the other parts of the infrastructure, namely the data objects and the data collections.</p>
 </section>
-<section id="the-collections">
-<h3>The Collections<a class="headerlink" href="#the-collections" title="Link to this heading"></a></h3>
-<p>The collections created serve three purposes:</p>
-<ol class="arabic simple">
-<li><p>giving access to or creating the data items</p></li>
-<li><p>preparing objects for writing into PODs or preparing them after reading</p></li>
-<li><p>support for the so-called notebook pattern</p></li>
-</ol>
-<p>When used via the so called factory pattern (i.e. using the <code class="docutils literal notranslate"><span class="pre">create</span></code> function to create new objects) a collection will return mutable objects.
-It is important to note that objects that are “owned” by a collection (i.e. they are either created via <code class="docutils literal notranslate"><span class="pre">create</span></code> or they are added to the collection via <code class="docutils literal notranslate"><span class="pre">push_back</span></code>) become invalid and can no longer be used once a collection is <code class="docutils literal notranslate"><span class="pre">clear</span></code>ed.</p>
+<section id="python">
+<h2>Python<a class="headerlink" href="#python" title="Link to this heading"></a></h2>
+<p>Python does not currently provide a single generic Reader or Writer class, but includes helpers to select the correct one at runtime.</p>
+<section id="id1">
+<h3>Reading<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Use the helper function to obtain the appropriate reader:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">podio.reading</span> <span class="kn">import</span> <span class="n">get_reader</span>
+
+<span class="n">reader</span> <span class="o">=</span> <span class="n">get_reader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="n">events</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">filename</span></code> can be a string or a list of strings, allowing you to read
+multiple files at once. The function will automatically select the correct reader
+depending on the format of the first file.
+Alternatively, instantiate backend-specific readers explicitly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">podio.root_io</span> <span class="kn">import</span> <span class="n">Reader</span>         <span class="c1"># For TTrees</span>
+<span class="kn">from</span> <span class="nn">podio.root_io</span> <span class="kn">import</span> <span class="n">RNTupleReader</span>  <span class="c1"># For RNTuples</span>
+
+<span class="n">reader</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>                <span class="c1"># For TTree files (.root)</span>
+<span class="n">rntuple_reader</span> <span class="o">=</span> <span class="n">RNTupleReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># For RNTuple files (.root)</span>
+</pre></div>
+</div>
 </section>
-<section id="vectorization-support-notebook-pattern">
-<h3>Vectorization support / notebook pattern<a class="headerlink" href="#vectorization-support-notebook-pattern" title="Link to this heading"></a></h3>
-<p>As an end-user oriented library, PODIO provides only a limited support for struct-of-arrays (SoA) memory layouts. In the vision, that the data used for heavy calculations is best copied locally, the library provides convenience methods for extracting the necessary information from the collections. More details can be found in the examples section of this document.</p>
+<section id="id2">
+<h3>Writing<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>Similarly, use the appropriate writer class for the file format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">podio.root_io</span> <span class="kn">import</span> <span class="n">Writer</span>         <span class="c1"># For TTrees</span>
+<span class="kn">from</span> <span class="nn">podio.root_io</span> <span class="kn">import</span> <span class="n">RNTupleWriter</span>  <span class="c1"># For RNTuples</span>
+
+<span class="n">writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>                <span class="c1"># For TTree output (.root)</span>
+<span class="n">rntuple_writer</span> <span class="o">=</span> <span class="n">RNTupleWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># For RNTuple output (.root)</span>
+
+<span class="n">writer</span><span class="o">.</span><span class="n">write_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
-</section>
-<section id="handling-mutability">
-<h2>Handling mutability<a class="headerlink" href="#handling-mutability" title="Link to this heading"></a></h2>
-<p>Depending on the policy of the client of PODIO, data collections may be read-only after creation, or may be altered still.
-While the base assumption of PODIO is that once-created collections are immutable once leaving the scope of its creator,
-it still allows for explicit <code class="docutils literal notranslate"><span class="pre">unfreezing</span></code> collections afterwards.
-This feature has to handled with care, as it heavily impacts thread-safety.</p>
 </section>
 </section>
 
