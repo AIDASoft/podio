@@ -215,6 +215,6 @@ read and write all the necessary EDM definitions.
 -  The `DatamodelDefinitionHolder` is intended to be used by readers. It
   provides the `getDatamodelDefinition` and `getAvailableDatamodels` methods.
   **It is again the readers property to correctly populate it with the data it
-  has read from file.** Currently the `SIOReader`, `ROOTReader` and the `ROOTRNTupleReader`,
+  has read from file.** Currently the `SIOReader`, `ROOTReader` and the `RNTupleReader`,
   use it and also offer the same functionality as public methods with the help
   of it.

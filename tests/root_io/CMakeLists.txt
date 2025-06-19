@@ -62,6 +62,13 @@ if(ENABLE_RNTUPLE)
       DEPENDS write_rntuple
   )
   set_property(TEST read_interface_rntuple PROPERTY DEPENDS write_interface_rntuple)
+
+  add_test(NAME write_interface_default_rntuple COMMAND write_interface_root example_frame_interface_default_rntuple.root)
+  PODIO_SET_TEST_ENV(write_interface_default_rntuple)
+  get_test_property(write_interface_default_rntuple ENVIRONMENT ENV)
+  set_property(TEST write_interface_default_rntuple PROPERTY ENVIRONMENT "${ENV};PODIO_DEFAULT_WRITE_RNTUPLE=1")
+  add_test(NAME read_interface_default_rntuple COMMAND read_rntuple example_frame_interface_default_rntuple.root)
+  set_tests_properties(read_interface_default_rntuple PROPERTIES DEPENDS write_interface_default_rntuple ENVIRONMENT "${ENV}")
 endif()
 
 if(ENABLE_DATASOURCE)
