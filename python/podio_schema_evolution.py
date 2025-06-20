@@ -378,6 +378,28 @@ class DataModelComparator:
             changed_klass.append(schema_change)
         return changed_klasses
 
+    def check_rename(self, added_member, dropped_member, schema_changes):
+        """Check whether this pair of addition / removal could be a rename"""
+        if added_member.member.full_type != dropped_member.member.full_type:
+            # Different types cannot be a simple renaming
+            return False
+
+        for schema_change in self.read_schema_changes:
+            if (
+                isinstance(schema_change, RenamedMember)
+                and (schema_change.name == dropped_member.definition_name)
+                and (schema_change.member_name_old == dropped_member.member.name)
+                and (schema_change.member_name_new == added_member.member.name)
+            ):
+                # remove the dropping/adding from the schema changes
+                # and replace it by the rename
+                schema_changes.remove(dropped_member)
+                schema_changes.remove(added_member)
+                schema_changes.append(schema_change)
+                return True
+
+        return False
+
     def heuristics_members(self, added_members, dropped_members, schema_changes):
         """make analysis of member changes in a given data type"""
         for dropped_member in dropped_members:
@@ -387,30 +409,13 @@ class DataModelComparator:
                 if dropped_member.definition_name == member.definition_name
             ]
             for added_member in added_members_in_definition:
-                if added_member.member.full_type == dropped_member.member.full_type:
-                    # this is a rename candidate. So let's see whether it has
-                    # been explicitly declared by the user
-                    is_rename = False
-                    for schema_change in self.read_schema_changes:
-                        if (
-                            isinstance(schema_change, RenamedMember)
-                            and (schema_change.name == dropped_member.definition_name)
-                            and (schema_change.member_name_old == dropped_member.member.name)
-                            and (schema_change.member_name_new == added_member.member.name)
-                        ):
-                            # remove the dropping/adding from the schema changes
-                            # and replace it by the rename
-                            schema_changes.remove(dropped_member)
-                            schema_changes.remove(added_member)
-                            schema_changes.append(schema_change)
-                            is_rename = True
-                    if not is_rename:
-                        self.warnings.append(
-                            f"Definition '{dropped_member.definition_name}' has a potential "
-                            f"rename: '{dropped_member.member.name}' -> "
-                            f"'{added_member.member.name}' of type "
-                            f"'{dropped_member.member.full_type}'."
-                        )
+                if not self.check_rename(added_member, dropped_member, schema_changes):
+                    self.warnings.append(
+                        f"Definition '{dropped_member.definition_name}' has a potential "
+                        f"rename: '{dropped_member.member.name}' -> "
+                        f"'{added_member.member.name}' of type "
+                        f"'{dropped_member.member.full_type}'."
+                    )
 
     def heuristics(self):
         """make an analysis of the data model changes:
