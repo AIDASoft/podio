@@ -379,7 +379,8 @@ class DataModelComparator:
         return changed_klasses
 
     def check_rename(self, added_member, dropped_member, schema_changes):
-        """Check whether this pair of addition / removal could be a rename"""
+        """Check whether this pair of addition / removal could be a rename and
+        return True if it is found in the renamings and false otherwise"""
         if added_member.member.full_type != dropped_member.member.full_type:
             # Different types cannot be a simple renaming
             return False
@@ -400,22 +401,30 @@ class DataModelComparator:
 
         return False
 
+    def filter_types_with_adds_and_drops(self, added_members, dropped_members):
+        """Filter all additions and removals and return pairs of additions /
+        removals that happen on the same datatype"""
+        filtered_list = []
+        for dropped_member in dropped_members:
+            for added_member in added_members:
+                if dropped_member.definition_name == added_member.definition_name:
+                    filtered_list.append((added_member, dropped_member))
+
+        return filtered_list
+
     def heuristics_members(self, added_members, dropped_members, schema_changes):
         """make analysis of member changes in a given data type"""
-        for dropped_member in dropped_members:
-            added_members_in_definition = [
-                member
-                for member in added_members
-                if dropped_member.definition_name == member.definition_name
-            ]
-            for added_member in added_members_in_definition:
-                if not self.check_rename(added_member, dropped_member, schema_changes):
-                    self.warnings.append(
-                        f"Definition '{dropped_member.definition_name}' has a potential "
-                        f"rename: '{dropped_member.member.name}' -> "
-                        f"'{added_member.member.name}' of type "
-                        f"'{dropped_member.member.full_type}'."
-                    )
+        same_type_adds_drops = self.filter_types_with_adds_and_drops(
+            added_members, dropped_members
+        )
+        for added_member, dropped_member in same_type_adds_drops:
+            if not self.check_rename(added_member, dropped_member, schema_changes):
+                self.warnings.append(
+                    f"Definition '{dropped_member.definition_name}' has a potential "
+                    f"rename: '{dropped_member.member.name}' -> "
+                    f"'{added_member.member.name}' of type "
+                    f"'{dropped_member.member.full_type}'."
+                )
 
     def heuristics(self):
         """make an analysis of the data model changes:
