@@ -31,8 +31,8 @@ class AddedComponent(SchemaChange):
 
     def __init__(self, component, name):
         self.component = component
-        self.name = name
-        super().__init__(f"'{self.name}' has been added")
+        self.klassname = name
+        super().__init__(f"'{self.klassname}' has been added")
 
 
 class DroppedComponent(SchemaChange):
@@ -40,9 +40,8 @@ class DroppedComponent(SchemaChange):
 
     def __init__(self, component, name):
         self.component = component
-        self.name = name
         self.klassname = name
-        super().__init__(f"'{self.name}' has been dropped")
+        super().__init__(f"'{self.klassname}' has been dropped")
 
 
 class AddedDatatype(SchemaChange):
@@ -50,9 +49,8 @@ class AddedDatatype(SchemaChange):
 
     def __init__(self, datatype, name):
         self.datatype = datatype
-        self.name = name
         self.klassname = name
-        super().__init__(f"'{self.name}' has been added")
+        super().__init__(f"'{self.klassname}' has been added")
 
 
 class DroppedDatatype(SchemaChange):
@@ -60,9 +58,8 @@ class DroppedDatatype(SchemaChange):
 
     def __init__(self, datatype, name):
         self.datatype = datatype
-        self.name = name
         self.klassname = name
-        super().__init__(f"'{self.name}' has been dropped")
+        super().__init__(f"'{self.klassname}' has been dropped")
 
 
 class RenamedDataType(SchemaChange):
@@ -81,9 +78,8 @@ class AddedMember(SchemaChange):
 
     def __init__(self, member, definition_name):
         self.member = member
-        self.definition_name = definition_name
         self.klassname = definition_name
-        super().__init__(f"'{self.definition_name}' has an added member '{self.member.name}'")
+        super().__init__(f"'{self.klassname}' has an added member '{self.member.name}'")
 
 
 class DroppedMember(SchemaChange):
@@ -91,22 +87,20 @@ class DroppedMember(SchemaChange):
 
     def __init__(self, member, definition_name):
         self.member = member
-        self.definition_name = definition_name
         self.klassname = definition_name
-        super().__init__(f"'{self.definition_name}' has a dropped member '{self.member.name}")
+        super().__init__(f"'{self.klassname}' has a dropped member '{self.member.name}")
 
 
 class ChangedMember(SchemaChange):
     """Class representing a type change in a member"""
 
     def __init__(self, name, member_name, old_member, new_member):
-        self.name = name
         self.member_name = member_name
         self.old_member = old_member
         self.new_member = new_member
         self.klassname = name
         super().__init__(
-            f"'{self.name}.{self.member_name}' changed type from "
+            f"'{self.klassname}.{self.member_name}' changed type from "
             + f"{self.old_member.full_type} to {self.new_member.full_type}"
         )
 
@@ -115,12 +109,11 @@ class RenamedMember(SchemaChange):
     """Class representing a renamed member"""
 
     def __init__(self, name, member_name_old, member_name_new):
-        self.name = name
         self.member_name_old = member_name_old
         self.member_name_new = member_name_new
         self.klassname = name
         super().__init__(
-            f"'{self.name}': member '{self.member_name_old}' renamed to '{self.member_name_new}'."
+            f"'{self.klassname}': member '{self.member_name_old}' renamed to '{self.member_name_new}'."
         )
 
 
@@ -388,7 +381,7 @@ class DataModelComparator:
         for schema_change in self.read_schema_changes:
             if (
                 isinstance(schema_change, RenamedMember)
-                and (schema_change.name == dropped_member.definition_name)
+                and (schema_change.klassname == dropped_member.klassname)
                 and (schema_change.member_name_old == dropped_member.member.name)
                 and (schema_change.member_name_new == added_member.member.name)
             ):
@@ -407,7 +400,7 @@ class DataModelComparator:
         filtered_list = []
         for dropped_member in dropped_members:
             for added_member in added_members:
-                if dropped_member.definition_name == added_member.definition_name:
+                if dropped_member.klassname == added_member.klassname:
                     filtered_list.append((added_member, dropped_member))
 
         return filtered_list
@@ -420,7 +413,7 @@ class DataModelComparator:
         for added_member, dropped_member in same_type_adds_drops:
             if not self.check_rename(added_member, dropped_member, schema_changes):
                 self.warnings.append(
-                    f"Definition '{dropped_member.definition_name}' has a potential "
+                    f"Definition '{dropped_member.klassname}' has a potential "
                     f"rename: '{dropped_member.member.name}' -> "
                     f"'{added_member.member.name}' of type "
                     f"'{dropped_member.member.full_type}'."
@@ -481,8 +474,8 @@ class DataModelComparator:
                 if set(dropped_members.keys()) == set(added_members.keys()):
                     for schema_change in self.read_schema_changes:
                         if isinstance(schema_change, RenamedDataType) and (
-                            schema_change.name_old == dropped.name
-                            and schema_change.name_new == added.name
+                            schema_change.name_old == dropped.klassname
+                            and schema_change.name_new == added.klassname
                         ):
                             schema_changes.remove(dropped)
                             schema_changes.remove(added)
@@ -490,7 +483,7 @@ class DataModelComparator:
                             is_known_evolution = True
                     if not is_known_evolution:
                         self.warnings.append(
-                            f"Potential rename of '{dropped.name}' into '{added.name}'."
+                            f"Potential rename of '{dropped.klassname}' into '{added.klassname}'."
                         )
 
         # are there dropped/added component pairs that could be interpreted as rename?
