@@ -94,7 +94,7 @@ class DroppedMember(SchemaChange):
 class ChangedMemberType(SchemaChange):
     """Class representing a type change in a member"""
 
-    def __init__(self, name, member_name, old_member, new_member):
+    def __init__(self, name, old_member, new_member):
         self.old_member = old_member
         self.new_member = new_member
         self.klassname = name
@@ -112,7 +112,8 @@ class RenamedMember(SchemaChange):
         self.member_name_new = member_name_new
         self.klassname = name
         super().__init__(
-            f"'{self.klassname}': member '{self.member_name_old}' renamed to '{self.member_name_new}'."
+            f"'{self.klassname}': member '{self.member_name_old}' renamed to "
+            f"'{self.member_name_new}'."
         )
 
 
@@ -348,9 +349,7 @@ class DataModelComparator:
                 new = members1[member_name]
                 old = members2[member_name]
                 if old.full_type != new.full_type:
-                    self.detected_schema_changes.append(
-                        ChangedMemberType(name, member_name, old, new)
-                    )
+                    self.detected_schema_changes.append(ChangedMemberType(name, old, new))
 
     @staticmethod
     def _compare_keys(keys1, keys2):
