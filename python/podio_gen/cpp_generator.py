@@ -414,8 +414,6 @@ have resolvable schema evolution incompatibilities:"
             schema_evolution_datatype["old_schema_version"] = self.old_schema_version
             self._fill_templates("Data", schema_evolution_datatype)
             self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
-        else:
-            self._fill_templates("Collection", datatype)
 
     def _preprocess_schema_evolution_component(self, name, component):
         """Preprocess this component (and generaty the necessary code) in case
