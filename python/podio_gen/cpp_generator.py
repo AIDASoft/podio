@@ -33,6 +33,11 @@ def replace_component_in_paths(oldname, newname, paths):
             paths[index] = newPath
 
 
+def _versioned(typename, version):
+    """Return a versioned name of the typename"""
+    return f"{typename}v{version}"
+
+
 class IncludeFrom(IntEnum):
     """Enum to signify if an include is needed and from where it should come"""
 
@@ -72,7 +77,6 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.old_yamlfile = old_description
         self.evolution_file = evolution_file
         self.old_schema_version = None
-        self.old_schema_version_int = None
         self.old_datamodel = None
         self.old_datamodels_components = set()
         self.old_datamodels_datatypes = set()
@@ -351,8 +355,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             )
             comparator.read()
             comparator.compare()
-            self.old_schema_version = f"v{comparator.datamodel_old.schema_version}"
-            self.old_schema_version_int = comparator.datamodel_old.schema_version
+            self.old_schema_version = comparator.datamodel_old.schema_version
             # some sanity checks
             if len(comparator.errors) > 0:
                 print(
@@ -391,13 +394,13 @@ have resolvable schema evolution incompatibilities:"
                     needs_schema_evolution = True
                     replace_component_in_paths(
                         member.array_type,
-                        member.array_type + self.old_schema_version,
+                        _versioned(member.array_type, self.old_schema_version),
                         schema_evolution_datatype["includes_data"],
                     )
                     member.full_type = member.full_type.replace(
-                        member.array_type, member.array_type + self.old_schema_version
+                        member.array_type, _versioned(member.array_type, self.old_schema_version)
                     )
-                    member.array_type = member.array_type + self.old_schema_version
+                    member.array_type = _versioned(member.array_type, self.old_schema_version)
 
             else:
                 if member.full_type in self.root_schema_dict:
@@ -405,20 +408,20 @@ have resolvable schema evolution incompatibilities:"
                     # prepare the ROOT I/O rule
                     replace_component_in_paths(
                         member.full_type,
-                        member.full_type + self.old_schema_version,
+                        _versioned(member.full_type, self.old_schema_version),
                         schema_evolution_datatype["includes_data"],
                     )
-                    member.full_type = member.full_type + self.old_schema_version
-                    member.bare_type = member.bare_type + self.old_schema_version
+                    member.full_type = _versioned(member.full_type, self.old_schema_version)
+                    member.bare_type = _versioned(member.bare_type, self.old_schema_version)
 
         if needs_schema_evolution:
             print(f"  Preparing explicit schema evolution for {name}")
-            schema_evolution_datatype["class"].bare_type = (
-                schema_evolution_datatype["class"].bare_type + self.old_schema_version
+            schema_evolution_datatype["class"].bare_type = _versioned(
+                schema_evolution_datatype["class"].bare_type, self.old_schema_version
             )  # noqa
-            schema_evolution_datatype["old_schema_version"] = self.old_schema_version_int
+            schema_evolution_datatype["old_schema_version"] = self.old_schema_version
             self._fill_templates("Data", schema_evolution_datatype)
-            self.root_schema_datatype_names.add(name + self.old_schema_version)
+            self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
             self._fill_templates("Collection", datatype, schema_evolution_datatype)
         else:
             self._fill_templates("Collection", datatype)
@@ -437,12 +440,12 @@ have resolvable schema evolution incompatibilities:"
                     for member in component["Members"]:
                         if member.name == schema_evolution.member_name_new:
                             member.name = schema_evolution.member_name_old
-                    component["class"] = DataType(name + self.old_schema_version)
+                    component["class"] = DataType(_versioned(name, self.old_schema_version))
                 else:
                     raise NotImplementedError
 
             self._fill_templates("Component", component)
-            self.root_schema_component_names.add(name + self.old_schema_version)
+            self.root_schema_component_names.add(_versioned(name, self.old_schema_version))
 
         except KeyError:
             return
@@ -481,7 +484,7 @@ have resolvable schema evolution incompatibilities:"
                     iorule = RootIoRule()
                     iorule.sourceClass = type_name
                     iorule.targetClass = type_name
-                    iorule.version = self.old_schema_version.lstrip("v")
+                    iorule.version = self.old_schema_version
                     iorule.source = f"{member_type} {schema_change.member_name_old}"
                     iorule.target = schema_change.member_name_new
                     iorule.code = f"{iorule.target} = onfile.{schema_change.member_name_old};"
