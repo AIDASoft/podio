@@ -117,21 +117,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         component["includes"] = self._sort_includes(includes)
 
         self._fill_templates("Component", component)
-        # Add potentially older schema for schema evolution
-        # based on ROOT capabilities for now
-        if name in self.root_schema_dict:
-            schema_evolutions = self.root_schema_dict[name]
-            component = deepcopy(component)
-            for schema_evolution in schema_evolutions:
-                if isinstance(schema_evolution, RenamedMember):
-                    for member in component["Members"]:
-                        if member.name == schema_evolution.member_name_new:
-                            member.name = schema_evolution.member_name_old
-                    component["class"] = DataType(name + self.old_schema_version)
-                else:
-                    raise NotImplementedError
-            self._fill_templates("Component", component)
-            self.root_schema_component_names.add(name + self.old_schema_version)
+        self._preprocess_schema_evolution_component(name, component)
 
         return component
 
@@ -430,6 +416,30 @@ have resolvable schema evolution incompatibilities:"
                 for item in root_filter(comparator.schema_changes):
                     # add whatever is relevant to our ROOT schema evolution
                     self.root_schema_dict.setdefault(item.klassname, []).append(item)
+
+    def _preprocess_schema_evolution_component(self, name, component):
+        """Preprocess this component (and generaty the necessary code) in case
+        schema evolution is necessary
+
+        NOTE: currently limited to support only ROOT schema evolution needs
+        """
+        try:
+            schema_evolutions = self.root_schema_dict[name]
+            component = deepcopy(component)
+            for schema_evolution in schema_evolutions:
+                if isinstance(schema_evolution, RenamedMember):
+                    for member in component["Members"]:
+                        if member.name == schema_evolution.member_name_new:
+                            member.name = schema_evolution.member_name_old
+                    component["class"] = DataType(name + self.old_schema_version)
+                else:
+                    raise NotImplementedError
+
+            self._fill_templates("Component", component)
+            self.root_schema_component_names.add(name + self.old_schema_version)
+
+        except KeyError:
+            return
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in
