@@ -91,16 +91,15 @@ class DroppedMember(SchemaChange):
         super().__init__(f"'{self.klassname}' has a dropped member '{self.member.name}")
 
 
-class ChangedMember(SchemaChange):
+class ChangedMemberType(SchemaChange):
     """Class representing a type change in a member"""
 
     def __init__(self, name, member_name, old_member, new_member):
-        self.member_name = member_name
         self.old_member = old_member
         self.new_member = new_member
         self.klassname = name
         super().__init__(
-            f"'{self.klassname}.{self.member_name}' changed type from "
+            f"'{self.klassname}.{self.old_member.name}' changed type from "
             + f"{self.old_member.full_type} to {self.new_member.full_type}"
         )
 
@@ -349,7 +348,9 @@ class DataModelComparator:
                 new = members1[member_name]
                 old = members2[member_name]
                 if old.full_type != new.full_type:
-                    self.detected_schema_changes.append(ChangedMember(name, member_name, old, new))
+                    self.detected_schema_changes.append(
+                        ChangedMemberType(name, member_name, old, new)
+                    )
 
     @staticmethod
     def _compare_keys(keys1, keys2):
@@ -440,7 +441,7 @@ class DataModelComparator:
 
         # are the member changes actually supported/supportable?
         changed_members = [
-            change for change in schema_changes if isinstance(change, ChangedMember)
+            change for change in schema_changes if isinstance(change, ChangedMemberType)
         ]
         for change in changed_members:
             # changes between arrays and basic types are forbidden
