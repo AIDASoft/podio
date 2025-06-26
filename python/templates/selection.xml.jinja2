@@ -7,6 +7,12 @@
 {%- endif -%}
 {%- endmacro -%}
 
+{%- macro data_selection(class, version) %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+        <class name="{{ namespace }}v{{ version }}::{{ class.bare_type }}Data"/>
+        <class name="std::vector<{{ namespace }}v{{ version }}::{{ class.bare_type }}Data>"/>
+{%- endmacro -%}
+
 {% macro ioread(iorule) %}
         <ioread sourceClass="{{ iorule.sourceClass }}" targetClass="{{ iorule.targetClass}}" version="[{{ iorule.version }}]" target="{{ iorule.target }}" source="{{ iorule.source }}">
         <![CDATA[
@@ -25,6 +31,7 @@
 
         <!-- datatypes -->
 {% for class in datatypes %}
+{{ data_selection(class, version) }}
 {{ class_selection(class, postfix='Data', vector=True) }}
 {# We need to also create the collections in the selection xml file. #}
 {# Otherwise the python interface does not work in gcc builds #}
@@ -34,6 +41,7 @@
 {{ class_selection(class) }}
 {{ class_selection(class, postfix='Collection') }}
 {% endfor %}
+
 
         <!-- previous schema components and pods -->
 {% for class in old_schema_components %}
