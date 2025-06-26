@@ -185,13 +185,6 @@ podio::SchemaVersionT {{ collection_type }}::getSchemaVersion() const {
 namespace {
  {{ macros.create_buffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, -1) }}
 
-{#
-// SCHEMA EVOLUTION: Not yet required with only ROOT backend
-// {% if old_schema_version is defined %}
-// {{ macros.create_buffers(class, package_name, collection_type, OneToManyRelations_old, OneToOneRelations_old, VectorMembers_old, old_schema_version) }}
-// {% endif %}
-#}
-
 // The usual trick with an IIFE and a static variable inside a function and then
 // making sure to call that function during shared library loading
 bool register{{ class.bare_type }}Collection() {
