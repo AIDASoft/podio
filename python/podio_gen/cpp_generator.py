@@ -459,7 +459,9 @@ have resolvable schema evolution incompatibilities:"
             for schema_change in schema_changes:
                 if isinstance(schema_change, RenamedMember):
                     # find out the type of the renamed member
-                    component = self.datamodel.components[type_name]
+                    component = self.datamodel.components.get(type_name)
+                    if component is None:
+                        component = self.datamodel.datatypes[type_name]
                     member_type = None
                     for member in component["Members"]:
                         if member.name == schema_change.member_name_new:
