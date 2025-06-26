@@ -7,6 +7,12 @@
 {%- endif -%}
 {%- endmacro -%}
 
+{%- macro data_selection(class, version) %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+        <class name="{{ namespace }}v{{ version }}::{{ class.bare_type }}Data"/>
+        <class name="std::vector<{{ namespace }}v{{ version }}::{{ class.bare_type }}Data>"/>
+{%- endmacro -%}
+
 {% macro ioread(iorule) %}
         <ioread sourceClass="{{ iorule.sourceClass }}" targetClass="{{ iorule.targetClass}}" version="[{{ iorule.version }}]" target="{{ iorule.target }}" source="{{ iorule.source }}">
         <![CDATA[
@@ -25,7 +31,7 @@
 
         <!-- datatypes -->
 {% for class in datatypes %}
-{{ class_selection(class, postfix='Data', vector=True) }}
+{{ data_selection(class, version) }}
 {# We need to also create the collections in the selection xml file. #}
 {# Otherwise the python interface does not work in gcc builds #}
 {# Additionally, in order to allow "direct" access to the user facing classes #}
@@ -33,6 +39,13 @@
 {{ class_selection(class, prefix='Mutable') }}
 {{ class_selection(class) }}
 {{ class_selection(class, postfix='Collection') }}
+{% endfor %}
+
+        <!-- for backwards compatibility with podio versions that didn't
+         generate a version namespace so we generate the "oldschool"
+         un-versioned data here as well -->
+{% for class in datatypes %}
+{{ class_selection(class, postfix='Data', vector=True) }}
 {% endfor %}
 
         <!-- previous schema components and pods -->
