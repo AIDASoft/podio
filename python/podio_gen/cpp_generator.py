@@ -215,7 +215,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         for rel in ("From", "To"):
             rel_type = link[rel]
             include_header = f"{rel_type.bare_type}Collection"
-            if self._is_interface(rel_type.full_type):
+            if self._is_in(rel_type.full_type, "interfaces"):
                 # Interfaces do not have a Collection header
                 include_header = rel_type.bare_type
             link["include_types"].append(
@@ -253,7 +253,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 member.sub_members = self.datamodel.components[member.full_type]["Members"]
 
         for relation in datatype["OneToOneRelations"]:
-            if self._is_interface(relation.full_type):
+            if self._is_in(relation.full_type, "interfaces"):
                 relation.interface_types = self.datamodel.interfaces[relation.full_type]["Types"]
             if self._needs_include(relation.full_type):
                 fwd_declarations[relation.namespace].append(relation.bare_type)
@@ -265,7 +265,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             includes.add('#include "podio/RelationRange.h"')
 
         for relation in datatype["OneToManyRelations"]:
-            if self._is_interface(relation.full_type):
+            if self._is_in(relation.full_type, "interfaces"):
                 relation.interface_types = self.datamodel.interfaces[relation.full_type]["Types"]
             if self._needs_include(relation.full_type):
                 includes.add(self._build_include(relation))
@@ -335,7 +335,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         for relation in datatype["OneToManyRelations"] + datatype["OneToOneRelations"]:
             if datatype["class"].bare_type != relation.bare_type:
                 include_from = self._needs_include(relation.full_type)
-                if self._is_interface(relation.full_type):
+                if self._is_in(relation.full_type, "interfaces"):
                     includes_cc.add(
                         self._build_include_for_class(relation.bare_type, include_from)
                     )

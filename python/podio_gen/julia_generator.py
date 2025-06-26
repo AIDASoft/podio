@@ -56,7 +56,7 @@ class JuliaClassGenerator(ClassGeneratorBaseMixin):
     def do_process_datatype(self, _, datatype):
         """Do the julia specific processing for a datatype"""
         if any(
-            self._is_interface(r.full_type)
+            self._is_in(r.full_type, "interfaces")
             for r in datatype["OneToOneRelations"] + datatype["OneToManyRelations"]
         ):
             # Julia doesn't support any interfaces yet, so we have to also sort out
