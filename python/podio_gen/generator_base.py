@@ -296,9 +296,15 @@ class ClassGeneratorBaseMixin:
         ):
             self._write_file(filename, self._eval_template(template, data, old_schema_data))
 
-    def _is_interface(self, classname):
-        """Check whether this is an interface type or a regular datatype"""
-        all_interfaces = self.datamodel.interfaces
+    def _is_in(self, classname, category):
+        """Check whether classname is a member of the category (components,
+        datatypes, interfaces)"""
+        if category not in ("datatypes", "components", "interfaces"):
+            raise ValueError(f"{category=} is not a valid category")
+
+        all_classes = getattr(self.datamodel, category)
         if self.upstream_edm:
-            all_interfaces = list(self.datamodel.interfaces) + list(self.upstream_edm.interfaces)
-        return classname in all_interfaces
+            all_classes = list(getattr(self.datamodel, category)) + list(
+                getattr(self.upstream_edm, category)
+            )
+        return classname in all_classes
