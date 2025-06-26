@@ -129,47 +129,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self._preprocess_for_obj(datatype)
         self._preprocess_for_collection(datatype)
 
-        # ROOT schema evolution preparation
-        # Compute and prepare the potential schema evolution parts
-        schema_evolution_datatype = deepcopy(datatype)
-        needs_schema_evolution = False
-        for member in schema_evolution_datatype["Members"]:
-            if member.is_array:
-                if member.array_type in self.root_schema_dict:
-                    needs_schema_evolution = True
-                    replace_component_in_paths(
-                        member.array_type,
-                        member.array_type + self.old_schema_version,
-                        schema_evolution_datatype["includes_data"],
-                    )
-                    member.full_type = member.full_type.replace(
-                        member.array_type, member.array_type + self.old_schema_version
-                    )
-                    member.array_type = member.array_type + self.old_schema_version
-
-            else:
-                if member.full_type in self.root_schema_dict:
-                    needs_schema_evolution = True
-                    # prepare the ROOT I/O rule
-                    replace_component_in_paths(
-                        member.full_type,
-                        member.full_type + self.old_schema_version,
-                        schema_evolution_datatype["includes_data"],
-                    )
-                    member.full_type = member.full_type + self.old_schema_version
-                    member.bare_type = member.bare_type + self.old_schema_version
-
-        if needs_schema_evolution:
-            print(f"  Preparing explicit schema evolution for {name}")
-            schema_evolution_datatype["class"].bare_type = (
-                schema_evolution_datatype["class"].bare_type + self.old_schema_version
-            )  # noqa
-            schema_evolution_datatype["old_schema_version"] = self.old_schema_version_int
-            self._fill_templates("Data", schema_evolution_datatype)
-            self.root_schema_datatype_names.add(name + self.old_schema_version)
-            self._fill_templates("Collection", datatype, schema_evolution_datatype)
-        else:
-            self._fill_templates("Collection", datatype)
+        self._preprocess_schema_evolution_datatype(name, datatype)
 
         self._fill_templates("Data", datatype)
         self._fill_templates("Object", datatype)
@@ -416,6 +376,52 @@ have resolvable schema evolution incompatibilities:"
                 for item in root_filter(comparator.schema_changes):
                     # add whatever is relevant to our ROOT schema evolution
                     self.root_schema_dict.setdefault(item.klassname, []).append(item)
+
+    def _preprocess_schema_evolution_datatype(self, name, datatype):
+        """Preprocess this datatype (and generate the necessary code) in case
+        schema evolution is necessary
+
+        NOTE: currently limited to support only ROOT schema evolution needs
+        """
+        schema_evolution_datatype = deepcopy(datatype)
+        needs_schema_evolution = False
+        for member in schema_evolution_datatype["Members"]:
+            if member.is_array:
+                if member.array_type in self.root_schema_dict:
+                    needs_schema_evolution = True
+                    replace_component_in_paths(
+                        member.array_type,
+                        member.array_type + self.old_schema_version,
+                        schema_evolution_datatype["includes_data"],
+                    )
+                    member.full_type = member.full_type.replace(
+                        member.array_type, member.array_type + self.old_schema_version
+                    )
+                    member.array_type = member.array_type + self.old_schema_version
+
+            else:
+                if member.full_type in self.root_schema_dict:
+                    needs_schema_evolution = True
+                    # prepare the ROOT I/O rule
+                    replace_component_in_paths(
+                        member.full_type,
+                        member.full_type + self.old_schema_version,
+                        schema_evolution_datatype["includes_data"],
+                    )
+                    member.full_type = member.full_type + self.old_schema_version
+                    member.bare_type = member.bare_type + self.old_schema_version
+
+        if needs_schema_evolution:
+            print(f"  Preparing explicit schema evolution for {name}")
+            schema_evolution_datatype["class"].bare_type = (
+                schema_evolution_datatype["class"].bare_type + self.old_schema_version
+            )  # noqa
+            schema_evolution_datatype["old_schema_version"] = self.old_schema_version_int
+            self._fill_templates("Data", schema_evolution_datatype)
+            self.root_schema_datatype_names.add(name + self.old_schema_version)
+            self._fill_templates("Collection", datatype, schema_evolution_datatype)
+        else:
+            self._fill_templates("Collection", datatype)
 
     def _preprocess_schema_evolution_component(self, name, component):
         """Preprocess this component (and generaty the necessary code) in case
