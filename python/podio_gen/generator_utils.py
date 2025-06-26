@@ -136,6 +136,13 @@ class DataType:
         self.full_type = klass
         self.namespace, self.bare_type = _get_namespace_class(self.full_type)
 
+    def full_data_type(self, schema_version):
+        """Return the fully qualified Data type name including its version namespace"""
+        dtype = f"v{schema_version}::{self.bare_type}Data"
+        if self.namespace:
+            dtype = f"{self.namespace}::{dtype}"
+        return dtype
+
     def __str__(self):
         if self.namespace:
             scoped_type = f"::{self.namespace}::{self.bare_type}"
