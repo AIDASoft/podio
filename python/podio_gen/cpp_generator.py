@@ -422,7 +422,6 @@ have resolvable schema evolution incompatibilities:"
             schema_evolution_datatype["old_schema_version"] = self.old_schema_version
             self._fill_templates("Data", schema_evolution_datatype)
             self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
-            self._fill_templates("Collection", datatype, schema_evolution_datatype)
         else:
             self._fill_templates("Collection", datatype)
 
