@@ -389,28 +389,20 @@ have resolvable schema evolution incompatibilities:"
         schema_evolution_datatype = deepcopy(datatype)
         needs_schema_evolution = False
         for member in schema_evolution_datatype["Members"]:
-            if member.is_array:
-                if member.array_type in self.root_schema_dict:
-                    needs_schema_evolution = True
-                    replace_component_in_paths(
-                        member.array_type,
-                        _versioned(member.array_type, self.old_schema_version),
-                        schema_evolution_datatype["includes_data"],
-                    )
+            member_type = member.array_type if member.is_array else member.full_type
+            if member_type in self.root_schema_dict:
+                needs_schema_evolution = True
+                replace_component_in_paths(
+                    member_type,
+                    _versioned(member_type, self.old_schema_version),
+                    schema_evolution_datatype["includes_data"],
+                )
+                if member.is_array:
                     member.full_type = member.full_type.replace(
                         member.array_type, _versioned(member.array_type, self.old_schema_version)
                     )
                     member.array_type = _versioned(member.array_type, self.old_schema_version)
-
-            else:
-                if member.full_type in self.root_schema_dict:
-                    needs_schema_evolution = True
-                    # prepare the ROOT I/O rule
-                    replace_component_in_paths(
-                        member.full_type,
-                        _versioned(member.full_type, self.old_schema_version),
-                        schema_evolution_datatype["includes_data"],
-                    )
+                else:
                     member.full_type = _versioned(member.full_type, self.old_schema_version)
                     member.bare_type = _versioned(member.bare_type, self.old_schema_version)
 
