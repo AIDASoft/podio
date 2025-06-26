@@ -439,7 +439,7 @@ have resolvable schema evolution incompatibilities:"
             self.root_schema_component_names.add(_versioned(name, self.old_schema_version))
 
         except KeyError:
-            return
+            pass
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in
