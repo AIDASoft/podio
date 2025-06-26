@@ -11,3 +11,8 @@ evolutions:
 
   EventInfo:
     class_renamed_to: EventInfoNewName
+
+  ExampleCluster:
+    member_rename:
+      - energy
+      - newEnergyName

@@ -91,7 +91,7 @@ datatypes :
     Description : "Cluster"
     Author : "B. Hegner"
     Members:
-      - double energy // cluster energy
+      - double newEnergyName // cluster energy (renamed for testing purposes)
     OneToManyRelations:
      - ExampleHit Hits // hits contained in the cluster
      - ExampleCluster Clusters // sub clusters used to create this cluster
