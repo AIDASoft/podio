@@ -25,9 +25,7 @@ SIOWriter::SIOWriter(const std::string& filename) {
 }
 
 SIOWriter::~SIOWriter() {
-  if (!m_finished) {
-    finish();
-  }
+  finish();
 }
 
 void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -55,6 +53,9 @@ void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& categor
 }
 
 void SIOWriter::finish() {
+  if (m_finished) {
+    return;
+  }
   auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(
       m_datamodelCollector.getDatamodelDefinitionsToWrite());
 
