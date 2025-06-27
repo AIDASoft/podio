@@ -1,6 +1,7 @@
 #ifndef PODIO_TESTS_SCHEMAEVOLUTION_READNEWDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_SCHEMAEVOLUTION_READNEWDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithArrayComponentCollection.h"
@@ -43,6 +44,14 @@ int readExampleHit(const podio::Frame& event) {
   return 0;
 }
 
+int readExampleCluster(const podio::Frame& event) {
+  const auto& coll = event.get<ExampleClusterCollection>("datatypeMemberRenameTest");
+  const auto elem = coll[0];
+  ASSERT_EQUAL(elem.newEnergyName(), 3.14, "Renamed datatype members does not have the expected value");
+
+  return 0;
+}
+
 int readExampleWithNamespace(const podio::Frame& event) {
   const auto& coll = event.get<ex42::ExampleWithNamespaceCollection>("componentMemberRenameTest");
   auto elem = coll[0];
@@ -73,6 +82,7 @@ int read_new_data(const std::string& filename) {
   int result = 0;
   result += readSimpleStruct(event);
   result += readExampleHit(event);
+  result += readExampleCluster(event);
   result += readExampleWithNamespace(event);
   result += readExampleWithARelation(event);
 
