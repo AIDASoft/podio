@@ -388,10 +388,18 @@ have resolvable schema evolution incompatibilities:"
         """
         schema_evolution_datatype = deepcopy(datatype)
         needs_schema_evolution = False
+        # We have to figure out whether we need to do schema evolution and how
+        # we do it. We have to do it if either a (non-component) member is
+        # affected or if a member that is a component type has a renamed member.
+        # The things we need to do differ slightly in both cases
         for member in schema_evolution_datatype["Members"]:
             member_type = member.array_type if member.is_array else member.full_type
-            if member_type in self.root_schema_dict:
+            evolution = self.root_schema_dict.get(member_type, None)
+            if evolution:
                 needs_schema_evolution = True
+                # We have a component with a member that got renamed. Hence we
+                # need to make sure we generate a version of the Data class with
+                # the old component
                 replace_component_in_paths(
                     member_type,
                     _versioned(member_type, self.old_schema_version),
