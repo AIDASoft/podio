@@ -1,6 +1,7 @@
 #ifndef PODIO_TESTS_SCHEMAEVOLUTION_READNEWDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_SCHEMAEVOLUTION_READNEWDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/EventInfoNewNameCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithArrayComponentCollection.h"
@@ -63,6 +64,15 @@ int readExampleWithARelation(const podio::Frame& event) {
   return 0;
 }
 
+int readEventInfoNewNameCollection(const podio::Frame& event) {
+  const auto& coll = event.get<EventInfoNewNameCollection>("datatypeRenamingTest");
+  const auto elem = coll[0];
+
+  ASSERT_EQUAL(elem.Number(), 42, "Contents of renamed datatype are not as expected")
+
+  return 0;
+}
+
 template <typename ReaderT>
 int read_new_data(const std::string& filename) {
   ReaderT reader{};
@@ -75,6 +85,7 @@ int read_new_data(const std::string& filename) {
   result += readExampleHit(event);
   result += readExampleWithNamespace(event);
   result += readExampleWithARelation(event);
+  result += readEventInfoNewNameCollection(event);
 
   return result;
 }
