@@ -411,7 +411,6 @@ have resolvable schema evolution incompatibilities:"
             schema_evolution_datatype["class"].bare_type = _versioned(
                 schema_evolution_datatype["class"].bare_type, self.old_schema_version
             )  # noqa
-            schema_evolution_datatype["old_schema_version"] = self.old_schema_version
             self._fill_templates("Data", schema_evolution_datatype)
             self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
 
