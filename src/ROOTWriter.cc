@@ -17,9 +17,7 @@ ROOTWriter::ROOTWriter(const std::string& filename) {
 }
 
 ROOTWriter::~ROOTWriter() {
-  if (!m_finished) {
-    finish();
-  }
+  finish();
 }
 
 void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
@@ -168,6 +166,9 @@ void ROOTWriter::resetBranches(CategoryInfo& categoryInfo,
 }
 
 void ROOTWriter::finish() {
+  if (m_finished) {
+    return;
+  }
   auto* metaTree = new TTree(root_utils::metaTreeName, "metadata tree for podio I/O functionality");
   metaTree->SetDirectory(m_file.get());
 

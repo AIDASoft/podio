@@ -28,9 +28,7 @@ RNTupleWriter::RNTupleWriter(const std::string& filename) :
 }
 
 RNTupleWriter::~RNTupleWriter() {
-  if (!m_finished) {
-    finish();
-  }
+  finish();
 }
 
 template <typename T>
@@ -235,6 +233,9 @@ RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(const std::string& c
 }
 
 void RNTupleWriter::finish() {
+  if (m_finished) {
+    return;
+  }
   auto metadata = root_compat::RNTupleModel::Create();
 
   const auto podioVersion = podio::version::build_version;
