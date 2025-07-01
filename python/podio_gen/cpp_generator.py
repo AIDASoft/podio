@@ -410,7 +410,7 @@ have resolvable schema evolution incompatibilities:"
             print(f"  Preparing explicit schema evolution for {name}")
             schema_evolution_datatype["class"].bare_type = _versioned(
                 schema_evolution_datatype["class"].bare_type, self.old_schema_version
-            )  # noqa
+            )
             self._fill_templates("Data", schema_evolution_datatype)
             self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
 
@@ -603,7 +603,7 @@ have resolvable schema evolution incompatibilities:"
             "old_schema_components": [
                 DataType(d)
                 for d in self.root_schema_datatype_names | self.root_schema_component_names
-            ],  # noqa
+            ],
             "iorules": self.root_schema_iorules,
         }
 
