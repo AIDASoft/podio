@@ -436,6 +436,7 @@ have resolvable schema evolution incompatibilities:"
             self.root_schema_component_names.add(_versioned(name, self.old_schema_version))
 
         except KeyError:
+            # We didn't find any schema evolution for this component
             pass
 
     def _invert_interfaces(self):
