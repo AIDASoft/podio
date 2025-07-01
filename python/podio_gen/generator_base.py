@@ -259,14 +259,8 @@ class ClassGeneratorBaseMixin:
 
         return fn_templates
 
-    def _eval_template(self, template, data, old_schema_data=None):
+    def _eval_template(self, template, data):
         """Fill the specified template"""
-        # merge the info of data and the old schema into a single dict
-        if old_schema_data:
-            data["OneToOneRelations_old"] = old_schema_data["OneToOneRelations"]
-            data["OneToManyRelations_old"] = old_schema_data["OneToManyRelations"]
-            data["VectorMembers_old"] = old_schema_data["VectorMembers"]
-
         return self.env.get_template(template).render(data)
 
     def _write_file(self, name, content):
@@ -284,7 +278,7 @@ class ClassGeneratorBaseMixin:
             changed = write_file_if_changed(fullname, content)
             self.any_changes = changed or self.any_changes
 
-    def _fill_templates(self, template_base, data, old_schema_data=None):
+    def _fill_templates(self, template_base, data):
         """Fill the template and write the results to file"""
         # Update the passed data with some global things that are the same for all
         # files
@@ -294,11 +288,17 @@ class ClassGeneratorBaseMixin:
         for filename, template in self._get_filenames_templates(
             template_base, data["class"].bare_type
         ):
-            self._write_file(filename, self._eval_template(template, data, old_schema_data))
+            self._write_file(filename, self._eval_template(template, data))
 
-    def _is_interface(self, classname):
-        """Check whether this is an interface type or a regular datatype"""
-        all_interfaces = self.datamodel.interfaces
+    def _is_in(self, classname, category):
+        """Check whether classname is a member of the category (components,
+        datatypes, interfaces)"""
+        if category not in ("datatypes", "components", "interfaces"):
+            raise ValueError(f"{category=} is not a valid category")
+
+        all_classes = getattr(self.datamodel, category)
         if self.upstream_edm:
-            all_interfaces = list(self.datamodel.interfaces) + list(self.upstream_edm.interfaces)
-        return classname in all_interfaces
+            all_classes = list(getattr(self.datamodel, category)) + list(
+                getattr(self.upstream_edm, category)
+            )
+        return classname in all_classes
