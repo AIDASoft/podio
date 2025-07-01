@@ -1,9 +1,9 @@
 #ifndef PODIO_TESTS_SCHEMAEVOLUTION_READNEWDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_SCHEMAEVOLUTION_READNEWDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithARelationCollection.h"
-#include "datamodel/ExampleWithArrayComponentCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
 
 #include "podio/Frame.h"
@@ -17,18 +17,6 @@
     return 1;                                                                                                          \
   }
 
-int readSimpleStruct(const podio::Frame& event) {
-  const auto& coll = event.get<ExampleWithArrayComponentCollection>("simpleStructTest");
-  auto elem = coll[0];
-  const auto sstruct = elem.s();
-
-  ASSERT_EQUAL(sstruct.y, 0, "New component member not 0 initialized")
-  ASSERT_EQUAL(sstruct.x, 42, "Existing component member changed")
-  ASSERT_EQUAL(sstruct.z, 123, "Existing component member changed")
-
-  return 0;
-}
-
 int readExampleHit(const podio::Frame& event) {
   const auto& coll = event.get<ExampleHitCollection>("datatypeMemberAdditionTest");
   auto elem = coll[0];
@@ -39,6 +27,14 @@ int readExampleHit(const podio::Frame& event) {
   ASSERT_EQUAL(elem.z(), 1.23, "Member variables unrelated to schema evolution have changed")
   ASSERT_EQUAL(elem.energy(), 0, "Member variables unrelated to schema evolution have changed")
   ASSERT_EQUAL(elem.cellID(), 0xcaffee, "Member variables unrelated to schema evolution have changed")
+
+  return 0;
+}
+
+int readExampleCluster(const podio::Frame& event) {
+  const auto& coll = event.get<ExampleClusterCollection>("datatypeMemberRenameTest");
+  const auto elem = coll[0];
+  ASSERT_EQUAL(elem.newEnergyName(), 3.14, "Renamed datatype members does not have the expected value");
 
   return 0;
 }
@@ -71,8 +67,8 @@ int read_new_data(const std::string& filename) {
   const auto event = podio::Frame(reader.readEntry("events", 0));
 
   int result = 0;
-  result += readSimpleStruct(event);
   result += readExampleHit(event);
+  result += readExampleCluster(event);
   result += readExampleWithNamespace(event);
   result += readExampleWithARelation(event);
 

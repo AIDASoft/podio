@@ -1,26 +1,14 @@
 #ifndef PODIO_TESTS_SCHEMAEVOLUTION_WRITEOLDDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TESTS_SCHEMAEVOLUTION_WRITEOLDDATA_H // NOLINT(llvm-header-guard): folder structure not suitable
 
+#include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithARelationCollection.h"
-#include "datamodel/ExampleWithArrayComponentCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
 
 #include "podio/Frame.h"
 
 #include <string>
-
-/// This is a datatype that holds a SimpleStruct component
-auto writeSimpleStruct() {
-  ExampleWithArrayComponentCollection coll;
-  auto elem = coll.create();
-  auto sstruct = SimpleStruct();
-  sstruct.x = 42;
-  sstruct.z = 123;
-  elem.s(sstruct);
-
-  return coll;
-}
 
 auto writeExampleHit() {
   ExampleHitCollection coll;
@@ -30,6 +18,12 @@ auto writeExampleHit() {
   elem.z(1.23);
   elem.cellID(0xcaffee);
 
+  return coll;
+}
+
+auto writeExampleCluster() {
+  ExampleClusterCollection coll;
+  auto elem = coll.create(3.14);
   return coll;
 }
 
@@ -53,7 +47,7 @@ auto writeExampleWithARelation() {
 podio::Frame createFrame() {
   podio::Frame event;
 
-  event.put(writeSimpleStruct(), "simpleStructTest");
+  event.put(writeExampleCluster(), "datatypeMemberRenameTest");
   event.put(writeExampleHit(), "datatypeMemberAdditionTest");
   event.put(writeExampleWithNamespace(), "componentMemberRenameTest");
   event.put(writeExampleWithARelation(), "floatToDoubleMemberTest");
