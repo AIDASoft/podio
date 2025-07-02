@@ -48,7 +48,7 @@ class CollectionSubscriptTest(unittest.TestCase):
         collection = nsp.EnergyInNamespaceCollection()
         _ = collection.create()
         self.assertEqual(len(collection), 1)
-        with self.assertRaises(IndexError):
+        with self.assertRaises(cppyy.gbl.std.out_of_range):
             _ = collection[20]
         _ = collection[0]
 
