@@ -87,6 +87,7 @@ if(ENABLE_DATASOURCE)
   list(APPEND root_components_needed ROOTDataFrame)
 endif()
 find_package(ROOT ${root_min_version} REQUIRED COMPONENTS ${root_components_needed})
+find_package(Python3 REQUIRED COMPONENTS Development)
 
 if(ENABLE_RNTUPLE AND ROOT_VERSION VERSION_LESS 6.34)
   message(WARNING "You are building RNTuple support against a version of ROOT that does not yet guarantee RNTuple backwards compatibility")
