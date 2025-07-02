@@ -5,6 +5,7 @@ import unittest
 from ROOT import ExampleHitCollection, ExampleHit
 import podio
 
+
 class TestBracketOperator(unittest.TestCase):
     """Check that operator[] returns a non-mutable object"""
 
