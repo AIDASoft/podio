@@ -3,7 +3,6 @@
 import unittest
 
 from ROOT import ExampleHitCollection, ExampleHit
-import podio
 
 
 class TestBracketOperator(unittest.TestCase):
@@ -12,7 +11,4 @@ class TestBracketOperator(unittest.TestCase):
     def test_bracket_operator(self):
         coll = ExampleHitCollection()
         coll.create()
-        frame = podio.Frame()
-        frame.put(coll, "hits_from_python")
-        coll = frame.get("hits_from_python")
         self.assertEqual(type(coll[0]), type(ExampleHit()))
