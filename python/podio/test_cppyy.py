@@ -16,4 +16,3 @@ class TestBracketOperator(unittest.TestCase):
         frame.put(coll, "hits_from_python")
         coll = frame.get("hits_from_python")
         self.assertEqual(type(coll[0]), type(ExampleHit()))
-    
