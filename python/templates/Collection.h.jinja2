@@ -194,10 +194,8 @@ public:
   // For cppyy pythonization, to make operator[] return
   // the immutable object instead of a mutable one
   static void __cppyy_explicit_pythonize__(PyObject* klass, const std::string&) {
-    auto cppName = "at";
-    auto pythonizationName = "__getitem__";
-    auto* methodObject = PyObject_GetAttrString(klass, cppName);
-    PyObject_SetAttrString(klass, pythonizationName, methodObject);
+    auto* methodObject = PyObject_GetAttrString(klass, "at");
+    PyObject_SetAttrString(klass, "__getitem__", methodObject);
     Py_DECREF(methodObject);
   }
 
