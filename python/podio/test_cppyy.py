@@ -4,7 +4,6 @@ import unittest
 
 from ROOT import ExampleHitCollection, ExampleHit
 import podio
-# import cppyy
 
 class TestBracketOperator(unittest.TestCase):
     """Check that operator[] returns a non-mutable object"""
