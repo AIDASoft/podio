@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""cppyy python binding tests"""
+"""cppyy python binding tests with pythonizations"""
 
 import unittest
 import ROOT
