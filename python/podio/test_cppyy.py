@@ -3,7 +3,7 @@
 
 import unittest
 
-from ROOT import ExampleHitCollection, ExampleHit
+from ROOT import ExampleHitCollection, ExampleHit, nsp
 
 
 class TestBracketOperator(unittest.TestCase):
@@ -13,3 +13,6 @@ class TestBracketOperator(unittest.TestCase):
         coll = ExampleHitCollection()
         coll.create()
         self.assertEqual(type(coll[0]), type(ExampleHit()))
+        coll = nsp.EnergyInNamespaceCollection()
+        coll.create()
+        self.assertEqual(type(coll[0]), type(nsp.EnergyInNamespace()))
