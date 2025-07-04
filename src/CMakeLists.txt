@@ -25,6 +25,7 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
   add_library(podio::${libname} ALIAS ${libname})
   target_include_directories(${libname} PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    ${Python3_INCLUDE_DIRS}
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   # dictionary
