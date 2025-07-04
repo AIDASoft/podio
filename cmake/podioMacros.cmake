@@ -13,6 +13,15 @@
 # ---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DICTIONARY dictionary)
   REFLEX_GENERATE_DICTIONARY(${ARGV})
+
+  # Dictionary payloads become very large for our generated EDMs, so we
+  # explicitly silence this warning here.
+  set_source_files_properties(${gensrcdict}
+    PROPERTIES
+    GENERATED TRUE
+    COMPILE_FLAGS "-Wno-overlength-strings"
+  )
+
   # We are not going to be able to fix these in any case, so disable clang-tidy
   # for the generated dictionaries
   set_target_properties(${dictionary} PROPERTIES CXX_CLANG_TIDY "")
