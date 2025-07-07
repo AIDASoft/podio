@@ -29,8 +29,6 @@
 {{ utils.namespace_open(class.namespace) }}
 
 {% with collection_type = class.bare_type + 'Collection' %}
-{{ collection_type }}::{{ collection_type }}() {}
-
 {{ collection_type }}::{{ collection_type }}({{ collection_type }}Data&& data, bool isSubsetColl) :
   m_isSubsetColl(isSubsetColl), m_storage(std::move(data)) {}
 
