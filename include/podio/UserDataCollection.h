@@ -97,9 +97,9 @@ public:
   /// The schema version of UserDataCollections
   static constexpr SchemaVersionT schemaVersion = 1;
 
-  constexpr static const char* typeName = userDataCollTypeName<BasicType>();
-  constexpr static const char* valueTypeName = userDataTypeName<BasicType>();
-  constexpr static const char* dataTypeName = userDataTypeName<BasicType>();
+  static constexpr std::string_view typeName = userDataCollTypeName<BasicType>();
+  static constexpr std::string_view valueTypeName = userDataTypeName<BasicType>();
+  static constexpr std::string_view dataTypeName = userDataTypeName<BasicType>();
 
   /// prepare buffers for serialization
   void prepareForWrite() const override {
@@ -298,21 +298,21 @@ std::ostream& operator<<(std::ostream& o, const podio::UserDataCollection<BasicT
 #pragma clang diagnostic ignored "-Wdeprecated-redundant-constexpr-static-def"
 #pragma clang diagnostic ignored "-Wdeprecated"
 template <typename BasicType, typename U>
-constexpr const char* UserDataCollection<BasicType, U>::typeName;
+constexpr std::string_view UserDataCollection<BasicType, U>::typeName;
 template <typename BasicType, typename U>
-constexpr const char* UserDataCollection<BasicType, U>::valueTypeName;
+constexpr std::string_view UserDataCollection<BasicType, U>::valueTypeName;
 template <typename BasicType, typename U>
-constexpr const char* UserDataCollection<BasicType, U>::dataTypeName;
+constexpr std::string_view UserDataCollection<BasicType, U>::dataTypeName;
 #pragma clang diagnostic pop
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated"
 template <typename BasicType, typename U>
-constexpr const char* UserDataCollection<BasicType, U>::typeName;
+constexpr std::string_view UserDataCollection<BasicType, U>::typeName;
 template <typename BasicType, typename U>
-constexpr const char* UserDataCollection<BasicType, U>::valueTypeName;
+constexpr std::string_view UserDataCollection<BasicType, U>::valueTypeName;
 template <typename BasicType, typename U>
-constexpr const char* UserDataCollection<BasicType, U>::dataTypeName;
+constexpr std::string_view UserDataCollection<BasicType, U>::dataTypeName;
 #pragma GCC diagnostic pop
 #endif
 
