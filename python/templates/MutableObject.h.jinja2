@@ -53,7 +53,7 @@ private:
   /// constructor from existing {{ class.bare_type }}Obj
   explicit Mutable{{ class.bare_type }}(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> obj);
 
-  podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj{nullptr};
+  podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj{new {{ class.bare_type }}Obj{}, podio::utils::MarkOwned};
 };
 
 {{ macros.json_output(class.bare_type, prefix='Mutable') }}

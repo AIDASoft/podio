@@ -1,12 +1,8 @@
 {% macro constructors_destructors(type, members, one_to_one_relations=[], multi_relations=[], prefix='') %}
 {% set full_type = prefix + type %}
 
-{{ full_type }}::{{ full_type }}() :
-  m_obj(new {{ type }}Obj{}, podio::utils::MarkOwned) {}
-
 {% if members %}
-{{ full_type }}::{{ full_type }}({{ members | map(attribute='signature') | join(', ') }}) :
-  m_obj(new {{ type }}Obj{}, podio::utils::MarkOwned) {
+{{ full_type }}::{{ full_type }}({{ members | map(attribute='signature') | join(', ') }}) {
 {% for member in members %}
   m_obj->data.{{ member.name }} = {{ member.name }};
 {% endfor %}

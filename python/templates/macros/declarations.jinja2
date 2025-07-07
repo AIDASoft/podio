@@ -60,7 +60,7 @@
 {% macro constructors_destructors(type, members, prefix='') %}
 {% set full_type = prefix + type %}
   /// default constructor
-  {{ full_type }}();
+  {{ full_type }}() = default;
 
 {%if members %}
   /// Constructor initializing all members
