@@ -42,7 +42,7 @@ public:
 {% endif %}
 
 public:
-  podio::ObjectID id;
+  podio::ObjectID id{};
   {{ class.bare_type }}Data data;
 {% for relation in OneToOneRelations %}
   std::unique_ptr<{{ relation.full_type }}> m_{{ relation.name }}{nullptr};

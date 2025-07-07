@@ -4,31 +4,18 @@
 
 namespace podio {
 
-GenericParameters::GenericParameters() :
-    m_intMtx(std::make_unique<std::mutex>()),
-    m_floatMtx(std::make_unique<std::mutex>()),
-    m_stringMtx(std::make_unique<std::mutex>()),
-    m_doubleMtx(std::make_unique<std::mutex>()) {
-}
-
-GenericParameters::GenericParameters(const GenericParameters& other) :
-    m_intMtx(std::make_unique<std::mutex>()),
-    m_floatMtx(std::make_unique<std::mutex>()),
-    m_stringMtx(std::make_unique<std::mutex>()),
-    m_doubleMtx(std::make_unique<std::mutex>()) {
-  {
-    // acquire all locks at once to make sure all internal maps are
-    // copied at the same "state" of the GenericParameters
-    auto& intMtx = other.getMutex<int>();
-    auto& floatMtx = other.getMutex<float>();
-    auto& stringMtx = other.getMutex<std::string>();
-    auto& doubleMtx = other.getMutex<double>();
-    std::scoped_lock lock(intMtx, floatMtx, stringMtx, doubleMtx);
-    _intMap = other._intMap;
-    _floatMap = other._floatMap;
-    _stringMap = other._stringMap;
-    _doubleMap = other._doubleMap;
-  }
+GenericParameters::GenericParameters(const GenericParameters& other) {
+  // acquire all locks at once to make sure all internal maps are
+  // copied at the same "state" of the GenericParameters
+  auto& intMtx = other.getMutex<int>();
+  auto& floatMtx = other.getMutex<float>();
+  auto& stringMtx = other.getMutex<std::string>();
+  auto& doubleMtx = other.getMutex<double>();
+  std::scoped_lock lock(intMtx, floatMtx, stringMtx, doubleMtx);
+  _intMap = other._intMap;
+  _floatMap = other._floatMap;
+  _stringMap = other._stringMap;
+  _doubleMap = other._doubleMap;
 }
 
 template <typename T>
