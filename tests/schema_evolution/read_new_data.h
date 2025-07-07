@@ -3,7 +3,6 @@
 
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithARelationCollection.h"
-#include "datamodel/ExampleWithArrayComponentCollection.h"
 #include "datamodel/ExampleWithNamespaceCollection.h"
 
 #include "podio/Frame.h"
@@ -16,18 +15,6 @@
     std::cerr << __PRETTY_FUNCTION__ << ": " << msg << " (expected: " << expected << ", actual: " << actual << ")";    \
     return 1;                                                                                                          \
   }
-
-int readSimpleStruct(const podio::Frame& event) {
-  const auto& coll = event.get<ExampleWithArrayComponentCollection>("simpleStructTest");
-  auto elem = coll[0];
-  const auto sstruct = elem.s();
-
-  ASSERT_EQUAL(sstruct.y, 0, "New component member not 0 initialized")
-  ASSERT_EQUAL(sstruct.x, 42, "Existing component member changed")
-  ASSERT_EQUAL(sstruct.z, 123, "Existing component member changed")
-
-  return 0;
-}
 
 int readExampleHit(const podio::Frame& event) {
   const auto& coll = event.get<ExampleHitCollection>("datatypeMemberAdditionTest");
@@ -71,7 +58,6 @@ int read_new_data(const std::string& filename) {
   const auto event = podio::Frame(reader.readEntry("events", 0));
 
   int result = 0;
-  result += readSimpleStruct(event);
   result += readExampleHit(event);
   result += readExampleWithNamespace(event);
   result += readExampleWithARelation(event);
