@@ -1,0 +1,24 @@
+{% macro ld_library_path(class, suffix='', extra_members=[]) %}
+// This is needed to avoid triggering opening every library in LD_LIBRARY_PATH
+// until it's fixed in ROOT. See https://github.com/root-project/root/issues/18489
+// and https://github.com/AIDASoft/podio/issues/770
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wdeprecated-redundant-constexpr-static-def"
+#pragma clang diagnostic ignored "-Wdeprecated"
+constexpr std::string_view {{ class.full_type }}{{ suffix }}::typeName;
+{% for member in extra_members %}
+constexpr std::string_view {{ class.full_type }}{{ suffix }}::{{ member }};
+{% endfor %}
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated"
+constexpr std::string_view {{ class.full_type }}{{ suffix }}::typeName;
+{% for member in extra_members %}
+constexpr std::string_view {{ class.full_type }}{{ suffix }}::{{ member }};
+{% endfor %}
+#pragma GCC diagnostic pop
+#endif
+{% endmacro %}
