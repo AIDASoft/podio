@@ -293,27 +293,27 @@ std::ostream& operator<<(std::ostream& o, const podio::UserDataCollection<BasicT
 // until it's fixed in ROOT. See https://github.com/root-project/root/issues/18489
 // and https://github.com/AIDASoft/podio/issues/770
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-warning-option"
-#pragma clang diagnostic ignored "-Wdeprecated-redundant-constexpr-static-def"
-#pragma clang diagnostic ignored "-Wdeprecated"
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunknown-warning-option"
+  #pragma clang diagnostic ignored "-Wdeprecated-redundant-constexpr-static-def"
+  #pragma clang diagnostic ignored "-Wdeprecated"
 template <typename BasicType, typename U>
 constexpr std::string_view UserDataCollection<BasicType, U>::typeName;
 template <typename BasicType, typename U>
 constexpr std::string_view UserDataCollection<BasicType, U>::valueTypeName;
 template <typename BasicType, typename U>
 constexpr std::string_view UserDataCollection<BasicType, U>::dataTypeName;
-#pragma clang diagnostic pop
+  #pragma clang diagnostic pop
 #elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated"
 template <typename BasicType, typename U>
 constexpr std::string_view UserDataCollection<BasicType, U>::typeName;
 template <typename BasicType, typename U>
 constexpr std::string_view UserDataCollection<BasicType, U>::valueTypeName;
 template <typename BasicType, typename U>
 constexpr std::string_view UserDataCollection<BasicType, U>::dataTypeName;
-#pragma GCC diagnostic pop
+  #pragma GCC diagnostic pop
 #endif
 
 } // namespace podio
