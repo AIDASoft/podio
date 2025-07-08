@@ -48,8 +48,7 @@ class CollectionSubscriptTest(unittest.TestCase):
         collection = nsp.EnergyInNamespaceCollection()
         _ = collection.create()
         self.assertEqual(len(collection), 1)
-        with self.assertRaises(IndexError):
-            _ = collection[20]
+        self.assertRaises(IndexError, lambda: collection[20])
         _ = collection[0]
 
     def test_getitem_return_type(self):

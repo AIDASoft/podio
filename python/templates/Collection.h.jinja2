@@ -193,25 +193,12 @@ public:
 
   // For cppyy pythonization, to make operator[] return
   // the immutable object instead of a mutable one
-  std::unique_ptr<{{ class.bare_type }}> __get_const_idx(size_t idx) const {
-    if (idx >= m_storage.entries.size()) {
-      PyErr_SetString(PyExc_IndexError, "list index out of range");
-      return nullptr;
-    }
-    auto* obj = m_storage.entries[idx];
-
-    std::unique_ptr<{{ class.bare_type }}> ret;
-    ret.reset(new {{ class.bare_type }}(obj));
-    return ret;
-  }
-
-  static void __cppyy_explicit_pythonize__(PyObject* klass, const std::string&) {
-    auto cppName = "__get_const_idx";
+  static void __cppyy_pythonize__(PyObject* klass, const std::string&) {
+    auto cppName = "at";
     auto pythonizationName = "__getitem__";
     auto* methodObject = PyObject_GetAttrString(klass, cppName);
     PyObject_SetAttrString(klass, pythonizationName, methodObject);
     Py_DECREF(methodObject);
-    PyObject_DelAttrString(klass, cppName);
   }
 
 {% for member in Members %}
