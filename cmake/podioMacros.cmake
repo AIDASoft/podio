@@ -188,7 +188,7 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
   LIST(FILTER SOURCES EXCLUDE REGEX .*SIOBlock.cc)
 
   add_library(${lib_name} SHARED ${SOURCES} ${HEADERS})
-  target_link_libraries(${lib_name} PUBLIC podio::podio ${Python3_LIBRARIES})
+  target_link_libraries(${lib_name} PUBLIC podio::podio)
   target_include_directories(${lib_name} PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
