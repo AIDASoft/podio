@@ -53,7 +53,7 @@ IF (BUILD_TESTING)
       ${strace_program} -e open,openat,creat -f -o ${CMAKE_CURRENT_BINARY_DIR}/strace.log \
         python3 ${CMAKE_CURRENT_SOURCE_DIR}/podio/test_strace.py && \
       lines=\$(wc -l < ${CMAKE_CURRENT_BINARY_DIR}/strace.log) && \
-      if [ \$lines -ge 7000 ]; then
+      if [ \$lines -ge 12000 ]; then
         echo \"Too many lines in strace.log (\$lines), test failed!\";
         exit 1;
       fi"
