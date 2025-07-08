@@ -58,6 +58,7 @@ IF (BUILD_TESTING)
         exit 1;
       fi"
   )
+  PODIO_SET_TEST_ENV(test_strace)
 
   set_property(TEST pyunittest PROPERTY DEPENDS write write_frame_root)
   if (TARGET write_sio)
