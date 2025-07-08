@@ -41,6 +41,23 @@ IF (BUILD_TESTING)
   PODIO_SET_TEST_ENV(pyunittest)
   add_test( NAME pyunittest_gen COMMAND python3 -m unittest discover -s ${PROJECT_SOURCE_DIR}/python/podio_gen)
   PODIO_SET_TEST_ENV(pyunittest_gen)
+  find_program(strace_program
+    NAMES strace
+    DOC "strace program to trace system calls"
+  )
+
+  # Test if too many files are being opened (https://github.com/AIDASoft/podio/issues/770)
+  # When the issue happened, it was around 7k with the Key4hep stack and 20k with the LCG stack
+  add_test(NAME test_strace
+    COMMAND bash -c "
+      ${strace_program} -e open,openat,creat -f -o ${CMAKE_CURRENT_BINARY_DIR}/strace.log \
+        python3 ${CMAKE_CURRENT_SOURCE_DIR}/podio/test_strace.py && \
+      lines=\$(wc -l < ${CMAKE_CURRENT_BINARY_DIR}/strace.log) && \
+      if [ \$lines -ge 5000 ]; then
+        echo \"Too many lines in strace.log (\$lines), test failed!\";
+        exit 1;
+      fi"
+  )
 
   set_property(TEST pyunittest PROPERTY DEPENDS write write_frame_root)
   if (TARGET write_sio)
