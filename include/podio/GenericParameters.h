@@ -53,7 +53,7 @@ private:
   using MutexPtr = std::unique_ptr<std::mutex>;
 
 public:
-  GenericParameters();
+  GenericParameters() = default;
 
   /// GenericParameters are copyable
   /// @note This is currently mainly done to keep the ROOT I/O happy, because
@@ -170,14 +170,14 @@ private:
   }
 
 private:
-  MapType<int> _intMap{};                ///< The map storing the integer values
-  mutable MutexPtr m_intMtx{nullptr};    ///< The mutex guarding the integer map
-  MapType<float> _floatMap{};            ///< The map storing the float values
-  mutable MutexPtr m_floatMtx{nullptr};  ///< The mutex guarding the float map
-  MapType<std::string> _stringMap{};     ///< The map storing the string values
-  mutable MutexPtr m_stringMtx{nullptr}; ///< The mutex guarding the string map
-  MapType<double> _doubleMap{};          ///< The map storing the double values
-  mutable MutexPtr m_doubleMtx{nullptr}; ///< The mutex guarding the double map
+  MapType<int> _intMap{};                                       ///< The map storing the integer values
+  mutable MutexPtr m_intMtx{std::make_unique<std::mutex>()};    ///< The mutex guarding the integer map
+  MapType<float> _floatMap{};                                   ///< The map storing the float values
+  mutable MutexPtr m_floatMtx{std::make_unique<std::mutex>()};  ///< The mutex guarding the float map
+  MapType<std::string> _stringMap{};                            ///< The map storing the string values
+  mutable MutexPtr m_stringMtx{std::make_unique<std::mutex>()}; ///< The mutex guarding the string map
+  MapType<double> _doubleMap{};                                 ///< The map storing the double values
+  mutable MutexPtr m_doubleMtx{std::make_unique<std::mutex>()}; ///< The mutex guarding the double map
 };
 
 template <ValidGenericDataType T>
