@@ -84,11 +84,11 @@ public:
 private:
   // members to handle 1-to-N-relations
 {% for relation in OneToManyRelations %}
-  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }}{new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()};  ///< Relation buffer for read / write
+  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }}{std::make_unique<std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>>()}; ///< Relation buffer for read / write
   std::vector<podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}>> m_rel_{{ relation.name }}_tmp{}; ///< Relation buffer for internal book-keeping
 {% endfor %}
 {% for relation in OneToOneRelations %}
-  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }}{new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()}; ///< Relation buffer for read / write
+  podio::UVecPtr<{{ relation.namespace }}::{{ relation.bare_type }}> m_rel_{{ relation.name }}{std::make_unique<std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>>()}; ///< Relation buffer for read / write
 {% endfor %}
 
   // members to handle vector members
