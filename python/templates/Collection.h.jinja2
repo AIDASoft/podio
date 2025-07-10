@@ -71,6 +71,7 @@ public:
 
   void clear() final;
 
+  /// Cppyy protocol to setup the pythonizations for this class. Not to be called directly.
   static void __cppyy_pythonize__(PyObject* klass, const std::string& name){
         podio::detail::pythonizations::pythonize_subscript(klass, name);
   }
