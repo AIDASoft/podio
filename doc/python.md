@@ -33,9 +33,9 @@ load_pythonizations("model_namespace")
 If only specific pythonizations should be applied:
 
 ```python
-from  podio.pythonizations import collection_subscript # specific pythonization
+from  podio.pythonizations import freeze_class # specific pythonization
 
-collection_subscript.CollectionSubscriptPythonizer.register("model_namespace")
+freeze_class.FreezeClassPythonizer.register("model_namespace")
 ```
 
 ### Developing new pythonizations
