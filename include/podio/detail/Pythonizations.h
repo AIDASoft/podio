@@ -1,12 +1,15 @@
 #ifndef PODIO_DETAIL_PYTHONIZATIONS_H
 #define PODIO_DETAIL_PYTHONIZATIONS_H
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <stdexcept>
 #include <string>
 
 namespace podio::detail::pythonizations {
 
+// Callback function for the subscript pythonization
+// Calls the `at` method and change exception type to IndexError if the index is out of range
 static inline PyObject* subscript(PyObject* self, PyObject* index) {
   PyObject* result = PyObject_CallMethod(self, "at", "O", index);
   if (!result) {
@@ -28,6 +31,7 @@ static inline PyObject* subscript(PyObject* self, PyObject* index) {
   return result;
 }
 
+// Helper to register the subscript pythonization callback as `__getitem__` method
 static inline void pythonize_subscript(PyObject* klass, const std::string& name) {
   static PyMethodDef ml = {"subscipt_pythonization", subscript, METH_VARARGS, R"(
         Raise an `IndexError` exception if an index is invalid.
