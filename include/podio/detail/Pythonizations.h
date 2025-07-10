@@ -7,15 +7,28 @@
 
 namespace podio::detail::pythonizations {
 
-static PyObject* subscript(PyObject* self, PyObject* index) {
+static inline PyObject* subscript(PyObject* self, PyObject* index) {
   PyObject* result = PyObject_CallMethod(self, "at", "O", index);
-  if (!result && PyErr_Occurred()) { // TODO: set IndexError only if cppyy.gbl.std.out_of_bounds occurred
-    PyErr_SetString(PyExc_IndexError, "Index out of range");
+  if (!result) {
+    PyObject* exc = PyErr_Occurred();
+    // Check if the exception is `cppyy.gbl.std.out_of_range`
+    // Since PyImport_ImportModule("cppyy") fails, this workaround checks the exception name
+    if (exc && PyObject_HasAttrString(exc, "__name__")) {
+      PyObject* exc_name = PyObject_GetAttrString(exc, "__name__");
+      if (exc_name) {
+        const char* name_cstr = PyUnicode_AsUTF8(exc_name);
+        if (name_cstr && strcmp(name_cstr, "out_of_range") == 0) {
+          PyErr_Clear();
+          PyErr_SetString(PyExc_IndexError, "Index out of range");
+        }
+        Py_DECREF(exc_name);
+      }
+    }
   }
   return result;
 }
 
-static void pythonize_subscript(PyObject* klass, const std::string& name) {
+static inline void pythonize_subscript(PyObject* klass, const std::string& name) {
   static PyMethodDef ml = {"subscipt_pythonization", subscript, METH_VARARGS, R"(
         Raise an `IndexError` exception if an index is invalid.
         The `__getitem__` will return immutable datatype objects instead of the mutable ones.
