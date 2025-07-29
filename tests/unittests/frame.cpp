@@ -398,10 +398,10 @@ TEST_CASE("Frame destructor ASanFail") {
       auto& hitClusters = hitClusterMap[name];
 
       for (int i = 0; i < 3; ++i) {
-        auto cluster = hitClusters.first->create();
+        auto cluster = hitClusters.first.create();
 
         for (int j = 0; j < 5; ++j) {
-          auto hit = hitClusters.second->create();
+          auto hit = hitClusters.second.create();
           cluster.addHits(hit);
         }
       }
