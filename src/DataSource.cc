@@ -40,7 +40,7 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
   frame = podioReader.readFrame(podio::Category::Event, 0, collsToRead);
 
   // Determine over how many events to run
-  if (nEventsInFiles <= 0) {
+  if (nEventsInFiles == 0) {
     throw std::runtime_error("podio::DataSource: No events found!");
   }
 

@@ -9,7 +9,7 @@
 namespace podio {
 
 SIOLegacyReader::SIOLegacyReader() {
-  auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
+  SIOBlockLibraryLoader::instance();
 }
 
 void SIOLegacyReader::openFile(const std::string& filename) {

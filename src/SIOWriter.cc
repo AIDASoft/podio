@@ -16,7 +16,7 @@ SIOWriter::SIOWriter(const std::string& filename) {
     SIO_THROW(sio::error_code::not_open, "Couldn't open output stream '" + filename + "'");
   }
 
-  auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
+  SIOBlockLibraryLoader::instance();
 
   sio::block_list blocks;
   blocks.emplace_back(std::make_shared<SIOVersionBlock>(podio::version::build_version));

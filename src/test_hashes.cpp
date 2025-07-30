@@ -98,7 +98,7 @@ optional arguments:
   -h, --help        show this help message and exit
 )HELP";
 
-int main(int argc, char* argv[]) {
+int main(int argc, const char* argv[]) {
   if (argc == 1) {
     std::cerr << usage << std::endl;
     return 1;

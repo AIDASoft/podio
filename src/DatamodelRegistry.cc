@@ -74,7 +74,7 @@ const std::string& DatamodelRegistry::getDatamodelName(size_t index) const {
 
 RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) const {
   const static std::vector<std::string_view> emptyVec{};
-  if (typeName.substr(0, 24) == "podio::UserDataCollection") {
+  if (typeName.substr(0, 25) == "podio::UserDataCollection") {
     return {emptyVec, emptyVec};
   }
 

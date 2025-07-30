@@ -6,8 +6,8 @@
 namespace podio {
 
 SchemaEvolution& SchemaEvolution::mutInstance() {
-  static SchemaEvolution instance;
-  return instance;
+  static SchemaEvolution schemaEv;
+  return schemaEv;
 }
 
 SchemaEvolution const& SchemaEvolution::instance() {

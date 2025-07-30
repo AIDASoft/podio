@@ -461,7 +461,7 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
   if (m_data) {
     // Have the buffers in the outer scope here to hold the raw data lock as
     // briefly as possible
-    auto buffers = std::optional<podio::CollectionReadBuffers>{std::nullopt};
+    std::optional<podio::CollectionReadBuffers> buffers;
     {
       std::lock_guard lock{*m_dataMtx};
       buffers = unpack(m_data.get(), name);

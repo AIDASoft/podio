@@ -122,7 +122,7 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
     argv.erase(it, it + 2);
   }
   // event range
-  if (const auto it = findFlags(argv, "-e", "--entries"); it != argv.end()) {
+  if (const auto it = findFlags(argv, "-e", "--entries"); it != argv.end() && it + 1 != argv.end()) {
     args.events = parseEventRange(*(it + 1));
     argv.erase(it, it + 2);
   }

@@ -71,9 +71,7 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
   for (const auto& filename : filenames) {
-    if (m_metadata_readers.find(filename) == m_metadata_readers.end()) {
-      m_metadata_readers[filename] = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename);
-    }
+    m_metadata_readers.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
   }
 
   m_metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);

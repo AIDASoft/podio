@@ -348,7 +348,7 @@ namespace detail {
       ref = std::make_unique<std::vector<podio::ObjectID>>();
     }
 
-    readBuffers.createCollection = [](podio::CollectionReadBuffers buffers, bool isSubsetColl) {
+    readBuffers.createCollection = [](const podio::CollectionReadBuffers& buffers, bool isSubsetColl) {
       LinkCollectionData<FromT, ToT> data(buffers, isSubsetColl);
       return std::make_unique<LinkCollection<FromT, ToT>>(std::move(data), isSubsetColl);
     };

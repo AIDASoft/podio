@@ -117,7 +117,7 @@ private:
 
   /// Initialize the branches for this category
   void initBranches(CategoryInfo& catInfo, const std::vector<root_utils::StoreCollection>& collections,
-                    /*const*/ podio::GenericParameters& parameters);
+                    const podio::GenericParameters& parameters);
 
   /// Get the (potentially uninitialized category information for this category)
   CategoryInfo& getCategoryInfo(const std::string& category);
