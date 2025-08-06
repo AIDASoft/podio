@@ -168,7 +168,11 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
 {% endif %}
   // The number of ObjectID vectors is either 1 or the sum of OneToMany and
   // OneToOne relations
+{% if OneToManyRelations | length + OneToOneRelations | length == 1 %}
+  const auto nRefs = 1;
+{% else %}
   const auto nRefs = isSubset ? 1 : {{ OneToManyRelations | length }} + {{ OneToOneRelations | length }};
+{% endif %}
   readBuffers.references = new podio::CollRefCollection(nRefs);
   for (auto& ref : *readBuffers.references) {
     // Make sure to place usable buffer pointers here
