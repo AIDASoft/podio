@@ -109,8 +109,7 @@ public:
     if (!m_isSubsetColl) {
       auto obj = object.m_obj;
       if (obj->id.index == podio::ObjectID::untracked) {
-        const auto size = m_storage.entries.size();
-        obj->id = {(int)size, m_collectionID};
+        obj->id = {static_cast<int>(m_storage.entries.size()), m_collectionID};
         m_storage.entries.push_back(obj.release());
       } else {
         throw std::invalid_argument("Object already in a collection. Cannot add it to a second collection");
