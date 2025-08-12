@@ -12,8 +12,7 @@
 
 namespace podio {
 
-ROOTWriter::ROOTWriter(const std::string& filename) {
-  m_file = std::make_unique<TFile>(filename.c_str(), "recreate");
+ROOTWriter::ROOTWriter(const std::string& filename) : m_file(std::make_unique<TFile>(filename.c_str(), "recreate")) {
 }
 
 ROOTWriter::~ROOTWriter() {
@@ -75,7 +74,7 @@ ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(const std::string& categor
 }
 
 void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_utils::StoreCollection>& collections,
-                              /*const*/ podio::GenericParameters& parameters) {
+                              const podio::GenericParameters& parameters) {
   catInfo.branches.reserve(collections.size() + root_utils::nParamBranches); // collections + parameters
 
   // First collections

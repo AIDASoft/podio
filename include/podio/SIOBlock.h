@@ -71,11 +71,7 @@ public:
   SIOBlock(const SIOBlock&) = delete;
   SIOBlock& operator=(const SIOBlock&) = delete;
 
-  podio::CollectionBase* getCollection() {
-    return m_buffers.createCollection(m_buffers, m_subsetColl).release();
-  }
-
-  podio::CollectionReadBuffers getBuffers() const {
+  const podio::CollectionReadBuffers& getBuffers() const {
     return m_buffers;
   }
 

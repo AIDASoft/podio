@@ -9,7 +9,6 @@
 #include "podio/ICollectionProvider.h"
 #include "podio/detail/RelationIOHelpers.h"
 
-#include <deque>
 #include <memory>
 #include <vector>
 
@@ -45,7 +44,8 @@ public:
   ~LinkCollectionData() = default;
 
   podio::CollectionWriteBuffers getCollectionBuffers(bool isSubsetColl) {
-    return {isSubsetColl ? nullptr : (void*)&m_data, (void*)m_data.get(), &m_refCollections, &m_vecInfo};
+    return {isSubsetColl ? nullptr : static_cast<void*>(&m_data), static_cast<void*>(m_data.get()), &m_refCollections,
+            &m_vecInfo};
   }
 
   void clear(bool isSubsetColl) {

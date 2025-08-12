@@ -216,8 +216,7 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
   if (m_isSubsetColl) {
     throw std::logic_error("Cannot create new elements on a subset collection");
   }
-  const int size = m_storage.entries.size();
-  auto obj = new {{ class.bare_type }}Obj({size, m_collectionID}, {std::forward<Args>(args)...});
+  auto obj = new {{ class.bare_type }}Obj({static_cast<int>(m_storage.entries.size()), m_collectionID}, {std::forward<Args>(args)...});
   m_storage.entries.push_back(obj);
 
 {% if OneToManyRelations or VectorMembers %}

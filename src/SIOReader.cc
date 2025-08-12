@@ -11,7 +11,7 @@
 namespace podio {
 
 SIOReader::SIOReader() {
-  auto& libLoader [[maybe_unused]] = SIOBlockLibraryLoader::instance();
+  SIOBlockLibraryLoader::instance();
 }
 
 void SIOReader::openFile(const std::string& filename) {

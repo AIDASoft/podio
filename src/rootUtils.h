@@ -118,20 +118,6 @@ consteval auto getGPBranchOffsets() {
 constexpr static auto availableCategories = "availableCategories";
 
 /**
- * Name of the field with the names of the collections for RNTuples
- */
-inline std::string collectionName(const std::string& category) {
-  return category + "_collectionNames";
-}
-
-/**
- * Name of the field with the flag for subset collections for RNTuples
- */
-inline std::string subsetCollection(const std::string& category) {
-  return category + "_isSubsetCollections";
-}
-
-/**
  * The name of the branch into which we store the build version of podio at the
  * time of writing the file
  */

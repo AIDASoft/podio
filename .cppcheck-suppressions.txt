@@ -1,0 +1,21 @@
+noExplicitConstructor:*
+missingInclude:*
+missingIncludeSystem:*
+*:*tests*
+*:*Dict.cxx
+*:MurmurHash3.cpp
+
+copyCtorPointerCopying:MaybeSharedPtr.h
+knownConditionTrueFalse:LinkCollectionImpl.h
+
+unusedFunction:RootHelpers.cc
+unusedFunction:Reader.h
+unusedFunction:Writer.h
+unusedFunction:FrameCategories.h
+unusedFunction:ObjectID.h # to_json
+unusedFunction:GenericParameters.h
+
+useStlAlgorithm:*Reader.cc
+useStlAlgorithm:LinkCollectionImpl.h
+useStlAlgorithm:podio-dump-tool.cpp
+useStlAlgorithm:SIOFrameData.cc

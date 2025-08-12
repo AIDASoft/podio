@@ -140,8 +140,7 @@ void {{ collection_type }}::push_back(const Mutable{{ class.bare_type }}& object
   if (!m_isSubsetColl) {
     auto obj = object.m_obj;
     if (obj->id.index == podio::ObjectID::untracked) {
-      const auto size = m_storage.entries.size();
-      obj->id = {static_cast<int>(size), m_collectionID};
+      obj->id = {static_cast<int>(m_storage.entries.size()), m_collectionID};
       m_storage.entries.push_back(obj.release());
 {% if OneToManyRelations or VectorMembers %}
       m_storage.createRelations(obj.get());

@@ -23,6 +23,11 @@ repos:
         entry: 'flake8 --config=.flake8'
         types: [python]
         language: system
+      - id: cppcheck
+        name: cppcheck
+        entry: cppcheck --project=build/compile_commands.json --enable=all --std=c++20 --cppcheck-build-dir=build --config-exclude="build/src/" --suppressions-list=.cppcheck-suppressions.txt -i "build/_deps/*" --error-exitcode=1 --check-level=exhaustive -j 4
+        language: system
+        pass_filenames: false
       - id: clang-tidy
         name: clang-tidy
         entry: .github/scripts/clang-tidy-hook
