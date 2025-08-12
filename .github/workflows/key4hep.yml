@@ -50,6 +50,7 @@ jobs:
             -DENABLE_RNTUPLE=ON \
             -DENABLE_DATASOURCE=ON \
             -DPODIO_SET_RPATH=ON \
+            -DPODIO_RUN_STRACE_TEST=ON \
             -G Ninja ..
           echo "::endgroup::"
           echo "::group::Build"
