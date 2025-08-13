@@ -415,7 +415,7 @@ have resolvable schema evolution incompatibilities:"
             self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
 
     def _preprocess_schema_evolution_component(self, name, component):
-        """Preprocess this component (and generaty the necessary code) in case
+        """Preprocess this component (and generate the necessary code) in case
         schema evolution is necessary
 
         NOTE: currently limited to support only ROOT schema evolution needs
