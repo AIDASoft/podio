@@ -15,6 +15,7 @@
 // podio specific includes
 #include "podio/ICollectionProvider.h"
 #include "podio/CollectionBase.h"
+#include "podio/detail/Pythonizations.h"
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json_fwd.hpp"
@@ -69,6 +70,11 @@ public:
   constexpr static std::string_view dataTypeName = "{{ (class | string ).strip(':') + "Data" }}";
 
   void clear() final;
+
+  /// Cppyy protocol to setup the pythonizations for this class. Not to be called directly.
+  static void __cppyy_pythonize__(PyObject* klass, const std::string& name){
+        podio::detail::pythonizations::pythonize_subscript(klass, name);
+  }
 
   /// Print this collection to the passed stream
   void print(std::ostream& os=std::cout, bool flush=true) const final;
