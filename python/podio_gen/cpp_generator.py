@@ -388,23 +388,42 @@ have resolvable schema evolution incompatibilities:"
         """
         schema_evolution_datatype = deepcopy(datatype)
         needs_schema_evolution = False
+        # We have to figure out whether we need to do schema evolution and how
+        # we do it. We have to do it if either a (non-component) member is
+        # affected or if a member that is a component type has a renamed member.
+        # The things we need to do differ slightly in both cases
         for member in schema_evolution_datatype["Members"]:
             member_type = member.array_type if member.is_array else member.full_type
-            if member_type in self.root_schema_dict:
-                needs_schema_evolution = True
-                replace_component_in_paths(
-                    member_type,
-                    _versioned(member_type, self.old_schema_version),
-                    schema_evolution_datatype["includes_data"],
-                )
-                if member.is_array:
-                    member.full_type = member.full_type.replace(
-                        member.array_type, _versioned(member.array_type, self.old_schema_version)
+            for type_name, evolutions in self.root_schema_dict.items():
+                if type_name == member_type:
+                    needs_schema_evolution = True
+                    # We have a component with a member that got renamed. Hence we
+                    # need to make sure we generate a version of the Data class with
+                    # the old component
+                    replace_component_in_paths(
+                        member_type,
+                        _versioned(member_type, self.old_schema_version),
+                        schema_evolution_datatype["includes_data"],
                     )
-                    member.array_type = _versioned(member.array_type, self.old_schema_version)
-                else:
-                    member.full_type = _versioned(member.full_type, self.old_schema_version)
-                    member.bare_type = _versioned(member.bare_type, self.old_schema_version)
+                    if member.is_array:
+                        member.full_type = member.full_type.replace(
+                            member.array_type,
+                            _versioned(member.array_type, self.old_schema_version),
+                        )
+                        member.array_type = _versioned(member.array_type, self.old_schema_version)
+                    else:
+                        member.full_type = _versioned(member.full_type, self.old_schema_version)
+                        member.bare_type = _versioned(member.bare_type, self.old_schema_version)
+                for evolution in evolutions:
+                    if (
+                        isinstance(evolution, RenamedMember)
+                        and member.name == evolution.member_name_new
+                    ):
+                        # We have a member that has been renamed. We just need to
+                        # make sure we get a version of the Data class with the old
+                        # name
+                        needs_schema_evolution = True
+                        member.name = evolution.member_name_old
 
         if needs_schema_evolution:
             print(f"  Preparing explicit schema evolution for {name}")
@@ -459,7 +478,11 @@ have resolvable schema evolution incompatibilities:"
             for schema_change in schema_changes:
                 if isinstance(schema_change, RenamedMember):
                     # find out the type of the renamed member
-                    component = self.datamodel.components[type_name]
+                    component = self.datamodel.components.get(type_name)
+                    is_datatype = False
+                    if component is None:
+                        is_datatype = True
+                        component = self.datamodel.datatypes[type_name]
                     member_type = None
                     for member in component["Members"]:
                         if member.name == schema_change.member_name_new:
@@ -473,6 +496,10 @@ have resolvable schema evolution incompatibilities:"
                     iorule = RootIoRule()
                     iorule.sourceClass = type_name
                     iorule.targetClass = type_name
+                    if is_datatype:
+                        iorule.sourceClass = f"{type_name}Data"
+                        iorule.targetClass = f"{type_name}Data"
+
                     iorule.version = self.old_schema_version
                     iorule.source = f"{member_type} {schema_change.member_name_old}"
                     iorule.target = schema_change.member_name_new
@@ -601,10 +628,8 @@ have resolvable schema evolution incompatibilities:"
             "version": self.datamodel.schema_version,
             "components": [DataType(c) for c in self.datamodel.components],
             "datatypes": [DataType(d) for d in self.datamodel.datatypes],
-            "old_schema_components": [
-                DataType(d)
-                for d in self.root_schema_datatype_names | self.root_schema_component_names
-            ],
+            "old_schema_components": [DataType(d) for d in self.root_schema_component_names],
+            "old_schema_datatypes": [DataType(d) for d in self.root_schema_datatype_names],
             "iorules": self.root_schema_iorules,
         }
 

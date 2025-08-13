@@ -39,6 +39,9 @@
 {% for class in old_schema_components %}
 {{ class_selection(class) }}
 {% endfor %}
+{% for class in old_schema_datatypes %}
+{{ class_selection(class, postfix="Data") }}
+{% endfor %}
 
     </selection>
 
