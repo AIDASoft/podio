@@ -68,7 +68,7 @@ private:
   explicit {{ class.bare_type}}(podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> obj);
   {{ class.bare_type}}({{ class.bare_type }}Obj* obj);
 
-  podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj{nullptr};
+  podio::utils::MaybeSharedPtr<{{ class.bare_type }}Obj> m_obj{new {{ class.bare_type }}Obj{}, podio::utils::MarkOwned};
 };
 
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);

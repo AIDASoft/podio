@@ -17,7 +17,6 @@
 {{ utils.namespace_open(class.namespace) }}
 {% with obj_type = class.bare_type + 'Obj' %}
 {{ obj_type }}::{{ obj_type }}() :
-  id(),
   data(){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
   m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>())
@@ -30,7 +29,6 @@
 {  }
 
 {{ obj_type }}::{{ obj_type }}(const {{ obj_type }}& other) :
-  id(),
   data(other.data){{ single_relations_initialize(OneToOneRelations) }}
 {%- for relation in OneToManyRelations + VectorMembers %},
   m_{{ relation.name }}(new std::vector<{{ relation.full_type }}>(*(other.m_{{ relation.name }})))

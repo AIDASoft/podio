@@ -13,7 +13,8 @@ namespace podio {
 class CollectionIDTable {
 
 public:
-  CollectionIDTable();
+  CollectionIDTable() = default;
+
   ~CollectionIDTable() = default;
 
   CollectionIDTable(const CollectionIDTable&) = delete;
@@ -63,7 +64,7 @@ public:
 private:
   std::vector<uint32_t> m_collectionIDs{};
   std::vector<std::string> m_names{};
-  mutable std::unique_ptr<std::mutex> m_mutex{nullptr};
+  mutable std::unique_ptr<std::mutex> m_mutex{std::make_unique<std::mutex>()};
 };
 
 } // namespace podio
