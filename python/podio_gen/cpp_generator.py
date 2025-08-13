@@ -33,6 +33,11 @@ def replace_component_in_paths(oldname, newname, paths):
             paths[index] = newPath
 
 
+def _versioned(typename, version):
+    """Return a versioned name of the typename"""
+    return f"{typename}v{version}"
+
+
 class IncludeFrom(IntEnum):
     """Enum to signify if an include is needed and from where it should come"""
 
@@ -72,7 +77,6 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.old_yamlfile = old_description
         self.evolution_file = evolution_file
         self.old_schema_version = None
-        self.old_schema_version_int = None
         self.old_datamodel = None
         self.old_datamodels_components = set()
         self.old_datamodels_datatypes = set()
@@ -117,21 +121,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         component["includes"] = self._sort_includes(includes)
 
         self._fill_templates("Component", component)
-        # Add potentially older schema for schema evolution
-        # based on ROOT capabilities for now
-        if name in self.root_schema_dict:
-            schema_evolutions = self.root_schema_dict[name]
-            component = deepcopy(component)
-            for schema_evolution in schema_evolutions:
-                if isinstance(schema_evolution, RenamedMember):
-                    for member in component["Members"]:
-                        if member.name == schema_evolution.member_name_new:
-                            member.name = schema_evolution.member_name_old
-                    component["class"] = DataType(name + self.old_schema_version)
-                else:
-                    raise NotImplementedError
-            self._fill_templates("Component", component)
-            self.root_schema_component_names.add(name + self.old_schema_version)
+        self._preprocess_schema_evolution_component(name, component)
 
         return component
 
@@ -143,47 +133,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self._preprocess_for_obj(datatype)
         self._preprocess_for_collection(datatype)
 
-        # ROOT schema evolution preparation
-        # Compute and prepare the potential schema evolution parts
-        schema_evolution_datatype = deepcopy(datatype)
-        needs_schema_evolution = False
-        for member in schema_evolution_datatype["Members"]:
-            if member.is_array:
-                if member.array_type in self.root_schema_dict:
-                    needs_schema_evolution = True
-                    replace_component_in_paths(
-                        member.array_type,
-                        member.array_type + self.old_schema_version,
-                        schema_evolution_datatype["includes_data"],
-                    )
-                    member.full_type = member.full_type.replace(
-                        member.array_type, member.array_type + self.old_schema_version
-                    )
-                    member.array_type = member.array_type + self.old_schema_version
-
-            else:
-                if member.full_type in self.root_schema_dict:
-                    needs_schema_evolution = True
-                    # prepare the ROOT I/O rule
-                    replace_component_in_paths(
-                        member.full_type,
-                        member.full_type + self.old_schema_version,
-                        schema_evolution_datatype["includes_data"],
-                    )
-                    member.full_type = member.full_type + self.old_schema_version
-                    member.bare_type = member.bare_type + self.old_schema_version
-
-        if needs_schema_evolution:
-            print(f"  Preparing explicit schema evolution for {name}")
-            schema_evolution_datatype["class"].bare_type = (
-                schema_evolution_datatype["class"].bare_type + self.old_schema_version
-            )  # noqa
-            schema_evolution_datatype["old_schema_version"] = self.old_schema_version_int
-            self._fill_templates("Data", schema_evolution_datatype)
-            self.root_schema_datatype_names.add(name + self.old_schema_version)
-            self._fill_templates("Collection", datatype, schema_evolution_datatype)
-        else:
-            self._fill_templates("Collection", datatype)
+        self._preprocess_schema_evolution_datatype(name, datatype)
 
         self._fill_templates("Data", datatype)
         self._fill_templates("Object", datatype)
@@ -215,7 +165,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         for rel in ("From", "To"):
             rel_type = link[rel]
             include_header = f"{rel_type.bare_type}Collection"
-            if self._is_interface(rel_type.full_type):
+            if self._is_in(rel_type.full_type, "interfaces"):
                 # Interfaces do not have a Collection header
                 include_header = rel_type.bare_type
             link["include_types"].append(
@@ -253,7 +203,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 member.sub_members = self.datamodel.components[member.full_type]["Members"]
 
         for relation in datatype["OneToOneRelations"]:
-            if self._is_interface(relation.full_type):
+            if self._is_in(relation.full_type, "interfaces"):
                 relation.interface_types = self.datamodel.interfaces[relation.full_type]["Types"]
             if self._needs_include(relation.full_type):
                 fwd_declarations[relation.namespace].append(relation.bare_type)
@@ -265,7 +215,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             includes.add('#include "podio/RelationRange.h"')
 
         for relation in datatype["OneToManyRelations"]:
-            if self._is_interface(relation.full_type):
+            if self._is_in(relation.full_type, "interfaces"):
                 relation.interface_types = self.datamodel.interfaces[relation.full_type]["Types"]
             if self._needs_include(relation.full_type):
                 includes.add(self._build_include(relation))
@@ -335,7 +285,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         for relation in datatype["OneToManyRelations"] + datatype["OneToOneRelations"]:
             if datatype["class"].bare_type != relation.bare_type:
                 include_from = self._needs_include(relation.full_type)
-                if self._is_interface(relation.full_type):
+                if self._is_in(relation.full_type, "interfaces"):
                     includes_cc.add(
                         self._build_include_for_class(relation.bare_type, include_from)
                     )
@@ -405,8 +355,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             )
             comparator.read()
             comparator.compare()
-            self.old_schema_version = f"v{comparator.datamodel_old.schema_version}"
-            self.old_schema_version_int = comparator.datamodel_old.schema_version
+            self.old_schema_version = comparator.datamodel_old.schema_version
             # some sanity checks
             if len(comparator.errors) > 0:
                 print(
@@ -430,6 +379,65 @@ have resolvable schema evolution incompatibilities:"
                 for item in root_filter(comparator.schema_changes):
                     # add whatever is relevant to our ROOT schema evolution
                     self.root_schema_dict.setdefault(item.klassname, []).append(item)
+
+    def _preprocess_schema_evolution_datatype(self, name, datatype):
+        """Preprocess this datatype (and generate the necessary code) in case
+        schema evolution is necessary
+
+        NOTE: currently limited to support only ROOT schema evolution needs
+        """
+        schema_evolution_datatype = deepcopy(datatype)
+        needs_schema_evolution = False
+        for member in schema_evolution_datatype["Members"]:
+            member_type = member.array_type if member.is_array else member.full_type
+            if member_type in self.root_schema_dict:
+                needs_schema_evolution = True
+                replace_component_in_paths(
+                    member_type,
+                    _versioned(member_type, self.old_schema_version),
+                    schema_evolution_datatype["includes_data"],
+                )
+                if member.is_array:
+                    member.full_type = member.full_type.replace(
+                        member.array_type, _versioned(member.array_type, self.old_schema_version)
+                    )
+                    member.array_type = _versioned(member.array_type, self.old_schema_version)
+                else:
+                    member.full_type = _versioned(member.full_type, self.old_schema_version)
+                    member.bare_type = _versioned(member.bare_type, self.old_schema_version)
+
+        if needs_schema_evolution:
+            print(f"  Preparing explicit schema evolution for {name}")
+            schema_evolution_datatype["class"].bare_type = _versioned(
+                schema_evolution_datatype["class"].bare_type, self.old_schema_version
+            )
+            self._fill_templates("Data", schema_evolution_datatype)
+            self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
+
+    def _preprocess_schema_evolution_component(self, name, component):
+        """Preprocess this component (and generate the necessary code) in case
+        schema evolution is necessary
+
+        NOTE: currently limited to support only ROOT schema evolution needs
+        """
+        try:
+            schema_evolutions = self.root_schema_dict[name]
+            component = deepcopy(component)
+            for schema_evolution in schema_evolutions:
+                if isinstance(schema_evolution, RenamedMember):
+                    for member in component["Members"]:
+                        if member.name == schema_evolution.member_name_new:
+                            member.name = schema_evolution.member_name_old
+                    component["class"] = DataType(_versioned(name, self.old_schema_version))
+                else:
+                    raise NotImplementedError
+
+            self._fill_templates("Component", component)
+            self.root_schema_component_names.add(_versioned(name, self.old_schema_version))
+
+        except KeyError:
+            # We didn't find any schema evolution for this component
+            pass
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in
@@ -465,7 +473,7 @@ have resolvable schema evolution incompatibilities:"
                     iorule = RootIoRule()
                     iorule.sourceClass = type_name
                     iorule.targetClass = type_name
-                    iorule.version = self.old_schema_version.lstrip("v")
+                    iorule.version = self.old_schema_version
                     iorule.source = f"{member_type} {schema_change.member_name_old}"
                     iorule.target = schema_change.member_name_new
                     iorule.code = f"{iorule.target} = onfile.{schema_change.member_name_old};"
@@ -596,7 +604,7 @@ have resolvable schema evolution incompatibilities:"
             "old_schema_components": [
                 DataType(d)
                 for d in self.root_schema_datatype_names | self.root_schema_component_names
-            ],  # noqa
+            ],
             "iorules": self.root_schema_iorules,
         }
 
