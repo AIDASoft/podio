@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v01-03 &mdash; PODIO  documentation</title>
+  <title>v01-04 &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -720,7 +720,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">v01-03</li>
+      <li class="breadcrumb-item active">v01-04</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -729,7 +729,114 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="v01-03">
+  <section id="v01-04">
+<h1>v01-04<a class="headerlink" href="#v01-04" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2025-08-13 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/809">PR#809</a>)</p>
+<ul>
+<li><p>Simplify constructors by using member initializers and only initialize in the constructor what changes with respect to the defaults</p></li>
+</ul>
+</li>
+<li><p>2025-08-13 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/799">PR#799</a>)</p>
+<ul>
+<li><p>Make sure that members that are builtin types can also be renamed with ROOT</p></li>
+</ul>
+</li>
+<li><p>2025-08-13 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/797">PR#797</a>)</p>
+<ul>
+<li><p>Refactor parts of the code generation that are related to schema evolution</p></li>
+<li><p>Remove some duplication and homogenize information from schema changes detection system</p></li>
+</ul>
+</li>
+<li><p>2025-08-12 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/813">PR#813</a>)</p>
+<ul>
+<li><p>Add cppcheck to pre-commit, together with a file with the warnings that are suppressed</p></li>
+<li><p>Fix the existing warnings</p></li>
+</ul>
+</li>
+<li><p>2025-08-12 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/808">PR#808</a>)</p>
+<ul>
+<li><p>Define <code class="docutils literal notranslate"><span class="pre">typeName</span></code>, <code class="docutils literal notranslate"><span class="pre">valueTypeName</span></code> and <code class="docutils literal notranslate"><span class="pre">dataTypeName</span></code> outside of each collection and <code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code> class, in addition to the existing definition inside the class to prevent an issue in which every library under LD_LIBRARY_PATH is opened when creating a collection in Python</p></li>
+</ul>
+</li>
+<li><p>2025-08-11 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/811">PR#811</a>)</p>
+<ul>
+<li><p>Deprecate the generation of an <code class="docutils literal notranslate"><span class="pre">operator-&gt;</span></code> for collections which made them usable as if they were pointers even when dealing with regular values.</p>
+<ul>
+<li><p><strong>Depending on your usage, the removal of this operator might break code that uses a generated datamodel. The recommended fix is to simply switch to using <code class="docutils literal notranslate"><span class="pre">.</span></code> instead of <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code> when working with (non-pointer) collections.</strong></p></li>
+<li><p>The original purpose for adding this was the (now abandoned) seamless drop-in replacement for LCIO, which uses collection pointers instead of values.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2025-07-07 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/807">PR#807</a>)</p>
+<ul>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">PODIO_GENERATE_DICTIONARY</span></code> a thin wrapper around <code class="docutils literal notranslate"><span class="pre">REFLEX_GENERATE_DICTIONARY</span></code> instead of a re-implementation</p></li>
+</ul>
+</li>
+<li><p>2025-07-01 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/804">PR#804</a>)</p>
+<ul>
+<li><p>Fix deprecation warning in pre-commit by updating hook version to latest one (v5.0.0)</p></li>
+</ul>
+</li>
+<li><p>2025-06-30 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/802">PR#802</a>)</p>
+<ul>
+<li><p>Switch back to the standard version of the run-lcg-view action, using docker as container runtime, since the upstream issue with cvmfs has been fixed.</p></li>
+</ul>
+</li>
+<li><p>2025-06-27 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/798">PR#798</a>)</p>
+<ul>
+<li><p>Allow calling finish() multiple times, with no effect after the first by checking the value of <code class="docutils literal notranslate"><span class="pre">m_finished</span></code>.</p></li>
+</ul>
+</li>
+<li><p>2025-06-20 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/786">PR#786</a>)</p>
+<ul>
+<li><p>Introduce a <code class="docutils literal notranslate"><span class="pre">FrameDataType</span></code> concept and constrain the <code class="docutils literal notranslate"><span class="pre">Frame</span></code> constructors with it</p></li>
+</ul>
+</li>
+<li><p>2025-06-19 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/784">PR#784</a>)</p>
+<ul>
+<li><p>Change the default setting of the generic writer to RNTuple when <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code> is set</p></li>
+<li><p>Add a test that writes an RNTuple because <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code> is set</p></li>
+<li><p>Since there was no documentation about the readers and writers, add documentation about them and include <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code> in it.</p></li>
+</ul>
+</li>
+<li><p>2025-06-18 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/785">PR#785</a>)</p>
+<ul>
+<li><p>Add missing override to the destructor of UserDataCollection and LinkCollectionImpl</p></li>
+</ul>
+</li>
+<li><p>2025-06-13 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/791">PR#791</a>)</p>
+<ul>
+<li><p>Disable the julia tests in the sanitizers workflows as they do not test anything meaningful there</p></li>
+<li><p>Use podman for now to run the CI that requires Julia</p></li>
+</ul>
+</li>
+<li><p>2025-06-13 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/789">PR#789</a>)</p>
+<ul>
+<li><p>Use python packages from the Key4hep stack in the pre-commit workflow</p></li>
+<li><p>Fix pre-commit</p></li>
+</ul>
+</li>
+<li><p>2025-06-13 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/788">PR#788</a>)</p>
+<ul>
+<li><p>Add the value of <code class="docutils literal notranslate"><span class="pre">ROOT_INCLUDE_PATH</span></code> from the environment to the tests</p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">k4_local_repo</span></code> in the key4hep workflow</p></li>
+</ul>
+</li>
+<li><p>2025-05-26 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/783">PR#783</a>)</p>
+<ul>
+<li><p>Use size_t instead of unsigned int for <code class="docutils literal notranslate"><span class="pre">operator[]</span></code>, <code class="docutils literal notranslate"><span class="pre">at</span></code>, <code class="docutils literal notranslate"><span class="pre">getID</span></code> and <code class="docutils literal notranslate"><span class="pre">setID</span></code> for Link collections, since it is the type used for data type collections and UserDataCollections.</p></li>
+</ul>
+</li>
+<li><p>2025-05-20 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/781">PR#781</a>)</p>
+<ul>
+<li><p>Fix Unity builds with SIO enabled by giving a variable different names</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v01-03">
 <h1>v01-03<a class="headerlink" href="#v01-03" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>2025-05-14 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/780">PR#780</a>)</p>
