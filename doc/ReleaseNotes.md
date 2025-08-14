@@ -1,3 +1,68 @@
+# v01-04
+
+* 2025-08-13 jmcarcell ([PR#809](https://github.com/AIDASoft/podio/pull/809))
+  - Simplify constructors by using member initializers and only initialize in the constructor what changes with respect to the defaults
+
+* 2025-08-13 Thomas Madlener ([PR#799](https://github.com/AIDASoft/podio/pull/799))
+  - Make sure that members that are builtin types can also be renamed with ROOT
+
+* 2025-08-13 Thomas Madlener ([PR#797](https://github.com/AIDASoft/podio/pull/797))
+  - Refactor parts of the code generation that are related to schema evolution
+  - Remove some duplication and homogenize information from schema changes detection system
+
+* 2025-08-12 jmcarcell ([PR#813](https://github.com/AIDASoft/podio/pull/813))
+  - Add cppcheck to pre-commit, together with a file with the warnings that are suppressed
+  - Fix the existing warnings
+
+* 2025-08-12 jmcarcell ([PR#808](https://github.com/AIDASoft/podio/pull/808))
+  - Define `typeName`, `valueTypeName` and `dataTypeName` outside of each collection and `UserDataCollection` class, in addition to the existing definition inside the class to prevent an issue in which every library under LD_LIBRARY_PATH is opened when creating a collection in Python
+
+* 2025-08-11 jmcarcell ([PR#811](https://github.com/AIDASoft/podio/pull/811))
+  - Deprecate the generation of an `operator->` for collections which made them usable as if they were pointers even when dealing with regular values.
+    - **Depending on your usage, the removal of this operator might break code that uses a generated datamodel. The recommended fix is to simply switch to using `.` instead of `->` when working with (non-pointer) collections.**
+    - The original purpose for adding this was the (now abandoned) seamless drop-in replacement for LCIO, which uses collection pointers instead of values.
+
+* 2025-07-07 Thomas Madlener ([PR#807](https://github.com/AIDASoft/podio/pull/807))
+  - Make `PODIO_GENERATE_DICTIONARY` a thin wrapper around `REFLEX_GENERATE_DICTIONARY` instead of a re-implementation
+
+* 2025-07-01 Thomas Madlener ([PR#804](https://github.com/AIDASoft/podio/pull/804))
+  - Fix deprecation warning in pre-commit by updating hook version to latest one (v5.0.0)
+
+* 2025-06-30 Thomas Madlener ([PR#802](https://github.com/AIDASoft/podio/pull/802))
+  - Switch back to the standard version of the run-lcg-view action, using docker as container runtime, since the upstream issue with cvmfs has been fixed.
+
+* 2025-06-27 jmcarcell ([PR#798](https://github.com/AIDASoft/podio/pull/798))
+  - Allow calling finish() multiple times, with no effect after the first by checking the value of `m_finished`.
+
+* 2025-06-20 Thomas Madlener ([PR#786](https://github.com/AIDASoft/podio/pull/786))
+  - Introduce a `FrameDataType` concept and constrain the `Frame` constructors with it
+
+* 2025-06-19 jmcarcell ([PR#784](https://github.com/AIDASoft/podio/pull/784))
+  - Change the default setting of the generic writer to RNTuple when `PODIO_DEFAULT_WRITE_RNTUPLE` is set
+  - Add a test that writes an RNTuple because `PODIO_DEFAULT_WRITE_RNTUPLE` is set
+  - Since there was no documentation about the readers and writers, add documentation about them and include `PODIO_DEFAULT_WRITE_RNTUPLE` in it.
+
+* 2025-06-18 jmcarcell ([PR#785](https://github.com/AIDASoft/podio/pull/785))
+  - Add missing override to the destructor of UserDataCollection and LinkCollectionImpl
+
+* 2025-06-13 Thomas Madlener ([PR#791](https://github.com/AIDASoft/podio/pull/791))
+  - Disable the julia tests in the sanitizers workflows as they do not test anything meaningful there
+  - Use podman for now to run the CI that requires Julia
+
+* 2025-06-13 jmcarcell ([PR#789](https://github.com/AIDASoft/podio/pull/789))
+  - Use python packages from the Key4hep stack in the pre-commit workflow
+  - Fix pre-commit
+
+* 2025-06-13 jmcarcell ([PR#788](https://github.com/AIDASoft/podio/pull/788))
+  - Add the value of `ROOT_INCLUDE_PATH` from the environment to the tests
+  - Call `k4_local_repo` in the key4hep workflow
+
+* 2025-05-26 jmcarcell ([PR#783](https://github.com/AIDASoft/podio/pull/783))
+  - Use size_t instead of unsigned int for `operator[]`, `at`, `getID` and `setID` for Link collections, since it is the type used for data type collections and UserDataCollections.
+
+* 2025-05-20 jmcarcell ([PR#781](https://github.com/AIDASoft/podio/pull/781))
+  - Fix Unity builds with SIO enabled by giving a variable different names
+
 # v01-03
 
 * 2025-05-14 jmcarcell ([PR#780](https://github.com/AIDASoft/podio/pull/780))
