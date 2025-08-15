@@ -58,7 +58,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         verbose,
         dryrun,
         upstream_edm,
-        old_description,
+        old_descriptions,
         evolution_file,
         datamodel_version=None,
     ):
@@ -74,16 +74,14 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.io_handlers = io_handlers
 
         # schema evolution specific code
-        self.old_yamlfile = old_description
+        self.old_yamlfiles = old_descriptions
         self.evolution_file = evolution_file
-        self.old_schema_version = None
-        self.old_datamodel = None
-        self.old_datamodels_components = set()
-        self.old_datamodels_datatypes = set()
-        self.root_schema_dict = {}  # containing the root relevant schema evolution per datatype
-        # information to update the selection.xml
-        self.root_schema_component_names = set()
-        self.root_schema_datatype_names = set()
+        self.old_datamodels = {}  # Map from schema version to datamodel
+        self.old_datamodels_components = {}  # Map from schema version to set of component names
+        self.old_datamodels_datatypes = {}  # Map from schema version to set of datatype names
+        self.root_schema_dict = {}  # Map from schema version to dict of evolutions per datatype
+        self.root_schema_component_names = set()  # All versioned component names
+        self.root_schema_datatype_names = set()  # All versioned datatype names
         self.root_schema_iorules = set()
         # a map of datatypes that are used in interfaces populated by pre_process
         self.types_in_interfaces = {}
@@ -339,40 +337,54 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.env.filters["ostream_collection_header"] = ostream_collection_header
 
     def _pre_process_schema_evolution(self):
-        """Process the schema evolution"""
-        # have to make all necessary comparisons
-        # which are the ones that changed?
-        # have to extend the selection xml file
-        if self.old_yamlfile:
+        """Process the schema evolution for all old schema versions"""
+        if not self.old_yamlfiles:
+            return
+
+        # Process each old schema version
+        for old_yamlfile in self.old_yamlfiles:
             comparator = DataModelComparator(
-                self.yamlfile, self.old_yamlfile, evolution_file=self.evolution_file
+                self.yamlfile, old_yamlfile, evolution_file=self.evolution_file
             )
             comparator.read()
             comparator.compare()
-            self.old_schema_version = comparator.datamodel_old.schema_version
+
+            old_schema_version = comparator.datamodel_old.schema_version
+            self.old_datamodels[old_schema_version] = comparator.datamodel_old
+
             # some sanity checks
             if len(comparator.errors) > 0:
                 print(
-                    f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
-have unresolvable schema evolution incompatibilities:"
+                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' "
+                    f"have unresolvable schema evolution incompatibilities:"
                 )
                 for error in comparator.errors:
                     print(error)
                 sys.exit(-1)
             if len(comparator.warnings) > 0:
                 print(
-                    f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
-have resolvable schema evolution incompatibilities:"
+                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' "
+                    f"have resolvable schema evolution incompatibilities:"
                 )
                 for warning in comparator.warnings:
                     print(warning)
                 sys.exit(-1)
 
+            # Store components and datatypes for this version
+            self.old_datamodels_components[old_schema_version] = set(
+                comparator.datamodel_old.components.keys()
+            )
+            self.old_datamodels_datatypes[old_schema_version] = set(
+                comparator.datamodel_old.datatypes.keys()
+            )
+
             # now go through all the io_handlers and see what we have to do
             if "ROOT" in self.io_handlers:
+                schema_dict_for_version = {}
                 for item in root_filter(comparator.schema_changes):
                     # add whatever is relevant to our ROOT schema evolution
-                    self.root_schema_dict.setdefault(item.klassname, []).append(item)
+                    schema_dict_for_version.setdefault(item.klassname, []).append(item)
+                self.root_schema_dict[old_schema_version] = schema_dict_for_version
 
     def _preprocess_schema_evolution_datatype(self, name, datatype):
         """Preprocess this datatype (and generate the necessary code) in case
