@@ -8,8 +8,9 @@
 #endif
 
 {{ utils.namespace_open(class.namespace) }}
+namespace v{{ schema_version }} {
 
-std::ostream& operator<<(std::ostream& o, const {{class.full_type}}& value) {
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value) {
 {% for member in Members %}
 {% if member.is_array %}
   for (int i = 0; i < {{ member.array_size }}; ++i) {
@@ -35,5 +36,6 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}& value) {
 }
 #endif
 
-{{ utils.namespace_close(class.namespace) }}
+} // namespace v{{ schema_version }}
 
+{{ utils.namespace_close(class.namespace) }}
