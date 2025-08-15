@@ -7,10 +7,11 @@
 {%- endif -%}
 {%- endmacro -%}
 
-{%- macro data_selection(class, version) %}
+{%- macro data_class_selection(class, version, suffix="") %}
 {% set namespace = class.namespace + '::' if class.namespace else '' %}
-        <class name="{{ namespace }}v{{ version }}::{{ class.bare_type }}Data"/>
-        <class name="std::vector<{{ namespace }}v{{ version }}::{{ class.bare_type }}Data>"/>
+{% set class_name = namespace + 'v' + version|string + '::' + class.bare_type + suffix %}
+        <class name="{{ class_name }}" ClassVersion="{{ version }}"/>
+        <class name="std::vector<{{ class_name }}>"/>
 {%- endmacro -%}
 
 {% macro ioread(iorule) %}
@@ -27,11 +28,12 @@
         <!-- components -->
 {% for class in components %}
 {{ class_selection(class, vector=True) }}
+{{ data_class_selection(class, version) }}
 {% endfor %}
 
         <!-- datatypes -->
 {% for class in datatypes %}
-{{ data_selection(class, version) }}
+{{ data_class_selection(class, version, "Data") }}
 {{ class_selection(class, postfix='Data', vector=True) }}
 {# We need to also create the collections in the selection xml file. #}
 {# Otherwise the python interface does not work in gcc builds #}
@@ -42,13 +44,11 @@
 {{ class_selection(class, postfix='Collection') }}
 {% endfor %}
 
-
+{% if old_schema_components or old_schema_datatypes %}
         <!-- previous schema components and pods -->
-{% for class in old_schema_components %}
-{{ class_selection(class) }}
-{% endfor %}
-{% for class in old_schema_datatypes %}
-{{ class_selection(class, postfix="Data") }}
+{% endif %}
+{% for item in old_schema_components %}
+{{ data_class_selection(item.class, item.version) }}
 {% endfor %}
 
     </selection>
