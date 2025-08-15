@@ -285,6 +285,7 @@ class ClassGeneratorBaseMixin:
         data["package_name"] = self.package_name
         data["use_get_syntax"] = self.get_syntax
         data["incfolder"] = self.incfolder
+        data["schema_version"] = self.datamodel.schema_version
         for filename, template in self._get_filenames_templates(
             template_base, data["class"].bare_type
         ):
