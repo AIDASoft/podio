@@ -55,11 +55,11 @@
 
 
         <!-- previous schema components and pods -->
-{% for class in old_schema_components %}
-{{ class_selection(class) }}
+{% for item in old_schema_components %}
+{{ data_class_selection(item.class, item.version) }}
 {% endfor %}
-{% for class in old_schema_datatypes %}
-{{ class_selection(class, postfix="Data") }}
+{% for item in old_schema_datatypes %}
+{{ data_class_selection(item.class, item.version, "Data") }}
 {% endfor %}
 
     </selection>

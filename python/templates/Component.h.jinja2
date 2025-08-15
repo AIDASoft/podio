@@ -37,6 +37,23 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}& value);
 } // namespace v{{ schema_version }}
 using {{ class.bare_type }} = v{{ schema_version }}::{{ class.bare_type }};
 
+{% if old_versions %}
+// Definitions for older versions
+{% endif %}
+{% for old_version in old_versions %}
+namespace v{{ old_version.version }} {
+
+class {{ class.bare_type }} {
+public:
+{% for member in old_version.definition.Members %}
+  {{ member }}
+{% endfor %}
+};
+
+} // namespace v{{ old_version.version }}
+{% endfor %}
+
+
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

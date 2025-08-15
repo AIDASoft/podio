@@ -104,12 +104,21 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         if the_links := datamodel["links"]:
             self._write_links_registration_file(the_links)
         self._write_all_collections_header()
+        self._write_dropped_components()
         self._write_cmake_lists_file()
 
     def do_process_component(self, name, component):
         """Handle everything cpp specific after the common processing of a component"""
         includes = set(self._get_member_includes(component["Members"]))
         includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
+
+        # Add old versions for schema evolution
+        old_comp_versions = self.changed_components.get(name, [])
+        component["old_versions"] = old_comp_versions
+        # update includes if necessary
+        for old_comp in old_comp_versions:
+            includes.update(self._get_member_includes(old_comp["definition"]["Members"]))
+
         component["includes"] = self._sort_includes(includes)
 
         self._fill_templates("Component", component)
@@ -517,14 +526,78 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
     def _create_selection_xml(self):
         """Create the selection xml that is necessary for ROOT I/O"""
+        # Collect old schema components and datatypes for dictionary generation
+        old_schema_components = []
+        old_schema_datatypes = []
+
+        for component_name, old_versions in self.changed_components.items():
+            for old_version in old_versions:
+                old_schema_components.append(
+                    {"class": DataType(component_name), "version": old_version["version"]}
+                )
+
+        for datatype_name, old_versions in self.changed_datatypes.items():
+            for old_version in old_versions:
+                old_schema_datatypes.append(
+                    {"class": DataType(datatype_name), "version": old_version["version"]}
+                )
+
         data = {
             "version": self.datamodel.schema_version,
             "components": [DataType(c) for c in self.datamodel.components],
             "datatypes": [DataType(d) for d in self.datamodel.datatypes],
             "old_schema_versions": list(self.old_datamodels.keys()),
+            "old_schema_components": old_schema_components,
+            "old_schema_datatypes": old_schema_datatypes,
         }
 
         self._write_file("selection.xml", self._eval_template("selection.xml.jinja2", data))
+
+    def _write_dropped_components(self):
+        """Write header files for components that have been dropped from the current schema"""
+        # Find components that exist in old versions but not in current datamodel
+        dropped_components = {}
+
+        for component_name, old_versions in self.changed_components.items():
+            if component_name not in self.datamodel.components:
+                # This component has been dropped, collect all its old versions
+                dropped_components[component_name] = old_versions
+
+        # Generate header files for dropped components
+        for component_name, old_versions in dropped_components.items():
+            # Pop the version with the most recent definition so that we can
+            # treat it as if it is the current version and generate it similar
+            # to normal components
+            most_recent_definition = max(old_versions, key=lambda x: x["version"])
+            old_versions.remove(most_recent_definition)
+            most_recent_version = most_recent_definition["version"]
+
+            component_def = most_recent_definition["definition"]
+            component_def["class"] = DataType(component_name)
+
+            # Process the component definition similar to current components
+            includes = set(self._get_member_includes(component_def["Members"]))
+            for old_comp in old_versions:
+                includes.update(self._get_member_includes(old_comp["definition"]["Members"]))
+
+            # Create the component data for template rendering
+            #
+            # NOTE: we do this manually here instead of going through
+            # fill_template as we need to populate a different schema_version
+            # and we omit any ExtraCode since that should not affect the data
+            # layout
+            component_def.update(
+                {
+                    "includes": self._sort_includes(includes),
+                    "old_versions": old_versions,
+                    "schema_version": most_recent_version,
+                    "package_name": self.package_name,
+                    "incfolder": self.incfolder,
+                    "use_get_syntax": self.get_syntax,
+                }
+            )
+            filename = f"{component_name}.h"
+            self._write_file(filename, self._eval_template("Component.h.jinja2", component_def))
 
     def _get_member_includes(self, members):
         """Process all members and gather the necessary includes"""
