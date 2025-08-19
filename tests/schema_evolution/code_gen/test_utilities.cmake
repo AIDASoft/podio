@@ -98,6 +98,7 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
   )
+  set_tests_properties(schema_evol:code_gen:${test_case}:write${suffix} PROPERTIES FIXTURES_SETUP ${test_case}_w${suffix})
 
   # Executable and test for reading new data
   add_executable(read_${test_base} ${test_case}/check.cpp)
@@ -115,7 +116,5 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
   )
-  set_property(TEST schema_evol:code_gen:${test_case}:read${suffix}
-    PROPERTY DEPENDS schema_evol:code_gen:${test_case}:write${suffix}
-  )
+  set_tests_properties(schema_evol:code_gen:${test_case}:read${suffix} PROPERTIES FIXTURES_REQUIRED ${test_case}_w${suffix})
 endfunction()
