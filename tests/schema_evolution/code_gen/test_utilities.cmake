@@ -1,0 +1,86 @@
+#--- GENERATE_DATAMODEL(test_case model_version)
+#
+# Arguments:
+#   test_case      The name of the test case
+#   model_version  which version of the model to generate (old or new)
+#
+# Generate the necessary code and build all required libraries for the specified
+# datamodel and version. Make sure to put all generated and compiled binary
+# outputs into a distinct subfolder such that at (test) runtime the models can
+# be individually "toggled"
+function(GENERATE_DATAMODEL test_case model_version)
+  set(model_base ${test_case}_${model_version}Model)
+  set(output_base ${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${model_version}_model)
+
+  PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+    IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+    OUTPUT_FOLDER ${output_base}
+  )
+  PODIO_ADD_DATAMODEL_CORE_LIB(${model_base} "${headers}" "${sources}"
+    OUTPUT_FOLDER ${output_base}
+  )
+  PODIO_ADD_ROOT_IO_DICT(${model_base}Dict ${model_base} "${headers}" ${output_base}/src/selection.xml
+    OUTPUT_FOLDER ${output_base}
+  )
+
+  # Make sure that each model can be "toggled" at runtime separately
+  set_target_properties(${model_base} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
+  set_target_properties(${model_base}Dict PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
+  add_custom_command(TARGET ${model_base}Dict
+    POST_BUILD
+    BYPRODUCTS
+      ${output_base}/lib${model_base}Dict_rdict.pcm
+      ${output_base}/${model_base}DictDict.rootmap
+
+    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/lib${model_base}Dict_rdict.pcm ${output_base}/lib${model_base}Dict_rdict.pcm
+    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/${model_base}DictDict.rootmap ${output_base}/${model_base}DictDict.rootmap
+
+    COMMENT "Moving generated rootmaps for ${test_case}"
+    VERBATIM
+  )
+
+endfunction()
+
+#--- ADD_SCHEMA_EVOLUTION_TEST(test_case)
+#
+# Arguments:
+#   test_case      The name of the test case
+#
+# Add all the bits and pieces that are necessary to test a certain schema
+# evolution case. This includes
+# - The generation of the old and new datamodels
+# - The compilation of the executables to write data in the old format and read
+#   them back in the new format
+#
+# See the README for more details on which parts need to be implemented for
+# adding a new test case.
+function(ADD_SCHEMA_EVOLUTION_TEST test_case)
+  # Generate datamodels
+  GENERATE_DATAMODEL(${test_case} old)
+  GENERATE_DATAMODEL(${test_case} new)
+
+  # Executable and test for writing old data
+  add_executable(write_${test_case} ${test_case}/check.cpp)
+  target_link_libraries(write_${test_case} PRIVATE ${test_case}_oldModel podio::podioIO)
+  target_compile_definitions(write_${test_case} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_WRITE)
+  add_test(NAME schema_evol:code_gen:${test_case}:write COMMAND write_${test_case})
+  set_property(TEST schema_evol:code_gen:${test_case}:write
+    PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+      PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
+  )
+
+  # Executable and test for reading new data
+  add_executable(read_${test_case} ${test_case}/check.cpp)
+  target_link_libraries(read_${test_case} PRIVATE ${test_case}_newModel podio::podioIO)
+  target_compile_definitions(read_${test_case} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_READ)
+  add_test(NAME schema_evol:code_gen:${test_case}:read COMMAND read_${test_case})
+  set_property(TEST schema_evol:code_gen:${test_case}:read
+    PROPERTY ENVIRONMENT
+      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+      PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
+  )
+  set_property(TEST schema_evol:code_gen:${test_case}:read
+    PROPERTY DEPENDS schema_evol:code_gen:${test_case}:write
+  )
+endfunction()
