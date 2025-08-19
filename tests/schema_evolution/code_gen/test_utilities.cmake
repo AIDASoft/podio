@@ -63,6 +63,8 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
   add_executable(write_${test_case} ${test_case}/check.cpp)
   target_link_libraries(write_${test_case} PRIVATE ${test_case}_oldModel podio::podioIO)
   target_compile_definitions(write_${test_case} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_WRITE)
+  target_include_directories(write_${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
   add_test(NAME schema_evol:code_gen:${test_case}:write COMMAND write_${test_case})
   set_property(TEST schema_evol:code_gen:${test_case}:write
     PROPERTY ENVIRONMENT
@@ -74,6 +76,8 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
   add_executable(read_${test_case} ${test_case}/check.cpp)
   target_link_libraries(read_${test_case} PRIVATE ${test_case}_newModel podio::podioIO)
   target_compile_definitions(read_${test_case} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_READ)
+  target_include_directories(read_${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
   add_test(NAME schema_evol:code_gen:${test_case}:read COMMAND read_${test_case})
   set_property(TEST schema_evol:code_gen:${test_case}:read
     PROPERTY ENVIRONMENT
