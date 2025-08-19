@@ -109,7 +109,7 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
 
   target_include_directories(read_${test_base} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-  add_test(NAME schema_evol:code_gen:${test_case}:read${suffix} COMMAND read_${test_case})
+  add_test(NAME schema_evol:code_gen:${test_case}:read${suffix} COMMAND read_${test_base})
   set_property(TEST schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
