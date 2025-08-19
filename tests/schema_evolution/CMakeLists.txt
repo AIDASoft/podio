@@ -62,3 +62,5 @@ set_property(TEST schema-evolution-script-with-failure PROPERTY WILL_FAIL true)
 add_subdirectory(detection)
 
 add_subdirectory(root_io)
+
+add_subdirectory(code_gen)
