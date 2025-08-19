@@ -446,14 +446,16 @@ class DataModelComparator:
             # changes between arrays and basic types are forbidden
             if change.old_member.is_array != change.new_member.is_array:
                 self.errors.append(
-                    f"Forbidden schema change in '{change.name}' for '{change.member_name}' from "
-                    f"'{change.old_member.full_type}' to '{change.new_member.full_type}'"
+                    f"Forbidden schema change in '{change.klassname}' for "
+                    f"'{change.old_member.name}' from '{change.old_member.full_type}'"
+                    f" to '{change.new_member.full_type}'"
                 )
             # changing from one component type to another component type is forbidden
             elif change.old_member.full_type in self.datamodel_old.components:
                 self.errors.append(
-                    f"Forbidden schema change in '{change.name}' for '{change.member_name}' from "
-                    f"'{change.old_member.full_type}' to '{change.new_member.full_type}'"
+                    f"Forbidden schema change in '{change.klassname}' for "
+                    f"'{change.old_member.name}' from '{change.old_member.full_type}'"
+                    f" to '{change.new_member.full_type}'"
                 )
 
         # are there dropped/added datatype pairs that could be interpreted as rename?
