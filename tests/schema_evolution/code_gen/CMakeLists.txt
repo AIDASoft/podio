@@ -8,3 +8,11 @@ ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_member RNTUPLE NO_GENERATE_MODELS)
 
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change)
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change RNTUPLE NO_GENERATE_MODELS)
+
+ADD_SCHEMA_EVOLUTION_TEST(components_rename_member WITH_EVOLUTION)
+# Needs newer version of ROOT to have support for RNTuple schema evolution
+# ADD_SCHEMA_EVOLUTION_TEST(components_rename_member WITH_EVOLUTION RNTUPLE NO_GENERATE_MODELS)
+
+ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_member WITH_EVOLUTION)
+# Needs newer version of ROOT to have support for RNTuple schema evolution
+# ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_member WITH_EVOLUTION RNTUPLE NO_GENERATE_MODELS)
