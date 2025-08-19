@@ -1,21 +1,33 @@
-#--- GENERATE_DATAMODEL(test_case model_version)
+#--- GENERATE_DATAMODEL(test_case model_version [WITH_EVOLUTION])
 #
 # Arguments:
 #   test_case      The name of the test case
 #   model_version  which version of the model to generate (old or new)
+#   WITH_EVOLUTION (Optional) pass an evolution.yaml file to the generation of the model
 #
 # Generate the necessary code and build all required libraries for the specified
 # datamodel and version. Make sure to put all generated and compiled binary
 # outputs into a distinct subfolder such that at (test) runtime the models can
 # be individually "toggled"
 function(GENERATE_DATAMODEL test_case model_version)
+  cmake_parse_arguments(PARSED_ARGS "WITH_EVOLUTION" "" "" ${ARGN})
   set(model_base ${test_case}_${model_version}Model)
   set(output_base ${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${model_version}_model)
 
-  PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-    IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-    OUTPUT_FOLDER ${output_base}
-  )
+  if(PARSED_ARGS_WITH_EVOLUTION)
+    PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+      IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+      OUTPUT_FOLDER ${output_base}
+      OLD_DESCRIPTION ${test_case}/old.yaml
+      SCHEMA_EVOLUTION ${test_case}/evolution.yaml
+    )
+  else()
+    PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+      IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+      OUTPUT_FOLDER ${output_base}
+      OLD_DESCRIPTION ${test_case}/old.yaml
+    )
+  endif()
   PODIO_ADD_DATAMODEL_CORE_LIB(${model_base} "${headers}" "${sources}"
     OUTPUT_FOLDER ${output_base}
   )
@@ -60,6 +72,7 @@ endfunction()
 #   test_case           The name of the test case
 #   RNTUPLE            (Optional) Use RNTuple backend for testing
 #   NO_GENERATE_MODELS (Optional) Skip generation of datamodels
+#   WITH_EVOLUTION     (Optional) Mark this evolution as one that needs intervention
 #
 # Add all the bits and pieces that are necessary to test a certain schema
 # evolution case. This includes
@@ -70,11 +83,16 @@ endfunction()
 # See the README for more details on which parts need to be implemented for
 # adding a new test case.
 function(ADD_SCHEMA_EVOLUTION_TEST test_case)
-  cmake_parse_arguments(PARSED_ARGS "RNTUPLE;NO_GENERATE_MODELS" "" "" ${ARGN})
+  cmake_parse_arguments(PARSED_ARGS "RNTUPLE;NO_GENERATE_MODELS;WITH_EVOLUTION" "" "" ${ARGN})
   # Generate datamodels
   if(NOT PARSED_ARGS_NO_GENERATE_MODELS)
-    GENERATE_DATAMODEL(${test_case} old)
-    GENERATE_DATAMODEL(${test_case} new)
+    if(PARSED_ARGS_WITH_EVOLUTION)
+      GENERATE_DATAMODEL(${test_case} old)
+      GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION)
+    else()
+      GENERATE_DATAMODEL(${test_case} old)
+      GENERATE_DATAMODEL(${test_case} new)
+    endif()
   endif()
 
   set(test_base ${test_case})

@@ -1,0 +1,10 @@
+schema_version: 2
+options:
+  includeSubfolder: true
+
+datatypes:
+  nsp::TestType:
+    Description: "A datatype to test member renaming"
+    Author: "Thomas Madlener"
+    Members:
+      - double energy // the old name
