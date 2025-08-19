@@ -54,14 +54,16 @@ function(GENERATE_DATAMODEL test_case model_version)
   set_target_properties(${model_base}Dict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endfunction()
 
-#--- ADD_SCHEMA_EVOLUTION_TEST(test_case)
+#--- ADD_SCHEMA_EVOLUTION_TEST(test_case [RNTUPLE] [NO_GENERATE_MODELS])
 #
 # Arguments:
-#   test_case      The name of the test case
+#   test_case           The name of the test case
+#   RNTUPLE            (Optional) Use RNTuple backend for testing
+#   NO_GENERATE_MODELS (Optional) Skip generation of datamodels
 #
 # Add all the bits and pieces that are necessary to test a certain schema
 # evolution case. This includes
-# - The generation of the old and new datamodels
+# - The generation of the old and new datamodels (unless NO_GENERATE_MODELS is specified)
 # - The compilation of the executables to write data in the old format and read
 #   them back in the new format
 #
