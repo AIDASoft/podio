@@ -29,15 +29,14 @@ function(GENERATE_DATAMODEL test_case model_version)
   # directory
   set_target_properties(${model_base} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
   set_target_properties(${model_base}Dict PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
-  add_custom_command(
-    OUTPUT
+  add_custom_command(TARGET ${model_base}Dict
+    POST_BUILD
+    BYPRODUCTS
       ${output_base}/lib${model_base}Dict_rdict.pcm
       ${output_base}/${model_base}DictDict.rootmap
 
     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/lib${model_base}Dict_rdict.pcm ${output_base}/lib${model_base}Dict_rdict.pcm
     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/${model_base}DictDict.rootmap ${output_base}/${model_base}DictDict.rootmap
-
-    DEPENDS ${model_base}Dict
 
     COMMENT "Moving generated rootmaps for ${test_case}"
     VERBATIM
@@ -50,6 +49,7 @@ function(GENERATE_DATAMODEL test_case model_version)
     DEPENDS
       ${output_base}/lib${model_base}Dict_rdict.pcm
       ${output_base}/${model_base}DictDict.rootmap
+      ${model_base}Dict
   )
   set_target_properties(${model_base}Dict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endfunction()
