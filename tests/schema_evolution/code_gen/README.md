@@ -20,14 +20,22 @@ present:
 
 The cmake function `ADD_SCHEMA_EVOLUTION_TEST` takes care of generating the
 necessary datamodels and compiling and linking all binaries that are required.
-It also ensures that the binaries are physically separated such that test
-runtime environments can be constructed accordingly.
+It also ensures that the binaries (most importantly dictionaries) are physically
+separated such that test runtime environments can be constructed accordingly.
+
+If the `RNTUPLE` argument / flag is passed to `ADD_SCHEMA_EVOLUTION_TEST` the
+test will use the `RNTuple{Writer,Reader}` instead of the default
+`ROOT{Writer,Reader}`.
+
+To avoid re-generating the datamodel again for the same check with different
+backends, the `NO_GENERATE_MODELS` flag can be passed to
+`ADD_SCHEMA_EVOLUTION_TEST`.
   
 ### Helper macros for `check.cpp`
 In order to remove some of the boiler plate that is necessary to write and read
 a collection of a certain type, the `check_base.h` file defines helper macros
-(that obey the two available compile options). These are `WRITE_WITH`,
-`READ_WITH` and `ASSERT_EQUAL`. The typical content of a `check.cpp` file will
+(that obey the two available compile options). These are `WRITE_AS`,
+`READ_AS` and `ASSERT_EQUAL`. The typical content of a `check.cpp` file will
 look something like this
 
 ```cpp
@@ -35,26 +43,36 @@ look something like this
 
 #include "datamodel/TestTypeCollection.h"  // The type that undergoes schema evolution
 
-// The readers and writers to use for testing
-#include "podio/ROOTWriter.h"
-#include "podio/ROOTReader.h"
-
-constexpr const auto FILENAME = "schema_evolution_test.root";
-
 int main() {
-  WRITE_WITH(podio::ROOTWriter, FILENAME, TestTypeCollection, {
+  WRITE_AS(TestTypeCollection, {
     // In this code block a collectin of type TestTypeCollection 
     // will be available as coll.
     // Additionally, a single element of name elem is present
     elem.s(42);  // Set the s-member to 42
   });
   
-  READ_WITH(podio::ROOTReader, FILENAME, TestTypeCollection, {
+  READ_AS(TestTypeCollection, {
     // In this code block a collection of type TestTypeCollection
     // has been read from the provided file and is available as coll.
     // Additionally, the first element of this collection is present
     // as elem
     ASSERT_EQUAL(elem.s(), 42, "Member s does not have the expected value"); 
-  })
+  });
 }
 ```
+
+### Additional technical details
+
+For developers who have to touch the internals of the whole machinery a few
+additional information bits about the expecations / assumptions:
+- `{WRITE,READ}_AS` assume that they can cobble together a filename via
+  `TEST_CASE` and `FILE_SUFFIX` pre-processor string literals. The former is
+  injected via `target_compile_definitions` in `ADD_SCHEMA_EVOLUTION_TEST` the
+  latter is defined in `check_base.h` directly depending on other pre-processor
+  flag definitions
+- `{WRITE,READ}_AS` are only defined as non-empty macros if
+  `PODIO_SCHEMA_EVOLUTION_TEST_{WRITE,READ}` are defined respectively. This is
+  what makes it possible to re-use the same source file.
+- If `RNTUPLE` is passed to `ADD_SCHEMA_EVOLUTION_TEST`,
+  `PODIO_SCHEMA_EVOLUTION_RNTUPLE` will also be injected via
+  `target_compile_definitions`
