@@ -1,0 +1,13 @@
+schema_version: 1
+
+components:
+  TestComponent:
+    Members:
+      - int x
+
+datatypes:
+  TestType:
+    Description: "A datatype that changes component type"
+    Author: "Thomas Madlener"
+    Members:
+      - TestComponent comp // the component
