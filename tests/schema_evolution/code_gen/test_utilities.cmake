@@ -23,22 +23,35 @@ function(GENERATE_DATAMODEL test_case model_version)
     OUTPUT_FOLDER ${output_base}
   )
 
-  # Make sure that each model can be "toggled" at runtime separately
+  # Make sure that each model can be "toggled" at runtime separately.
+  # Effecitvely amounts to moving the byproducts of the dictgen above to the
+  # appropriate place and making sure libraries are built into the right output
+  # directory
   set_target_properties(${model_base} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
   set_target_properties(${model_base}Dict PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
-  add_custom_command(TARGET ${model_base}Dict
-    POST_BUILD
-    BYPRODUCTS
+  add_custom_command(
+    OUTPUT
       ${output_base}/lib${model_base}Dict_rdict.pcm
       ${output_base}/${model_base}DictDict.rootmap
 
     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/lib${model_base}Dict_rdict.pcm ${output_base}/lib${model_base}Dict_rdict.pcm
     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/${model_base}DictDict.rootmap ${output_base}/${model_base}DictDict.rootmap
 
+    DEPENDS ${model_base}Dict
+
     COMMENT "Moving generated rootmaps for ${test_case}"
     VERBATIM
   )
 
+  # Make sure cmake is aware of how these files came to their final destination
+  # so that there is a chance of dependency tracking and we might avoid too
+  # frequent triggering of the dictgen step
+  add_custom_target(Move_${model_base}Dict_files
+    DEPENDS
+      ${output_base}/lib${model_base}Dict_rdict.pcm
+      ${output_base}/${model_base}DictDict.rootmap
+  )
+  set_target_properties(${model_base}Dict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endfunction()
 
 #--- ADD_SCHEMA_EVOLUTION_TEST(test_case)
