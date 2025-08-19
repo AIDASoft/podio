@@ -1,0 +1,17 @@
+schema_version: 1
+options:
+  includeSubfolder: True
+
+components:
+  TestComponent:
+    Description: "A component with different floating point types in the different versions"
+    Members:
+      - float f
+
+datatypes:
+  TestType:
+    Description: "A datatype with different floating point members in the different versions"
+    Author : "Thomas Madlener"
+    Members:
+      - double energy       // an anergy
+      - TestComponent comp  // a component
