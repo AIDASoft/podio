@@ -1,20 +1,15 @@
 # Schema Evolution tests
 This folder contains tests for the schema evolution functionality in podio. The
-functionality is tested by first writing data with an old schema version and
-then reading in with the current schema version.
-[`datalayout_new.yaml`](./datalayout_new.yaml) holds the definition of the new
-version, using schema version 3, while the
-[`datalayout.yaml`](../datalayout.yaml) that is also used for the other I/O
-tests is used as the old version (schema version 2).
+tests cover different aspects of the schema evolution functionality and are
+roughly split into disjoint and orthogonal categories:
+- Tests in `detection` check whether the `podio_schema_evolution.py` script
+  properly detects schema changes and marks possible and impossible ones.
+- Tests in `code_gen` on the other hand check whether the expected (supported)
+  schema evolution functionalities work as expected.
 
-## Differences between the two schema versions
-Since it is not immediately visible from the test code this list contains the
-differences between the two schema versions, and also how this evolution is
-tested (if it is supported)
-
-| component / datatype | difference from v2 to v3 | purpose of test | tested with |
-|--|--|--|--|
-| `SimpleStruct` | no `int t` member in v2 | Addition of new members in components | As  member of `ExampleWithArrayComponent` |
-| `ExampleHit` | no `double t` member in v1 | Addition of new members in datatypes | Directly via `ExampleHit` |
-| `ex2::NamespaceStruct` | renaming of `y` to `y_new` | Renaming of member variables | As member of `ex42::ExampleWithNamespace` |
-| `ex42::ExampleWithARelation` | type of `number` member | migration of `float` to `double` | Directly via `ex42::ExampleWithARelation` |
+Both of these folders contain a few more technical details on how the tests
+work. These are mainly targetted at other developers as both folders come with a
+little mini framework that allows for a rather terse test definition. This
+should make it possible to add new tests rather easily. (Assuming that these
+test cases can be represented in a similar way as the existing ones and do not
+require changes to the underlying machinery).

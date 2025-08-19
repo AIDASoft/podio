@@ -8,6 +8,7 @@ set(should_fail_cases
   relations:rm_multi_relation
   relations:mv_single_to_multi
   relations:mv_multi_to_single
+  members:change_component_type
 )
 
 set(should_succeed_cases
