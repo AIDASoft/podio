@@ -1,0 +1,15 @@
+schema_version: 2
+options:
+  includeSubfolder: True
+
+datatypes:
+  ExampleHit :
+    Description : "Example Hit"
+    Author : "B. Hegner"
+    Members:
+     - unsigned long long cellID      // cellID
+     - double x [mm]     // x-coordinate
+     - double y [mm]     // y-coordinate
+     - double z [mm]     // z-coordinate
+     - double energy [GeV] // measured energy deposit
+     - double t [ns]     // time
