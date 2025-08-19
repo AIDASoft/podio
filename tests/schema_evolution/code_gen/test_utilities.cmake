@@ -55,36 +55,52 @@ endfunction()
 # See the README for more details on which parts need to be implemented for
 # adding a new test case.
 function(ADD_SCHEMA_EVOLUTION_TEST test_case)
+  cmake_parse_arguments(PARSED_ARGS "RNTUPLE;NO_GENERATE_MODELS" "" "" ${ARGN})
   # Generate datamodels
-  GENERATE_DATAMODEL(${test_case} old)
-  GENERATE_DATAMODEL(${test_case} new)
+  if(NOT PARSED_ARGS_NO_GENERATE_MODELS)
+    GENERATE_DATAMODEL(${test_case} old)
+    GENERATE_DATAMODEL(${test_case} new)
+  endif()
 
+  set(test_base ${test_case})
+  set(suffix "")
+  if(PARSED_ARGS_RNTUPLE)
+    set(test_base ${test_case}_rntuple)
+    set(suffix "_rntuple")
+  endif()
   # Executable and test for writing old data
-  add_executable(write_${test_case} ${test_case}/check.cpp)
-  target_link_libraries(write_${test_case} PRIVATE ${test_case}_oldModel podio::podioIO)
-  target_compile_definitions(write_${test_case} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_WRITE)
-  target_include_directories(write_${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  add_executable(write_${test_base} ${test_case}/check.cpp)
+  target_link_libraries(write_${test_base} PRIVATE ${test_case}_oldModel podio::podioIO)
+  target_compile_definitions(write_${test_base} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_WRITE TEST_CASE="${test_case}")
+  if(PARSED_ARGS_RNTUPLE)
+    target_compile_definitions(write_${test_base} PRIVATE PODIO_SCHEMA_EVOLUTION_RNTUPLE)
+  endif()
+  target_include_directories(write_${test_base} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-  add_test(NAME schema_evol:code_gen:${test_case}:write COMMAND write_${test_case})
-  set_property(TEST schema_evol:code_gen:${test_case}:write
+  add_test(NAME schema_evol:code_gen:${test_case}:write${suffix} COMMAND write_${test_base})
+  set_property(TEST schema_evol:code_gen:${test_case}:write${suffix}
     PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
   )
 
   # Executable and test for reading new data
-  add_executable(read_${test_case} ${test_case}/check.cpp)
-  target_link_libraries(read_${test_case} PRIVATE ${test_case}_newModel podio::podioIO)
-  target_compile_definitions(read_${test_case} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_READ)
-  target_include_directories(read_${test_case} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  add_executable(read_${test_base} ${test_case}/check.cpp)
+  target_link_libraries(read_${test_base} PRIVATE ${test_case}_newModel podio::podioIO)
+  target_compile_definitions(read_${test_base} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_READ TEST_CASE="${test_case}")
+  if(PARSED_ARGS_RNTUPLE)
+    target_compile_definitions(read_${test_base} PRIVATE PODIO_SCHEMA_EVOLUTION_RNTUPLE)
+  endif()
 
-  add_test(NAME schema_evol:code_gen:${test_case}:read COMMAND read_${test_case})
-  set_property(TEST schema_evol:code_gen:${test_case}:read
+  target_include_directories(read_${test_base} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+  add_test(NAME schema_evol:code_gen:${test_case}:read${suffix} COMMAND read_${test_case})
+  set_property(TEST schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
   )
-  set_property(TEST schema_evol:code_gen:${test_case}:read
-    PROPERTY DEPENDS schema_evol:code_gen:${test_case}:write
+  set_property(TEST schema_evol:code_gen:${test_case}:read${suffix}
+    PROPERTY DEPENDS schema_evol:code_gen:${test_case}:write${suffix}
   )
 endfunction()
