@@ -5,11 +5,12 @@ import unittest
 import ROOT
 import cppyy
 from ROOT import ExampleMCCollection, MutableExampleMC
-from ROOT import nsp
+from ROOT import ex2, nsp
 from pythonizations import load_pythonizations  # pylint: disable=import-error
 
 # load all available pythonizations to the classes in a namespace
 # loading pythonizations changes the state of cppyy backend shared by all the tests in a process
+load_pythonizations("ex2")
 load_pythonizations("nsp")
 
 
@@ -64,7 +65,7 @@ class AttributeCreationTest(unittest.TestCase):
     """Setting new attributes test"""
 
     def test_disable_new_attribute_creation(self):
-        component = nsp.AnotherNamespaceStruct()
+        component = ex2.NamespaceStruct()
         self.assertEqual(component.x, 0)
         component.x = 1
         self.assertEqual(component.x, 1)
