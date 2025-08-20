@@ -1,3 +1,8 @@
+# v01-04-01
+
+* 2025-08-20 Thomas Madlener ([PR#818](https://github.com/AIDASoft/podio/pull/818))
+  - Backport of [#816](https://github.com/AIDASoft/podio/pull/816) (fix for schema evolution check script)
+
 # v01-04
 
 * 2025-08-13 jmcarcell ([PR#809](https://github.com/AIDASoft/podio/pull/809))
