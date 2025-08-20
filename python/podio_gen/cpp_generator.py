@@ -127,8 +127,17 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
     def do_process_datatype(self, name, datatype):
         """Do the cpp specific processing of a datatype"""
-        datatype["includes_data"] = self._get_member_includes(datatype["Members"])
+        data_includes = set(self._get_member_includes(datatype["Members"]))
         datatype["using_interface_types"] = self.types_in_interfaces.get(name, [])
+
+        # Add old versions for schema evolution
+        old_versions = self.changed_datatypes.get(name, [])
+        datatype["old_versions"] = old_versions
+        for old_dt in old_versions:
+            data_includes.update(self._get_member_includes(datatype["Members"]))
+
+        datatype["includes_data"] = self._sort_includes(data_includes)
+
         self._preprocess_for_class(datatype)
         self._preprocess_for_obj(datatype)
         self._preprocess_for_collection(datatype)
