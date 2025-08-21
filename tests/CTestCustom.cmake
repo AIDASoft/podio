@@ -96,6 +96,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     schema_evol:code_gen:implicit_floating_point_change:read
     schema_evol:code_gen:no_change:write
     schema_evol:code_gen:no_change:read
+    schema_evol:code_gen:array_component_new_member:write
+    schema_evol:code_gen:array_component_new_member:read
   )
   endif()
 
@@ -125,6 +127,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:implicit_floating_point_change:read_rntuple
       schema_evol:code_gen:no_change:write_rntuple
       schema_evol:code_gen:no_change:read_rntuple
+      schema_evol:code_gen:array_component_new_member:write_rntuple
+      schema_evol:code_gen:array_component_new_member:read_rntuple
     )
   endif()
 
@@ -158,6 +162,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:implicit_floating_point_change:read
       schema_evol:code_gen:no_change:write
       schema_evol:code_gen:no_change:read
+      schema_evol:code_gen:array_component_new_member:write
+      schema_evol:code_gen:array_component_new_member:read
+
 
       schema_evol:code_gen:components_new_member:write_rntuple
       schema_evol:code_gen:components_new_member:read_rntuple
@@ -167,6 +174,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:implicit_floating_point_change:read_rntuple
       schema_evol:code_gen:no_change:write_rntuple
       schema_evol:code_gen:no_change:read_rntuple
+      schema_evol:code_gen:array_component_new_member:write_rntuple
+      schema_evol:code_gen:array_component_new_member:read_rntuple
     )
 
   endif()
