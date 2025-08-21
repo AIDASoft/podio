@@ -21,26 +21,26 @@ REPORT_TEXT = """
 """
 
 
-def replace_component_in_paths(oldname, newname, paths):
-    """Replace component name by another one in existing paths"""
-    # strip the namespace
-    shortoldname = oldname.split("::")[-1]
-    shortnewname = newname.split("::")[-1]
-    # and do the replace in place
-    for index, thePath in enumerate(paths):
-        if shortoldname in thePath:
-            newPath = thePath.replace(shortoldname, shortnewname)
-            paths[index] = newPath
+# def replace_component_in_paths(oldname, newname, paths):
+#     """Replace component name by another one in existing paths"""
+#     # strip the namespace
+#     shortoldname = oldname.split("::")[-1]
+#     shortnewname = newname.split("::")[-1]
+#     # and do the replace in place
+#     for index, thePath in enumerate(paths):
+#         if shortoldname in thePath:
+#             newPath = thePath.replace(shortoldname, shortnewname)
+#             paths[index] = newPath
 
 
-def _versioned(typename, version):
-    """Return a versioned name of the typename"""
-    return f"{typename}v{version}"
+# def _versioned(typename, version):
+#     """Return a versioned name of the typename"""
+#     return f"{typename}v{version}"
 
 
-def _versioned_namespace(version):
-    """Return a versioned namespace name"""
-    return f"v{version}"
+# def _versioned_namespace(version):
+#     """Return a versioned namespace name"""
+#     return f"v{version}"
 
 
 class IncludeFrom(IntEnum):
