@@ -251,6 +251,42 @@ class MemberVariable:
             definition += rf" ///< {self.docstring}"
         return definition
 
+    def qualified_as_version(self, version):
+        """String representation with a potential intermediate version namespace
+
+        Only applies in case the member is a component, as builtin variables are
+        considered not versionable
+        """
+        # Nothing to do for builtins
+        if self.is_builtin:
+            return self.__str__()
+
+        # Handle non-builtin array members
+        if self.is_array and not self.is_builtin_array:
+            if self.array_namespace:
+                versioned_array_type = (
+                    f"::{self.array_namespace}::v{version}::{self.array_bare_type}"
+                )
+            else:
+                versioned_array_type = f"::v{version}::{self.array_bare_type}"
+
+            scoped_type = f"std::array<{versioned_array_type}, {self.array_size}>"
+        else:
+            # Build the scoped type with version namespace injected
+            if self.namespace:
+                scoped_type = f"::{self.namespace}::v{version}::{self.bare_type}"
+            else:
+                scoped_type = f"::v{version}::{self.bare_type}"
+
+        if self.default_val:
+            definition = rf"{scoped_type} {self.name}{{{self.default_val}}};"
+        else:
+            definition = rf"{scoped_type} {self.name}{{}};"
+
+        if self.docstring:
+            definition += rf" ///< {self.docstring}"
+        return definition
+
     def __repr__(self):
         """For better readability if printed as part of a dict or list"""
         return f"MemberVariable: {self.__str__()}"

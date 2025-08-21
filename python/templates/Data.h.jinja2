@@ -37,7 +37,7 @@ namespace v{{ old_version.version }} {
 class {{ class.bare_type }}Data {
 public:
 {% for member in old_version.definition.Members %}
-  {{ member }}
+  {{ member.qualified_as_version(old_version.version) }}
 {% endfor %}
 
 {% for member in old_version.definition.VectorMembers + old_version.definition.OneToManyRelations %}

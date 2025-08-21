@@ -81,7 +81,15 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         # schema evolution specific code
         self.old_yamlfiles = old_descriptions
         self.evolution_file = evolution_file
-        self.old_datamodels = {}  # Map from schema version to datamodel
+        self.old_datamodels = (
+            {}
+        )  # Map from schema version to datamodel # TODO: remove and replace with list of schema versions
+        self.old_components = defaultdict(
+            list
+        )  # Map from component names to old component versions
+        self.old_datatypes = defaultdict(
+            list
+        )  # Map from component names to old component versions
         self.changed_components = defaultdict(list)  # Components that have changed at some point
         self.changed_datatypes = defaultdict(list)  # Datatypes that have changed at some point
         # a map of datatypes that are used in interfaces populated by pre_process
@@ -112,8 +120,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         includes = set(self._get_member_includes(component["Members"]))
         includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
 
-        # Add old versions for schema evolution
-        old_comp_versions = self.changed_components.get(name, [])
+        # Add old versions **even if they are identical**
+        old_comp_versions = self.old_components.get(name, [])
         component["old_versions"] = old_comp_versions
         # update includes if necessary
         for old_comp in old_comp_versions:
@@ -131,7 +139,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         datatype["using_interface_types"] = self.types_in_interfaces.get(name, [])
 
         # Add old versions for schema evolution
-        old_versions = self.changed_datatypes.get(name, [])
+        old_versions = self.old_datatypes.get(name, [])
         datatype["old_versions"] = old_versions
         for old_dt in old_versions:
             data_includes.update(self._get_member_includes(datatype["Members"]))
@@ -352,10 +360,36 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.env.filters["ostream_collection_header"] = ostream_collection_header
 
     def _pre_process_schema_evolution(self):
-        """Identify components and datatypes that have changed across schema versions"""
+        """Identify components and datatypes that have changed across schema
+        versions and do the necessary pre-processing to have information
+        available later in the necessary format"""
+        # If we don't have old schemas we don't have to do any of this
         if not self.old_yamlfiles:
             return
 
+        self.old_datamodels = self._read_old_schemas()
+        self._regroup_old_datamodels(self.old_datamodels)
+
+    def _regroup_old_datamodels(self, old_datamodels):
+        """Re-organize all old schemas into a structure that is easier to use.
+
+        The input maps a version to a datamodel definition
+
+        The output should map the component (names) to a list of dictionaries
+        containing the version and the definition
+        """
+        for version, old_model in old_datamodels.items():
+            for name, comp_def in old_model.components.items():
+                self.old_components[name].append({"version": version, "definition": comp_def})
+
+            for name, datatype_def in old_model.datatypes.items():
+                self.old_datatypes[name].append({"version": version, "definition": datatype_def})
+
+    def _read_old_schemas(self):
+        """Read all old schema versions, determine whether all evolutions are
+        possible and store information about components and datatypes that
+        changed."""
+        old_datamodels = {}
         # Process each old schema version
         for old_yamlfile in self.old_yamlfiles:
             comparator = DataModelComparator(
@@ -365,7 +399,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             comparator.compare()
 
             old_schema_version = comparator.datamodel_old.schema_version
-            self.old_datamodels[old_schema_version] = comparator.datamodel_old
+            old_datamodels[old_schema_version] = comparator.datamodel_old
 
             # some sanity checks
             if len(comparator.errors) > 0:
@@ -386,6 +420,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 sys.exit(-1)
 
             # Store old definitions for items that have actually changed
+            # TODO: Move this somewhere else?
             for change in comparator.schema_changes:
                 if hasattr(change, "klassname"):
                     # Handle components (both existing and removed)
@@ -406,6 +441,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                                 "definition": comparator.datamodel_old.datatypes[change.klassname],
                             }
                         )
+
+        return old_datamodels
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in
@@ -539,13 +576,13 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         old_schema_components = []
         old_schema_datatypes = []
 
-        for component_name, old_versions in self.changed_components.items():
+        for component_name, old_versions in self.old_components.items():
             for old_version in old_versions:
                 old_schema_components.append(
                     {"class": DataType(component_name), "version": old_version["version"]}
                 )
 
-        for datatype_name, old_versions in self.changed_datatypes.items():
+        for datatype_name, old_versions in self.old_datatypes.items():
             for old_version in old_versions:
                 old_schema_datatypes.append(
                     {"class": DataType(datatype_name), "version": old_version["version"]}
