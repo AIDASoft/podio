@@ -52,6 +52,7 @@ jobs:
               -DENABLE_JULIA=OFF \
               -DENABLE_RNTUPLE=ON \
               -DENABLE_DATASOURCE=ON \
+              -DPODIO_NO_MEMLIMIT_SCHEMA_EVOL_TESTS=ON \
               -G Ninja ..
             echo "::endgroup::"
             echo "::group::Build"
