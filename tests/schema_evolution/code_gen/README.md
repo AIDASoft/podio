@@ -16,7 +16,7 @@ present:
   `-DPODIO_SCHEMA_EVOLUTION_TEST_WRITE` and once with
   `-DPODIO_SCHEMA_EVOLUTION_TEST_READ` which allows to have different versions
   of a datamodel available without having to write a lot of the boiler plate
-  twice. 
+  twice.
 
 The cmake function `ADD_SCHEMA_EVOLUTION_TEST` takes care of generating the
 necessary datamodels and compiling and linking all binaries that are required.
@@ -30,7 +30,6 @@ test will use the `RNTuple{Writer,Reader}` instead of the default
 To avoid re-generating the datamodel again for the same check with different
 backends, the `NO_GENERATE_MODELS` flag can be passed to
 `ADD_SCHEMA_EVOLUTION_TEST`.
-  
 ### Helper macros for `check.cpp`
 In order to remove some of the boiler plate that is necessary to write and read
 a collection of a certain type, the `check_base.h` file defines helper macros
@@ -45,18 +44,17 @@ look something like this
 
 int main() {
   WRITE_AS(TestTypeCollection, {
-    // In this code block a collectin of type TestTypeCollection 
+    // In this code block a collection of type TestTypeCollection
     // will be available as coll.
     // Additionally, a single element of name elem is present
     elem.s(42);  // Set the s-member to 42
   });
-  
   READ_AS(TestTypeCollection, {
     // In this code block a collection of type TestTypeCollection
     // has been read from the provided file and is available as coll.
     // Additionally, the first element of this collection is present
     // as elem
-    ASSERT_EQUAL(elem.s(), 42, "Member s does not have the expected value"); 
+    ASSERT_EQUAL(elem.s(), 42, "Member s does not have the expected value");
   });
 }
 ```
