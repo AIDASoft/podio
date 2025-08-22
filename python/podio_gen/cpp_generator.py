@@ -256,7 +256,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         for relation in datatype["OneToOneRelations"]:
             if relation.full_type != datatype["class"].full_type:
                 fwd_declarations[relation.namespace].append(relation.bare_type)
-                includes_cc.add(self._build_include(relation))
+            includes_cc.add(self._build_include(relation))
 
         if datatype["VectorMembers"] or datatype["OneToManyRelations"]:
             includes.add("#include <vector>")
