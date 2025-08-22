@@ -110,14 +110,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
     def do_process_component(self, name, component):
         """Handle everything cpp specific after the common processing of a component"""
-        includes = set()
-        includes.update(*(m.includes for m in component["Members"]))
-        for member in component["Members"]:
-            if not (member.is_builtin or member.is_builtin_array):
-                includes.add(self._build_include(member))
-
+        includes = set(self._get_member_includes(component["Members"]))
         includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
-
         component["includes"] = self._sort_includes(includes)
 
         self._fill_templates("Component", component)
