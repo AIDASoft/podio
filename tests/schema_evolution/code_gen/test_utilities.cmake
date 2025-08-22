@@ -141,7 +141,15 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
 
   target_include_directories(read_${test_base} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-  add_test(NAME schema_evol:code_gen:${test_case}:read${suffix} COMMAND read_${test_base})
+  # Make sure to not freeze systems via memory leaks that can occur when ROOT
+  # struggles with schema evolution. ulimit -v takes kb
+  set(test_command "ulimit -v 1000000; ${CMAKE_CURRENT_BINARY_DIR}/read_${test_base}")
+  if(PODIO_NO_MEMLIMIT_SCHEMA_EVOL_TESTS)
+    set(test_command "${CMAKE_CURRENT_BINARY_DIR}/read_${test_base}")
+  endif()
+
+  add_test(NAME schema_evol:code_gen:${test_case}:read${suffix}
+        COMMAND bash -c "${test_command}")
   set_property(TEST schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
