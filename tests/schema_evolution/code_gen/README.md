@@ -73,6 +73,10 @@ additional information bits about the expecations / assumptions:
 - `{WRITE,READ}_AS` are only defined as non-empty macros if
   `PODIO_SCHEMA_EVOLUTION_TEST_{WRITE,READ}` are defined respectively. This is
   what makes it possible to re-use the same source file.
+- Both macros are implemented via `{WRITE,READ}_WITH` macros respecitvely. These
+  are slightly more generic and take a writer or reader type as well as a
+  filename as argument to setup the basic writer or reader and a corresponding
+  Frame called `event`.
 - If `RNTUPLE` is passed to `ADD_SCHEMA_EVOLUTION_TEST`,
   `PODIO_SCHEMA_EVOLUTION_RNTUPLE` will also be injected via
   `target_compile_definitions`
