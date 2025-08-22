@@ -1,5 +1,8 @@
 include(test_utilities.cmake)
 
+ADD_SCHEMA_EVOLUTION_TEST(no_change)
+ADD_SCHEMA_EVOLUTION_TEST(no_change RNTUPLE NO_GENERATE_MODELS)
+
 ADD_SCHEMA_EVOLUTION_TEST(components_new_member)
 ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_member)
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change)
