@@ -14,18 +14,27 @@ function(GENERATE_DATAMODEL test_case model_version)
   set(model_base ${test_case}_${model_version}Model)
   set(output_base ${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${model_version}_model)
 
-  if(PARSED_ARGS_WITH_EVOLUTION)
-    PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-      IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-      OUTPUT_FOLDER ${output_base}
-      OLD_DESCRIPTION ${test_case}/old.yaml
-      SCHEMA_EVOLUTION ${test_case}/evolution.yaml
-    )
+  if(NOT ${model_version} STREQUAL "old")
+    # We only want to pass old versions or additional information if we are not
+    # the 'old' model
+    if(PARSED_ARGS_WITH_EVOLUTION)
+      PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+        OUTPUT_FOLDER ${output_base}
+        OLD_DESCRIPTION ${test_case}/old.yaml
+        SCHEMA_EVOLUTION ${test_case}/evolution.yaml
+      )
+    else()
+      PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+        OUTPUT_FOLDER ${output_base}
+        OLD_DESCRIPTION ${test_case}/old.yaml
+      )
+    endif()
   else()
     PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
       IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
       OUTPUT_FOLDER ${output_base}
-      OLD_DESCRIPTION ${test_case}/old.yaml
     )
   endif()
   PODIO_ADD_DATAMODEL_CORE_LIB(${model_base} "${headers}" "${sources}"
