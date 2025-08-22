@@ -208,6 +208,12 @@ datatypes :
       - double d{9.876e5} // double val
       - CompWithInit comp // To make sure that the default initializer of the component does what it should
 
+  ExampleWithSingleSelfRelation:
+    Description: "A datatype that has a one-to-one relation with itself"
+    Author: "Thomas Madlener"
+    OneToOneRelations:
+      - ExampleWithSingleSelfRelation relation // the relation to itself
+
   ExampleWithInterfaceRelation:
     Description: "Datatype that uses an interface type as one of its relations"
     Author: "Thomas Madlener"
