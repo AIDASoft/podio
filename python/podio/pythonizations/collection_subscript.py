@@ -1,7 +1,16 @@
 """Pythonize subscript operation for collections"""
 
+import warnings
 import cppyy
 from .utils.pythonizer import Pythonizer
+
+warnings.warn(
+    "The module 'collection_subscript' is deprecated and will be removed in a future release. "
+    "The subscript pythonization is now defined in generated C++ class definition "
+    "and applied automatically.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 class CollectionSubscriptPythonizer(Pythonizer):
