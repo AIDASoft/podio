@@ -846,17 +846,6 @@ auto createCollections(const size_t nElements = 3u) {
     userDataColl.push_back(3.14f * i);
   }
 
-  vecMemColl.prepareForWrite();
-  auto buffers = vecMemColl.getBuffers();
-  auto vecBuffers = buffers.vectorMembers;
-  auto thisVec = (*vecBuffers)[0].second;
-
-  // const auto floatVec = podio::CollectionWriteBuffers::asVector<float>(thisVec);
-  const auto floatVec2 = podio::CollectionReadBuffers::asVector<float>(thisVec);
-
-  // std::cout << floatVec->size() << '\n';
-  std::cout << "** " << floatVec2->size() << " vs " << vecMemColl.size() << '\n';
-
   return colls;
 }
 
