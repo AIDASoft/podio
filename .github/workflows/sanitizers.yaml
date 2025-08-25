@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: [gcc13, clang16]
+        compiler: [gcc15, clang19]
         # Since Leak is usually part of Address, we do not run it separately in
         # CI. Keeping Address and Undefined separate for easier debugging
         sanitizer: [Thread,
@@ -33,11 +33,11 @@ jobs:
         #     sanitizer: MemoryWithOrigin
     steps:
       - uses: actions/checkout@v4
-      - uses: cvmfs-contrib/github-action-cvmfs@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v5
       - uses: key4hep/key4hep-actions/cache-external-data@main
       - uses: aidasoft/run-lcg-view@v5
         with:
-          release-platform: LCG_107/x86_64-el9-${{ matrix.compiler }}-opt
+          release-platform: LCG_108/x86_64-el9-${{ matrix.compiler }}-opt
           ccache-key: ccache-sanitizers-el9-${{ matrix.compiler }}-${{ matrix.sanitizer }}
           run: |
             echo "::group::Run CMake"
@@ -45,7 +45,7 @@ jobs:
             cd build
             cmake -DCMAKE_BUILD_TYPE=Debug \
               -DUSE_SANITIZER=${{ matrix.sanitizer }} \
-              -DCMAKE_CXX_STANDARD=20 \
+              -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.compiler }} == gcc15 ]] && echo "23" || echo "20") \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
               -DUSE_EXTERNAL_CATCH2=OFF \
