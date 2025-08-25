@@ -174,7 +174,7 @@ class DroppedMultiRelation(SchemaChange):
 
 
 class RootIoRule:
-    """A placeholder IORule class"""
+    """Class collecting all necessary information to create an I/O rule for ROOT"""
 
     def __init__(self):
         self.sourceClass = None
