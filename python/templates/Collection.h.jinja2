@@ -65,9 +65,9 @@ public:
 //  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, uint32_t collectionID);
   ~{{ class.bare_type }}Collection() override;
 
-  constexpr static std::string_view typeName = "{{ (class | string ).strip(':') + "Collection" }}";
-  constexpr static std::string_view valueTypeName = "{{ (class | string ).strip(':') }}";
-  constexpr static std::string_view dataTypeName = "{{ class.full_data_type(schema_version) }}";
+  constexpr static std::string_view typeName = "{{ (class | string).strip(':') }}Collection";
+  constexpr static std::string_view valueTypeName = "{{ (class | string).strip(':') }}";
+  constexpr static std::string_view dataTypeName = "{{ (class | string).strip(':') }}Data";
 
   void clear() final;
 

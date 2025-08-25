@@ -9,7 +9,7 @@ from pythonizations import load_pythonizations  # pylint: disable=import-error
 # loading pythonizations changes the state of cppyy backend shared by all the tests in a process
 # NOTE: We need to load the versioned namespace here for components as the
 # typedef we have doe s not cover it
-load_pythonizations("ex2::v2")
+load_pythonizations("ex2")
 
 
 class AttributeCreationTest(unittest.TestCase):
