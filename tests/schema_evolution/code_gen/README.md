@@ -1,7 +1,7 @@
 # *Code generation* tests for schema evolution
 
 This folder contains small and targeted test cases to ensure that code
-generateion related to schema evolution works as expected. The goal is to have
+generation related to schema evolution works as expected. The goal is to have
 rather small test cases that focus on one specific (or a limited set of related)
 schema changes to ensure that the related code generation works as intended.
 
@@ -62,7 +62,7 @@ int main() {
 ### Additional technical details
 
 For developers who have to touch the internals of the whole machinery a few
-additional information bits about the expecations / assumptions:
+additional information bits about the expectations / assumptions:
 - `{WRITE,READ}_AS` assume that they can cobble together a filename via
   `TEST_CASE` and `FILE_SUFFIX` pre-processor string literals. The former is
   injected via `target_compile_definitions` in `ADD_SCHEMA_EVOLUTION_TEST` the
@@ -71,7 +71,7 @@ additional information bits about the expecations / assumptions:
 - `{WRITE,READ}_AS` are only defined as non-empty macros if
   `PODIO_SCHEMA_EVOLUTION_TEST_{WRITE,READ}` are defined respectively. This is
   what makes it possible to re-use the same source file.
-- Both macros are implemented via `{WRITE,READ}_WITH` macros respecitvely. These
+- Both macros are implemented via `{WRITE,READ}_WITH` macros respectively. These
   are slightly more generic and take a writer or reader type as well as a
   filename as argument to setup the basic writer or reader and a corresponding
   Frame called `event`.
