@@ -45,7 +45,7 @@ function(GENERATE_DATAMODEL test_case model_version)
   )
 
   # Make sure that each model can be "toggled" at runtime separately.
-  # Effecitvely amounts to moving the byproducts of the dictgen above to the
+  # Effectively amounts to moving the byproducts of the dictgen above to the
   # appropriate place and making sure libraries are built into the right output
   # directory
   set_target_properties(${model_base} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
