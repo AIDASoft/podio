@@ -48,7 +48,6 @@ jobs:
               -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.compiler }} == gcc15 ]] && echo "23" || echo "20") \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
-              -DUSE_EXTERNAL_CATCH2=OFF \
               -DENABLE_SIO=ON \
               -DENABLE_JULIA=OFF \
               -DENABLE_RNTUPLE=ON \
