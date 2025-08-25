@@ -8,7 +8,6 @@
 #endif
 
 {{ utils.namespace_open(class.namespace) }}
-namespace v{{ schema_version }} {
 
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value) {
 {% for member in Members %}
@@ -36,6 +35,5 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}& value) {
 }
 #endif
 
-} // namespace v{{ schema_version }}
 
 {{ utils.namespace_close(class.namespace) }}

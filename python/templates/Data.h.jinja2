@@ -10,7 +10,6 @@
 {% endfor %}
 
 {{ utils.namespace_open(class.namespace) }}
-namespace v{{ schema_version }} {
 
 {{ macros.class_description(class.bare_type, Description, Author, postfix='Data') }}
 class {{ class.bare_type }}Data {
@@ -25,9 +24,11 @@ public:
 {% endfor %}
 };
 
+
+namespace v{{ schema_version }} {
+using {{ class.bare_type }}Data = {{ class.full_type }}Data;
 } // namespace v{{ schema_version }}
 
-using {{ class.bare_type }}Data = v{{ schema_version }}::{{ class.bare_type }}Data;
 {{ utils.namespace_close(class.namespace) }}
 
 #endif
