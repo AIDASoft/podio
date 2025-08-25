@@ -17,10 +17,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["dev3/x86_64-el9-clang16-opt",
-              "dev4/x86_64-el9-clang16-opt",
-              "dev4/x86_64-el9-gcc13-opt",
-              "LCG_107/x86_64-el9-clang16-opt",
+        LCG: ["dev3/x86_64-el9-gcc15-opt",
+              "dev4/x86_64-el9-clang19-opt",
+              "dev4/x86_64-el9-gcc15-opt",
+              "LCG_108/x86_64-el9-gcc15-opt",  # root 6.36.02 with c++23
               "LCG_107/x86_64-el9-gcc13-opt",  # root 6.34.02 !minimal root version for RNTuple
               "LCG_104/x86_64-el9-gcc13-opt"]  # root 6.28.04 !minimal root version check
     steps:
@@ -42,10 +42,10 @@ jobs:
             -DENABLE_DATASOURCE=ON \
             -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DCMAKE_INSTALL_PREFIX=../install \
-            -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
-            -DUSE_EXTERNAL_CATCH2=OFF \
+            -DUSE_EXTERNAL_CATCH2=AUTO \
             -DPODIO_USE_CLANG_FORMAT=AUTO \
             -G Ninja ..
           echo "::endgroup::"
