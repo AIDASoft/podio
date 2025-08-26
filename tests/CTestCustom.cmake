@@ -7,6 +7,42 @@
 # "Integration style tests" pretty much all have problems at the moment with any
 # sanitizer
 
+# We define some lists here to avoid having to repeat them below
+set(failing_with_address_sanitizer
+  # Technically most of the write tests here succeed, but there is no point in
+  # only running them, since they are practically only the setup step for the
+  # actual read tests
+  schema_evol:code_gen:components_new_member:write
+  schema_evol:code_gen:components_new_member:read
+  schema_evol:code_gen:components_rename_member:write
+  schema_evol:code_gen:components_rename_member:read
+  schema_evol:code_gen:datatypes_new_member:write
+  schema_evol:code_gen:datatypes_new_member:read
+  schema_evol:code_gen:datatypes_rename_member:write
+  schema_evol:code_gen:datatypes_rename_member:read
+  schema_evol:code_gen:implicit_floating_point_change:write
+  schema_evol:code_gen:implicit_floating_point_change:read
+)
+
+set(failing_with_thread_sanitizer
+  # Technically most of the write tests here succeed, but there is no point in
+  # only running them, since they are practically only the setup step for the
+  # actual read tests
+  schema_evol:code_gen:components_new_member:write_rntuple
+  schema_evol:code_gen:components_new_member:read_rntuple
+  schema_evol:code_gen:datatypes_new_member:write_rntuple
+  schema_evol:code_gen:datatypes_new_member:read_rntuple
+  schema_evol:code_gen:implicit_floating_point_change:write_rntuple
+  schema_evol:code_gen:implicit_floating_point_change:read_rntuple
+)
+
+# This will only apply for clang based builds and is currently the superset of
+# the two above
+set(failing_with_undefined_sanitizer
+  ${failing_with_address_sanitizer}
+  ${failing_with_thread_sanitizer}
+)
+
 if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQUAL ""))
   set(CTEST_CUSTOM_TESTS_IGNORE
     ${CTEST_CUSTOM_TESTS_IGNORE}
@@ -52,9 +88,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
 
-    write_old_data_root
-    read_new_data_root
-
     read_with_rdatasource_root
     read_python_with_rdatasource_root
   )
@@ -83,7 +116,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       read_frame_legacy_sio
       read_and_write_frame_sio
-      )
+
+      ${failing_with_address_sanitizer}
+  )
   endif()
 
   if("@USE_SANITIZER@" MATCHES "Thread")
@@ -100,6 +135,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       datamodel_def_store_roundtrip_rntuple
       datamodel_def_store_roundtrip_rntuple_extension
+
+      ${failing_with_thread_sanitizer}
     )
   endif()
 
@@ -120,8 +157,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       datamodel_def_store_roundtrip_rntuple
       datamodel_def_store_roundtrip_rntuple_extension
-    )
 
+      ${failing_with_undefined_sanitizer}
+    )
   endif()
 
 endif()
