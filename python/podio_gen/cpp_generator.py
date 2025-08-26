@@ -8,8 +8,7 @@ from enum import IntEnum
 from collections import defaultdict
 from collections.abc import Mapping
 
-from podio_schema_evolution import DataModelComparator
-from podio_schema_evolution import RenamedMember, root_filter, RootIoRule
+from podio_schema_evolution import DataModelComparator, RootIoRule, RenamedMember
 from podio_gen.generator_base import ClassGeneratorBaseMixin, write_file_if_changed
 from podio_gen.generator_utils import DataType, DataModelJSONEncoder
 
@@ -431,6 +430,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                                 "definition": comparator.datamodel_old.components[
                                     change.klassname
                                 ],
+                                "schema_change": change,
                             }
                         )
                     # Handle datatypes (both existing and removed)
@@ -439,6 +439,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                             {
                                 "version": old_schema_version,
                                 "definition": comparator.datamodel_old.datatypes[change.klassname],
+                                "schema_change": change,
                             }
                         )
 
@@ -570,6 +571,66 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             self._eval_template("DatamodelDefinition.h.jinja2", data),
         )
 
+    def _prepare_iorule_component(self, name, component, schema_change, version):
+        """Prepare the iorule for a given component schema change"""
+        comp_type = DataType(name)
+
+        if isinstance(schema_change, RenamedMember):
+            for member in component["Members"]:
+                if schema_change.member_name_old == member.name:
+                    member_type = member.full_type
+                    break
+
+            return RootIoRule(
+                sourceClass=comp_type.full_type,
+                targetClass=comp_type.full_type,
+                source=f"{member_type} {schema_change.member_name_old}",
+                target=schema_change.member_name_new,
+                code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
+                version=version,
+            )
+
+    def _prepare_iorule_datatype(self, name, definition, schema_change, version):
+        """Prepare the iorule for a given datatype schema change"""
+        datatype = DataType(name)
+
+        if isinstance(schema_change, RenamedMember):
+            for member in definition["Members"]:
+                if schema_change.member_name_old == member.name:
+                    member_type = member.full_type
+                    break
+
+            return RootIoRule(
+                sourceClass=f"{datatype.full_type}Data",
+                targetClass=f"{datatype.full_type}Data",
+                source=f"{member_type} {schema_change.member_name_old}",
+                target=schema_change.member_name_new,
+                code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
+                version=version,
+            )
+
+    def _prepare_iorules(self):
+        """Create all the necessary I/O rules to do ROOT schema evolution
+        outside of it's automatic capabilities"""
+        iorules = []
+        for name, old_comps in self.changed_components.items():
+            for comp in old_comps:
+                iorule = self._prepare_iorule_component(
+                    name, comp["definition"], comp["schema_change"], comp["version"]
+                )
+                if iorule is not None:
+                    iorules.append(iorule)
+
+        for name, old_dtypes in self.changed_datatypes.items():
+            for dtype in old_dtypes:
+                iorule = self._prepare_iorule_datatype(
+                    name, dtype["definition"], dtype["schema_change"], dtype["version"]
+                )
+                if iorule is not None:
+                    iorules.append(iorule)
+
+        return iorules
+
     def _create_selection_xml(self):
         """Create the selection xml that is necessary for ROOT I/O"""
         # Collect old schema components and datatypes for dictionary generation
@@ -588,6 +649,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                     {"class": DataType(datatype_name), "version": old_version["version"]}
                 )
 
+        iorules = self._prepare_iorules()
+
         data = {
             "version": self.datamodel.schema_version,
             "components": [DataType(c) for c in self.datamodel.components],
@@ -595,6 +658,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             "old_schema_versions": list(self.old_datamodels.keys()),
             "old_schema_components": old_schema_components,
             "old_schema_datatypes": old_schema_datatypes,
+            "iorules": iorules,
         }
 
         self._write_file("selection.xml", self._eval_template("selection.xml.jinja2", data))
