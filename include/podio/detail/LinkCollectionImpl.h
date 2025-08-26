@@ -98,7 +98,7 @@ public:
   }
   /// Returns the mutable object of given index
   mutable_type at(std::size_t index) {
-    return mutable_type(podio::utils::MaybeSharedPtr(m_storage.at(index)));
+    return mutable_type(podio::utils::MaybeSharedPtr(m_storage.entries.at(index)));
   }
 
   void push_back(mutable_type object) {
