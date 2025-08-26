@@ -4,8 +4,15 @@
 import unittest
 import ROOT
 import cppyy
-from ROOT import ExampleMCCollection, MutableExampleMC
+from ROOT import (
+    ExampleMCCollection,
+    MutableExampleMC,
+    TestLinkCollection,
+    MutableTestLink,
+    TestLink,
+)
 from ROOT import nsp
+import podio
 
 
 class ObjectConversionsTest(unittest.TestCase):
@@ -53,6 +60,38 @@ class CollectionSubscriptTest(unittest.TestCase):
         obj = collection.create()
         self.assertIsInstance(obj, nsp.MutableEnergyInNamespace)
         self.assertIsInstance(collection[0], nsp.EnergyInNamespace)
+
+    def test_link_collection_check(self):
+        """Test that bound checking for link collection subscript is enabled"""
+        collection = TestLinkCollection()
+        _ = collection.create()
+        self.assertEqual(len(collection), 1)
+        with self.assertRaises(IndexError):
+            _ = collection[20]
+        _ = collection[0]
+
+    def test_link_collection_getitem_type(self):
+        """Test that link collection subscript returns an instance of podio immutable datatype"""
+        collection = TestLinkCollection()
+        obj = collection.create()
+        self.assertIsInstance(obj, MutableTestLink)
+        self.assertIsInstance(collection[0], TestLink)
+
+    def test_user_data_collection_check(self):
+        """Test that bound checking for podio.UserDataCollection subscript is enabled"""
+        collection = podio.podio.UserDataCollection["float"]()
+        _ = collection.create()
+        self.assertEqual(len(collection), 1)
+        with self.assertRaises(IndexError):
+            _ = collection[20]
+        _ = collection[0]
+
+    def test_user_data_collection_getitem_type(self):
+        """Test that link collection subscript returns parameterized type"""
+        collection = podio.podio.UserDataCollection["float"]()
+        obj = collection.create()
+        self.assertIsInstance(obj, float)
+        self.assertIsInstance(collection[0], float)
 
 
 class HashTest(unittest.TestCase):

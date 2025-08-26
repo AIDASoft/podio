@@ -14,6 +14,7 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/SchemaEvolution.h"
+#include "podio/detail/Pythonizations.h"
 #include "podio/utilities/MaybeSharedPtr.h"
 #include "podio/utilities/StaticConcatenate.h"
 #include "podio/utilities/TypeHelpers.h"
@@ -230,6 +231,11 @@ public:
 
   const std::string_view getDataTypeName() const override {
     return dataTypeName;
+  }
+
+  /// Cppyy protocol to setup the pythonizations for this class. Not to be called directly.
+  static void __cppyy_pythonize__(PyObject* klass, const std::string& name) {
+    podio::detail::pythonizations::pythonize_subscript(klass, name);
   }
 
   bool isSubsetCollection() const override {
