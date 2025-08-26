@@ -319,11 +319,11 @@ TEST_CASE("LinkCollection constness", "[links][static-checks][const-correctness]
 
     // check the individual steps again from above, to see where things fail if they fail
     STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestLColl>().begin()),
-                                  TestLColl::const_iterator>); // const collectionb begin() should return a
+                                  TestLColl::const_iterator>); // const collection begin() should return a
                                                                // LinkCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestLColl>().end()),
-                                  TestLColl::const_iterator>); // const collectionb end() should return a
+                                  TestLColl::const_iterator>); // const collection end() should return a
                                                                // LinkCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<const TestLColl>().begin()),
@@ -350,7 +350,7 @@ TEST_CASE("LinkCollection constness", "[links][static-checks][const-correctness]
                                                          // MutableCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestLColl>().end()),
-                                  TestLColl::iterator>); // collectionb end() should return a
+                                  TestLColl::iterator>); // collection end() should return a
                                                          // MutableCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<TestLColl>().begin()),
