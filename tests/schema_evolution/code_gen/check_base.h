@@ -4,14 +4,14 @@
 #include <podio/Frame.h>
 #include <podio/ROOTReader.h>
 #include <podio/ROOTWriter.h>
-#ifdef PODIO_ENABLE_RNTUPLE
+#if PODIO_ENABLE_RNTUPLE
   #include <podio/RNTupleReader.h>
   #include <podio/RNTupleWriter.h>
 #endif
 
 #include <iostream>
 
-#if defined(PODIO_SCHEMA_EVOLUTION_RNTUPLE) && !defined(PODIO_ENABLE_RNTUPLE)
+#if defined(PODIO_SCHEMA_EVOLUTION_RNTUPLE) && !PODIO_ENABLE_RNTUPLE
   #error "Cannot build schema evolution tests for RNTuple without RNTuple support"
 #endif
 
