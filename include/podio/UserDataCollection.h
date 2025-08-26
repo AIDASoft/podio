@@ -5,6 +5,7 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/SchemaEvolution.h"
+#include "podio/detail/Pythonizations.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
@@ -163,6 +164,11 @@ public:
   /// fully qualified type name of stored POD elements - with namespace
   const std::string_view getDataTypeName() const override {
     return dataTypeName;
+  }
+
+  /// Cppyy protocol to setup the pythonizations for this class. Not to be called directly.
+  static void __cppyy_pythonize__(PyObject* klass, const std::string& name) {
+    podio::detail::pythonizations::pythonize_subscript(klass, name);
   }
 
   /// clear the collection and all internal states
