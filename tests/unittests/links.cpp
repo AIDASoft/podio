@@ -9,6 +9,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
+#include <utility>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -475,6 +476,20 @@ void checkCollections(const TestLColl& links, const ExampleHitCollection& hits,
 
     index++;
   }
+}
+
+TEST_CASE("LinkCollection element access", "[links][basics]") {
+  auto [linkColl, hitColl, clusterColl] = createLinkCollections();
+
+  for (size_t i = 0; i < linkColl.size(); ++i) {
+    REQUIRE(linkColl[i].getWeight() == i);
+    REQUIRE(std::as_const(linkColl)[i].getWeight() == i);
+    REQUIRE(linkColl.at(i).getWeight() == i);
+    REQUIRE(std::as_const(linkColl).at(i).getWeight() == i);
+  }
+
+  REQUIRE_THROWS_AS(linkColl.at(linkColl.size()), std::out_of_range);
+  REQUIRE_THROWS_AS(std::as_const(linkColl).at(linkColl.size()), std::out_of_range);
 }
 
 TEST_CASE("LinkCollection looping", "[links][basics]") {
