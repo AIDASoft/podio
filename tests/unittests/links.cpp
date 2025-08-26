@@ -9,6 +9,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
+#include <utility>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -318,11 +319,11 @@ TEST_CASE("LinkCollection constness", "[links][static-checks][const-correctness]
 
     // check the individual steps again from above, to see where things fail if they fail
     STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestLColl>().begin()),
-                                  TestLColl::const_iterator>); // const collectionb begin() should return a
+                                  TestLColl::const_iterator>); // const collection begin() should return a
                                                                // LinkCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const TestLColl>().end()),
-                                  TestLColl::const_iterator>); // const collectionb end() should return a
+                                  TestLColl::const_iterator>); // const collection end() should return a
                                                                // LinkCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<const TestLColl>().begin()),
@@ -349,7 +350,7 @@ TEST_CASE("LinkCollection constness", "[links][static-checks][const-correctness]
                                                          // MutableCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestLColl>().end()),
-                                  TestLColl::iterator>); // collectionb end() should return a
+                                  TestLColl::iterator>); // collection end() should return a
                                                          // MutableCollectionIterator
 
     STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<TestLColl>().begin()),
@@ -475,6 +476,20 @@ void checkCollections(const TestLColl& links, const ExampleHitCollection& hits,
 
     index++;
   }
+}
+
+TEST_CASE("LinkCollection element access", "[links][basics]") {
+  auto [linkColl, hitColl, clusterColl] = createLinkCollections();
+
+  for (size_t i = 0; i < linkColl.size(); ++i) {
+    REQUIRE(linkColl[i].getWeight() == i);
+    REQUIRE(std::as_const(linkColl)[i].getWeight() == i);
+    REQUIRE(linkColl.at(i).getWeight() == i);
+    REQUIRE(std::as_const(linkColl).at(i).getWeight() == i);
+  }
+
+  REQUIRE_THROWS_AS(linkColl.at(linkColl.size()), std::out_of_range);
+  REQUIRE_THROWS_AS(std::as_const(linkColl).at(linkColl.size()), std::out_of_range);
 }
 
 TEST_CASE("LinkCollection looping", "[links][basics]") {
