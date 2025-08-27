@@ -82,15 +82,11 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         # schema evolution specific code
         self.old_yamlfile = old_description
         self.evolution_file = evolution_file
-        self.old_schema_version = None
-        self.old_datamodel = None
-        self.old_datamodels_components = set()
-        self.old_datamodels_datatypes = set()
-        self.root_schema_dict = {}  # containing the root relevant schema evolution per datatype
-        # information to update the selection.xml
-        self.root_schema_component_names = set()
-        self.root_schema_datatype_names = set()
-        self.root_schema_iorules = []
+        self.old_datamodel = {}  # version to old datamodel
+        self.old_components = defaultdict(list)  # names to old component versions
+        self.old_datatypes = defaultdict(list)  # names to old datatype versions
+        self.changed_components = defaultdict(list)  # components that have changed at some point
+        self.changed_datatypes = defaultdict(list)  # datatypes that have changed at some point
         # a map of datatypes that are used in interfaces populated by pre_process
         self.types_in_interfaces = {}
 
@@ -106,7 +102,6 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self._write_edm_def_file()
 
         if "ROOT" in self.io_handlers:
-            self._prepare_iorules()
             self._create_selection_xml()
 
         if the_links := datamodel["links"]:
@@ -120,20 +115,32 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
         component["includes"] = self._sort_includes(includes)
 
+        # Add old versions **even if they are identical**
+        old_comp_versions = self.old_components.get(name, [])
+        component["old_versions"] = old_comp_versions
+        # update includes if necessary
+        for old_comp in old_comp_versions:
+            includes.update(self._get_member_includes(old_comp["definition"]["Members"]))
+
         self._fill_templates("Component", component)
-        self._preprocess_schema_evolution_component(name, component)
 
         return component
 
     def do_process_datatype(self, name, datatype):
         """Do the cpp specific processing of a datatype"""
-        datatype["includes_data"] = self._get_member_includes(datatype["Members"])
+        data_includes = set(self._get_member_includes(datatype["Members"]))
         datatype["using_interface_types"] = self.types_in_interfaces.get(name, [])
+
+        # Add old versions for schema evolution
+        old_versions = self.old_datatypes.get(name, [])
+        datatype["old_versions"] = old_versions
+        for old_dt in old_versions:
+            data_includes.update(self._get_member_includes(old_dt["definition"]["Members"]))
+
+        datatype["includes_data"] = self._sort_includes(data_includes)
         self._preprocess_for_class(datatype)
         self._preprocess_for_obj(datatype)
         self._preprocess_for_collection(datatype)
-
-        self._preprocess_schema_evolution_datatype(name, datatype)
 
         self._fill_templates("Data", datatype)
         self._fill_templates("Object", datatype)
@@ -345,124 +352,96 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.env.filters["ostream_collection_header"] = ostream_collection_header
 
     def _pre_process_schema_evolution(self):
-        """Process the schema evolution"""
-        # have to make all necessary comparisons
-        # which are the ones that changed?
-        # have to extend the selection xml file
-        if self.old_yamlfile:
-            reader = PodioConfigReader()
-            datamodel_new = reader.read(self.yamlfile, package_name="new")
-            datamodel_old = reader.read(self.old_yamlfile, package_name="old")
+        """Identify components and datatypes that have changed across schema
+        versions and do the necessary pre-processing to have information
+        available later in the necessary format"""
+        # If we don't have old schemas we don't have to do any of this
+        if not self.old_yamlfile:
+            return
 
-            comparator = DataModelComparator(datamodel_new)
-            detected_changes = comparator.compare(datamodel_old)
-            judge = SchemaEvolutionJudge(
-                comparator.datamodel_new, evolution_file=self.evolution_file
-            )
-            comparison_results = judge.judge(datamodel_old, detected_changes)
+        self.old_datamodel = self._read_old_schema()
+        self._regroup_old_datamodel(self.old_datamodel)
 
-            self.old_schema_version = comparison_results.old_datamodel.schema_version
-            # some sanity checks
-            if len(comparison_results.errors) > 0:
-                print(
-                    f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+    def _regroup_old_datamodel(self, old_datamodel):
+        """Re-organize the old schema into a structure that is easier to use.
+
+        Create a map with the version as key and the component and datatype
+        (names) as a list of dictionaries with the old definition
+        """
+        # Currently this dictionary will only have one version, but as a
+        # preparation step for future developments where it might have more we
+        # already treat it as if there are several
+        for version, old_model in old_datamodel.items():
+            for name, comp_def in old_model.components.items():
+                self.old_components[name].append({"version": version, "definition": comp_def})
+
+            for name, datatype_def in old_model.datatypes.items():
+                self.old_datatypes[name].append({"version": version, "definition": datatype_def})
+
+    def _read_old_schema(self):
+        """Read the old datamodel schema, determine whether all evolutions are
+        possible and store information about components and datatypes that
+        changed.
+        """
+        reader = PodioConfigReader()
+        datamodel_new = reader.read(self.yamlfile, package_name="new")
+        datamodel_old = reader.read(self.old_yamlfile, package_name="old")
+
+        comparator = DataModelComparator(datamodel_new)
+        detected_changes = comparator.compare(datamodel_old)
+        judge = SchemaEvolutionJudge(comparator.datamodel_new, evolution_file=self.evolution_file)
+        comparison_results = judge.judge(datamodel_old, detected_changes)
+
+        # some sanity checks
+        if len(comparison_results.errors) > 0:
+            print(
+                f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
 have unresolvable schema evolution incompatibilities:"
-                )
-                for error in comparison_results.errors:
-                    print(error)
-                sys.exit(-1)
-            if len(comparison_results.warnings) > 0:
-                print(
-                    f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
-have resolvable schema evolution incompatibilities:"
-                )
-                for warning in comparison_results.warnings:
-                    print(warning)
-                sys.exit(-1)
-
-            # now go through all the io_handlers and see what we have to do
-            if "ROOT" in self.io_handlers:
-                for item in root_filter(comparison_results.schema_changes):
-                    # add whatever is relevant to our ROOT schema evolution
-                    self.root_schema_dict.setdefault(item.klassname, []).append(item)
-
-    def _preprocess_schema_evolution_datatype(self, name, datatype):
-        """Preprocess this datatype (and generate the necessary code) in case
-        schema evolution is necessary
-
-        NOTE: currently limited to support only ROOT schema evolution needs
-        """
-        schema_evolution_datatype = deepcopy(datatype)
-        needs_schema_evolution = False
-        # We have to figure out whether we need to do schema evolution and how
-        # we do it. We have to do it if either a (non-component) member is
-        # affected or if a member that is a component type has a renamed member.
-        # The things we need to do differ slightly in both cases
-        for member in schema_evolution_datatype["Members"]:
-            member_type = member.array_type if member.is_array else member.full_type
-            for type_name, evolutions in self.root_schema_dict.items():
-                if type_name == member_type:
-                    needs_schema_evolution = True
-                    # We have a component with a member that got renamed. Hence we
-                    # need to make sure we generate a version of the Data class with
-                    # the old component
-                    replace_component_in_paths(
-                        member_type,
-                        _versioned(member_type, self.old_schema_version),
-                        schema_evolution_datatype["includes_data"],
-                    )
-                    if member.is_array:
-                        member.full_type = member.full_type.replace(
-                            member.array_type,
-                            _versioned(member.array_type, self.old_schema_version),
-                        )
-                        member.array_type = _versioned(member.array_type, self.old_schema_version)
-                    else:
-                        member.full_type = _versioned(member.full_type, self.old_schema_version)
-                        member.bare_type = _versioned(member.bare_type, self.old_schema_version)
-                for evolution in evolutions:
-                    if (
-                        isinstance(evolution, RenamedMember)
-                        and member.name == evolution.member_name_new
-                    ):
-                        # We have a member that has been renamed. We just need to
-                        # make sure we get a version of the Data class with the old
-                        # name
-                        needs_schema_evolution = True
-                        member.name = evolution.member_name_old
-
-        if needs_schema_evolution:
-            print(f"  Preparing explicit schema evolution for {name}")
-            schema_evolution_datatype["class"].bare_type = _versioned(
-                schema_evolution_datatype["class"].bare_type, self.old_schema_version
             )
-            self._fill_templates("Data", schema_evolution_datatype)
-            self.root_schema_datatype_names.add(_versioned(name, self.old_schema_version))
+            for error in comparison_results.errors:
+                print(error)
+            sys.exit(-1)
+        if len(comparison_results.warnings) > 0:
+            print(
+                f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+have resolvable schema evolution incompatibilities:"
+            )
+            for warning in comparison_results.warnings:
+                print(warning)
+            sys.exit(-1)
 
-    def _preprocess_schema_evolution_component(self, name, component):
-        """Preprocess this component (and generate the necessary code) in case
-        schema evolution is necessary
+        old_datamodel = {}
+        old_schema_version = comparison_results.old_datamodel.schema_version
+        old_datamodel[old_schema_version] = comparison_results.old_datamodel
 
-        NOTE: currently limited to support only ROOT schema evolution needs
-        """
-        try:
-            schema_evolutions = self.root_schema_dict[name]
-            component = deepcopy(component)
-            for schema_evolution in schema_evolutions:
-                if isinstance(schema_evolution, RenamedMember):
-                    for member in component["Members"]:
-                        if member.name == schema_evolution.member_name_new:
-                            member.name = schema_evolution.member_name_old
-                    component["class"] = DataType(_versioned(name, self.old_schema_version))
-                else:
-                    raise NotImplementedError
+        # Store old definitions for items that have actually changed
+        # TODO: Move this somewher else?  # pylint: disable=fixme
+        for change in comparison_results.schema_changes:
+            if hasattr(change, "klassname"):
+                # Handle components (both existing and removed)
+                if change.klassname in comparison_results.old_datamodel.components:
+                    self.changed_components[change.klassname].append(
+                        {
+                            "version": old_schema_version,
+                            "definition": comparison_results.old_datamodel.components[
+                                change.klassname
+                            ],
+                            "schema_change": change,
+                        }
+                    )
+                    # Handle datatypes (both existing and removed)
+                elif change.klassname in comparison_results.old_datamodel.datatypes:
+                    self.changed_datatypes[change.klassname].append(
+                        {
+                            "version": old_schema_version,
+                            "definition": comparison_results.old_datamodel.datatypes[
+                                change.klassname
+                            ],
+                            "schema_change": change,
+                        }
+                    )
 
-            self._fill_templates("Component", component)
-            self.root_schema_component_names.add(_versioned(name, self.old_schema_version))
-
-        except KeyError:
-            # We didn't find any schema evolution for this component
-            pass
+        return old_datamodel
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in
@@ -478,47 +457,69 @@ have resolvable schema evolution incompatibilities:"
 
         return types_in_interfaces
 
+    def _prepare_iorule_component(self, name, component, schema_change, version):
+        """Prepare the iorule for a given component schema change"""
+        comp_type = DataType(name)
+
+        if isinstance(schema_change, RenamedMember):
+            for member in component["Members"]:
+                if schema_change.member_name_old == member.name:
+                    member_type = member.full_type
+                    break
+
+            return RootIoRule(
+                sourceClass=comp_type.full_type,
+                targetClass=comp_type.full_type,
+                source=f"{member_type} {schema_change.member_name_old}",
+                target=schema_change.member_name_new,
+                code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
+                version=version,
+            )
+
+        return None
+
+    def _prepare_iorule_datatype(self, name, definition, schema_change, version):
+        """Prepare the iorule for a given datatype schema change"""
+        datatype = DataType(name)
+
+        if isinstance(schema_change, RenamedMember):
+            for member in definition["Members"]:
+                if schema_change.member_name_old == member.name:
+                    member_type = member.full_type
+                    break
+
+            return RootIoRule(
+                sourceClass=f"{datatype.full_type}Data",
+                targetClass=f"{datatype.full_type}Data",
+                source=f"{member_type} {schema_change.member_name_old}",
+                target=schema_change.member_name_new,
+                code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
+                version=version,
+            )
+
+        return None
+
     def _prepare_iorules(self):
-        """Prepare the IORules to be put in the Reflex dictionary"""
-        for type_name, schema_changes in self.root_schema_dict.items():
-            for schema_change in schema_changes:
-                if isinstance(schema_change, RenamedMember):
-                    # find out the type of the renamed member
-                    component = self.datamodel.components.get(type_name)
-                    is_datatype = False
-                    if component is None:
-                        is_datatype = True
-                        component = self.datamodel.datatypes[type_name]
-                    member_type = None
-                    for member in component["Members"]:
-                        if member.name == schema_change.member_name_new:
-                            member_type = member.full_type
-                    if member_type is None:
-                        raise ValueError(
-                            "Could not find type for renamed member"
-                            f"{schema_change.member_name_new} in {type_name}"
-                        )
+        """Create all the necessary I/O rules to do ROOT schema evolution
+        outside of its automatic capabilities"""
+        iorules = []
+        for name, old_comps in self.changed_components.items():
+            for comp in old_comps:
+                iorule = self._prepare_iorule_component(
+                    name, comp["definition"], comp["schema_change"], comp["version"]
+                )
+                if iorule is not None:
+                    iorules.append(iorule)
 
-                    sourceClass = type_name
-                    targetClass = type_name
-                    if is_datatype:
-                        sourceClass = f"{type_name}Data"
-                        targetClass = f"{type_name}Data"
+        for name, old_dtypes in self.changed_datatypes.items():
+            for dtype in old_dtypes:
+                iorule = self._prepare_iorule_datatype(
+                    name, dtype["definition"], dtype["schema_change"], dtype["version"]
+                )
+                if iorule is not None:
+                    iorules.append(iorule)
 
-                    target = schema_change.member_name_new
-                    iorule = RootIoRule(
-                        sourceClass=sourceClass,
-                        targetClass=targetClass,
-                        source=f"{member_type} {schema_change.member_name_old}",
-                        version=self.old_schema_version,
-                        target=target,
-                        code=f"{target} = onfile.{schema_change.member_name_old};",
-                    )
-                    self.root_schema_iorules.append(iorule)
-                else:
-                    raise NotImplementedError(
-                        f"Schema evolution for {schema_change} not yet implemented."
-                    )
+        return iorules
 
     def _write_cmake_lists_file(self):
         """Write the names of all generated header and src files into cmake lists"""
@@ -634,13 +635,32 @@ have resolvable schema evolution incompatibilities:"
 
     def _create_selection_xml(self):
         """Create the selection xml that is necessary for ROOT I/O"""
+        # Collect old schema components and datatypes for dictionary generation
+        old_schema_components = []
+        old_schema_datatypes = []
+
+        for component_name, old_versions in self.old_components.items():
+            for old_version in old_versions:
+                old_schema_components.append(
+                    {"class": DataType(component_name), "version": old_version["version"]}
+                )
+
+        for datatype_name, old_versions in self.old_datatypes.items():
+            for old_version in old_versions:
+                old_schema_datatypes.append(
+                    {"class": DataType(datatype_name), "version": old_version["version"]}
+                )
+
+        iorules = self._prepare_iorules()
+
         data = {
             "version": self.datamodel.schema_version,
             "components": [DataType(c) for c in self.datamodel.components],
             "datatypes": [DataType(d) for d in self.datamodel.datatypes],
-            "old_schema_components": [DataType(d) for d in self.root_schema_component_names],
-            "old_schema_datatypes": [DataType(d) for d in self.root_schema_datatype_names],
-            "iorules": self.root_schema_iorules,
+            "old_schema_versions": list(self.old_datamodel.keys()),
+            "old_schema_components": old_schema_components,
+            "old_schema_datatypes": old_schema_datatypes,
+            "iorules": iorules,
         }
 
         self._write_file("selection.xml", self._eval_template("selection.xml.jinja2", data))
