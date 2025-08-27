@@ -3,13 +3,12 @@
 
 import sys
 import os
-from copy import deepcopy
 from enum import IntEnum
 from collections import defaultdict
 from collections.abc import Mapping
 
 from podio_schema_evolution import DataModelComparator
-from podio_schema_evolution import RenamedMember, root_filter, RootIoRule
+from podio_schema_evolution import RenamedMember, RootIoRule
 from podio_gen.generator_base import ClassGeneratorBaseMixin, write_file_if_changed
 from podio_gen.generator_utils import DataType, DataModelJSONEncoder
 
@@ -19,23 +18,6 @@ REPORT_TEXT = """
   Used {yamlfile} to create {nclasses} classes in {installdir}/
   Read instructions in the README.md to run your first example!
 """
-
-
-def replace_component_in_paths(oldname, newname, paths):
-    """Replace component name by another one in existing paths"""
-    # strip the namespace
-    shortoldname = oldname.split("::")[-1]
-    shortnewname = newname.split("::")[-1]
-    # and do the replace in place
-    for index, thePath in enumerate(paths):
-        if shortoldname in thePath:
-            newPath = thePath.replace(shortoldname, shortnewname)
-            paths[index] = newPath
-
-
-def _versioned(typename, version):
-    """Return a versioned name of the typename"""
-    return f"{typename}v{version}"
 
 
 class IncludeFrom(IntEnum):
