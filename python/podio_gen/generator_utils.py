@@ -144,6 +144,9 @@ class DataType:
 
         return scoped_type
 
+    def __repr__(self):
+        return f"DataType: {self.__str__()}"
+
     def _to_json(self):
         """Return a string representation that can be parsed again"""
         return self.full_type
@@ -241,6 +244,10 @@ class MemberVariable:
             definition += rf" ///< {self.docstring}"
         return definition
 
+    def __repr__(self):
+        """For better readability if printed as part of a dict or list"""
+        return f"MemberVariable: {self.__str__()}"
+
     def getter_name(self, get_syntax):
         """Get the getter name of the variable"""
         if not get_syntax:
@@ -325,6 +332,13 @@ class DataModel:  # pylint: disable=too-few-public-methods
         """Return the dictionary, so that we can easily hook this into the pythons
         JSON ecosystem"""
         return self.__dict__
+
+    def __repr__(self):
+        return (
+            f"DataModel: {self.schema_version=} | {len(self.datatypes)} datatypes,"
+            f" {len(self.components)} components, {len(self.interfaces)} interfaces, "
+            f"{len(self.links)} links"
+        )
 
 
 class DataModelJSONEncoder(json.JSONEncoder):
