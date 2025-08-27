@@ -56,7 +56,9 @@
 
     </selection>
 
+{% if iorules %}
 <!-- I/O rules for invoking the schema evolution mechanism of ROOT -->
+{% endif %}
 {% for iorule in iorules %}
 {{ ioread(iorule) }}
 {% endfor %}
