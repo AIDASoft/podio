@@ -50,6 +50,9 @@
 {% for item in old_schema_components %}
 {{ data_class_selection(item.class, item.version) }}
 {% endfor %}
+{% for item in old_schema_datatypes %}
+{{ data_class_selection(item.class, item.version, "Data") }}
+{% endfor %}
 
     </selection>
 

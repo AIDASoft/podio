@@ -36,6 +36,22 @@ namespace v{{ schema_version }} {
 using {{ class.bare_type }} = {{ class.full_type }};
 } // namespace v{{ schema_version }}
 
+{% if old_versions %}
+// Definitions for older versions
+{% endif %}
+{% for old_version in old_versions %}
+namespace v{{ old_version.version }} {
+
+class {{ class.bare_type }} {
+public:
+{% for member in old_version.definition.Members %}
+  {{ member }}
+{% endfor %}
+};
+
+} // namespace v{{ old_version.version }}
+{% endfor %}
+
 {{ utils.namespace_close(class.namespace) }}
 
 #endif
