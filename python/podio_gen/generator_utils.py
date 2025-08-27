@@ -136,6 +136,13 @@ class DataType:
         self.full_type = klass
         self.namespace, self.bare_type = _get_namespace_class(self.full_type)
 
+    def full_data_type(self, schema_version):
+        """Return the fully qualified Data type name including its version namespace"""
+        dtype = f"v{schema_version}::{self.bare_type}Data"
+        if self.namespace:
+            dtype = f"{self.namespace}::{dtype}"
+        return dtype
+
     def __str__(self):
         if self.namespace:
             scoped_type = f"::{self.namespace}::{self.bare_type}"
@@ -143,6 +150,9 @@ class DataType:
             scoped_type = self.full_type
 
         return scoped_type
+
+    def __repr__(self):
+        return f"DataType: {self.__str__()}"
 
     def _to_json(self):
         """Return a string representation that can be parsed again"""
@@ -241,6 +251,46 @@ class MemberVariable:
             definition += rf" ///< {self.docstring}"
         return definition
 
+    def qualified_as_version(self, version):
+        """String representation with a potential intermediate version namespace
+
+        Only applies in case the member is a component, as builtin variables are
+        considered not versionable
+        """
+        # Nothing to do for builtins
+        if self.is_builtin:
+            return self.__str__()
+
+        # Handle non-builtin array members
+        if self.is_array and not self.is_builtin_array:
+            if self.array_namespace:
+                versioned_array_type = (
+                    f"::{self.array_namespace}::v{version}::{self.array_bare_type}"
+                )
+            else:
+                versioned_array_type = f"::v{version}::{self.array_bare_type}"
+
+            scoped_type = f"std::array<{versioned_array_type}, {self.array_size}>"
+        else:
+            # Build the scoped type with version namespace injected
+            if self.namespace:
+                scoped_type = f"::{self.namespace}::v{version}::{self.bare_type}"
+            else:
+                scoped_type = f"::v{version}::{self.bare_type}"
+
+        if self.default_val:
+            definition = rf"{scoped_type} {self.name}{{{self.default_val}}};"
+        else:
+            definition = rf"{scoped_type} {self.name}{{}};"
+
+        if self.docstring:
+            definition += rf" ///< {self.docstring}"
+        return definition
+
+    def __repr__(self):
+        """For better readability if printed as part of a dict or list"""
+        return f"MemberVariable: {self.__str__()}"
+
     def getter_name(self, get_syntax):
         """Get the getter name of the variable"""
         if not get_syntax:
@@ -325,6 +375,13 @@ class DataModel:  # pylint: disable=too-few-public-methods
         """Return the dictionary, so that we can easily hook this into the pythons
         JSON ecosystem"""
         return self.__dict__
+
+    def __repr__(self):
+        return (
+            f"DataModel: {self.schema_version=} | {len(self.datatypes)} datatypes,"
+            f" {len(self.components)} components {len(self.interfaces)} interfaces "
+            f"{len(self.links)} links"
+        )
 
 
 class DataModelJSONEncoder(json.JSONEncoder):
