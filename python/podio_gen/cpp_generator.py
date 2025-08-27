@@ -566,7 +566,7 @@ have resolvable schema evolution incompatibilities:"
             for x in list(self.datamodel.datatypes.keys()) + list(self.datamodel.links.keys())
         )
         self._write_file(
-            os.path.join(self.install_dir, self.package_name, f"{self.package_name}.h"),
+            f"{self.package_name}.h",
             self._eval_template(
                 "datamodel.h.jinja2",
                 {
