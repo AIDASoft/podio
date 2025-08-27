@@ -286,7 +286,7 @@ public:
   }
 };
 
-using UserDataCollectionList = decltype(std::apply(
+using UserDataCollectionTypes = decltype(std::apply(
     []<typename... Ts>(Ts...) { return utils::TypeList<UserDataCollection<Ts>...>{}; }, SupportedUserDataTypes{}));
 
 // don't make this macro public as it should only be used internally here...

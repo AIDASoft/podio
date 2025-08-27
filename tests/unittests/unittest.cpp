@@ -1633,7 +1633,7 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
   REQUIRE_THAT(extensionLinkTypes, UnorderedEquals(std::vector<std::string>{}));
 
   std::vector<std::string> userDataCollectionTypes;
-  addTypeAll(podio::UserDataCollectionList{}, userDataCollectionTypes);
+  addTypeAll(podio::UserDataCollectionTypes{}, userDataCollectionTypes);
   REQUIRE_THAT(userDataCollectionTypes,
                UnorderedEquals(std::vector<std::string>{
                    "podio::UserDataCollection<float>", "podio::UserDataCollection<double>",
