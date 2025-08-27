@@ -336,7 +336,7 @@ class DataModel:  # pylint: disable=too-few-public-methods
     def __repr__(self):
         return (
             f"DataModel: {self.schema_version=} | {len(self.datatypes)} datatypes,"
-            f" {len(self.components)} components {len(self.interfaces)} interfaces "
+            f" {len(self.components)} components, {len(self.interfaces)} interfaces, "
             f"{len(self.links)} links"
         )
 
