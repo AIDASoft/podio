@@ -1586,9 +1586,9 @@ void addTypeAll(podio::utils::TypeList<T...>&&, std::vector<std::string>& collec
 TEST_CASE("Add type lists", "[basics][code-gen]") {
   using Catch::Matchers::UnorderedEquals;
 
-  std::vector<std::string> collectionTypes;
-  addTypeAll(datamodel::datamodelDataTypes{}, collectionTypes);
-  REQUIRE_THAT(collectionTypes,
+  std::vector<std::string> dataTypes;
+  addTypeAll(datamodel::datamodelDataTypes{}, dataTypes);
+  REQUIRE_THAT(dataTypes,
                UnorderedEquals(std::vector<std::string>{"EventInfo",
                                                         "ExampleHit",
                                                         "ExampleMC",
@@ -1610,12 +1610,42 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
                                                         "ExampleWithExternalExtraCode",
                                                         "nsp::EnergyInNamespace",
                                                         "ExampleWithSingleSelfRelation"}));
+  std::vector<std::string> dataCollectionTypes;
+  addTypeAll(datamodel::datamodelDataCollectionTypes{}, dataCollectionTypes);
+  REQUIRE_THAT(dataCollectionTypes,
+               UnorderedEquals(std::vector<std::string>{"EventInfoCollection",
+                                                        "ExampleHitCollection",
+                                                        "ExampleMCCollection",
+                                                        "ExampleClusterCollection",
+                                                        "ExampleReferencingTypeCollection",
+                                                        "ExampleWithVectorMemberCollection",
+                                                        "ExampleWithOneRelationCollection",
+                                                        "ExampleWithArrayComponentCollection",
+                                                        "ExampleWithComponentCollection",
+                                                        "ExampleForCyclicDependency1Collection",
+                                                        "ExampleForCyclicDependency2Collection",
+                                                        "ex42::ExampleWithNamespaceCollection",
+                                                        "ex42::ExampleWithARelationCollection",
+                                                        "ExampleWithDifferentNamespaceRelationsCollection",
+                                                        "ExampleWithArrayCollection",
+                                                        "ExampleWithFixedWidthIntegersCollection",
+                                                        "ExampleWithUserInitCollection",
+                                                        "ExampleWithInterfaceRelationCollection",
+                                                        "ExampleWithExternalExtraCodeCollection",
+                                                        "nsp::EnergyInNamespaceCollection",
+                                                        "ExampleWithSingleSelfRelationCollection"}));
 
   std::vector<std::string> linkTypes;
   addTypeAll(datamodel::datamodelLinkTypes{}, linkTypes);
   REQUIRE_THAT(linkTypes,
                UnorderedEquals(std::vector<std::string>{"podio::Link<ExampleHit,ExampleCluster>",
                                                         "podio::Link<ExampleCluster,TypeWithEnergy>"}));
+
+  std::vector<std::string> linkCollectionTypes;
+  addTypeAll(datamodel::datamodelLinkCollectionTypes{}, linkCollectionTypes);
+  REQUIRE_THAT(linkCollectionTypes,
+               UnorderedEquals(std::vector<std::string>{"podio::LinkCollection<ExampleHit,ExampleCluster>",
+                                                        "podio::LinkCollection<ExampleCluster,TypeWithEnergy>"}));
 
   std::vector<std::string> interfaceTypes;
   addTypeAll(datamodel::datamodelInterfaceTypes{}, interfaceTypes);
@@ -1628,9 +1658,21 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
   REQUIRE_THAT(extensionDataTypes,
                UnorderedEquals(std::vector<std::string>{"extension::ContainedType", "extension::ExternalComponentType",
                                                         "extension::ExternalRelationType"}));
+
+  std::vector<std::string> extensionDataCollectionTypes;  
+  addTypeAll(extension_model::extension_modelDataCollectionTypes{}, extensionDataCollectionTypes);
+  REQUIRE_THAT(extensionDataCollectionTypes,
+               UnorderedEquals(std::vector<std::string>{"extension::ContainedTypeCollection",
+                                                        "extension::ExternalComponentTypeCollection",
+                                                        "extension::ExternalRelationTypeCollection"}));
+
   std::vector<std::string> extensionLinkTypes;
   addTypeAll(extension_model::extension_modelLinkTypes{}, extensionLinkTypes);
   REQUIRE_THAT(extensionLinkTypes, UnorderedEquals(std::vector<std::string>{}));
+
+  std::vector<std::string> extensionLinkCollectionTypes;  
+  addTypeAll(extension_model::extension_modelLinkCollectionTypes{}, extensionLinkCollectionTypes);
+  REQUIRE_THAT(extensionLinkCollectionTypes, UnorderedEquals(std::vector<std::string>{}));
 
   std::vector<std::string> userDataCollectionTypes;
   addTypeAll(podio::UserDataCollectionTypes{}, userDataCollectionTypes);

@@ -13,13 +13,25 @@ namespace {{ package_name }} {
 
 using {{ package_name }}DataTypes = podio::utils::TypeList<
 {% for name in datatypes %}
-  {{ name }}{% if not loop.last %},{% endif %}
+{% if loop.first %}  {% else %} {% endif %}{{ name }}{% if not loop.last %},{% endif %}
+{% endfor %}
+>;
+
+using {{ package_name }}DataCollectionTypes = podio::utils::TypeList<
+{% for name in datatypes %}
+{% if loop.first %}  {% else %} {% endif %}{{ name }}Collection{% if not loop.last %},{% endif %}
 {% endfor %}
 >;
 
 using {{ package_name }}LinkTypes = podio::utils::TypeList<
 {% for name in links %}
-  {{ name }}{% if not loop.last %},{% endif %}
+{% if loop.first %}  {% else %} {% endif %}{{ name }}{% if not loop.last %},{% endif %}
+{% endfor %}
+>;
+
+using {{ package_name }}LinkCollectionTypes = podio::utils::TypeList<
+{% for name in links %}
+{% if loop.first %}  {% else %} {% endif %}{{ name }}Collection{% if not loop.last %},{% endif %}
 {% endfor %}
 >;
 
