@@ -52,9 +52,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
 
-    write_old_data_root
-    read_new_data_root
-
     read_with_rdatasource_root
     read_python_with_rdatasource_root
   )
@@ -83,7 +80,25 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       read_frame_legacy_sio
       read_and_write_frame_sio
-      )
+
+    # Technically most of the write tests here succeed, but there is no point in
+    # only running them, since they are practically only the setup step for the
+    # actual read tests
+    schema_evol:code_gen:components_new_member:write
+    schema_evol:code_gen:components_new_member:read
+    schema_evol:code_gen:components_rename_member:write
+    schema_evol:code_gen:components_rename_member:read
+    schema_evol:code_gen:datatypes_new_member:write
+    schema_evol:code_gen:datatypes_new_member:read
+    schema_evol:code_gen:datatypes_rename_member:write
+    schema_evol:code_gen:datatypes_rename_member:read
+    schema_evol:code_gen:implicit_floating_point_change:write
+    schema_evol:code_gen:implicit_floating_point_change:read
+    schema_evol:code_gen:no_change:write
+    schema_evol:code_gen:no_change:read
+    schema_evol:code_gen:array_component_new_member:write
+    schema_evol:code_gen:array_component_new_member:read
+  )
   endif()
 
   if("@USE_SANITIZER@" MATCHES "Thread")
@@ -100,6 +115,20 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       datamodel_def_store_roundtrip_rntuple
       datamodel_def_store_roundtrip_rntuple_extension
+
+      # Technically most of the write tests here succeed, but there is no point in
+      # only running them, since they are practically only the setup step for the
+      # actual read tests
+      schema_evol:code_gen:components_new_member:write_rntuple
+      schema_evol:code_gen:components_new_member:read_rntuple
+      schema_evol:code_gen:datatypes_new_member:write_rntuple
+      schema_evol:code_gen:datatypes_new_member:read_rntuple
+      schema_evol:code_gen:implicit_floating_point_change:write_rntuple
+      schema_evol:code_gen:implicit_floating_point_change:read_rntuple
+      schema_evol:code_gen:no_change:write_rntuple
+      schema_evol:code_gen:no_change:read_rntuple
+      schema_evol:code_gen:array_component_new_member:write_rntuple
+      schema_evol:code_gen:array_component_new_member:read_rntuple
     )
   endif()
 
@@ -120,6 +149,33 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       datamodel_def_store_roundtrip_rntuple
       datamodel_def_store_roundtrip_rntuple_extension
+
+      schema_evol:code_gen:components_new_member:write
+      schema_evol:code_gen:components_new_member:read
+      schema_evol:code_gen:components_rename_member:write
+      schema_evol:code_gen:components_rename_member:read
+      schema_evol:code_gen:datatypes_new_member:write
+      schema_evol:code_gen:datatypes_new_member:read
+      schema_evol:code_gen:datatypes_rename_member:write
+      schema_evol:code_gen:datatypes_rename_member:read
+      schema_evol:code_gen:implicit_floating_point_change:write
+      schema_evol:code_gen:implicit_floating_point_change:read
+      schema_evol:code_gen:no_change:write
+      schema_evol:code_gen:no_change:read
+      schema_evol:code_gen:array_component_new_member:write
+      schema_evol:code_gen:array_component_new_member:read
+
+
+      schema_evol:code_gen:components_new_member:write_rntuple
+      schema_evol:code_gen:components_new_member:read_rntuple
+      schema_evol:code_gen:datatypes_new_member:write_rntuple
+      schema_evol:code_gen:datatypes_new_member:read_rntuple
+      schema_evol:code_gen:implicit_floating_point_change:write_rntuple
+      schema_evol:code_gen:implicit_floating_point_change:read_rntuple
+      schema_evol:code_gen:no_change:write_rntuple
+      schema_evol:code_gen:no_change:read_rntuple
+      schema_evol:code_gen:array_component_new_member:write_rntuple
+      schema_evol:code_gen:array_component_new_member:read_rntuple
     )
 
   endif()
