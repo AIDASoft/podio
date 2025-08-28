@@ -1659,7 +1659,7 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
                UnorderedEquals(std::vector<std::string>{"extension::ContainedType", "extension::ExternalComponentType",
                                                         "extension::ExternalRelationType"}));
 
-  std::vector<std::string> extensionDataCollectionTypes;  
+  std::vector<std::string> extensionDataCollectionTypes;
   addTypeAll(extension_model::extension_modelDataCollectionTypes{}, extensionDataCollectionTypes);
   REQUIRE_THAT(extensionDataCollectionTypes,
                UnorderedEquals(std::vector<std::string>{"extension::ContainedTypeCollection",
@@ -1670,7 +1670,7 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
   addTypeAll(extension_model::extension_modelLinkTypes{}, extensionLinkTypes);
   REQUIRE_THAT(extensionLinkTypes, UnorderedEquals(std::vector<std::string>{}));
 
-  std::vector<std::string> extensionLinkCollectionTypes;  
+  std::vector<std::string> extensionLinkCollectionTypes;
   addTypeAll(extension_model::extension_modelLinkCollectionTypes{}, extensionLinkCollectionTypes);
   REQUIRE_THAT(extensionLinkCollectionTypes, UnorderedEquals(std::vector<std::string>{}));
 
