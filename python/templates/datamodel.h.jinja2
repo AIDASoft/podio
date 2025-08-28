@@ -12,33 +12,27 @@
 namespace {{ package_name }} {
 
 using {{ package_name }}DataTypes = podio::utils::TypeList<
-{% for name in datatypes %}
-{% if loop.first %}  {% else %} {% endif %}{{ name }}{% if not loop.last %},{% endif %}
-{% endfor %}
+  {{ datatypes | map('string') | join(', ')}}
 >;
 
 using {{ package_name }}DataCollectionTypes = podio::utils::TypeList<
-{% for name in datatypes %}
-{% if loop.first %}  {% else %} {% endif %}{{ name }}Collection{% if not loop.last %},{% endif %}
-{% endfor %}
+{%  if datatypes %}
+  {{ datatypes | map('string') | join('Collection, ') ~ 'Collection' }}
+{% endif %}
 >;
 
 using {{ package_name }}LinkTypes = podio::utils::TypeList<
-{% for name in links %}
-{% if loop.first %}  {% else %} {% endif %}{{ name }}{% if not loop.last %},{% endif %}
-{% endfor %}
+  {{ links | map('string') | join(', ')}}
 >;
 
 using {{ package_name }}LinkCollectionTypes = podio::utils::TypeList<
-{% for name in links %}
-{% if loop.first %}  {% else %} {% endif %}{{ name }}Collection{% if not loop.last %},{% endif %}
-{% endfor %}
+{% if links %}
+  {{ links | map('string') | join('Collection, ') ~ 'Collection' }}
+{% endif %}
 >;
 
 using {{ package_name }}InterfaceTypes = podio::utils::TypeList<
-{% for name in interfaces %}
-  {{ name }}{% if not loop.last %},{% endif %}
-{% endfor %}
+  {{ interfaces | map('string') | join(', ')}}
 >;
 
 }
