@@ -12,27 +12,27 @@
 namespace {{ package_name }} {
 
 using {{ package_name }}DataTypes = podio::utils::TypeList<
-  {{ datatypes | map('string') | join(', ')}}
+  {{ datatypes | join(', ')}}
 >;
 
 using {{ package_name }}DataCollectionTypes = podio::utils::TypeList<
 {%  if datatypes %}
-  {{ datatypes | map('string') | join('Collection, ') ~ 'Collection' }}
+  {{ datatypes | join('Collection, ') ~ 'Collection' }}
 {% endif %}
 >;
 
 using {{ package_name }}LinkTypes = podio::utils::TypeList<
-  {{ links | map('string') | join(', ')}}
+  {{ links  | join(', ')}}
 >;
 
 using {{ package_name }}LinkCollectionTypes = podio::utils::TypeList<
 {% if links %}
-  {{ links | map('string') | join('Collection, ') ~ 'Collection' }}
+  {{ links | join('Collection, ') ~ 'Collection' }}
 {% endif %}
 >;
 
 using {{ package_name }}InterfaceTypes = podio::utils::TypeList<
-  {{ interfaces | map('string') | join(', ')}}
+  {{ interfaces | join(', ')}}
 >;
 
 }
