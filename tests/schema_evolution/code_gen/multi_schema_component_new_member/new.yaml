@@ -1,0 +1,17 @@
+schema_version: 3
+options:
+  includeSubfolder: True
+
+components:
+  SimpleStruct:
+    Members:
+      - int x [mm]
+      - int y [mm]
+      - int z [mm]
+
+datatypes:
+  TestType:
+    Description: "A datatype for wrapping the component for testing"
+    Author: "Thomas Madlener"
+    Members:
+      - SimpleStruct s // The component under test
