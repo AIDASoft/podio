@@ -29,6 +29,7 @@ function(GENERATE_DATAMODEL test_case model_version)
     message(FATAL_ERROR "WITH_EVOLUTION requires OLD_VERSIONS to be specified")
   endif()
 
+  # Generate the datamodel with appropriate options
   if(PARSED_ARGS_WITH_EVOLUTION)
     PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
       IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
@@ -106,25 +107,28 @@ endfunction()
 # See the README for more details on which parts need to be implemented for
 # adding a new test case.
 function(ADD_SCHEMA_EVOLUTION_TEST test_case)
-  cmake_parse_arguments(PARSED_ARGS "RNTUPLE;NO_GENERATE_MODELS;WITH_EVOLUTION;NO_EVOLUTION_CHECKS" "" "" ${ARGN})
+  cmake_parse_arguments(PARSED_ARGS "RNTUPLE;NO_GENERATE_MODELS;WITH_EVOLUTION;NO_EVOLUTION_CHECKS" "" "OLD_MODELS" ${ARGN})
   # Generate datamodels
   if(NOT PARSED_ARGS_NO_GENERATE_MODELS)
+    # Generate old model(s)
+    foreach(old_version ${old_versions})
+      GENERATE_DATAMODEL(${test_case} ${old_version})
+    endforeach()
+
+    # Generate new model with the knowledge of all old versions
     if(PARSED_ARGS_WITH_EVOLUTION)
       if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
-        GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION NO_EVOLUTION_CHECKS OLD_VERSIONS old)
+        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION NO_EVOLUTION_CHECKS OLD_VERSIONS ${old_versions})
       else()
-        GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION OLD_VERSIONS old)
+        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION OLD_VERSIONS ${old_versions})
       endif()
-    else()
+     else()
       if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
-        GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new NO_EVOLUTION_CHECKS OLD_VERSIONS old)
+        GENERATE_DATAMODEL(${test_case} new NO_EVOLUTION_CHECKS OLD_VERSIONS ${old_versions})
       else()
-        GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new OLD_VERSIONS old)
+        GENERATE_DATAMODEL(${test_case} new OLD_VERSIONS ${old_versions})
       endif()
+    endif()
     endif()
   endif()
 
@@ -135,25 +139,34 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
     set(suffix "_rntuple")
   endif()
   # Executable and test for writing old data
-  add_executable(write_${test_base} ${test_case}/check.cpp)
-  target_link_libraries(write_${test_base} PRIVATE ${test_case}_oldModel podio::podioIO)
-  target_compile_definitions(write_${test_base} PRIVATE PODIO_SCHEMA_EVOLUTION_TEST_WRITE TEST_CASE="${test_case}")
-  if(PARSED_ARGS_RNTUPLE)
-    target_compile_definitions(write_${test_base} PRIVATE PODIO_SCHEMA_EVOLUTION_RNTUPLE)
-  endif()
-  target_include_directories(write_${test_base} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  # Create write executables for each old model version
+  set(required_fixtures)
+  foreach(old_version ${old_versions})
+    # Executable for writing with this specific old version
+    add_executable(write_${test_base}_${old_version} ${test_case}/check.cpp)
+    target_link_libraries(write_${test_base}_${old_version} PRIVATE ${test_case}_${old_version}Model podio::podioIO)
+    target_compile_definitions(write_${test_base}_${old_version} PRIVATE
+      PODIO_SCHEMA_EVOLUTION_TEST_WRITE
+      TEST_CASE="${test_case}"
+      OLD_VERSION="${old_version}")
+    if(PARSED_ARGS_RNTUPLE)
+      target_compile_definitions(write_${test_base}_${old_version} PRIVATE PODIO_SCHEMA_EVOLUTION_RNTUPLE)
+    endif()
+    target_include_directories(write_${test_base}_${old_version} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-  add_test(NAME schema_evol:code_gen:${test_case}:write${suffix} COMMAND write_${test_base})
-  set_property(TEST schema_evol:code_gen:${test_case}:write${suffix}
-    PROPERTY ENVIRONMENT
-      ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
-      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-  )
-  set_tests_properties(schema_evol:code_gen:${test_case}:write${suffix}
-    PROPERTIES
-      FIXTURES_SETUP ${test_case}_w${suffix}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_case}
-  )
+    add_test(NAME schema_evol:code_gen:${test_case}:write_${old_version}${suffix} COMMAND write_${test_base}_${old_version})
+    set_property(TEST schema_evol:code_gen:${test_case}:write_${old_version}${suffix}
+      PROPERTY ENVIRONMENT
+        ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${old_version}_model
+        LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+    )
+    set_tests_properties(schema_evol:code_gen:${test_case}:write_${old_version}${suffix}
+      PROPERTIES
+        FIXTURES_SETUP ${test_case}_w_${old_version}${suffix}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_case}
+      )
+    list(APPEND required_fixtures ${test_case}_w_${old_version}${suffix})
+  endforeach()
 
   # Executable and test for reading new data
   add_executable(read_${test_base} ${test_case}/check.cpp)
@@ -176,7 +189,7 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
   )
   set_tests_properties(schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTIES
-      FIXTURES_REQUIRED ${test_case}_w${suffix}
+      FIXTURES_REQUIRED "${required_fixtures}"
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_case}
     )
 endfunction()
