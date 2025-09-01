@@ -138,17 +138,29 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
     set(test_base ${test_case}_rntuple)
     set(suffix "_rntuple")
   endif()
+
   # Executable and test for writing old data
   # Create write executables for each old model version
   set(required_fixtures)
   foreach(old_version ${old_versions})
+    # Define datamodel_version based on old_version
+    if(old_version STREQUAL "oldest")
+      set(datamodel_version 1)
+    elseif(old_version STREQUAL "old")
+      set(datamodel_version 2)
+    else()
+      message(WARNING "Using a datamodel version (name) that is not mapped to an integer value, things are likely to break at compile time")
+      unset(datamodel_version)
+    endif()
+
     # Executable for writing with this specific old version
     add_executable(write_${test_base}_${old_version} ${test_case}/check.cpp)
     target_link_libraries(write_${test_base}_${old_version} PRIVATE ${test_case}_${old_version}Model podio::podioIO)
     target_compile_definitions(write_${test_base}_${old_version} PRIVATE
       PODIO_SCHEMA_EVOLUTION_TEST_WRITE
       TEST_CASE="${test_case}"
-      OLD_VERSION="${old_version}")
+      DATAMODEL_VERSION=${datamodel_version}
+    )
     if(PARSED_ARGS_RNTUPLE)
       target_compile_definitions(write_${test_base}_${old_version} PRIVATE PODIO_SCHEMA_EVOLUTION_RNTUPLE)
     endif()
