@@ -1,50 +1,56 @@
-#--- GENERATE_DATAMODEL(test_case model_version [WITH_EVOLUTION] [NO_EVOLUTION_CHECKS])
+#--- GENERATE_DATAMODEL(test_case model_version [WITH_EVOLUTION] [NO_EVOLUTION_CHECKS] [OLD_VERSIONS version1 version2 ...])
 #
 # Arguments:
 #   test_case           The name of the test case
 #   model_version       which version of the model to generate (old or new)
 #   WITH_EVOLUTION      (Optional) pass an evolution.yaml file to the generation of the model
 #   NO_EVOLUTION_CHECKS (Optional) skip passing OLD_DESCRIPTION to PODIO_GENERATE_DATAMODEL
+#   OLD_VERSIONS   (Optional) list of old model versions to pass to OLD_DESCRIPTION
 #
 # Generate the necessary code and build all required libraries for the specified
 # datamodel and version. Make sure to put all generated and compiled binary
 # outputs into a distinct subfolder such that at (test) runtime the models can
 # be individually "toggled"
 function(GENERATE_DATAMODEL test_case model_version)
-  cmake_parse_arguments(PARSED_ARGS "WITH_EVOLUTION;NO_EVOLUTION_CHECKS" "" "" ${ARGN})
+  cmake_parse_arguments(PARSED_ARGS "WITH_EVOLUTION;NO_EVOLUTION_CHECKS" "" "OLD_VERSIONS" ${ARGN})
   set(model_base ${test_case}_${model_version}Model)
   set(output_base ${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${model_version}_model)
 
-  if(NOT ${model_version} STREQUAL "old")
-    # We only want to pass old versions or additional information if we are not
-    # the 'old' model
-    if(PARSED_ARGS_WITH_EVOLUTION)
-      PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-        OUTPUT_FOLDER ${output_base}
-        OLD_DESCRIPTION ${test_case}/old.yaml
-        SCHEMA_EVOLUTION ${test_case}/evolution.yaml
-      )
-    else()
-      if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
-        PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-          IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-          OUTPUT_FOLDER ${output_base}
-        )
-      else()
-        PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-          IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-          OUTPUT_FOLDER ${output_base}
-          OLD_DESCRIPTION ${test_case}/old.yaml
-        )
-      endif()
-    endif()
-  else()
+  # Build the list of old descriptions
+  set(old_descriptions)
+  if(PARSED_ARGS_OLD_VERSIONS)
+    foreach(old_version ${PARSED_ARGS_OLD_VERSIONS})
+      list(APPEND old_descriptions ${test_case}/${old_version}.yaml)
+    endforeach()
+  endif()
+
+  # Validate that WITH_EVOLUTION requires old descriptions
+  if(PARSED_ARGS_WITH_EVOLUTION AND NOT old_descriptions)
+    message(FATAL_ERROR "WITH_EVOLUTION requires OLD_VERSIONS to be specified")
+  endif()
+
+  if(PARSED_ARGS_WITH_EVOLUTION)
     PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
       IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
       OUTPUT_FOLDER ${output_base}
+      OLD_DESCRIPTIONS ${old_descriptions}
+      SCHEMA_EVOLUTION ${test_case}/evolution.yaml
     )
+  else()
+    if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
+      PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+        OUTPUT_FOLDER ${output_base}
+      )
+    elseif(old_descriptions)
+      PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+        OUTPUT_FOLDER ${output_base}
+        OLD_DESCRIPTIONS ${old_descriptions}
+      )
+    endif()
   endif()
+
   PODIO_ADD_DATAMODEL_CORE_LIB(${model_base} "${headers}" "${sources}"
     OUTPUT_FOLDER ${output_base}
   )
@@ -106,18 +112,18 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
     if(PARSED_ARGS_WITH_EVOLUTION)
       if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
         GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION NO_EVOLUTION_CHECKS)
+        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION NO_EVOLUTION_CHECKS OLD_VERSIONS old)
       else()
         GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION)
+        GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION OLD_VERSIONS old)
       endif()
     else()
       if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
         GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new NO_EVOLUTION_CHECKS)
+        GENERATE_DATAMODEL(${test_case} new NO_EVOLUTION_CHECKS OLD_VERSIONS old)
       else()
         GENERATE_DATAMODEL(${test_case} old)
-        GENERATE_DATAMODEL(${test_case} new)
+        GENERATE_DATAMODEL(${test_case} new OLD_VERSIONS old)
       endif()
     endif()
   endif()
