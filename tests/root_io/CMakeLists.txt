@@ -36,7 +36,15 @@ foreach( sourcefile ${root_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${root_libs}")
 endforeach()
 
-set_property(TEST read_interface_root PROPERTY DEPENDS write_interface_root)
+set_tests_properties(write_frame_root PROPERTIES FIXTURES_SETUP podio_write_frame_root_fixture)
+set_tests_properties(write_interface_root PROPERTIES FIXTURES_SETUP podio_write_interface_root_fixture)
+set_tests_properties(read_interface_root PROPERTIES FIXTURES_REQUIRED podio_write_interface_root_fixture)
+
+
+if(ENABLE_RNTUPLE)
+  set_tests_properties(write_rntuple PROPERTIES FIXTURES_SETUP podio_write_rntuple_fixture)
+  set_tests_properties(write_interface_rntuple PROPERTIES FIXTURES_SETUP podio_write_interface_rntuple_fixture)
+endif()
 
 set_tests_properties(
   read_frame_root
@@ -46,12 +54,12 @@ set_tests_properties(
   selected_colls_roundtrip_root
 
   PROPERTIES
-    DEPENDS write_frame_root
+    FIXTURES_REQUIRED podio_write_frame_root_fixture
 )
 
 add_test(NAME read_python_multiple COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_multiple.py)
 PODIO_SET_TEST_ENV(read_python_multiple)
-set_property(TEST read_python_multiple PROPERTY DEPENDS write_frame_root)
+set_tests_properties(read_python_multiple PROPERTIES FIXTURES_REQUIRED podio_write_frame_root_fixture)
 
 if(ENABLE_RNTUPLE)
   set_tests_properties(
@@ -59,20 +67,22 @@ if(ENABLE_RNTUPLE)
     selected_colls_roundtrip_rntuple
 
     PROPERTIES
-      DEPENDS write_rntuple
+      FIXTURES_REQUIRED podio_write_rntuple_fixture
   )
-  set_property(TEST read_interface_rntuple PROPERTY DEPENDS write_interface_rntuple)
+  set_tests_properties(read_interface_rntuple PROPERTIES FIXTURES_REQUIRED podio_write_interface_rntuple_fixture)
 
   add_test(NAME write_interface_default_rntuple COMMAND write_interface_root example_frame_interface_default_rntuple.root)
   PODIO_SET_TEST_ENV(write_interface_default_rntuple)
   get_test_property(write_interface_default_rntuple ENVIRONMENT ENV)
   set_property(TEST write_interface_default_rntuple PROPERTY ENVIRONMENT "${ENV};PODIO_DEFAULT_WRITE_RNTUPLE=1")
+  set_tests_properties(write_interface_default_rntuple PROPERTIES FIXTURES_SETUP podio_write_interface_default_rntuple_fixture)
   add_test(NAME read_interface_default_rntuple COMMAND read_rntuple example_frame_interface_default_rntuple.root)
-  set_tests_properties(read_interface_default_rntuple PROPERTIES DEPENDS write_interface_default_rntuple ENVIRONMENT "${ENV}")
+  set_tests_properties(read_interface_default_rntuple PROPERTIES ENVIRONMENT "${ENV}" FIXTURES_REQUIRED podio_write_interface_default_rntuple_fixture)
+
 endif()
 
 if(ENABLE_DATASOURCE)
-  set_property(TEST read_with_rdatasource_root PROPERTY DEPENDS write_frame_root)
+  set_tests_properties(read_with_rdatasource_root PROPERTIES FIXTURES_REQUIRED podio_write_frame_root_fixture)
 endif()
 
 add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
@@ -89,21 +99,23 @@ endforeach()
 #--- c++
 add_test(NAME write_python_frame_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.root root_io.Writer)
 PODIO_SET_TEST_ENV(write_python_frame_root)
-set_property(TEST read_python_frame_root PROPERTY DEPENDS write_python_frame_root)
+set_tests_properties(write_python_frame_root PROPERTIES FIXTURES_SETUP podio_write_python_frame_root_fixture)
+set_tests_properties(read_python_frame_root PROPERTIES FIXTURES_REQUIRED podio_write_python_frame_root_fixture)
 
 if (ENABLE_RNTUPLE)
   add_test(NAME write_python_frame_rntuple COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py_rntuple.root root_io.RNTupleWriter)
   PODIO_SET_TEST_ENV(write_python_frame_rntuple)
+  set_tests_properties(write_python_frame_rntuple PROPERTIES FIXTURES_SETUP podio_write_python_frame_rntuple_fixture)
 
-  set_property(TEST read_python_frame_rntuple PROPERTY DEPENDS write_python_frame_rntuple)
+  set_tests_properties(read_python_frame_rntuple PROPERTIES FIXTURES_REQUIRED podio_write_python_frame_rntuple_fixture)
 endif()
 
 add_test(NAME param_reading_rdataframe COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/param_reading_rdataframe.py example_frame.root)
 PODIO_SET_TEST_ENV(param_reading_rdataframe)
-set_property(TEST param_reading_rdataframe PROPERTY DEPENDS write_frame_root)
+set_tests_properties(param_reading_rdataframe PROPERTIES FIXTURES_REQUIRED podio_write_frame_root_fixture)
 
 if(ENABLE_DATASOURCE)
   add_test(NAME read_python_with_rdatasource_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_datasource.py)
   PODIO_SET_TEST_ENV(read_python_with_rdatasource_root)
-  set_property(TEST read_python_with_rdatasource_root PROPERTY DEPENDS read_with_rdatasource_root)
+  set_tests_properties(read_python_with_rdatasource_root PROPERTIES FIXTURES_REQUIRED podio_write_frame_root_fixture)
 endif()
