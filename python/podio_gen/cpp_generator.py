@@ -361,43 +361,40 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         old_datamodels = {}
         # Process each old schema version
         for old_yamlfile in self.old_yamlfiles:
-            comparator = DataModelComparator(
-                self.yamlfile, old_yamlfile, evolution_file=self.evolution_file
-            )
-            comparator.read()
-            comparator.compare()
+            comparator = DataModelComparator(self.yamlfile, evolution_file=self.evolution_file)
+            comparison_results = comparator.compare(old_yamlfile)
 
-            old_schema_version = comparator.datamodel_old.schema_version
-            old_datamodels[old_schema_version] = comparator.datamodel_old
+            old_schema_version = comparison_results.old_datamodel.schema_version
+            old_datamodels[old_schema_version] = comparison_results.old_datamodel
 
             # some sanity checks
-            if len(comparator.errors) > 0:
+            if len(comparison_results.errors) > 0:
                 print(
                     f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' "
                     f"have unresolvable schema evolution incompatibilities:"
                 )
-                for error in comparator.errors:
+                for error in comparison_results.errors:
                     print(error)
                 sys.exit(-1)
-            if len(comparator.warnings) > 0:
+            if len(comparison_results.warnings) > 0:
                 print(
                     f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' "
                     f"have resolvable schema evolution incompatibilities:"
                 )
-                for warning in comparator.warnings:
+                for warning in comparison_results.warnings:
                     print(warning)
                 sys.exit(-1)
 
             # Store old definitions for items that have actually changed
             # TODO: Move this somewher else?  #pylint: disable=fixme
-            for change in comparator.schema_changes:
+            for change in comparison_results.schema_changes:
                 if hasattr(change, "klassname"):
                     # Handle components (both existing and removed)
-                    if change.klassname in comparator.datamodel_old.components:
+                    if change.klassname in comparison_results.old_datamodel.components:
                         self.changed_components[change.klassname].append(
                             {
                                 "version": old_schema_version,
-                                "definition": comparator.datamodel_old.components[
+                                "definition": comparison_results.old_datamodel.components[
                                     change.klassname
                                 ],
                                 "schema_change": change,
@@ -405,11 +402,13 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                         )
 
                     # Handle datatypes (both existing and removed)
-                    elif change.klassname in comparator.datamodel_old.datatypes:
+                    elif change.klassname in comparison_results.old_datamodel.datatypes:
                         self.changed_datatypes[change.klassname].append(
                             {
                                 "version": old_schema_version,
-                                "definition": comparator.datamodel_old.datatypes[change.klassname],
+                                "definition": comparison_results.old_datamodel.datatypes[
+                                    change.klassname
+                                ],
                                 "schema_change": change,
                             }
                         )

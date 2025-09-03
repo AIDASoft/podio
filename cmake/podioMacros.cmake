@@ -148,6 +148,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     ${podio_PYTHON_DIR}/podio_gen/generator_base.py
     ${podio_PYTHON_DIR}/podio_gen/cpp_generator.py
     ${podio_PYTHON_DIR}/podio_gen/julia_generator.py
+    ${podio_PYTHON_DIR}/podio_schema_evolution.py
     ${ARG_DEPENDS}
   )
 
