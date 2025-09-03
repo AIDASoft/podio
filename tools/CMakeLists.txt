@@ -44,7 +44,7 @@ if(BUILD_TESTING)
   #
   # Args:
   #     name        the name of the test
-  #     depends_on  the target name of the test that produces the required input file
+  #     depends_on  the test fixture name(s) of the test(s) that produces the required input file
   function(CREATE_DUMP_TEST name depends_on)
     add_test(NAME ${name} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/podio-dump ${ARGN})
     PODIO_SET_TEST_ENV(${name})
@@ -54,7 +54,7 @@ if(BUILD_TESTING)
        )
     if (depends_on)
       set_tests_properties(${name} PROPERTIES
-        DEPENDS ${depends_on}
+        FIXTURES_REQUIRED ${depends_on}
         )
     endif()
   endfunction()
@@ -81,23 +81,23 @@ if(BUILD_TESTING)
   endfunction()
 
   CREATE_DUMP_TEST(podio-dump-help _dummy_target_ --help)
-  CREATE_DUMP_TEST(podio-dump-root "write_frame_root" ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
-  CREATE_DUMP_TEST(podio-dump-detailed-root "write_frame_root" --detailed --category other_events --entries 2:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
+  CREATE_DUMP_TEST(podio-dump-root "podio_write_frame_root_fixture" ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
+  CREATE_DUMP_TEST(podio-dump-detailed-root "podio_write_frame_root_fixture" --detailed --category other_events --entries 2:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
 
   CREATE_LEGACY_DUMP_TEST("root" v00-16-06 v00-16-06-example.root)
   CREATE_LEGACY_DUMP_TEST("root-detailed" v00-16-06 v00-16-06-example.root --detailed --entries 2:3)
 
   if (ENABLE_SIO)
-    CREATE_DUMP_TEST(podio-dump-sio "write_frame_sio" --entries 4:7 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
-    CREATE_DUMP_TEST(podio-dump-detailed-sio "write_frame_sio" --detailed --entries 9 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
+    CREATE_DUMP_TEST(podio-dump-sio "podio_sio_write_fixture" --entries 4:7 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
+    CREATE_DUMP_TEST(podio-dump-detailed-sio "podio_sio_write_fixture" --detailed --entries 9 ${PROJECT_BINARY_DIR}/tests/sio_io/example_frame.sio)
 
     CREATE_LEGACY_DUMP_TEST("sio" v00-16-06 v00-16-06-example.sio)
     CREATE_LEGACY_DUMP_TEST("sio-detailed" v00-16-06 v00-16-06-example.sio --detailed --entries 2:3)
   endif()
 
   if (ENABLE_RNTUPLE)
-    CREATE_DUMP_TEST(podio-dump-rntuple "write_rntuple" ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root)
-    CREATE_DUMP_TEST(podio-dump-detailed-rntuple "write_rntuple" --detailed --category events --entries 1:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root)
+    CREATE_DUMP_TEST(podio-dump-rntuple "podio_write_rntuple_fixture" ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root)
+    CREATE_DUMP_TEST(podio-dump-detailed-rntuple "podio_write_rntuple_fixture" --detailed --category events --entries 1:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_rntuple.root)
   endif()
 
 endif()
