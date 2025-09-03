@@ -26,7 +26,7 @@ set_tests_properties(
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
   PROPERTIES
-    FIXTURES_REQUIRED podio_write_frame_root_fixture
+    FIXTURES_REQUIRED podio_write_root_fixture
   )
 
 set(sio_roundtrip_tests "")
@@ -55,7 +55,7 @@ if (ENABLE_SIO)
   set_tests_properties(
       ${sio_roundtrip_tests}
     PROPERTIES
-      FIXTURES_REQUIRED podio_sio_write_fixture
+      FIXTURES_REQUIRED podio_write_sio_fixture
     )
 endif()
 
