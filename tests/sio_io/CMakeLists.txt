@@ -32,8 +32,8 @@ set_tests_properties(read_interface_sio PROPERTIES FIXTURES_REQUIRED podio_sio_w
 #--- c++
 add_test(NAME write_python_frame_sio COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.sio sio_io.Writer)
 PODIO_SET_TEST_ENV(write_python_frame_sio)
-set_tests_properties(write_python_frame_sio PROPERTIES FIXTURES_SETUP podio_sio_write_fixture)
-set_tests_properties(read_python_frame_sio PROPERTIES FIXTURES_REQUIRED podio_sio_write_fixture)
+set_tests_properties(write_python_frame_sio PROPERTIES FIXTURES_SETUP podio_sio_write_python_fixture)
+set_tests_properties(read_python_frame_sio PROPERTIES FIXTURES_REQUIRED podio_sio_write_python_fixture)
 
 add_executable(read_frame_legacy_sio read_frame_legacy_sio.cpp)
 target_link_libraries(read_frame_legacy_sio PRIVATE "${sio_libs}" TestDataModel)
