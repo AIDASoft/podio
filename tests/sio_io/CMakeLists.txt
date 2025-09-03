@@ -21,8 +21,6 @@ set_tests_properties(
   selected_colls_roundtrip_sio
 
   PROPERTIES
-    DEPENDS
-    write_frame_sio
     FIXTURES_REQUIRED podio_sio_write_fixture
 )
 
