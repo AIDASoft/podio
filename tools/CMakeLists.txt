@@ -19,27 +19,18 @@ if(BUILD_TESTING)
   #
   # Args:
   #     name        the name of the test
-  #     depends_on  the target name of the test that produces the required input file
-  function(CREATE_VIS_TEST name depends_on)
+  function(CREATE_VIS_TEST name)
     add_test(NAME ${name} COMMAND ./podio-vis ${ARGN})
     PODIO_SET_TEST_ENV(${name})
 
     set_tests_properties(${name} PROPERTIES
        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
        )
-    if (depends_on)
-      set_tests_properties(${name} PROPERTIES
-        DEPENDS ${depends_on}
-        )
-    endif()
   endfunction()
 
-  CREATE_VIS_TEST(podio-vis-help _dummy_target_
-    --help)
-  CREATE_VIS_TEST(podio-vis-datamodel datamodel
-    --dot ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml)
-  CREATE_VIS_TEST(podio-vis-datamodel-extension extension_model
-    --dot --upstream-edm datamodel:${PROJECT_SOURCE_DIR}/tests/datalayout.yaml ${PROJECT_SOURCE_DIR}/tests/datalayout_extension.yaml)
+  CREATE_VIS_TEST(podio-vis-help --help)
+  CREATE_VIS_TEST(podio-vis-datamodel --dot ${PROJECT_SOURCE_DIR}/tests/datalayout.yaml)
+  CREATE_VIS_TEST(podio-vis-datamodel-extension --dot --upstream-edm datamodel:${PROJECT_SOURCE_DIR}/tests/datalayout.yaml ${PROJECT_SOURCE_DIR}/tests/datalayout_extension.yaml)
 endif()
 
 # Add a very basic tests here to make sure that podio-dump at least runs
