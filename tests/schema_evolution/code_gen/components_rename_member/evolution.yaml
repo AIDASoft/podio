@@ -1,8 +1,8 @@
-from_schema_version: 1
-to_schema_version: 2
-
-evolutions:
+migrations:
   nsp::TestComponent:
-    member_rename:
-      - y
-      - y_new
+    - from_version: 1
+      to_version: 2
+      change:
+        type: rename_member
+        from: y
+        to: y_new
