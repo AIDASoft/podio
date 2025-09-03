@@ -56,8 +56,8 @@ function(GENERATE_DATAMODEL test_case model_version)
       ${output_base}/lib${model_base}Dict_rdict.pcm
       ${output_base}/${model_base}DictDict.rootmap
 
-    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/lib${model_base}Dict_rdict.pcm ${output_base}/lib${model_base}Dict_rdict.pcm
-    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/${model_base}DictDict.rootmap ${output_base}/${model_base}DictDict.rootmap
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/lib${model_base}Dict_rdict.pcm ${output_base}/lib${model_base}Dict_rdict.pcm
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/${model_base}DictDict.rootmap ${output_base}/${model_base}DictDict.rootmap
 
     COMMENT "Moving generated rootmaps for ${test_case}"
     VERBATIM
@@ -125,7 +125,11 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
   )
-  set_tests_properties(schema_evol:code_gen:${test_case}:write${suffix} PROPERTIES FIXTURES_SETUP ${test_case}_w${suffix})
+  set_tests_properties(schema_evol:code_gen:${test_case}:write${suffix}
+    PROPERTIES
+      FIXTURES_SETUP ${test_case}_w${suffix}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_case}
+  )
 
   # Executable and test for reading new data
   add_executable(read_${test_base} ${test_case}/check.cpp)
@@ -143,5 +147,9 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
   )
-  set_tests_properties(schema_evol:code_gen:${test_case}:read${suffix} PROPERTIES FIXTURES_REQUIRED ${test_case}_w${suffix})
+  set_tests_properties(schema_evol:code_gen:${test_case}:read${suffix}
+    PROPERTIES
+      FIXTURES_REQUIRED ${test_case}_w${suffix}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${test_case}
+    )
 endfunction()
