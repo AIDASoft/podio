@@ -7,7 +7,13 @@ from enum import IntEnum
 from collections import defaultdict
 from collections.abc import Mapping
 
-from podio_schema_evolution import DataModelComparator, RootIoRule, RenamedMember
+from podio_schema_evolution import (
+    DataModelComparator,
+    SchemaEvolutionJudge,
+    RootIoRule,
+    RenamedMember,
+)
+from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_base import ClassGeneratorBaseMixin, write_file_if_changed
 from podio_gen.generator_utils import DataType, DataModelJSONEncoder
 
@@ -359,13 +365,23 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         changed.
         """
         old_datamodels = {}
+        reader = PodioConfigReader()
+
         # Process each old schema version
         for old_yamlfile in self.old_yamlfiles:
-            comparator = DataModelComparator(self.yamlfile, evolution_file=self.evolution_file)
-            comparison_results = comparator.compare(old_yamlfile)
+            datamodel_new = reader.read(self.yamlfile, package_name="new")
+            datamodel_old = reader.read(old_yamlfile, package_name="old")
 
-            old_schema_version = comparison_results.old_datamodel.schema_version
-            old_datamodels[old_schema_version] = comparison_results.old_datamodel
+            comparator = DataModelComparator(datamodel_new)
+            detected_changes = comparator.compare(datamodel_old)
+            old_schema_version = datamodel_old.schema_version
+            old_datamodels[old_schema_version] = datamodel_old
+
+            # Use SchemaEvolutionJudge to analyze the detected changes
+            judge = SchemaEvolutionJudge(
+                comparator.datamodel_new, evolution_file=self.evolution_file
+            )
+            comparison_results = judge.judge(datamodel_old, detected_changes)
 
             # some sanity checks
             if len(comparison_results.errors) > 0:
