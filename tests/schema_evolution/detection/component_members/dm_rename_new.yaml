@@ -1,0 +1,15 @@
+schema_version: 3
+
+components:
+  ComponentWithRenamedMember:
+    Description: "A component with a renamed member"
+    Author: "Test Author"
+    Members:
+      - int newName // the new name
+
+datatypes:
+  TypeWithComponent:
+    Description: "A type that uses the component"
+    Author: "Test Author"
+    Members:
+      - ComponentWithRenamedMember comp // component member
