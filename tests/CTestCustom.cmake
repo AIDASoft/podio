@@ -26,6 +26,16 @@ set(failing_with_address_sanitizer
   schema_evol:code_gen:no_change:read
   schema_evol:code_gen:array_component_new_member:write_old
   schema_evol:code_gen:array_component_new_member:read
+
+  schema_evol:code_gen:multi_schema_component_new_member:write_old
+  schema_evol:code_gen:multi_schema_component_new_member:write_oldest
+  schema_evol:code_gen:multi_schema_component_new_member:read
+  schema_evol:code_gen:multi_schema_datatypes_new_member:write_old
+  schema_evol:code_gen:multi_schema_datatypes_new_member:write_oldest
+  schema_evol:code_gen:multi_schema_datatypes_new_member:read
+  schema_evol:code_gen:multi_schema_components_rename_member:write_old
+  schema_evol:code_gen:multi_schema_components_rename_member:write_oldest
+  schema_evol:code_gen:multi_schema_components_rename_member:read
 )
 
 set(failing_with_thread_sanitizer
@@ -43,12 +53,11 @@ set(failing_with_thread_sanitizer
   schema_evol:code_gen:no_change:read_rntuple
   schema_evol:code_gen:array_component_new_member:write_old_rntuple
   schema_evol:code_gen:array_component_new_member:read_rntuple
-  # The following two work with clang19, but not gcc15
-  schema_evol:code_gen:datatypes_remove_type:write_rntuple
-  schema_evol:code_gen:datatypes_remove_type:read_rntuple
-  # These work with gcc15 but not clang19
-  schema_evol:code_gen:datatypes_rename_relation:write_rntuple
-  schema_evol:code_gen:datatypes_rename_relation:read_rntuple
+
+  schema_evol:code_gen:multi_schema_component_new_member:write_old_rntuple
+  schema_evol:code_gen:multi_schema_component_new_member:read_rntuple
+  schema_evol:code_gen:multi_schema_datatypes_new_member:write_old_rntuple
+  schema_evol:code_gen:multi_schema_datatypes_new_member:read_rntuple
 )
 
 # This will only apply for clang based builds and is currently the superset of
