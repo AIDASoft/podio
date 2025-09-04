@@ -1,8 +1,8 @@
-from_schema_version: 1
-to_schema_version: 2
-
-evolutions:
+migrations:
   nsp::TestType:
-    member_rename:
-      - oldEnergy
-      - energy
+    - from_version: 1
+      to_version: 2
+      change:
+        type: rename_member
+        from: oldEnergy
+        to: energy
