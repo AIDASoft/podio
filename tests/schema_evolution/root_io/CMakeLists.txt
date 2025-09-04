@@ -1,5 +1,0 @@
-CREATE_PODIO_TEST(write_old_data_root.cpp "TestDataModelDict;podioRootIO")
-PODIO_CREATE_READ_NEW_DATA_TEST(read_new_data_root.cpp "TestDataModel_v3Dict;podio::podioRootIO")
-
-set_tests_properties(write_old_data_root PROPERTIES FIXTURES_SETUP podio_write_old_data_root_fixture)
-set_tests_properties(read_new_data_root PROPERTIES FIXTURES_REQUIRED podio_write_old_data_root_fixture)
