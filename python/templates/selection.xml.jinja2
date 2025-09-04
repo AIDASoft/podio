@@ -7,6 +7,13 @@
 {%- endif -%}
 {%- endmacro -%}
 
+{%- macro data_class_selection(class, version, suffix="") %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+{% set class_name = namespace + 'v' + version|string + '::' + class.bare_type + suffix %}
+        <class name="{{ class_name }}" ClassVersion="{{ version }}"/>
+        <class name="std::vector<{{ class_name }}>"/>
+{%- endmacro -%}
+
 {% macro ioread(iorule) %}
         <ioread sourceClass="{{ iorule.sourceClass }}" targetClass="{{ iorule.targetClass}}" version="[{{ iorule.version }}]" target="{{ iorule.target }}" source="{{ iorule.source }}">
         <![CDATA[
@@ -21,10 +28,12 @@
         <!-- components -->
 {% for class in components %}
 {{ class_selection(class, vector=True) }}
+{{ data_class_selection(class, version) }}
 {% endfor %}
 
         <!-- datatypes -->
 {% for class in datatypes %}
+{{ data_class_selection(class, version, "Data") }}
 {{ class_selection(class, postfix='Data', vector=True) }}
 {# We need to also create the collections in the selection xml file. #}
 {# Otherwise the python interface does not work in gcc builds #}
@@ -35,17 +44,23 @@
 {{ class_selection(class, postfix='Collection') }}
 {% endfor %}
 
+{% if old_schema_components or old_schema_datatypes %}
         <!-- previous schema components and pods -->
-{% for class in old_schema_components %}
-{{ class_selection(class) }}
+{% endif %}
+{% for item in old_schema_components %}
+{{ data_class_selection(item.class, item.version) }}
 {% endfor %}
-{% for class in old_schema_datatypes %}
-{{ class_selection(class, postfix="Data") }}
+{% for item in old_schema_datatypes %}
+{{ data_class_selection(item.class, item.version, "Data") }}
 {% endfor %}
 
     </selection>
 
+{% if iorules %}
+<!-- I/O rules for invoking the schema evolution mechanism of ROOT -->
+{% endif %}
 {% for iorule in iorules %}
 {{ ioread(iorule) }}
 {% endfor %}
+
 </lcgdict>

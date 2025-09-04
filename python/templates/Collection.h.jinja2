@@ -67,7 +67,7 @@ public:
 
   constexpr static std::string_view typeName = "{{ (class | string ).strip(':') + "Collection" }}";
   constexpr static std::string_view valueTypeName = "{{ (class | string ).strip(':') }}";
-  constexpr static std::string_view dataTypeName = "{{ (class | string ).strip(':') + "Data" }}";
+  constexpr static std::string_view dataTypeName = "{{ ( class | string ).strip(':') }}Data";
 
   void clear() final;
 

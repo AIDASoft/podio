@@ -4,6 +4,7 @@ Provides infrastructure for analyzing schema definitions for schema evolution
 """
 
 import sys
+from dataclasses import dataclass
 import yaml
 
 from podio_gen.podio_config_reader import PodioConfigReader
@@ -173,16 +174,16 @@ class DroppedMultiRelation(SchemaChange):
         )
 
 
+@dataclass
 class RootIoRule:
-    """A placeholder IORule class"""
+    """Class collecting all necessary information to create an I/O rule for ROOT"""
 
-    def __init__(self):
-        self.sourceClass = None
-        self.targetClass = None
-        self.version = None
-        self.source = None
-        self.target = None
-        self.code = None
+    sourceClass: str
+    targetClass: str
+    version: int
+    code: str
+    target: str
+    source: str = ""
 
 
 def sio_filter(schema_changes):
