@@ -1,6 +1,7 @@
 #include "podio/RNTupleWriter.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
