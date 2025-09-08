@@ -3,7 +3,6 @@
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
-#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "podio/utilities/TypeHelpers.h"
 
@@ -210,17 +209,17 @@ inline void resetBranches(TTree* chain, CollectionBranches& branches, const std:
 template <typename BufferT>
 inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionBranches& branches) {
 
-  if (auto buffer = collBuffers.data) {
+  if (const auto buffer = collBuffers.data) {
     branches.data->SetAddress(buffer);
   }
 
-  if (auto refCollections = collBuffers.references) {
+  if (const auto refCollections = collBuffers.references) {
     for (size_t i = 0; i < refCollections->size(); ++i) {
       branches.refs[i]->SetAddress(&(*refCollections)[i]);
     }
   }
 
-  if (auto vecMembers = collBuffers.vectorMembers) {
+  if (const auto vecMembers = collBuffers.vectorMembers) {
     for (size_t i = 0; i < vecMembers->size(); ++i) {
       branches.vecs[i]->SetAddress((*vecMembers)[i].second);
     }
@@ -256,7 +255,7 @@ inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable
     const auto collID = idTable.ids()[iColl];
     const auto& name = idTable.names()[iColl];
 
-    if (auto branch = getBranch(eventTree, name.c_str())) {
+    if (const auto branch = getBranch(eventTree, name.c_str())) {
       const std::string_view bufferClassName = branch->GetClassName();
       // this comes with vector<...Data>, where we only care about the ...
       std::string_view dataClass = bufferClassName;
