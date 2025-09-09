@@ -248,7 +248,6 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
   target_include_directories(${dict_name} PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    ${Python3_INCLUDE_DIRS}
     )
   target_include_directories(${dict_name} SYSTEM PUBLIC
     ${Python3_INCLUDE_DIRS}
