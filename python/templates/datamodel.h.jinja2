@@ -15,7 +15,7 @@ using {{ package_name }}DataTypes = podio::utils::TypeList<
   {{ datatypes | join(', ')}}
 >;
 
-using {{ package_name }}DataCollectionTypes = podio::utils::TypeList<
+using {{ package_name }}CollectionTypes = podio::utils::TypeList<
 {%  if datatypes %}
   {{ datatypes | join('Collection, ') ~ 'Collection' }}
 {% endif %}

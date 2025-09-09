@@ -1611,7 +1611,7 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
                                                         "nsp::EnergyInNamespace",
                                                         "ExampleWithSingleSelfRelation"}));
   std::vector<std::string> dataCollectionTypes;
-  addTypeAll(datamodel::datamodelDataCollectionTypes{}, dataCollectionTypes);
+  addTypeAll(datamodel::datamodelCollectionTypes{}, dataCollectionTypes);
   REQUIRE_THAT(dataCollectionTypes,
                UnorderedEquals(std::vector<std::string>{"EventInfoCollection",
                                                         "ExampleHitCollection",
@@ -1659,9 +1659,9 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
                UnorderedEquals(std::vector<std::string>{"extension::ContainedType", "extension::ExternalComponentType",
                                                         "extension::ExternalRelationType"}));
 
-  std::vector<std::string> extensionDataCollectionTypes;
-  addTypeAll(extension_model::extension_modelDataCollectionTypes{}, extensionDataCollectionTypes);
-  REQUIRE_THAT(extensionDataCollectionTypes,
+  std::vector<std::string> extensionCollectionTypes;
+  addTypeAll(extension_model::extension_modelCollectionTypes{}, extensionCollectionTypes);
+  REQUIRE_THAT(extensionCollectionTypes,
                UnorderedEquals(std::vector<std::string>{"extension::ContainedTypeCollection",
                                                         "extension::ExternalComponentTypeCollection",
                                                         "extension::ExternalRelationTypeCollection"}));
