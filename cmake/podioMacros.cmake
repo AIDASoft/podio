@@ -250,6 +250,9 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     ${Python3_INCLUDE_DIRS}
     )
+  target_include_directories(${dict_name} SYSTEM PUBLIC
+    ${Python3_INCLUDE_DIRS}
+    )
   PODIO_GENERATE_DICTIONARY(${dict_name} ${HEADERS} SELECTION ${selectionfile}
     OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dict_name}${CMAKE_SHARED_LIBRARY_SUFFIX}
     )
