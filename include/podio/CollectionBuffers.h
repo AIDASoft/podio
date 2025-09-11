@@ -4,6 +4,9 @@
 #include "podio/ObjectID.h"
 #include "podio/SchemaEvolution.h"
 
+#ifndef NDEBUG
+  #include <cassert>
+#endif
 #include <functional>
 #include <memory>
 #include <string>
@@ -82,6 +85,24 @@ struct CollectionReadBuffers {
   template <typename T>
   static std::vector<T>* asVector(void* raw) {
     // Are we at a beach? I can almost smell the C...
+#ifndef NDEBUG
+    // It is possible that we get a garbage vector pointer back from ROOT in
+    // some cases. These can be triggered, e.g. by not providing the correct
+    // dictionaries when reading back data. This can happen via a faulty
+    // environment or in cases where the on-disk version of the data can no
+    // longer be read back properly into the in-memory representation of the
+    // current datamodel. This really is just a stop-gap to avoid running into
+    // an infinite loop that eats all memory. Almost certainly ROOT has emitted
+    // some warnings prior to this.
+    const auto* tmp = static_cast<std::vector<T>*>(raw);
+    for (auto elem [[maybe_unused]] : *tmp) {
+      // The "garbageness" of the vector is indicated by the fact that it
+      // reports a size of 0 (implying begin() == end() in at least GCCs
+      // implementation), but still entering this loop. Hence, we use that to
+      // assert here.
+      assert(tmp->size() != 0);
+    }
+#endif
     return static_cast<std::vector<T>*>(raw);
   }
 
