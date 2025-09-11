@@ -91,11 +91,16 @@ struct CollectionReadBuffers {
     // an infinite loop that eats all memory. Almost certainly ROOT has emitted
     // some warnings prior to this.
     const auto* tmp = static_cast<std::vector<T>*>(raw);
-    for (const auto& _ [[maybe_unused]] : *tmp) {
+    // NOTE: We deliberatly make this a copy, as that at least leads to a crash
+    // in Debug builds
+    for (const auto _ [[maybe_unused]] : *tmp) {
       // The "garbageness" of the vector is indicated by the fact that it
       // reports a size of 0 (implying begin() == end() in at least GCCs
       // implementation), but still entering this loop. Hence, we use that to
       // assert here.
+      //
+      // NOTE: It looks like this is not necessarily true nor sufficient to
+      // detect problems.
       assert(tmp->size() != 0);
       break; // Only need to do this once
     }
