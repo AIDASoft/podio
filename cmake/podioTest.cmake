@@ -4,6 +4,7 @@ function(PODIO_SET_TEST_ENV test)
   # We need to convert this into a list of arguments that can be used as environment variable
   list(JOIN PODIO_IO_HANDLERS " " IO_HANDLERS)
   set(test_environment
+    ROOT_LIBRARY_PATH=""
     LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests:${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PYTHONPATH=${PROJECT_SOURCE_DIR}/python:$ENV{PYTHONPATH}
       PODIO_SIOBLOCK_PATH=${PROJECT_BINARY_DIR}/tests
