@@ -1,0 +1,10 @@
+schema_version: 2
+options:
+  includeSubfolder: true
+
+datatypes:
+  NewTestType:
+    Description: "A datatype that will be renamed"
+    Author: "Thomas Madlener"
+    Members:
+      - int i // an int
