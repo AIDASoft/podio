@@ -84,7 +84,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         # information to update the selection.xml
         self.root_schema_component_names = set()
         self.root_schema_datatype_names = set()
-        self.root_schema_iorules = set()
+        self.root_schema_iorules = []
         # a map of datatypes that are used in interfaces populated by pre_process
         self.types_in_interfaces = {}
 
@@ -487,18 +487,22 @@ have resolvable schema evolution incompatibilities:"
                             f"{schema_change.member_name_new} in {type_name}"
                         )
 
-                    iorule = RootIoRule()
-                    iorule.sourceClass = type_name
-                    iorule.targetClass = type_name
+                    sourceClass = type_name
+                    targetClass = type_name
                     if is_datatype:
-                        iorule.sourceClass = f"{type_name}Data"
-                        iorule.targetClass = f"{type_name}Data"
+                        sourceClass = f"{type_name}Data"
+                        targetClass = f"{type_name}Data"
 
-                    iorule.version = self.old_schema_version
-                    iorule.source = f"{member_type} {schema_change.member_name_old}"
-                    iorule.target = schema_change.member_name_new
-                    iorule.code = f"{iorule.target} = onfile.{schema_change.member_name_old};"
-                    self.root_schema_iorules.add(iorule)
+                    target = schema_change.member_name_new
+                    iorule = RootIoRule(
+                        sourceClass=sourceClass,
+                        targetClass=targetClass,
+                        source=f"{member_type} {schema_change.member_name_old}",
+                        version=self.old_schema_version,
+                        target=target,
+                        code=f"{target} = onfile.{schema_change.member_name_old};",
+                    )
+                    self.root_schema_iorules.append(iorule)
                 else:
                     raise NotImplementedError(
                         f"Schema evolution for {schema_change} not yet implemented."
