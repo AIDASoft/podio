@@ -65,7 +65,7 @@ jobs:
             ninja -k0
             echo "::endgroup::"
             echo "::group::Test and install podio"
-            ctest --output-on-failure --schedule-random -j$(nproc)
+            ctest --output-on-failure --schedule-random -j$(nproc) --timeout 600
             ninja install
             cd $STARTDIR/podio
             source init.sh && source env.sh

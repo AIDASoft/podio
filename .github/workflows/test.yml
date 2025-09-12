@@ -58,7 +58,7 @@ jobs:
           julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
           echo "::group::Run tests"
-          ctest --output-on-failure --schedule-random -j$(nproc)
+          ctest --output-on-failure --schedule-random -j$(nproc) --timeout 600
           echo "::endgroup::"
           echo "::group::Install"
           ninja install
