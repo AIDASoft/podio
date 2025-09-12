@@ -344,33 +344,30 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         # which are the ones that changed?
         # have to extend the selection xml file
         if self.old_yamlfile:
-            comparator = DataModelComparator(
-                self.yamlfile, self.old_yamlfile, evolution_file=self.evolution_file
-            )
-            comparator.read()
-            comparator.compare()
-            self.old_schema_version = comparator.datamodel_old.schema_version
+            comparator = DataModelComparator(self.yamlfile, evolution_file=self.evolution_file)
+            comparison_results = comparator.compare(self.old_yamlfile)
+            self.old_schema_version = comparison_results.old_datamodel.schema_version
             # some sanity checks
-            if len(comparator.errors) > 0:
+            if len(comparison_results.errors) > 0:
                 print(
                     f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
 have unresolvable schema evolution incompatibilities:"
                 )
-                for error in comparator.errors:
+                for error in comparison_results.errors:
                     print(error)
                 sys.exit(-1)
-            if len(comparator.warnings) > 0:
+            if len(comparison_results.warnings) > 0:
                 print(
                     f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
 have resolvable schema evolution incompatibilities:"
                 )
-                for warning in comparator.warnings:
+                for warning in comparison_results.warnings:
                     print(warning)
                 sys.exit(-1)
 
             # now go through all the io_handlers and see what we have to do
             if "ROOT" in self.io_handlers:
-                for item in root_filter(comparator.schema_changes):
+                for item in root_filter(comparison_results.schema_changes):
                     # add whatever is relevant to our ROOT schema evolution
                     self.root_schema_dict.setdefault(item.klassname, []).append(item)
 
