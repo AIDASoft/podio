@@ -4,6 +4,7 @@
 #include "podio/ObjectID.h"
 #include "podio/SchemaEvolution.h"
 
+#include <cassert>
 #include <functional>
 #include <memory>
 #include <string>
@@ -81,6 +82,28 @@ struct CollectionReadBuffers {
 
   template <typename T>
   static std::vector<T>* asVector(void* raw) {
+    // It is possible that we get a garbage vector pointer back from ROOT in
+    // some cases. These can be triggered, e.g. by not providing the correct
+    // dictionaries when reading back data. This can happen via a faulty
+    // environment or in cases where the on-disk version of the data can no
+    // longer be read back properly into the in-memory representation of the
+    // current datamodel. This really is just a stop-gap to avoid running into
+    // an infinite loop that eats all memory. Almost certainly ROOT has emitted
+    // some warnings prior to this.
+    const auto* tmp = static_cast<std::vector<T>*>(raw);
+    // NOTE: We deliberatly make this a copy, as that at least leads to a crash
+    // in Debug builds
+    for (const auto _ [[maybe_unused]] : *tmp) {
+      // The "garbageness" of the vector is indicated by the fact that it
+      // reports a size of 0 (implying begin() == end() in at least GCCs
+      // implementation), but still entering this loop. Hence, we use that to
+      // assert here.
+      //
+      // NOTE: It looks like this is not necessarily true nor sufficient to
+      // detect problems.
+      assert(tmp->size() != 0);
+      break; // Only need to do this once
+    }
     // Are we at a beach? I can almost smell the C...
     return static_cast<std::vector<T>*>(raw);
   }
