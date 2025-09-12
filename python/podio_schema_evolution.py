@@ -222,9 +222,10 @@ def root_filter(schema_changes):
     return relevant_schema_changes
 
 
-class DataModelComparator:
+class SchemaEvolutionJudge:
     """
-    Compares two datamodels and extracts required schema evolution
+    Analyzes detected schema changes and applies heuristics to determine
+    what changes are supported, need user input, or are forbidden
     """
 
     unsupported_changes = (
@@ -236,177 +237,29 @@ class DataModelComparator:
         DroppedMultiRelation,
     )
 
-    def __init__(self, yamlfile_new, evolution_file=None) -> None:
-        self.reader = PodioConfigReader()
-        self.datamodel_new = self.reader.read(yamlfile_new, package_name="new")
+    def __init__(self, new_datamodel, evolution_file=None):
+        self.datamodel_new = new_datamodel
         self.evolution_file = evolution_file
 
-    def compare(self, yamlfile_old) -> ComparisonResults:
-        """execute the comparison between the new datamodel and the old one from yamlfile_old"""
-
-        datamodel_old = self.reader.read(yamlfile_old, package_name="old")
-
-        detected_schema_changes = []
+    def judge(self, old_datamodel, detected_schema_changes) -> ComparisonResults:
+        """Apply heuristics to detected schema changes and return analysis results"""
         read_schema_changes = []
-        schema_changes = []
         warnings = []
         errors = []
 
         if self.evolution_file:
-            read_schema_changes = self._read_evolution_file(datamodel_old)
+            read_schema_changes = self._read_evolution_file(old_datamodel)
 
-        detected_schema_changes.extend(self._compare_components(datamodel_old))
-        detected_schema_changes.extend(self._compare_datatypes(datamodel_old))
         schema_changes, warnings, errors = self._heuristics(
-            datamodel_old, detected_schema_changes, read_schema_changes, warnings, errors
+            old_datamodel, detected_schema_changes, read_schema_changes, warnings, errors
         )
 
         return ComparisonResults(
-            old_datamodel=datamodel_old,
+            old_datamodel=old_datamodel,
             warnings=warnings,
             errors=errors,
             schema_changes=schema_changes,
         )
-
-    def _compare_components(self, datamodel_old):
-        """compare component definitions of old and new datamodel"""
-        detected_schema_changes = []
-        # first check for dropped, added and kept components
-        added_components, dropped_components, kept_components = self._compare_keys(
-            self.datamodel_new.components.keys(), datamodel_old.components.keys()
-        )
-        detected_schema_changes.extend(
-            [
-                AddedComponent(self.datamodel_new.components[name], name)
-                for name in added_components
-            ]
-        )
-        detected_schema_changes.extend(
-            [DroppedComponent(datamodel_old.components[name], name) for name in dropped_components]
-        )
-
-        detected_schema_changes.extend(
-            self._compare_members(
-                kept_components,
-                self.datamodel_new.components,
-                datamodel_old.components,
-                "Members",
-            )
-        )
-
-        return detected_schema_changes
-
-    def _compare_datatypes(self, datamodel_old):
-        """compare datatype definitions of old and new datamodel"""
-        detected_schema_changes = []
-        # first check for dropped, added and kept components
-        added_types, dropped_types, kept_types = self._compare_keys(
-            self.datamodel_new.datatypes.keys(), datamodel_old.datatypes.keys()
-        )
-        detected_schema_changes.extend(
-            [AddedDatatype(self.datamodel_new.datatypes[name], name) for name in added_types]
-        )
-        detected_schema_changes.extend(
-            [DroppedDatatype(datamodel_old.datatypes[name], name) for name in dropped_types]
-        )
-
-        detected_schema_changes.extend(
-            self._compare_members(
-                kept_types,
-                self.datamodel_new.datatypes,
-                datamodel_old.datatypes,
-                "Members",
-            )
-        )
-
-        detected_schema_changes.extend(
-            self._compare_members(
-                kept_types,
-                self.datamodel_new.datatypes,
-                datamodel_old.datatypes,
-                "VectorMembers",
-                AddedVectorMember,
-                DroppedVectorMember,
-            )
-        )
-
-        detected_schema_changes.extend(
-            self._compare_members(
-                kept_types,
-                self.datamodel_new.datatypes,
-                datamodel_old.datatypes,
-                "OneToOneRelations",
-                AddedSingleRelation,
-                DroppedSingleRelation,
-            )
-        )
-
-        detected_schema_changes.extend(
-            self._compare_members(
-                kept_types,
-                self.datamodel_new.datatypes,
-                datamodel_old.datatypes,
-                "OneToManyRelations",
-                AddedMultiRelation,
-                DroppedMultiRelation,
-            )
-        )
-
-        return detected_schema_changes
-
-    def _compare_members(
-        self,
-        definitions,
-        first,
-        second,
-        category,
-        added_change=AddedMember,
-        dropped_change=DroppedMember,
-    ):
-        """compare member definitions in old and new datamodel"""
-        detected_schema_changes = []
-        for name in definitions:
-            # we are only interested in members not the extracode
-            members1 = {member.name: member for member in first[name][category]}
-            members2 = {member.name: member for member in second[name][category]}
-            added_members, dropped_members, kept_members = self._compare_keys(
-                members1.keys(), members2.keys()
-            )
-            detected_schema_changes.extend(
-                [added_change(members1[member], name) for member in added_members]
-            )
-            detected_schema_changes.extend(
-                [dropped_change(members2[member], name) for member in dropped_members]
-            )
-
-            # now let's compare old and new for the kept members
-            for member_name in kept_members:
-                new = members1[member_name]
-                old = members2[member_name]
-                if old.full_type != new.full_type:
-                    detected_schema_changes.append(ChangedMemberType(name, old, new))
-
-        return detected_schema_changes
-
-    @staticmethod
-    def _compare_keys(keys1, keys2):
-        """compare keys of two given dicts. return added, dropped and overlapping keys"""
-        added = set(keys1).difference(keys2)
-        dropped = set(keys2).difference(keys1)
-        kept = set(keys1).intersection(keys2)
-        return added, dropped, kept
-
-    def get_changed_schemata(self, comparison_results, schema_filter=None):
-        """return the schemata which actually changed"""
-        if schema_filter:
-            schema_changes = schema_filter(comparison_results.schema_changes)
-        else:
-            schema_changes = comparison_results.schema_changes
-        changed_klasses = {}
-        for schema_change in schema_changes:
-            changed_klass = changed_klasses.setdefault(schema_change.klassname, [])
-            changed_klass.append(schema_change)
-        return changed_klasses
 
     def check_rename(self, added_member, dropped_member, schema_changes, read_schema_changes):
         """Check whether this pair of addition / removal could be a rename and
@@ -463,7 +316,7 @@ class DataModelComparator:
         return warnings
 
     def _heuristics(
-        self, datamodel_old, detected_schema_changes, read_schema_changes, warnings, errors
+        self, old_datamodel, detected_schema_changes, read_schema_changes, warnings, errors
     ):
         """make an analysis of the data model changes:
         - check which can be auto-resolved
@@ -498,7 +351,7 @@ class DataModelComparator:
                     f" to '{change.new_member.full_type}'"
                 )
             # changing from one component type to another component type is forbidden
-            elif change.old_member.full_type in datamodel_old.components:
+            elif change.old_member.full_type in old_datamodel.components:
                 errors.append(
                     f"Forbidden schema change in '{change.klassname}' for "
                     f"'{change.old_member.name}' from '{change.old_member.full_type}'"
@@ -552,31 +405,7 @@ class DataModelComparator:
 
         return schema_changes, warnings, errors
 
-    def print_comparison(self, comparison_results):
-        """print the result of the datamodel comparison"""
-        print(
-            f"Comparing datamodel versions {self.datamodel_new.schema_version}"
-            f" and {comparison_results.old_datamodel.schema_version}"
-        )
-
-        print(f"Detected {len(comparison_results.schema_changes)} schema changes:")
-        for change in comparison_results.schema_changes:
-            print(f" - {change}")
-
-        if len(comparison_results.warnings) > 0:
-            print("Warnings:")
-            for warning in comparison_results.warnings:
-                print(f" - {warning}")
-
-        if len(comparison_results.errors) > 0:
-            print("ERRORS:")
-            for error in comparison_results.errors:
-                print(f" - {error}")
-            return False
-
-        return True
-
-    def _read_evolution_file(self, datamodel_old):
+    def _read_evolution_file(self, old_datamodel):
         """read and parse evolution file"""
         read_schema_changes = []
         supported_operations = ("member_rename", "class_renamed_to")
@@ -584,7 +413,7 @@ class DataModelComparator:
             content = yaml.load(stream, yaml.SafeLoader)
             from_schema_version = content["from_schema_version"]
             to_schema_version = content["to_schema_version"]
-            if (from_schema_version != datamodel_old.schema_version) or (
+            if (from_schema_version != old_datamodel.schema_version) or (
                 to_schema_version != self.datamodel_new.schema_version
             ):
                 raise BaseException(
@@ -611,6 +440,188 @@ class DataModelComparator:
         return read_schema_changes
 
 
+class DataModelComparator:
+    """
+    Compares two datamodels and detects schema changes
+    """
+
+    def __init__(self, new_datamodel: DataModel) -> None:
+        self.datamodel_new = new_datamodel
+
+    def compare(self, old_datamodel: DataModel) -> List[SchemaChange]:
+        """execute the comparison between the new datamodel and the old one"""
+
+        detected_schema_changes = []
+        detected_schema_changes.extend(self._compare_components(old_datamodel))
+        detected_schema_changes.extend(self._compare_datatypes(old_datamodel))
+
+        return detected_schema_changes
+
+    def _compare_components(self, old_datamodel):
+        """compare component definitions of old and new datamodel"""
+        detected_schema_changes = []
+        # first check for dropped, added and kept components
+        added_components, dropped_components, kept_components = self._compare_keys(
+            self.datamodel_new.components.keys(), old_datamodel.components.keys()
+        )
+        detected_schema_changes.extend(
+            [
+                AddedComponent(self.datamodel_new.components[name], name)
+                for name in added_components
+            ]
+        )
+        detected_schema_changes.extend(
+            [DroppedComponent(old_datamodel.components[name], name) for name in dropped_components]
+        )
+
+        detected_schema_changes.extend(
+            self._compare_members(
+                kept_components,
+                self.datamodel_new.components,
+                old_datamodel.components,
+                "Members",
+            )
+        )
+
+        return detected_schema_changes
+
+    def _compare_datatypes(self, old_datamodel):
+        """compare datatype definitions of old and new datamodel"""
+        detected_schema_changes = []
+        # first check for dropped, added and kept components
+        added_types, dropped_types, kept_types = self._compare_keys(
+            self.datamodel_new.datatypes.keys(), old_datamodel.datatypes.keys()
+        )
+        detected_schema_changes.extend(
+            [AddedDatatype(self.datamodel_new.datatypes[name], name) for name in added_types]
+        )
+        detected_schema_changes.extend(
+            [DroppedDatatype(old_datamodel.datatypes[name], name) for name in dropped_types]
+        )
+
+        detected_schema_changes.extend(
+            self._compare_members(
+                kept_types,
+                self.datamodel_new.datatypes,
+                old_datamodel.datatypes,
+                "Members",
+            )
+        )
+
+        detected_schema_changes.extend(
+            self._compare_members(
+                kept_types,
+                self.datamodel_new.datatypes,
+                old_datamodel.datatypes,
+                "VectorMembers",
+                AddedVectorMember,
+                DroppedVectorMember,
+            )
+        )
+
+        detected_schema_changes.extend(
+            self._compare_members(
+                kept_types,
+                self.datamodel_new.datatypes,
+                old_datamodel.datatypes,
+                "OneToOneRelations",
+                AddedSingleRelation,
+                DroppedSingleRelation,
+            )
+        )
+
+        detected_schema_changes.extend(
+            self._compare_members(
+                kept_types,
+                self.datamodel_new.datatypes,
+                old_datamodel.datatypes,
+                "OneToManyRelations",
+                AddedMultiRelation,
+                DroppedMultiRelation,
+            )
+        )
+
+        return detected_schema_changes
+
+    def _compare_members(
+        self,
+        definitions,
+        first,
+        second,
+        category,
+        added_change=AddedMember,
+        dropped_change=DroppedMember,
+    ):
+        """compare member definitions in old and new datamodel"""
+        detected_schema_changes = []
+        for name in definitions:
+            # we are only interested in members not the extracode
+            members1 = {member.name: member for member in first[name][category]}
+            members2 = {member.name: member for member in second[name][category]}
+            added_members, dropped_members, kept_members = self._compare_keys(
+                members1.keys(), members2.keys()
+            )
+            detected_schema_changes.extend(
+                [added_change(members1[member], name) for member in added_members]
+            )
+            detected_schema_changes.extend(
+                [dropped_change(members2[member], name) for member in dropped_members]
+            )
+
+            # now let's compare old and new for the kept members
+            for member_name in kept_members:
+                new = members1[member_name]
+                old = members2[member_name]
+                if old.full_type != new.full_type:
+                    detected_schema_changes.append(ChangedMemberType(name, old, new))
+
+        return detected_schema_changes
+
+    @staticmethod
+    def _compare_keys(keys1, keys2):
+        """compare keys of two given dicts. return added, dropped and overlapping keys"""
+        added = set(keys1).difference(keys2)
+        dropped = set(keys2).difference(keys1)
+        kept = set(keys1).intersection(keys2)
+        return added, dropped, kept
+
+    def get_changed_schemata(self, results, schema_filter=None):
+        """return the schemata which actually changed"""
+        if schema_filter:
+            schema_changes = schema_filter(results.schema_changes)
+        else:
+            schema_changes = results.schema_changes
+        changed_klasses = {}
+        for schema_change in schema_changes:
+            changed_klass = changed_klasses.setdefault(schema_change.klassname, [])
+            changed_klass.append(schema_change)
+        return changed_klasses
+
+    def print_comparison(self, results):
+        """print the result of the datamodel comparison"""
+        print(
+            f"Comparing datamodel versions {self.datamodel_new.schema_version}"
+            f" and {results.old_datamodel.schema_version}"
+        )
+
+        print(f"Detected {len(results.schema_changes)} schema changes:")
+        for change in results.schema_changes:
+            print(f" - {change}")
+
+        if len(results.warnings) > 0:
+            print("Warnings:")
+            for warning in results.warnings:
+                print(f" - {warning}")
+
+        if len(results.errors) > 0:
+            print("ERRORS:")
+            for error in results.errors:
+                print(f" - {error}")
+            return False
+
+        return True
+
+
 ##########################
 if __name__ == "__main__":
     import argparse
@@ -627,8 +638,15 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    comparator = DataModelComparator(args.new, evolution_file=args.evo)
-    comparison_results = comparator.compare(args.old)
+    reader = PodioConfigReader()
+    datamodel_new = reader.read(args.new, package_name="new")
+    datamodel_old = reader.read(args.old, package_name="old")
+    comparator = DataModelComparator(datamodel_new)
+    detected_changes = comparator.compare(datamodel_old)
+
+    judge = SchemaEvolutionJudge(comparator.datamodel_new, evolution_file=args.evo)
+    comparison_results = judge.judge(datamodel_old, detected_changes)
+
     if not comparator.print_comparison(comparison_results):
         sys.exit(1)
     # print(comparator.get_changed_schemata(comparison_results, schema_filter=root_filter))
