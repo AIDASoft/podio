@@ -48,7 +48,7 @@
   if (s > 1e15) throw std::runtime_error("Bad data after reading: a collection is too big");
   else
     if (s == 0)
-      for (const auto& _ : *m_data.get())
+      for ([[maybe_unused]] const auto& _ : *m_data.get())
         throw std::runtime_error("Bad data after reading: zero-sized collection with data");
   // end of ugly
 
