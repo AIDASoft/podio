@@ -122,8 +122,8 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
   add_test(NAME schema_evol:code_gen:${test_case}:write${suffix} COMMAND write_${test_base})
   set_property(TEST schema_evol:code_gen:${test_case}:write${suffix}
     PROPERTY ENVIRONMENT
-      ROOT_LIBRARY_PATH=""
-      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+      ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
+      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
   )
   set_tests_properties(schema_evol:code_gen:${test_case}:write${suffix}
@@ -153,8 +153,8 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
         COMMAND bash -c "${test_command}")
   set_property(TEST schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTY ENVIRONMENT
-      ROOT_LIBRARY_PATH=""
-      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+      ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
+      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
   )
   set_tests_properties(schema_evol:code_gen:${test_case}:read${suffix}
