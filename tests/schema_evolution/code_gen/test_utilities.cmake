@@ -124,7 +124,6 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
     PROPERTY ENVIRONMENT
       ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-      PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/old_model
   )
   set_tests_properties(schema_evol:code_gen:${test_case}:write${suffix}
     PROPERTIES
@@ -155,7 +154,6 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
     PROPERTY ENVIRONMENT
       ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
-      PODIO_SIO_BLOCK=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
   )
   set_tests_properties(schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTIES
