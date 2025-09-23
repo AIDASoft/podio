@@ -151,13 +151,6 @@ include(CTest)
 set(USE_EXTERNAL_CATCH2 AUTO CACHE STRING "Link against an external Catch2 v3 static library, otherwise build it locally")
 set_property(CACHE USE_EXTERNAL_CATCH2 PROPERTY STRINGS AUTO ON OFF)
 
-#--- enable CPack --------------------------------------------------------------
-
-option(ENABLE_CPACK "Whether or not to use cpack config" OFF)
-if(ENABLE_CPACK)
-  include(cmake/podioCPack.cmake)
-endif()
-
 #--- target for Doxygen documentation ------------------------------------------
 if(CREATE_DOC)
 	include(cmake/podioDoxygen.cmake)
