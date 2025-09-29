@@ -12,6 +12,7 @@
 #include <fmt/ranges.h>
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <numeric>
 #include <ranges>
