@@ -1,6 +1,7 @@
 #include "podio/DatamodelRegistry.h"
 
 #include <algorithm>
+#include <charconv>
 #include <iostream>
 #include <iterator>
 #include <string_view>
@@ -15,12 +16,42 @@ DatamodelRegistry& DatamodelRegistry::mutInstance() {
   return registryInstance;
 }
 
+podio::SchemaVersionT extractSchemaVersion(const std::string_view definition) {
+  // Extract schema_version from JSON definition without full parsing
+  // Look for "schema_version": followed by a number
+  constexpr std::string_view schemaVersionKey = "\"schema_version\":";
+  if (auto pos = definition.find(schemaVersionKey); pos != std::string_view::npos) {
+    pos += schemaVersionKey.length();
+    // Skip whitespace
+    while (pos < definition.length() && std::isspace(definition[pos])) {
+      ++pos;
+    }
+    // Extract the number
+    auto start = pos;
+    while (pos < definition.length() && std::isdigit(definition[pos])) {
+      ++pos;
+    }
+    if (pos > start) {
+      // Convert substring to integer using std::from_chars for better error handling
+      podio::SchemaVersionT schemaVersion = 0;
+      auto result = std::from_chars(definition.data() + start, definition.data() + pos, schemaVersion);
+      if (result.ec == std::errc{}) {
+        return schemaVersion;
+      }
+    }
+  }
+
+  // Return 0 if no valid schema version found
+  return 0;
+}
+
 size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view definition,
                                             const podio::RelationNameMapping& relationNames) {
   const auto it = std::ranges::find(m_definitions, name, &decltype(m_definitions)::value_type::first);
 
   if (it == m_definitions.cend()) {
     int index = m_definitions.size();
+    m_schemaVersions.emplace(name, extractSchemaVersion(definition));
     m_definitions.emplace_back(std::move(name), definition);
 
     for (const auto& [typeName, relations, vectorMembers] : relationNames) {
@@ -99,6 +130,13 @@ RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) con
 
 std::optional<podio::version::Version> DatamodelRegistry::getDatamodelVersion(const std::string& name) const {
   if (const auto it = m_datamodelVersions.find(name); it != m_datamodelVersions.end()) {
+    return it->second;
+  }
+  return std::nullopt;
+}
+
+std::optional<podio::SchemaVersionT> DatamodelRegistry::getSchemaVersion(const std::string& name) const {
+  if (const auto it = m_schemaVersions.find(name); it != m_schemaVersions.end()) {
     return it->second;
   }
   return std::nullopt;
