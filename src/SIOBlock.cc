@@ -100,7 +100,7 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBa
 
 SIOBlockLibraryLoader::SIOBlockLibraryLoader() {
   for (const auto& [lib, dir] : getLibNames()) {
-    const auto status = loadLib(lib);
+    const auto status = loadLib(lib, dir);
     switch (status) {
     case LoadStatus::Success:
       std::cerr << "Loaded SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
@@ -115,11 +115,12 @@ SIOBlockLibraryLoader::SIOBlockLibraryLoader() {
   }
 }
 
-SIOBlockLibraryLoader::LoadStatus SIOBlockLibraryLoader::loadLib(const std::string& libname) {
+SIOBlockLibraryLoader::LoadStatus SIOBlockLibraryLoader::loadLib(const std::string& libname,
+                                                                 const std::string& directory) {
   if (_loadedLibs.find(libname) != _loadedLibs.end()) {
     return LoadStatus::AlreadyLoaded;
   }
-  void* libhandle = dlopen(libname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+  void* libhandle = dlopen((directory + "/" + libname).c_str(), RTLD_LAZY | RTLD_GLOBAL);
   if (libhandle) {
     _loadedLibs.insert({libname, libhandle});
     return LoadStatus::Success;
