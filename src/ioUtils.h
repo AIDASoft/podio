@@ -4,7 +4,6 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -27,6 +26,7 @@ inline std::vector<std::string> checkEDMVersionsReadable(const podio::DatamodelD
     if (!envSchemaVersion) {
       warnings.emplace_back("EDM '" + edmName +
                             "' exists in file but does not seem to be loaded from the environment by podio");
+      continue;
     }
     if (envSchemaVersion.value() < fileSchemaVersion) {
       warnings.emplace_back("EDM '" + edmName + "' exists in file with schema version " +
