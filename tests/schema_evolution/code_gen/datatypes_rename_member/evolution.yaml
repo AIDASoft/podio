@@ -2,7 +2,6 @@ migrations:
   nsp::TestType:
     - from_version: 1
       to_version: 2
-      change:
-        type: rename_member
+      rename_member:
         from: oldEnergy
         to: energy
