@@ -97,21 +97,18 @@ migrations:
   ExampleHit:
     - from_version: 1
       to_version: 2
-      change:
-        type: rename_member
+      rename_member:
         from: old_field
         to: new_field
     - from_version: 2
       to_version: 3
-      change:
-        type: rename_member
+      rename_member:
         from: another_old
         to: another_new
   AnotherType:
     - from_version: 1
       to_version: 2
-      change:
-        type: rename_member
+      rename_member:
         from: x
         to: y
 """
@@ -186,16 +183,14 @@ migrations:
 migrations:
   ExampleHit:
     - from_version: 1
-      # missing to_version and change
+      # missing to_version and change type
 """
         temp_file = self._create_temp_yaml_file(yaml_content)
 
         try:
             with self.assertRaises(ValueError) as cm:
                 SchemaMigrationReader.read_yaml(temp_file)
-            self.assertIn(
-                "Migration missing required keys: ['to_version', 'change']", str(cm.exception)
-            )
+            self.assertIn("Migration missing required key: 'to_version'", str(cm.exception))
         finally:
             self._cleanup_temp_file(temp_file)
 
@@ -206,8 +201,7 @@ migrations:
   ExampleHit:
     - from_version: "1"
       to_version: 2
-      change:
-        type: rename_member
+      rename_member:
         from: old
         to: new
 """
@@ -220,42 +214,63 @@ migrations:
         finally:
             self._cleanup_temp_file(temp_file)
 
-    def test_change_not_dict(self):
-        """Test that 'change' must be a dictionary."""
+    def test_change_details_not_dict(self):
+        """Test that change details must be a dictionary."""
         yaml_content = """
 migrations:
   ExampleHit:
     - from_version: 1
       to_version: 2
-      change: not_a_dict
+      rename_member: not_a_dict
 """
         temp_file = self._create_temp_yaml_file(yaml_content)
 
         try:
             with self.assertRaises(ValueError) as cm:
                 SchemaMigrationReader.read_yaml(temp_file)
-            self.assertIn("'change' must be a dictionary", str(cm.exception))
+            self.assertIn(
+                "Change type 'rename_member' missing required fields:", str(cm.exception)
+            )
         finally:
             self._cleanup_temp_file(temp_file)
 
     def test_missing_change_type(self):
-        """Test that change dictionary must contain 'type' field."""
+        """Test that migration must contain a change type."""
         yaml_content = """
 migrations:
   ExampleHit:
     - from_version: 1
       to_version: 2
-      change:
-        from: old
-        to: new
-        # missing type
+      # missing change type
 """
         temp_file = self._create_temp_yaml_file(yaml_content)
 
         try:
             with self.assertRaises(ValueError) as cm:
                 SchemaMigrationReader.read_yaml(temp_file)
-            self.assertIn("Change dictionary must contain a 'type' field", str(cm.exception))
+            self.assertIn("Migration must contain one change type", str(cm.exception))
+        finally:
+            self._cleanup_temp_file(temp_file)
+
+    def test_multiple_change_types(self):
+        """Test that migration cannot have multiple change types."""
+        yaml_content = """
+migrations:
+  ExampleHit:
+    - from_version: 1
+      to_version: 2
+      rename_member:
+        from: old
+        to: new
+      another_type:
+        some: value
+"""
+        temp_file = self._create_temp_yaml_file(yaml_content)
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                SchemaMigrationReader.read_yaml(temp_file)
+            self.assertIn("Migration can only have one change type", str(cm.exception))
         finally:
             self._cleanup_temp_file(temp_file)
 
@@ -266,8 +281,7 @@ migrations:
   ExampleHit:
     - from_version: 1
       to_version: 2
-      change:
-        type: invalid_type
+      invalid_type:
         from: old
         to: new
 """
@@ -288,20 +302,17 @@ migrations:
   ExampleHit:
     - from_version: 3
       to_version: 4
-      change:
-        type: rename_member
+      rename_member:
         from: c
         to: d
     - from_version: 1
       to_version: 2
-      change:
-        type: rename_member
+      rename_member:
         from: a
         to: b
     - from_version: 2
       to_version: 3
-      change:
-        type: rename_member
+      rename_member:
         from: b
         to: c
 """
@@ -325,8 +336,7 @@ migrations:
   TestType:
     - from_version: 1
       to_version: 2
-      change:
-        type: rename_member
+      rename_member:
         from: old
         to: new
 """
