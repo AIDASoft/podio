@@ -248,26 +248,21 @@ int main(int argc, char* argv[]) {
   // We strip the executable name off directly for parsing
   const auto args = parseArgs({argv + 1, argv + argc});
 
-  try {
-    auto reader = podio::makeReader(args.inputFile);
-    if (!args.dumpEDM.empty()) {
-      return dumpEDMDefinition(reader, args.dumpEDM);
-    }
+  auto reader = podio::makeReader(args.inputFile);
+  if (!args.dumpEDM.empty()) {
+    return dumpEDMDefinition(reader, args.dumpEDM);
+  }
 
-    printGeneralInfo(reader, args.inputFile);
+  printGeneralInfo(reader, args.inputFile);
 
-    for (const auto event : args.events) {
-      try {
-        const auto& frame = reader.readFrame(args.category, event);
-        printFrame(frame, args.category, event, args.detailed);
-      } catch (std::runtime_error& err) {
-        fmt::println(stderr, "{}", err.what());
-        return 1;
-      }
+  for (const auto event : args.events) {
+    try {
+      const auto& frame = reader.readFrame(args.category, event);
+      printFrame(frame, args.category, event, args.detailed);
+    } catch (std::runtime_error& err) {
+      fmt::println(stderr, "{}", err.what());
+      return 1;
     }
-  } catch (const std::bad_function_call&) {
-    fmt::println(stderr, "ERROR: Cannot create the necessary structures to read a collection from file");
-    return 1;
   }
 
   return 0;

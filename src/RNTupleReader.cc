@@ -185,13 +185,13 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     const auto& collType = coll.dataType;
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
     const auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
-    const auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
 
     if (!maybeBuffers) {
-      std::cout << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
+      std::cerr << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
                 << " and schema version " << coll.schemaVersion << std::endl;
       return nullptr;
     }
+    const auto& collBuffers = maybeBuffers.value();
 
     if (coll.isSubset) {
       const auto brName = root_utils::subsetBranch(coll.name);

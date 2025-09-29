@@ -133,7 +133,11 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
     if (!collsToRead.empty() && std::ranges::find(collsToRead, catInfo.storedClasses[i].name) == collsToRead.end()) {
       continue;
     }
-    buffers.emplace(catInfo.storedClasses[i].name, getCollectionBuffers(catInfo, i, reloadBranches, localEntry));
+    auto collBuffers = getCollectionBuffers(catInfo, i, reloadBranches, localEntry);
+    if (!collBuffers) {
+      return nullptr;
+    }
+    buffers.emplace(catInfo.storedClasses[i].name, collBuffers.value());
   }
 
   auto parameters = readEntryParameters(catInfo, reloadBranches, localEntry);
@@ -142,8 +146,9 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
-podio::CollectionReadBuffers ROOTReader::getCollectionBuffers(ROOTReader::CategoryInfo& catInfo, size_t iColl,
-                                                              bool reloadBranches, unsigned int localEntry) {
+std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROOTReader::CategoryInfo& catInfo,
+                                                                             size_t iColl, bool reloadBranches,
+                                                                             unsigned int localEntry) {
   const auto& name = catInfo.storedClasses[iColl].name;
   const auto& [collType, isSubsetColl, schemaVersion, index] = catInfo.storedClasses[iColl].info;
   auto& branches = catInfo.branches[index];
@@ -151,8 +156,12 @@ podio::CollectionReadBuffers ROOTReader::getCollectionBuffers(ROOTReader::Catego
   const auto& bufferFactory = podio::CollectionBufferFactory::instance();
   auto maybeBuffers = bufferFactory.createBuffers(collType, schemaVersion, isSubsetColl);
 
-  // TODO: Error handling of empty optional
-  auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
+  if (!maybeBuffers) {
+    std::cerr << "WARNING: Buffers couldn't be created for collection " << name << " of type " << collType
+              << " and schema version " << schemaVersion << std::endl;
+    return std::nullopt;
+  }
+  auto collBuffers = maybeBuffers.value();
 
   if (reloadBranches) {
     root_utils::resetBranches(catInfo.chain.get(), branches, name);
