@@ -8,8 +8,14 @@ from enum import IntEnum
 from collections import defaultdict
 from collections.abc import Mapping
 
-from podio_schema_evolution import DataModelComparator
-from podio_schema_evolution import RenamedMember, root_filter, RootIoRule
+from podio_schema_evolution import (
+    DataModelComparator,
+    SchemaEvolutionJudge,
+    RootIoRule,
+    RenamedMember,
+    root_filter,
+)
+from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_base import ClassGeneratorBaseMixin, write_file_if_changed
 from podio_gen.generator_utils import DataType, DataModelJSONEncoder
 
@@ -84,7 +90,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         # information to update the selection.xml
         self.root_schema_component_names = set()
         self.root_schema_datatype_names = set()
-        self.root_schema_iorules = set()
+        self.root_schema_iorules = []
         # a map of datatypes that are used in interfaces populated by pre_process
         self.types_in_interfaces = {}
 
@@ -344,33 +350,39 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         # which are the ones that changed?
         # have to extend the selection xml file
         if self.old_yamlfile:
-            comparator = DataModelComparator(
-                self.yamlfile, self.old_yamlfile, evolution_file=self.evolution_file
+            reader = PodioConfigReader()
+            datamodel_new = reader.read(self.yamlfile, package_name="new")
+            datamodel_old = reader.read(self.old_yamlfile, package_name="old")
+
+            comparator = DataModelComparator(datamodel_new)
+            detected_changes = comparator.compare(datamodel_old)
+            judge = SchemaEvolutionJudge(
+                comparator.datamodel_new, evolution_file=self.evolution_file
             )
-            comparator.read()
-            comparator.compare()
-            self.old_schema_version = comparator.datamodel_old.schema_version
+            comparison_results = judge.judge(datamodel_old, detected_changes)
+
+            self.old_schema_version = comparison_results.old_datamodel.schema_version
             # some sanity checks
-            if len(comparator.errors) > 0:
+            if len(comparison_results.errors) > 0:
                 print(
                     f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
 have unresolvable schema evolution incompatibilities:"
                 )
-                for error in comparator.errors:
+                for error in comparison_results.errors:
                     print(error)
                 sys.exit(-1)
-            if len(comparator.warnings) > 0:
+            if len(comparison_results.warnings) > 0:
                 print(
                     f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
 have resolvable schema evolution incompatibilities:"
                 )
-                for warning in comparator.warnings:
+                for warning in comparison_results.warnings:
                     print(warning)
                 sys.exit(-1)
 
             # now go through all the io_handlers and see what we have to do
             if "ROOT" in self.io_handlers:
-                for item in root_filter(comparator.schema_changes):
+                for item in root_filter(comparison_results.schema_changes):
                     # add whatever is relevant to our ROOT schema evolution
                     self.root_schema_dict.setdefault(item.klassname, []).append(item)
 
@@ -487,18 +499,22 @@ have resolvable schema evolution incompatibilities:"
                             f"{schema_change.member_name_new} in {type_name}"
                         )
 
-                    iorule = RootIoRule()
-                    iorule.sourceClass = type_name
-                    iorule.targetClass = type_name
+                    sourceClass = type_name
+                    targetClass = type_name
                     if is_datatype:
-                        iorule.sourceClass = f"{type_name}Data"
-                        iorule.targetClass = f"{type_name}Data"
+                        sourceClass = f"{type_name}Data"
+                        targetClass = f"{type_name}Data"
 
-                    iorule.version = self.old_schema_version
-                    iorule.source = f"{member_type} {schema_change.member_name_old}"
-                    iorule.target = schema_change.member_name_new
-                    iorule.code = f"{iorule.target} = onfile.{schema_change.member_name_old};"
-                    self.root_schema_iorules.add(iorule)
+                    target = schema_change.member_name_new
+                    iorule = RootIoRule(
+                        sourceClass=sourceClass,
+                        targetClass=targetClass,
+                        source=f"{member_type} {schema_change.member_name_old}",
+                        version=self.old_schema_version,
+                        target=target,
+                        code=f"{target} = onfile.{schema_change.member_name_old};",
+                    )
+                    self.root_schema_iorules.append(iorule)
                 else:
                     raise NotImplementedError(
                         f"Schema evolution for {schema_change} not yet implemented."
