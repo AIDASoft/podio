@@ -676,17 +676,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedSingleRelation"><code class="docutils literal notranslate"><span class="pre">AddedSingleRelation</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.AddedVectorMember"><code class="docutils literal notranslate"><span class="pre">AddedVectorMember</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.ChangedMemberType"><code class="docutils literal notranslate"><span class="pre">ChangedMemberType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.ComparisonResults"><code class="docutils literal notranslate"><span class="pre">ComparisonResults</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.ComparisonResults.errors"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.errors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.ComparisonResults.old_datamodel"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.old_datamodel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.ComparisonResults.schema_changes"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.schema_changes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.ComparisonResults.warnings"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.warnings</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator"><code class="docutils literal notranslate"><span class="pre">DataModelComparator</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.check_rename"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.check_rename()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.compare"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.compare()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.filter_types_with_adds_and_drops"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.filter_types_with_adds_and_drops()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.get_changed_schemata"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.get_changed_schemata()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.heuristics"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.heuristics()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.heuristics_members"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.heuristics_members()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.print_comparison"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.print_comparison()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.read"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.read()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.read_evolution_file"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.read_evolution_file()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.DataModelComparator.unsupported_changes"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.unsupported_changes</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedComponent"><code class="docutils literal notranslate"><span class="pre">DroppedComponent</span></code></a></li>
@@ -697,8 +697,24 @@
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.DroppedVectorMember"><code class="docutils literal notranslate"><span class="pre">DroppedVectorMember</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.RenamedDataType"><code class="docutils literal notranslate"><span class="pre">RenamedDataType</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.RenamedMember"><code class="docutils literal notranslate"><span class="pre">RenamedMember</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.RootIoRule"><code class="docutils literal notranslate"><span class="pre">RootIoRule</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.RootIoRule"><code class="docutils literal notranslate"><span class="pre">RootIoRule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.RootIoRule.code"><code class="docutils literal notranslate"><span class="pre">RootIoRule.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.RootIoRule.source"><code class="docutils literal notranslate"><span class="pre">RootIoRule.source</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.RootIoRule.sourceClass"><code class="docutils literal notranslate"><span class="pre">RootIoRule.sourceClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.RootIoRule.target"><code class="docutils literal notranslate"><span class="pre">RootIoRule.target</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.RootIoRule.targetClass"><code class="docutils literal notranslate"><span class="pre">RootIoRule.targetClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.RootIoRule.version"><code class="docutils literal notranslate"><span class="pre">RootIoRule.version</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.SchemaChange"><code class="docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.check_rename"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.check_rename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.filter_types_with_adds_and_drops"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.filter_types_with_adds_and_drops()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.heuristics_members"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.heuristics_members()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.judge"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.judge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.unsupported_changes"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.unsupported_changes</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.root_filter"><code class="docutils literal notranslate"><span class="pre">root_filter()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.sio_filter"><code class="docutils literal notranslate"><span class="pre">sio_filter()</span></code></a></li>
 </ul>
@@ -784,73 +800,54 @@
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">DataModelComparator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yamlfile_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evolution_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="podio_schema_evolution.ComparisonResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">ComparisonResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_datamodel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="podio_gen.html#podio_gen.generator_utils.DataModel" title="podio_gen.generator_utils.DataModel"><span class="pre">DataModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_changes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><span class="pre">SchemaChange</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.ComparisonResults" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Compares two datamodels and extracts required schema evolution</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.check_rename">
-<span class="sig-name descname"><span class="pre">check_rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">added_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropped_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_changes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.check_rename" title="Link to this definition"></a></dt>
-<dd><p>Check whether this pair of addition / removal could be a rename and
-return True if it is found in the renamings and false otherwise</p>
+<p>Class grouping the results of a datamodel comparison</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.ComparisonResults.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#podio_schema_evolution.ComparisonResults.errors" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.ComparisonResults.old_datamodel">
+<span class="sig-name descname"><span class="pre">old_datamodel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="podio_gen.html#podio_gen.generator_utils.DataModel" title="podio_gen.generator_utils.DataModel"><span class="pre">DataModel</span></a></em><a class="headerlink" href="#podio_schema_evolution.ComparisonResults.old_datamodel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.ComparisonResults.schema_changes">
+<span class="sig-name descname"><span class="pre">schema_changes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><span class="pre">SchemaChange</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#podio_schema_evolution.ComparisonResults.schema_changes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.ComparisonResults.warnings">
+<span class="sig-name descname"><span class="pre">warnings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#podio_schema_evolution.ComparisonResults.warnings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">DataModelComparator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_datamodel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="podio_gen.html#podio_gen.generator_utils.DataModel" title="podio_gen.generator_utils.DataModel"><span class="pre">DataModel</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Compares two datamodels and detects schema changes</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.compare">
-<span class="sig-name descname"><span class="pre">compare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.compare" title="Link to this definition"></a></dt>
-<dd><p>execute the comparison on-preloaded datamodel definitions</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.filter_types_with_adds_and_drops">
-<span class="sig-name descname"><span class="pre">filter_types_with_adds_and_drops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">added_members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropped_members</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.filter_types_with_adds_and_drops" title="Link to this definition"></a></dt>
-<dd><p>Filter all additions and removals and return pairs of additions /
-removals that happen on the same datatype</p>
+<span class="sig-name descname"><span class="pre">compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_datamodel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="podio_gen.html#podio_gen.generator_utils.DataModel" title="podio_gen.generator_utils.DataModel"><span class="pre">DataModel</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#podio_schema_evolution.SchemaChange" title="podio_schema_evolution.SchemaChange"><span class="pre">SchemaChange</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.compare" title="Link to this definition"></a></dt>
+<dd><p>execute the comparison between the new datamodel and the old one</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.get_changed_schemata">
-<span class="sig-name descname"><span class="pre">get_changed_schemata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.get_changed_schemata" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_changed_schemata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.get_changed_schemata" title="Link to this definition"></a></dt>
 <dd><p>return the schemata which actually changed</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.heuristics">
-<span class="sig-name descname"><span class="pre">heuristics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.heuristics" title="Link to this definition"></a></dt>
-<dd><p>make an analysis of the data model changes:
-- check which can be auto-resolved
-- check which need extra information from the user
-- check which one are plain forbidden/impossible</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.heuristics_members">
-<span class="sig-name descname"><span class="pre">heuristics_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">added_members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropped_members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_changes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.heuristics_members" title="Link to this definition"></a></dt>
-<dd><p>make analysis of member changes in a given data type</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.print_comparison">
-<span class="sig-name descname"><span class="pre">print_comparison</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.print_comparison" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">print_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.print_comparison" title="Link to this definition"></a></dt>
 <dd><p>print the result of the datamodel comparison</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.read">
-<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.read" title="Link to this definition"></a></dt>
-<dd><p>read datamodels from yaml files</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.read_evolution_file">
-<span class="sig-name descname"><span class="pre">read_evolution_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.read_evolution_file" title="Link to this definition"></a></dt>
-<dd><p>read and parse evolution file</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="podio_schema_evolution.DataModelComparator.unsupported_changes">
-<span class="sig-name descname"><span class="pre">unsupported_changes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'podio_schema_evolution.AddedVectorMember'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedVectorMember'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.AddedSingleRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedSingleRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.AddedMultiRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedMultiRelation'&gt;)</span></em><a class="headerlink" href="#podio_schema_evolution.DataModelComparator.unsupported_changes" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -912,9 +909,39 @@ removals that happen on the same datatype</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="podio_schema_evolution.RootIoRule">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">RootIoRule</span></span><a class="headerlink" href="#podio_schema_evolution.RootIoRule" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">RootIoRule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sourceClass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetClass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.RootIoRule" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A placeholder IORule class</p>
+<p>Class collecting all necessary information to create an I/O rule for ROOT</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.RootIoRule.code">
+<span class="sig-name descname"><span class="pre">code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#podio_schema_evolution.RootIoRule.code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.RootIoRule.source">
+<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#podio_schema_evolution.RootIoRule.source" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.RootIoRule.sourceClass">
+<span class="sig-name descname"><span class="pre">sourceClass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#podio_schema_evolution.RootIoRule.sourceClass" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.RootIoRule.target">
+<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#podio_schema_evolution.RootIoRule.target" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.RootIoRule.targetClass">
+<span class="sig-name descname"><span class="pre">targetClass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#podio_schema_evolution.RootIoRule.targetClass" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.RootIoRule.version">
+<span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#podio_schema_evolution.RootIoRule.version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -922,6 +949,45 @@ removals that happen on the same datatype</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">SchemaChange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.SchemaChange" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The base class for all schema changes providing a brief description as representation</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_schema_evolution.</span></span><span class="sig-name descname"><span class="pre">SchemaEvolutionJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_datamodel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evolution_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Analyzes detected schema changes and applies heuristics to determine
+what changes are supported, need user input, or are forbidden</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.check_rename">
+<span class="sig-name descname"><span class="pre">check_rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">added_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropped_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_changes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_schema_changes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.check_rename" title="Link to this definition"></a></dt>
+<dd><p>Check whether this pair of addition / removal could be a rename and
+return True if it is found in the renamings and false otherwise</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.filter_types_with_adds_and_drops">
+<span class="sig-name descname"><span class="pre">filter_types_with_adds_and_drops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">added_members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropped_members</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.filter_types_with_adds_and_drops" title="Link to this definition"></a></dt>
+<dd><p>Filter all additions and removals and return pairs of additions /
+removals that happen on the same datatype</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.heuristics_members">
+<span class="sig-name descname"><span class="pre">heuristics_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">added_members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropped_members</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_changes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_schema_changes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.heuristics_members" title="Link to this definition"></a></dt>
+<dd><p>make analysis of member changes in a given data type</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.judge">
+<span class="sig-name descname"><span class="pre">judge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_datamodel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detected_schema_changes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#podio_schema_evolution.ComparisonResults" title="podio_schema_evolution.ComparisonResults"><span class="pre">ComparisonResults</span></a></span></span><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.judge" title="Link to this definition"></a></dt>
+<dd><p>Apply heuristics to detected schema changes and return analysis results</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.unsupported_changes">
+<span class="sig-name descname"><span class="pre">unsupported_changes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'podio_schema_evolution.AddedVectorMember'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedVectorMember'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.AddedSingleRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedSingleRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.AddedMultiRelation'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'podio_schema_evolution.DroppedMultiRelation'&gt;)</span></em><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.unsupported_changes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
