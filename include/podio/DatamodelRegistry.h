@@ -100,6 +100,15 @@ public:
   /// @returns The name of the datamodel
   const std::string& getDatamodelName(size_t index) const;
 
+  /// Get the version of the datamodel with the given name
+  ///
+  /// @note This will return the version of the datamodel library **not the
+  /// schema version of the datamodel**.
+  ///
+  /// @param name The name of the datamodel
+  ///
+  /// @returns The version of the datamodel if the datamodel is known to the
+  ///          registry or an empty optional otherwise
   std::optional<podio::version::Version> getDatamodelVersion(const std::string& name) const;
 
   /// Register a datamodel and return its index in the registry.
