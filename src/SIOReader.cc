@@ -1,5 +1,6 @@
 #include "podio/SIOReader.h"
 
+#include "ioUtils.h"
 #include "sioUtils.h"
 
 #include <sio/api.h>
@@ -129,6 +130,10 @@ void SIOReader::readEDMDefinitions() {
   auto datamodelDefs = static_cast<SIOMapBlock<std::string, std::string>*>(blocks[0].get());
   auto edmVersions = static_cast<SIOMapBlock<std::string, podio::version::Version>*>(blocks[1].get());
   m_datamodelHolder = DatamodelDefinitionHolder(std::move(datamodelDefs->mapData), std::move(edmVersions->mapData));
+
+  for (const auto& warning : io_utils::checkEDMVersionsReadable(m_datamodelHolder)) {
+    std::cerr << "WARNING: " << warning << std::endl;
+  }
 }
 
 } // namespace podio
