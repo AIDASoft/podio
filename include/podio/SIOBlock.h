@@ -261,7 +261,7 @@ private:
   enum class LoadStatus : short { Success = 0, AlreadyLoaded = 1, Error = 2 };
 
   /// Load a library with the given name via dlopen
-  LoadStatus loadLib(const std::string& libname);
+  LoadStatus loadLib(const std::string& libname, const std::string& directory);
 
   /// Get all files that are found on LD_LIBRARY_PATH and that have "SioBlocks"
   /// in their name together with the directory they are in
