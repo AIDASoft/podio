@@ -160,6 +160,8 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
   auto maybeBuffers = bufferFactory.createBuffers(collType, schemaVersion, isSubsetColl);
 
   if (!maybeBuffers) {
+    std::cerr << "WARNING: Buffers couldn't be created for collection " << name << " of type " << collType
+              << " and schema version " << schemaVersion << std::endl;
     return std::nullopt;
   }
 
