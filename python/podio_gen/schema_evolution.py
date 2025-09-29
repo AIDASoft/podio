@@ -46,7 +46,7 @@ class SchemaMigration:
         missing = [field for field in required if field not in self.details]
 
         if missing:
-            raise ValueError(f"Change type {self.type.value} missing required fields: {missing}")
+            raise ValueError(f"Change type '{self.type.value}' missing required fields: {missing}")
 
 
 class SchemaMigrationReader:
@@ -95,37 +95,35 @@ class SchemaMigrationReader:
     @staticmethod
     def _parse_single_migration(migration_dict: Dict[str, Any]) -> SchemaMigration:
         """Parse a single migration dictionary."""
-        required_keys = ["from_version", "to_version", "change"]
-        missing_keys = [key for key in required_keys if key not in migration_dict]
-
-        if missing_keys:
-            raise ValueError(f"Migration missing required keys: {missing_keys}")
-
-        from_version = migration_dict["from_version"]
-        to_version = migration_dict["to_version"]
-        change_dict = migration_dict["change"]
+        try:
+            from_version = migration_dict.pop("from_version")
+            to_version = migration_dict.pop("to_version")
+        except KeyError as exc:
+            raise ValueError(f"Migration missing required key: {exc}") from exc
 
         if not isinstance(from_version, int) or not isinstance(to_version, int):
             raise ValueError("from_version and to_version must be integers")
 
-        if not isinstance(change_dict, dict):
-            raise ValueError("'change' must be a dictionary")
+        if len(migration_dict) == 0:
+            valid_types = [ct.value for ct in ChangeType]
+            raise ValueError(f"Migration must contain one change type. Valid types: {valid_types}")
 
-        if "type" not in change_dict:
-            raise ValueError("Change dictionary must contain a 'type' field")
+        if len(migration_dict) > 1:
+            raise ValueError("Migration can only have one change type")
 
-        type_value = change_dict.pop("type")
+        change_type_key, change_details = next(iter(migration_dict.items()))
+
         try:
-            change_type = ChangeType(type_value)
+            change_type = ChangeType(change_type_key)
         except ValueError as exc:
             valid_types = [ct.value for ct in ChangeType]
             raise ValueError(
-                f"Invalid change type '{type_value}'. Valid types: {valid_types}"
+                f"Invalid change type '{change_type_key}'. Valid types: {valid_types}"
             ) from exc
 
         return SchemaMigration(
             from_version=from_version,
             to_version=to_version,
             type=change_type,
-            details=change_dict,
+            details=change_details,
         )
