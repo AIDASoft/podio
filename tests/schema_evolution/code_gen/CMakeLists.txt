@@ -8,6 +8,7 @@ ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_member)
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change)
 ADD_SCHEMA_EVOLUTION_TEST(components_rename_member WITH_EVOLUTION)
 ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_member WITH_EVOLUTION)
+ADD_SCHEMA_EVOLUTION_TEST(rename_datatype)
 
 # RNTuple support for schema evolution capabilities is version dependent
 if(ENABLE_RNTUPLE AND ROOT_VERSION VERSION_GREATER_EQUAL 6.34)
