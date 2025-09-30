@@ -349,9 +349,6 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         Create a map with the version as key and the component and datatype
         (names) as a list of dictionaries with the old definition
         """
-        # Currently this dictionary will only have one version, but as a
-        # preparation step for future developments where it might have more we
-        # already treat it as if there are several
         for version, old_model in old_datamodel.items():
             for name, comp_def in old_model.components.items():
                 self.old_components[name].append({"version": version, "definition": comp_def})
@@ -365,6 +362,8 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         changed.
         """
         reader = PodioConfigReader()
+        # Read the current model again into a "new" namespace to have it more
+        # easily discerned from the "old" model
         datamodel_new = reader.read(self.yamlfile, package_name="new")
         datamodel_old = reader.read(self.old_yamlfile, package_name="old")
 
@@ -486,21 +485,21 @@ have resolvable schema evolution incompatibilities:"
         iorules = []
         for name, old_comps in self.changed_components.items():
             for comp in old_comps:
-                iorule = self._prepare_iorule_component(
-                    name, comp["definition"], comp["schema_change"], comp["version"]
+                iorules.append(
+                    self._prepare_iorule_component(
+                        name, comp["definition"], comp["schema_change"], comp["version"]
+                    )
                 )
-                if iorule is not None:
-                    iorules.append(iorule)
 
         for name, old_dtypes in self.changed_datatypes.items():
             for dtype in old_dtypes:
-                iorule = self._prepare_iorule_datatype(
-                    name, dtype["definition"], dtype["schema_change"], dtype["version"]
+                iorules.append(
+                    self._prepare_iorule_datatype(
+                        name, dtype["definition"], dtype["schema_change"], dtype["version"]
+                    )
                 )
-                if iorule is not None:
-                    iorules.append(iorule)
 
-        return iorules
+        return [r for r in iorules if r is not None]
 
     def _write_cmake_lists_file(self):
         """Write the names of all generated header and src files into cmake lists"""
