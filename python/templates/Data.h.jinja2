@@ -24,6 +24,30 @@ public:
 {% endfor %}
 };
 
+
+namespace v{{ schema_version }} {
+using {{ class.bare_type }}Data = {{ class.full_type }}Data;
+} // namespace v{{ schema_version }}
+
+{% if old_versions %}
+// Definition for older versions
+{% endif %}
+{% for old_version in old_versions %}
+namespace v{{ old_version.version }} {
+class {{ class.bare_type }}Data {
+public:
+{% for member in old_version.definition.Members %}
+  {{ member.qualified_as_version(old_version.version) }}
+{% endfor %}
+
+{% for member in old_version.definition.VectorMembers + old_version.definition.OneToManyRelations %}
+  unsigned int {{ member.name }}_begin{};
+  unsigned int {{ member.name }}_end{};
+{% endfor %}
+};
+} // namespace v{{ old_version.version }}
+{% endfor %}
+
 {{ utils.namespace_close(class.namespace) }}
 
 #endif
