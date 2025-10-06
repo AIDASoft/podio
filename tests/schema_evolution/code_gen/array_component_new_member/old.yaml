@@ -1,0 +1,18 @@
+schema_version: 1
+options:
+  includeSubfolder: True
+
+components:
+  SimpleStruct:
+    Members:
+      - int x [mm]
+      - int y [mm]
+      - int z [mm]
+      - std::array<int, 4> p [mm]
+
+datatypes:
+  ArrayTestType:
+    Description: "Foo"
+    Author: "bar"
+    Members:
+      - std::array<SimpleStruct, 5> s // abc

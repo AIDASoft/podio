@@ -15,6 +15,7 @@
 #endif
 
 {{ utils.namespace_open(class.namespace) }}
+
 {{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 public:
@@ -25,11 +26,31 @@ public:
 {{ utils.if_present(ExtraCode, "declaration") }}
 };
 
-std::ostream& operator<<(std::ostream& o, const {{class.full_type}}& value);
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ class.bare_type }}& value);
 #endif
+
+namespace v{{ schema_version }} {
+using {{ class.bare_type }} = {{ class.full_type }};
+} // namespace v{{ schema_version }}
+
+{% if old_versions %}
+// Definitions for older versions
+{% endif %}
+{% for old_version in old_versions %}
+namespace v{{ old_version.version }} {
+
+class {{ class.bare_type }} {
+public:
+{% for member in old_version.definition.Members %}
+  {{ member }}
+{% endfor %}
+};
+
+} // namespace v{{ old_version.version }}
+{% endfor %}
 
 {{ utils.namespace_close(class.namespace) }}
 

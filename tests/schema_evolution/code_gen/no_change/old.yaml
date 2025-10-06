@@ -1,0 +1,29 @@
+schema_version: 1
+options:
+  includeSubfolder: True
+
+components:
+  TestComponent:
+    Members:
+      - int x
+
+  nsp::NamespaceComponent:
+    Members:
+      - float f
+
+datatypes:
+  TestType:
+    Description: "A datatype that changes component type"
+    Author: "Thomas Madlener"
+    Members:
+      - TestComponent comp // the component
+
+  nsp::NamespaceType:
+    Description: "A datatype that changes component type"
+    Author: "Thomas Madlener"
+    Members:
+      - nsp::NamespaceComponent comp // the component
+    OneToOneRelations:
+      - nsp::NamespaceType singleRel // a single relation
+    OneToManyRelations:
+      - TestType multiRel // a one-to-many relation
