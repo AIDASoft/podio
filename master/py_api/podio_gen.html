@@ -639,7 +639,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.cpp_generator">podio_gen.cpp_generator module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio_gen.cpp_generator.CPPClassGenerator"><code class="docutils literal notranslate"><span class="pre">CPPClassGenerator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_gen.cpp_generator.IncludeFrom"><code class="docutils literal notranslate"><span class="pre">IncludeFrom</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#podio_gen.cpp_generator.replace_component_in_paths"><code class="docutils literal notranslate"><span class="pre">replace_component_in_paths()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.generator_base">podio_gen.generator_base module</a><ul>
@@ -825,12 +824,6 @@
 <span class="sig-name descname"><span class="pre">NOWHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#podio_gen.cpp_generator.IncludeFrom.NOWHERE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="podio_gen.cpp_generator.replace_component_in_paths">
-<span class="sig-prename descclassname"><span class="pre">podio_gen.cpp_generator.</span></span><span class="sig-name descname"><span class="pre">replace_component_in_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oldname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.replace_component_in_paths" title="Link to this definition"></a></dt>
-<dd><p>Replace component name by another one in existing paths</p>
 </dd></dl>
 
 </section>
@@ -1032,6 +1025,14 @@ array access</p>
 <dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.normalize_fw_type">
 <span class="sig-name descname"><span class="pre">normalize_fw_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.normalize_fw_type" title="Link to this definition"></a></dt>
 <dd><p>Normalize the fixed width type and make sure to include &lt;cstdint&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.qualified_as_version">
+<span class="sig-name descname"><span class="pre">qualified_as_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.qualified_as_version" title="Link to this definition"></a></dt>
+<dd><p>String representation with a potential intermediate version namespace
+Only applies in case the member is a component, as builtin variables are
+considered not versionable</p>
 </dd></dl>
 
 <dl class="py method">
