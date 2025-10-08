@@ -18,6 +18,7 @@ Welcome to PODIO's documentation!
    userdata.md
    links.md
    storage_details.md
+   tools.md
    cmake.md
    advanced_topics.md
    templates.md
