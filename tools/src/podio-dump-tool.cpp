@@ -174,9 +174,11 @@ void printFrameOverview(const podio::Frame& frame) {
 
   for (const auto& name : podio::utils::sortAlphabeticaly(collNames)) {
     const auto coll = frame.get(name);
-    rows.emplace_back(name, coll->getValueTypeName(), coll->size(), fmt::format("{:0>8x}", coll->getID()));
+    auto nameWithCollInfo = fmt::format("{}{}", name, coll->isSubsetCollection() ? " (*)" : "");
+    rows.emplace_back(std::move(nameWithCollInfo), coll->getValueTypeName(), coll->size(),
+                      fmt::format("{:0>8x}", coll->getID()));
   }
-  printTable(rows, {"Name", "ValueType", "Size", "ID"});
+  printTable(rows, {"Name (* = subset collection)", "ValueType", "Size", "ID"});
 
   fmt::println("\nParameters:");
   std::vector<std::tuple<std::string, std::string_view, size_t>> paramRows{};
