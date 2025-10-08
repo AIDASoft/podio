@@ -443,3 +443,19 @@ TEST_CASE("EIC-Jana2 cleanup use case", "[memory-management][492][174]") {
   }
   delete clone;
 }
+
+TEST_CASE("Frame extract", "[frame]") {
+  auto event = podio::Frame{};
+
+  auto clusters = ExampleClusterCollection();
+  clusters.create(3.14f);
+  clusters.create(42.0f);
+  event.put(std::move(clusters), "clusters");
+
+  auto extractedClusters = event.extract<ExampleClusterCollection>("clusters");
+  REQUIRE(extractedClusters[0].energy() == 3.14f);
+  REQUIRE(extractedClusters[1].energy() == 42.0f);
+
+  // Ensure the original collection is no longer there
+  REQUIRE(event.get("clusters") == nullptr);
+}
