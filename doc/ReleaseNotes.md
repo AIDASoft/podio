@@ -1,3 +1,105 @@
+# v01-05
+
+* 2025-10-08 Juan Miguel Carceller ([PR#854](https://github.com/AIDASoft/podio/pull/854))
+  - Add documentation about some of the existing tools
+
+* 2025-10-06 Thomas Madlener ([PR#803](https://github.com/AIDASoft/podio/pull/803))
+  - Generate the `XYZData` PODs into a `v{{ old_version }}` namespace in order to have the old definitions available for schema evolution purposes if necessary.
+    - The current version of the PODs are not put into such a version namespace.
+    - The old versions are generated even if they are identical in their definition to the current namespace.
+    - All versions that have been provided to the code generation will be generated.
+
+* 2025-09-29 Thomas Madlener ([PR#852](https://github.com/AIDASoft/podio/pull/852))
+  - Make sure using `PODIO_SIOBLOCK_PATH` works without having `LD_LIBRARY_PATH` set appropriately.
+    - Without this fix the `SioBlock` libraries also had to be on `LD_LIBRARY_PATH` for the dynamic loading to work. Now `PODIO_SIOBLOCK_PATH` is enough.
+
+* 2025-09-29 Thomas Madlener ([PR#844](https://github.com/AIDASoft/podio/pull/844))
+  - Split schema evolution detection into two parts; detecting changes and judging whether they can be handled automatically or not
+
+* 2025-09-24 Juan Miguel Carceller ([PR#849](https://github.com/AIDASoft/podio/pull/849))
+  - Remove support for CPack since it is unused, points to wrong information and is not working. See also https://github.com/key4hep/EDM4hep/pull/445.
+
+* 2025-09-23 Juan Miguel Carceller ([PR#841](https://github.com/AIDASoft/podio/pull/841))
+  - Set ROOT_LIBRARY_PATH in tests to better control the environment
+
+* 2025-09-12 Thomas Madlener ([PR#843](https://github.com/AIDASoft/podio/pull/843))
+  - Randomize the order of the tests in CI to detect implicit test dependencies and avoid introducing new ones
+  - Add global timeouts for running tests to fail earlier in case of CVMFS loading issues
+
+* 2025-09-10 Thomas Madlener ([PR#836](https://github.com/AIDASoft/podio/pull/836))
+  - Run schema evolution read tests with limited memory to avoid ROOT running away with all the memory.
+
+* 2025-09-09 Juan Miguel Carceller ([PR#840](https://github.com/AIDASoft/podio/pull/840))
+  - Delete an extra Python3_INCLUDE_DIRS, forgotten in https://github.com/AIDASoft/podio/pull/839
+
+* 2025-09-09 Juan Miguel Carceller ([PR#839](https://github.com/AIDASoft/podio/pull/839))
+  - Add the Python headers to the system includes to avoid warnings
+
+* 2025-09-08 Juan Miguel Carceller ([PR#837](https://github.com/AIDASoft/podio/pull/837))
+  - Move some includes where they are used and add `const` in a few places
+
+* 2025-09-04 Thomas Madlener ([PR#817](https://github.com/AIDASoft/podio/pull/817))
+  - Refactor the way schema evolution tests are done to make them easier to adapt and understand
+    - Introduce a mini testing framework that allows to focus on a single schema change for a given test
+    - Remove the duplication of the test datamodel with various schema changes sprinkled across it
+  - Enable some schema evolution tests for RNTuple
+
+* 2025-09-03 Thomas Madlener ([PR#835](https://github.com/AIDASoft/podio/pull/835))
+  - Remove an unnecessary `depends_on` argument from the tests for `podio-vis` as they do not depend on any other test and all the necessary inputs are part of the source code.
+
+* 2025-09-03 Juan Miguel Carceller ([PR#834](https://github.com/AIDASoft/podio/pull/834))
+  - Add CMake fixtures for tests that read and write files so that reading doesn't happen if writing fails and running the reading tests requires the write tests
+
+* 2025-08-28 Juan Miguel Carceller ([PR#832](https://github.com/AIDASoft/podio/pull/832))
+  - Add types with all the collection types of a datamodel in datamodel.h
+  - Add tests for the new types
+  - Use single spaces instead of two spaces between types in the list
+
+* 2025-08-27 Thomas Madlener ([PR#831](https://github.com/AIDASoft/podio/pull/831))
+  - Fix a minor bug in generation of all collections header file
+
+* 2025-08-27 Thomas Madlener ([PR#830](https://github.com/AIDASoft/podio/pull/830))
+  - Add a `__repr__` method to some of the classes in the generator python utils for improved printouts
+
+* 2025-08-27 Juan Miguel Carceller ([PR#829](https://github.com/AIDASoft/podio/pull/829))
+  - Add a `podio::UserDataCollectionTypes` type list containing all the available user data collection types.
+
+* 2025-08-26 Mateusz Jakub Fila ([PR#826](https://github.com/AIDASoft/podio/pull/826))
+  - Fix typo causing error in non-const overload of `LinkCollection::at(size_t)`
+
+* 2025-08-26 Mateusz Jakub Fila ([PR#824](https://github.com/AIDASoft/podio/pull/824))
+  - Add automatic collection subscript pythonization to `UserDataCollection` and `LinkCollection`
+
+* 2025-08-26 Thomas Madlener ([PR#823](https://github.com/AIDASoft/podio/pull/823))
+  - Switch to newer LCG release and compilers for sanitizer CI workflows
+  - Remove some unnecessary debug output from the unittests that trips UBSan on gcc15
+
+* 2025-08-25 Thomas Madlener ([PR#822](https://github.com/AIDASoft/podio/pull/822))
+  - Update CI workflows to also build against root with c++23
+  - Bump the minimum required version of Catch2 to 3.5 as that fixes some compiler warnings for c++23
+
+* 2025-08-25 Mateusz Jakub Fila ([PR#810](https://github.com/AIDASoft/podio/pull/810))
+  - Add automatic pythonization of collection subscript with C++ callback
+  - Deprecate pythonization of collection subscript with Python callback
+
+* 2025-08-22 Thomas Madlener ([PR#821](https://github.com/AIDASoft/podio/pull/821))
+  - Fix code generation to allow for types to have a `OneToOneRelation` to itself. This was previously not possible (but seemingly unused)
+
+* 2025-08-22 Mateusz Jakub Fila ([PR#820](https://github.com/AIDASoft/podio/pull/820))
+  - Run cppcheck pre-commit hook only for c++ files
+
+* 2025-08-22 Thomas Madlener ([PR#819](https://github.com/AIDASoft/podio/pull/819))
+  - Use an existing member function for building includes in components code generation
+
+* 2025-08-20 Thomas Madlener ([PR#816](https://github.com/AIDASoft/podio/pull/816))
+  - Fix missed renaming of member names that were missed in [#797](https://github.com/AIDASoft/podio/pull/797)
+
+* 2025-08-20 Thomas Madlener ([PR#815](https://github.com/AIDASoft/podio/pull/815))
+  - Remove unused datatype from the original model and re-use another one to do the same test
+
+* 2025-08-14 jmcarcell ([PR#812](https://github.com/AIDASoft/podio/pull/812))
+  - Remove the deprecated operator-> in collections
+
 # v01-04
 
 * 2025-08-13 jmcarcell ([PR#809](https://github.com/AIDASoft/podio/pull/809))
