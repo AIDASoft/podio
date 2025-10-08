@@ -1,4 +1,4 @@
-# Writing extra data outside an EDM
+# Writing extra data outside the EDM
 In some cases it can be necessary to write some additional data that can not
 (yet) be stored in the EDM. PODIO offers a possibility to store such extra *user
 data* via the `podio::UserDataCollection`. It gives the user access to a
