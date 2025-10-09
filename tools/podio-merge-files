@@ -3,9 +3,6 @@
 
 import argparse
 import sys
-import podio
-import podio.root_io
-from podio import reading
 
 parser = argparse.ArgumentParser(
     description="Merge any number of podio files into one, can merge TTree and RNTuple files"
@@ -22,18 +19,21 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+# Import podio later for quick help messages
+import podio  # pylint: disable=wrong-import-position # noqa: E402
+import podio.root_io  # pylint: disable=wrong-import-position # noqa: E402
+from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
+
 all_files = set()
 for f in args.files:
     if f in all_files:
         raise ValueError(f"File {f} is present more than once in the input list")
     all_files.add(f)
 
-ROOT_FORMAT = reading._determine_root_format(args.files[0])  # pylint: disable=protected-access
-if ROOT_FORMAT == reading.RootFileFormat.TTREE:
-    reader = podio.root_io.Reader(args.files)
+reader = reading.get_reader(args.files)
+if isinstance(reader, podio.root_io.Reader):
     writer = podio.root_io.Writer(args.output_file)
-elif ROOT_FORMAT == reading.RootFileFormat.RNTUPLE:
-    reader = podio.root_io.RNTupleReader(args.files)
+elif isinstance(reader, podio.root_io.RNTupleReader):
     writer = podio.root_io.RNTupleWriter(args.output_file)
 else:
     raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
