@@ -205,8 +205,11 @@ public:
     return rend();
   }
 
+  [[deprecated(
+      "isValid will be removed, use getID() if you want to check the ID, otherwise assume the collection is valid")]]
   bool isValid() const override {
-    return m_isValid;
+    return getID() != static_cast<uint32_t>(podio::ObjectID::untracked) &&
+        getID() != static_cast<uint32_t>(podio::ObjectID::invalid);
   }
 
   podio::CollectionWriteBuffers getBuffers() override {
@@ -258,7 +261,6 @@ public:
     if (!m_isSubsetColl) {
       std::ranges::for_each(m_storage.entries, [id](auto* obj) { obj->id = {obj->id.index, id}; });
     }
-    m_isValid = true;
   }
 
   uint32_t getID() const override {
@@ -311,7 +313,6 @@ private:
   // that gives access to the Obj* which is definitely not what we want
   friend CollectionDataT;
 
-  bool m_isValid{false};
   mutable bool m_isPrepared{false};
   bool m_isSubsetColl{false};
   uint32_t m_collectionID{0};
