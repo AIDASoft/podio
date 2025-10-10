@@ -9,6 +9,7 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
+#include <cassert>
 #include <concepts>
 #include <initializer_list>
 #include <memory>
@@ -91,6 +92,7 @@ class Frame {
     virtual ~FrameConcept() = default;
     virtual const podio::CollectionBase* get(const std::string& name) const = 0;
     virtual const podio::CollectionBase* put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) = 0;
+    virtual std::unique_ptr<podio::CollectionBase> extract(const std::string& name) = 0;
     virtual podio::GenericParameters& parameters() = 0;
     virtual const podio::GenericParameters& parameters() const = 0;
 
@@ -121,6 +123,10 @@ class Frame {
     /// pointer to it. If a collection already exists or insertion fails, return
     /// a nullptr
     const podio::CollectionBase* put(std::unique_ptr<CollectionBase> coll, const std::string& name) final;
+
+    /// Try to extract a collection from the internal storage and return
+    /// ownership to the caller. If not found return a nullptr
+    std::unique_ptr<podio::CollectionBase> extract(const std::string& name) final;
 
     /// Get a reference to the internally used GenericParameters
     podio::GenericParameters& parameters() override {
@@ -218,6 +224,30 @@ public:
   /// @returns A const pointer to a collection if it is available or a nullptr
   ///          if it is not
   const podio::CollectionBase* get(const std::string& name) const;
+
+  /// Extract a collection pointer from the Frame by name
+  ///
+  /// @note This does not check if there are any existing references to this
+  /// collection already. All existing references to the extracted collection
+  /// and their elements (!) will be invalidated.
+  ///
+  /// @returns An owning pointer to the collection if it is available or a
+  ///          nullptr if it is not
+  std::unique_ptr<podio::CollectionBase> extract(const std::string& name);
+
+  /// Extract a collection from the Frame by name
+  ///
+  /// @tparam CollT The type of the desired collection
+  /// @param name   The name of the collection
+  ///
+  /// @note This does not check if there are any existing references to this
+  /// collection already. All existing references to the extracted collection
+  /// and their elements (!) will be invalidated.
+  ///
+  /// @returns The extracted collection if it existed inside the Frame or
+  ///          otherwise a default initialized empty collection
+  template <CollectionType CollT>
+  CollT extract(const std::string& name);
 
   /// (Destructively) move a collection into the Frame and get a reference to
   /// the inserted collection back for further use.
@@ -406,6 +436,21 @@ inline const podio::CollectionBase* Frame::get(const std::string& name) const {
   return m_self->get(name);
 }
 
+inline std::unique_ptr<podio::CollectionBase> Frame::extract(const std::string& name) {
+  return m_self->extract(name);
+}
+
+template <CollectionType CollT>
+CollT Frame::extract(const std::string& name) {
+  auto coll = extract(name);
+  auto typedColl = dynamic_cast<CollT*>(coll.get());
+  if (typedColl) {
+    return std::move(*static_cast<CollT*>(coll.release()));
+  }
+
+  return CollT{};
+}
+
 inline void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {
   const auto* retColl = m_self->put(std::move(coll), name);
   if (!retColl) {
@@ -440,6 +485,21 @@ Frame::FrameModel<FrameDataT>::FrameModel(std::unique_ptr<FrameDataT> data) :
 template <typename FrameDataT>
 const podio::CollectionBase* Frame::FrameModel<FrameDataT>::get(const std::string& name) const {
   return doGet(name);
+}
+
+template <typename FrameDataT>
+std::unique_ptr<podio::CollectionBase> Frame::FrameModel<FrameDataT>::extract(const std::string& name) {
+  // Let get do the heavy lifting of setting relations, etc.
+  if (get(name) == nullptr) {
+    return nullptr;
+  }
+
+  {
+    std::lock_guard lock{*m_mapMtx};
+    const auto collHandle = m_collections.extract(name);
+    assert(!collHandle.empty());
+    return std::move(collHandle.mapped());
+  }
 }
 
 template <typename FrameDataT>
