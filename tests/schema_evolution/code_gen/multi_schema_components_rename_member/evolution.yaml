@@ -1,0 +1,12 @@
+migrations:
+  nsp::TestComponent:
+    - from_version: 1
+      to_version: 2  # NOTE: this is the version at which this was changed
+      rename_member:
+        from: y_original
+        to: y_renamed  # NOTE: but here we have to use the latest name(!)
+    - from_version: 2
+      to_version: 3
+      rename_member:
+        from: y
+        to: y_renamed
