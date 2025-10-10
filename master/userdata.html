@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Writing extra data outside an EDM &mdash; PODIO  documentation</title>
+  <title>Writing extra data outside the EDM &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -132,7 +132,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="frame.html#frame-implementation-and-design">Frame implementation and design</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing extra data outside an EDM</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing extra data outside the EDM</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example-usage">Example usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#some-limitations">Some limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#no-relations-to-other-collections">No relations to other collections</a></li>
@@ -163,6 +163,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="storage_details.html#sio">SIO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools and utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#displaying-the-content-of-files-podio-dump">Displaying the content of files: <code class="docutils literal notranslate"><span class="pre">podio-dump</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#merging-files-podio-merge-files">Merging files: <code class="docutils literal notranslate"><span class="pre">podio-merge-files</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#converting-between-root-ttrees-and-rntuples-podio-ttree-to-rntuple">Converting between ROOT TTrees and RNTuples: <code class="docutils literal notranslate"><span class="pre">podio-ttree-to-rntuple</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#visualizing-a-model-podio-vis">Visualizing a model: <code class="docutils literal notranslate"><span class="pre">podio-vis</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cmake.html">Building a new data model library with CMake</a><ul>
@@ -737,7 +744,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Writing extra data outside an EDM</li>
+      <li class="breadcrumb-item active">Writing extra data outside the EDM</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -746,8 +753,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="writing-extra-data-outside-an-edm">
-<h1>Writing extra data outside an EDM<a class="headerlink" href="#writing-extra-data-outside-an-edm" title="Link to this heading"></a></h1>
+  <section id="writing-extra-data-outside-the-edm">
+<h1>Writing extra data outside the EDM<a class="headerlink" href="#writing-extra-data-outside-the-edm" title="Link to this heading"></a></h1>
 <p>In some cases it can be necessary to write some additional data that can not
 (yet) be stored in the EDM. PODIO offers a possibility to store such extra <em>user
 data</em> via the <code class="docutils literal notranslate"><span class="pre">podio::UserDataCollection</span></code>. It gives the user access to a

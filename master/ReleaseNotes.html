@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>v01-04 &mdash; PODIO  documentation</title>
+  <title>v01-05 &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -130,7 +130,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="frame.html#frame-implementation-and-design">Frame implementation and design</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userdata.html">Writing extra data outside an EDM</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="userdata.html">Writing extra data outside the EDM</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="userdata.html#example-usage">Example usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="userdata.html#some-limitations">Some limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="userdata.html#no-relations-to-other-collections">No relations to other collections</a></li>
@@ -161,6 +161,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="storage_details.html#sio">SIO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools and utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#displaying-the-content-of-files-podio-dump">Displaying the content of files: <code class="docutils literal notranslate"><span class="pre">podio-dump</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#merging-files-podio-merge-files">Merging files: <code class="docutils literal notranslate"><span class="pre">podio-merge-files</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#converting-between-root-ttrees-and-rntuples-podio-ttree-to-rntuple">Converting between ROOT TTrees and RNTuples: <code class="docutils literal notranslate"><span class="pre">podio-ttree-to-rntuple</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html#visualizing-a-model-podio-vis">Visualizing a model: <code class="docutils literal notranslate"><span class="pre">podio-vis</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cmake.html">Building a new data model library with CMake</a><ul>
@@ -735,7 +742,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">v01-04</li>
+      <li class="breadcrumb-item active">v01-05</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -744,7 +751,179 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="v01-04">
+  <section id="v01-05">
+<h1>v01-05<a class="headerlink" href="#v01-05" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>2025-10-08 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/854">PR#854</a>)</p>
+<ul>
+<li><p>Add documentation about some of the existing tools</p></li>
+</ul>
+</li>
+<li><p>2025-10-06 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/803">PR#803</a>)</p>
+<ul>
+<li><p>Generate the <code class="docutils literal notranslate"><span class="pre">XYZData</span></code> PODs into a <code class="docutils literal notranslate"><span class="pre">v{{</span> <span class="pre">old_version</span> <span class="pre">}}</span></code> namespace in order to have the old definitions available for schema evolution purposes if necessary.</p>
+<ul>
+<li><p>The current version of the PODs are not put into such a version namespace.</p></li>
+<li><p>The old versions are generated even if they are identical in their definition to the current namespace.</p></li>
+<li><p>All versions that have been provided to the code generation will be generated.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2025-09-29 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/852">PR#852</a>)</p>
+<ul>
+<li><p>Make sure using <code class="docutils literal notranslate"><span class="pre">PODIO_SIOBLOCK_PATH</span></code> works without having <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> set appropriately.</p>
+<ul>
+<li><p>Without this fix the <code class="docutils literal notranslate"><span class="pre">SioBlock</span></code> libraries also had to be on <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> for the dynamic loading to work. Now <code class="docutils literal notranslate"><span class="pre">PODIO_SIOBLOCK_PATH</span></code> is enough.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>2025-09-29 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/844">PR#844</a>)</p>
+<ul>
+<li><p>Split schema evolution detection into two parts; detecting changes and judging whether they can be handled automatically or not</p></li>
+</ul>
+</li>
+<li><p>2025-09-24 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/849">PR#849</a>)</p>
+<ul>
+<li><p>Remove support for CPack since it is unused, points to wrong information and is not working. See also https://github.com/key4hep/EDM4hep/pull/445.</p></li>
+</ul>
+</li>
+<li><p>2025-09-23 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/841">PR#841</a>)</p>
+<ul>
+<li><p>Set ROOT_LIBRARY_PATH in tests to better control the environment</p></li>
+</ul>
+</li>
+<li><p>2025-09-12 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/843">PR#843</a>)</p>
+<ul>
+<li><p>Randomize the order of the tests in CI to detect implicit test dependencies and avoid introducing new ones</p></li>
+<li><p>Add global timeouts for running tests to fail earlier in case of CVMFS loading issues</p></li>
+</ul>
+</li>
+<li><p>2025-09-10 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/836">PR#836</a>)</p>
+<ul>
+<li><p>Run schema evolution read tests with limited memory to avoid ROOT running away with all the memory.</p></li>
+</ul>
+</li>
+<li><p>2025-09-09 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/840">PR#840</a>)</p>
+<ul>
+<li><p>Delete an extra Python3_INCLUDE_DIRS, forgotten in https://github.com/AIDASoft/podio/pull/839</p></li>
+</ul>
+</li>
+<li><p>2025-09-09 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/839">PR#839</a>)</p>
+<ul>
+<li><p>Add the Python headers to the system includes to avoid warnings</p></li>
+</ul>
+</li>
+<li><p>2025-09-08 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/837">PR#837</a>)</p>
+<ul>
+<li><p>Move some includes where they are used and add <code class="docutils literal notranslate"><span class="pre">const</span></code> in a few places</p></li>
+</ul>
+</li>
+<li><p>2025-09-04 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/817">PR#817</a>)</p>
+<ul>
+<li><p>Refactor the way schema evolution tests are done to make them easier to adapt and understand</p>
+<ul>
+<li><p>Introduce a mini testing framework that allows to focus on a single schema change for a given test</p></li>
+<li><p>Remove the duplication of the test datamodel with various schema changes sprinkled across it</p></li>
+</ul>
+</li>
+<li><p>Enable some schema evolution tests for RNTuple</p></li>
+</ul>
+</li>
+<li><p>2025-09-03 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/835">PR#835</a>)</p>
+<ul>
+<li><p>Remove an unnecessary <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> argument from the tests for <code class="docutils literal notranslate"><span class="pre">podio-vis</span></code> as they do not depend on any other test and all the necessary inputs are part of the source code.</p></li>
+</ul>
+</li>
+<li><p>2025-09-03 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/834">PR#834</a>)</p>
+<ul>
+<li><p>Add CMake fixtures for tests that read and write files so that reading doesn’t happen if writing fails and running the reading tests requires the write tests</p></li>
+</ul>
+</li>
+<li><p>2025-08-28 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/832">PR#832</a>)</p>
+<ul>
+<li><p>Add types with all the collection types of a datamodel in datamodel.h</p></li>
+<li><p>Add tests for the new types</p></li>
+<li><p>Use single spaces instead of two spaces between types in the list</p></li>
+</ul>
+</li>
+<li><p>2025-08-27 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/831">PR#831</a>)</p>
+<ul>
+<li><p>Fix a minor bug in generation of all collections header file</p></li>
+</ul>
+</li>
+<li><p>2025-08-27 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/830">PR#830</a>)</p>
+<ul>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> method to some of the classes in the generator python utils for improved printouts</p></li>
+</ul>
+</li>
+<li><p>2025-08-27 Juan Miguel Carceller (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/829">PR#829</a>)</p>
+<ul>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">podio::UserDataCollectionTypes</span></code> type list containing all the available user data collection types.</p></li>
+</ul>
+</li>
+<li><p>2025-08-26 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/826">PR#826</a>)</p>
+<ul>
+<li><p>Fix typo causing error in non-const overload of <code class="docutils literal notranslate"><span class="pre">LinkCollection::at(size_t)</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-08-26 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/824">PR#824</a>)</p>
+<ul>
+<li><p>Add automatic collection subscript pythonization to <code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code> and <code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code></p></li>
+</ul>
+</li>
+<li><p>2025-08-26 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/823">PR#823</a>)</p>
+<ul>
+<li><p>Switch to newer LCG release and compilers for sanitizer CI workflows</p></li>
+<li><p>Remove some unnecessary debug output from the unittests that trips UBSan on gcc15</p></li>
+</ul>
+</li>
+<li><p>2025-08-25 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/822">PR#822</a>)</p>
+<ul>
+<li><p>Update CI workflows to also build against root with c++23</p></li>
+<li><p>Bump the minimum required version of Catch2 to 3.5 as that fixes some compiler warnings for c++23</p></li>
+</ul>
+</li>
+<li><p>2025-08-25 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/810">PR#810</a>)</p>
+<ul>
+<li><p>Add automatic pythonization of collection subscript with C++ callback</p></li>
+<li><p>Deprecate pythonization of collection subscript with Python callback</p></li>
+</ul>
+</li>
+<li><p>2025-08-22 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/821">PR#821</a>)</p>
+<ul>
+<li><p>Fix code generation to allow for types to have a <code class="docutils literal notranslate"><span class="pre">OneToOneRelation</span></code> to itself. This was previously not possible (but seemingly unused)</p></li>
+</ul>
+</li>
+<li><p>2025-08-22 Mateusz Jakub Fila (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/820">PR#820</a>)</p>
+<ul>
+<li><p>Run cppcheck pre-commit hook only for c++ files</p></li>
+</ul>
+</li>
+<li><p>2025-08-22 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/819">PR#819</a>)</p>
+<ul>
+<li><p>Use an existing member function for building includes in components code generation</p></li>
+</ul>
+</li>
+<li><p>2025-08-20 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/816">PR#816</a>)</p>
+<ul>
+<li><p>Fix missed renaming of member names that were missed in <a class="reference external" href="https://github.com/AIDASoft/podio/pull/797">#797</a></p></li>
+</ul>
+</li>
+<li><p>2025-08-20 Thomas Madlener (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/815">PR#815</a>)</p>
+<ul>
+<li><p>Remove unused datatype from the original model and re-use another one to do the same test</p></li>
+</ul>
+</li>
+<li><p>2025-08-14 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/812">PR#812</a>)</p>
+<ul>
+<li><p>Remove the deprecated operator-&gt; in collections</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v01-04">
 <h1>v01-04<a class="headerlink" href="#v01-04" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>2025-08-13 jmcarcell (<a class="reference external" href="https://github.com/AIDASoft/podio/pull/809">PR#809</a>)</p>
