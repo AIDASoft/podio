@@ -195,7 +195,7 @@ void printFrameDetailed(const podio::Frame& frame) {
   const auto collNames = frame.getAvailableCollections();
   for (const auto& name : podio::utils::sortAlphabeticaly(collNames)) {
     const auto coll = frame.get(name);
-    fmt::println("{}", name);
+    fmt::println("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
     coll->print();
     fmt::println("");
   }
