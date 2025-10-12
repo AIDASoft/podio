@@ -59,7 +59,7 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
   std::vector<std::string> collNames = frame.getAvailableCollections();
   for (auto&& collName : collNames) {
     const podio::CollectionBase* coll = frame.get(collName);
-    if (coll->isValid()) {
+    if (coll->hasID()) {
       m_columnNames.emplace_back(std::move(collName));
       m_columnTypes.emplace_back(coll->getTypeName());
     }

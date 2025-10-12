@@ -23,7 +23,7 @@
 
 void processExtensions(const podio::Frame& event, int iEvent, podio::version::Version) {
   const auto& extColl = event.get<extension::ContainedTypeCollection>("extension_Contained");
-  ASSERT(extColl.isValid(), "extension_Contained collection should be present")
+  ASSERT(extColl.hasID(), "extension_Contained collection should be present")
   ASSERT(extColl.size() == 1, "extension_Contained collection should have one element")
   auto extElem = extColl[0];
   const auto& polVec = extElem.getAVector();
@@ -32,7 +32,7 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
   ASSERT(polVec.rho == 3.14f, "polVec.phi value not as expected")
 
   const auto& extCompColl = event.get<extension::ExternalComponentTypeCollection>("extension_ExternalComponent");
-  ASSERT(extCompColl.isValid(), "extension_ExternalComponent collection should be present")
+  ASSERT(extCompColl.hasID(), "extension_ExternalComponent collection should be present")
   ASSERT(extCompColl.size() == 1, "extension_ExternalComponent should have one element")
   auto extCompElem = extCompColl[0];
   ASSERT((extCompElem.getAStruct().p == std::array{iEvent, iEvent - 2, iEvent + 4, iEvent * 8}),
@@ -42,7 +42,7 @@ void processExtensions(const podio::Frame& event, int iEvent, podio::version::Ve
   ASSERT(extCompElem.getAComponent().nspStruct.y == iEvent * 2, "aComponent.nspStruct.y value not as expected")
 
   const auto& extRelColl = event.get<extension::ExternalRelationTypeCollection>("extension_ExternalRelation");
-  ASSERT(extRelColl.isValid(), "extension_ExternalRelation collection should be present")
+  ASSERT(extRelColl.hasID(), "extension_ExternalRelation collection should be present")
   ASSERT(extRelColl.size() == 3, "extension_ExternalRelation collection should contain 3 elements")
 
   const auto& hits = event.get<ExampleHitCollection>("hits");

@@ -136,7 +136,7 @@ Collections can be retrieved explicitly:
 
 ```cpp
     auto& hits = frame.get<HitCollection>("hits");
-    if (hits.isValid()) { ... }
+    if (hits.hasID()) { ... } // If the collection is not found, an empty one without ID is returned
 ```
 
 Or implicitly when following an object reference. In both cases the access to data that has been retrieved is `const`.

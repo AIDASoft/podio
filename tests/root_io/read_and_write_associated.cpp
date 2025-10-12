@@ -79,7 +79,7 @@ void readCollection() {
     auto store = podio::Frame(reader.readNextEntry(podio::Category::Event));
 
     auto& clusters = store.get<ExampleClusterCollection>("clusters");
-    if (clusters.isValid()) {
+    if (clusters.hasID()) {
       for (const auto& cluster : clusters) {
         if (cluster.isAvailable()) {
           for (const auto& hit : cluster.Hits()) {
@@ -95,7 +95,7 @@ void readCollection() {
 
     // Test for subset collections
     auto& hits_subset = store.get<ExampleHitCollection>("hits_subset");
-    if (hits_subset.isValid()) {
+    if (hits_subset.hasID()) {
       if (!hits_subset.isSubsetCollection()) {
         throw std::runtime_error("hits_subset should be a subset collection");
       }

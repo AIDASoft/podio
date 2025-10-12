@@ -205,11 +205,16 @@ public:
     return rend();
   }
 
-  [[deprecated(
-      "isValid will be removed, use getID() if you want to check the ID, otherwise assume the collection is valid")]]
-  bool isValid() const override {
+  /// check if the collection has a valid ID
+  bool hasID() const override {
     return getID() != static_cast<uint32_t>(podio::ObjectID::untracked) &&
         getID() != static_cast<uint32_t>(podio::ObjectID::invalid);
+  }
+
+  [[deprecated(
+      "isValid will be removed, use hasID() if you want to check if it has an ID, otherwise assume the collection is valid")]]
+  bool isValid() const override {
+    return hasID();
   }
 
   podio::CollectionWriteBuffers getBuffers() override {
