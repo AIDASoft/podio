@@ -155,8 +155,7 @@ public:
   [[deprecated("isValid will be removed, use hasID() if you want to check if it has an ID, otherwise assume the "
                "collection is valid")]]
   bool isValid() const final {
-    return getID() != static_cast<uint32_t>(podio::ObjectID::untracked) &&
-        getID() != static_cast<uint32_t>(podio::ObjectID::invalid);
+    return hasID();
   }
 
   size_t getDatamodelRegistryIndex() const final;
