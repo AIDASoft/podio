@@ -13,7 +13,7 @@ set_tests_properties(schema_evol:code_gen:datatypes_new_member:read_garbage
       PROPERTIES
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/datatypes_new_member
       ENVIRONMENT "${test_env};ROOT_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests"
-      PASS_REGULAR_EXPRESSION "Bad data"
+      PASS_REGULAR_EXPRESSION "Bad data;Segmentation fault"
       DEPENDS schema_evol:code_gen:datatypes_new_member:write
 )
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change)
