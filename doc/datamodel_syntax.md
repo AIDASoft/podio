@@ -196,7 +196,7 @@ is currently being held internally.
 
 ```cpp
 auto energyType = TypeWithEnergy{}; // An empty interface is possible but useless
-bool valid = energyType.isValid();  // <-- false
+bool hasID = energyType.hasID();  // <-- false
 
 auto hit = ExampleHit{};
 energyType = hit;     // assigning a hit to the interface type

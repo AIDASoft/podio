@@ -228,7 +228,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     // are referenced to make sure that all the necessary relations are handled
     // correctly
     auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
-    if (!mcpRefs.isValid()) {
+    if (!mcpRefs.hasID()) {
       throw std::runtime_error("Collection 'mcParticleRefs' should be present");
     }
 
@@ -252,7 +252,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   checkMCParticleCollection(event, fileVersion);
 
   auto& mcps = event.get<ExampleMCCollection>("mcparticles");
-  if (!mcps.isValid()) {
+  if (!mcps.hasID()) {
     throw std::runtime_error("Collection 'mcparticles' should be present");
   }
 
@@ -263,7 +263,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     // Load the subset collection first to ensure that it pulls in objects that
     // have not been read yet
     auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
-    if (!mcpRefs.isValid()) {
+    if (!mcpRefs.hasID()) {
       throw std::runtime_error("Collection 'mcParticleRefs' should be present");
     }
 
@@ -308,7 +308,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   // std::cout << "Fetching collection 'refs'" << std::endl;
   auto& refs = event.get<ExampleReferencingTypeCollection>("refs");
-  if (refs.isValid()) {
+  if (refs.hasID()) {
     auto ref = refs[0];
     for (auto cluster : ref.Clusters()) {
       for (auto hit [[maybe_unused]] : cluster.Hits()) {
@@ -320,7 +320,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
   // std::cout << "Fetching collection 'OneRelation'" << std::endl;
   auto& rels = event.get<ExampleWithOneRelationCollection>("OneRelation");
-  if (rels.isValid()) {
+  if (rels.hasID()) {
     // std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
   } else {
     throw std::runtime_error("Collection 'OneRelation' should be present");
@@ -328,7 +328,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
   auto& vecs = event.get<ExampleWithVectorMemberCollection>("WithVectorMember");
-  if (vecs.isValid()) {
+  if (vecs.hasID()) {
     if (vecs.size() != 2) {
       throw std::runtime_error("Collection 'WithVectorMember' should have two elements'");
     }
@@ -355,13 +355,13 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   }
 
   auto& comps = event.get<ExampleWithComponentCollection>("Component");
-  if (comps.isValid()) {
+  if (comps.hasID()) {
     auto comp = comps[0];
     int a [[maybe_unused]] = comp.component().data.x + comp.component().data.z;
   }
 
   auto& arrays = event.get<ExampleWithArrayCollection>("arrays");
-  if (arrays.isValid() && !arrays.empty()) {
+  if (arrays.hasID() && !arrays.empty()) {
     auto array = arrays[0];
     if (array.myArray(1) != eventNum) {
       throw std::runtime_error("Array not properly set.");
@@ -380,7 +380,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   auto& copies = event.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
 
   auto cpytest = ex42::ExampleWithARelationCollection{};
-  if (nmspaces.isValid() && copies.isValid()) {
+  if (nmspaces.hasID() && copies.hasID()) {
     for (size_t j = 0; j < nmspaces.size(); j++) {
       auto nmsp = nmspaces[j];
       auto cpy = copies[j];
@@ -417,7 +417,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   if (fileVersion >= podio::version::Version{0, 13, 1}) {
     const auto& fixedWidthInts = event.get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
-    if (not fixedWidthInts.isValid() or fixedWidthInts.size() != 3) {
+    if (not fixedWidthInts.hasID() or fixedWidthInts.size() != 3) {
       throw std::runtime_error("Collection \'fixedWidthInts\' should be present and have 3 elements");
     }
 

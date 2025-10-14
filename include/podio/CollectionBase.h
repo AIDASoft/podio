@@ -46,7 +46,8 @@ public:
   /// Get the collection buffers for this collection
   virtual podio::CollectionWriteBuffers getBuffers() = 0;
 
-  /// check for validity of the container after read
+  virtual bool hasID() const = 0;
+
   virtual bool isValid() const = 0;
 
   /// number of elements in the collection

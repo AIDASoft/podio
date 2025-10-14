@@ -131,9 +131,16 @@ public:
     return {&_vecPtr, _vecPtr, &m_refCollections, &m_vecmem_info};
   }
 
-  /// check for validity of the container after read
+  /// check if the collection has a valid ID
+  bool hasID() const override {
+    return getID() != static_cast<uint32_t>(podio::ObjectID::untracked) &&
+        getID() != static_cast<uint32_t>(podio::ObjectID::invalid);
+  }
+
+  [[deprecated("isValid will be removed, use hasID() if you want to check if it has an ID, otherwise assume the "
+               "collection is valid")]]
   bool isValid() const override {
-    return true;
+    return hasID();
   }
 
   /// number of elements in the collection
