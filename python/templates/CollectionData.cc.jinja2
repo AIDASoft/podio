@@ -45,11 +45,11 @@
   // https://github.com/AIDASoft/podio/pull/817#issuecomment-3266748609 and
   // https://github.com/AIDASoft/podio/pull/842
   volatile std::uint64_t s = m_data->size();
-  if (s > 1e15) throw std::runtime_error("Bad data after reading: a collection is too big");
+  if (s > 1e15) throw std::runtime_error("Bad data after reading: a collection is too big ({{ class.full_type }})");
   else
     if (s == 0)
       for ([[maybe_unused]] const auto& _ : *m_data.get())
-        throw std::runtime_error("Bad data after reading: zero-sized collection with data");
+        throw std::runtime_error("Bad data after reading: zero-sized collection with data ({{ class.full_type }})");
   // end of ugly
 
 
