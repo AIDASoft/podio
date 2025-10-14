@@ -7,14 +7,17 @@ ADD_SCHEMA_EVOLUTION_TEST(no_change)
 
 ADD_SCHEMA_EVOLUTION_TEST(components_new_member)
 ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_member)
+# Special test to check that we catch when the dictionary with the old is still loaded
+# and ROOT returns garbage data
 get_property(test_env TEST schema_evol:code_gen:datatypes_new_member:read PROPERTY ENVIRONMENT)
+# Since it may crash, the test has to be wrapped with ${CMAKE_COMMAND} -E env so that it can still pass
 add_test(NAME schema_evol:code_gen:datatypes_new_member:read_garbage COMMAND ${CMAKE_COMMAND} -E env $<TARGET_FILE:read_datatypes_new_member>)
 set_tests_properties(schema_evol:code_gen:datatypes_new_member:read_garbage
       PROPERTIES
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/datatypes_new_member
       ENVIRONMENT "${test_env};ROOT_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests"
       PASS_REGULAR_EXPRESSION "Bad data;Segmentation fault"
-      DEPENDS schema_evol:code_gen:datatypes_new_member:write
+      FIXTURES_REQUIRED datatypes_new_member_w
 )
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change)
 ADD_SCHEMA_EVOLUTION_TEST(components_rename_member WITH_EVOLUTION)
