@@ -1,0 +1,20 @@
+schema_version: 1
+options:
+  includeSubfolder: True
+
+datatypes:
+  ExampleHitStays :
+    Description : "Example Hit"
+    Author : "Author"
+    Members:
+     - unsigned long long cellID      // cellID
+     - double t [mm]     // x-coordinate
+  ExampleHitRemoved :
+    Description : "Example Hit"
+    Author : "Author"
+    Members:
+     - unsigned long long cellID      // cellID
+     - double x [mm]     // x-coordinate
+     - double y [mm]     // y-coordinate
+     - double z [mm]     // z-coordinate
+     - double energy [GeV] // measured energy deposit
