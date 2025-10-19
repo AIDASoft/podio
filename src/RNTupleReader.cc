@@ -105,6 +105,7 @@ unsigned RNTupleReader::getEntries(const std::string& name) {
     for (const auto& filename : m_filenames) {
       try {
         ROOT::RNTupleDescriptor::RCreateModelOptions options;
+        // Read unknown types (like deleted ones) without errors
         options.SetEmulateUnknownTypes(true);
         m_readers[name].emplace_back(root_compat::RNTupleReader::Open(options, name, filename));
         m_readerEntries[name].push_back(m_readerEntries[name].back() + m_readers[name].back()->GetNEntries());
