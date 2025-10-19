@@ -25,8 +25,8 @@ int main() {
   reader.openFile((TEST_CASE FILE_SUFFIX));
   // TODO: Make this work when reading all collections
   auto event = podio::Frame(reader.readNextEntry(podio::Category::Event, {"evolution_collection"}));
-  const auto& coll = event.get<ExampleHitStaysCollection>("evolution_collection");                                                 \
-  const auto elem = coll[0];                                                                                       \
+  const auto& coll = event.get<ExampleHitStaysCollection>("evolution_collection");
+  const auto elem = coll[0];
   ASSERT_EQUAL(elem.t(), 99, "Member variables unrelated to schema evolution have changed");
 #endif
   return 0;
