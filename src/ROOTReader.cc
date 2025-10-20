@@ -183,7 +183,9 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
   }
 
   // set the addresses and read the data
-  root_utils::setCollectionAddresses(collBuffers, branches);
+  if (!root_utils::setCollectionAddresses(collBuffers, branches)) {
+    return std::nullopt;
+  }
   root_utils::readBranchesData(branches, localEntry);
 
   collBuffers.recast(collBuffers);
