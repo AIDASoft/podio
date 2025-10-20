@@ -111,7 +111,8 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 #else
         m_readers[category].emplace_back(root_compat::RNTupleReader::Open(category, filename));
 #endif
-        m_readerEntries[category].push_back(m_readerEntries[category].back() + m_readers[category].back()->GetNEntries());
+        m_readerEntries[category].push_back(m_readerEntries[category].back() +
+                                            m_readers[category].back()->GetNEntries());
       } catch (const RException&) {
         std::cout << "Category " << category << " not found in file " << filename << std::endl;
       }
