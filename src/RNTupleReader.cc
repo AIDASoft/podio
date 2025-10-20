@@ -206,7 +206,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     const auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
 
     if (!maybeBuffers) {
-      std::cout << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
+      std::cerr << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
                 << " and schema version " << coll.schemaVersion << std::endl;
       if (readOptions.skipUnreadable) {
         continue;

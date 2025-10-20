@@ -145,8 +145,9 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
     }
     auto collBuffers = getCollectionBuffers(catInfo, i, reloadBranches, localEntry);
     if (!collBuffers) {
-      std::cerr << "WARNING: Could not get buffers for collection " << catInfo.storedClasses[i].name
-                << "(type=" << std::get<std::string>(catInfo.storedClasses[i].info) << ") from file" << std::endl;
+      std::cerr << "WARNING: Buffers couldn't be created for collection " << catInfo.storedClasses[i].name
+                << " of type " << std::get<std::string>(catInfo.storedClasses[i].info) << " and schema version "
+                << std::get<2>(catInfo.storedClasses[i].info) << std::endl;
       if (readOptions.skipUnreadable) {
         continue;
       } else {
