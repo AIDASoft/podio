@@ -102,7 +102,7 @@ public:
   /// @param name The name of the category
   ///
   /// @returns The number of entries that are available for the category
-  unsigned getEntries(const std::string& name);
+  unsigned getEntries(const std::string& name) const;
 
   /// Get the build version of podio that has been used to write the current
   /// file
