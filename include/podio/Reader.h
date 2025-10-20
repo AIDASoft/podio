@@ -117,6 +117,16 @@ public:
     return m_self->readNextFrame(name, podio::ReadOptions::Only(collsToRead));
   }
 
+  /// Read the next frame of a given category
+  ///
+  /// @param name The category name for which to read the next frame
+  /// @param readOptions Options for configuring the read operation, including
+  ///                    which collections to read and whether to skip unreadable ones
+  ///
+  /// @returns A fully constructed Frame with the contents read from file
+  ///
+  /// @throws std::invalid_argument in case the category is not available or in
+  ///         case no more entries are available
   podio::Frame readNextFrame(const std::string& name, const podio::ReadOptions& readOptions = {}) {
     return m_self->readNextFrame(name, readOptions);
   }
@@ -133,6 +143,14 @@ public:
     return readNextFrame(podio::Category::Event, podio::ReadOptions::Only(collsToRead));
   }
 
+  /// Read the next frame of the "events" category
+  ///
+  /// @param readOptions Options for configuring the read operation, including
+  ///                    which collections to read and whether to skip unreadable ones
+  ///
+  /// @returns A fully constructed Frame with the contents read from file
+  ///
+  /// @throws std::invalid_argument in case no (more) events are available
   podio::Frame readNextEvent(const podio::ReadOptions& readOptions = {}) {
     return readNextFrame(podio::Category::Event, readOptions);
   }
@@ -152,6 +170,17 @@ public:
     return m_self->readFrame(name, index, podio::ReadOptions::Only(collsToRead));
   }
 
+  /// Read a specific frame for a given category
+  ///
+  /// @param name  The category name for which to read the next entry
+  /// @param index The entry number to read
+  /// @param readOptions Options for configuring the read operation, including
+  ///                    which collections to read and whether to skip unreadable ones
+  ///
+  /// @returns A fully constructed Frame with the contents read from file
+  ///
+  /// @throws std::invalid_argument in case the category is not available or in
+  ///         case the specified entry is not available
   podio::Frame readFrame(const std::string& name, size_t index, const podio::ReadOptions& readOptions = {}) {
     return m_self->readFrame(name, index, readOptions);
   }
@@ -169,6 +198,15 @@ public:
     return readFrame(podio::Category::Event, index, podio::ReadOptions::Only(collsToRead));
   }
 
+  /// Read a specific frame of the "events" category
+  ///
+  /// @param index The event number to read
+  /// @param readOptions Options for configuring the read operation, including
+  ///                    which collections to read and whether to skip unreadable ones
+  ///
+  /// @returns A fully constructed Frame with the contents read from file
+  ///
+  /// @throws std::invalid_argument in case the desired event is not available
   podio::Frame readEvent(size_t index, const podio::ReadOptions& readOptions = {}) {
     return readFrame(podio::Category::Event, index, readOptions);
   }
