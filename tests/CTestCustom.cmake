@@ -18,6 +18,7 @@ set(failing_with_address_sanitizer
   schema_evol:code_gen:components_rename_member:read
   schema_evol:code_gen:datatypes_new_member:write
   schema_evol:code_gen:datatypes_new_member:read
+  schema_evol:code_gen:datatypes_new_member:read_garbage
   schema_evol:code_gen:datatypes_rename_member:write
   schema_evol:code_gen:datatypes_rename_member:read
   schema_evol:code_gen:implicit_floating_point_change:write
@@ -38,6 +39,7 @@ set(failing_with_thread_sanitizer
   schema_evol:code_gen:components_new_member:read_rntuple
   schema_evol:code_gen:datatypes_new_member:write_rntuple
   schema_evol:code_gen:datatypes_new_member:read_rntuple
+  schema_evol:code_gen:datatypes_new_member:read_garbage
   schema_evol:code_gen:implicit_floating_point_change:write_rntuple
   schema_evol:code_gen:implicit_floating_point_change:read_rntuple
   schema_evol:code_gen:no_change:write_rntuple
