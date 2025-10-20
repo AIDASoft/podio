@@ -147,7 +147,7 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
     if (!collBuffers) {
       std::cerr << "WARNING: Could not get buffers for collection " << catInfo.storedClasses[i].name
                 << "(type=" << std::get<std::string>(catInfo.storedClasses[i].info) << ") from file" << std::endl;
-      if (readOptions.skipUnredable) {
+      if (readOptions.skipUnreadable) {
         continue;
       } else {
         return nullptr;

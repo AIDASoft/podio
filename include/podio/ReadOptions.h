@@ -7,7 +7,7 @@
 namespace podio {
 struct ReadOptions {
   std::vector<std::string> collsToRead{};
-  bool skipUnredable{false};
+  bool skipUnreadable{false};
 
   inline static ReadOptions SkipUnreadable() {
     return {{}, true};

@@ -208,7 +208,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     if (!maybeBuffers) {
       std::cout << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
                 << " and schema version " << coll.schemaVersion << std::endl;
-      if (readOptions.skipUnredable) {
+      if (readOptions.skipUnreadable) {
         continue;
       } else {
         return nullptr;
