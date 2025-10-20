@@ -145,9 +145,6 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& n
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
-  if (m_totalEntries.find(category) == m_totalEntries.end()) {
-    getEntries(category);
-  }
   if (entNum >= m_totalEntries[category]) {
     return nullptr;
   }
