@@ -104,9 +104,16 @@ unsigned RNTupleReader::getEntries(const std::string& name) {
     m_readerEntries[name].push_back(0);
     for (const auto& filename : m_filenames) {
       try {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 36, 0)
+        ROOT::RNTupleDescriptor::RCreateModelOptions options;
+        // Read unknown types (like deleted ones) without errors
+        options.SetEmulateUnknownTypes(true);
+        m_readers[name].emplace_back(root_compat::RNTupleReader::Open(options, name, filename));
+#else
         m_readers[name].emplace_back(root_compat::RNTupleReader::Open(name, filename));
+#endif
         m_readerEntries[name].push_back(m_readerEntries[name].back() + m_readers[name].back()->GetNEntries());
-      } catch (const RException& e) {
+      } catch (const RException&) {
         std::cout << "Category " << name << " not found in file " << filename << std::endl;
       }
     }

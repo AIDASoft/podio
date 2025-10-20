@@ -26,6 +26,8 @@ set(failing_with_address_sanitizer
   schema_evol:code_gen:no_change:read
   schema_evol:code_gen:array_component_new_member:write
   schema_evol:code_gen:array_component_new_member:read
+  schema_evol:code_gen:datatypes_remove_type:write
+  schema_evol:code_gen:datatypes_remove_type:read
 )
 
 set(failing_with_thread_sanitizer
@@ -42,6 +44,9 @@ set(failing_with_thread_sanitizer
   schema_evol:code_gen:no_change:read_rntuple
   schema_evol:code_gen:array_component_new_member:write_rntuple
   schema_evol:code_gen:array_component_new_member:read_rntuple
+  # The following two work with clang19, but not gcc15
+  schema_evol:code_gen:datatypes_remove_type:write_rntuple
+  schema_evol:code_gen:datatypes_remove_type:read_rntuple
 )
 
 # This will only apply for clang based builds and is currently the superset of
