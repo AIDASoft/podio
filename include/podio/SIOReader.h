@@ -1,6 +1,7 @@
 #ifndef PODIO_SIOREADER_H
 #define PODIO_SIOREADER_H
 
+#include "podio/ReadOptions.h"
 #include "podio/SIOBlock.h"
 #include "podio/SIOFrameData.h"
 #include "podio/podioVersion.h"
@@ -51,7 +52,10 @@ public:
   ///          category exists and if there are still entries left to read.
   ///          Otherwise a nullptr
   std::unique_ptr<podio::SIOFrameData> readNextEntry(const std::string& name,
-                                                     const std::vector<std::string>& collsToRead = {});
+                                                     const std::vector<std::string>& collsToRead);
+
+  std::unique_ptr<podio::SIOFrameData> readNextEntry(const std::string& name,
+                                                     const podio::ReadOptions& readOptions = {});
 
   /// Read the desired data entry for a given category.
   ///
@@ -69,7 +73,10 @@ public:
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category and the desired entry exist. Otherwise a nullptr
   std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name, const unsigned entry,
-                                                 const std::vector<std::string>& collsToRead = {});
+                                                 const std::vector<std::string>& collsToRead);
+
+  std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name, const unsigned entry,
+                                                 const podio::ReadOptions& = {});
 
   /// Get the number of entries for the given name
   ///
