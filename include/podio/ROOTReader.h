@@ -2,6 +2,7 @@
 #define PODIO_ROOTREADER_H
 
 #include "podio/ROOTFrameData.h"
+#include "podio/ReadOptions.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
@@ -89,7 +90,10 @@ public:
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
-                                                      const std::vector<std::string>& collsToRead = {});
+                                                      const std::vector<std::string>& collsToRead);
+
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
+                                                      const podio::ReadOptions& readOptions = {});
 
   /// Read the desired data entry for a given category.
   ///
@@ -104,7 +108,10 @@ public:
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
-                                                  const std::vector<std::string>& collsToRead = {});
+                                                  const std::vector<std::string>& collsToRead);
+
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
+                                                  const podio::ReadOptions& collsToRead = {});
 
   /// Get the number of entries for the given name
   ///
@@ -192,7 +199,7 @@ private:
   /// counter afterwards. In case the requested entry is larger than the
   /// available number of entries, return a nullptr.
   std::unique_ptr<podio::ROOTFrameData> readEntry(ROOTReader::CategoryInfo& catInfo,
-                                                  const std::vector<std::string>& collsToRead);
+                                                  const podio::ReadOptions& readOptions);
 
   /// Get / read the buffers at index iColl in the passed category information
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(CategoryInfo& catInfo, size_t iColl,

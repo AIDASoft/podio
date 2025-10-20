@@ -2,6 +2,7 @@
 #define PODIO_RNTUPLEREADER_H
 
 #include "podio/ROOTFrameData.h"
+#include "podio/ReadOptions.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
@@ -75,8 +76,10 @@ public:
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
-                                                      const std::vector<std::string>& collsToRead = {});
+                                                      const std::vector<std::string>& collsToRead);
 
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
+                                                      const podio::ReadOptions& readOptions = {});
   /// Read the desired data entry for a given category.
   ///
   /// @param name  The category name for which to read the next entry
@@ -90,7 +93,10 @@ public:
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
-                                                  const std::vector<std::string>& collsToRead = {});
+                                                  const std::vector<std::string>& collsToRead);
+
+  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
+                                                  const podio::ReadOptions& readOptions = {});
 
   /// Get the names of all the available Frame categories in the current file(s).
   ///
