@@ -216,27 +216,35 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     }
     const auto& collBuffers = maybeBuffers.value();
 
-    if (coll.isSubset) {
-      const auto brName = root_utils::subsetBranch(coll.name);
-      const auto vec = new std::vector<podio::ObjectID>;
-      dentry->BindRawPtr(brName, vec);
-      collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-    } else {
-      dentry->BindRawPtr(coll.name, collBuffers.data);
-
-      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
-      for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
-        const auto relName = relVecNames.relations[j];
+    try {
+      if (coll.isSubset) {
+        const auto brName = root_utils::subsetBranch(coll.name);
         const auto vec = new std::vector<podio::ObjectID>;
-        const auto brName = root_utils::refBranch(coll.name, relName);
         dentry->BindRawPtr(brName, vec);
-        collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-      }
+        collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
+      } else {
+        dentry->BindRawPtr(coll.name, collBuffers.data);
 
-      for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
-        const auto vecName = relVecNames.vectorMembers[j];
-        const auto brName = root_utils::vecBranch(coll.name, vecName);
-        dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
+        const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
+        for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
+          const auto relName = relVecNames.relations[j];
+          const auto vec = new std::vector<podio::ObjectID>;
+          const auto brName = root_utils::refBranch(coll.name, relName);
+          dentry->BindRawPtr(brName, vec);
+          collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
+        }
+
+        for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
+          const auto vecName = relVecNames.vectorMembers[j];
+          const auto brName = root_utils::vecBranch(coll.name, vecName);
+          dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
+        }
+      }
+    } catch (const RException&) {
+      if (readOptions.skipUnreadable) {
+        continue;
+      } else {
+        return nullptr;
       }
     }
 
