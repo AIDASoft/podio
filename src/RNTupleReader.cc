@@ -96,32 +96,38 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);
-}
 
-unsigned RNTupleReader::getEntries(const std::string& name) {
-  if (m_readers.find(name) == m_readers.end()) {
-    m_readerEntries[name].reserve(m_filenames.size() + 1);
-    m_readerEntries[name].push_back(0);
+  // Pre-fill the entries map
+  for (const auto& category : m_availableCategories) {
+    m_readerEntries[category].reserve(m_filenames.size() + 1);
+    m_readerEntries[category].push_back(0);
     for (const auto& filename : m_filenames) {
       try {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 36, 0)
         ROOT::RNTupleDescriptor::RCreateModelOptions options;
         // Read unknown types (like deleted ones) without errors
         options.SetEmulateUnknownTypes(true);
-        m_readers[name].emplace_back(root_compat::RNTupleReader::Open(options, name, filename));
+        m_readers[category].emplace_back(root_compat::RNTupleReader::Open(options, category, filename));
 #else
-        m_readers[name].emplace_back(root_compat::RNTupleReader::Open(name, filename));
+        m_readers[category].emplace_back(root_compat::RNTupleReader::Open(category, filename));
 #endif
-        m_readerEntries[name].push_back(m_readerEntries[name].back() + m_readers[name].back()->GetNEntries());
+        m_readerEntries[category].push_back(m_readerEntries[category].back() +
+                                            m_readers[category].back()->GetNEntries());
       } catch (const RException&) {
-        std::cout << "Category " << name << " not found in file " << filename << std::endl;
+        std::cout << "Category " << category << " not found in file " << filename << std::endl;
       }
     }
-    m_totalEntries[name] = m_readerEntries[name].back();
+    m_totalEntries[category] = m_readerEntries[category].back();
     // The last entry is not needed since it's the total number of entries
-    m_readerEntries[name].pop_back();
+    m_readerEntries[category].pop_back();
   }
-  return m_totalEntries[name];
+}
+
+unsigned RNTupleReader::getEntries(const std::string& name) const {
+  if (const auto it = m_totalEntries.find(name); it != m_totalEntries.end()) {
+    return it->second;
+  }
+  return 0;
 }
 
 std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
@@ -140,9 +146,6 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& n
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
-  if (m_totalEntries.find(category) == m_totalEntries.end()) {
-    getEntries(category);
-  }
   if (entNum >= m_totalEntries[category]) {
     return nullptr;
   }
