@@ -5,6 +5,7 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
+#include "podio/ReadOptions.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
@@ -87,19 +88,29 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
 
 std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name,
                                                          const std::vector<std::string>& collsToRead) {
+  return readNextEntry(name, {collsToRead, false});
+}
+
+std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name,
+                                                         const podio::ReadOptions& readOptions) {
   auto& catInfo = getCategoryInfo(name);
-  return readEntry(catInfo, collsToRead);
+  return readEntry(catInfo, readOptions);
 }
 
 std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum,
                                                      const std::vector<std::string>& collsToRead) {
+  return readEntry(name, entNum, {collsToRead, false});
+}
+
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum,
+                                                     const podio::ReadOptions& readOptions) {
   auto& catInfo = getCategoryInfo(name);
   catInfo.entry = entNum;
-  return readEntry(catInfo, collsToRead);
+  return readEntry(catInfo, readOptions);
 }
 
 std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo,
-                                                     const std::vector<std::string>& collsToRead) {
+                                                     const podio::ReadOptions& readOptions) {
   if (!catInfo.chain) {
     return nullptr;
   }
@@ -108,8 +119,8 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   }
 
   // Make sure to not silently ignore non-existant but requested collections
-  if (!collsToRead.empty()) {
-    for (const auto& name : collsToRead) {
+  if (!readOptions.collsToRead.empty()) {
+    for (const auto& name : readOptions.collsToRead) {
       if (std::ranges::find(catInfo.storedClasses, name, &detail::NamedCollInfo::name) == catInfo.storedClasses.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
@@ -128,14 +139,19 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
 
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
-    if (!collsToRead.empty() && std::ranges::find(collsToRead, catInfo.storedClasses[i].name) == collsToRead.end()) {
+    if (!readOptions.collsToRead.empty() &&
+        std::ranges::find(readOptions.collsToRead, catInfo.storedClasses[i].name) == readOptions.collsToRead.end()) {
       continue;
     }
     auto collBuffers = getCollectionBuffers(catInfo, i, reloadBranches, localEntry);
     if (!collBuffers) {
       std::cerr << "WARNING: Could not get buffers for collection " << catInfo.storedClasses[i].name
                 << "(type=" << std::get<std::string>(catInfo.storedClasses[i].info) << ") from file" << std::endl;
-      continue;
+      if (readOptions.skipUnredable) {
+        continue;
+      } else {
+        return nullptr;
+      }
     }
     buffers.emplace(catInfo.storedClasses[i].name, std::move(collBuffers.value()));
   }

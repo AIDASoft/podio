@@ -3,6 +3,7 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
+#include "podio/ReadOptions.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
@@ -141,11 +142,24 @@ std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name,
                                                             const std::vector<std::string>& collsToRead) {
-  return readEntry(name, m_entries[name], collsToRead);
+  return readEntry(name, m_entries[name], {collsToRead, false});
+}
+
+std::unique_ptr<podio::ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name,
+                                                                   const podio::ReadOptions& readOptions) {
+  return readEntry(name, m_entries[name], readOptions);
 }
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
+  return readEntry(category, entNum, {collsToRead, false});
+}
+
+std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum,
+                                                        const podio::ReadOptions& readOptions) {
+  if (m_totalEntries.find(category) == m_totalEntries.end()) {
+    getEntries(category);
+  }
   if (entNum >= m_totalEntries[category]) {
     return nullptr;
   }
@@ -158,8 +172,8 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
 
   const auto& collInfo = m_collectionInfo[category];
   // Make sure to not silently ignore non-existant but requested collections
-  if (!collsToRead.empty()) {
-    for (const auto& name : collsToRead) {
+  if (!readOptions.collsToRead.empty()) {
+    for (const auto& name : readOptions.collsToRead) {
       if (std::ranges::find(collInfo, name, &root_utils::CollectionWriteInfo::name) == collInfo.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
@@ -183,7 +197,8 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
   const auto dentry = m_readers[category][readerIndex]->GetModel().CreateEntry();
 
   for (const auto& coll : collInfo) {
-    if (!collsToRead.empty() && std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
+    if (!readOptions.collsToRead.empty() &&
+        std::ranges::find(readOptions.collsToRead, coll.name) == readOptions.collsToRead.end()) {
       continue;
     }
     const auto& collType = coll.dataType;
@@ -193,9 +208,13 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     if (!maybeBuffers) {
       std::cout << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
                 << " and schema version " << coll.schemaVersion << std::endl;
-      continue;
+      if (readOptions.skipUnredable) {
+        continue;
+      } else {
+        return nullptr;
+      }
     }
-    const auto collBuffers = maybeBuffers.value();
+    const auto& collBuffers = maybeBuffers.value();
 
     if (coll.isSubset) {
       const auto brName = root_utils::subsetBranch(coll.name);
