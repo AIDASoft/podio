@@ -170,7 +170,7 @@ void ROOTWriter::finish() {
     return;
   }
 
-  // Use scope to make sure everything is destroyed before deleting TFile
+  // Use a scope to make sure everything is destroyed before deleting TFile
   {
     auto* metaTree = new TTree(root_utils::metaTreeName, "metadata tree for podio I/O functionality");
     metaTree->SetDirectory(m_file.get());

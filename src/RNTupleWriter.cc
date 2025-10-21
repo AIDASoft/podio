@@ -237,7 +237,7 @@ void RNTupleWriter::finish() {
   if (!m_file) {
     return;
   }
-  // Use scope to make sure everything is destroyed before deleting TFile
+  // Use a scope to make sure everything is destroyed before deleting TFile
   {
     auto metadata = root_compat::RNTupleModel::Create();
 
