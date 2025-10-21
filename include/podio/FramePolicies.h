@@ -28,6 +28,8 @@ struct FrameCreateEmptyNonExistentPolicy {
   }
 };
 
+static auto CreateEmptyCollOnNonExistent = FrameCreateEmptyNonExistentPolicy{};
+
 struct FrameThrowOnNonExistentPolicy {
   template <podio::CollectionType CollT>
   const CollT& operator()(const CollT* coll, const std::string& name) const {
@@ -37,6 +39,8 @@ struct FrameThrowOnNonExistentPolicy {
     throw std::runtime_error("Cannot retrieve collection " + name + " from Frame");
   }
 };
+
+static auto ThrowOnNonExistent = FrameThrowOnNonExistentPolicy{};
 } // namespace podio
 
 #endif // PODIO_FRAMEPOLICIES_H

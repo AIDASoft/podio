@@ -1,4 +1,5 @@
 #include "podio/Frame.h"
+#include "podio/FramePolicies.h"
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -6,6 +7,7 @@
 #include "datamodel/ExampleHitCollection.h"
 
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <utility>
@@ -446,4 +448,20 @@ TEST_CASE("EIC-Jana2 cleanup use case", "[memory-management][492][174]") {
     }
   }
   delete clone;
+}
+
+TEST_CASE("Frame get with policies", "[frame]") {
+  STATIC_REQUIRE(podio::GetPolicyCallable<podio::FrameCreateEmptyNonExistentPolicy, ExampleHitCollection>);
+  STATIC_REQUIRE(podio::GetPolicyCallable<podio::FrameThrowOnNonExistentPolicy, ExampleHitCollection>);
+
+  const auto frame = createFrame();
+
+  // implicit default version
+  REQUIRE_FALSE(frame.get<ExampleHitCollection>("non-existent-collection").hasID());
+  // explicit version
+  REQUIRE_FALSE(
+      frame.get<ExampleHitCollection>("non-existent-collection", podio::CreateEmptyCollOnNonExistent).hasID());
+
+  REQUIRE_THROWS_AS(frame.get<ExampleHitCollection>("non-existent-collection", podio::ThrowOnNonExistent),
+                    std::runtime_error);
 }
