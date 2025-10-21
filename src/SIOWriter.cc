@@ -53,7 +53,7 @@ void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& categor
 }
 
 void SIOWriter::finish() {
-  if (m_finished) {
+  if (!m_stream.is_open()) {
     return;
   }
   auto edmDefMap = std::make_shared<podio::SIOMapBlock<std::string, std::string>>(
@@ -88,8 +88,6 @@ void SIOWriter::finish() {
   m_stream.write(reinterpret_cast<char*>(&finalWords), sizeof(finalWords));
 
   m_stream.close();
-
-  m_finished = true;
 }
 
 } // namespace podio

@@ -74,7 +74,6 @@ private:
   sio::ofstream m_stream{};       ///< The output file stream
   SIOFileTOCRecord m_tocRecord{}; ///< The "table of contents" of the written file
   DatamodelDefinitionCollector m_datamodelCollector{};
-  bool m_finished{false}; ///< Has finish been called already?
 };
 } // namespace podio
 

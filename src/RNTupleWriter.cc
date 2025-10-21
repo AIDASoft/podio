@@ -234,54 +234,58 @@ RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(const std::string& c
 }
 
 void RNTupleWriter::finish() {
-  if (m_finished) {
+  if (!m_file) {
     return;
   }
-  auto metadata = root_compat::RNTupleModel::Create();
+  // Use scope to make sure everything is destroyed before deleting TFile
+  {
+    auto metadata = root_compat::RNTupleModel::Create();
 
-  const auto podioVersion = podio::version::build_version;
-  auto versionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
-  *versionField = {podioVersion.major, podioVersion.minor, podioVersion.patch};
+    const auto podioVersion = podio::version::build_version;
+    auto versionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
+    *versionField = {podioVersion.major, podioVersion.minor, podioVersion.patch};
 
-  const auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
-  for (const auto& [name, _] : edmDefinitions) {
-    const auto edmVersion = DatamodelRegistry::instance().getDatamodelVersion(name);
-    if (edmVersion) {
-      const auto edmVersionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
-      *edmVersionField = {edmVersion->major, edmVersion->minor, edmVersion->patch};
+    const auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
+    for (const auto& [name, _] : edmDefinitions) {
+      const auto edmVersion = DatamodelRegistry::instance().getDatamodelVersion(name);
+      if (edmVersion) {
+        const auto edmVersionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
+        *edmVersionField = {edmVersion->major, edmVersion->minor, edmVersion->patch};
+      }
+    }
+
+    const auto edmField =
+        metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+    *edmField = std::move(edmDefinitions);
+
+    const auto availableCategoriesField =
+        metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
+    for (const auto& [c, _] : m_categories) {
+      availableCategoriesField->push_back(c);
+    }
+
+    for (const auto& [category, collInfo] : m_categories) {
+      const auto collInfoField =
+          metadata->MakeField<std::vector<root_utils::CollectionWriteInfo>>({root_utils::collInfoName(category)});
+      *collInfoField = collInfo.collInfo;
+    }
+
+    metadata->Freeze();
+    const auto metadataWriter =
+        root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
+
+    metadataWriter->Fill();
+
+    m_file->Write();
+
+    // All the tuple writers must be deleted before the file so that they flush
+    // unwritten output
+    for (auto& [_, catInfo] : m_categories) {
+      catInfo.writer.reset();
     }
   }
 
-  const auto edmField =
-      metadata->MakeField<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
-  *edmField = std::move(edmDefinitions);
-
-  const auto availableCategoriesField = metadata->MakeField<std::vector<std::string>>(root_utils::availableCategories);
-  for (const auto& [c, _] : m_categories) {
-    availableCategoriesField->push_back(c);
-  }
-
-  for (const auto& [category, collInfo] : m_categories) {
-    const auto collInfoField =
-        metadata->MakeField<std::vector<root_utils::CollectionWriteInfo>>({root_utils::collInfoName(category)});
-    *collInfoField = collInfo.collInfo;
-  }
-
-  metadata->Freeze();
-  const auto metadataWriter =
-      root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
-
-  metadataWriter->Fill();
-
-  m_file->Write();
-
-  // All the tuple writers must be deleted before the file so that they flush
-  // unwritten output
-  for (auto& [_, catInfo] : m_categories) {
-    catInfo.writer.reset();
-  }
-
-  m_finished = true;
+  m_file.reset();
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
