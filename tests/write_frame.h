@@ -557,4 +557,21 @@ void write_frames(const std::string& filename) {
   writer.finish();
 }
 
+template <typename WriterT>
+void write_subsets_only(const std::string& filename) {
+  WriterT writer(filename);
+
+  auto mcps = createMCCollection();
+  auto subsetMCPs = ExampleMCCollection();
+  subsetMCPs.setSubsetCollection();
+  for (const auto mc : mcps) {
+    subsetMCPs.push_back(mc);
+  }
+
+  auto frame = podio::Frame();
+  frame.put(std::move(subsetMCPs), "subsetMCParticles");
+
+  writer.writeFrame(frame, "events");
+}
+
 #endif // PODIO_TESTS_WRITE_FRAME_H
