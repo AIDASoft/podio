@@ -131,8 +131,6 @@ private:
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
 
   DatamodelDefinitionCollector m_datamodelCollector{};
-
-  bool m_finished{false}; ///< Whether writing has been actually done
 };
 
 } // namespace podio
