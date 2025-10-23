@@ -1,0 +1,22 @@
+options:
+  includeSubfolder: true
+
+schema_version: 1
+
+datatypes:
+  ExampleHit:
+    Description: "Example hit"
+    Author: "B. Hegner"
+    Members:
+      - double x // x coordinate
+      - double y // y coordinate
+      - double z // z coordinate
+      - double energy // measured energy deposit
+
+  ExampleCluster:
+    Description: "Cluster"
+    Author: "B. Hegner"
+    Members:
+      - double energy // cluster energy
+    OneToManyRelations:
+      - ExampleHit oldHits // hits in this cluster
