@@ -1,3 +1,30 @@
+# v01-06
+
+* 2025-10-21 Juan Miguel Carceller ([PR#867](https://github.com/AIDASoft/podio/pull/867))
+  - Use a handle to a file or stream in the writers to check if we are done
+
+* 2025-10-20 Juan Miguel Carceller ([PR#865](https://github.com/AIDASoft/podio/pull/865))
+  - Make `RNTupleReader::getEntries` `const` since it's also `const` in the other readers
+
+* 2025-10-20 Juan Miguel Carceller ([PR#864](https://github.com/AIDASoft/podio/pull/864))
+  - Do not load the deprecated pythonization collection_subscript
+
+* 2025-10-20 Juan Miguel Carceller ([PR#862](https://github.com/AIDASoft/podio/pull/862))
+  - Make it possible to read RNTuples with removed types, using `SetEmulateUnknownTypes`
+  - Add a test that fails without this fix and works with this fix (only RNTuple was failing)
+
+* 2025-10-20 Juan Miguel Carceller ([PR#846](https://github.com/AIDASoft/podio/pull/846))
+  - Add ugly code to trigger an error when reading garbage
+
+* 2025-10-14 Juan Miguel Carceller ([PR#860](https://github.com/AIDASoft/podio/pull/860))
+  - Deprecate `isValid()` for collections and add `hasID()` to check if a collection has an ID. This allows to find out if `frame.get<type>("name")` didn't find a collection, since it will return an empty one in this case.
+
+* 2025-10-10 Juan Miguel Carceller ([PR#857](https://github.com/AIDASoft/podio/pull/857))
+  - podio-merge-files: import podio later for faster help messages and use get_reader
+
+* 2025-10-10 Thomas Madlener ([PR#855](https://github.com/AIDASoft/podio/pull/855))
+  - Add an indication whether a collection is a subset collection to the output of `podio-dump`
+
 # v01-05
 
 * 2025-10-08 Juan Miguel Carceller ([PR#854](https://github.com/AIDASoft/podio/pull/854))
