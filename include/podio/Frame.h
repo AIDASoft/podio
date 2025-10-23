@@ -172,17 +172,6 @@ public:
   template <FrameDataType FrameData>
   Frame(std::unique_ptr<FrameData>);
 
-  /// Frame constructor from (almost) arbitrary raw data.
-  ///
-  /// This r-value overload is mainly present for enabling the python bindings,
-  /// where cppyy seems to strip the std::unique_ptr somewhere in the process
-  ///
-  /// @tparam FrameData Arbitrary data container that provides access to the
-  ///                   collection buffers as well as the metadata, when
-  ///                   requested by the Frame.
-  template <RValueFrameDataType FrameData>
-  Frame(FrameData&&);
-
   /// A Frame is move-only
   Frame(const Frame&) = delete;
   /// A Frame is move-only
@@ -385,10 +374,6 @@ inline Frame::Frame() : Frame(std::make_unique<detail::EmptyFrameData>()) {
 
 template <FrameDataType FrameData>
 Frame::Frame(std::unique_ptr<FrameData> data) : m_self(std::make_unique<FrameModel<FrameData>>(std::move(data))) {
-}
-
-template <RValueFrameDataType FrameData>
-Frame::Frame(FrameData&& data) : Frame(std::make_unique<FrameData>(std::move(data))) {
 }
 
 template <CollectionType CollT>
