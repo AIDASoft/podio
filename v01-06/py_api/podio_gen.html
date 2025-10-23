@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>podio_gen package &mdash; PODIO  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=7f41d439"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="podio_schema_evolution module" href="podio_schema_evolution.html" />
+    <link rel="prev" title="podio_class_generator module" href="podio_class_generator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PODIO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../doc.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc.html#quick-start">Quick-start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">Design and Implementation Details</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../design.html#layout-of-objects">Layout of Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../design.html#the-user-layer">The User Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../design.html#the-internal-data-layer">The Internal Data Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../design.html#the-pod-layer">The POD Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../design.html#the-collections">The Collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../design.html#vectorization-support-notebook-pattern">Vectorization support / notebook pattern</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../design.html#handling-mutability">Handling mutability</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datamodel_syntax.html">Data Models and Data Model Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#basic-concepts-and-supported-features">Basic Concepts and Supported Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#mandatory-fields">Mandatory fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#definition-of-custom-components">Definition of custom components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#definition-of-custom-data-classes">Definition of custom data classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#defining-members">Defining members</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#definition-of-references-between-objects">Definition of references between objects:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#explicit-definition-of-methods">Explicit definition of methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#definition-of-custom-interfaces">Definition of custom interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#definition-of-links">Definition of links</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#assigning-to-interface-types">Assigning to interface types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#global-options">Global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#embedding-a-datamodel-version">Embedding a datamodel version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datamodel_syntax.html#extending-a-datamodel-using-types-from-an-upstream-datamodel">Extending a datamodel / using types from an upstream datamodel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../datamodel_syntax.html#potential-pitfalls">Potential pitfalls</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples for Supported Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#object-ownership">Object Ownership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#object-creation-and-storage">Object Creation and Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#object-references">Object References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#looping-through-collections">Looping through Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#cloning-objects">Cloning objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#podio-frame-container"><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#object-retrieval">Object Retrieval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#user-defined-meta-data">User defined Meta Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples.html#python-interface">Python Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reading_writing.html">ROOT Support in Podio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reading_writing.html#c">C++</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#reading">Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#writing">Writing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_writing.html#python">Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#id1">Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#id2">Writing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../frame.html">The <code class="docutils literal notranslate"><span class="pre">Frame</span></code> concept</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../frame.html#basic-functionality-of-a-frame">Basic functionality of a <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../frame.html#usage-examples-for-collection-data">Usage examples for collection data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../frame.html#putting-collection-data-into-the-frame">Putting collection data into the <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../frame.html#getting-collection-references-from-the-frame">Getting collection (references) from the <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../frame.html#usage-for-parameters">Usage for Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../frame.html#i-o-basics-and-philosophy">I/O basics and philosophy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../frame.html#writing-a-frame">Writing a <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../frame.html#reading-a-frame">Reading a <code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../frame.html#schema-evolution">Schema evolution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../frame.html#frame-implementation-and-design">Frame implementation and design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userdata.html">Writing extra data outside the EDM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../userdata.html#example-usage">Example usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../userdata.html#some-limitations">Some limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../userdata.html#no-relations-to-other-collections">No relations to other collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../userdata.html#limited-supported-types">Limited supported types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">Linking unrelated objects with each other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#link-basics"><code class="docutils literal notranslate"><span class="pre">Link</span></code> basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#how-to-use-links">How to use <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../links.html#enabling-i-o-capabilities-for-links">Enabling I/O capabilities for <code class="docutils literal notranslate"><span class="pre">Link</span></code>s</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#the-linknavigator-utility">The <code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code> utility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../links.html#implementation-details">Implementation details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../links.html#file-structure">File structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../links.html#default-and-mutable-link-classes">Default and <code class="docutils literal notranslate"><span class="pre">Mutable</span></code> <code class="docutils literal notranslate"><span class="pre">Link</span></code> classes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../storage_details.html">Storage details of files produced by podio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../storage_details.html#root">ROOT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../storage_details.html#storage-of-collection-data">Storage of Collection data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage_details.html#storage-of-frame-parameters">Storage of Frame parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage_details.html#storage-of-podio-related-metadata">Storage of podio related metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../storage_details.html#sio">SIO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools.html">Tools and utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools.html#displaying-the-content-of-files-podio-dump">Displaying the content of files: <code class="docutils literal notranslate"><span class="pre">podio-dump</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools.html#merging-files-podio-merge-files">Merging files: <code class="docutils literal notranslate"><span class="pre">podio-merge-files</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools.html#converting-between-root-ttrees-and-rntuples-podio-ttree-to-rntuple">Converting between ROOT TTrees and RNTuples: <code class="docutils literal notranslate"><span class="pre">podio-ttree-to-rntuple</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools.html#visualizing-a-model-podio-vis">Visualizing a model: <code class="docutils literal notranslate"><span class="pre">podio-vis</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cmake.html">Building a new data model library with CMake</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cmake.html#exported-cmake-functions-and-macros">Exported CMake functions and macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cmake.html#a-simple-example">A simple example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cmake.html#more-advanced-data-model-generation">More advanced data model generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cmake.html#example-usage-of-advanced-options">Example usage of Advanced options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#writing-extra-data-outside-the-edm">Writing extra data outside the EDM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#changing-creating-new-templates">Changing / creating new templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#persistency">Persistency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#writing-back-end">Writing Back-End</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#reading-back-end">Reading Back-End</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#dumping-json">Dumping JSON</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#thread-safety">Thread-safety</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#changing-user-data">Changing user data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#serialization">Serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#not-thread-safe-components">Not-thread-safe components</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#running-pre-commit">Running pre-commit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#retrieving-the-edm-definition-from-a-data-file">Retrieving the EDM definition from a data file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#accessing-the-edm-definition-programmatically">Accessing the EDM definition programmatically</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#technical-details-on-edm-definition-embedding">Technical details on EDM definition embedding</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../advanced_topics.html#the-datamodelregistry">The <code class="docutils literal notranslate"><span class="pre">DatamodelRegistry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../advanced_topics.html#i-o-helpers-for-edm-definition-storing">I/O helpers for EDM definition storing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../templates.html">Changing / creating new templates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../templates.html#preprocessing-of-yaml-file">Preprocessing of yaml file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates.html#existing-templates">Existing templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates.html#adding-a-new-template">Adding a new template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templates.html#available-information-in-the-templates">Available information in the templates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../templates.html#general-information">General information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../templates.html#components">Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../templates.html#datatypes">Datatypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../templates.html#membervariable"><code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../templates.html#datatype"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../templates.html#julia-code-generation">Julia code generation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../python.html">Python interface for data models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../python.html#pythonizations">Pythonizations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../python.html#developing-new-pythonizations">Developing new pythonizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../python.html#considerations">Considerations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../collections_as_container.html">PODIO Collection as a <em>Container</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#container-types">Container Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#container-member-functions-and-operators">Container member functions and operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#collection-as-an-allocatorawarecontainer">Collection as an <em>AllocatorAwareContainer</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../collections_as_container.html#allocatorawarecontainer-types">AllocatorAwareContainer types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../collections_as_container.html#allocatorawarecontainer-expression-and-statements"><em>AllocatorAwareContainer</em> expression and statements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#collection-iterators-as-an-iterator">Collection iterators as an <em>Iterator</em></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../collections_as_container.html#iterator-summary">Iterator summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../collections_as_container.html#legacyiterator">LegacyIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../collections_as_container.html#legacyinputiterator">LegacyInputIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../collections_as_container.html#legacyforwarditerator">LegacyForwardIterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../collections_as_container.html#legacyoutputiterator">LegacyOutputIterator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#collection-as-a-range">Collection as a <em>range</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../collections_as_container.html#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_api/api.html">C++ API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cpp_api/classlist.html">Class list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE"><code class="docutils literal notranslate"><span class="pre">CollectionBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_collection_buffer_factory.html">Class podio::CollectionBufferFactory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_collection_buffer_factory.html#_CPPv4N5podio23CollectionBufferFactoryE"><code class="docutils literal notranslate"><span class="pre">CollectionBufferFactory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_collection_i_d_table.html">Class podio::CollectionIDTable</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_collection_i_d_table.html#_CPPv4N5podio17CollectionIDTableE"><code class="docutils literal notranslate"><span class="pre">CollectionIDTable</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_data_source.html">Class podio::DataSource</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_data_source.html#_CPPv4N5podio10DataSourceE"><code class="docutils literal notranslate"><span class="pre">DataSource</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_datamodel_definition_collector.html">Class podio::DatamodelDefinitionCollector</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_datamodel_definition_collector.html#_CPPv4N5podio28DatamodelDefinitionCollectorE"><code class="docutils literal notranslate"><span class="pre">DatamodelDefinitionCollector</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_datamodel_definition_holder.html">Class podio::DatamodelDefinitionHolder</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_datamodel_definition_holder.html#_CPPv4N5podio25DatamodelDefinitionHolderE"><code class="docutils literal notranslate"><span class="pre">DatamodelDefinitionHolder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_datamodel_registry.html">Class podio::DatamodelRegistry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_datamodel_registry.html#_CPPv4N5podio17DatamodelRegistryE"><code class="docutils literal notranslate"><span class="pre">DatamodelRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_frame.html">Class podio::Frame</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_generic_parameters.html">Class podio::GenericParameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE"><code class="docutils literal notranslate"><span class="pre">GenericParameters</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_i_collection_provider.html">Class podio::ICollectionProvider</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_i_collection_provider.html#_CPPv4N5podio19ICollectionProviderE"><code class="docutils literal notranslate"><span class="pre">ICollectionProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_collection.html">Class podio::LinkCollection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_collection.html#_CPPv4I00EN5podio14LinkCollectionE"><code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_collection_data.html">Class podio::LinkCollectionData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_collection_data.html#_CPPv4I00EN5podio18LinkCollectionDataE"><code class="docutils literal notranslate"><span class="pre">LinkCollectionData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_collection_iterator_t.html">Class podio::LinkCollectionIteratorT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_collection_iterator_t.html#_CPPv4I00_bEN5podio23LinkCollectionIteratorTE"><code class="docutils literal notranslate"><span class="pre">LinkCollectionIteratorT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_navigator.html">Class podio::LinkNavigator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE"><code class="docutils literal notranslate"><span class="pre">LinkNavigator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_obj.html">Class podio::LinkObj</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_obj.html#_CPPv4I00EN5podio7LinkObjE"><code class="docutils literal notranslate"><span class="pre">LinkObj</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_s_i_o_block.html">Class podio::LinkSIOBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_s_i_o_block.html#_CPPv4I00EN5podio12LinkSIOBlockE"><code class="docutils literal notranslate"><span class="pre">LinkSIOBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_t.html">Class podio::LinkT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_link_t.html#_CPPv4I00_bEN5podio5LinkTE"><code class="docutils literal notranslate"><span class="pre">LinkT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_object_i_d.html">Class podio::ObjectID</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_object_i_d.html#_CPPv4N5podio8ObjectIDE"><code class="docutils literal notranslate"><span class="pre">ObjectID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_n_tuple_reader.html">Class podio::RNTupleReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReaderE"><code class="docutils literal notranslate"><span class="pre">RNTupleReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_n_tuple_writer.html">Class podio::RNTupleWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_n_tuple_writer.html#_CPPv4N5podio13RNTupleWriterE"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html">Class podio::ROOTFrameData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_frame_data.html#_CPPv4N5podio13ROOTFrameDataE"><code class="docutils literal notranslate"><span class="pre">ROOTFrameData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html">Class podio::ROOTLegacyReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_legacy_reader.html#_CPPv4N5podio16ROOTLegacyReaderE"><code class="docutils literal notranslate"><span class="pre">ROOTLegacyReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_reader.html">Class podio::ROOTReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4N5podio10ROOTReaderE"><code class="docutils literal notranslate"><span class="pre">ROOTReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_writer.html">Class podio::ROOTWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_r_o_o_t_writer.html#_CPPv4N5podio10ROOTWriterE"><code class="docutils literal notranslate"><span class="pre">ROOTWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_reader.html">Class podio::Reader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6ReaderE"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_relation_range.html">Class podio::RelationRange</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4I0EN5podio13RelationRangeE"><code class="docutils literal notranslate"><span class="pre">RelationRange</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block.html">Class podio::SIOBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block.html#_CPPv4N5podio8SIOBlockE"><code class="docutils literal notranslate"><span class="pre">SIOBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block_factory.html">Class podio::SIOBlockFactory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block_factory.html#_CPPv4N5podio15SIOBlockFactoryE"><code class="docutils literal notranslate"><span class="pre">SIOBlockFactory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block_library_loader.html">Class podio::SIOBlockLibraryLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">SIOBlockLibraryLoader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html">Class podio::SIOBlockUserData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I_21SupportedUserDataTypeEN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">SIOBlockUserData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_collection_i_d_table_block.html">Class podio::SIOCollectionIDTableBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_collection_i_d_table_block.html#_CPPv4N5podio25SIOCollectionIDTableBlockE"><code class="docutils literal notranslate"><span class="pre">SIOCollectionIDTableBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_event_meta_data_block.html">Class podio::SIOEventMetaDataBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_event_meta_data_block.html#_CPPv4N5podio21SIOEventMetaDataBlockE"><code class="docutils literal notranslate"><span class="pre">SIOEventMetaDataBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_file_t_o_c_record.html">Class podio::SIOFileTOCRecord</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_file_t_o_c_record.html#_CPPv4N5podio16SIOFileTOCRecordE"><code class="docutils literal notranslate"><span class="pre">SIOFileTOCRecord</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_frame_data.html">Class podio::SIOFrameData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_frame_data.html#_CPPv4N5podio12SIOFrameDataE"><code class="docutils literal notranslate"><span class="pre">SIOFrameData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_legacy_reader.html">Class podio::SIOLegacyReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_legacy_reader.html#_CPPv4N5podio15SIOLegacyReaderE"><code class="docutils literal notranslate"><span class="pre">SIOLegacyReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_numbered_meta_data_block.html">Class podio::SIONumberedMetaDataBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_numbered_meta_data_block.html#_CPPv4N5podio24SIONumberedMetaDataBlockE"><code class="docutils literal notranslate"><span class="pre">SIONumberedMetaDataBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_reader.html">Class podio::SIOReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_reader.html#_CPPv4N5podio9SIOReaderE"><code class="docutils literal notranslate"><span class="pre">SIOReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_writer.html">Class podio::SIOWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_s_i_o_writer.html#_CPPv4N5podio9SIOWriterE"><code class="docutils literal notranslate"><span class="pre">SIOWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_schema_evolution.html">Class podio::SchemaEvolution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_schema_evolution.html#_CPPv4N5podio15SchemaEvolutionE"><code class="docutils literal notranslate"><span class="pre">SchemaEvolution</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_user_data_collection.html">Class podio::UserDataCollection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_user_data_collection.html#_CPPv4I00EN5podio18UserDataCollectionE"><code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_writer.html">Class podio::Writer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/class/classpodio_1_1utils_1_1_maybe_shared_ptr.html">Class podio::utils::MaybeSharedPtr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/class/classpodio_1_1utils_1_1_maybe_shared_ptr.html#_CPPv4I0EN5podio5utils14MaybeSharedPtrE"><code class="docutils literal notranslate"><span class="pre">MaybeSharedPtr</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../cpp_api/structlist.html">Struct list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">CollectionReadBuffers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_collection_write_buffers.html">Struct podio::CollectionWriteBuffers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_collection_write_buffers.html#_CPPv4N5podio22CollectionWriteBuffersE"><code class="docutils literal notranslate"><span class="pre">CollectionWriteBuffers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_frame_1_1_frame_concept.html">Struct podio::Frame::FrameConcept</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_frame_1_1_frame_concept.html#_CPPv4N5podio5Frame12FrameConceptE"><code class="docutils literal notranslate"><span class="pre">FrameConcept</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_frame_1_1_frame_model.html">Struct podio::Frame::FrameModel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_frame_1_1_frame_model.html#_CPPv4I0EN5podio5Frame10FrameModelE"><code class="docutils literal notranslate"><span class="pre">FrameModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_link_data.html">Struct podio::LinkData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_link_data.html#_CPPv4N5podio8LinkDataE"><code class="docutils literal notranslate"><span class="pre">LinkData</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html">Struct podio::RNTupleWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html#_CPPv4N5podio13RNTupleWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info.html">Struct podio::ROOTReader::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info.html#_CPPv4N5podio10ROOTReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html#_CPPv4N5podio10ROOTWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html">Struct podio::Reader::ReaderConcept</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4N5podio6Reader13ReaderConceptE"><code class="docutils literal notranslate"><span class="pre">ReaderConcept</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html">Struct podio::Reader::ReaderModel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4I0EN5podio6Reader11ReaderModelE"><code class="docutils literal notranslate"><span class="pre">ReaderModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_relation_names.html">Struct podio::RelationNames</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_relation_names.html#_CPPv4N5podio13RelationNamesE"><code class="docutils literal notranslate"><span class="pre">RelationNames</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_s_i_o_file_t_o_c_record_block.html">Struct podio::SIOFileTOCRecordBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_s_i_o_file_t_o_c_record_block.html#_CPPv4N5podio21SIOFileTOCRecordBlockE"><code class="docutils literal notranslate"><span class="pre">SIOFileTOCRecordBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_s_i_o_map_block.html">Struct podio::SIOMapBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_s_i_o_map_block.html#_CPPv4I00EN5podio11SIOMapBlockE"><code class="docutils literal notranslate"><span class="pre">SIOMapBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_s_i_o_version_block.html">Struct podio::SIOVersionBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_s_i_o_version_block.html#_CPPv4N5podio15SIOVersionBlockE"><code class="docutils literal notranslate"><span class="pre">SIOVersionBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_schema_evolution_1_1_map_index.html">Struct podio::SchemaEvolution::MapIndex</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_schema_evolution_1_1_map_index.html#_CPPv4N5podio15SchemaEvolution8MapIndexE"><code class="docutils literal notranslate"><span class="pre">MapIndex</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_writer_1_1_writer_concept.html">Struct podio::Writer::WriterConcept</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_writer_1_1_writer_concept.html#_CPPv4N5podio6Writer13WriterConceptE"><code class="docutils literal notranslate"><span class="pre">WriterConcept</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_writer_1_1_writer_model.html">Struct podio::Writer::WriterModel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_writer_1_1_writer_model.html#_CPPv4I0EN5podio6Writer11WriterModelE"><code class="docutils literal notranslate"><span class="pre">WriterModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1det_1_1nonesuch.html">Struct podio::det::nonesuch</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchE"><code class="docutils literal notranslate"><span class="pre">nonesuch</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">CollectionBranches</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_write_info.html">Struct podio::root_utils::CollectionWriteInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_write_info.html#_CPPv4N5podio10root_utils19CollectionWriteInfoE"><code class="docutils literal notranslate"><span class="pre">CollectionWriteInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_param_storage.html">Struct podio::root_utils::ParamStorage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_param_storage.html#_CPPv4I0EN5podio10root_utils12ParamStorageE"><code class="docutils literal notranslate"><span class="pre">ParamStorage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1utils_1_1_maybe_shared_ptr_1_1_control_block.html">Struct podio::utils::MaybeSharedPtr::ControlBlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1utils_1_1_maybe_shared_ptr_1_1_control_block.html#_CPPv4N5podio5utils14MaybeSharedPtr12ControlBlockE"><code class="docutils literal notranslate"><span class="pre">ControlBlock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1utils_1_1_type_list.html">Struct podio::utils::TypeList</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1utils_1_1_type_list.html#_CPPv4IDpEN5podio5utils8TypeListE"><code class="docutils literal notranslate"><span class="pre">TypeList</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1utils_1_1static__concatenate.html">Struct podio::utils::static_concatenate</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1utils_1_1static__concatenate.html#_CPPv4I_DpRKNSt11string_viewEEN5podio5utils18static_concatenateE"><code class="docutils literal notranslate"><span class="pre">static_concatenate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1version_1_1_version.html">Struct podio::version::Version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1version_1_1_version.html#_CPPv4N5podio7version7VersionE"><code class="docutils literal notranslate"><span class="pre">Version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../cpp_api/namespacelist.html">Namespace list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t.html">Namespace ROOT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t.html#_CPPv44ROOT"><code class="docutils literal notranslate"><span class="pre">ROOT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t_1_1_r_d_f.html">Namespace ROOT::RDF</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t_1_1_r_d_f.html#_CPPv4N4ROOT3RDFE"><code class="docutils literal notranslate"><span class="pre">RDF</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio.html">Namespace podio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio.html#_CPPv45podio"><code class="docutils literal notranslate"><span class="pre">podio</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1_category.html">Namespace podio::Category</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1_category.html#_CPPv4N5podio8CategoryE"><code class="docutils literal notranslate"><span class="pre">Category</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1det.html">Namespace podio::det</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3detE"><code class="docutils literal notranslate"><span class="pre">det</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1root__compat.html">Namespace podio::root_compat</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1root__compat.html#_CPPv4N5podio11root_compatE"><code class="docutils literal notranslate"><span class="pre">root_compat</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1root__utils.html">Namespace podio::root_utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1root__utils.html#_CPPv4N5podio10root_utilsE"><code class="docutils literal notranslate"><span class="pre">root_utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1sio__helpers.html">Namespace podio::sio_helpers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1sio__helpers.html#_CPPv4N5podio11sio_helpersE"><code class="docutils literal notranslate"><span class="pre">sio_helpers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1utils.html">Namespace podio::utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1utils.html#_CPPv4N5podio5utilsE"><code class="docutils literal notranslate"><span class="pre">utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1version.html">Namespace podio::version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1version.html#_CPPv4N5podio7versionE"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacesio.html">Namespace sio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacesio.html#_CPPv43sio"><code class="docutils literal notranslate"><span class="pre">sio</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">python</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="podio.html">podio package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.pythonizations.html">podio.pythonizations package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.base_writer">podio.base_writer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.base_writer.AllWriters"><code class="docutils literal notranslate"><span class="pre">AllWriters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.base_writer.BaseWriterMixin"><code class="docutils literal notranslate"><span class="pre">BaseWriterMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.data_source">podio.data_source module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.frame">podio.frame module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.frame.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.frame_iterator">podio.frame_iterator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.frame_iterator.FrameCategoryIterator"><code class="docutils literal notranslate"><span class="pre">FrameCategoryIterator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.reading">podio.reading module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.reading.RootFileFormat"><code class="docutils literal notranslate"><span class="pre">RootFileFormat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.reading.get_reader"><code class="docutils literal notranslate"><span class="pre">get_reader()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.root_io">podio.root_io module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.root_io.LegacyReader"><code class="docutils literal notranslate"><span class="pre">LegacyReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.root_io.RNTupleReader"><code class="docutils literal notranslate"><span class="pre">RNTupleReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.root_io.RNTupleWriter"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.root_io.Reader"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.root_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.sio_io">podio.sio_io module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.sio_io.LegacyReader"><code class="docutils literal notranslate"><span class="pre">LegacyReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.sio_io.Reader"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.sio_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.utils">podio.utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.utils.convert_to_str_paths"><code class="docutils literal notranslate"><span class="pre">convert_to_str_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.utils.expand_glob"><code class="docutils literal notranslate"><span class="pre">expand_glob()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio.version">podio.version module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.version.parse"><code class="docutils literal notranslate"><span class="pre">parse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio.html#module-podio">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio.html#podio.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="podio_class_generator.html">podio_class_generator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.clang_format_file"><code class="docutils literal notranslate"><span class="pre">clang_format_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.has_clang_format"><code class="docutils literal notranslate"><span class="pre">has_clang_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.parse_version"><code class="docutils literal notranslate"><span class="pre">parse_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_class_generator.html#podio_class_generator.read_upstream_edm"><code class="docutils literal notranslate"><span class="pre">read_upstream_edm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">podio_gen package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.cpp_generator">podio_gen.cpp_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.cpp_generator.CPPClassGenerator"><code class="docutils literal notranslate"><span class="pre">CPPClassGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.cpp_generator.IncludeFrom"><code class="docutils literal notranslate"><span class="pre">IncludeFrom</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.generator_base">podio_gen.generator_base module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_base.ClassGeneratorBaseMixin"><code class="docutils literal notranslate"><span class="pre">ClassGeneratorBaseMixin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_base.write_file_if_changed"><code class="docutils literal notranslate"><span class="pre">write_file_if_changed()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.generator_utils">podio_gen.generator_utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_utils.DataModel"><code class="docutils literal notranslate"><span class="pre">DataModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_utils.DataModelJSONEncoder"><code class="docutils literal notranslate"><span class="pre">DataModelJSONEncoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_utils.DataType"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_utils.DefinitionError"><code class="docutils literal notranslate"><span class="pre">DefinitionError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_utils.MemberVariable"><code class="docutils literal notranslate"><span class="pre">MemberVariable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.generator_utils.get_julia_type"><code class="docutils literal notranslate"><span class="pre">get_julia_type()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.julia_generator">podio_gen.julia_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.julia_generator.JuliaClassGenerator"><code class="docutils literal notranslate"><span class="pre">JuliaClassGenerator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.podio_config_reader">podio_gen.podio_config_reader module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.podio_config_reader.ClassDefinitionValidator"><code class="docutils literal notranslate"><span class="pre">ClassDefinitionValidator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.podio_config_reader.MemberParser"><code class="docutils literal notranslate"><span class="pre">MemberParser</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.podio_config_reader.PodioConfigReader"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio_gen">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="podio_schema_evolution.html">podio_schema_evolution module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.AddedComponent"><code class="docutils literal notranslate"><span class="pre">AddedComponent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.AddedDatatype"><code class="docutils literal notranslate"><span class="pre">AddedDatatype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.AddedMember"><code class="docutils literal notranslate"><span class="pre">AddedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.AddedMultiRelation"><code class="docutils literal notranslate"><span class="pre">AddedMultiRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.AddedSingleRelation"><code class="docutils literal notranslate"><span class="pre">AddedSingleRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.AddedVectorMember"><code class="docutils literal notranslate"><span class="pre">AddedVectorMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.ChangedMemberType"><code class="docutils literal notranslate"><span class="pre">ChangedMemberType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.ComparisonResults"><code class="docutils literal notranslate"><span class="pre">ComparisonResults</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.ComparisonResults.errors"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.errors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.ComparisonResults.old_datamodel"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.old_datamodel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.ComparisonResults.schema_changes"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.schema_changes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.ComparisonResults.warnings"><code class="docutils literal notranslate"><span class="pre">ComparisonResults.warnings</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DataModelComparator"><code class="docutils literal notranslate"><span class="pre">DataModelComparator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.compare"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.compare()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.get_changed_schemata"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.get_changed_schemata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DataModelComparator.print_comparison"><code class="docutils literal notranslate"><span class="pre">DataModelComparator.print_comparison()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DroppedComponent"><code class="docutils literal notranslate"><span class="pre">DroppedComponent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DroppedDatatype"><code class="docutils literal notranslate"><span class="pre">DroppedDatatype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DroppedMember"><code class="docutils literal notranslate"><span class="pre">DroppedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DroppedMultiRelation"><code class="docutils literal notranslate"><span class="pre">DroppedMultiRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DroppedSingleRelation"><code class="docutils literal notranslate"><span class="pre">DroppedSingleRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.DroppedVectorMember"><code class="docutils literal notranslate"><span class="pre">DroppedVectorMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RenamedDataType"><code class="docutils literal notranslate"><span class="pre">RenamedDataType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RenamedMember"><code class="docutils literal notranslate"><span class="pre">RenamedMember</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RootIoRule"><code class="docutils literal notranslate"><span class="pre">RootIoRule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RootIoRule.code"><code class="docutils literal notranslate"><span class="pre">RootIoRule.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RootIoRule.source"><code class="docutils literal notranslate"><span class="pre">RootIoRule.source</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RootIoRule.sourceClass"><code class="docutils literal notranslate"><span class="pre">RootIoRule.sourceClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RootIoRule.target"><code class="docutils literal notranslate"><span class="pre">RootIoRule.target</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RootIoRule.targetClass"><code class="docutils literal notranslate"><span class="pre">RootIoRule.targetClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.RootIoRule.version"><code class="docutils literal notranslate"><span class="pre">RootIoRule.version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.SchemaChange"><code class="docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge.check_rename"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.check_rename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge.filter_types_with_adds_and_drops"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.filter_types_with_adds_and_drops()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge.heuristics_members"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.heuristics_members()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge.judge"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.judge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge.unsupported_changes"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.unsupported_changes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.root_filter"><code class="docutils literal notranslate"><span class="pre">root_filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="podio_schema_evolution.html#podio_schema_evolution.sio_filter"><code class="docutils literal notranslate"><span class="pre">sio_filter()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PODIO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">python</a></li>
+      <li class="breadcrumb-item active">podio_gen package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="podio-gen-package">
+<h1>podio_gen package<a class="headerlink" href="#podio-gen-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-podio_gen.cpp_generator">
+<span id="podio-gen-cpp-generator-module"></span><h2>podio_gen.cpp_generator module<a class="headerlink" href="#module-podio_gen.cpp_generator" title="Link to this heading"></a></h2>
+<p>Podio C++ class / code generator</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.cpp_generator.</span></span><span class="sig-name descname"><span class="pre">CPPClassGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_handlers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_edm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evolution_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datamodel_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_gen.generator_base.ClassGeneratorBaseMixin" title="podio_gen.generator_base.ClassGeneratorBaseMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassGeneratorBaseMixin</span></code></a></p>
+<p>The c++ class / code generator for podio</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.do_process_component">
+<span class="sig-name descname"><span class="pre">do_process_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.do_process_component" title="Link to this definition"></a></dt>
+<dd><p>Handle everything cpp specific after the common processing of a component</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.do_process_datatype">
+<span class="sig-name descname"><span class="pre">do_process_datatype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.do_process_datatype" title="Link to this definition"></a></dt>
+<dd><p>Do the cpp specific processing of a datatype</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.do_process_interface">
+<span class="sig-name descname"><span class="pre">do_process_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interface</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.do_process_interface" title="Link to this definition"></a></dt>
+<dd><p>Process an interface definition and generate the necessary code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.do_process_link">
+<span class="sig-name descname"><span class="pre">do_process_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.do_process_link" title="Link to this definition"></a></dt>
+<dd><p>Process a link definition and generate the necessary code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.post_process">
+<span class="sig-name descname"><span class="pre">post_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datamodel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.post_process" title="Link to this definition"></a></dt>
+<dd><p>Do the cpp specific post processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.pre_process">
+<span class="sig-name descname"><span class="pre">pre_process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.pre_process" title="Link to this definition"></a></dt>
+<dd><p>The necessary specific pre-processing for cpp code generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.CPPClassGenerator.print_report">
+<span class="sig-name descname"><span class="pre">print_report</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.CPPClassGenerator.print_report" title="Link to this definition"></a></dt>
+<dd><p>Print a summary report about the generated code</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.IncludeFrom">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.cpp_generator.</span></span><span class="sig-name descname"><span class="pre">IncludeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.cpp_generator.IncludeFrom" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>Enum to signify if an include is needed and from where it should come</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.IncludeFrom.EXTERNAL">
+<span class="sig-name descname"><span class="pre">EXTERNAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#podio_gen.cpp_generator.IncludeFrom.EXTERNAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.IncludeFrom.INTERNAL">
+<span class="sig-name descname"><span class="pre">INTERNAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#podio_gen.cpp_generator.IncludeFrom.INTERNAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.cpp_generator.IncludeFrom.NOWHERE">
+<span class="sig-name descname"><span class="pre">NOWHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#podio_gen.cpp_generator.IncludeFrom.NOWHERE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-podio_gen.generator_base">
+<span id="podio-gen-generator-base-module"></span><h2>podio_gen.generator_base module<a class="headerlink" href="#module-podio_gen.generator_base" title="Link to this heading"></a></h2>
+<p>podio class / code generator base functionality</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.generator_base.ClassGeneratorBaseMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_base.</span></span><span class="sig-name descname"><span class="pre">ClassGeneratorBaseMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_edm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datamodel_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_base.ClassGeneratorBaseMixin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for code generation providing common functionality and
+orchestration</p>
+<p>The base class takes care of initializing the common state that is necessary
+for code generation for the different languages. It reads and validates the
+datamodel and sets up the jinja2 environment. Furthermore it provides the
+functionality for filling templates and it also does the loop over all the
+components and datatypes in the datamodel offering hooks (see below) to
+augment the common processing with language specifics.</p>
+<p>The following members are initialized and accessible from inheriting classes</p>
+<ul class="simple">
+<li><p>yamlfile (the path to the yamlfile)</p></li>
+<li><p>install_dir (top level directory into which the code should be generated)</p></li>
+<li><p>package_name (the name of the package)</p></li>
+<li><p>verbose (whether to print some information about the code gen process)</p></li>
+<li><p>dryrun (whether to actually generate the datamodel or to only run the
+processing without filling the contents)</p></li>
+<li><p>upstream_edm (an optional upstream datamodel)</p></li>
+<li><p>datamodel (the current datamodel read from the yamlfile)</p></li>
+<li><p>get_syntax (whether to use get syntax or not)</p></li>
+<li><p>incfolder (whether to create an includeSubfolder or not)</p></li>
+<li><p>expose_pod_members (whether or not to expose the pod members)</p></li>
+<li><p>formatter_func (an optional formatting function that is called after the
+jinja template evaluation but before writing the contents to disk)</p></li>
+<li><p>generated_files (a list of files that have been generated)</p></li>
+<li><p>any_changes (a boolean indicating whether the current run of the code
+generation led to any changes in the generated code wrt the one that is
+already present in the output directory)</p></li>
+</ul>
+<p>Inheriting classes need to implement the following (potentially empty) methods:</p>
+<dl class="simple">
+<dt>pre_process() -&gt; dict: does some global pre-processing for the datamodel</dt><dd><p>before any of the components or datatypes are
+processed. Needs to return a (potentially) empty
+dictionary</p>
+</dd>
+<dt>do_process_component(name: str, component: dict) -&gt; dict: do some language</dt><dd><p>specific processing for a component populating the
+component dictionary further. When called only the
+“class” key will be populated. Return a dictionary or
+None. If None, this will not be put into the “components”
+list. This function also has to take care of filling
+the necessary templates!</p>
+</dd>
+<dt>do_process_datatype(name: str, datatype: dict): do some language specific</dt><dd><p>processing for a datatype populating the datatype
+dictionary further. When called only the “class” key will
+be populated. Return a dictionary or None. If None, this
+will not be put into the “datatypes” list. This function
+also has to take care of filling the necessary templates!</p>
+</dd>
+<dt>do_process_interface(name: str, interface: dict): do some language specific</dt><dd><p>processing for an interface type, populating the
+interface dictionary further. When called only the
+“class” key will be populated. Return a dictionary or
+None. If None, this will not be put into the “interfaces”
+list. This function also has to take care of filling the
+necessary templates!</p>
+</dd>
+<dt>do_process_link(name: str, link: dict): do some language specific processing</dt><dd><p>for a link type, populating the link dictionary further.
+When called only the “class” key will be populated. Return a
+dictionary or None. If None, this will not be put into the
+“links” list. This function also has to take care of filling
+the necessary templates!</p>
+</dd>
+<dt>post_process(datamodel: dict): do some global post processing for which all</dt><dd><p>components and datatypes need to have been processed already.
+Gets called with the dictionary that has been created in
+pre_process and filled during the processing. The process
+components and datatypes are accessible via the “components”,
+“datatypes”, “interfaces” and “links” keys respectively.</p>
+</dd>
+</dl>
+<p>print_report(): prints a report summarizing what has been generated</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_base.ClassGeneratorBaseMixin.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_base.ClassGeneratorBaseMixin.process" title="Link to this definition"></a></dt>
+<dd><p>Run the actual generation</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="podio_gen.generator_base.write_file_if_changed">
+<span class="sig-prename descclassname"><span class="pre">podio_gen.generator_base.</span></span><span class="sig-name descname"><span class="pre">write_file_if_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_base.write_file_if_changed" title="Link to this definition"></a></dt>
+<dd><p>Write the file contents only if it has changed or if the file does not exist
+yet. Return whether the file has been written or not</p>
+</dd></dl>
+
+</section>
+<section id="module-podio_gen.generator_utils">
+<span id="podio-gen-generator-utils-module"></span><h2>podio_gen.generator_utils module<a class="headerlink" href="#module-podio_gen.generator_utils" title="Link to this heading"></a></h2>
+<p>Module holding some generator utility functions</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.DataModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">DataModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.DataModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for holding a complete datamodel read from a configuration file</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.DataModelJSONEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">DataModelJSONEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.DataModelJSONEncoder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
+<p>A JSON encoder for DataModels, resp. anything hat has a _to_json method.</p>
+<p>Constructor for JSONEncoder, with sensible defaults.</p>
+<p>If skipkeys is false, then it is a TypeError to attempt
+encoding of keys that are not str, int, float, bool or None.
+If skipkeys is True, such items are simply skipped.</p>
+<p>If ensure_ascii is true, the output is guaranteed to be str
+objects with all incoming non-ASCII characters escaped.  If
+ensure_ascii is false, the output can contain non-ASCII characters.</p>
+<p>If check_circular is true, then lists, dicts, and custom encoded
+objects will be checked for circular references during encoding to
+prevent an infinite recursion (which would cause an RecursionError).
+Otherwise, no such check takes place.</p>
+<p>If allow_nan is true, then NaN, Infinity, and -Infinity will be
+encoded as such.  This behavior is not JSON specification compliant,
+but is consistent with most JavaScript based encoders and decoders.
+Otherwise, it will be a ValueError to encode such floats.</p>
+<p>If sort_keys is true, then the output of dictionaries will be
+sorted by key; this is useful for regression tests to ensure
+that JSON serializations can be compared on a day-to-day basis.</p>
+<p>If indent is a non-negative integer, then JSON array
+elements and object members will be pretty-printed with that
+indent level.  An indent level of 0 will only insert newlines.
+None is the most compact representation.</p>
+<p>If specified, separators should be an (item_separator, key_separator)
+tuple.  The default is (’, ‘, ‘: ‘) if <em>indent</em> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and
+(‘,’, ‘: ‘) otherwise.  To get the most compact JSON representation,
+you should specify (‘,’, ‘:’) to eliminate whitespace.</p>
+<p>If specified, default is a function that gets called for objects
+that can’t otherwise be serialized.  It should return a JSON encodable
+version of the object or raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.DataModelJSONEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.DataModelJSONEncoder.default" title="Link to this definition"></a></dt>
+<dd><p>The override for the default, first trying to call _to_json, otherwise
+handing off to the default JSONEncoder</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.DataType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">DataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">klass</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.DataType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simple class to hold information about a datatype or component that is
+defined in the datamodel.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.DefinitionError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">DefinitionError</span></span><a class="headerlink" href="#podio_gen.generator_utils.DefinitionError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception raised by the ClassDefinitionValidator for invalid definitions.
+Mainly here to distinguish it from plain exceptions that are otherwise raised.
+In this way this makes it possible to selectively catch exceptions related to
+the datamodel definition without also catching all the rest which might point
+to another problem</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">MemberVariable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simple class to hold information about a member variable</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.docstring">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docstring</span></span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.docstring" title="Link to this definition"></a></dt>
+<dd><p>Docstring to be used in code generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.getter_name">
+<span class="sig-name descname"><span class="pre">getter_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_syntax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.getter_name" title="Link to this definition"></a></dt>
+<dd><p>Get the getter name of the variable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.getter_return_type">
+<span class="sig-name descname"><span class="pre">getter_return_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">for_array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.getter_return_type" title="Link to this definition"></a></dt>
+<dd><p>Get the return type for a getter function for a variable</p>
+<p>All types that are builtin will be returned by value, the rest will be
+returned as const&amp;</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>for_array</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the type should be for an indexed
+array access</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.normalize_fw_type">
+<span class="sig-name descname"><span class="pre">normalize_fw_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fw_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.normalize_fw_type" title="Link to this definition"></a></dt>
+<dd><p>Normalize the fixed width type and make sure to include &lt;cstdint&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.qualified_as_version">
+<span class="sig-name descname"><span class="pre">qualified_as_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.qualified_as_version" title="Link to this definition"></a></dt>
+<dd><p>String representation with a potential intermediate version namespace
+Only applies in case the member is a component, as builtin variables are
+considered not versionable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.setter_name">
+<span class="sig-name descname"><span class="pre">setter_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_syntax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_relation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.setter_name" title="Link to this definition"></a></dt>
+<dd><p>Get the setter name of the variable</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.MemberVariable.signature">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">signature</span></span><a class="headerlink" href="#podio_gen.generator_utils.MemberVariable.signature" title="Link to this definition"></a></dt>
+<dd><p>Get the signature for this member variable to be used in function definitions</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="podio_gen.generator_utils.get_julia_type">
+<span class="sig-prename descclassname"><span class="pre">podio_gen.generator_utils.</span></span><span class="sig-name descname"><span class="pre">get_julia_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpp_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.generator_utils.get_julia_type" title="Link to this definition"></a></dt>
+<dd><p>Parse the given c++ type to a Julia type</p>
+</dd></dl>
+
+</section>
+<section id="module-podio_gen.julia_generator">
+<span id="podio-gen-julia-generator-module"></span><h2>podio_gen.julia_generator module<a class="headerlink" href="#module-podio_gen.julia_generator" title="Link to this heading"></a></h2>
+<p>podio Julia class / code generator</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.julia_generator.</span></span><span class="sig-name descname"><span class="pre">JuliaClassGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_edm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datamodel_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio_gen.generator_base.ClassGeneratorBaseMixin" title="podio_gen.generator_base.ClassGeneratorBaseMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassGeneratorBaseMixin</span></code></a></p>
+<p>The julia class / code generator for podio</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.do_process_component">
+<span class="sig-name descname"><span class="pre">do_process_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.do_process_component" title="Link to this definition"></a></dt>
+<dd><p>Do the julia specific processing of a component</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.do_process_datatype">
+<span class="sig-name descname"><span class="pre">do_process_datatype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.do_process_datatype" title="Link to this definition"></a></dt>
+<dd><p>Do the julia specific processing for a datatype</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.do_process_interface">
+<span class="sig-name descname"><span class="pre">do_process_interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">__</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.do_process_interface" title="Link to this definition"></a></dt>
+<dd><p>Julia does not support interface types yet, so this does nothing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.do_process_link">
+<span class="sig-name descname"><span class="pre">do_process_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">__</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.do_process_link" title="Link to this definition"></a></dt>
+<dd><p>Julia does not support link types yet, so this does nothing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.get_upstream_name">
+<span class="sig-name descname"><span class="pre">get_upstream_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.get_upstream_name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the upstream datamodel if any</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.post_process">
+<span class="sig-name descname"><span class="pre">post_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datamodel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.post_process" title="Link to this definition"></a></dt>
+<dd><p>The necessary julia specific post processing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.pre_process">
+<span class="sig-name descname"><span class="pre">pre_process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.pre_process" title="Link to this definition"></a></dt>
+<dd><p>The necessary specific pre-processing for julia code generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.julia_generator.JuliaClassGenerator.print_report">
+<span class="sig-name descname"><span class="pre">print_report</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.julia_generator.JuliaClassGenerator.print_report" title="Link to this definition"></a></dt>
+<dd><p>Print a summary of the generated code</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-podio_gen.podio_config_reader">
+<span id="podio-gen-podio-config-reader-module"></span><h2>podio_gen.podio_config_reader module<a class="headerlink" href="#module-podio_gen.podio_config_reader" title="Link to this heading"></a></h2>
+<p>Datamodel yaml configuration file reading and validation utilities.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.podio_config_reader.</span></span><span class="sig-name descname"><span class="pre">ClassDefinitionValidator</span></span><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Validate the datamodel read from the input yaml file for the most obvious
+problems.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.not_yet_implemented_keys">
+<span class="sig-name descname"><span class="pre">not_yet_implemented_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('TransientMembers',</span> <span class="pre">'Typedefs')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.not_yet_implemented_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.required_datatype_keys">
+<span class="sig-name descname"><span class="pre">required_datatype_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Description',</span> <span class="pre">'Author')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.required_datatype_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys">
+<span class="sig-name descname"><span class="pre">required_interface_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Description',</span> <span class="pre">'Author',</span> <span class="pre">'Members',</span> <span class="pre">'Types')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.required_link_keys">
+<span class="sig-name descname"><span class="pre">required_link_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Description',</span> <span class="pre">'Author',</span> <span class="pre">'From',</span> <span class="pre">'To')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.required_link_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.valid_datatype_member_keys">
+<span class="sig-name descname"><span class="pre">valid_datatype_member_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Members',</span> <span class="pre">'VectorMembers',</span> <span class="pre">'OneToOneRelations',</span> <span class="pre">'OneToManyRelations')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.valid_datatype_member_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.valid_extra_code_keys">
+<span class="sig-name descname"><span class="pre">valid_extra_code_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('declaration',</span> <span class="pre">'implementation',</span> <span class="pre">'includes',</span> <span class="pre">'declarationFile',</span> <span class="pre">'implementationFile')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.valid_extra_code_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.valid_extra_datatype_keys">
+<span class="sig-name descname"><span class="pre">valid_extra_datatype_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('ExtraCode',</span> <span class="pre">'MutableExtraCode')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.valid_extra_datatype_keys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.ClassDefinitionValidator.validate">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datamodel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_edm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.podio_config_reader.ClassDefinitionValidator.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate the datamodel.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.podio_config_reader.</span></span><span class="sig-name descname"><span class="pre">MemberParser</span></span><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to parse member variables from strings without doing too much validation</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.array_re">
+<span class="sig-name descname"><span class="pre">array_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('</span> <span class="pre">*std::array</span> <span class="pre">*&lt;</span> <span class="pre">*((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0-9)</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.array_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.array_str">
+<span class="sig-name descname"><span class="pre">array_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">*std::array</span> <span class="pre">*&lt;</span> <span class="pre">*((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0-9:_]*)</span> <span class="pre">*,</span> <span class="pre">*([0-9]+)</span> <span class="pre">*&gt;'</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.array_str" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.bare_array_re">
+<span class="sig-name descname"><span class="pre">bare_array_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('</span> <span class="pre">*</span> <span class="pre">*std::array</span> <span class="pre">*&lt;</span> <span class="pre">*((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0)</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.bare_array_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.bare_member_re">
+<span class="sig-name descname"><span class="pre">bare_member_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('</span> <span class="pre">*((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0-9:_]*)</span> <span class="pre">+([a-zA-Z)</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.bare_member_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.builtin_str">
+<span class="sig-name descname"><span class="pre">builtin_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'(?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)'</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.builtin_str" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.comment_str">
+<span class="sig-name descname"><span class="pre">comment_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\\/\\/</span> <span class="pre">*(.*)'</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.comment_str" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.def_val_str">
+<span class="sig-name descname"><span class="pre">def_val_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'(?:{(.+)})?'</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.def_val_str" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.full_array_re">
+<span class="sig-name descname"><span class="pre">full_array_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('</span> <span class="pre">*std::array</span> <span class="pre">*&lt;</span> <span class="pre">*((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0-9)</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.full_array_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.member_re">
+<span class="sig-name descname"><span class="pre">member_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('</span> <span class="pre">*((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0-9:_]*)</span> <span class="pre">+([a-zA-Z)</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.member_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.name_re">
+<span class="sig-name descname"><span class="pre">name_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('([a-zA-Z_]+\\w*)')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.name_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.name_str">
+<span class="sig-name descname"><span class="pre">name_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'([a-zA-Z_]+\\w*)'</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.name_str" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.parse" title="Link to this definition"></a></dt>
+<dd><p>Parse the passed string</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.type_re">
+<span class="sig-name descname"><span class="pre">type_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0-9:_]*)')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.type_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.type_str">
+<span class="sig-name descname"><span class="pre">type_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'((?:unsigned</span> <span class="pre">long</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">long)|(?:unsigned</span> <span class="pre">int)|(?:long</span> <span class="pre">long)|(?:unsigned)|(?:double)|(?:float)|(?:short)|(?:long)|(?:char)|(?:bool)|(?:int)|(?:\\:{2})?[a-zA-Z]+[a-zA-Z0-9:_]*)'</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.type_str" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.unit_re">
+<span class="sig-name descname"><span class="pre">unit_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(?:\\[([a-zA-Z_*\\/^]+\\w*)\\])?')</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.unit_re" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.MemberParser.unit_str">
+<span class="sig-name descname"><span class="pre">unit_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'(?:\\[([a-zA-Z_*\\/^]+\\w*)\\])?'</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.MemberParser.unit_str" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.PodioConfigReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.podio_config_reader.</span></span><span class="sig-name descname"><span class="pre">PodioConfigReader</span></span><a class="headerlink" href="#podio_gen.podio_config_reader.PodioConfigReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Config reader that does basic parsing of the member definitions and puts
+everything into a somewhat uniform structure without doing any fancy
+validation</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.PodioConfigReader.member_parser">
+<span class="sig-name descname"><span class="pre">member_parser</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;podio_gen.podio_config_reader.MemberParser</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.PodioConfigReader.member_parser" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.PodioConfigReader.options">
+<span class="sig-name descname"><span class="pre">options</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'exposePODMembers':</span> <span class="pre">True,</span> <span class="pre">'getSyntax':</span> <span class="pre">False,</span> <span class="pre">'includeSubfolder':</span> <span class="pre">False}</span></em><a class="headerlink" href="#podio_gen.podio_config_reader.PodioConfigReader.options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.PodioConfigReader.parse_model">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_edm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.podio_config_reader.PodioConfigReader.parse_model" title="Link to this definition"></a></dt>
+<dd><p>Parse a model from the dictionary, e.g. read from a yaml file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.podio_config_reader.PodioConfigReader.read">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_edm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.podio_config_reader.PodioConfigReader.read" title="Link to this definition"></a></dt>
+<dd><p>Read the datamodel definition from the yamlfile.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-podio_gen">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-podio_gen" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Key4hep authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
