@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """Unit tests for podio readers"""
 
-from podio.version import build_version
+import unittest
+
+from ROOT import __version__ as root_version
+
+from podio.version import build_version, parse
+
+# We are only interested in the major and minor version and splitting on '/'
+# allows us to make this works over the switch in versioning format in ROOT
+ROOT_VERSION = parse(root_version.split("/")[0])
 
 
 class ReaderTestCaseMixin:
@@ -96,6 +104,10 @@ class ReaderTestCaseMixin:
         event = self.reader.get("events", ["hits", "info", "links"])[0]
         self.assertEqual(set(event.getAvailableCollections()), {"hits", "info", "links"})
 
+    @unittest.skipIf(
+        ROOT_VERSION <= parse("6.30"),
+        "cppyy version shipped with ROOT fails on overload resolution",
+    )
     def test_invalid_limited_collections(self):
         """Ensure that requesting non existant collections raises a value error"""
         with self.assertRaises(ValueError):

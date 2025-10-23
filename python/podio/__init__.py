@@ -27,4 +27,15 @@ try:
 except ImportError:
     pass
 
-__all__ = ["__version__", "Frame", "root_io", "sio_io", "reading", "data_source", "version"]
+ReadOptions = podio.ReadOptions
+
+__all__ = [
+    "__version__",
+    "Frame",
+    "root_io",
+    "sio_io",
+    "reading",
+    "data_source",
+    "version",
+    "ReadOptions",
+]
