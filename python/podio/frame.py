@@ -82,7 +82,7 @@ class Frame:
         """
         # Explicitly check for None here, to not return empty Frames on nullptr data
         if data is not None:
-            self._frame = podio.Frame(data)
+            self._frame = podio.Frame(data.__smartptr__())
         else:
             self._frame = podio.Frame()
 
