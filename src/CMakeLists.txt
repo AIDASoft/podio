@@ -141,6 +141,8 @@ if(ENABLE_SIO)
 
   PODIO_ADD_LIB_AND_DICT(podioSioIO "${sio_headers}" "${sio_sources}" sio_selection.xml)
   target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS})
+  # For ROOT_VERSION_CODE in Frame.h
+  target_include_directories(podioSioIO PUBLIC $<TARGET_PROPERTY:ROOT::Core,INTERFACE_INCLUDE_DIRECTORIES>)
   target_compile_definitions(podioSioIO PUBLIC PODIO_ENABLE_SIO=1)
 
   LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
