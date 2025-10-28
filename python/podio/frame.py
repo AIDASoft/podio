@@ -75,7 +75,6 @@ class Frame:
     _coll_nullptr = cppyy.bind_object(cppyy.nullptr, "podio::CollectionBase")
     _root_6_36 = ROOT.__version__ >= "6.36.00"
 
-
     def __init__(self, data=None):
         """Create a Frame.
 
