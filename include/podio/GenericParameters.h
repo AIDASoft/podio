@@ -1,6 +1,5 @@
-// -*- C++ -*-
 #ifndef PODIO_GENERICPARAMETERS_H
-#define PODIO_GENERICPARAMETERS_H 1
+#define PODIO_GENERICPARAMETERS_H
 
 #include "podio/utilities/TypeHelpers.h"
 
