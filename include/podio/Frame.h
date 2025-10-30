@@ -9,8 +9,6 @@
 #include "podio/SchemaEvolution.h"
 #include "podio/utilities/TypeHelpers.h"
 
-#include <RVersion.h>
-
 #include <concepts>
 #include <initializer_list>
 #include <memory>
@@ -174,7 +172,7 @@ public:
   template <FrameDataType FrameData>
   Frame(std::unique_ptr<FrameData>);
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 36, 0)
+#ifdef PODIO_ROOT_OLDER_6_36
   /// Frame constructor from (almost) arbitrary raw data.
   ///
   /// This r-value overload is mainly present for enabling the python bindings,
@@ -391,7 +389,7 @@ template <FrameDataType FrameData>
 Frame::Frame(std::unique_ptr<FrameData> data) : m_self(std::make_unique<FrameModel<FrameData>>(std::move(data))) {
 }
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 36, 0)
+#ifdef PODIO_ROOT_OLDER_6_36
 template <RValueFrameDataType FrameData>
 Frame::Frame(FrameData&& data) : Frame(std::make_unique<FrameData>(std::move(data))) {
 }
