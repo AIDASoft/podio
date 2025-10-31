@@ -73,6 +73,7 @@ class Frame:
     # distinguish between empty and non-existant collection create a nullptr here
     # with the correct type that we can compare against
     _coll_nullptr = cppyy.bind_object(cppyy.nullptr, "podio::CollectionBase")
+    _root_6_36 = ROOT.__version__ >= "6.36.00"
 
     def __init__(self, data=None):
         """Create a Frame.
@@ -82,7 +83,7 @@ class Frame:
         """
         # Explicitly check for None here, to not return empty Frames on nullptr data
         if data is not None:
-            self._frame = podio.Frame(data)
+            self._frame = podio.Frame(data.__smartptr__() if self._root_6_36 else data)
         else:
             self._frame = podio.Frame()
 
