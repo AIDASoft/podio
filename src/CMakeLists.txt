@@ -80,7 +80,6 @@ SET(core_headers
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
 target_compile_options(podio PRIVATE -pthread)
 # For Frame.h
-message(WARNING "ROOT_VERSION = ${ROOT_VERSION}")
 if (ROOT_VERSION VERSION_LESS 6.36)
   target_compile_definitions(podio PUBLIC PODIO_ROOT_OLDER_6_36=1)
 endif()
