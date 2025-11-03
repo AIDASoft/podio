@@ -1,4 +1,4 @@
- # podio
+# podio
 
 [![linux](https://github.com/AIDASoft/podio/actions/workflows/test.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/test.yml)
 [![ubuntu](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml)
