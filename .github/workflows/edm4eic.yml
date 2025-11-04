@@ -29,6 +29,7 @@ jobs:
       with:
         repository: eic/EDM4eic
         path: edm4eic
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
     - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v5
       with:
