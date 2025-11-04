@@ -1,0 +1,76 @@
+name: edm4eic
+
+on:
+  push:
+    branches:
+      - master
+    pull_request:
+    workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["el9", "ubuntu2404"]
+
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        path: podio
+    - uses: actions/checkout@v5
+      with:
+        repository: key4hep/EDM4hep
+        path: edm4hep
+    - uses: actions/checkout@v5
+      with:
+        repository: eic/EDM4eic
+        path: edm4eic
+    - uses: key4hep/key4hep-actions/cache-external-data@main
+    - uses: aidasoft/run-lcg-view@v5
+      with:
+        container: ${{ matrix.image }}
+        view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
+        ccache-key: ccache-edm4eic-${{ matrix.image }}
+        run: |
+          STARTDIR=$(pwd)
+          echo "::group::Build podio"
+          cmake -B ${STARTDIR}/podio/build -S ${STARTDIR}/podio \
+            -DCMAKE_INSTALL_PREFIX=${STARTDIR}/podio/install \
+            -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DUSE_EXTERNAL_CATCH2=ON \
+            -DENABLE_RNTUPLE=ON \
+            -DENABLE_DATASOURCE=ON \
+            -DPODIO_SET_RPATH=ON \
+            -DBUILD_TESTING=OFF \
+            -DENABLE_JULIA=OFF \
+            -G Ninja ..
+          cmake --build ${STARTDIR}/podio/build --target install
+          cd ${STARTDIR}/podio && source init.sh && source env.sh && cd ${STARTDIR}
+          echo "::endgroup::"
+
+          echo "::group::Build EDM4hep"
+          cmake -B ${STARTDIR}/edm4hep/build -S ${STARTDIR}/edm4hep \
+            -DCMAKE_INSTALL_PREFIX=${STARTDIR}/edm4hep/install \
+              -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DUSE_EXTERNAL_CATCH2=ON \
+            -DBUILD_TESTING=OFF \
+            -G Ninja ..
+          cmake --build ${STARTDIR}/edm4hep/build --target intall
+          cd ${STARTDIR}/edm4hep && k4_local_repo && cd ${STARTDIR}
+          echo "::endgroup::"
+
+          echo "::group::Build EDM4eic"
+          cmake -B ${STARTDIR}/edm4eic/build -S ${STARTDIR}/edm4eic
+          cmake --build ${STARTDIR}/edm4eic/build
+          ctest --test-dir ${STARTDIR}/edm4eic/build -j$(nproc) --output-on-failure
+          echo "::endgroup::"
