@@ -2,7 +2,6 @@
 #define PODIO_RNTUPLEREADER_H
 
 #include "podio/ROOTFrameData.h"
-#include "podio/ReadOptions.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
@@ -76,22 +75,8 @@ public:
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
-                                                      const std::vector<std::string>& collsToRead);
+                                                      const std::vector<std::string>& collsToRead = {});
 
-  /// Read the next data entry for a given category.
-  ///
-  /// @param name The category name for which to read the next entry
-  /// @param readOptions Options for configuring the read operation, including
-  ///                    which collections to read and whether to skip unreadable ones
-  ///
-  /// @returns FrameData from which a podio::Frame can be constructed if the
-  ///          category exists and if there are still entries left to read.
-  ///          Otherwise a nullptr
-  ///
-  /// @throws std::invalid_argument in case readOptions.collsToRead contains collection
-  /// names that are not available
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
-                                                      const podio::ReadOptions& readOptions = {});
   /// Read the desired data entry for a given category.
   ///
   /// @param name  The category name for which to read the next entry
@@ -105,22 +90,7 @@ public:
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
   std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
-                                                  const std::vector<std::string>& collsToRead);
-
-  /// Read the desired data entry for a given category.
-  ///
-  /// @param name  The category name for which to read the next entry
-  /// @param entry The entry number to read
-  /// @param readOptions Options for configuring the read operation, including
-  ///                    which collections to read and whether to skip unreadable ones
-  ///
-  /// @returns FrameData from which a podio::Frame can be constructed if the
-  ///          category and the desired entry exist. Otherwise a nullptr
-  ///
-  /// @throws std::invalid_argument in case readOptions.collsToRead contains collection
-  /// names that are not available
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
-                                                  const podio::ReadOptions& readOptions = {});
+                                                  const std::vector<std::string>& collsToRead = {});
 
   /// Get the names of all the available Frame categories in the current file(s).
   ///

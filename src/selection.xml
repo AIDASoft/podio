@@ -49,7 +49,5 @@
     <function name="podio::utils::is_glob_pattern"/>
     <function name="podio::utils::expand_glob"/>
 
-    <class name="podio::ReadOptions"/>
-
   </selection>
 </lcgdict>

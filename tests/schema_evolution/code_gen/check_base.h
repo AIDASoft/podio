@@ -79,7 +79,7 @@ using ReaderT = podio::ROOTReader;
     {{auto reader = READER_TYPE();                                                                                     \
     std::cout << "Reading file " << FILENAME << std::endl;                                                             \
     reader.openFile(FILENAME);                                                                                         \
-    auto event = podio::Frame(reader.readEntry(podio::Category::Event, 0, podio::ReadOptions::SkipUnreadable()));      \
+    auto event = podio::Frame(reader.readEntry(podio::Category::Event, 0));                                            \
     {__VA_ARGS__};                                                                                                     \
     return 0;                                                                                                          \
     }                                                                                                                  \

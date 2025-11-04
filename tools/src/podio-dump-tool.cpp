@@ -1,5 +1,4 @@
 #include "argparseUtils.h"
-#include "podio/ReadOptions.h"
 #include "tabulate.h"
 
 #include "podio/Frame.h"
@@ -259,7 +258,7 @@ int main(int argc, char* argv[]) {
 
   for (const auto event : args.events) {
     try {
-      const auto& frame = reader.readFrame(args.category, event, podio::ReadOptions::SkipUnreadable());
+      const auto& frame = reader.readFrame(args.category, event);
       printFrame(frame, args.category, event, args.detailed);
     } catch (std::runtime_error& err) {
       fmt::println(stderr, "{}", err.what());
