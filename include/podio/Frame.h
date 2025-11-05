@@ -4,7 +4,6 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/FrameCategories.h" // mainly for convenience
-#include "podio/FramePolicies.h"
 #include "podio/GenericParameters.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/SchemaEvolution.h"
@@ -211,9 +210,8 @@ public:
   ///
   /// @returns      A const reference to the collection if it is available or to
   ///               an empty (static) collection
-  template <CollectionType CollT, typename GetPolicy = FrameCreateEmptyNonExistentPolicy>
-    requires GetPolicyCallable<GetPolicy, CollT>
-  const CollT& get(const std::string& name, GetPolicy policy = FrameCreateEmptyNonExistentPolicy{}) const;
+  template <CollectionType CollT>
+  const CollT& get(const std::string& name) const;
 
   /// Get a collection pointer from the Frame by name.
   ///
@@ -403,11 +401,12 @@ Frame::Frame(FrameData&& data) : Frame(std::make_unique<FrameData>(std::move(dat
 }
 #endif
 
-template <CollectionType CollT, typename GetPolicy>
-  requires GetPolicyCallable<GetPolicy, CollT>
-const CollT& Frame::get(const std::string& name, GetPolicy policy) const {
-  const auto* coll = dynamic_cast<const CollT*>(m_self->get(name));
-  return policy(coll, name);
+template <CollectionType CollT>
+const CollT& Frame::get(const std::string& name) const {
+  if (const auto* coll = dynamic_cast<const CollT*>(m_self->get(name))) {
+    return *coll;
+  }
+  throw std::runtime_error("Cannot retrieve collection " + name + " of type " + std::string(CollT::typeName));
 }
 
 inline const podio::CollectionBase* Frame::get(const std::string& name) const {
