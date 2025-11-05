@@ -7,7 +7,6 @@
 #include "datamodel/ExampleReferencingTypeCollection.h"
 #include "datamodel/ExampleWithARelationCollection.h"
 #include "datamodel/ExampleWithArrayCollection.h"
-#include "datamodel/ExampleWithComponentCollection.h"
 #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 #include "datamodel/ExampleWithNamespace.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
@@ -352,12 +351,6 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   } else {
     throw std::runtime_error("Collection 'WithVectorMember' should be present");
-  }
-
-  auto& comps = event.get<ExampleWithComponentCollection>("Component");
-  if (comps.hasID()) {
-    auto comp = comps[0];
-    int a [[maybe_unused]] = comp.component().data.x + comp.component().data.z;
   }
 
   auto& arrays = event.get<ExampleWithArrayCollection>("arrays");
