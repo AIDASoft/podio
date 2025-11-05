@@ -871,8 +871,11 @@
 <li><p><strong>name</strong> – The name under which this collection should be stored in the Frame</p></li>
 </ul>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A const reference to the collection that has just been inserted </p>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – in case a collection already exists with the same name </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A const reference to the collection that has just been inserted</p>
 </dd>
 </dl>
 </dd></dl>
@@ -885,8 +888,11 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>coll</strong> – The collection that should be moved into the Frame </p></li>
-<li><p><strong>name</strong> – The name under which this collection should be stored in the Frame </p></li>
+<li><p><strong>name</strong> – The name under which this collection should be stored in the Frame</p></li>
 </ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – in case a collection already exists with the same name </p>
 </dd>
 </dl>
 </dd></dl>
