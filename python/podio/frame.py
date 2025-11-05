@@ -161,10 +161,20 @@ class Frame:
 
         Raises:
             ValueError: If collection is not actually a podio.CollectionBase
+            ValueError: If a collection with the same name already exists
         """
         if not _is_collection_base(collection):
             raise ValueError("Can only put podio collections into a Frame")
-        return self._frame.put(cppyy.gbl.std.move(collection), name)
+        try:
+            return self._frame.put(cppyy.gbl.std.move(collection), name)
+        except TypeError:
+            # We have two overloads in c++ that could be chosen here, a
+            # templated one and one taking a unique_ptr<CollectionBase>. The
+            # first one will throw an invalid_argument (as expected), which then
+            # makes cppyy try the second one which fails with a type conversion.
+            # Hence we catch the TypeError here and return a ValueError.
+            # pylint: disable-next=raise-missing-from
+            raise ValueError(f"An object with key {name} already exists in the Frame")
 
     @property
     def parameters(self):
