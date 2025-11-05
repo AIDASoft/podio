@@ -69,7 +69,11 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Build EDM4eic"
-          cmake -B ${STARTDIR}/edm4eic/build -S ${STARTDIR}/edm4eic -GNinja
+          export PATH=$(echo $PATH | tr ':' '\n' | grep -v doxygen | tr '\n' ':')
+          cmake -B ${STARTDIR}/edm4eic/build -S ${STARTDIR}/edm4eic \
+            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
+            -DBUILD_TESTING=ON \
+            -GNinja
           cmake --build ${STARTDIR}/edm4eic/build
           ctest --test-dir ${STARTDIR}/edm4eic/build -j$(nproc) --output-on-failure
           echo "::endgroup::"
