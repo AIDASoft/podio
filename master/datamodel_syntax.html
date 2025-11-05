@@ -937,7 +937,7 @@ The main additional functionality they offer is the possibility to directly
 assign to them (if they type is supported) and to query them for the type that
 is currently being held internally.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">energyType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TypeWithEnergy</span><span class="p">{};</span><span class="w"> </span><span class="c1">// An empty interface is possible but useless</span>
-<span class="kt">bool</span><span class="w"> </span><span class="n">hasID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">energyType</span><span class="p">.</span><span class="n">hasID</span><span class="p">();</span><span class="w">  </span><span class="c1">// &lt;-- false</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">hasID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">energyType</span><span class="p">.</span><span class="n">isAvailable</span><span class="p">();</span><span class="w">  </span><span class="c1">// &lt;-- false</span>
 
 <span class="k">auto</span><span class="w"> </span><span class="n">hit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ExampleHit</span><span class="p">{};</span>
 <span class="n">energyType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hit</span><span class="p">;</span><span class="w">     </span><span class="c1">// assigning a hit to the interface type</span>
