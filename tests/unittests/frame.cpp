@@ -381,11 +381,15 @@ TEST_CASE("Frame double insert", "[frame][basics]") {
   auto clusters = ExampleClusterCollection();
   clusters.create(3.14f);
   clusters.create(42.0f);
+  event.put(std::move(clusters), "clusters");
+
   auto other_clusters = ExampleClusterCollection();
   other_clusters.create(23.0f);
-
-  event.put(std::move(clusters), "clusters");
   REQUIRE_THROWS_AS(event.put(std::move(other_clusters), "clusters"), std::invalid_argument);
+
+  auto clustersPtr = std::make_unique<ExampleClusterCollection>();
+  clustersPtr->create(42.0f);
+  REQUIRE_THROWS_AS(event.put(std::move(clustersPtr), "clusters"), std::invalid_argument);
 }
 
 TEST_CASE("Frame destructor ASanFail") {

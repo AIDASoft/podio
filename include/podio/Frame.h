@@ -235,6 +235,9 @@ public:
   ///
   /// @returns      A const reference to the collection that has just been
   ///               inserted
+  ///
+  /// @throws std::invalid_argument in case a collection already exists with the
+  ///               same name
   template <CollectionRValueType CollT>
   const CollT& put(CollT&& coll, const std::string& name);
 
@@ -243,6 +246,9 @@ public:
   /// @param coll The collection that should be moved into the Frame
   /// @param name The name under which this collection should be stored in the
   ///             Frame
+  ///
+  /// @throws std::invalid_argument in case a collection already exists with the
+  ///               same name
   void put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name);
 
   /// Add a value to the parameters of the Frame (if the type is supported).
@@ -411,21 +417,12 @@ inline const podio::CollectionBase* Frame::get(const std::string& name) const {
 }
 
 inline void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::string& name) {
-  const auto* retColl = m_self->put(std::move(coll), name);
-  if (!retColl) {
-    // TODO: Handle collisions
-  }
+  m_self->put(std::move(coll), name);
 }
 
 template <CollectionRValueType CollT>
 const CollT& Frame::put(CollT&& coll, const std::string& name) {
-  const auto* retColl = static_cast<const CollT*>(m_self->put(std::make_unique<CollT>(std::move(coll)), name));
-  if (retColl) {
-    return *retColl;
-  }
-  // TODO: Handle collision case
-  static const auto emptyColl = CollT();
-  return emptyColl;
+  return *static_cast<const CollT*>(m_self->put(std::make_unique<CollT>(std::move(coll)), name));
 }
 
 template <typename FrameDataT>

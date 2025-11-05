@@ -107,6 +107,16 @@ class FrameTest(unittest.TestCase):
         # On the other hand the return value of put has the original content
         self.assertEqual(len(hits2), 1)
 
+    def test_frame_put_collection_collision(self):
+        """Check that creating a name collision raises the expected exception"""
+        frame = Frame()
+        hits = ExampleHitCollection()
+        frame.put(hits, "hits")
+
+        more_hits = ExampleHitCollection()
+        with self.assertRaises(ValueError):
+            frame.put(more_hits, "hits")
+
     def test_frame_put_parameters(self):
         """Check that putting a parameter works as expected"""
         frame = Frame()
