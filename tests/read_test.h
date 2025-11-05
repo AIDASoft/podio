@@ -227,9 +227,6 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     // are referenced to make sure that all the necessary relations are handled
     // correctly
     auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
-    if (!mcpRefs.hasID()) {
-      throw std::runtime_error("Collection 'mcParticleRefs' should be present");
-    }
 
     // Only doing a very basic check here, that mainly just ensures that the
     // RelationRange is valid and does not segfault.
@@ -251,9 +248,6 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
   checkMCParticleCollection(event, fileVersion);
 
   auto& mcps = event.get<ExampleMCCollection>("mcparticles");
-  if (!mcps.hasID()) {
-    throw std::runtime_error("Collection 'mcparticles' should be present");
-  }
 
   // Check the MCParticle subset collection only if it is technically possible
   // to be in the file
@@ -262,9 +256,6 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     // Load the subset collection first to ensure that it pulls in objects that
     // have not been read yet
     auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
-    if (!mcpRefs.hasID()) {
-      throw std::runtime_error("Collection 'mcParticleRefs' should be present");
-    }
 
     for (auto pr : mcpRefs) {
       if (static_cast<unsigned>(pr.getObjectID().collectionID) == mcpRefs.getID()) {
@@ -305,113 +296,91 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     }
   }
 
-  // std::cout << "Fetching collection 'refs'" << std::endl;
   auto& refs = event.get<ExampleReferencingTypeCollection>("refs");
-  if (refs.hasID()) {
-    auto ref = refs[0];
-    for (auto cluster : ref.Clusters()) {
-      for (auto hit [[maybe_unused]] : cluster.Hits()) {
-        // std::cout << "  Referenced object has an energy of " << hit.energy() << std::endl;
-      }
+  auto ref = refs[0];
+  for (auto cluster : ref.Clusters()) {
+    for (auto hit [[maybe_unused]] : cluster.Hits()) {
     }
-  } else {
-    throw std::runtime_error("Collection 'refs' should be present");
   }
-  // std::cout << "Fetching collection 'OneRelation'" << std::endl;
-  auto& rels = event.get<ExampleWithOneRelationCollection>("OneRelation");
-  if (rels.hasID()) {
-    // std::cout << "Referenced object has an energy of " << (*rels)[0].cluster().energy() << std::endl;
-  } else {
-    throw std::runtime_error("Collection 'OneRelation' should be present");
-  }
+  auto& rels [[maybe_unused]] = event.get<ExampleWithOneRelationCollection>("OneRelation");
 
   //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
   auto& vecs = event.get<ExampleWithVectorMemberCollection>("WithVectorMember");
-  if (vecs.hasID()) {
-    if (vecs.size() != 2) {
-      throw std::runtime_error("Collection 'WithVectorMember' should have two elements'");
-    }
+  if (vecs.size() != 2) {
+    throw std::runtime_error("Collection 'WithVectorMember' should have two elements'");
+  }
 
-    for (auto vec : vecs) {
-      if (vec.count().size() != 2) {
-        throw std::runtime_error(
-            "Element of 'WithVectorMember' collection should have two elements in its 'count' vector");
-      }
+  for (auto vec : vecs) {
+    if (vec.count().size() != 2) {
+      throw std::runtime_error(
+          "Element of 'WithVectorMember' collection should have two elements in its 'count' vector");
     }
-    if (vecs[0].count(0) != eventNum || vecs[0].count(1) != eventNum + 10 || vecs[1].count(0) != eventNum + 1 ||
-        vecs[1].count(1) != eventNum + 11) {
-      throw std::runtime_error("Element values of the 'count' vector in an element of the 'WithVectorMember' "
-                               "collection do not have the expected values");
-    }
+  }
+  if (vecs[0].count(0) != eventNum || vecs[0].count(1) != eventNum + 10 || vecs[1].count(0) != eventNum + 1 ||
+      vecs[1].count(1) != eventNum + 11) {
+    throw std::runtime_error("Element values of the 'count' vector in an element of the 'WithVectorMember' "
+                             "collection do not have the expected values");
+  }
 
-    for (auto item : vecs) {
-      for (auto c = item.count_begin(), end = item.count_end(); c != end; ++c) {
-        std::cout << "  Counter value " << (*c) << std::endl;
-      }
+  for (auto item : vecs) {
+    for (auto c = item.count_begin(), end = item.count_end(); c != end; ++c) {
+      std::cout << "  Counter value " << (*c) << std::endl;
     }
-  } else {
-    throw std::runtime_error("Collection 'WithVectorMember' should be present");
   }
 
   auto& arrays = event.get<ExampleWithArrayCollection>("arrays");
-  if (arrays.hasID() && !arrays.empty()) {
-    auto array = arrays[0];
-    if (array.myArray(1) != eventNum) {
-      throw std::runtime_error("Array not properly set.");
-    }
-    if (array.arrayStruct().data.p.at(2) != 2 * eventNum) {
-      throw std::runtime_error("Array not properly set.");
-    }
-    if (array.structArray(0).x != eventNum) {
-      throw std::runtime_error("Array of struct not properly set.");
-    }
-  } else {
-    throw std::runtime_error("Collection 'arrays' should be present");
+  if (arrays.empty()) {
+    throw std::runtime_error("Collection 'arrays' should not be empty");
+  }
+  auto array = arrays[0];
+  if (array.myArray(1) != eventNum) {
+    throw std::runtime_error("Array not properly set.");
+  }
+  if (array.arrayStruct().data.p.at(2) != 2 * eventNum) {
+    throw std::runtime_error("Array not properly set.");
+  }
+  if (array.structArray(0).x != eventNum) {
+    throw std::runtime_error("Array of struct not properly set.");
   }
 
   auto& nmspaces = event.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelation");
   auto& copies = event.get<ex42::ExampleWithARelationCollection>("WithNamespaceRelationCopy");
 
   auto cpytest = ex42::ExampleWithARelationCollection{};
-  if (nmspaces.hasID() && copies.hasID()) {
-    for (size_t j = 0; j < nmspaces.size(); j++) {
-      auto nmsp = nmspaces[j];
-      auto cpy = copies[j];
-      cpytest.push_back(nmsp.clone());
-      if (nmsp.ref().isAvailable()) {
-        if (nmsp.ref().component().x != cpy.ref().component().x ||
-            nmsp.ref().component().y != cpy.ref().component().y) {
-          throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
-        }
-        // check direct accessors of POD sub members
-        if (nmsp.ref().x() != cpy.ref().x()) {
-          throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
-        }
-        if (nmsp.number() != cpy.number()) {
-          throw std::runtime_error("Copied item has differing member.");
-        }
-        if (nmsp.ref().getObjectID() != cpy.ref().getObjectID()) {
-          throw std::runtime_error("Copied item has wrong OneToOne references.");
-        }
+  for (size_t j = 0; j < nmspaces.size(); j++) {
+    auto nmsp = nmspaces[j];
+    auto cpy = copies[j];
+    cpytest.push_back(nmsp.clone());
+    if (nmsp.ref().isAvailable()) {
+      if (nmsp.ref().component().x != cpy.ref().component().x || nmsp.ref().component().y != cpy.ref().component().y) {
+        throw std::runtime_error("Copied item has differing component in OneToOne referenced item.");
       }
-      auto cpy_it = cpy.refs_begin();
-      for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
-        if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
-          throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
-        }
-        if (it->getObjectID() != cpy_it->getObjectID()) {
-          throw std::runtime_error("Copied item has wrong OneToMany references.");
-        }
+      // check direct accessors of POD sub members
+      if (nmsp.ref().x() != cpy.ref().x()) {
+        throw std::runtime_error("Getting wrong values when using direct accessors for sub members.");
+      }
+      if (nmsp.number() != cpy.number()) {
+        throw std::runtime_error("Copied item has differing member.");
+      }
+      if (nmsp.ref().getObjectID() != cpy.ref().getObjectID()) {
+        throw std::runtime_error("Copied item has wrong OneToOne references.");
       }
     }
-  } else {
-    throw std::runtime_error("Collection 'WithNamespaceRelation' and 'WithNamespaceRelationCopy' should be present");
+    auto cpy_it = cpy.refs_begin();
+    for (auto it = nmsp.refs_begin(); it != nmsp.refs_end(); ++it, ++cpy_it) {
+      if (it->component().x != cpy_it->component().x || it->component().y != cpy_it->component().y) {
+        throw std::runtime_error("Copied item has differing component in OneToMany referenced item.");
+      }
+      if (it->getObjectID() != cpy_it->getObjectID()) {
+        throw std::runtime_error("Copied item has wrong OneToMany references.");
+      }
+    }
   }
 
   if (fileVersion >= podio::version::Version{0, 13, 1}) {
     const auto& fixedWidthInts = event.get<ExampleWithFixedWidthIntegersCollection>("fixedWidthInts");
-    if (not fixedWidthInts.hasID() or fixedWidthInts.size() != 3) {
-      throw std::runtime_error("Collection \'fixedWidthInts\' should be present and have 3 elements");
+    if (fixedWidthInts.size() != 3) {
+      throw std::runtime_error("Collection \'fixedWidthInts\' should have 3 elements");
     }
 
     auto maxValues = fixedWidthInts[0];

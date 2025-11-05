@@ -79,38 +79,30 @@ void readCollection() {
     auto store = podio::Frame(reader.readNextEntry(podio::Category::Event));
 
     auto& clusters = store.get<ExampleClusterCollection>("clusters");
-    if (clusters.hasID()) {
-      for (const auto& cluster : clusters) {
-        if (cluster.isAvailable()) {
-          for (const auto& hit : cluster.Hits()) {
-            if (hit.isAvailable()) {
-              throw std::runtime_error("Hit is available, although it has not been written");
-            }
+    for (const auto& cluster : clusters) {
+      if (cluster.isAvailable()) {
+        for (const auto& hit : cluster.Hits()) {
+          if (hit.isAvailable()) {
+            throw std::runtime_error("Hit is available, although it has not been written");
           }
         }
       }
-    } else {
-      throw std::runtime_error("Collection 'clusters' should be present");
     }
 
     // Test for subset collections
     auto& hits_subset = store.get<ExampleHitCollection>("hits_subset");
-    if (hits_subset.hasID()) {
-      if (!hits_subset.isSubsetCollection()) {
-        throw std::runtime_error("hits_subset should be a subset collection");
-      }
+    if (!hits_subset.isSubsetCollection()) {
+      throw std::runtime_error("hits_subset should be a subset collection");
+    }
 
-      if (hits_subset.size() != 2) {
-        throw std::runtime_error("subset collection should have original size");
-      }
+    if (hits_subset.size() != 2) {
+      throw std::runtime_error("subset collection should have original size");
+    }
 
-      for (const auto& hit : hits_subset) {
-        if (hit.isAvailable()) {
-          throw std::runtime_error("Hit is available, although it has not been written");
-        }
+    for (const auto& hit : hits_subset) {
+      if (hit.isAvailable()) {
+        throw std::runtime_error("Hit is available, although it has not been written");
       }
-    } else {
-      throw std::runtime_error("Collection 'hits_subset' should be present");
     }
   }
 }

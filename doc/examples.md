@@ -135,8 +135,11 @@ necessary to highlight the change of ownership that happens in this case.
 Collections can be retrieved explicitly:
 
 ```cpp
-    auto& hits = frame.get<HitCollection>("hits");
-    if (hits.hasID()) { ... } // If the collection is not found, an empty one without ID is returned
+    try {
+      auto& hits = frame.get<HitCollection>("hits");
+    } catch (const std::runtime_error&) {
+      // The collection "hits" has not been available as type HitCollection
+    }
 ```
 
 Or implicitly when following an object reference. In both cases the access to data that has been retrieved is `const`.
