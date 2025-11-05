@@ -25,6 +25,9 @@ TEST_CASE("Frame collections", "[frame][basics]") {
   REQUIRE(coll[1].energy() == 42.0f);
 
   REQUIRE_FALSE(event.get("non-existant"));
+
+  REQUIRE_THROWS_AS(event.get<ExampleClusterCollection>("non-existant"), std::runtime_error);
+  REQUIRE_THROWS_AS(event.get<ExampleHitCollection>("clusters"), std::runtime_error);
 }
 
 TEST_CASE("Frame parameters", "[frame][basics]") {
