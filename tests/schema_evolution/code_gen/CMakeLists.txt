@@ -1,6 +1,3 @@
-# Most sanitizers don't really like to run with limited virtual memory
-option(PODIO_NO_MEMLIMIT_SCHEMA_EVOL_TESTS "Run the schema evolution tests without memory limit" OFF)
-
 include(test_utilities.cmake)
 
 ADD_SCHEMA_EVOLUTION_TEST(no_change)
