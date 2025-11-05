@@ -144,7 +144,7 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
   # Make sure to not freeze systems via memory leaks that can occur when ROOT
   # struggles with schema evolution. ulimit -v takes kb
   set(test_command "ulimit -v 1000000; ${CMAKE_CURRENT_BINARY_DIR}/read_${test_base}")
-  if(PODIO_NO_MEMLIMIT_SCHEMA_EVOL_TESTS)
+  if(USE_SANITIZER)
     set(test_command "${CMAKE_CURRENT_BINARY_DIR}/read_${test_base}")
   endif()
 
