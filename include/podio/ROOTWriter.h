@@ -6,7 +6,6 @@
 
 #include "TFile.h"
 
-#include <memory>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -127,7 +126,7 @@ private:
   /// Fill the parameter keys and values into the CategoryInfo storage
   static void fillParams(CategoryInfo& catInfo, const GenericParameters& params);
 
-  std::unique_ptr<TFile> m_file{nullptr};                       ///< The storage file
+  TFile m_file;                       ///< The storage file
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
 
   DatamodelDefinitionCollector m_datamodelCollector{};
