@@ -13,7 +13,7 @@
 
 namespace podio {
 
-ROOTWriter::ROOTWriter(const std::string& filename) : m_file(std::make_unique<TFile>(filename.c_str(), "recreate")) {
+ROOTWriter::ROOTWriter(const std::string& filename) : m_file(filename.c_str(), "recreate") {
 }
 
 ROOTWriter::~ROOTWriter() {
@@ -32,7 +32,7 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
   if (catInfo.tree == nullptr) {
     catInfo.collsToWrite = podio::utils::sortAlphabeticaly(collsToWrite);
     catInfo.tree = new TTree(category.c_str(), (category + " data tree").c_str());
-    catInfo.tree->SetDirectory(m_file.get());
+    catInfo.tree->SetDirectory(&m_file);
   }
 
   std::vector<root_utils::StoreCollection> collections;
@@ -166,46 +166,41 @@ void ROOTWriter::resetBranches(CategoryInfo& categoryInfo,
 }
 
 void ROOTWriter::finish() {
-  if (!m_file) {
+  if (!m_file.IsOpen()) {
     return;
   }
 
-  // Use a scope to make sure everything is destroyed before deleting TFile
-  {
-    auto* metaTree = new TTree(root_utils::metaTreeName, "metadata tree for podio I/O functionality");
-    metaTree->SetDirectory(m_file.get());
+  auto metaTree = TTree(root_utils::metaTreeName, "metadata tree for podio I/O functionality");
+  metaTree.SetDirectory(&m_file);
 
-    // Store the collection id table and collection info for reading in the meta tree
-    for (auto& [category, info] : m_categories) {
-      metaTree->Branch(root_utils::collInfoName(category).c_str(), &info.collInfo);
-    }
-
-    // Store the current podio build version into the meta data tree
-    auto podioVersion = podio::version::build_version;
-    metaTree->Branch(root_utils::versionBranchName, &podioVersion);
-
-    auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
-    metaTree->Branch(root_utils::edmDefBranchName, &edmDefinitions);
-
-    // Collect the (build) versions of the generated datamodels where available
-    DatamodelDefinitionHolder::VersionList edmVersions;
-    for (const auto& [name, _] : edmDefinitions) {
-      const auto edmVersion = podio::DatamodelRegistry::instance().getDatamodelVersion(name);
-      if (edmVersion) {
-        edmVersions.emplace_back(name, edmVersion.value());
-      }
-    }
-    for (auto& [name, version] : edmVersions) {
-      metaTree->Branch(root_utils::edmVersionBranchName(name).c_str(), &version);
-    }
-
-    metaTree->Fill();
-
-    m_file->Write();
-    m_file->Close();
+  // Store the collection id table and collection info for reading in the meta tree
+  for (auto& [category, info] : m_categories) {
+    metaTree.Branch(root_utils::collInfoName(category).c_str(), &info.collInfo);
   }
 
-  m_file.reset();
+  // Store the current podio build version into the meta data tree
+  auto podioVersion = podio::version::build_version;
+  metaTree.Branch(root_utils::versionBranchName, &podioVersion);
+
+  auto edmDefinitions = m_datamodelCollector.getDatamodelDefinitionsToWrite();
+  metaTree.Branch(root_utils::edmDefBranchName, &edmDefinitions);
+
+  // Collect the (build) versions of the generated datamodels where available
+  DatamodelDefinitionHolder::VersionList edmVersions;
+  for (const auto& [name, _] : edmDefinitions) {
+    const auto edmVersion = podio::DatamodelRegistry::instance().getDatamodelVersion(name);
+    if (edmVersion) {
+      edmVersions.emplace_back(name, edmVersion.value());
+    }
+  }
+  for (auto& [name, version] : edmVersions) {
+    metaTree.Branch(root_utils::edmVersionBranchName(name).c_str(), &version);
+  }
+
+  metaTree.Fill();
+
+  m_file.Write();
+  m_file.Close();
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
