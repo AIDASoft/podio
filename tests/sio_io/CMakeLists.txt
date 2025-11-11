@@ -6,6 +6,7 @@ set(sio_dependent_tests
   write_interface_sio.cpp
   read_interface_sio.cpp
   selected_colls_roundtrip_sio.cpp
+  write_subset_only_sio.cpp
 )
 set(sio_libs podio::podioSioIO podio::podioIO)
 foreach( sourcefile ${sio_dependent_tests} )
@@ -22,6 +23,12 @@ set_tests_properties(
 
   PROPERTIES
     FIXTURES_REQUIRED podio_write_sio_fixture
+)
+
+set_tests_properties(
+  write_subset_only_sio
+  PROPERTIES
+    FIXTURES_SETUP podio_write_subset_only_sio
 )
 
 set_tests_properties(read_interface_sio PROPERTIES FIXTURES_REQUIRED podio_write_interface_sio_fixture)

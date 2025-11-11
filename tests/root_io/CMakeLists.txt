@@ -10,6 +10,7 @@ set(root_dependent_tests
   read_interface_root.cpp
   read_glob.cpp
   selected_colls_roundtrip_root.cpp
+  write_subset_only.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -20,6 +21,7 @@ if(ENABLE_RNTUPLE)
       write_interface_rntuple.cpp
       read_interface_rntuple.cpp
       selected_colls_roundtrip_rntuple.cpp
+      write_subset_only_rntuple.cpp
      )
 endif()
 if(ENABLE_DATASOURCE)
@@ -39,6 +41,19 @@ endforeach()
 set_tests_properties(write_frame_root PROPERTIES FIXTURES_SETUP podio_write_root_fixture)
 set_tests_properties(write_interface_root PROPERTIES FIXTURES_SETUP podio_write_interface_root_fixture)
 set_tests_properties(read_interface_root PROPERTIES FIXTURES_REQUIRED podio_write_interface_root_fixture)
+
+set_tests_properties(
+  write_subset_only
+  PROPERTIES
+    FIXTURES_SETUP podio_write_subset_only
+)
+
+set_tests_properties(
+  write_subset_only_rntuple
+  PROPERTIES
+    FIXTURES_SETUP podio_write_subset_only_rntuple
+)
+
 
 
 if(ENABLE_RNTUPLE)
