@@ -2,6 +2,8 @@ name: edm4eic
 
 on:
   push:
+    branches:
+      - master
   pull_request:
   workflow_dispatch:
 
