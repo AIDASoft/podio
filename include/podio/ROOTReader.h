@@ -195,8 +195,8 @@ private:
                                                   const std::vector<std::string>& collsToRead);
 
   /// Get / read the buffers at index iColl in the passed category information
-  podio::CollectionReadBuffers getCollectionBuffers(CategoryInfo& catInfo, size_t iColl, bool reloadBranches,
-                                                    unsigned int localEntry);
+  std::optional<podio::CollectionReadBuffers> getCollectionBuffers(CategoryInfo& catInfo, size_t iColl,
+                                                                   bool reloadBranches, unsigned int localEntry);
 
   std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
   std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories

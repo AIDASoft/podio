@@ -207,7 +207,7 @@ inline void resetBranches(TTree* chain, CollectionBranches& branches, const std:
 }
 
 template <typename BufferT>
-inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionBranches& branches) {
+inline bool setCollectionAddresses(const BufferT& collBuffers, const CollectionBranches& branches) {
 
   if (const auto buffer = collBuffers.data) {
     branches.data->SetAddress(buffer);
@@ -215,15 +215,23 @@ inline void setCollectionAddresses(const BufferT& collBuffers, const CollectionB
 
   if (const auto refCollections = collBuffers.references) {
     for (size_t i = 0; i < refCollections->size(); ++i) {
+      if (!branches.refs[i]) {
+        return false;
+      }
       branches.refs[i]->SetAddress(&(*refCollections)[i]);
     }
   }
 
   if (const auto vecMembers = collBuffers.vectorMembers) {
     for (size_t i = 0; i < vecMembers->size(); ++i) {
+      if (!branches.vecs[i]) {
+        return false;
+      }
       branches.vecs[i]->SetAddress((*vecMembers)[i].second);
     }
   }
+
+  return true;
 }
 
 inline void readBranchesData(const CollectionBranches& branches, Long64_t entry) {
