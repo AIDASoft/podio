@@ -138,7 +138,7 @@ Collections can be retrieved explicitly:
     try {
       auto& hits = frame.get<HitCollection>("hits");
     } catch (const std::runtime_error&) {
-      // The collection "hits" has not been available as type HitCollection
+      // The collection "hits" does not exist or isn't a HitCollection
     }
 ```
 
