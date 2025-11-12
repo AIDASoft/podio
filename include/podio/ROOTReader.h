@@ -152,6 +152,7 @@ public:
   std::vector<std::string> getAvailableDatamodels() const {
     return m_datamodelHolder.getAvailableDatamodels();
   }
+  std::optional<std::map<std::string, std::pair<size_t, float>>> getSizeStats(std::string_view category) const;
 
 private:
   /// Helper struct to group together all the necessary state to read / process
