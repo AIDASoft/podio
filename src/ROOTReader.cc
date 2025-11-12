@@ -457,4 +457,37 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
   return {std::move(collBranches), storedClasses};
 }
 
+std::optional<std::map<std::string, std::pair<size_t, float>>>
+ROOTReader::getSizeStats(std::string_view category) const {
+  std::map<std::string, std::pair<size_t, float>> stats;
+  if (const auto it = m_categories.find(std::string(category)); it == m_categories.end()) {
+    return std::nullopt;
+  }
+  const auto& catInfo = m_categories.at(std::string(category));
+  for (const auto& branches : catInfo.branches) {
+    size_t totalZipBytes = 0;
+    size_t totalTotBytes = 0;
+    for (const auto& br : branches.vecs) {
+      totalZipBytes += br->GetZipBytes("*");
+      totalTotBytes += br->GetTotBytes("*");
+    }
+    for (const auto& br : branches.refs) {
+      totalZipBytes += br->GetZipBytes("*");
+      totalTotBytes += br->GetTotBytes("*");
+    }
+    if (branches.data) {
+      totalZipBytes += branches.data->GetZipBytes("*");
+      totalTotBytes += branches.data->GetTotBytes("*");
+      stats[branches.data->GetName()] = {totalZipBytes, static_cast<float>(totalTotBytes) / totalZipBytes};
+    } else {
+      auto names = branches.refNames[0];
+      // This is a subset collection
+      // Delete the suffix "_objIdx"
+      names.erase(names.end() - 7, names.end());
+      stats[names] = {totalZipBytes, static_cast<float>(totalTotBytes) / totalZipBytes};
+    }
+  }
+  return stats;
+}
+
 } // namespace podio

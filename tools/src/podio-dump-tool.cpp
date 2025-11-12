@@ -165,20 +165,23 @@ void getParameterOverview(const podio::Frame& frame,
   }
 }
 
-void printFrameOverview(const podio::Frame& frame) {
+void printFrameOverview(const podio::Frame& frame,
+                        const std::optional<std::map<std::string, std::pair<size_t, float>>>& stats = {}) {
   fmt::println("Collections:");
   const auto collNames = frame.getAvailableCollections();
 
-  std::vector<std::tuple<std::string, std::string_view, size_t, std::string>> rows;
+  std::vector<std::tuple<std::string, std::string_view, size_t, std::string, std::string>> rows;
   rows.reserve(collNames.size());
 
   for (const auto& name : podio::utils::sortAlphabeticaly(collNames)) {
     const auto coll = frame.get(name);
     auto nameWithCollInfo = fmt::format("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
     rows.emplace_back(std::move(nameWithCollInfo), coll->getValueTypeName(), coll->size(),
-                      fmt::format("{:0>8x}", coll->getID()));
+                      fmt::format("{:0>8x}", coll->getID()),
+                      stats ? fmt::format("{} ({:.2f})", stats->at(name).first, stats->at(name).second) : "");
   }
-  printTable(rows, {"Name (s = subset collection)", "ValueType", "Size", "ID"});
+  printTable(rows,
+             {"Name (s = subset collection)", "ValueType", "Size", "ID", stats ? "Bytes on disk (compression)" : ""});
 
   fmt::println("\nParameters:");
   std::vector<std::tuple<std::string, std::string_view, size_t>> paramRows{};
@@ -236,12 +239,14 @@ int dumpEDMDefinition(const podio::Reader& reader, const std::string& modelName)
   return 0;
 }
 
-void printFrame(const podio::Frame& frame, const std::string& category, size_t iEntry, bool detailed) {
+void printFrame(const podio::Frame& frame, const podio::Reader& reader, const std::string& category, size_t iEntry,
+                bool detailed) {
   fmt::println("{:#^82}", fmt::format(" {}: {} ", category, iEntry));
   if (detailed) {
     printFrameDetailed(frame);
   } else {
-    printFrameOverview(frame);
+    const auto stats = reader.getSizeStats(category);
+    printFrameOverview(frame, stats);
   }
 }
 
@@ -259,7 +264,7 @@ int main(int argc, char* argv[]) {
   for (const auto event : args.events) {
     try {
       const auto& frame = reader.readFrame(args.category, event);
-      printFrame(frame, args.category, event, args.detailed);
+      printFrame(frame, reader, args.category, event, args.detailed);
     } catch (std::runtime_error& err) {
       fmt::println(stderr, "{}", err.what());
       return 1;

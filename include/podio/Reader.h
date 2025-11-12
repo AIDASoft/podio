@@ -215,6 +215,8 @@ public:
   std::vector<std::string> getAvailableDatamodels() const {
     return m_self->getAvailableDatamodels();
   }
+
+  std::optional<std::map<std::string, std::pair<size_t, float>>> getSizeStats(std::string_view category) const;
 };
 
 /// Create a Reader that is able to read the file or files matching a glob pattern
