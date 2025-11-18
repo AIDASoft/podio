@@ -27,6 +27,12 @@ If the `RNTUPLE` argument / flag is passed to `ADD_SCHEMA_EVOLUTION_TEST` the
 test will use the `RNTuple{Writer,Reader}` instead of the default
 `ROOT{Writer,Reader}`.
 
+If the `NO_EVOLUTION_CHECKS` argument / flag is passed the code generation for
+the new model will not take into account the old model yaml defintion. Hence,
+there will be no checks on whether the evolution is actually supported at the
+moment. This makes it possible to write checks that ensure certain behavior even
+if the evolution is not supported.
+
 To avoid re-generating the datamodel again for the same check with different
 backends, the `NO_GENERATE_MODELS` flag can be passed to
 `ADD_SCHEMA_EVOLUTION_TEST`.

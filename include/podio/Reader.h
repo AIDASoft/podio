@@ -22,8 +22,9 @@ private:
   struct ReaderConcept {
     virtual ~ReaderConcept() = default;
 
-    virtual podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>&) = 0;
-    virtual podio::Frame readFrame(const std::string& name, size_t index, const std::vector<std::string>&) = 0;
+    virtual podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>& collsToRead) = 0;
+    virtual podio::Frame readFrame(const std::string& name, size_t index,
+                                   const std::vector<std::string>& collsToRead) = 0;
     virtual size_t getEntries(const std::string& name) const = 0;
     virtual podio::version::Version currentFileVersion() const = 0;
     virtual std::optional<podio::version::Version> currentFileVersion(const std::string& name) const = 0;
