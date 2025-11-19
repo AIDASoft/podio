@@ -460,10 +460,11 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
 std::optional<std::map<std::string, std::pair<size_t, float>>>
 ROOTReader::getSizeStats(std::string_view category) const {
   std::map<std::string, std::pair<size_t, float>> stats;
-  if (const auto it = m_categories.find(std::string(category)); it == m_categories.end()) {
+  const auto catIt = m_categories.find(std::string(category)); 
+  if (catIt == m_categories.end()) {
     return std::nullopt;
   }
-  const auto& catInfo = m_categories.at(std::string(category));
+  const auto& catInfo = catIt->second;
   for (const auto& branches : catInfo.branches) {
     size_t totalZipBytes = 0;
     size_t totalTotBytes = 0;

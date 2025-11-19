@@ -181,7 +181,7 @@ void printFrameOverview(const podio::Frame& frame,
                       stats ? fmt::format("{} ({:.2f})", stats->at(name).first, stats->at(name).second) : "");
   }
   printTable(rows,
-             {"Name (s = subset collection)", "ValueType", "Size", "ID", stats ? "Bytes on disk (compression)" : ""});
+             {"Name (s = subset collection)", "ValueType", "Size", "ID", stats ? "Bytes on disk (compression factor)" : ""});
 
   fmt::println("\nParameters:");
   std::vector<std::tuple<std::string, std::string_view, size_t>> paramRows{};
