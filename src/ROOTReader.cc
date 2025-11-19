@@ -457,9 +457,9 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
   return {std::move(collBranches), storedClasses};
 }
 
-std::optional<std::map<std::string, std::pair<size_t, float>>>
+std::optional<std::map<std::string, SizeStats>>
 ROOTReader::getSizeStats(std::string_view category) const {
-  std::map<std::string, std::pair<size_t, float>> stats;
+  std::map<std::string, SizeStats> stats;
   const auto catIt = m_categories.find(std::string(category)); 
   if (catIt == m_categories.end()) {
     return std::nullopt;

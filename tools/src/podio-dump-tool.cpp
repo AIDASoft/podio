@@ -5,6 +5,7 @@
 #include "podio/Reader.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/MiscHelpers.h"
+#include "podio/utilities/ReaderUtils.h"
 
 #include <fmt/core.h>
 #include <fmt/ostream.h>
@@ -26,6 +27,7 @@ struct ParsedArgs {
   std::vector<size_t> events{0};
   std::string dumpEDM{};
   bool detailed{false};
+  bool sizeStats{false};
 };
 
 constexpr auto usageMsg = R"(usage: podio-dump [-h] [-c CATEGORY] [-e ENTRIES] [-d] [--version] inputfile)";
@@ -37,14 +39,15 @@ positional arguments:
   inputfile             Name of the file to dump content from
 
 options:
-  -h, --help            show this help message and exit
+  -h, --help            Show this help message and exit
   -c CATEGORY, --category CATEGORY
                         Which Frame category to dump
   -e ENTRIES, --entries ENTRIES
-                        Which entries to print. A single number, comma separated list of numbers or "first:last" for an inclusive range of entries. Defaults to the first entry.
-  -d, --detailed        Dump the full contents not just the collection info
+                        Which entries to print. A single number, comma-separated list of numbers or "first:last" for an inclusive range of entries. Defaults to the first entry.
+  -d, --detailed        Dump the full contents, not just the collection info
+  -s, --size-stats      Show size statistics per collection
   --dump-edm DUMP_EDM   Dump the specified EDM definition from the file in yaml format
-  --version             show program's version number and exit
+  --version             Show the program's version number and exit
 )";
 
 void printUsageAndExit() {
@@ -131,6 +134,10 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
     args.dumpEDM = getArgumentValueOrExit(argv, it);
     argv.erase(it, it + 2);
   }
+  if (const auto it = findFlags(argv, "-s", "--size-stats"); it != argv.end()) {
+    args.sizeStats = true;
+    argv.erase(it);
+  }
 
   if (argv.size() != 1) {
     printUsageAndExit();
@@ -165,8 +172,7 @@ void getParameterOverview(const podio::Frame& frame,
   }
 }
 
-void printFrameOverview(const podio::Frame& frame,
-                        const std::optional<std::map<std::string, std::pair<size_t, float>>>& stats = {}) {
+void printFrameOverview(const podio::Frame& frame, const std::optional<std::map<std::string, SizeStats>>& stats = {}) {
   fmt::println("Collections:");
   const auto collNames = frame.getAvailableCollections();
 
@@ -176,12 +182,17 @@ void printFrameOverview(const podio::Frame& frame,
   for (const auto& name : podio::utils::sortAlphabeticaly(collNames)) {
     const auto coll = frame.get(name);
     auto nameWithCollInfo = fmt::format("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
+    std::string statsStr;
+    if (stats) {
+      const auto& statPair = stats->at(name);
+      statsStr = fmt::format("{} ({:.2f})", statPair.numBytes, statPair.compressionFactor);
+    }
     rows.emplace_back(std::move(nameWithCollInfo), coll->getValueTypeName(), coll->size(),
-                      fmt::format("{:0>8x}", coll->getID()),
-                      stats ? fmt::format("{} ({:.2f})", stats->at(name).first, stats->at(name).second) : "");
+                      fmt::format("{:0>8x}", coll->getID()), statsStr);
   }
-  printTable(rows,
-             {"Name (s = subset collection)", "ValueType", "Size", "ID", stats ? "Bytes on disk (compression factor)" : ""});
+  printTable(
+      rows,
+      {"Name (s = subset collection)", "ValueType", "Size", "ID", stats ? "Bytes on disk (compression factor)" : ""});
 
   fmt::println("\nParameters:");
   std::vector<std::tuple<std::string, std::string_view, size_t>> paramRows{};
@@ -240,12 +251,15 @@ int dumpEDMDefinition(const podio::Reader& reader, const std::string& modelName)
 }
 
 void printFrame(const podio::Frame& frame, const podio::Reader& reader, const std::string& category, size_t iEntry,
-                bool detailed) {
+                bool detailed, bool sizeStats) {
   fmt::println("{:#^82}", fmt::format(" {}: {} ", category, iEntry));
   if (detailed) {
     printFrameDetailed(frame);
   } else {
-    const auto stats = reader.getSizeStats(category);
+    auto stats = std::optional<std::map<std::string, SizeStats>>{};
+    if (sizeStats) {
+      stats = reader.getSizeStats(category);
+    }
     printFrameOverview(frame, stats);
   }
 }
@@ -264,7 +278,7 @@ int main(int argc, char* argv[]) {
   for (const auto event : args.events) {
     try {
       const auto& frame = reader.readFrame(args.category, event);
-      printFrame(frame, reader, args.category, event, args.detailed);
+      printFrame(frame, reader, args.category, event, args.detailed, args.sizeStats);
     } catch (std::runtime_error& err) {
       fmt::println(stderr, "{}", err.what());
       return 1;
