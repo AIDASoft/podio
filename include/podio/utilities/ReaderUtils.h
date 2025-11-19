@@ -1,6 +1,8 @@
 #ifndef PODIO_READERUTILS_H
 #define PODIO_READERUTILS_H
 
+#include <cstddef>
+
 struct SizeStats {
   size_t numBytes;
   float compressionFactor;
