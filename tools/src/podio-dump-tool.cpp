@@ -45,7 +45,7 @@ options:
   -e ENTRIES, --entries ENTRIES
                         Which entries to print. A single number, comma-separated list of numbers or "first:last" for an inclusive range of entries. Defaults to the first entry.
   -d, --detailed        Dump the full contents, not just the collection info
-  -s, --size-stats      Show size statistics per collection
+  -s, --size-stats      Show size statistics per collection for the whole file (if available for the file format)
   --dump-edm DUMP_EDM   Dump the specified EDM definition from the file in yaml format
   --version             Show the program's version number and exit
 )";
