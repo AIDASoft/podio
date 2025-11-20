@@ -220,7 +220,6 @@ void testWithIO() {
   for (int i = 0; i < 10; ++i) {
     const auto event = podio::Frame(reader.readNextEntry(podio::Category::Event));
     auto& readColl = event.get<ExampleMCCollection>("mcparticles");
-    ASSERT_CONDITION(readColl.hasID(), "Collection 'mcparticles' should be present")
     ASSERT_EQUAL(readColl.size(), 10, "'mcparticles' should have 10 entries")
 
     doTestExampleMC(readColl);

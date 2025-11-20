@@ -28,7 +28,12 @@ int main() {
     ASSERT_EQUAL(hitColl[0].z(), 3.45, "Readable elements should not change");
     ASSERT_EQUAL(hitColl[0].energy(), 5.67, "Readable elements should not change");
 
-    const auto& clusterColl = event.get<ExampleClusterCollection>("evolution_collection");
-    ASSERT_EQUAL(clusterColl.hasID(), false, "Unreadable collection should be skipped");
+    try {
+      const auto& clusterColl [[maybe_unused]] = event.get<ExampleClusterCollection>("evolution_collection");
+      // We should not get here, we just use the ASSERT_EQUAL for the easy message emitting
+      ASSERT_EQUAL(true, false, "Unreadable collection should be skipped");
+    } catch (const std::runtime_error&) {
+      ASSERT_EQUAL(true, true, "Unreadable collection should be skipped");
+    }
   })
 }

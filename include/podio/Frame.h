@@ -403,13 +403,10 @@ Frame::Frame(FrameData&& data) : Frame(std::make_unique<FrameData>(std::move(dat
 
 template <CollectionType CollT>
 const CollT& Frame::get(const std::string& name) const {
-  const auto* coll = dynamic_cast<const CollT*>(m_self->get(name));
-  if (coll) {
+  if (const auto* coll = dynamic_cast<const CollT*>(m_self->get(name))) {
     return *coll;
   }
-  // TODO: Handle non-existing collections
-  static const auto emptyColl = CollT();
-  return emptyColl;
+  throw std::runtime_error("Cannot retrieve collection " + name + " of type " + std::string(CollT::typeName));
 }
 
 inline const podio::CollectionBase* Frame::get(const std::string& name) const {
