@@ -118,7 +118,8 @@ void DataSource::InitSlot(unsigned int, ULong64_t) {
 }
 
 bool DataSource::SetEntry(unsigned int slot, ULong64_t entry) {
-  m_frames[slot] = std::make_unique<podio::Frame>(m_podioReaders[slot]->readFrame(podio::Category::Event, entry));
+  m_frames[slot] =
+      std::make_unique<podio::Frame>(m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_columnNames));
 
   for (auto& collectionIndex : m_activeCollections) {
     m_Collections[collectionIndex][slot] = m_frames[slot]->get(m_columnNames.at(collectionIndex));
