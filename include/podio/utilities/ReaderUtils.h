@@ -8,4 +8,4 @@ struct SizeStats {
   float compressionFactor;
 };
 
-#endif // PODIO_READERUTILS_H
+#endif // PODIO_UTILITIES_READERUTILS_H
