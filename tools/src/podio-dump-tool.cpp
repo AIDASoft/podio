@@ -250,16 +250,12 @@ int dumpEDMDefinition(const podio::Reader& reader, const std::string& modelName)
   return 0;
 }
 
-void printFrame(const podio::Frame& frame, const podio::Reader& reader, const std::string& category, size_t iEntry,
-                bool detailed, bool sizeStats) {
+void printFrame(const podio::Frame& frame, const std::string& category, size_t iEntry, bool detailed,
+                const std::optional<std::map<std::string, SizeStats>>& stats = {}) {
   fmt::println("{:#^82}", fmt::format(" {}: {} ", category, iEntry));
   if (detailed) {
     printFrameDetailed(frame);
   } else {
-    auto stats = std::optional<std::map<std::string, SizeStats>>{};
-    if (sizeStats) {
-      stats = reader.getSizeStats(category);
-    }
     printFrameOverview(frame, stats);
   }
 }
@@ -275,10 +271,15 @@ int main(int argc, char* argv[]) {
 
   printGeneralInfo(reader, args.inputFile);
 
+  auto stats = std::optional<std::map<std::string, SizeStats>>{};
+  if (args.sizeStats) {
+    stats = reader.getSizeStats(args.category);
+  }
+
   for (const auto event : args.events) {
     try {
       const auto& frame = reader.readFrame(args.category, event);
-      printFrame(frame, reader, args.category, event, args.detailed, args.sizeStats);
+      printFrame(frame, args.category, event, args.detailed, stats);
     } catch (std::runtime_error& err) {
       fmt::println(stderr, "{}", err.what());
       return 1;
