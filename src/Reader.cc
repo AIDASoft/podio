@@ -9,6 +9,7 @@
 #endif
 
 #include "podio/utilities/Glob.h"
+#include "podio/utilities/ReaderUtils.h"
 
 #include "TFile.h"
 #include "TKey.h"
@@ -86,6 +87,13 @@ Reader makeReader(const std::vector<std::string>& filenames) {
   }
 
   throw std::runtime_error("Unknown file extension: " + suffix);
+}
+
+std::optional<std::map<std::string, SizeStats>> Reader::getSizeStats(std::string_view category) {
+  if (const auto* rootReader = dynamic_cast<ReaderModel<ROOTReader>*>(m_self.get())) {
+    return rootReader->m_reader->getSizeStats(category);
+  }
+  return std::nullopt;
 }
 
 } // namespace podio

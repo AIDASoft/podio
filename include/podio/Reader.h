@@ -3,6 +3,7 @@
 
 #include "podio/Frame.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/ReaderUtils.h"
 
 namespace podio {
 
@@ -215,6 +216,8 @@ public:
   std::vector<std::string> getAvailableDatamodels() const {
     return m_self->getAvailableDatamodels();
   }
+
+  std::optional<std::map<std::string, SizeStats>> getSizeStats(std::string_view category);
 };
 
 /// Create a Reader that is able to read the file or files matching a glob pattern

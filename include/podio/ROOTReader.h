@@ -4,6 +4,7 @@
 #include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/ReaderUtils.h"
 #include "podio/utilities/RootHelpers.h"
 
 #include "TChain.h"
@@ -152,6 +153,7 @@ public:
   std::vector<std::string> getAvailableDatamodels() const {
     return m_datamodelHolder.getAvailableDatamodels();
   }
+  std::optional<std::map<std::string, SizeStats>> getSizeStats(std::string_view category);
 
 private:
   /// Helper struct to group together all the necessary state to read / process
