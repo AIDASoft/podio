@@ -1,4 +1,4 @@
-#include "MurmurHash3.h"
+#include "../src/MurmurHash3.h"
 
 #include <fstream>
 #include <iomanip>
@@ -87,7 +87,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T, A>& vec) {
   return os << ']';
 }
 
-constexpr static auto usage = R"USAGE(usage: podio_test_hashes [-h] collNameFile)USAGE";
+constexpr static auto usage = R"USAGE(usage: podio-test-hashes [-h] collNameFile)USAGE";
 constexpr static auto help = R"HELP(
 Check if any of the collection names provided lead to a collision in the collection IDs
 
