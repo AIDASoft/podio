@@ -421,6 +421,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cpp_api/structlist.html">Struct list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/struct_size_stats.html">Struct SizeStats</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/struct_size_stats.html#_CPPv49SizeStats"><code class="docutils literal notranslate"><span class="pre">SizeStats</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">CollectionReadBuffers</span></code></a></li>
 </ul>
@@ -2124,6 +2128,8 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader9getEventsEv">podio::Reader::getEvents (C++ function)</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4NK5podio6Reader9getEventsEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader9getEventsEv">[2]</a>
 </li>
+      <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6Reader12getSizeStatsENSt11string_viewE">podio::Reader::getSizeStats (C++ function)</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4N5podio6Reader12getSizeStatsENSt11string_viewE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6Reader12getSizeStatsENSt11string_viewE">[2]</a>
+</li>
       <li><a href="cpp_api/file/_reader_8h.html#_CPPv4N5podio6Reader6m_selfE">podio::Reader::m_self (C++ member)</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6ReaderaSERK6Reader">podio::Reader::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6ReaderaSERR6Reader">[1]</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4N5podio6ReaderaSERK6Reader">[2]</a>, <a href="cpp_api/file/_reader_8h.html#_CPPv4N5podio6ReaderaSERR6Reader">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6ReaderaSERK6Reader">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6ReaderaSERR6Reader">[5]</a>
@@ -2503,6 +2509,8 @@
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4NK5podio10ROOTReader22getDatamodelDefinitionERKNSt6stringE">podio::ROOTReader::getDatamodelDefinition (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4NK5podio10ROOTReader22getDatamodelDefinitionERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio10ROOTReader22getDatamodelDefinitionERKNSt6stringE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4NK5podio10ROOTReader10getEntriesERKNSt6stringE">podio::ROOTReader::getEntries (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4NK5podio10ROOTReader10getEntriesERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio10ROOTReader10getEntriesERKNSt6stringE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_r_o_o_t_reader.html#_CPPv4N5podio10ROOTReader12getSizeStatsENSt11string_viewE">podio::ROOTReader::getSizeStats (C++ function)</a>, <a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4N5podio10ROOTReader12getSizeStatsENSt11string_viewE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio10ROOTReader12getSizeStatsENSt11string_viewE">[2]</a>
 </li>
       <li><a href="cpp_api/file/_r_o_o_t_reader_8h.html#_CPPv4N5podio10ROOTReader12initCategoryER12CategoryInfoRKNSt6stringE">podio::ROOTReader::initCategory (C++ function)</a>
 </li>
@@ -3392,13 +3400,19 @@
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable.signature">signature (podio_gen.generator_utils.MemberVariable property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/namespace/namespacesio.html#_CPPv43sio">sio (C++ type)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.sio_filter">sio_filter() (in module podio_schema_evolution)</a>
 </li>
       <li><a href="cpp_api/file/_s_i_o_block_8h.html#c.SIOMAPBLOCK_NAME">SIOMAPBLOCK_NAME (C macro)</a>
+</li>
+      <li><a href="cpp_api/file/_reader_utils_8h.html#_CPPv49SizeStats">SizeStats (C++ struct)</a>, <a href="cpp_api/struct/struct_size_stats.html#_CPPv49SizeStats">[1]</a>
+</li>
+      <li><a href="cpp_api/file/_reader_utils_8h.html#_CPPv4N9SizeStats17compressionFactorE">SizeStats::compressionFactor (C++ member)</a>, <a href="cpp_api/struct/struct_size_stats.html#_CPPv4N9SizeStats17compressionFactorE">[1]</a>
+</li>
+      <li><a href="cpp_api/file/_reader_utils_8h.html#_CPPv4N9SizeStats8numBytesE">SizeStats::numBytes (C++ member)</a>, <a href="cpp_api/struct/struct_size_stats.html#_CPPv4N9SizeStats8numBytesE">[1]</a>
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RootIoRule.source">source (podio_schema_evolution.RootIoRule attribute)</a>
 </li>
