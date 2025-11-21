@@ -217,7 +217,7 @@ public:
     return m_self->getAvailableDatamodels();
   }
 
-  std::optional<std::map<std::string, SizeStats>> getSizeStats(std::string_view category) const;
+  std::optional<std::map<std::string, SizeStats>> getSizeStats(std::string_view category);
 };
 
 /// Create a Reader that is able to read the file or files matching a glob pattern
