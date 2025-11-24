@@ -170,6 +170,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#merging-files-podio-merge-files">Merging files: <code class="docutils literal notranslate"><span class="pre">podio-merge-files</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#converting-between-root-ttrees-and-rntuples-podio-ttree-to-rntuple">Converting between ROOT TTrees and RNTuples: <code class="docutils literal notranslate"><span class="pre">podio-ttree-to-rntuple</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualizing-a-model-podio-vis">Visualizing a model: <code class="docutils literal notranslate"><span class="pre">podio-vis</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-hash-collisions-in-collection-names-podio-test-hashes">Testing hash collisions in collection names: <code class="docutils literal notranslate"><span class="pre">podio-test-hashes</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cmake.html">Building a new data model library with CMake</a><ul>
@@ -857,6 +858,16 @@ To see all available options and usage instructions, run with <code class="docut
 <p>Example usage:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">podio</span><span class="o">-</span><span class="n">vis</span><span class="w"> </span><span class="o">--</span><span class="n">fmt</span><span class="w"> </span><span class="n">svg</span><span class="w"> </span><span class="n">my_model</span><span class="p">.</span><span class="n">yaml</span>
 <span class="n">firefox</span><span class="w"> </span><span class="n">gv</span><span class="p">.</span><span class="n">svg</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-hash-collisions-in-collection-names-podio-test-hashes">
+<h2>Testing hash collisions in collection names: <code class="docutils literal notranslate"><span class="pre">podio-test-hashes</span></code><a class="headerlink" href="#testing-hash-collisions-in-collection-names-podio-test-hashes" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">podio-test-hashes</span></code> is a small utility that checks whether a list of collection names produces collisions when hashed into PODIO collection IDs.
+The names should be provided in a test file, separated by whitespace.
+If any collisions are found, the tool will return status code <code class="docutils literal notranslate"><span class="pre">1</span></code> and print the colliding names along with their computed hash IDs.</p>
+<p>Example usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>podio-test-hashes<span class="w"> </span>collection_names.txt
 </pre></div>
 </div>
 </section>
