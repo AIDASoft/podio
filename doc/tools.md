@@ -107,3 +107,15 @@ Example usage:
 podio-vis --fmt svg my_model.yaml
 firefox gv.svg
 ```
+
+## Testing hash collisions in collection names: `podio-test-hashes`
+
+`podio-test-hashes` is a small utility that checks whether a list of collection names produces collisions when hashed into PODIO collection IDs.
+The names should be provided in a test file, separated by whitespace.
+If any collisions are found, the tool will return status code `1` and print the colliding names along with their computed hash IDs.
+
+Example usage:
+
+```bash
+podio-test-hashes collection_names.txt
+```
