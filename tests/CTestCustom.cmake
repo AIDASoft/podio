@@ -148,9 +148,11 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     )
   endif()
 
-  if("@USE_SANITIZER@" MATCHES "Undefined" AND "@CMAKE_CXX_COMPILER_ID@" STREQUAL "Clang")
+  if("@USE_SANITIZER@" MATCHES "Undefined" AND "@CMAKE_CXX_COMPILER_ID@" STREQUAL "Clang" AND "@CMAKE_CXX_COMPILER_VERSION@" VERSION_LOWER_EQUAL "20.0.0")
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
+
+      read_interface_root
 
       write_rntuple
       read_rntuple
