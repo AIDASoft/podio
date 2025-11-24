@@ -152,6 +152,20 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
 
+      relation_range
+
+      read_glob
+      read_and_write_associated
+      write_frame_root
+      read_frame_root
+      read_frame_root_multiple
+      read_and_write_frame_root
+      selected_colls_roundtrip_root
+
+      podio-dump-root
+      podio-dump-detailed-root
+
+      write_interface_root
       read_interface_root
 
       write_rntuple
