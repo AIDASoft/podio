@@ -218,3 +218,43 @@ read and write all the necessary EDM definitions.
   has read from file.** Currently the `SIOReader`, `ROOTReader` and the `RNTupleReader`,
   use it and also offer the same functionality as public methods with the help
   of it.
+
+## Subset collections
+
+Subset collections in podio enable you to create collections whose elements are
+references to objects stored in one or more original collections. This is useful
+for organizing and processing only a specific group of objects (e.g. a subset of
+particles) without duplicating data. Subset collections function as lightweight
+indexes pointing to selected objects in the event’s collections rather than
+owning the objects themselves. Because they only store references, subset
+collections consume very little space when written to disk.
+
+To define a subset collection, call the `setSubsetCollection()` method on a
+newly created collection. You can then add objects from the original
+collection(s) using `push_back`. It is important to note that a subset
+collection can contain references to objects from different collections,
+provided all referenced collections are available. You can check whether a
+collection is a subset by calling `isSubsetCollection()`. Other than their
+creation and how elements are added, subset collections behave like regular
+collections.
+
+```cpp
+auto subsetColl = MyCollectionType();
+subsetColl.setSubsetCollection();
+subsetColl.push_back(originalCollection[0]);
+```
+
+Subset collections can be distinguished in the output of `podio-dump`, where
+they are marked with an `(s)` next to their name.
+
+### Limitations
+
+When reading a subset collection, it is necessary to also have the original
+collection(s) present. The references stored in the subset collection require
+the originals to resolve the actual objects they point to.
+
+Currently, subset collections cannot be promoted to full collections that own
+their objects. For more information or to follow future developments, see [podio
+issue
+#655](https://github.com/AIDASoft/podio/issues/655).
+
