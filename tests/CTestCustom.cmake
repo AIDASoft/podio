@@ -69,24 +69,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
   set(CTEST_CUSTOM_TESTS_IGNORE
     ${CTEST_CUSTOM_TESTS_IGNORE}
 
-    read_and_write_associated
-    check_benchmark_outputs
-    read_frame_legacy_root
-    read_frame_root_multiple
     write_python_frame_root
     read_python_frame_root
-    read_and_write_frame_root
 
     param_reading_rdataframe
 
-    write_frame_root
-    read_frame_root
-    read_glob
     read_python_multiple
-    selected_colls_roundtrip_root
-
-    write_interface_root
-    read_interface_root
 
     write_python_frame_sio
     read_python_frame_sio
@@ -94,13 +82,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_python_frame_rntuple
     read_python_frame_rntuple
 
-    relation_range
-
     pyunittest
     test_strace
 
-    podio-dump-root
-    podio-dump-detailed-root
     podio-dump-legacy_root_v00-16-06
     podio-dump-legacy_root-detailed_v00-16-06
 
@@ -146,6 +130,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
   if("@USE_SANITIZER@" MATCHES "Thread")
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
+
+      read_interface_root
 
       read_rntuple
       read_interface_rntuple
