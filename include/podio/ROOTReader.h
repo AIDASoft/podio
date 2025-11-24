@@ -17,6 +17,11 @@
 #include <utility>
 #include <vector>
 
+// forward declarations
+class TClass;
+class TFile;
+class TTree;
+
 namespace podio {
 
 namespace detail {
