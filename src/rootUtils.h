@@ -2,6 +2,7 @@
 #define PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/utilities/RootHelpers.h"
 #include "podio/utilities/TypeHelpers.h"
@@ -206,8 +207,8 @@ inline void resetBranches(TTree* chain, CollectionBranches& branches, const std:
   }
 }
 
-template <typename BufferT>
-inline bool setCollectionAddressesReader(BufferT& collBuffers, const CollectionBranches& branches) {
+inline bool setCollectionAddressesReader(podio::CollectionReadBuffers& collBuffers,
+                                         const CollectionBranches& branches) {
 
   if (collBuffers.data) {
     branches.data->SetAddress(&collBuffers.data);
@@ -234,8 +235,8 @@ inline bool setCollectionAddressesReader(BufferT& collBuffers, const CollectionB
   return true;
 }
 
-template <typename BufferT>
-inline bool setCollectionAddressesWriter(const BufferT& collBuffers, const CollectionBranches& branches) {
+inline bool setCollectionAddressesWriter(const podio::CollectionWriteBuffers& collBuffers,
+                                         const CollectionBranches& branches) {
 
   if (collBuffers.data) {
     branches.data->SetAddress(collBuffers.data);
