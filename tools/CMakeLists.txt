@@ -1,3 +1,8 @@
+
+add_executable(podio-test-hashes src/podio-test-hashes.cpp)
+target_link_libraries(podio-test-hashes PRIVATE podio::podio)
+install(TARGETS podio-test-hashes EXPORT podioTargets DESTINATION "${CMAKE_INSTALL_BINDIR}")
+
 add_executable(podio-dump-tool src/podio-dump-tool.cpp)
 target_link_libraries(podio-dump-tool PRIVATE podio::podio podio::podioIO fmt::fmt)
 
