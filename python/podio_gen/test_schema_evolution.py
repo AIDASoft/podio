@@ -4,8 +4,13 @@
 import unittest
 import tempfile
 import os
+from textwrap import dedent
 
-from podio_gen.schema_evolution import SchemaMigration, SchemaMigrationReader, ChangeType
+from podio_gen.schema_evolution import (
+    SchemaMigration,
+    SchemaMigrationReader,
+    ChangeType,
+)
 
 
 class TestSchemaMigration(unittest.TestCase):
@@ -92,27 +97,27 @@ class TestSchemaMigrationReader(unittest.TestCase):
 
     def test_read_valid_yaml_file(self):
         """Test reading a valid YAML file."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: 1
-      to_version: 2
-      rename_member:
-        from: old_field
-        to: new_field
-    - from_version: 2
-      to_version: 3
-      rename_member:
-        from: another_old
-        to: another_new
-  AnotherType:
-    - from_version: 1
-      to_version: 2
-      rename_member:
-        from: x
-        to: y
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit:
+            - from_version: 1
+              to_version: 2
+              rename_member:
+                from: old_field
+                to: new_field
+            - from_version: 2
+              to_version: 3
+              rename_member:
+                from: another_old
+                to: another_new
+          AnotherType:
+             - from_version: 1
+               to_version: 2
+               rename_member:
+                 from: x
+                 to: y
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             result = SchemaMigrationReader.read_yaml(temp_file)
@@ -134,11 +139,11 @@ migrations:
 
     def test_missing_migrations_key(self):
         """Test that YAML must contain 'migrations' key."""
-        yaml_content = """
-some_other_key:
-  value: test
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        some_other_key:
+          value: test
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -149,11 +154,11 @@ some_other_key:
 
     def test_migrations_not_dict(self):
         """Test that 'migrations' must be a dictionary."""
-        yaml_content = """
-migrations:
-  - not_a_dict
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+         - not_a_dict
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -164,11 +169,11 @@ migrations:
 
     def test_migration_list_not_list(self):
         """Test that migrations for a datatype must be a list."""
-        yaml_content = """
-migrations:
-  ExampleHit: not_a_list
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit: not_a_list
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -179,13 +184,13 @@ migrations:
 
     def test_missing_required_migration_keys(self):
         """Test that migrations must have required keys."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: 1
-      # missing to_version and change type
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+         ExampleHit:
+           - from_version: 1
+           # missing to_version and change type
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -196,16 +201,16 @@ migrations:
 
     def test_invalid_version_types(self):
         """Test that versions must be integers."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: "1"
-      to_version: 2
-      rename_member:
-        from: old
-        to: new
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit:
+            - from_version: "1"
+              to_version: 2
+              rename_member:
+                from: old
+                to: new
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -216,34 +221,35 @@ migrations:
 
     def test_change_details_not_dict(self):
         """Test that change details must be a dictionary."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: 1
-      to_version: 2
-      rename_member: not_a_dict
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit:
+            - from_version: 1
+              to_version: 2
+              rename_member: not_a_dict
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
                 SchemaMigrationReader.read_yaml(temp_file)
             self.assertIn(
-                "Change type 'rename_member' missing required fields:", str(cm.exception)
+                "Change type 'rename_member' missing required fields:",
+                str(cm.exception),
             )
         finally:
             self._cleanup_temp_file(temp_file)
 
     def test_missing_change_type(self):
         """Test that migration must contain a change type."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: 1
-      to_version: 2
-      # missing change type
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit:
+            - from_version: 1
+              to_version: 2
+              # missing change type
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -254,18 +260,18 @@ migrations:
 
     def test_multiple_change_types(self):
         """Test that migration cannot have multiple change types."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: 1
-      to_version: 2
-      rename_member:
-        from: old
-        to: new
-      another_type:
-        some: value
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit:
+            - from_version: 1
+              to_version: 2
+              rename_member:
+                from: old
+                to: new
+              another_type:
+                some: value
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -276,16 +282,16 @@ migrations:
 
     def test_invalid_change_type(self):
         """Test that change type must be valid."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: 1
-      to_version: 2
-      invalid_type:
-        from: old
-        to: new
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit:
+            - from_version: 1
+              to_version: 2
+              invalid_type:
+                from: old
+                to: new
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             with self.assertRaises(ValueError) as cm:
@@ -297,26 +303,26 @@ migrations:
 
     def test_migrations_sorted_by_version(self):
         """Test that migrations are sorted by from_version."""
-        yaml_content = """
-migrations:
-  ExampleHit:
-    - from_version: 3
-      to_version: 4
-      rename_member:
-        from: c
-        to: d
-    - from_version: 1
-      to_version: 2
-      rename_member:
-        from: a
-        to: b
-    - from_version: 2
-      to_version: 3
-      rename_member:
-        from: b
-        to: c
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          ExampleHit:
+            - from_version: 3
+              to_version: 4
+              rename_member:
+                from: c
+                to: d
+            - from_version: 1
+              to_version: 2
+              rename_member:
+                from: a
+                to: b
+            - from_version: 2
+              to_version: 3
+              rename_member:
+                from: b
+                to: c
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             result = SchemaMigrationReader.read_yaml(temp_file)
@@ -331,16 +337,16 @@ migrations:
 
     def test_read_yaml_file(self):
         """Test reading from an actual file."""
-        yaml_content = """
-migrations:
-  TestType:
-    - from_version: 1
-      to_version: 2
-      rename_member:
-        from: old
-        to: new
-"""
-        temp_file = self._create_temp_yaml_file(yaml_content)
+        yaml_content = """\
+        migrations:
+          TestType:
+            - from_version: 1
+              to_version: 2
+              rename_member:
+                from: old
+                to: new
+        """
+        temp_file = self._create_temp_yaml_file(dedent(yaml_content))
 
         try:
             result = SchemaMigrationReader.read_yaml(temp_file)
