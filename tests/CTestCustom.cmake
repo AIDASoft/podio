@@ -132,7 +132,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
   if("@USE_SANITIZER@" MATCHES "Undefined" AND "@CMAKE_CXX_COMPILER_ID@" STREQUAL "Clang" AND @CMAKE_CXX_COMPILER_VERSION@ VERSION_LESS_EQUAL "20.0.0")
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
-
       relation_range
 
       read_glob
@@ -162,6 +161,23 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       datamodel_def_store_roundtrip_rntuple
       datamodel_def_store_roundtrip_rntuple_extension
+
+      schema_evol:code_gen:components_new_member:write
+      schema_evol:code_gen:components_new_member:read
+      schema_evol:code_gen:components_rename_member:write
+      schema_evol:code_gen:components_rename_member:read
+      schema_evol:code_gen:datatypes_new_member:write
+      schema_evol:code_gen:datatypes_new_member:read
+      schema_evol:code_gen:datatypes_rename_member:write
+      schema_evol:code_gen:datatypes_rename_member:read
+      schema_evol:code_gen:implicit_floating_point_change:write
+      schema_evol:code_gen:implicit_floating_point_change:read
+      schema_evol:code_gen:no_change:write
+      schema_evol:code_gen:no_change:read
+      schema_evol:code_gen:array_component_new_member:write
+      schema_evol:code_gen:array_component_new_member:read
+      schema_evol:code_gen:datatypes_remove_type:write
+      schema_evol:code_gen:datatypes_remove_type:read
 
       ${failing_with_undefined_sanitizer}
     )
