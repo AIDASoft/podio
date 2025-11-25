@@ -9,26 +9,7 @@
 
 # We define some lists here to avoid having to repeat them below
 set(failing_with_address_sanitizer
-  # Technically most of the write tests here succeed, but there is no point in
-  # only running them, since they are practically only the setup step for the
-  # actual read tests
-  schema_evol:code_gen:components_new_member:write
-  schema_evol:code_gen:components_new_member:read
-  schema_evol:code_gen:components_rename_member:write
-  schema_evol:code_gen:components_rename_member:read
-  schema_evol:code_gen:datatypes_new_member:write
-  schema_evol:code_gen:datatypes_new_member:read
   schema_evol:code_gen:datatypes_new_member:read_garbage
-  schema_evol:code_gen:datatypes_rename_member:write
-  schema_evol:code_gen:datatypes_rename_member:read
-  schema_evol:code_gen:implicit_floating_point_change:write
-  schema_evol:code_gen:implicit_floating_point_change:read
-  schema_evol:code_gen:no_change:write
-  schema_evol:code_gen:no_change:read
-  schema_evol:code_gen:array_component_new_member:write
-  schema_evol:code_gen:array_component_new_member:read
-  schema_evol:code_gen:datatypes_remove_type:write
-  schema_evol:code_gen:datatypes_remove_type:read
   schema_evol:code_gen:datatypes_rename_relation:write
   schema_evol:code_gen:datatypes_rename_relation:read
   schema_evol:code_gen:datatypes_rename_relation:write_rntuple
