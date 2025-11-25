@@ -84,10 +84,8 @@ ROOTLegacyReader::getCollectionBuffers(const std::pair<std::string, detail::Coll
   }
 
   // set the addresses and read the data
-  root_utils::setCollectionAddresses(collBuffers, branches);
+  root_utils::setCollectionAddressesReader(collBuffers, branches);
   root_utils::readBranchesData(branches, localEntry);
-
-  collBuffers.recast(collBuffers);
 
   return collBuffers;
 }

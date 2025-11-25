@@ -364,12 +364,6 @@ namespace detail {
       return std::make_unique<LinkCollection<FromT, ToT>>(std::move(data), isSubsetColl);
     };
 
-    readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
-      if (buffers.data) {
-        buffers.data = podio::CollectionWriteBuffers::asVector<float>(buffers.data);
-      }
-    };
-
     readBuffers.deleteBuffers = [](const podio::CollectionReadBuffers& buffers) {
       if (buffers.data) {
         // If we have data then we are not a subset collection and we have

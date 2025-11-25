@@ -31,9 +31,6 @@ namespace {
                 delete static_cast<std::vector<T>*>(buffers.data);
                 return std::make_unique<UserDataCollection<T>>(std::move(vec));
               },
-              [](podio::CollectionReadBuffers& buffers) {
-                buffers.data = podio::CollectionWriteBuffers::asVector<T>(buffers.data);
-              },
               [](const podio::CollectionReadBuffers& buffers) { delete static_cast<std::vector<T>*>(buffers.data); }};
         });
 

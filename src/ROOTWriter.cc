@@ -140,8 +140,8 @@ void ROOTWriter::resetBranches(CategoryInfo& categoryInfo,
                                const std::vector<root_utils::StoreCollection>& collections) {
   size_t iColl = 0;
   for (const auto& [_, coll] : collections) {
-    const auto& collBranches = categoryInfo.branches[iColl];
-    root_utils::setCollectionAddresses(coll->getBuffers(), collBranches);
+    const auto& branches = categoryInfo.branches[iColl];
+    root_utils::setCollectionAddressesWriter(coll->getBuffers(), branches);
     iColl++;
   }
   // Correct index to point to the last branch of collection data for symmetric

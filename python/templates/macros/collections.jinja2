@@ -192,18 +192,6 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
     return std::make_unique<{{ collection_type }}>(std::move(data), isSubsetColl);
   };
 
-  readBuffers.recast = [](podio::CollectionReadBuffers& buffers) {
-    // We only have any of these buffers if this is not a subset collection
-    if (buffers.data) {
-      buffers.data = podio::CollectionWriteBuffers::asVector<{{ class.full_type }}Data>(buffers.data);
-{% if VectorMembers %}
-{% for member in VectorMembers %}
-      (*buffers.vectorMembers)[{{ loop.index0 }}].second = podio::CollectionWriteBuffers::asVector<{{ member.full_type }}>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
-{% endfor %}
-{% endif %}
-    }
-  };
-
   readBuffers.deleteBuffers = [](const podio::CollectionReadBuffers& buffers) {
     if (buffers.data) {
       // If we have data then we are not a subset collection and we have to

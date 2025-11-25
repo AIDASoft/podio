@@ -2,6 +2,7 @@
 #define PODIO_ROOT_UTILS_H // NOLINT(llvm-header-guard): internal headers confuse clang-tidy
 
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/CollectionIDTable.h"
 #include "podio/utilities/RootHelpers.h"
 #include "podio/utilities/TypeHelpers.h"
@@ -206,11 +207,39 @@ inline void resetBranches(TTree* chain, CollectionBranches& branches, const std:
   }
 }
 
-template <typename BufferT>
-inline bool setCollectionAddresses(const BufferT& collBuffers, const CollectionBranches& branches) {
+inline bool setCollectionAddressesReader(podio::CollectionReadBuffers& collBuffers,
+                                         const CollectionBranches& branches) {
 
-  if (const auto buffer = collBuffers.data) {
-    branches.data->SetAddress(buffer);
+  if (collBuffers.data) {
+    branches.data->SetAddress(&collBuffers.data);
+  }
+
+  if (const auto refCollections = collBuffers.references) {
+    for (size_t i = 0; i < refCollections->size(); ++i) {
+      if (!branches.refs[i]) {
+        return false;
+      }
+      branches.refs[i]->SetAddress(&(*refCollections)[i]);
+    }
+  }
+
+  if (const auto vecMembers = collBuffers.vectorMembers) {
+    for (size_t i = 0; i < vecMembers->size(); ++i) {
+      if (!branches.vecs[i]) {
+        return false;
+      }
+      branches.vecs[i]->SetAddress(&(*vecMembers)[i].second);
+    }
+  }
+
+  return true;
+}
+
+inline bool setCollectionAddressesWriter(const podio::CollectionWriteBuffers& collBuffers,
+                                         const CollectionBranches& branches) {
+
+  if (collBuffers.data) {
+    branches.data->SetAddress(collBuffers.data);
   }
 
   if (const auto refCollections = collBuffers.references) {

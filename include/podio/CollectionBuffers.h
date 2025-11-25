@@ -49,20 +49,17 @@ struct CollectionReadBuffers {
   std::string_view type{};
 
   using CreateFuncT = std::function<std::unique_ptr<podio::CollectionBase>(podio::CollectionReadBuffers, bool)>;
-  using RecastFuncT = std::function<void(CollectionReadBuffers&)>;
 
   using DeleteFuncT = std::function<void(CollectionReadBuffers&)>;
 
   CollectionReadBuffers(void* d, CollRefCollection* ref, VectorMembersInfo* vec, SchemaVersionT version,
-                        std::string_view typ, CreateFuncT&& createFunc, RecastFuncT&& recastFunc,
-                        DeleteFuncT&& deleteFunc) :
+                        std::string_view typ, CreateFuncT&& createFunc, DeleteFuncT&& deleteFunc) :
       data(d),
       references(ref),
       vectorMembers(vec),
       schemaVersion(version),
       type(typ),
       createCollection(std::move(createFunc)),
-      recast(std::move(recastFunc)),
       deleteBuffers(std::move(deleteFunc)) {
   }
 
@@ -86,27 +83,6 @@ struct CollectionReadBuffers {
   }
 
   CreateFuncT createCollection{};
-
-  // This is a hacky workaround for the ROOT backend at the moment. There is
-  // probably a better solution, but I haven't found it yet. The problem is the
-  // following:
-  //
-  // When creating a pointer to a vector<T>, either via new or via
-  // TClass::New(), we get a void*, that can be cast back to a vector with
-  //
-  //     static_cast<vector<T>*>(raw);
-  //
-  // However, as soon as we pass that same void* to TBranch::SetAddress this no
-  // longer works and the actual cast has to be
-  //
-  //     *static_cast<vector<T>**>(raw);
-  //
-  // To make it possible to always use the first form, after we leave the Root
-  // parts of reading, this function is populated in the createBuffers call of each
-  // datatype where we have the necessary type information (from code
-  // generation) to do the second cast and assign the result of that to the data
-  // field again.
-  RecastFuncT recast{};
 
   // Workaround for https://github.com/AIDASoft/podio/issues/500
   // We need a function that explicitly deletes the buffers, but for this we
