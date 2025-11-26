@@ -1,0 +1,9 @@
+schema_version: 5
+
+datatypes:
+  TypesWithAddedAndRemovedMembers:
+    Description: "A type with an added an a removed member that should work fine"
+    Author: "Thomas Madlener"
+    Members:
+      - int oldMember // the old member
+      - float unchanged // an unchanged member
