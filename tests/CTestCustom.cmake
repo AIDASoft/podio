@@ -174,6 +174,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:implicit_floating_point_change:read
       schema_evol:code_gen:no_change:write
       schema_evol:code_gen:no_change:read
+      schema_evol:code_gen:no_change_array_member:write
+      schema_evol:code_gen:no_change_array_member:read
       schema_evol:code_gen:array_component_new_member:write
       schema_evol:code_gen:array_component_new_member:read
       schema_evol:code_gen:datatypes_remove_type:write
