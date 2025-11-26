@@ -7,4 +7,6 @@ datatypes:
     Description: "A datatype to test member renaming"
     Author: "Thomas Madlener"
     Members:
+      - int unchangedMember // a member that doesn't change
       - double oldEnergy // the old name
+      - float anotherNonChange // another member that doesn't change
