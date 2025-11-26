@@ -6,6 +6,8 @@ Provides infrastructure for analyzing schema definitions for schema evolution
 import sys
 from dataclasses import dataclass
 from typing import List
+from enum import IntEnum
+
 import yaml
 
 from podio_gen.podio_config_reader import PodioConfigReader
@@ -237,6 +239,13 @@ class SchemaEvolutionJudge:
         DroppedMultiRelation,
     )
 
+    class RenameResult(IntEnum):
+        """Possible results for checking member variable renaming"""
+
+        NO_RENAME = 0
+        HANDLED = 1
+        UNHANDLED = 2
+
     def __init__(self, new_datamodel, evolution_file=None):
         self.datamodel_new = new_datamodel
         self.evolution_file = evolution_file
@@ -251,7 +260,11 @@ class SchemaEvolutionJudge:
             read_schema_changes = self._read_evolution_file(old_datamodel)
 
         schema_changes, warnings, errors = self._heuristics(
-            old_datamodel, detected_schema_changes, read_schema_changes, warnings, errors
+            old_datamodel,
+            detected_schema_changes,
+            read_schema_changes,
+            warnings,
+            errors,
         )
 
         return ComparisonResults(
@@ -266,7 +279,7 @@ class SchemaEvolutionJudge:
         return True if it is found in the renamings and false otherwise"""
         if added_member.member.full_type != dropped_member.member.full_type:
             # Different types cannot be a simple renaming
-            return False
+            return self.RenameResult.NO_RENAME
 
         for schema_change in read_schema_changes:
             if (
@@ -280,9 +293,9 @@ class SchemaEvolutionJudge:
                 schema_changes.remove(dropped_member)
                 schema_changes.remove(added_member)
                 schema_changes.append(schema_change)
-                return True
+                return self.RenameResult.HANDLED
 
-        return False
+        return self.RenameResult.UNHANDLED
 
     def filter_types_with_adds_and_drops(self, added_members, dropped_members):
         """Filter all additions and removals and return pairs of additions /
@@ -296,15 +309,23 @@ class SchemaEvolutionJudge:
         return filtered_list
 
     def heuristics_members(
-        self, added_members, dropped_members, schema_changes, read_schema_changes, warnings
+        self,
+        added_members,
+        dropped_members,
+        schema_changes,
+        read_schema_changes,
+        warnings,
     ):
         """make analysis of member changes in a given data type"""
         same_type_adds_drops = self.filter_types_with_adds_and_drops(
             added_members, dropped_members
         )
         for added_member, dropped_member in same_type_adds_drops:
-            if not self.check_rename(
-                added_member, dropped_member, schema_changes, read_schema_changes
+            if (
+                self.check_rename(
+                    added_member, dropped_member, schema_changes, read_schema_changes
+                )
+                == self.RenameResult.UNHANDLED
             ):
                 warnings.append(
                     f"Definition '{dropped_member.klassname}' has a potential "
@@ -316,7 +337,12 @@ class SchemaEvolutionJudge:
         return warnings
 
     def _heuristics(
-        self, old_datamodel, detected_schema_changes, read_schema_changes, warnings, errors
+        self,
+        old_datamodel,
+        detected_schema_changes,
+        read_schema_changes,
+        warnings,
+        errors,
     ):
         """make an analysis of the data model changes:
         - check which can be auto-resolved
@@ -332,7 +358,11 @@ class SchemaEvolutionJudge:
         ]
         added_members = [change for change in schema_changes if isinstance(change, AddedMember)]
         warnings = self.heuristics_members(
-            added_members, dropped_members, schema_changes, read_schema_changes, warnings
+            added_members,
+            dropped_members,
+            schema_changes,
+            read_schema_changes,
+            warnings,
         )
 
         for change in (c for c in schema_changes if isinstance(c, self.unsupported_changes)):
