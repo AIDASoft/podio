@@ -38,16 +38,16 @@ function(GENERATE_DATAMODEL test_case model_version)
       SCHEMA_EVOLUTION ${test_case}/evolution.yaml
     )
   else()
-    if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
-      PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
-        OUTPUT_FOLDER ${output_base}
-      )
-    elseif(old_descriptions)
+    if(old_descriptions AND NOT PARSED_ARGS_NO_EVOLUTION_CHECKS)
       PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
         IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
         OUTPUT_FOLDER ${output_base}
         OLD_DESCRIPTIONS ${old_descriptions}
+    )
+    else()
+      PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
+        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+        OUTPUT_FOLDER ${output_base}
       )
     endif()
   endif()
@@ -108,6 +108,13 @@ endfunction()
 # adding a new test case.
 function(ADD_SCHEMA_EVOLUTION_TEST test_case)
   cmake_parse_arguments(PARSED_ARGS "RNTUPLE;NO_GENERATE_MODELS;WITH_EVOLUTION;NO_EVOLUTION_CHECKS" "" "OLD_MODELS" ${ARGN})
+
+  # Default to a single old version unless we get an argument
+  set(old_versions "old")
+  if(PARSED_ARGS_OLD_MODELS)
+    set(old_versions ${PARSED_ARGS_OLD_MODELS})
+  endif()
+
   # Generate datamodels
   if(NOT PARSED_ARGS_NO_GENERATE_MODELS)
     # Generate old model(s)
@@ -122,13 +129,12 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
       else()
         GENERATE_DATAMODEL(${test_case} new WITH_EVOLUTION OLD_VERSIONS ${old_versions})
       endif()
-     else()
+    else()
       if(PARSED_ARGS_NO_EVOLUTION_CHECKS)
         GENERATE_DATAMODEL(${test_case} new NO_EVOLUTION_CHECKS OLD_VERSIONS ${old_versions})
       else()
         GENERATE_DATAMODEL(${test_case} new OLD_VERSIONS ${old_versions})
       endif()
-    endif()
     endif()
   endif()
 
