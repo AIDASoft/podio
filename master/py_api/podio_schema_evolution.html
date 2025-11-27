@@ -719,6 +719,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.SchemaChange"><code class="docutils literal notranslate"><span class="pre">SchemaChange</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.RenameResult"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.RenameResult</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.check_rename"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.check_rename()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.filter_types_with_adds_and_drops"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.filter_types_with_adds_and_drops()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_schema_evolution.SchemaEvolutionJudge.heuristics_members"><code class="docutils literal notranslate"><span class="pre">SchemaEvolutionJudge.heuristics_members()</span></code></a></li>
@@ -968,6 +969,28 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Analyzes detected schema changes and applies heuristics to determine
 what changes are supported, need user input, or are forbidden</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.RenameResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RenameResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.RenameResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>Possible results for checking member variable renaming</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.RenameResult.HANDLED">
+<span class="sig-name descname"><span class="pre">HANDLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.RenameResult.HANDLED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.RenameResult.NO_RENAME">
+<span class="sig-name descname"><span class="pre">NO_RENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.RenameResult.NO_RENAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.RenameResult.UNHANDLED">
+<span class="sig-name descname"><span class="pre">UNHANDLED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.RenameResult.UNHANDLED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="podio_schema_evolution.SchemaEvolutionJudge.check_rename">
 <span class="sig-name descname"><span class="pre">check_rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">added_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropped_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_changes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_schema_changes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_schema_evolution.SchemaEvolutionJudge.check_rename" title="Link to this definition"></a></dt>
