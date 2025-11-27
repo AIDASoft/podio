@@ -1,0 +1,12 @@
+schema_version: 3
+options:
+  includeSubfolder: True
+
+datatypes:
+  TestType:
+    Description: "A datatype for testing multi-schema evolution"
+    Author: "Thomas Madlener"
+    Members:
+      - int x // x-coordinate
+      - int y // y-coordinate
+      - int z // z-coordinate

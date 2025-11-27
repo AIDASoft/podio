@@ -45,7 +45,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         verbose,
         dryrun,
         upstream_edm,
-        old_description,
+        old_descriptions,
         evolution_file,
         datamodel_version=None,
     ):
@@ -61,9 +61,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.io_handlers = io_handlers
 
         # schema evolution specific code
-        self.old_yamlfile = old_description
+        self.old_yamlfiles = old_descriptions
         self.evolution_file = evolution_file
-        self.old_datamodel = {}  # version to old datamodel
+        self.old_datamodels = {}  # version to old datamodel
         self.old_components = defaultdict(list)  # names to old component versions
         self.old_datatypes = defaultdict(list)  # names to old datatype versions
         self.changed_components = defaultdict(list)  # components that have changed at some point
@@ -92,20 +92,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
     def do_process_component(self, name, component):
         """Handle everything cpp specific after the common processing of a component"""
-        includes = set(self._get_member_includes(component["Members"]))
-        includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
-        component["includes"] = self._sort_includes(includes)
-
-        # Add old versions **even if they are identical**
-        old_comp_versions = self.old_components.get(name, [])
-        component["old_versions"] = old_comp_versions
-        # update includes if necessary
-        for old_comp in old_comp_versions:
-            includes.update(self._get_member_includes(old_comp["definition"]["Members"]))
-
-        self._fill_templates("Component", component)
-
-        return component
+        return self._generate_component_code(component, self.old_components.get(name, []))
 
     def do_process_datatype(self, name, datatype):
         """Do the cpp specific processing of a datatype"""
@@ -325,7 +312,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 return f"{{:>{col_width}}}".format(name)
 
             n_comps = len(components)
-            comp_str = f'[ {", ".join(components)}]'
+            comp_str = f"[ {', '.join(components)}]"
             return f"{{:>{col_width * n_comps}}}".format(name + " " + comp_str)
 
         datatype["ostream_collection_settings"] = {"header_contents": header_contents}
@@ -337,11 +324,12 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         versions and do the necessary pre-processing to have information
         available later in the necessary format"""
         # If we don't have old schemas we don't have to do any of this
-        if not self.old_yamlfile:
+        if not self.old_yamlfiles:
             return
 
-        self.old_datamodel = self._read_old_schema()
-        self._regroup_old_datamodel(self.old_datamodel)
+        self.old_datamodels = self._read_old_schema()
+        self._regroup_old_datamodel(self.old_datamodels)
+        self._identify_dropped_components()
 
     def _regroup_old_datamodel(self, old_datamodel):
         """Re-organize the old schema into a structure that is easier to use.
@@ -356,72 +344,108 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             for name, datatype_def in old_model.datatypes.items():
                 self.old_datatypes[name].append({"version": version, "definition": datatype_def})
 
+    def _identify_dropped_components(self):
+        """Identify components that have been dropped
+
+        These need to be generated outside the main loop. Additionally, the
+        necessary includes have to be present for the Data classes
+        """
+        current_components = set(self.datamodel.components.keys())
+        previous_components = set(self.old_components.keys())
+        dropped_components = previous_components.difference(current_components)
+
+        for name in dropped_components:
+            comps = sorted(self.old_components[name], key=lambda x: x["version"], reverse=True)
+            most_recent_comp = comps[0]["definition"]
+            most_recent_comp["class"] = DataType(name)
+            most_recent_comp["generate_current_version"] = False
+            self._generate_component_code(most_recent_comp, comps)
+
+    def _generate_component_code(self, component, old_comp_versions):
+        """Generate the component code for a given component definition and old
+        versions of it"""
+        includes = set(self._get_member_includes(component["Members"]))
+        includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
+        component["includes"] = self._sort_includes(includes)
+
+        # Add old versions **even if they are identical**
+        component["old_versions"] = old_comp_versions
+        # update includes if necessary
+        for old_comp in old_comp_versions:
+            includes.update(self._get_member_includes(old_comp["definition"]["Members"]))
+
+        self._fill_templates("Component", component)
+
+        return component
+
     def _read_old_schema(self):
         """Read the old datamodel schema, determine whether all evolutions are
         possible and store information about components and datatypes that
         changed.
         """
+        old_datamodels = {}
         reader = PodioConfigReader()
         # Read the current model again into a "new" namespace to have it more
         # easily discerned from the "old" model
         datamodel_new = reader.read(self.yamlfile, package_name="new")
-        datamodel_old = reader.read(self.old_yamlfile, package_name="old")
-
         comparator = DataModelComparator(datamodel_new)
-        detected_changes = comparator.compare(datamodel_old)
         judge = SchemaEvolutionJudge(comparator.datamodel_new, evolution_file=self.evolution_file)
-        comparison_results = judge.judge(datamodel_old, detected_changes)
 
-        # some sanity checks
-        if len(comparison_results.errors) > 0:
-            print(
-                f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+        # Process each old schema version
+        for old_yamlfile in self.old_yamlfiles:
+            datamodel_old = reader.read(old_yamlfile, package_name="old")
+            detected_changes = comparator.compare(datamodel_old)
+            comparison_results = judge.judge(datamodel_old, detected_changes)
+
+            # some sanity checks
+            if len(comparison_results.errors) > 0:
+                print(
+                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
 have unresolvable schema evolution incompatibilities:"
-            )
-            for error in comparison_results.errors:
-                print(error)
-            sys.exit(-1)
-        if len(comparison_results.warnings) > 0:
-            print(
-                f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+                )
+                for error in comparison_results.errors:
+                    print(error)
+                sys.exit(-1)
+            if len(comparison_results.warnings) > 0:
+                print(
+                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
 have resolvable schema evolution incompatibilities:"
-            )
-            for warning in comparison_results.warnings:
-                print(warning)
-            sys.exit(-1)
+                )
+                for warning in comparison_results.warnings:
+                    print(warning)
+                sys.exit(-1)
 
-        old_datamodel = {}
-        old_schema_version = comparison_results.old_datamodel.schema_version
-        old_datamodel[old_schema_version] = comparison_results.old_datamodel
+            old_schema_version = comparison_results.old_datamodel.schema_version
+            old_datamodels[old_schema_version] = comparison_results.old_datamodel
 
-        # Store old definitions for items that have actually changed
-        # TODO: Move this somewher else?  # pylint: disable=fixme
-        for change in comparison_results.schema_changes:
-            if hasattr(change, "klassname"):
-                # Handle components (both existing and removed)
-                if change.klassname in comparison_results.old_datamodel.components:
-                    self.changed_components[change.klassname].append(
-                        {
-                            "version": old_schema_version,
-                            "definition": comparison_results.old_datamodel.components[
-                                change.klassname
-                            ],
-                            "schema_change": change,
-                        }
-                    )
+            # Store old definitions for items that have actually changed
+            # TODO: Move this somewher else?  # pylint: disable=fixme
+            for change in comparison_results.schema_changes:
+                if hasattr(change, "klassname"):
+                    # Handle components (both existing and removed)
+                    if change.klassname in comparison_results.old_datamodel.components:
+                        self.changed_components[change.klassname].append(
+                            {
+                                "version": old_schema_version,
+                                "definition": comparison_results.old_datamodel.components[
+                                    change.klassname
+                                ],
+                                "schema_change": change,
+                            }
+                        )
                     # Handle datatypes (both existing and removed)
-                elif change.klassname in comparison_results.old_datamodel.datatypes:
-                    self.changed_datatypes[change.klassname].append(
-                        {
-                            "version": old_schema_version,
-                            "definition": comparison_results.old_datamodel.datatypes[
-                                change.klassname
-                            ],
-                            "schema_change": change,
-                        }
-                    )
+                    elif change.klassname in comparison_results.old_datamodel.datatypes:
+                        self.changed_datatypes[change.klassname].append(
+                            {
+                                "version": old_schema_version,
+                                "definition": comparison_results.old_datamodel.datatypes[
+                                    change.klassname
+                                ],
+                                "schema_change": change,
+                            }
+                        )
 
-        return old_datamodel
+        return old_datamodels
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in
@@ -495,7 +519,10 @@ have resolvable schema evolution incompatibilities:"
             for dtype in old_dtypes:
                 iorules.append(
                     self._prepare_iorule_datatype(
-                        name, dtype["definition"], dtype["schema_change"], dtype["version"]
+                        name,
+                        dtype["definition"],
+                        dtype["schema_change"],
+                        dtype["version"],
                     )
                 )
 
@@ -622,13 +649,19 @@ have resolvable schema evolution incompatibilities:"
         for component_name, old_versions in self.old_components.items():
             for old_version in old_versions:
                 old_schema_components.append(
-                    {"class": DataType(component_name), "version": old_version["version"]}
+                    {
+                        "class": DataType(component_name),
+                        "version": old_version["version"],
+                    }
                 )
 
         for datatype_name, old_versions in self.old_datatypes.items():
             for old_version in old_versions:
                 old_schema_datatypes.append(
-                    {"class": DataType(datatype_name), "version": old_version["version"]}
+                    {
+                        "class": DataType(datatype_name),
+                        "version": old_version["version"],
+                    }
                 )
 
         iorules = self._prepare_iorules()
@@ -637,7 +670,7 @@ have resolvable schema evolution incompatibilities:"
             "version": self.datamodel.schema_version,
             "components": [DataType(c) for c in self.datamodel.components],
             "datatypes": [DataType(d) for d in self.datamodel.datatypes],
-            "old_schema_versions": list(self.old_datamodel.keys()),
+            "old_schema_versions": list(self.old_datamodels.keys()),
             "old_schema_components": old_schema_components,
             "old_schema_datatypes": old_schema_datatypes,
             "iorules": iorules,
@@ -666,6 +699,8 @@ have resolvable schema evolution incompatibilities:"
             classname in self.datamodel.components
             or classname in self.datamodel.datatypes
             or classname in self.datamodel.interfaces
+            or classname in self.old_components
+            or classname in self.old_datatypes
         ):
             return IncludeFrom.INTERNAL
 
