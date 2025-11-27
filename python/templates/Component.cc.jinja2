@@ -2,7 +2,7 @@
 // AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 
 #include "{{ incfolder }}{{ class.bare_type }}.h"
-
+{% if generate_current_version %}
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
@@ -37,3 +37,4 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}& value) {
 
 
 {{ utils.namespace_close(class.namespace) }}
+{% endif %}

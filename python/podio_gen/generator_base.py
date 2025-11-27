@@ -193,6 +193,7 @@ class ClassGeneratorBaseMixin:
         # original definition can be left untouched
         component = deepcopy(component)
         component["class"] = DataType(name)
+        component["generate_current_version"] = True
 
         return self.do_process_component(name, component)
 
@@ -239,7 +240,7 @@ class ClassGeneratorBaseMixin:
                 "LinkCollection": "Collection",
             }
 
-            return f'{prefix.get(tmpl, "")}{{name}}{postfix.get(tmpl, "")}.{{end}}'
+            return f"{prefix.get(tmpl, '')}{{name}}{postfix.get(tmpl, '')}.{{end}}"
 
         endings = {
             "Data": ("h",),
