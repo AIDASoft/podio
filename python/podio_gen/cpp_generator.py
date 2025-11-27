@@ -371,7 +371,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
         # Process each old schema version
         for old_yamlfile in self.old_yamlfiles:
-            datamodel_old = reader.read(old_yamlfile, package_name="old")
+            datamodel_old = reader.read(old_yamlfile, package_name="old", ignore_extracode=True)
             detected_changes = comparator.compare(datamodel_old)
             comparison_results = judge.judge(datamodel_old, detected_changes)
 
