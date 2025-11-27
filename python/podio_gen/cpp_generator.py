@@ -704,6 +704,8 @@ have resolvable schema evolution incompatibilities:"
             classname in self.datamodel.components
             or classname in self.datamodel.datatypes
             or classname in self.datamodel.interfaces
+            or classname in self.old_components
+            or classname in self.old_datatypes
         ):
             return IncludeFrom.INTERNAL
 
