@@ -1,0 +1,20 @@
+options:
+  includeSubfolder: true
+
+schema_version: 3
+
+components:
+  edm4hep::Vector3d:
+    Members:
+      - double x
+      - double y
+      - double z
+
+datatypes:
+  ExampleMC:
+    Description: "An example for a class where an older version had a component that is entirely dropped"
+    Author: "Thomas Madlener"
+    Members:
+      - int PDG // pdg
+      - double energy // energy
+      - edm4hep::Vector3d momentum // momentum

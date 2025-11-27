@@ -22,6 +22,7 @@ ADD_SCHEMA_EVOLUTION_TEST(components_rename_member WITH_EVOLUTION)
 ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_member WITH_EVOLUTION)
 ADD_SCHEMA_EVOLUTION_TEST(array_component_new_member)
 ADD_SCHEMA_EVOLUTION_TEST(datatypes_remove_type)
+ADD_SCHEMA_EVOLUTION_TEST(drop_component)
 
 ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_relation NO_EVOLUTION_CHECKS)
 
@@ -29,9 +30,12 @@ ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_relation NO_EVOLUTION_CHECKS)
 ADD_SCHEMA_EVOLUTION_TEST(multi_schema_component_new_member OLD_MODELS old oldest)
 ADD_SCHEMA_EVOLUTION_TEST(multi_schema_datatypes_new_member OLD_MODELS old oldest)
 ADD_SCHEMA_EVOLUTION_TEST(multi_schema_components_rename_member OLD_MODELS old oldest WITH_EVOLUTION)
+ADD_SCHEMA_EVOLUTION_TEST(multi_schema_drop_component OLD_MODELS old oldest)
 
 if(ENABLE_RNTUPLE)
   ADD_SCHEMA_EVOLUTION_TEST(no_change RNTUPLE NO_GENERATE_MODELS)
+  ADD_SCHEMA_EVOLUTION_TEST(drop_component RNTUPLE NO_GENERATE_MODELS)
+  ADD_SCHEMA_EVOLUTION_TEST(multi_schema_drop_component OLD_MODELS old oldest RNTUPLE NO_GENERATE_MODELS)
 endif()
 
 # RNTuple support for schema evolution capabilities is version dependent
