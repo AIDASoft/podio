@@ -1,0 +1,10 @@
+schema_version: 2
+options:
+  includeSubfolder: True
+
+datatypes:
+  nsp::NamespaceType:
+    Description: "A datatype that changes component type"
+    Author: "Thomas Madlener"
+    Members:
+      - std::array<int, 2> intArray // someArray

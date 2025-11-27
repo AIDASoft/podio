@@ -262,15 +262,18 @@ class MemberVariable:
         if self.is_builtin:
             return str(self)
 
-        if self.is_array and not self.is_builtin_array:
-            if self.array_namespace:
-                versioned_array_type = (
-                    f"::{self.array_namespace}::v{version}::{self.array_bare_type}"
-                )
+        if self.is_array:
+            if self.is_builtin_array:
+                scoped_type = self.full_type
             else:
-                versioned_array_type = f"::v{version}::{self.array_bare_type}"
+                if self.array_namespace:
+                    versioned_array_type = (
+                        f"::{self.array_namespace}::v{version}::{self.array_bare_type}"
+                    )
+                else:
+                    versioned_array_type = f"::v{version}::{self.array_bare_type}"
 
-            scoped_type = f"std::array<{versioned_array_type}, {self.array_size}>"
+                scoped_type = f"std::array<{versioned_array_type}, {self.array_size}>"
         else:
             if self.namespace:
                 scoped_type = f"::{self.namespace}::v{version}::{self.bare_type}"
