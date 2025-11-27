@@ -92,20 +92,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
     def do_process_component(self, name, component):
         """Handle everything cpp specific after the common processing of a component"""
-        includes = set(self._get_member_includes(component["Members"]))
-        includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
-        component["includes"] = self._sort_includes(includes)
-
-        # Add old versions **even if they are identical**
-        old_comp_versions = self.old_components.get(name, [])
-        component["old_versions"] = old_comp_versions
-        # update includes if necessary
-        for old_comp in old_comp_versions:
-            includes.update(self._get_member_includes(old_comp["definition"]["Members"]))
-
-        self._fill_templates("Component", component)
-
-        return component
+        return self._generate_component_code(component, self.old_components.get(name, []))
 
     def do_process_datatype(self, name, datatype):
         """Do the cpp specific processing of a datatype"""
@@ -325,7 +312,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 return f"{{:>{col_width}}}".format(name)
 
             n_comps = len(components)
-            comp_str = f'[ {", ".join(components)}]'
+            comp_str = f"[ {', '.join(components)}]"
             return f"{{:>{col_width * n_comps}}}".format(name + " " + comp_str)
 
         datatype["ostream_collection_settings"] = {"header_contents": header_contents}
@@ -342,6 +329,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
         self.old_datamodels = self._read_old_schemas()
         self._regroup_old_datamodels(self.old_datamodels)
+        self._identify_dropped_components()
 
     def _regroup_old_datamodels(self, old_datamodels):
         """Re-organize the old schema into a structure that is easier to use.
@@ -355,6 +343,40 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
             for name, datatype_def in old_model.datatypes.items():
                 self.old_datatypes[name].append({"version": version, "definition": datatype_def})
+
+    def _identify_dropped_components(self):
+        """Identify components that have been dropped
+
+        These need to be generated outside the main loop. Additionally, the
+        necessary includes have to be present for the Data classes
+        """
+        current_components = set(self.datamodel.components.keys())
+        previous_components = set(self.old_components.keys())
+        dropped_components = previous_components.difference(current_components)
+
+        for name in dropped_components:
+            comps = sorted(self.old_components[name], key=lambda x: x["version"], reverse=True)
+            most_recent_comp = comps[0]["definition"]
+            most_recent_comp["class"] = DataType(name)
+            most_recent_comp["generate_current_version"] = False
+            self._generate_component_code(most_recent_comp, comps)
+
+    def _generate_component_code(self, component, old_comp_versions):
+        """Generate the component code for a given component definition and old
+        versions of it"""
+        includes = set(self._get_member_includes(component["Members"]))
+        includes.update(component.get("ExtraCode", {}).get("includes", "").split("\n"))
+        component["includes"] = self._sort_includes(includes)
+
+        # Add old versions **even if they are identical**
+        component["old_versions"] = old_comp_versions
+        # update includes if necessary
+        for old_comp in old_comp_versions:
+            includes.update(self._get_member_includes(old_comp["definition"]["Members"]))
+
+        self._fill_templates("Component", component)
+
+        return component
 
     def _read_old_schemas(self):
         """Read the old datamodel schema, determine whether all evolutions are
@@ -497,7 +519,10 @@ have resolvable schema evolution incompatibilities:"
             for dtype in old_dtypes:
                 iorules.append(
                     self._prepare_iorule_datatype(
-                        name, dtype["definition"], dtype["schema_change"], dtype["version"]
+                        name,
+                        dtype["definition"],
+                        dtype["schema_change"],
+                        dtype["version"],
                     )
                 )
 
@@ -629,13 +654,19 @@ have resolvable schema evolution incompatibilities:"
         for component_name, old_versions in self.old_components.items():
             for old_version in old_versions:
                 old_schema_components.append(
-                    {"class": DataType(component_name), "version": old_version["version"]}
+                    {
+                        "class": DataType(component_name),
+                        "version": old_version["version"],
+                    }
                 )
 
         for datatype_name, old_versions in self.old_datatypes.items():
             for old_version in old_versions:
                 old_schema_datatypes.append(
-                    {"class": DataType(datatype_name), "version": old_version["version"]}
+                    {
+                        "class": DataType(datatype_name),
+                        "version": old_version["version"],
+                    }
                 )
 
         iorules = self._prepare_iorules()

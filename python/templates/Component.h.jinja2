@@ -8,14 +8,17 @@
 {% for include in includes %}
 {{ include }}
 {% endfor %}
+{% if generate_current_version %}
 #include <ostream>
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json_fwd.hpp"
 #endif
+{% endif %}
 
 {{ utils.namespace_open(class.namespace) }}
 
+{% if generate_current_version %}
 {{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 public:
@@ -35,6 +38,7 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}& value);
 namespace v{{ schema_version }} {
 using {{ class.bare_type }} = {{ class.full_type }};
 } // namespace v{{ schema_version }}
+{% endif %}
 
 {% if old_versions %}
 // Definitions for older versions
