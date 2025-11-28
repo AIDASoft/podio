@@ -68,6 +68,21 @@ or via direct accessors
 
 If asking for an entry outside bounds, a `std::out_of_range` exception is thrown.
 
+### Subset collections
+Subset collections in podio enable you to create collections whose elements are
+references to objects stored in one or more original collections:
+
+```cpp
+auto subsetColl = MyCollectionType();
+subsetColl.setSubsetCollection();
+subsetColl.push_back(originalCollection[0]);
+```
+
+Other than having to call `setSubsetCollection` and `push_back` for adding
+elements from another collection, subset collections behave like regular
+collections. See [subset collections](advanced_topics.md#subset-collections) for
+more details.
+
 
 ### Looping through Collections
 Looping through collections is supported in two ways. Via iterators:
