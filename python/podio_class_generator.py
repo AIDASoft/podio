@@ -148,15 +148,15 @@ if __name__ == "__main__":
         type=read_upstream_edm,
     )
     parser.add_argument(
-        "--old-description",
-        help="Provide schema evolution relative to the old yaml file.",
-        default=None,
-        action="store",
+        "--old-descriptions",
+        help="yaml files with old datamodel versions",
+        default=[],
+        nargs="*",
     )
     parser.add_argument(
         "-e",
         "--evolution_file",
-        help="yaml file clarifying schema evolutions",
+        help="yaml file clarifying schema evolutions for all old versions.",
         default=None,
         action="store",
     )
@@ -196,7 +196,7 @@ if __name__ == "__main__":
             dryrun=args.dryrun,
             upstream_edm=args.upstream_edm,
             datamodel_version=args.datamodel_version,
-            old_description=args.old_description,
+            old_descriptions=args.old_descriptions,
             evolution_file=args.evolution_file,
         )
 
