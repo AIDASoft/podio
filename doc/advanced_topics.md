@@ -91,7 +91,7 @@ synchronize with any other for file operations).
 
 The podio toolkit supports schema evolution for EDMs that are generated with it.
 it also tries to leverage existing schema evolution functionality of the chosen
-backend if available, e.g. via ROOT. In order to opt-in to schema evolution, it
+backend if available, e.g. via ROOT. In order to opt-in to manual schema evolution, it
 is necessary to pass the old datamodel definition(s) to the code generator, via:
 
 ::::{tab-set}
