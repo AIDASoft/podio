@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#object-ownership">Object Ownership</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#object-creation-and-storage">Object Creation and Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#object-references">Object References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#subset-collections">Subset collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#looping-through-collections">Looping through Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#cloning-objects">Cloning objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
@@ -203,6 +204,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#i-o-helpers-for-edm-definition-storing">I/O helpers for EDM definition storing</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#subset-collections">Subset collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
 </ul>
 </li>
 </ul>
@@ -973,6 +978,41 @@ use it and also offer the same functionality as public methods with the help
 of it.</p></li>
 </ul>
 </section>
+</section>
+</section>
+<section id="subset-collections">
+<h2>Subset collections<a class="headerlink" href="#subset-collections" title="Link to this heading"></a></h2>
+<p>Subset collections in podio enable you to create collections whose elements are
+references to objects stored in one or more original collections. This is useful
+for organizing and processing only a specific group of objects (e.g. a subset of
+particles) without duplicating data. Subset collections function as lightweight
+indexes pointing to selected objects in the event’s collections rather than
+owning the objects themselves. Because they only store references, subset
+collections consume very little space when written to disk.</p>
+<p>To define a subset collection, call the <code class="docutils literal notranslate"><span class="pre">setSubsetCollection()</span></code> method on a
+newly created collection. You can then add objects from the original
+collection(s) using <code class="docutils literal notranslate"><span class="pre">push_back</span></code>. It is important to note that a subset
+collection can contain references to objects from different collections,
+provided all referenced collections are available. You can check whether a
+collection is a subset by calling <code class="docutils literal notranslate"><span class="pre">isSubsetCollection()</span></code>. Other than their
+creation and how elements are added, subset collections behave like regular
+collections.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">subsetColl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyCollectionType</span><span class="p">();</span>
+<span class="n">subsetColl</span><span class="p">.</span><span class="n">setSubsetCollection</span><span class="p">();</span>
+<span class="n">subsetColl</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">originalCollection</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>Subset collections can be distinguished in the output of <code class="docutils literal notranslate"><span class="pre">podio-dump</span></code>, where
+they are marked with an <code class="docutils literal notranslate"><span class="pre">(s)</span></code> next to their name.</p>
+<section id="limitations">
+<h3>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h3>
+<p>When reading a subset collection, it is necessary to also have the original
+collection(s) present. The references stored in the subset collection require
+the originals to resolve the actual objects they point to.</p>
+<p>Currently, subset collections cannot be promoted to full collections that own
+their objects. For more information or to follow future developments, see <a class="reference external" href="https://github.com/AIDASoft/podio/issues/655">podio
+issue
+#655</a>.</p>
 </section>
 </section>
 </section>

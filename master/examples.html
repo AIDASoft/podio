@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#object-ownership">Object Ownership</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#object-creation-and-storage">Object Creation and Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#object-references">Object References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subset-collections">Subset collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#looping-through-collections">Looping through Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cloning-objects">Cloning objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
@@ -203,6 +204,10 @@
 <li class="toctree-l4"><a class="reference internal" href="advanced_topics.html#i-o-helpers-for-edm-definition-storing">I/O helpers for EDM definition storing</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#subset-collections">Subset collections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#limitations">Limitations</a></li>
 </ul>
 </li>
 </ul>
@@ -817,6 +822,20 @@ to objects in this collection are invalidated as well.</strong></p>
 </pre></div>
 </div>
 <p>If asking for an entry outside bounds, a <code class="docutils literal notranslate"><span class="pre">std::out_of_range</span></code> exception is thrown.</p>
+</section>
+<section id="subset-collections">
+<h2>Subset collections<a class="headerlink" href="#subset-collections" title="Link to this heading"></a></h2>
+<p>Subset collections in podio enable you to create collections whose elements are
+references to objects stored in one or more original collections:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">subsetColl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyCollectionType</span><span class="p">();</span>
+<span class="n">subsetColl</span><span class="p">.</span><span class="n">setSubsetCollection</span><span class="p">();</span>
+<span class="n">subsetColl</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">originalCollection</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>Other than having to call <code class="docutils literal notranslate"><span class="pre">setSubsetCollection</span></code> and <code class="docutils literal notranslate"><span class="pre">push_back</span></code> for adding
+elements from another collection, subset collections behave like regular
+collections. See <a class="reference internal" href="advanced_topics.html#subset-collections"><span class="std std-ref">subset collections</span></a> for
+more details.</p>
 </section>
 <section id="looping-through-collections">
 <h2>Looping through Collections<a class="headerlink" href="#looping-through-collections" title="Link to this heading"></a></h2>
