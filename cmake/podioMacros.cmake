@@ -42,6 +42,9 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 #      RETURN_SOURCES       variable that will be filled with the list of created source files : src/*.cc
 #   Parameters:
 #      OLD_DESCRIPTION      OPTIONAL: The path to the yaml file describing a previous datamodel version
+#                           Cannot be used together with OLD_DESCRIPTIONS
+#      OLD_DESCRIPTIONS     OPTIONAL: List of paths to yaml files describing previous datamodel versions
+#                           Cannot be used together with OLD_DESCRIPTION
 #      OUTPUT_FOLDER        OPTIONAL: The folder in which the output files should be placed
 #                           Default is ${CMAKE_CURRENT_SOURCE_DIR}
 #      UPSTREAM_EDM         OPTIONAL: The upstream edm and its package name that are passed to the
@@ -60,7 +63,7 @@ set_property(CACHE PODIO_USE_CLANG_FORMAT PROPERTY STRINGS AUTO ON OFF)
 # this is essentially a no-op, and should not cause re-compilation.
 #---------------------------------------------------------------------------------------------------
 function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOURCES)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "OLD_DESCRIPTION;OUTPUT_FOLDER;UPSTREAM_EDM;SCHEMA_EVOLUTION" "IO_BACKEND_HANDLERS;LANG;DEPENDS;VERSION" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OLD_DESCRIPTION;OUTPUT_FOLDER;UPSTREAM_EDM;SCHEMA_EVOLUTION" "IO_BACKEND_HANDLERS;LANG;DEPENDS;VERSION;OLD_DESCRIPTIONS" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
@@ -69,9 +72,17 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     SET(UPSTREAM_EDM_ARG "--upstream-edm=${ARG_UPSTREAM_EDM}")
   ENDIF()
 
+  # Check that OLD_DESCRIPTION and OLD_DESCRIPTIONS are not both set
+  IF (ARG_OLD_DESCRIPTION AND ARG_OLD_DESCRIPTIONS)
+    MESSAGE(FATAL_ERROR "OLD_DESCRIPTION and OLD_DESCRIPTIONS cannot be set simultaneously")
+  ENDIF()
+
   SET(OLD_DESCRIPTION_ARG "")
   IF (ARG_OLD_DESCRIPTION)
-    SET(OLD_DESCRIPTION_ARG "--old-description=${ARG_OLD_DESCRIPTION}")
+    SET(OLD_DESCRIPTION_ARG "--old-descriptions" "${ARG_OLD_DESCRIPTION}")
+  ELSEIF (ARG_OLD_DESCRIPTIONS)
+    SET(OLD_DESCRIPTION_ARG "--old-descriptions")
+    LIST(APPEND OLD_DESCRIPTION_ARG ${ARG_OLD_DESCRIPTIONS})
   ENDIF()
 
   IF(NOT ARG_IO_BACKEND_HANDLERS)
@@ -144,7 +155,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   message(STATUS "Creating '${datamodel}' datamodel")
   # we need to bootstrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG} ${OLD_DESCRIPTION_ARG} ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG} ${VERSION_ARG}
+    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG}  ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG} ${VERSION_ARG} ${OLD_DESCRIPTION_ARG}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE podio_generate_command_retval
     )
