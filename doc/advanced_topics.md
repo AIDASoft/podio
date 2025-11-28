@@ -86,6 +86,136 @@ The Readers and Writers that ship with podio are assumed to run on a single
 thread only (more precisely we assume that each Reader or Writer doesn't have to
 synchronize with any other for file operations).
 
+
+## Schema evolution
+
+The podio toolkit supports schema evolution for EDMs that are generated with it.
+it also tries to leverage existing schema evolution functionality of the chosen
+backend if available, e.g. via ROOT. In order to opt-in to manual schema evolution, it
+is necessary to pass the old datamodel definition(s) to the code generator, via:
+
+::::{tab-set}
+:::{tab-item} CMake macro
+
+```cmake
+PODIO_GENERATE_DATAMODEL(datamodel datamodel.yaml headers sources
+    OLD_DESCRIPTION old_datamodel.yaml
+)
+```
+
+:::
+:::{tab-item} python CLI script
+
+```bash
+python3 python/podio_class_generator.py \
+    --old-description old_datamodel.yaml \
+    datamodel.yaml output_gen_dir datamodel
+```
+
+:::
+::::
+
+In case podio detects unsupported schema changes code generation will fail with
+a message about which changes were detected that are not supported. For some
+evolutions we have implemented support for manually specifying what should
+happen. In these cases it is necessary to specify an *evolution file* that
+describes these changes, the grammar is as follows
+
+```yaml
+migrations:
+  <datatype>:  # The datatype (or component) for which a change happens
+    - from_version: <version>  # The old schema version (before the change)
+      to_version: <version>  # The new schema version (after the change)
+      <change_type>: {<change_args>}
+```
+
+It's possible to specify multiple changes for any given datatype and the
+`{from,to}_version` as well as the `<change_type>` are mandatory.
+
+::::{tab-set}
+:::{tab-item} CMake macro
+
+```cmake
+PODIO_GENERATE_DATAMODEL(datamodel datamodel.yaml headers sources
+    OLD_DESCRIPTION old_datamodel.yaml
+    SCHEMA_EVOLUTION evolution.yaml
+)
+```
+
+:::
+:::{tab-item} python CLI script
+
+```bash
+python3 python/podio_class_generator.py \
+    --old-description old_datamodel.yaml \
+    --evolution_file evolution.yaml \
+    datamodel.yaml output_gen_dir datamodel
+```
+
+:::
+::::
+
+### Supported evolutions
+
+Currently the schema evolution capabilities are largely modeled after what can
+be automatically handled by the ROOT backend and podio actually relies on ROOT
+doing the necessary evolutions for us. The supported automatic schema evolution
+capabilities for ROOT are listed [here for TTree based
+I/O](https://root.cern/manual/io/#automatic-schema-evolution) and [here for
+RNTuple based
+I/O](https://root.cern.ch/doc/master/md_tree_2ntuple_2doc_2SchemaEvolution.html).
+
+All evolutions that are not covered by this are currently not supported, unless
+they are listed below in the table for manual evolutions.
+
+#### Manual evolutions
+
+The following table lists the evolutions that require manual intervention, but
+that are taken care of by the podio machinery.
+
+| `<change_type>` | description              | `<change_args>`                      |
+|-----------------|--------------------------|--------------------------------------|
+| `rename_member` | Rename a member variable | `{from: <old-name>, to: <new-name>}` |
+
+An example evolution file looks like
+```yaml
+migrations:
+  TestType:
+    - from_version: 1
+      to_version: 2
+      rename_member:
+        from: oldEnergy
+        to: energy
+```
+
+### Checking possiblities for schema evolution
+
+The podio toolkit also provides a small script that allows to check up-front
+whether two versions of an EDM need manual intervention as well as confirming
+that an evolution file indeed handles all changes that require manual
+intervention. This can be called as
+
+```bash
+python3 python/podio_schema_evolution.py \
+  datamodel.yaml old_datamodel.yaml
+```
+
+an evolution file can be specified with the `-e` argument.
+
+:::{note}
+Currently the (automatic) schema evolution capabilities of podio are closesly
+modeled after the capabilities of ROOT. This also means that other backends
+might fail to do proper schema evolution even if the code generation succeeded.
+**In case you encounter an unsupported evolution that you need please open an
+issue on our github repository with a feature request**.
+:::
+
+### General considerations for schema evolution
+
+podio will always do schema evolution from **any previous version directly to
+the current schema version** of an EDM. It will not chain several evolutions
+from intermediate versions to arrive at the current version.
+
 ## Running pre-commit
 
  - Install [pre-commit](https://pre-commit.com/)
