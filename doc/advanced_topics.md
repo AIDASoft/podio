@@ -155,7 +155,23 @@ python3 python/podio_class_generator.py \
 :::
 ::::
 
-### Supported manual evolutions
+### Supported evolutions
+
+Currently the schema evolution capabilities are largely modeled after what can
+be automatically handled by the ROOT backend and podio actually relies on ROOT
+doing the necessary evolutions for us. The supported automatic schema evolution
+capabilities for ROOT are listed [here for TTree based
+I/O](https://root.cern/manual/io/#automatic-schema-evolution) and [here for
+RNTuple based
+I/O](https://root.cern.ch/doc/master/md_tree_2ntuple_2doc_2SchemaEvolution.html).
+
+All evolutions that are not covered by this are currently not supported, unless
+they are listed below in the table for manual evolutions.
+
+#### Manual evolutions
+
+The following table lists the evolutions that require manual intervention, but
+that are taken care of by the podio machinery.
 
 | `<change_type>` | description              | `<change_args>`                      |
 |-----------------|--------------------------|--------------------------------------|
