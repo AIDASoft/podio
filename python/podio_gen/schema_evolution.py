@@ -111,7 +111,7 @@ class SchemaMigrationReader:
         if len(migration_dict) > 1:
             raise ValueError("Migration can only have one change type")
 
-        change_type_key, change_details = next(iter(migration_dict.items()))
+        (change_type_key, change_details), = migration_dict.items()
 
         try:
             change_type = ChangeType(change_type_key)
