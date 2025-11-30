@@ -11,7 +11,7 @@ As a consequence some of the **standard algorithms may not work** with PODIO `Co
 
 The following tables list the compliance of a PODIO generated collection with the *Container* named requirement, stating which member types, interfaces, or concepts are fulfilled and which are not. Additionally, there are some comments explaining missing parts or pointing out differences in behaviour.
 
-### Container Types
+## Container Types
 
 | Name | Type | Requirements | Fulfilled by Collection? | Comment |
 |------|------|--------------|--------------------------|---------|
@@ -23,7 +23,7 @@ The following tables list the compliance of a PODIO generated collection with th
 | `difference_type`| Signed integer | Must be the same as `std::iterator_traits::difference_type` for `iterator` and `const_iterator` | ✔️ yes | |
 | `size_type` | Unsigned integer | Large enough to represent all positive values of `difference_type` | ✔️ yes | |
 
-### Container member functions and operators
+## Container member functions and operators
 
 | Expression | Return type | Semantics | Fulfilled by Collection? | Comment |
 |------------|-------------|-----------|--------------------------|---------|

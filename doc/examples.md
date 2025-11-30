@@ -125,7 +125,7 @@ pattern is supported by providing access like
 The resulting `std::vector` can then be used in (auto-)vectorizable code.
 Passing in a size argument is optional; If no argument is passed all elements will be returned,
 if an argument is passed only as many elements as requested will be returned.
-If the collection holds less elements than are requested, only as elements as are available will be returned.
+If the collection holds less elements than are requested, only as many elements as are available will be returned.
 
 ### `podio::Frame` container
 
@@ -167,7 +167,7 @@ This could be configuration parameters of simulation jobs, or parameter descript
 holds an arbitrary number of named parameters of type `int, float, string` or vectors if these.
 Meta data can be stored and retrieved from the `Frame` via the templated `putParameter` and `getParameter` methods.
 
-#### Python Interface
+### Python Interface
 
 The `Reader` and `Writer` classes in the `root_io` and `sio_io` submodules
 provide all the necessary functionality to read and write event files. An

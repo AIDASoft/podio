@@ -49,7 +49,7 @@ a PR, as we only allow *rebase merges* for PRs.
 Please make sure you fill in meaningful release notes in the comment field that is
 provided at the Github web page when creating the PR, e.g.
 
-```
+```text
 
 BEGINRELEASENOTES
 - updated documentation

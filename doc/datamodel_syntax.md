@@ -156,6 +156,7 @@ define which `Types` can be used with this interface class, in this case the
 not allow for mutable access to their data.** They can be used in relations
 between objects, just like normal `datatypes`.
 
+(definition-of-links)=
 ## Definition of links
 Podio offers a templated `Link` class ([see here for more details](links.md))
 that allows one to link two arbitrary datatypes without having to introduce a

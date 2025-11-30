@@ -350,6 +350,7 @@ read and write all the necessary EDM definitions.
   use it and also offer the same functionality as public methods with the help
   of it.
 
+(subset-collections)=
 ## Subset collections
 
 Subset collections in podio enable you to create collections whose elements are

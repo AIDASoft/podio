@@ -56,7 +56,7 @@ source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "cpp_api.rst", "py_api.rst"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "cpp_api.rst", "py_api.rst", "ReleaseNotes.md", "contributing.md", "cpp_api/filelist.rst"]
 
 # cpp as main language
 primary_domain = "cpp"
@@ -64,7 +64,7 @@ highlight_language = "cpp"
 
 # -- Options for MyST parser -------------------------------------------------
 myst_enable_extensions = ["colon_fence", "html_image"]
-myst_heading_anchor = 3
+myst_heading_anchors = 3
 
 # -- Options for HTML output -------------------------------------------------
 
