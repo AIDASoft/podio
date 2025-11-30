@@ -21,6 +21,7 @@ The language specific generators inherit from the [`ClassGeneratorBaseMixin`](/p
 Currently two language specific generators are available: [`CPPClassGenerator`](/python/podio_gen/cpp_generator.py) and [`JuliaClassGenerator`](/python/podio_gen/julia_generator.py).
 Note that some of the information below will only apply to either of these generators as they provide the template engine with slightly different content.
 
+(existing-templates)=
 ## Existing templates
 
 Currently PODIO loads templates that are placed in [`<prefix>/python/templates`](/python/templates).
@@ -61,6 +62,7 @@ Note that for most templates this means that they have to be filled for each dat
 If additional preprocessing is necessary, it will be necessary to also add that to the language specific generators.
 The main entry point to the generation is the `process` method which essentially just delegates to other methods.
 
+(available-information-in-the-templates)=
 ## Available information in the templates
 
 The following gives an overview of the information that is available from the dictionary that is passed to the templates from the different
@@ -119,6 +121,7 @@ The following keys / variables are filled for each datatype
 | `ostream_collection_settings` | A dict with a single `header_contents` key that is necessary for the output stream overload implementation of collections                                |
 
 
+(membervariable)=
 ### `MemberVariable`
 Defined in [`python/generator_utils.py`](/python/generator_utils.py).
 The string representation gives the definition of the member, including a potentially present description string.
@@ -141,6 +144,7 @@ In principle all members are accessible in the templates, however, the most impo
 | `jl_imports`  | Import required for `StaticArrays: MVector`                                                                                                                                      |
 | `julia_type`  | Equivalent julia type for the c++ type                                                                                                                                           |
 
+(datatype)=
 ### `DataType`
 Defined in [`python/generator_utils.py`](/python/generator_utils.py).
 This is essentially a stripped down version of the `MemberVariable` with the major difference being that the string representation returns the fully qualified type instead.

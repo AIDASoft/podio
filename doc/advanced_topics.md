@@ -271,6 +271,7 @@ single argument and returns the EDM definition as a JSON string. Most likely
 this has to be decoded into an actual JSON structure in order to be usable (e.g.
 via `json.loads` in python to get a `dict`).
 
+(technical-details-on-edm-definition-embedding)=
 ### Technical details on EDM definition embedding
 The EDM definition is embedded into the core EDM library as a raw string literal
 in JSON format. This string is generated into the `DatamodelDefinition.h` file as
