@@ -28,8 +28,6 @@ set(failing_with_thread_sanitizer
   schema_evol:code_gen:datatypes_new_member:write_old_rntuple
   schema_evol:code_gen:datatypes_new_member:read_rntuple
   schema_evol:code_gen:datatypes_new_member:read_garbage
-  schema_evol:code_gen:implicit_floating_point_change:write_rntuple
-  schema_evol:code_gen:implicit_floating_point_change:read_rntuple
   schema_evol:code_gen:no_change:write_old_rntuple
   schema_evol:code_gen:no_change:read_rntuple
   schema_evol:code_gen:array_component_new_member:write_old_rntuple
@@ -181,6 +179,9 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:datatypes_rename_member:read
       schema_evol:code_gen:implicit_floating_point_change:write_old
       schema_evol:code_gen:implicit_floating_point_change:read
+  	  schema_evol:code_gen:implicit_floating_point_change:write_old_rntuple
+      schema_evol:code_gen:implicit_floating_point_change:read_rntuple
+
       schema_evol:code_gen:no_change:write_old
       schema_evol:code_gen:no_change:read
       schema_evol:code_gen:no_change_array_member:write_old
@@ -196,9 +197,13 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:multi_schema_datatypes_new_member:write_oldest
       schema_evol:code_gen:multi_schema_datatypes_new_member:write_old
       schema_evol:code_gen:multi_schema_datatypes_new_member:read
-      schema_evol:code_gen:multi_schema_component_rename_member:write_oldest
-      schema_evol:code_gen:multi_schema_component_rename_member:write_old
-      schema_evol:code_gen:multi_schema_component_rename_member:read
+
+  	  schema_evol:code_gen:multi_schema_components_rename_member:write_old
+  	  schema_evol:code_gen:multi_schema_components_rename_member:write_oldest
+  	  schema_evol:code_gen:multi_schema_components_rename_member:read
+
+  	  schema_evol:code_gen:multi_schema_component_new_member:write_oldest_rntuple
+  	  schema_evol:code_gen:multi_schema_datatypes_new_member:write_oldest_rntuple
 
       ${failing_with_undefined_sanitizer}
     )
