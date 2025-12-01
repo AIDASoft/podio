@@ -13,25 +13,43 @@ fi
 
 ALL_ARGS=("$@")
 DUMP_MODEL=0
+USE_GDB=0
 
+PARSED_ARGS=()
 while [[ "$#" -gt 0 ]]; do
     case $1 in
+        --gdb)
+            USE_GDB=1
+            shift
+            ;;
         --dump-edm*)
             DUMP_MODEL=1
-            break
+            PARSED_ARGS+=("$1")
+            shift
             ;;
         *)
+            PARSED_ARGS+=("$1")
             shift
             ;;
     esac
 done
 
+ALL_ARGS=("${PARSED_ARGS[@]}")
+
 if [ ${DUMP_MODEL} = 1 ]; then
+    if [ ${USE_GDB} = 1 ]; then
+        echo "--gdb cannot be used together with --dump-edm" >&2
+        exit 1
+    fi
     if ! ls "${THIS_DIR}"/json-to-yaml > /dev/null 2>&1; then
         echo "Could not find the json-to-yaml executable (has it been instaled?)" >&2
         exit 1
     fi
     "${THIS_DIR}"/podio-dump-tool "${ALL_ARGS[@]}" | "${THIS_DIR}"/json-to-yaml
 else
-    "${THIS_DIR}"/podio-dump-tool "${ALL_ARGS[@]}"
+    if [ ${USE_GDB} = 1 ]; then
+        gdb --args "${THIS_DIR}"/podio-dump-tool "${ALL_ARGS[@]}"
+    else
+        "${THIS_DIR}"/podio-dump-tool "${ALL_ARGS[@]}"
+    fi
 fi
