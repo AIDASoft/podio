@@ -340,23 +340,23 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         if not self.old_yamlfiles:
             return
 
-        self.old_datamodels = self._read_old_schema()
-        self._regroup_old_datamodel(self.old_datamodels)
+        self.old_datamodels = self._read_old_schemas()
+        self._regroup_old_datamodels(self.old_datamodels)
 
-    def _regroup_old_datamodel(self, old_datamodel):
+    def _regroup_old_datamodels(self, old_datamodels):
         """Re-organize the old schema into a structure that is easier to use.
 
         Create a map with the version as key and the component and datatype
         (names) as a list of dictionaries with the old definition
         """
-        for version, old_model in old_datamodel.items():
+        for version, old_model in old_datamodels.items():
             for name, comp_def in old_model.components.items():
                 self.old_components[name].append({"version": version, "definition": comp_def})
 
             for name, datatype_def in old_model.datatypes.items():
                 self.old_datatypes[name].append({"version": version, "definition": datatype_def})
 
-    def _read_old_schema(self):
+    def _read_old_schemas(self):
         """Read the old datamodel schema, determine whether all evolutions are
         possible and store information about components and datatypes that
         changed.
