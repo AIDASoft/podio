@@ -196,6 +196,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#not-thread-safe-components">Not-thread-safe components</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#schema-evolution">Schema evolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#supported-evolutions">Supported evolutions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#manual-evolutions">Manual evolutions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-possiblities-for-schema-evolution">Checking possiblities for schema evolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general-considerations-for-schema-evolution">General considerations for schema evolution</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#running-pre-commit">Running pre-commit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#retrieving-the-edm-definition-from-a-data-file">Retrieving the EDM definition from a data file</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#accessing-the-edm-definition-programmatically">Accessing the EDM definition programmatically</a></li>
@@ -682,6 +691,12 @@
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio_gen.html#module-podio_gen.schema_evolution">podio_gen.schema_evolution module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.schema_evolution.ChangeType"><code class="docutils literal notranslate"><span class="pre">ChangeType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigration"><code class="docutils literal notranslate"><span class="pre">SchemaMigration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigrationReader"><code class="docutils literal notranslate"><span class="pre">SchemaMigrationReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_gen.html#module-podio_gen">Module contents</a></li>
 </ul>
 </li>
@@ -850,6 +865,94 @@ The following lists the caveats of the library when it comes to parallelization.
 <p>The Readers and Writers that ship with podio are assumed to run on a single
 thread only (more precisely we assume that each Reader or Writer doesn’t have to
 synchronize with any other for file operations).</p>
+</section>
+</section>
+<section id="schema-evolution">
+<h2>Schema evolution<a class="headerlink" href="#schema-evolution" title="Link to this heading"></a></h2>
+<p>The podio toolkit supports schema evolution for EDMs that are generated with it.
+it also tries to leverage existing schema evolution functionality of the chosen
+backend if available, e.g. via ROOT. In order to opt-in to manual schema evolution, it
+is necessary to pass the old datamodel definition(s) to the code generator, via:</p>
+<p>In case podio detects unsupported schema changes code generation will fail with
+a message about which changes were detected that are not supported. For some
+evolutions we have implemented support for manually specifying what should
+happen. In these cases it is necessary to specify an <em>evolution file</em> that
+describes these changes, the grammar is as follows</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">migrations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">&lt;datatype&gt;</span><span class="p">:</span><span class="w">  </span><span class="c1"># The datatype (or component) for which a change happens</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;version&gt;</span><span class="w">  </span><span class="c1"># The old schema version (before the change)</span>
+<span class="w">      </span><span class="nt">to_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;version&gt;</span><span class="w">  </span><span class="c1"># The new schema version (after the change)</span>
+<span class="w">      </span><span class="nt">&lt;change_type&gt;</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nv">&lt;change_args&gt;</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>It’s possible to specify multiple changes for any given datatype and the
+<code class="docutils literal notranslate"><span class="pre">{from,to}_version</span></code> as well as the <code class="docutils literal notranslate"><span class="pre">&lt;change_type&gt;</span></code> are mandatory.</p>
+<section id="supported-evolutions">
+<h3>Supported evolutions<a class="headerlink" href="#supported-evolutions" title="Link to this heading"></a></h3>
+<p>Currently the schema evolution capabilities are largely modeled after what can
+be automatically handled by the ROOT backend and podio actually relies on ROOT
+doing the necessary evolutions for us. The supported automatic schema evolution
+capabilities for ROOT are listed <a class="reference external" href="https://root.cern/manual/io/#automatic-schema-evolution">here for TTree based
+I/O</a> and <a class="reference external" href="https://root.cern.ch/doc/master/md_tree_2ntuple_2doc_2SchemaEvolution.html">here for
+RNTuple based
+I/O</a>.</p>
+<p>All evolutions that are not covered by this are currently not supported, unless
+they are listed below in the table for manual evolutions.</p>
+<section id="manual-evolutions">
+<h4>Manual evolutions<a class="headerlink" href="#manual-evolutions" title="Link to this heading"></a></h4>
+<p>The following table lists the evolutions that require manual intervention, but
+that are taken care of by the podio machinery.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">&lt;change_type&gt;</span></code></p></th>
+<th class="head"><p>description</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">&lt;change_args&gt;</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rename_member</span></code></p></td>
+<td><p>Rename a member variable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{from:</span> <span class="pre">&lt;old-name&gt;,</span> <span class="pre">to:</span> <span class="pre">&lt;new-name&gt;}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>An example evolution file looks like</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">migrations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">TestType</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="nt">to_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">rename_member</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">oldEnergy</span>
+<span class="w">        </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">energy</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="checking-possiblities-for-schema-evolution">
+<h3>Checking possiblities for schema evolution<a class="headerlink" href="#checking-possiblities-for-schema-evolution" title="Link to this heading"></a></h3>
+<p>The podio toolkit also provides a small script that allows to check up-front
+whether two versions of an EDM need manual intervention as well as confirming
+that an evolution file indeed handles all changes that require manual
+intervention. This can be called as</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>python/podio_schema_evolution.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>datamodel.yaml<span class="w"> </span>old_datamodel.yaml
+</pre></div>
+</div>
+<p>an evolution file can be specified with the <code class="docutils literal notranslate"><span class="pre">-e</span></code> argument.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently the (automatic) schema evolution capabilities of podio are closesly
+modeled after the capabilities of ROOT. This also means that other backends
+might fail to do proper schema evolution even if the code generation succeeded.
+<strong>In case you encounter an unsupported evolution that you need please open an
+issue on our github repository with a feature request</strong>.</p>
+</div>
+</section>
+<section id="general-considerations-for-schema-evolution">
+<h3>General considerations for schema evolution<a class="headerlink" href="#general-considerations-for-schema-evolution" title="Link to this heading"></a></h3>
+<p>podio will always do schema evolution from <strong>any previous version directly to
+the current schema version</strong> of an EDM. It will not chain several evolutions
+from intermediate versions to arrive at the current version.</p>
 </section>
 </section>
 <section id="running-pre-commit">

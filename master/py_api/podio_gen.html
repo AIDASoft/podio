@@ -196,6 +196,15 @@
 <li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#not-thread-safe-components">Not-thread-safe components</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#schema-evolution">Schema evolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#supported-evolutions">Supported evolutions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../advanced_topics.html#manual-evolutions">Manual evolutions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#checking-possiblities-for-schema-evolution">Checking possiblities for schema evolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#general-considerations-for-schema-evolution">General considerations for schema evolution</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#running-pre-commit">Running pre-commit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#retrieving-the-edm-definition-from-a-data-file">Retrieving the EDM definition from a data file</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#accessing-the-edm-definition-programmatically">Accessing the EDM definition programmatically</a></li>
@@ -680,6 +689,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#podio_gen.podio_config_reader.ClassDefinitionValidator"><code class="docutils literal notranslate"><span class="pre">ClassDefinitionValidator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_gen.podio_config_reader.MemberParser"><code class="docutils literal notranslate"><span class="pre">MemberParser</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio_gen.podio_config_reader.PodioConfigReader"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio_gen.schema_evolution">podio_gen.schema_evolution module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.schema_evolution.ChangeType"><code class="docutils literal notranslate"><span class="pre">ChangeType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.schema_evolution.SchemaMigration"><code class="docutils literal notranslate"><span class="pre">SchemaMigration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio_gen.schema_evolution.SchemaMigrationReader"><code class="docutils literal notranslate"><span class="pre">SchemaMigrationReader</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio_gen">Module contents</a></li>
@@ -1300,6 +1315,64 @@ validation</p>
 <dt class="sig sig-object py" id="podio_gen.podio_config_reader.PodioConfigReader.read">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_edm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.podio_config_reader.PodioConfigReader.read" title="Link to this definition"></a></dt>
 <dd><p>Read the datamodel definition from the yamlfile.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-podio_gen.schema_evolution">
+<span id="podio-gen-schema-evolution-module"></span><h2>podio_gen.schema_evolution module<a class="headerlink" href="#module-podio_gen.schema_evolution" title="Link to this heading"></a></h2>
+<p>Schema evolution utilities for PODIO data types.</p>
+<p>This module provides classes and utilities for reading and validating
+schema migration configurations from YAML files.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.ChangeType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.schema_evolution.</span></span><span class="sig-name descname"><span class="pre">ChangeType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.schema_evolution.ChangeType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration of supported schema change types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.ChangeType.RENAME_MEMBER">
+<span class="sig-name descname"><span class="pre">RENAME_MEMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rename_member'</span></em><a class="headerlink" href="#podio_gen.schema_evolution.ChangeType.RENAME_MEMBER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.SchemaMigration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.schema_evolution.</span></span><span class="sig-name descname"><span class="pre">SchemaMigration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#podio_gen.schema_evolution.ChangeType" title="podio_gen.schema_evolution.ChangeType"><span class="pre">ChangeType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio_gen.schema_evolution.SchemaMigration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a single schema migration between two versions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.SchemaMigration.details">
+<span class="sig-name descname"><span class="pre">details</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#podio_gen.schema_evolution.SchemaMigration.details" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.SchemaMigration.from_version">
+<span class="sig-name descname"><span class="pre">from_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#podio_gen.schema_evolution.SchemaMigration.from_version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.SchemaMigration.to_version">
+<span class="sig-name descname"><span class="pre">to_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#podio_gen.schema_evolution.SchemaMigration.to_version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.SchemaMigration.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#podio_gen.schema_evolution.ChangeType" title="podio_gen.schema_evolution.ChangeType"><span class="pre">ChangeType</span></a></em><a class="headerlink" href="#podio_gen.schema_evolution.SchemaMigration.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.SchemaMigrationReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio_gen.schema_evolution.</span></span><span class="sig-name descname"><span class="pre">SchemaMigrationReader</span></span><a class="headerlink" href="#podio_gen.schema_evolution.SchemaMigrationReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Reader and validator for schema migration YAML files.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio_gen.schema_evolution.SchemaMigrationReader.read_yaml">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#podio_gen.schema_evolution.SchemaMigration" title="podio_gen.schema_evolution.SchemaMigration"><span class="pre">SchemaMigration</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#podio_gen.schema_evolution.SchemaMigrationReader.read_yaml" title="Link to this definition"></a></dt>
+<dd><p>Read and validate a schema migration YAML file.</p>
 </dd></dl>
 
 </dd></dl>

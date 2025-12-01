@@ -196,6 +196,15 @@
 <li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#not-thread-safe-components">Not-thread-safe components</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#schema-evolution">Schema evolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#supported-evolutions">Supported evolutions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../advanced_topics.html#manual-evolutions">Manual evolutions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#checking-possiblities-for-schema-evolution">Checking possiblities for schema evolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#general-considerations-for-schema-evolution">General considerations for schema evolution</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#running-pre-commit">Running pre-commit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html#retrieving-the-edm-definition-from-a-data-file">Retrieving the EDM definition from a data file</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../advanced_topics.html#accessing-the-edm-definition-programmatically">Accessing the EDM definition programmatically</a></li>
@@ -682,6 +691,12 @@
 <li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="podio_gen.html#module-podio_gen.schema_evolution">podio_gen.schema_evolution module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.ChangeType"><code class="docutils literal notranslate"><span class="pre">ChangeType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigration"><code class="docutils literal notranslate"><span class="pre">SchemaMigration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigrationReader"><code class="docutils literal notranslate"><span class="pre">SchemaMigrationReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="podio_gen.html#module-podio_gen">Module contents</a></li>
 </ul>
 </li>
@@ -983,6 +998,24 @@
 <li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader.options"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader.options</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader.parse_model"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader.parse_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader.read"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader.read()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="podio_gen.html#module-podio_gen.schema_evolution">podio_gen.schema_evolution module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.ChangeType"><code class="docutils literal notranslate"><span class="pre">ChangeType</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.ChangeType.RENAME_MEMBER"><code class="docutils literal notranslate"><span class="pre">ChangeType.RENAME_MEMBER</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigration"><code class="docutils literal notranslate"><span class="pre">SchemaMigration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigration.details"><code class="docutils literal notranslate"><span class="pre">SchemaMigration.details</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigration.from_version"><code class="docutils literal notranslate"><span class="pre">SchemaMigration.from_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigration.to_version"><code class="docutils literal notranslate"><span class="pre">SchemaMigration.to_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigration.type"><code class="docutils literal notranslate"><span class="pre">SchemaMigration.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigrationReader"><code class="docutils literal notranslate"><span class="pre">SchemaMigrationReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="podio_gen.html#podio_gen.schema_evolution.SchemaMigrationReader.read_yaml"><code class="docutils literal notranslate"><span class="pre">SchemaMigrationReader.read_yaml()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -193,6 +193,15 @@
 <li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#not-thread-safe-components">Not-thread-safe components</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#schema-evolution">Schema evolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#supported-evolutions">Supported evolutions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="advanced_topics.html#manual-evolutions">Manual evolutions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#checking-possiblities-for-schema-evolution">Checking possiblities for schema evolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#general-considerations-for-schema-evolution">General considerations for schema evolution</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#running-pre-commit">Running pre-commit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#retrieving-the-edm-definition-from-a-data-file">Retrieving the EDM definition from a data file</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#accessing-the-edm-definition-programmatically">Accessing the EDM definition programmatically</a></li>
@@ -679,6 +688,12 @@
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.podio_config_reader.PodioConfigReader"><code class="docutils literal notranslate"><span class="pre">PodioConfigReader</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio_gen.html#module-podio_gen.schema_evolution">podio_gen.schema_evolution module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.schema_evolution.ChangeType"><code class="docutils literal notranslate"><span class="pre">ChangeType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigration"><code class="docutils literal notranslate"><span class="pre">SchemaMigration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigrationReader"><code class="docutils literal notranslate"><span class="pre">SchemaMigrationReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio_gen.html#module-podio_gen">Module contents</a></li>
 </ul>
 </li>
@@ -842,6 +857,8 @@
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.ChangedMemberType">ChangedMemberType (class in podio_schema_evolution)</a>
 </li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.ChangeType">ChangeType (class in podio_gen.schema_evolution)</a>
+</li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge.check_rename">check_rename() (podio_schema_evolution.SchemaEvolutionJudge method)</a>
 </li>
       <li><a href="py_api/podio_class_generator.html#podio_class_generator.clang_format_file">clang_format_file() (in module podio_class_generator)</a>
@@ -850,10 +867,10 @@
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_base.ClassGeneratorBaseMixin">ClassGeneratorBaseMixin (class in podio_gen.generator_base)</a>
 </li>
-      <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RootIoRule.code">code (podio_schema_evolution.RootIoRule attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RootIoRule.code">code (podio_schema_evolution.RootIoRule attribute)</a>
+</li>
       <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.collection_subscript.CollectionSubscriptPythonizer">CollectionSubscriptPythonizer (class in podio.pythonizations.collection_subscript)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.MemberParser.comment_str">comment_str (podio_gen.podio_config_reader.MemberParser attribute)</a>
@@ -895,6 +912,8 @@
       <li><a href="cpp_api/file/_maybe_shared_ptr_8h.html#c.DEFINE_COMPARISON_OPERATOR">DEFINE_COMPARISON_OPERATOR (C macro)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.DefinitionError">DefinitionError</a>
+</li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigration.details">details (podio_gen.schema_evolution.SchemaMigration attribute)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.cpp_generator.CPPClassGenerator.do_process_component">do_process_component() (podio_gen.cpp_generator.CPPClassGenerator method)</a>
 
@@ -979,6 +998,8 @@
       <li><a href="py_api/podio.html#podio.frame_iterator.FrameCategoryIterator">FrameCategoryIterator (class in podio.frame_iterator)</a>
 </li>
       <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.freeze_class.FreezeClassPythonizer">FreezeClassPythonizer (class in podio.pythonizations.freeze_class)</a>
+</li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigration.from_version">from_version (podio_gen.schema_evolution.SchemaMigration attribute)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.MemberParser.full_array_re">full_array_re (podio_gen.podio_config_reader.MemberParser attribute)</a>
 </li>
@@ -1171,6 +1192,8 @@
         <li><a href="py_api/podio_gen.html#module-podio_gen.julia_generator">podio_gen.julia_generator</a>
 </li>
         <li><a href="py_api/podio_gen.html#module-podio_gen.podio_config_reader">podio_gen.podio_config_reader</a>
+</li>
+        <li><a href="py_api/podio_gen.html#module-podio_gen.schema_evolution">podio_gen.schema_evolution</a>
 </li>
         <li><a href="py_api/podio_schema_evolution.html#module-podio_schema_evolution">podio_schema_evolution</a>
 </li>
@@ -2281,10 +2304,10 @@
 </li>
       <li><a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader14m_totalEntriesE">podio::RNTupleReader::m_totalEntries (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReader8openFileERKNSt6stringE">podio::RNTupleReader::openFile (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader8openFileERKNSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReader8openFileERKNSt6stringE">[2]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">podio::RNTupleReader::openFiles (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReader9openFilesERKNSt6vectorINSt6stringEEE">[2]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReaderaSERK13RNTupleReader">podio::RNTupleReader::operator= (C++ function)</a>, <a href="cpp_api/file/_r_n_tuple_reader_8h.html#_CPPv4N5podio13RNTupleReaderaSERK13RNTupleReader">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReaderaSERK13RNTupleReader">[2]</a>
@@ -3260,6 +3283,13 @@
         <li><a href="py_api/podio_gen.html#module-podio_gen.podio_config_reader">module</a>
 </li>
       </ul></li>
+      <li>
+    podio_gen.schema_evolution
+
+      <ul>
+        <li><a href="py_api/podio_gen.html#module-podio_gen.schema_evolution">module</a>
+</li>
+      </ul></li>
       <li><a href="cpp_api/file/_glob_8h.html#c.PODIO_HAS_GLOB_SUPPORT">PODIO_HAS_GLOB_SUPPORT (C macro)</a>
 </li>
       <li><a href="cpp_api/file/podio_version_8h.html#c.PODIO_MAJOR_VERSION">PODIO_MAJOR_VERSION (C macro)</a>
@@ -3355,6 +3385,8 @@
 </li>
       <li><a href="py_api/podio_class_generator.html#podio_class_generator.read_upstream_edm">read_upstream_edm() (in module podio_class_generator)</a>
 </li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigrationReader.read_yaml">read_yaml() (podio_gen.schema_evolution.SchemaMigrationReader static method)</a>
+</li>
       <li><a href="py_api/podio.html#podio.root_io.Reader">Reader (class in podio.root_io)</a>
 
       <ul>
@@ -3363,16 +3395,18 @@
       </ul></li>
       <li><a href="py_api/podio.pythonizations.utils.html#podio.pythonizations.utils.pythonizer.Pythonizer.register">register() (podio.pythonizations.utils.pythonizer.Pythonizer class method)</a>
 </li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.ChangeType.RENAME_MEMBER">RENAME_MEMBER (podio_gen.schema_evolution.ChangeType attribute)</a>
+</li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RenamedDataType">RenamedDataType (class in podio_schema_evolution)</a>
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RenamedMember">RenamedMember (class in podio_schema_evolution)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_datatype_keys">required_datatype_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
 </li>
-      <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys">required_interface_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_interface_keys">required_interface_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
+</li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.ClassDefinitionValidator.required_link_keys">required_link_keys (podio_gen.podio_config_reader.ClassDefinitionValidator attribute)</a>
 </li>
       <li><a href="py_api/podio.html#podio.reading.RootFileFormat.RNTUPLE">RNTUPLE (podio.reading.RootFileFormat attribute)</a>
@@ -3405,14 +3439,18 @@
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.SchemaEvolutionJudge.RenameResult">SchemaEvolutionJudge.RenameResult (class in podio_schema_evolution)</a>
 </li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigration">SchemaMigration (class in podio_gen.schema_evolution)</a>
+</li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigrationReader">SchemaMigrationReader (class in podio_gen.schema_evolution)</a>
+</li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable.setter_name">setter_name() (podio_gen.generator_utils.MemberVariable method)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.generator_utils.MemberVariable.signature">signature (podio_gen.generator_utils.MemberVariable property)</a>
 </li>
-      <li><a href="cpp_api/namespace/namespacesio.html#_CPPv43sio">sio (C++ type)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="cpp_api/namespace/namespacesio.html#_CPPv43sio">sio (C++ type)</a>
+</li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.sio_filter">sio_filter() (in module podio_schema_evolution)</a>
 </li>
       <li><a href="cpp_api/file/_s_i_o_block_8h.html#c.SIOMAPBLOCK_NAME">SIOMAPBLOCK_NAME (C macro)</a>
@@ -3437,9 +3475,13 @@
 </li>
       <li><a href="py_api/podio_schema_evolution.html#podio_schema_evolution.RootIoRule.targetClass">targetClass (podio_schema_evolution.RootIoRule attribute)</a>
 </li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigration.to_version">to_version (podio_gen.schema_evolution.SchemaMigration attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="py_api/podio.html#podio.reading.RootFileFormat.TTREE">TTREE (podio.reading.RootFileFormat attribute)</a>
+</li>
+      <li><a href="py_api/podio_gen.html#podio_gen.schema_evolution.SchemaMigration.type">type (podio_gen.schema_evolution.SchemaMigration attribute)</a>
 </li>
       <li><a href="py_api/podio_gen.html#podio_gen.podio_config_reader.MemberParser.type_re">type_re (podio_gen.podio_config_reader.MemberParser attribute)</a>
 </li>
