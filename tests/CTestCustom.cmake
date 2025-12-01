@@ -190,6 +190,16 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:datatypes_remove_type:write_old
       schema_evol:code_gen:datatypes_remove_type:read
 
+      schema_evol:code_gen:multi_schema_component_new_member:write_oldest
+      schema_evol:code_gen:multi_schema_component_new_member:write_old
+      schema_evol:code_gen:multi_schema_component_new_member:read
+      schema_evol:code_gen:multi_schema_datatypes_new_member:write_oldest
+      schema_evol:code_gen:multi_schema_datatypes_new_member:write_old
+      schema_evol:code_gen:multi_schema_datatypes_new_member:read
+      schema_evol:code_gen:multi_schema_component_rename_member:write_oldest
+      schema_evol:code_gen:multi_schema_component_rename_member:write_old
+      schema_evol:code_gen:multi_schema_component_rename_member:read
+
       ${failing_with_undefined_sanitizer}
     )
   endif()
