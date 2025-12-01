@@ -503,9 +503,14 @@ have resolvable schema evolution incompatibilities:"
 
     def _write_cmake_lists_file(self):
         """Write the names of all generated header and src files into cmake lists"""
-        header_files = (f for f in self.generated_files if f.endswith(".h"))
+        header_files = list(f for f in self.generated_files if f.endswith(".h"))
         src_files = (f for f in self.generated_files if f.endswith(".cc"))
         xml_files = (f for f in self.generated_files if f.endswith(".xml"))
+
+        # Sort header files so that Collection headers appear first. This is
+        # necessary for cling to load things in the correct order for some
+        # reason. See https://github.com/AIDASoft/podio/issues/892
+        header_files.sort(key=lambda f: (0 if "Collection.h" in f else 1, f))
 
         def _write_list(name, target_folder, files, comment):
             """Write all files into a cmake variable using the target_folder as path to the
