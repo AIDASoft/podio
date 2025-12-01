@@ -8,10 +8,9 @@ from dataclasses import dataclass
 from typing import List
 from enum import IntEnum
 
-import yaml
-
 from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_utils import DataModel
+from podio_gen.schema_evolution import SchemaMigrationReader, ChangeType
 
 
 # @TODO: not really a good class model here
@@ -249,22 +248,18 @@ class SchemaEvolutionJudge:
     def __init__(self, new_datamodel, evolution_file=None):
         self.datamodel_new = new_datamodel
         self.evolution_file = evolution_file
+        self.read_schema_changes = []
+
+        if self.evolution_file:
+            self.read_schema_changes = self._read_evolution_file()
 
     def judge(self, old_datamodel, detected_schema_changes) -> ComparisonResults:
         """Apply heuristics to detected schema changes and return analysis results"""
-        read_schema_changes = []
         warnings = []
         errors = []
 
-        if self.evolution_file:
-            read_schema_changes = self._read_evolution_file(old_datamodel)
-
         schema_changes, warnings, errors = self._heuristics(
-            old_datamodel,
-            detected_schema_changes,
-            read_schema_changes,
-            warnings,
-            errors,
+            old_datamodel, detected_schema_changes, self.read_schema_changes, warnings, errors
         )
 
         return ComparisonResults(
@@ -435,37 +430,19 @@ class SchemaEvolutionJudge:
 
         return schema_changes, warnings, errors
 
-    def _read_evolution_file(self, old_datamodel):
+    def _read_evolution_file(self):
         """read and parse evolution file"""
         read_schema_changes = []
-        supported_operations = ("member_rename", "class_renamed_to")
-        with open(self.evolution_file, "r", encoding="utf-8") as stream:
-            content = yaml.load(stream, yaml.SafeLoader)
-            from_schema_version = content["from_schema_version"]
-            to_schema_version = content["to_schema_version"]
-            if (from_schema_version != old_datamodel.schema_version) or (
-                to_schema_version != self.datamodel_new.schema_version
-            ):
-                raise BaseException(
-                    "Versions in schema evolution file do not match versions in "
-                    "data model descriptions."
-                )
 
-            if "evolutions" in content:
-                for klassname, value in content["evolutions"].items():
-                    # now let's go through the various supported evolutions
-                    for operation, details in value.items():
-                        if operation not in supported_operations:
-                            raise BaseException(
-                                f"Schema evolution operation {operation} in {klassname} unknown"
-                                " or not supported"
-                            )
-                        if operation == "member_rename":
-                            schema_change = RenamedMember(klassname, details[0], details[1])
-                            read_schema_changes.append(schema_change)
-                        elif operation == "class_renamed_to":
-                            schema_change = RenamedDataType(klassname, details)
-                            read_schema_changes.append(schema_change)
+        migrations = SchemaMigrationReader.read_yaml(self.evolution_file)
+
+        for klassname, migration_list in migrations.items():
+            for migration in migration_list:
+                if migration.type == ChangeType.RENAME_MEMBER:
+                    schema_change = RenamedMember(
+                        klassname, migration.details["from"], migration.details["to"]
+                    )
+                    read_schema_changes.append(schema_change)
 
         return read_schema_changes
 
