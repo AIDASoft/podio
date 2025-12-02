@@ -46,6 +46,7 @@ extensions = [
     "myst_parser",
     "breathe",
     "sphinx_copybutton",
+    "sphinx_design",
 ]
 
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
@@ -56,7 +57,14 @@ source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "cpp_api.rst", "py_api.rst", "ReleaseNotes.md", "contributing.md", "cpp_api/filelist.rst"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "cpp_api.rst", "py_api.rst", "ReleaseNotes.md", "contributing.md", "cpp_api/filelist.rst", "cpp_api/file/*8h.rst"]
+
+# Suppress noisy warnings from generated C++ API docs
+suppress_warnings = [
+    "duplicate_declaration.cpp",  # duplicate C++ declarations from Breathe
+    "cpp",                        # general C++ domain parse warnings
+]
+
 
 # cpp as main language
 primary_domain = "cpp"

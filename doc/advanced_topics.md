@@ -95,6 +95,7 @@ backend if available, e.g. via ROOT. In order to opt-in to manual schema evoluti
 is necessary to pass the old datamodel definition(s) to the code generator, via:
 
 ::::{tab-set}
+
 :::{tab-item} CMake macro
 
 ```cmake
@@ -102,8 +103,8 @@ PODIO_GENERATE_DATAMODEL(datamodel datamodel.yaml headers sources
     OLD_DESCRIPTION old_datamodel.yaml
 )
 ```
-
 :::
+
 :::{tab-item} python CLI script
 
 ```bash
@@ -111,8 +112,8 @@ python3 python/podio_class_generator.py \
     --old-description old_datamodel.yaml \
     datamodel.yaml output_gen_dir datamodel
 ```
-
 :::
+
 ::::
 
 In case podio detects unsupported schema changes code generation will fail with

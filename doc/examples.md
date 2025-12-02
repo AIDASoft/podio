@@ -5,14 +5,14 @@ well as some potential pitfalls. These examples are mainly concerned with how
 collections of objects and the objects themselves interact. As such they are
 framework agnostic.
 
-### Object Ownership
+## Object Ownership
 
 Every data created is either explicitly owned by collections or automatically garbage-collected. There is no need for any `new` or `delete` call on user side.
 As a general rule: **If an object has been added to a collection, the collection
 assumes ownership and if the collection goes out of scope all handles that point
 to objects in this collection are invalidated as well.**
 
-### Object Creation and Storage
+## Object Creation and Storage
 
 Objects and collections can be created via factories, which ensure proper object ownership:
 
@@ -36,7 +36,7 @@ In addition, individual objects can be created in the free. If they aren't attac
 
 In this respect all objects behave like objects in Python.
 
-### Object References
+## Object References
 
 The library supports the creation of one-to-many relations:
 
@@ -68,7 +68,7 @@ or via direct accessors
 
 If asking for an entry outside bounds, a `std::out_of_range` exception is thrown.
 
-### Subset collections
+## Subset collections
 Subset collections in podio enable you to create collections whose elements are
 references to objects stored in one or more original collections:
 
@@ -84,7 +84,7 @@ collections. See [subset collections](advanced_topics.md#subset-collections) for
 more details.
 
 
-### Looping through Collections
+## Looping through Collections
 Looping through collections is supported in two ways. Via iterators:
 
 ```cpp
@@ -101,7 +101,7 @@ and via direct object access:
     }
 ```
 
-### Cloning objects
+## Cloning objects
 
 In order to clone objects it is necessary to use the `clone` method which
 returns a `Mutable` object again. `clone` takes a parameter `cloneRelations`
@@ -111,7 +111,7 @@ data but none of the relations.
 
 ![](figures/object_clone.svg)
 
-### Support for Notebook-Pattern
+## Support for Notebook-Pattern
 
 The `notebook pattern` uses the assumption that it is better to create a small
 copy of only the data that are needed for a particular calculation. This
@@ -127,7 +127,7 @@ Passing in a size argument is optional; If no argument is passed all elements wi
 if an argument is passed only as many elements as requested will be returned.
 If the collection holds less elements than are requested, only as many elements as are available will be returned.
 
-### `podio::Frame` container
+## `podio::Frame` container
 
 The `podio::Frame` is the main container for containing and grouping collections
 together. It has two main methods:
@@ -145,7 +145,7 @@ together. It has two main methods:
 Note that for `put`ting collections into the Frame an explicit `std::move` is
 necessary to highlight the change of ownership that happens in this case.
 
-### Object Retrieval
+## Object Retrieval
 
 Collections can be retrieved explicitly:
 
@@ -160,14 +160,14 @@ Collections can be retrieved explicitly:
 Or implicitly when following an object reference. In both cases the access to data that has been retrieved is `const`.
 
 
-### User defined Meta Data
+## User defined Meta Data
 
 Sometimes it is necessary or useful to store additional data that is not directly foreseen in the EDM.
 This could be configuration parameters of simulation jobs, or parameter descriptions like cell-ID encoding etc. PODIO currently allows to store such meta data in terms of a `GenericParameters` class that
 holds an arbitrary number of named parameters of type `int, float, string` or vectors if these.
 Meta data can be stored and retrieved from the `Frame` via the templated `putParameter` and `getParameter` methods.
 
-### Python Interface
+## Python Interface
 
 The `Reader` and `Writer` classes in the `root_io` and `sio_io` submodules
 provide all the necessary functionality to read and write event files. An

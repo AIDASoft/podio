@@ -7,4 +7,3 @@ C++ API documentation
    classlist
    structlist
    namespacelist
-   grouplist
