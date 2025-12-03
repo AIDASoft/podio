@@ -21,16 +21,12 @@ macro(podio_set_rpath)
       set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
     endif("${isSystemDir}" STREQUAL "-1")
   elseif(PODIO_SET_RPATH)
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIBDIR}") # install LIBDIR
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
     # the RPATH to be used when installing, but only if it's not a system directory
     list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
     if("${isSystemDir}" STREQUAL "-1")
-      set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIBDIR}")
+      set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
     endif("${isSystemDir}" STREQUAL "-1")
-    # Make sure to actually set RPATH and not RUNPATH by disabling the new dtags
-    # explicitly. Set executable and shared library linker flags for this
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--disable-new-dtags")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
   else()
     set(CMAKE_SKIP_INSTALL_RPATH TRUE)           # skip the full RPATH for the install tree
   endif()
