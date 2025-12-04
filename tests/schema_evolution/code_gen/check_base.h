@@ -63,9 +63,51 @@ using ReaderT = podio::ROOTReader;
       {__VA_ARGS__};                                                                                                   \
       event.put(std::move(coll), "evolution_collection");                                                              \
     })}
+
+  /// Macro to write a collection of the specified type to a test file for the
+  /// oldest datamodel version using a pre-defined WriterT and constructing the
+  /// filename to write to from the TEST_CASE and FILE_SUFFIX pre-processor
+  /// constants with "_oldest" suffix. Similar to WRITE_AS but creates files
+  /// specifically for the oldest datamodel version.
+  ///
+  /// @param COLL_TYPE The type of collection to create and write
+  #if DATAMODEL_VERSION == 1
+    #define WRITE_AS_OLDEST(COLL_TYPE, ...)                                                                            \
+      {WRITE_WITH(WriterT, (TEST_CASE "_oldest" FILE_SUFFIX), {                                                        \
+        auto coll = COLL_TYPE();                                                                                       \
+        auto elem = coll.create();                                                                                     \
+        {__VA_ARGS__};                                                                                                 \
+        event.put(std::move(coll), "evolution_collection");                                                            \
+      })}
+  #endif
+
+  /// Macro to write a collection of the specified type to a test file for the
+  /// old datamodel version using a pre-defined WriterT and constructing the
+  /// filename to write to from the TEST_CASE and FILE_SUFFIX pre-processor
+  /// constants with "_old" suffix. Similar to WRITE_AS but creates files
+  /// specifically for the old datamodel version.
+  ///
+  /// @param COLL_TYPE The type of collection to create and write
+  #if DATAMODEL_VERSION == 2
+    #define WRITE_AS_OLD(COLL_TYPE, ...)                                                                               \
+      {WRITE_WITH(WriterT, (TEST_CASE "_old" FILE_SUFFIX), {                                                           \
+        auto coll = COLL_TYPE();                                                                                       \
+        auto elem = coll.create();                                                                                     \
+        {__VA_ARGS__};                                                                                                 \
+        event.put(std::move(coll), "evolution_collection");                                                            \
+      })}
+  #endif
+
 #else
   #define WRITE_WITH(...)
   #define WRITE_AS(...)
+#endif
+
+#ifndef WRITE_AS_OLDEST
+  #define WRITE_AS_OLDEST(...)
+#endif
+#ifndef WRITE_AS_OLD
+  #define WRITE_AS_OLD(...)
 #endif
 
 #ifdef PODIO_SCHEMA_EVOLUTION_TEST_READ
@@ -98,9 +140,23 @@ using ReaderT = podio::ROOTReader;
       const auto elem = coll[0];                                                                                       \
       {__VA_ARGS__};                                                                                                   \
     })}
+
+  /// Macro to read a collection of the specified type from a test file for a specific
+  /// datamodel version. Similar to READ_AS but allows specifying the version name
+  /// which will be used to construct the filename.
+  ///
+  /// @param COLL_TYPE The type of collection to read
+  /// @param VERSION The version name used in the filename
+  #define READ_AS_FROM_VERSION(COLL_TYPE, VERSION, ...)                                                                \
+    {READ_WITH(ReaderT, (TEST_CASE "_" VERSION FILE_SUFFIX), {                                                         \
+      const auto& coll = event.get<COLL_TYPE>("evolution_collection");                                                 \
+      const auto elem = coll[0];                                                                                       \
+      {__VA_ARGS__};                                                                                                   \
+    })}
 #else
   #define READ_WITH(...)
   #define READ_AS(...)
+  #define READ_AS_FROM_VERSION(...)
 #endif
 
 #endif // PODIO_TESTS_SCHEMAEVOLUTION_CODEGEN_CHECKBASE_H

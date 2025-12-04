@@ -1,0 +1,16 @@
+schema_version: 3
+options:
+  includeSubfolder: true
+
+components:
+  nsp::TestComponent:
+    Members:
+      - int x
+      - int y_renamed
+
+datatypes:
+  nsp::TestType:
+    Description: "A wrapper datatype to test component schema evolution"
+    Author: "Thomas Madlener"
+    Members:
+      - nsp::TestComponent comp // the component under test

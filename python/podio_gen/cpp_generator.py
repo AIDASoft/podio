@@ -45,7 +45,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         verbose,
         dryrun,
         upstream_edm,
-        old_description,
+        old_descriptions,
         evolution_file,
         datamodel_version=None,
     ):
@@ -61,9 +61,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.io_handlers = io_handlers
 
         # schema evolution specific code
-        self.old_yamlfile = old_description
+        self.old_yamlfiles = old_descriptions
         self.evolution_file = evolution_file
-        self.old_datamodel = {}  # version to old datamodel
+        self.old_datamodels = {}  # version to old datamodel
         self.old_components = defaultdict(list)  # names to old component versions
         self.old_datatypes = defaultdict(list)  # names to old datatype versions
         self.changed_components = defaultdict(list)  # components that have changed at some point
@@ -337,91 +337,93 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         versions and do the necessary pre-processing to have information
         available later in the necessary format"""
         # If we don't have old schemas we don't have to do any of this
-        if not self.old_yamlfile:
+        if not self.old_yamlfiles:
             return
 
-        self.old_datamodel = self._read_old_schema()
-        self._regroup_old_datamodel(self.old_datamodel)
+        self.old_datamodels = self._read_old_schemas()
+        self._regroup_old_datamodels(self.old_datamodels)
 
-    def _regroup_old_datamodel(self, old_datamodel):
+    def _regroup_old_datamodels(self, old_datamodels):
         """Re-organize the old schema into a structure that is easier to use.
 
         Create a map with the version as key and the component and datatype
         (names) as a list of dictionaries with the old definition
         """
-        for version, old_model in old_datamodel.items():
+        for version, old_model in old_datamodels.items():
             for name, comp_def in old_model.components.items():
                 self.old_components[name].append({"version": version, "definition": comp_def})
 
             for name, datatype_def in old_model.datatypes.items():
                 self.old_datatypes[name].append({"version": version, "definition": datatype_def})
 
-    def _read_old_schema(self):
+    def _read_old_schemas(self):
         """Read the old datamodel schema, determine whether all evolutions are
         possible and store information about components and datatypes that
         changed.
         """
+        old_datamodels = {}
         reader = PodioConfigReader()
         # Read the current model again into a "new" namespace to have it more
         # easily discerned from the "old" model
         datamodel_new = reader.read(self.yamlfile, package_name="new")
-        datamodel_old = reader.read(self.old_yamlfile, package_name="old")
-
         comparator = DataModelComparator(datamodel_new)
-        detected_changes = comparator.compare(datamodel_old)
         judge = SchemaEvolutionJudge(comparator.datamodel_new, evolution_file=self.evolution_file)
-        comparison_results = judge.judge(datamodel_old, detected_changes)
 
-        # some sanity checks
-        if len(comparison_results.errors) > 0:
-            print(
-                f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+        # Process each old schema version
+        for old_yamlfile in self.old_yamlfiles:
+            datamodel_old = reader.read(old_yamlfile, package_name="old")
+            detected_changes = comparator.compare(datamodel_old)
+            comparison_results = judge.judge(datamodel_old, detected_changes)
+
+            # some sanity checks
+            if len(comparison_results.errors) > 0:
+                print(
+                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
 have unresolvable schema evolution incompatibilities:"
-            )
-            for error in comparison_results.errors:
-                print(error)
-            sys.exit(-1)
-        if len(comparison_results.warnings) > 0:
-            print(
-                f"The given datamodels '{self.yamlfile}' and '{self.old_yamlfile}' \
+                )
+                for error in comparison_results.errors:
+                    print(error)
+                sys.exit(-1)
+            if len(comparison_results.warnings) > 0:
+                print(
+                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
 have resolvable schema evolution incompatibilities:"
-            )
-            for warning in comparison_results.warnings:
-                print(warning)
-            sys.exit(-1)
+                )
+                for warning in comparison_results.warnings:
+                    print(warning)
+                sys.exit(-1)
 
-        old_datamodel = {}
-        old_schema_version = comparison_results.old_datamodel.schema_version
-        old_datamodel[old_schema_version] = comparison_results.old_datamodel
+            old_schema_version = comparison_results.old_datamodel.schema_version
+            old_datamodels[old_schema_version] = comparison_results.old_datamodel
 
-        # Store old definitions for items that have actually changed
-        # TODO: Move this somewher else?  # pylint: disable=fixme
-        for change in comparison_results.schema_changes:
-            if hasattr(change, "klassname"):
-                # Handle components (both existing and removed)
-                if change.klassname in comparison_results.old_datamodel.components:
-                    self.changed_components[change.klassname].append(
-                        {
-                            "version": old_schema_version,
-                            "definition": comparison_results.old_datamodel.components[
-                                change.klassname
-                            ],
-                            "schema_change": change,
-                        }
-                    )
+            # Store old definitions for items that have actually changed
+            # TODO: Move this somewher else?  # pylint: disable=fixme
+            for change in comparison_results.schema_changes:
+                if hasattr(change, "klassname"):
+                    # Handle components (both existing and removed)
+                    if change.klassname in comparison_results.old_datamodel.components:
+                        self.changed_components[change.klassname].append(
+                            {
+                                "version": old_schema_version,
+                                "definition": comparison_results.old_datamodel.components[
+                                    change.klassname
+                                ],
+                                "schema_change": change,
+                            }
+                        )
                     # Handle datatypes (both existing and removed)
-                elif change.klassname in comparison_results.old_datamodel.datatypes:
-                    self.changed_datatypes[change.klassname].append(
-                        {
-                            "version": old_schema_version,
-                            "definition": comparison_results.old_datamodel.datatypes[
-                                change.klassname
-                            ],
-                            "schema_change": change,
-                        }
-                    )
+                    elif change.klassname in comparison_results.old_datamodel.datatypes:
+                        self.changed_datatypes[change.klassname].append(
+                            {
+                                "version": old_schema_version,
+                                "definition": comparison_results.old_datamodel.datatypes[
+                                    change.klassname
+                                ],
+                                "schema_change": change,
+                            }
+                        )
 
-        return old_datamodel
+        return old_datamodels
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in
@@ -642,7 +644,7 @@ have resolvable schema evolution incompatibilities:"
             "version": self.datamodel.schema_version,
             "components": [DataType(c) for c in self.datamodel.components],
             "datatypes": [DataType(d) for d in self.datamodel.datatypes],
-            "old_schema_versions": list(self.old_datamodel.keys()),
+            "old_schema_versions": list(self.old_datamodels.keys()),
             "old_schema_components": old_schema_components,
             "old_schema_datatypes": old_schema_datatypes,
             "iorules": iorules,

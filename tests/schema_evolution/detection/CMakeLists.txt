@@ -18,6 +18,7 @@ set(should_succeed_cases
 
 set(should_warn_cases
   members:rename
+  component_members:rename
 )
 
 foreach(test_case IN LISTS should_fail_cases should_succeed_cases should_warn_cases)
