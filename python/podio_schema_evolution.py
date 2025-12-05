@@ -646,8 +646,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     reader = PodioConfigReader()
-    datamodel_new = reader.read(args.new, package_name="new")
-    datamodel_old = reader.read(args.old, package_name="old")
+    datamodel_new = reader.read(args.new, package_name="new", ignore_extracode=True)
+    datamodel_old = reader.read(args.old, package_name="old", ignore_extracode=True)
     comparator = DataModelComparator(datamodel_new)
     detected_changes = comparator.compare(datamodel_old)
 

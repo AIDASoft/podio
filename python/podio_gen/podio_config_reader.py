@@ -483,7 +483,7 @@ class PodioConfigReader:
             definitions[directive] = definitions.get(directive, "") + "\n" + contents
 
     @classmethod
-    def _read_component(cls, definition, parent_path):
+    def _read_component(cls, definition, parent_path, ignore_extracode=False):
         """Read the component and put it into an easily digestible format."""
         component = {}
         for name, category in definition.items():
@@ -492,7 +492,7 @@ class PodioConfigReader:
                 for member in definition[name]:
                     # for components we do not require a description in the members
                     component["Members"].append(cls.member_parser.parse(member, False))
-            elif name == "ExtraCode":
+            elif name == "ExtraCode" and not ignore_extracode:
                 extra_code = copy.deepcopy(category)
                 cls._expand_extracode(extra_code, parent_path, "declaration")
                 component[name] = extra_code
@@ -502,7 +502,7 @@ class PodioConfigReader:
         return component
 
     @classmethod
-    def _read_datatype(cls, value, parent_path):
+    def _read_datatype(cls, value, parent_path, ignore_extracode=False):
         """Read the datatype and put it into an easily digestible format"""
         datatype = {}
         for category, definition in value.items():
@@ -512,7 +512,7 @@ class PodioConfigReader:
                 for member in definition:
                     members.append(cls.member_parser.parse(member))
                 datatype[category] = members
-            elif category in ("ExtraCode", "MutableExtraCode"):
+            elif category in ("ExtraCode", "MutableExtraCode") and not ignore_extracode:
                 extra_code = copy.deepcopy(definition)
                 cls._expand_extracode(extra_code, parent_path, "implementation")
                 cls._expand_extracode(extra_code, parent_path, "declaration")
@@ -555,7 +555,9 @@ class PodioConfigReader:
         return link
 
     @classmethod
-    def parse_model(cls, model_dict, package_name, upstream_edm=None, parent_path=None):
+    def parse_model(
+        cls, model_dict, package_name, upstream_edm=None, parent_path=None, ignore_extracode=False
+    ):
         """Parse a model from the dictionary, e.g. read from a yaml file."""
 
         try:
@@ -576,12 +578,12 @@ class PodioConfigReader:
         components = {}
         if "components" in model_dict:
             for klassname, value in model_dict["components"].items():
-                components[klassname] = cls._read_component(value, parent_path)
+                components[klassname] = cls._read_component(value, parent_path, ignore_extracode)
 
         datatypes = {}
         if "datatypes" in model_dict:
             for klassname, value in model_dict["datatypes"].items():
-                datatypes[klassname] = cls._read_datatype(value, parent_path)
+                datatypes[klassname] = cls._read_datatype(value, parent_path, ignore_extracode)
 
         interfaces = {}
         if "interfaces" in model_dict:
@@ -611,10 +613,10 @@ class PodioConfigReader:
         return datamodel
 
     @classmethod
-    def read(cls, yamlfile, package_name, upstream_edm=None):
+    def read(cls, yamlfile, package_name, upstream_edm=None, ignore_extracode=False):
         """Read the datamodel definition from the yamlfile."""
         with open(yamlfile, "r", encoding="utf-8") as stream:
             content = yaml.load(stream, yaml.SafeLoader)
         parent_path = os.path.dirname(yamlfile)
 
-        return cls.parse_model(content, package_name, upstream_edm, parent_path)
+        return cls.parse_model(content, package_name, upstream_edm, parent_path, ignore_extracode)
