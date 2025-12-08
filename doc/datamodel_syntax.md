@@ -131,6 +131,7 @@ The `includes` will be add to the header files of the generated classes.
 
 The code being provided has to use the macro `{name}` in place of the concrete name of the class. The paths to the files given in `declarationFile` and `implementationFile` should be either absolute or relative to the datamodel yaml file. The cmake users are encouraged to specify these file via the `DEPENDS` option of `PODIO_GENERATE_DATAMODEL` to add the files as configuration dependency of the datamodel and cause the datamodel re-generation when they change.
 
+(definition-of-custom-interfaces)=
 ## Definition of custom interfaces
 An interface type can be defined as follows (again using an example from the example datamodel)
 
@@ -155,6 +156,7 @@ define which `Types` can be used with this interface class, in this case the
 not allow for mutable access to their data.** They can be used in relations
 between objects, just like normal `datatypes`.
 
+(definition-of-links)=
 ## Definition of links
 Podio offers a templated `Link` class ([see here for more details](links.md))
 that allows one to link two arbitrary datatypes without having to introduce a
@@ -215,6 +217,7 @@ auto newCluster = energyType.as<ExampleCluster>(); // <-- "cast back" to origina
 auto newHit = energyType.as<ExampleHit>(); // <-- exception
 ```
 
+(global-options)=
 ## Global options
 Some customization of the generated code is possible through flags. These flags are listed in the section `options`:
 

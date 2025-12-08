@@ -95,6 +95,7 @@ backend if available, e.g. via ROOT. In order to opt-in to manual schema evoluti
 is necessary to pass the old datamodel definition(s) to the code generator, via:
 
 ::::{tab-set}
+
 :::{tab-item} CMake macro
 
 ```cmake
@@ -102,8 +103,8 @@ PODIO_GENERATE_DATAMODEL(datamodel datamodel.yaml headers sources
     OLD_DESCRIPTION old_datamodel.yaml
 )
 ```
-
 :::
+
 :::{tab-item} python CLI script
 
 ```bash
@@ -111,8 +112,8 @@ python3 python/podio_class_generator.py \
     --old-description old_datamodel.yaml \
     datamodel.yaml output_gen_dir datamodel
 ```
-
 :::
+
 ::::
 
 In case podio detects unsupported schema changes code generation will fail with
@@ -271,6 +272,7 @@ single argument and returns the EDM definition as a JSON string. Most likely
 this has to be decoded into an actual JSON structure in order to be usable (e.g.
 via `json.loads` in python to get a `dict`).
 
+(technical-details-on-edm-definition-embedding)=
 ### Technical details on EDM definition embedding
 The EDM definition is embedded into the core EDM library as a raw string literal
 in JSON format. This string is generated into the `DatamodelDefinition.h` file as
@@ -349,6 +351,7 @@ read and write all the necessary EDM definitions.
   use it and also offer the same functionality as public methods with the help
   of it.
 
+(subset-collections)=
 ## Subset collections
 
 Subset collections in podio enable you to create collections whose elements are

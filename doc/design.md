@@ -32,6 +32,7 @@ For each of the `OneToManyRelations` and `VectorMembers` a vector-like interface
 
 With the chosen interface, the code written in C++ and Python looks almost identical, if taking proper advantage of the `auto` keyword.
 
+(the-internal-data-layer)=
 ### The Internal Data Layer
 
 The internal objects give access to the object data, i.e. the POD, and the references to other objects.

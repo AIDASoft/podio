@@ -11,7 +11,7 @@ As a consequence some of the **standard algorithms may not work** with PODIO `Co
 
 The following tables list the compliance of a PODIO generated collection with the *Container* named requirement, stating which member types, interfaces, or concepts are fulfilled and which are not. Additionally, there are some comments explaining missing parts or pointing out differences in behaviour.
 
-### Container Types
+## Container Types
 
 | Name | Type | Requirements | Fulfilled by Collection? | Comment |
 |------|------|--------------|--------------------------|---------|
@@ -23,7 +23,7 @@ The following tables list the compliance of a PODIO generated collection with th
 | `difference_type`| Signed integer | Must be the same as `std::iterator_traits::difference_type` for `iterator` and `const_iterator` | ✔️ yes | |
 | `size_type` | Unsigned integer | Large enough to represent all positive values of `difference_type` | ✔️ yes | |
 
-### Container member functions and operators
+## Container member functions and operators
 
 | Expression | Return type | Semantics | Fulfilled by Collection? | Comment |
 |------------|-------------|-----------|--------------------------|---------|
@@ -99,6 +99,7 @@ The values obtained immediately through `->` (for instance, `auto& e = it->energ
 Despite the exception, the collection iterators are made to still report themselves as fulfilling the forward iterator requirements since the problematic usage (`auto* ptr = it.operator->();`) is rare in normal scenarios.
 :::
 
+(legacyiterator)=
 ### LegacyIterator
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
@@ -117,6 +118,7 @@ Despite the exception, the collection iterators are made to still report themsel
 | `*r` | Unspecified | | ✔️ yes / ✔️ yes | |
 | `++r` | `It&` | | ✔️ yes / ✔️ yes | |
 
+(legacyinputiterator)=
 ### LegacyInputIterator
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
@@ -133,6 +135,7 @@ Despite the exception, the collection iterators are made to still report themsel
 | `(void)r++` | | Same as `(void)++r` | ✔️ yes / ✔️ yes | |
 | `*r++` | Convertible to `value_type` | Same as `value_type x = *r; ++r; return x;` | ✔️ yes / ✔️ yes | |
 
+(legacyforwarditerator)=
 ### LegacyForwardIterator
 
 In addition to the *LegacyForwardIterator* the C++ standard specifies also the *mutable LegacyForwardIterator*, which is both *LegacyForwardIterator* and *LegacyOutputIterator*. The term **mutable** used in this context doesn't imply mutability in the sense used in the PODIO.
@@ -150,6 +153,7 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `i++` | `It` | Same as `It ip = i; ++i; return ip;` | ✔️ yes / ✔️ yes | |
 | `*i++` | `reference` | | ✔️ yes / ✔️ yes | |
 
+(legacyoutputiterator)=
 ### LegacyOutputIterator
 
 | Requirement | Fulfilled by `iterator`/`const_iterator`? | Comment |
@@ -193,6 +197,7 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | `std::ranges::common_range` | ✔️ yes |
 | `std::ranges::viewable_range` | ✔️ yes |
 
+(collection-and-standard-algorithms)=
 ## Collection and standard algorithms
 
 Most of the standard algorithms require iterators to meet specific named requirements, such as [*LegacyInputIterator*](https://en.cppreference.com/w/cpp/named_req/InputIterator), [*LegacyForwardIterator*](https://en.cppreference.com/w/cpp/named_req/ForwardIterator), or [*LegacyRandomAccessIterator*](https://en.cppreference.com/w/cpp/named_req/RandomAccessIterator). These requirements are not always strictly enforced at compile time, making it essential to understand the allowed iterator category when using standard algorithms.

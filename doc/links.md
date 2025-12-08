@@ -44,6 +44,7 @@ the [usage section](#how-to-use-links)).
 For a more detailed explanation of the internals and the actual implementation
 see [the implementation details](#implementation-details).
 
+(how-to-use-links)=
 ## How to use `Link`s
 Using `Link`s is quite simple. The most straight forward way is to simply
 declare them as part of the datamodel, [as described
@@ -174,6 +175,7 @@ for (const auto& [reco, weight] : linkedRecs) {
 Alternatively, you can access the object via the `o` member and the weight via
 the `weight` member.
 
+(implementation-details)=
 ## Implementation details
 
 In order to give a slightly easier entry to the details of the implementation
