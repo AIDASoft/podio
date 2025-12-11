@@ -57,7 +57,7 @@ class LinkT {
 
 public:
   using mutable_type = podio::MutableLink<FromT, ToT>;
-  using value_type = podio::Link<FromT, ToT>;
+  using object_type = podio::Link<FromT, ToT>;
   using collection_type = podio::LinkCollection<FromT, ToT>;
 
   static constexpr std::string_view typeName =
