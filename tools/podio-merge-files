@@ -55,9 +55,7 @@ try:
 except ValueError:
     is_metadata_available = False  # pylint: disable=invalid-name
 
-#print progress bar, dummy for now
-print(f"Merging: ")
-for category in categories:
+for category in tqdm(categories):
     #counter=0
     print(f"Merging category '{category}'")
     all_frames = reader.get(category)
