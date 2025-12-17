@@ -4,6 +4,7 @@
 import argparse
 import sys
 import time
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(
     description="Merge any number of podio files into one, can merge TTree and RNTuple files"
@@ -57,15 +58,15 @@ except ValueError:
 #print progress bar, dummy for now
 print(f"Merging: ")
 for category in categories:
-    counter=0
-    print(f"\n Merging category '{category:>10s}': ", end='')
+    #counter=0
+    print(f"Merging category '{category}'")
     all_frames = reader.get(category)
-    for frame in all_frames:
+    for frame in tqdm(all_frames):
         writer.write_frame(frame, category)
-        print('.', end='', flush=True)
-        if counter and counter % 50 == 0:
-            print(f" {counter}", end='', flush=True)
-        counter+=1
+        #print('.', end='', flush=True)
+        #if counter and counter % 50 == 0:
+        #    print(f" {counter}", end='', flush=True)
+        #counter+=1
 
 time4 = time.time()
 print(f"\nMerged data categories in {time4 - time3:.2f} seconds")
