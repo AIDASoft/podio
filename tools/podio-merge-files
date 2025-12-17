@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(
     description="Merge any number of podio files into one, can merge TTree and RNTuple files"
 )
 
-parser.add_argument("--output-file", help="name of the output file", required=True)
+parser.add_argument("-o","--output-file", help="name of the output file", required=True)
 parser.add_argument("files", nargs="+", help="which files to merge")
 parser.add_argument(
     "--metadata",
