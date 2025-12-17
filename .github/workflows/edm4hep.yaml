@@ -42,43 +42,35 @@ jobs:
             STARTDIR=$(pwd)
             echo "::group::Build Catch2"
             cd $STARTDIR/catch2
-            mkdir build && cd build
-            cmake -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") -DCMAKE_INSTALL_PREFIX=../install -G Ninja ..
-            ninja -k0 install
+            cmake -B build -S . -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") -DCMAKE_INSTALL_PREFIX=$(pwd)/install -G Ninja
+            cmake --build build --target install
             export CMAKE_PREFIX_PATH=$STARTDIR/catch2/install:$CMAKE_PREFIX_PATH
             echo "::endgroup::"
             echo "::group::Build podio"
             cd $STARTDIR/podio
-            mkdir build && cd build
-            cmake -DENABLE_SIO=ON \
+            cmake -B build -S . \
+              --preset ci-build \
               -DENABLE_JULIA=ON \
-              -DENABLE_DATASOURCE=ON \
-              -DENABLE_RNTUPLE=ON \
-              -DCMAKE_INSTALL_PREFIX=../install \
+              -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
               -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
               -DUSE_EXTERNAL_CATCH2=ON \
-              -DBUILD_TESTING=ON \
-              -DPODIO_RUN_STRACE_TEST=ON \
-              -DPODIO_ENABLE_SCHEMA_EVOLUTION_TESTS=ON \
-              -G Ninja ..
-            ninja -k0
+              -DPODIO_RUN_STRACE_TEST=ON
+            cmake --build build -- -k0
             echo "::endgroup::"
             echo "::group::Test and install podio"
-            ctest --output-on-failure --schedule-random -j$(nproc) --timeout 600
-            ninja install
+            ctest --test-dir build --output-on-failure --schedule-random -j$(nproc) --timeout 600
+            cmake --build build --target install
             cd $STARTDIR/podio
             source init.sh && source env.sh
             echo "::endgroup::"
             echo "::group::Build and test EDM4hep"
             cd $STARTDIR/edm4hep
-            mkdir build && cd build
-            cmake -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
+            cmake -B build -S . \
+              -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DUSE_EXTERNAL_CATCH2=ON \
-              -G Ninja ..
-            ninja -k0
-            ctest --output-on-failure
+              -G Ninja
+            cmake --build build -- -k0
+            ctest --test-dir build --output-on-failure
             echo "::endgroup::"
