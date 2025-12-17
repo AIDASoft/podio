@@ -43,6 +43,7 @@ jobs:
             -DPODIO_SET_RPATH=ON \
             -DPODIO_RUN_STRACE_TEST=ON \
             -DENABLE_RNTUPLE=ON \
+            -DPODIO_ENABLE_SCHEMA_EVOLUTION_TESTS=ON \
             -G Ninja ..
           echo "::endgroup::"
           echo "::group::Build"
