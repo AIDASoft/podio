@@ -5,6 +5,10 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
         exclude: (doc/ReleaseNotes.md)
+  - repo: https://github.com/psf/black
+    rev: 23.11.0
+    hooks:
+      - id: black
   - repo: local
     hooks:
       - id: clang-format
@@ -35,7 +39,3 @@ repos:
         types: [c++]
         exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)|podioVersion.in.h)
         language: system
-  - repo: https://github.com/psf/black
-    rev: 23.11.0
-    hooks:
-      - id: black
