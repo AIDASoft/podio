@@ -56,8 +56,6 @@ except ValueError:
     is_metadata_available = False  # pylint: disable=invalid-name
 
 for category in tqdm(categories):
-    #counter=0
-    print(f"Merging category '{category}'")
     all_frames = reader.get(category)
     for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
         writer.write_frame(frame, category)
