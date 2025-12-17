@@ -34,24 +34,17 @@ jobs:
         run: |
           echo "::group::Run CMake"
           # export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
-          mkdir -p build install
-          cd build
-          cmake -DENABLE_SIO=ON \
+          cmake -B build -S . \
+            --preset ci-build \
             -DENABLE_JULIA=ON \
             -DENABLE_RNTUPLE=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
-            -DENABLE_DATASOURCE=ON \
             -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DCMAKE_INSTALL_PREFIX=../install \
-            -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=AUTO \
-            -DPODIO_USE_CLANG_FORMAT=AUTO \
-            -DPODIO_ENABLE_SCHEMA_EVOLUTION_TESTS=ON \
-            -G Ninja ..
+            -DPODIO_USE_CLANG_FORMAT=AUTO
           echo "::endgroup::"
           echo "::group::Build"
-          ninja -k0
+          cmake --build build -- -k0
           echo "::endgroup::"
           echo "::group::Julia StaticArrays Package Install"
           # # Temporary workaround for https://its.cern.ch/jira/browse/SPI-2838
@@ -59,8 +52,8 @@ jobs:
           julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
           echo "::group::Run tests"
-          ctest --output-on-failure --schedule-random -j$(nproc) --timeout 600
+          ctest --test-dir build --output-on-failure --schedule-random -j$(nproc) --timeout 600
           echo "::endgroup::"
           echo "::group::Install"
-          ninja install
+          cmake --build build --target install
           echo "::endgroup::"
