@@ -59,10 +59,6 @@ for category in tqdm(categories):
     all_frames = reader.get(category)
     for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
         writer.write_frame(frame, category)
-        #print('.', end='', flush=True)
-        #if counter and counter % 50 == 0:
-        #    print(f" {counter}", end='', flush=True)
-        #counter+=1
 
 time4 = time.time()
 print(f"\nMerged data categories in {time4 - time3:.2f} seconds")
