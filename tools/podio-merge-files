@@ -3,6 +3,7 @@
 
 import argparse
 import sys
+import time
 
 parser = argparse.ArgumentParser(
     description="Merge any number of podio files into one, can merge TTree and RNTuple files"
@@ -24,11 +25,15 @@ import podio  # pylint: disable=wrong-import-position # noqa: E402
 import podio.root_io  # pylint: disable=wrong-import-position # noqa: E402
 from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
 
+#count how long this step takes
+time1 = time.time()
 all_files = set()
 for f in args.files:
     if f in all_files:
         raise ValueError(f"File {f} is present more than once in the input list")
     all_files.add(f)
+time2 = time.time()
+print(f"Checked input files for duplicates in {time2 - time1:.2f} seconds")
 
 reader = reading.get_reader(args.files)
 if isinstance(reader, podio.root_io.Reader):
@@ -38,6 +43,9 @@ elif isinstance(reader, podio.root_io.RNTupleReader):
 else:
     raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
 
+time3 = time.time()
+print(f"Initialized reader and writer in {time3 - time2:.2f} seconds")
+
 categories = list(reader.categories)
 is_metadata_available = True  # pylint: disable=invalid-name
 try:
@@ -46,10 +54,21 @@ try:
 except ValueError:
     is_metadata_available = False  # pylint: disable=invalid-name
 
+#print progress bar, dummy for now
+print(f"Merging: ")
 for category in categories:
+    counter=0
+    print(f"\n Merging category '{category:>10s}': ", end='')
     all_frames = reader.get(category)
     for frame in all_frames:
         writer.write_frame(frame, category)
+        print('.', end='', flush=True)
+        if counter and counter % 50 == 0:
+            print(f" {counter}", end='', flush=True)
+        counter+=1
+
+time4 = time.time()
+print(f"\nMerged data categories in {time4 - time3:.2f} seconds")
 
 if args.metadata == "none":
     sys.exit(0)
@@ -62,6 +81,10 @@ else:
         all_frames = [reader.get("metadata")[0]]
     else:
         all_frames = reader.get("metadata")
+time5 = time.time()
+print(f"Retrieved metadata frames in {time5 - time4:.2f} seconds")
 for frame in all_frames:
     frame.put_parameter("MergedInputFiles", args.files)
     writer.write_frame(frame, "metadata")
+time6 = time.time()
+print(f"Wrote metadata frames in {time6 - time5:.2f} seconds")
