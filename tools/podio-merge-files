@@ -59,7 +59,7 @@ for category in tqdm(categories):
     #counter=0
     print(f"Merging category '{category}'")
     all_frames = reader.get(category)
-    for frame in tqdm(all_frames):
+    for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
         writer.write_frame(frame, category)
         #print('.', end='', flush=True)
         #if counter and counter % 50 == 0:
