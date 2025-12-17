@@ -3,7 +3,6 @@
 
 import argparse
 import sys
-import time
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(
@@ -26,15 +25,11 @@ import podio  # pylint: disable=wrong-import-position # noqa: E402
 import podio.root_io  # pylint: disable=wrong-import-position # noqa: E402
 from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
 
-#count how long this step takes
-time1 = time.time()
 all_files = set()
 for f in args.files:
     if f in all_files:
         raise ValueError(f"File {f} is present more than once in the input list")
     all_files.add(f)
-time2 = time.time()
-print(f"Checked input files for duplicates in {time2 - time1:.2f} seconds")
 
 reader = reading.get_reader(args.files)
 if isinstance(reader, podio.root_io.Reader):
@@ -43,9 +38,6 @@ elif isinstance(reader, podio.root_io.RNTupleReader):
     writer = podio.root_io.RNTupleWriter(args.output_file)
 else:
     raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
-
-time3 = time.time()
-print(f"Initialized reader and writer in {time3 - time2:.2f} seconds")
 
 categories = list(reader.categories)
 is_metadata_available = True  # pylint: disable=invalid-name
@@ -60,9 +52,6 @@ for category in tqdm(categories):
     for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
         writer.write_frame(frame, category)
 
-time4 = time.time()
-print(f"\nMerged data categories in {time4 - time3:.2f} seconds")
-
 if args.metadata == "none":
     sys.exit(0)
 
@@ -74,10 +63,6 @@ else:
         all_frames = [reader.get("metadata")[0]]
     else:
         all_frames = reader.get("metadata")
-time5 = time.time()
-print(f"Retrieved metadata frames in {time5 - time4:.2f} seconds")
 for frame in all_frames:
     frame.put_parameter("MergedInputFiles", args.files)
     writer.write_frame(frame, "metadata")
-time6 = time.time()
-print(f"Wrote metadata frames in {time6 - time5:.2f} seconds")
