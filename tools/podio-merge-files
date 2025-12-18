@@ -3,12 +3,13 @@
 
 import argparse
 import sys
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(
     description="Merge any number of podio files into one, can merge TTree and RNTuple files"
 )
 
-parser.add_argument("--output-file", help="name of the output file", required=True)
+parser.add_argument("-o", "--output-file", help="name of the output file", required=True)
 parser.add_argument("files", nargs="+", help="which files to merge")
 parser.add_argument(
     "--metadata",
@@ -46,9 +47,9 @@ try:
 except ValueError:
     is_metadata_available = False  # pylint: disable=invalid-name
 
-for category in categories:
+for category in tqdm(categories):
     all_frames = reader.get(category)
-    for frame in all_frames:
+    for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
         writer.write_frame(frame, category)
 
 if args.metadata == "none":

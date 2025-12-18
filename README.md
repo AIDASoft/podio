@@ -70,6 +70,7 @@ Check that you can now import the `yaml` and `jinja2` modules in python.
 Some tools have additional dependencies that are not required for code generation or library use
 - `graphviz` is required for `podio-vis`
 - `tabulate` is required for `podio-dump`
+- `tqdm` is required for `podio-merge-files`
 
 ## Preparing the environment
 
