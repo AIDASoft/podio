@@ -34,8 +34,7 @@ jobs:
         run: |
           echo "::group::Run CMake"
           # export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
-          cmake -B build -S . \
-            --preset ci-build \
+          cmake --preset ci-build \
             -DENABLE_JULIA=ON \
             -DENABLE_RNTUPLE=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
@@ -44,7 +43,7 @@ jobs:
             -DPODIO_USE_CLANG_FORMAT=AUTO
           echo "::endgroup::"
           echo "::group::Build"
-          cmake --build build -- -k0
+          cmake --build --preset ci-build
           echo "::endgroup::"
           echo "::group::Julia StaticArrays Package Install"
           # # Temporary workaround for https://its.cern.ch/jira/browse/SPI-2838
@@ -52,8 +51,8 @@ jobs:
           julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
           echo "::group::Run tests"
-          ctest --test-dir build --output-on-failure --schedule-random -j$(nproc) --timeout 600
+          ctest --preset ci-build -j$(nproc)
           echo "::endgroup::"
           echo "::group::Install"
-          cmake --build build --target install
+          cmake --build --preset ci-build --target install
           echo "::endgroup::"
