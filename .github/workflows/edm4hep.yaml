@@ -48,18 +48,17 @@ jobs:
             echo "::endgroup::"
             echo "::group::Build podio"
             cd $STARTDIR/podio
-            cmake -B build -S . \
-              --preset ci-build \
+            cmake -S . --preset ci-build \
               -DENABLE_JULIA=ON \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
               -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
               -DUSE_EXTERNAL_CATCH2=ON \
               -DPODIO_RUN_STRACE_TEST=ON
-            cmake --build build -- -k0
+            cmake --build --preset ci-build
             echo "::endgroup::"
             echo "::group::Test and install podio"
-            ctest --test-dir build --output-on-failure --schedule-random -j$(nproc) --timeout 600
-            cmake --build build --target install
+            ctest --preset ci-build -j$(nproc)
+            cmake --build --preset ci-build --target install
             cd $STARTDIR/podio
             source init.sh && source env.sh
             echo "::endgroup::"

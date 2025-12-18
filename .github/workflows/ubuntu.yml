@@ -30,8 +30,7 @@ jobs:
         ccache-key: ccache-ubuntu-${{ matrix.LCG }}
         run: |
           echo "::group::Run CMake"
-          cmake -B build -S . \
-            --preset ci-build \
+          cmake -S . --preset ci-build \
             -DENABLE_JULIA=ON \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=20 \
@@ -39,14 +38,14 @@ jobs:
             -DPODIO_RUN_STRACE_TEST=ON
           echo "::endgroup::"
           echo "::group::Build"
-          cmake --build build -- -k0
+          cmake --build --preset ci-build
           echo "::endgroup"
           echo "::group::Julia StaticArrays Package Install"
           julia -e 'import Pkg; Pkg.add("StaticArrays")'
           echo "::endgroup"
           echo "::group::Run tests"
-          ctest --test-dir build --output-on-failure --schedule-random -j$(nproc) --timeout 600
+          ctest --preset ci-build -j$(nproc)
           echo "::endgroup::"
           echo "::group::Install"
-          cmake --build build --target install
+          cmake --build --preset ci-build --target install
           echo "::endgroup::"
