@@ -436,6 +436,27 @@ TEST_CASE("Frame getName", "[frame][basics]") {
   REQUIRE_FALSE(frame.getName(0xfffffff).has_value());
 }
 
+TEST_CASE("Frame get from object", "[frame][basics]") {
+  auto event = podio::Frame{};
+
+  auto clusters = ExampleClusterCollection{};
+  auto cluster = clusters.create(3.14f);
+
+  REQUIRE(event.get(cluster) == nullptr);
+
+  const auto& invalidClusters = event.get<ExampleClusterCollection>(cluster);
+  REQUIRE_FALSE(invalidClusters.isValid());
+
+  const auto& frameClusters = event.put(std::move(clusters), "clusters");
+  const auto& objectClusters = event.get<ExampleClusterCollection>(cluster);
+  REQUIRE(frameClusters[0] == objectClusters[0]);
+
+  const auto* collPtr = event.get(cluster);
+  STATIC_REQUIRE(std::is_same_v<decltype(collPtr), const ExampleClusterCollection*>);
+  REQUIRE(collPtr != nullptr);
+  REQUIRE((*collPtr)[0] == cluster);
+}
+
 TEST_CASE("EIC-Jana2 cleanup use case", "[memory-management][492][174]") {
   // Test case that only triggers in ASan builds if memory-management / cleanup
   // has a bug

@@ -299,8 +299,12 @@ TEST_CASE("Links templated accessors", "[links]") {
   }
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
-TEST_CASE("LinkCollection collection concept", "[links][concepts]") {
+
+TEST_CASE("Link concept checks", "[links][concepts]") {
   STATIC_REQUIRE(podio::CollectionType<TestLColl>);
+  STATIC_REQUIRE(podio::ObjectType<TestL>);
+  STATIC_REQUIRE(podio::ObjectType<TestMutL>);
+  STATIC_REQUIRE_FALSE(podio::ObjectType<TestLColl>);
 }
 
 TEST_CASE("LinkCollection constness", "[links][static-checks][const-correctness]") {

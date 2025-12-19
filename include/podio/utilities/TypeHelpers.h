@@ -176,6 +176,12 @@ namespace detail {
   template <typename T>
   using hasObject_t = typename T::object_type;
 
+  /// Detector for checking the existence of a value_type member. Necessary to
+  /// avoid false positives for default handle types from collections, since
+  /// collections also specify a mutable_type member.
+  template <typename T>
+  using hasValue_t = typename T::value_type;
+
   /// Variable template for determining whether type T is a podio generated
   /// mutable handle class
   template <typename T>
@@ -184,7 +190,8 @@ namespace detail {
   /// Variable template for determining whether type T is a podio generated
   /// default handle class
   template <typename T>
-  constexpr static bool isDefaultHandleType = det::is_detected_v<hasMutable_t, std::remove_reference_t<T>>;
+  constexpr static bool isDefaultHandleType = det::is_detected_v<hasMutable_t, std::remove_reference_t<T>> &&
+      !det::is_detected_v<hasValue_t, std::remove_reference_t<T>>;
 
   /// Variable template for obtaining the default handle type from any podio
   /// generated handle type.
@@ -244,6 +251,11 @@ namespace detail {
 
 // forward declaration to be able to use it below
 class CollectionBase;
+
+/// Concept for checking whether a passed type T is (or can be) a podio
+/// generated handle class
+template <typename T>
+concept ObjectType = detail::isMutableHandleType<T> || detail::isDefaultHandleType<T>;
 
 /// Concept for checking whether a passed type T is a collection
 template <typename T>

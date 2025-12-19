@@ -63,6 +63,7 @@
 #include "extension_model/extension_model.h"
 
 #include "podio/UserDataCollection.h"
+#include "podio/utilities/TypeHelpers.h"
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto coll = EventInfoCollection();
@@ -124,6 +125,11 @@ TEST_CASE("Component", "[basics]") {
   auto info = MutableExampleWithComponent();
   info.component().data.x = 3;
   REQUIRE(3 == info.component().data.x);
+}
+
+TEST_CASE("ObjectType concept", "[concepts]") {
+  STATIC_REQUIRE(podio::ObjectType<ExampleHit>);
+  STATIC_REQUIRE_FALSE(podio::ObjectType<ExampleHitCollection>);
 }
 
 TEST_CASE("makeEmpty", "[basics]") {
