@@ -622,6 +622,22 @@ have resolvable schema evolution incompatibilities:"
             ),
         )
 
+    @staticmethod
+    def _build_type_info(full_name):
+        """Extract namespace and bare type from a full type name.
+        
+        Args:
+            full_name: Fully qualified type name (e.g., 'nsp::EnergyInNamespace' or 'ExampleHit')
+            
+        Returns:
+            Dictionary with 'full', 'ns', and 'bare' keys
+        """
+        if "::" in full_name:
+            ns, bare = full_name.rsplit("::", 1)
+        else:
+            ns, bare = "", full_name
+        return {"full": full_name, "ns": ns, "bare": bare}
+
     def _write_datamodel_module(self):
         """Write a C++20 module interface file that exports all datamodel types"""
         if not self.enable_modules:
@@ -630,33 +646,19 @@ have resolvable schema evolution incompatibilities:"
         if self.verbose:
             print(f"Generating C++20 module interface for {self.package_name}")
 
-        # Prepare the context data for the template
-        # Components: extract just the bare type (last part after ::)
-        component_bare_types = [name.split("::")[-1] for name in self.datamodel.components.keys()]
-        component_full_names = list(self.datamodel.components.keys())
-
-        # Datatypes: extract bare types and full names
-        datatype_bare_types = [name.split("::")[-1] for name in self.datamodel.datatypes.keys()]
-        datatype_full_names = list(self.datamodel.datatypes.keys())
-
-        # Interfaces and links
-        interface_bare_types = [name.split("::")[-1] for name in self.datamodel.interfaces.keys()]
-        interface_full_names = list(self.datamodel.interfaces.keys())
-
-        link_bare_types = [name.split("::")[-1] for name in self.datamodel.links.keys()]
-        link_full_names = list(self.datamodel.links.keys())
+        # Prepare structured type information with namespace details
+        datatypes = [self._build_type_info(name) for name in self.datamodel.datatypes.keys()]
+        components = [self._build_type_info(name) for name in self.datamodel.components.keys()]
+        interfaces = [self._build_type_info(name) for name in self.datamodel.interfaces.keys()]
+        links = [self._build_type_info(name) for name in self.datamodel.links.keys()]
 
         context = {
             "package_name": self.package_name,
             "incfolder": self.incfolder,
-            "datatype_types": datatype_bare_types,  # For includes
-            "datatype_names": datatype_full_names,  # For exports
-            "component_types": component_bare_types,  # For includes
-            "component_names": component_full_names,  # For exports
-            "interface_types": interface_bare_types,  # For includes
-            "interface_names": interface_full_names,  # For exports
-            "link_types": link_bare_types,  # For includes
-            "link_names": link_full_names,  # For exports
+            "datatypes": datatypes,
+            "components": components,
+            "interfaces": interfaces,
+            "links": links,
         }
 
         # Generate the module file
