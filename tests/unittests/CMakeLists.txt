@@ -49,32 +49,43 @@ if(PODIO_ENABLE_CXX_MODULES)
   # This test demonstrates the intended usage pattern when CMake support matures.
   # CMake 3.28+ added CXX_MODULE file sets, but consuming them in regular .cpp files
   # requires dependency scanning to work correctly, which is still evolving.
+  #
+  # KNOWN ISSUES (as of GCC 15 / CMake 3.31):
+  # - Standard library modules expose TU-local entities, causing compilation errors
+  # - Module dependency scanning doesn't fully work with imported modules in .cpp files
+  # - This test will fail to compile until these issues are resolved upstream
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.30)
-    message(STATUS "CMake ${CMAKE_VERSION} - adding module import demonstration test")
-    message(STATUS "  Note: Direct 'import' in .cpp files requires experimental CMake features")
-    message(STATUS "  This test documents the intended usage when CMake module support matures")
+    message(STATUS "CMake ${CMAKE_VERSION} - module import test available but expected to fail")
+    message(STATUS "  Note: Direct 'import' in .cpp files blocked by compiler/stdlib issues")
+    message(STATUS "  This test will be enabled once GCC/Clang stdlib modules are stable")
     
     # This test serves as:
-    # 1. Documentation of how modules SHOULD be consumed when CMake support is complete
-    # 2. A canary to detect when CMake module support reaches maturity
+    # 1. Documentation of how modules SHOULD be consumed when support is complete
+    # 2. A canary to detect when module support reaches maturity
     # 3. Validation that our module interfaces are correctly structured
-    add_executable(unittest_podio_import cxx_modules_import.cpp)
-    target_link_libraries(unittest_podio_import PRIVATE 
-      TestDataModel 
-      podio::podio 
-      Catch2::Catch2WithMain
-    )
-    target_compile_features(unittest_podio_import PRIVATE cxx_std_20)
-    
-    # Add the test but mark it as experimental
-    add_test(NAME unittest_import COMMAND unittest_podio_import)
-    PODIO_SET_TEST_ENV(unittest_import)
-    set_tests_properties(unittest_import PROPERTIES
-      LABELS "modules;import;experimental"
-      # This test is expected to fail until CMake module dependency scanning matures
-      # When it starts passing without code changes, CMake support has improved!
-      WILL_FAIL TRUE
-    )
+    #
+    # Currently disabled due to known compiler/stdlib issues
+    # Uncomment when GCC/Clang provide stable standard library module support
+    #
+    # add_executable(unittest_podio_import cxx_modules_import.cpp)
+    # target_link_libraries(unittest_podio_import PRIVATE 
+    #   TestDataModel 
+    #   podio::podio 
+    #   Catch2::Catch2WithMain
+    # )
+    # target_compile_features(unittest_podio_import PRIVATE cxx_std_20)
+    # 
+    # # Enable module scanning for this file
+    # set_source_files_properties(cxx_modules_import.cpp PROPERTIES
+    #   LANGUAGE CXX
+    #   CXX_SCAN_FOR_MODULES ON
+    # )
+    # 
+    # add_test(NAME unittest_import COMMAND unittest_podio_import)
+    # PODIO_SET_TEST_ENV(unittest_import)
+    # set_tests_properties(unittest_import PROPERTIES
+    #   LABELS "modules;import;experimental"
+    # )
   else()
     message(STATUS "CMake ${CMAKE_VERSION} - skipping module import test (requires 3.30+)")
   endif()
