@@ -1,0 +1,117 @@
+{% import "macros/utils.jinja2" as utils %}
+// SPDX-License-Identifier: Apache-2.0
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+//
+// C++20 Module Interface for {{ package_name }} datamodel
+// This module exports all generated datatypes, collections, and components
+
+module;
+
+// Global module fragment - include all necessary headers
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <vector>
+
+// Podio core headers (module-safe - no ROOT dependencies)
+#include "podio/CollectionBase.h"
+#include "podio/ICollectionProvider.h"
+#include "podio/SchemaEvolution.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/utilities/MaybeSharedPtr.h"
+#include "podio/detail/OrderKey.h"
+
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
+#include "nlohmann/json_fwd.hpp"
+#endif
+
+// Include all component headers
+{% for component in component_types %}
+#include "{{ incfolder }}{{ component }}.h"
+{% endfor %}
+
+// Include all datatype headers (Object, MutableObject, Collection, etc.)
+{% for name in datatype_types %}
+#include "{{ incfolder }}{{ name }}.h"
+#include "{{ incfolder }}Mutable{{ name }}.h"
+#include "{{ incfolder }}{{ name }}Obj.h"
+#include "{{ incfolder }}{{ name }}Data.h"
+#include "{{ incfolder }}{{ name }}Collection.h"
+#include "{{ incfolder }}{{ name }}CollectionData.h"
+{% endfor %}
+
+// Include all interface headers
+{% for interface in interface_types %}
+#include "{{ incfolder }}{{ interface }}.h"
+{% endfor %}
+
+// Include all link headers
+{% for link in link_types %}
+#include "{{ incfolder }}{{ link }}Collection.h"
+{% endfor %}
+
+export module {{ package_name }}.datamodel;
+
+// Re-export podio core types that are used in the datamodel
+export namespace podio {
+  using podio::CollectionBase;
+  using podio::ICollectionProvider;
+  using podio::SchemaEvolution;
+  using podio::SchemaVersionT;
+}
+
+// Export all components
+{% if component_names %}
+export namespace {{ package_name }} {
+{% for component in component_names %}
+  using {{ component }};
+{% endfor %}
+}
+{% endif %}
+
+// Export all datatypes (Object, MutableObject, Collection)
+{% for name in datatype_names %}
+{% set bare = name.split("::")[-1] %}
+export namespace {{ package_name }} {
+  // {{ name }} datatype
+  using {{ name }};
+  using {{ name.rsplit("::", 1)[0] ~ "::" if "::" in name else "" }}Mutable{{ bare }};
+  using {{ name.rsplit("::", 1)[0] ~ "::" if "::" in name else "" }}{{ bare }}Collection;
+  using {{ name.rsplit("::", 1)[0] ~ "::" if "::" in name else "" }}{{ bare }}CollectionIterator;
+  using {{ name.rsplit("::", 1)[0] ~ "::" if "::" in name else "" }}Mutable{{ bare }}CollectionIterator;
+  using {{ name.rsplit("::", 1)[0] ~ "::" if "::" in name else "" }}{{ bare }}Obj;
+  using {{ name.rsplit("::", 1)[0] ~ "::" if "::" in name else "" }}{{ bare }}Data;
+  using {{ name.rsplit("::", 1)[0] ~ "::" if "::" in name else "" }}{{ bare }}CollectionData;
+}
+{% endfor %}
+
+// Export all interfaces
+{% if interface_names %}
+export namespace {{ package_name }} {
+{% for interface in interface_names %}
+  using {{ interface }};
+{% endfor %}
+}
+{% endif %}
+
+// Export all link collections
+{% if link_names %}
+export namespace {{ package_name }} {
+{% for link in link_names %}
+{% set bare = link.split("::")[-1] %}
+  using {{ link.rsplit("::", 1)[0] ~ "::" if "::" in link else "" }}{{ bare }}Collection;
+{% endfor %}
+}
+{% endif %}
+
+// Export type lists for introspection
+export namespace {{ package_name }} {
+  // Note: TypeList definitions are in {{ package_name }}.h header
+  // They cannot be directly exported from modules due to template complexities
+}
