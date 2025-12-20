@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright (c) 2024 PODIO Contributors
 // Module interface for podio.core - ROOT-independent podio functionality
 //
 // This module exports the core podio types and interfaces that don't depend on ROOT.
