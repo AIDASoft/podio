@@ -48,6 +48,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         old_descriptions,
         evolution_file,
         datamodel_version=None,
+        enable_modules=False,
     ):
         super().__init__(
             yamlfile,
@@ -59,6 +60,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             datamodel_version=datamodel_version,
         )
         self.io_handlers = io_handlers
+        self.enable_modules = enable_modules
 
         # schema evolution specific code
         self.old_yamlfiles = old_descriptions
@@ -88,6 +90,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         if the_links := datamodel["links"]:
             self._write_links_registration_file(the_links)
         self._write_all_collections_header()
+        self._write_datamodel_module()
         self._write_cmake_lists_file()
 
     def do_process_component(self, name, component):
@@ -533,6 +536,7 @@ have resolvable schema evolution incompatibilities:"
         header_files = list(f for f in self.generated_files if f.endswith(".h"))
         src_files = (f for f in self.generated_files if f.endswith(".cc"))
         xml_files = (f for f in self.generated_files if f.endswith(".xml"))
+        module_files = (f for f in self.generated_files if f.endswith(".ixx"))
 
         # Sort header files so that Collection headers appear first. This is
         # necessary for cling to load things in the correct order for some
@@ -582,6 +586,15 @@ have resolvable schema evolution incompatibilities:"
             )
         )
 
+        full_contents.append(
+            _write_list(
+                "module_files",
+                r"${ARG_OUTPUT_FOLDER}/src",
+                module_files,
+                "Generated C++20 module interface files",
+            )
+        )
+
         write_file_if_changed(
             f"{self.install_dir}/podio_generated_files.cmake",
             "\n".join(full_contents),
@@ -608,6 +621,47 @@ have resolvable schema evolution incompatibilities:"
                 },
             ),
         )
+
+    def _write_datamodel_module(self):
+        """Write a C++20 module interface file that exports all datamodel types"""
+        if not self.enable_modules:
+            return
+
+        if self.verbose:
+            print(f"Generating C++20 module interface for {self.package_name}")
+
+        # Prepare the context data for the template
+        # Components: extract just the bare type (last part after ::)
+        component_bare_types = [name.split("::")[-1] for name in self.datamodel.components.keys()]
+        component_full_names = list(self.datamodel.components.keys())
+
+        # Datatypes: extract bare types and full names
+        datatype_bare_types = [name.split("::")[-1] for name in self.datamodel.datatypes.keys()]
+        datatype_full_names = list(self.datamodel.datatypes.keys())
+
+        # Interfaces and links
+        interface_bare_types = [name.split("::")[-1] for name in self.datamodel.interfaces.keys()]
+        interface_full_names = list(self.datamodel.interfaces.keys())
+
+        link_bare_types = [name.split("::")[-1] for name in self.datamodel.links.keys()]
+        link_full_names = list(self.datamodel.links.keys())
+
+        context = {
+            "package_name": self.package_name,
+            "incfolder": self.incfolder,
+            "datatype_types": datatype_bare_types,  # For includes
+            "datatype_names": datatype_full_names,  # For exports
+            "component_types": component_bare_types,  # For includes
+            "component_names": component_full_names,  # For exports
+            "interface_types": interface_bare_types,  # For includes
+            "interface_names": interface_full_names,  # For exports
+            "link_types": link_bare_types,  # For includes
+            "link_names": link_full_names,  # For exports
+        }
+
+        # Generate the module file
+        module_content = self._eval_template("datamodel_module.ixx.jinja2", context)
+        self._write_file(f"{self.package_name}_module.ixx", module_content)
 
     def _write_links_registration_file(self, links):
         """Write a .cc file that registers all the link collections that were
