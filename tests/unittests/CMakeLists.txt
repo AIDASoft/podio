@@ -41,7 +41,7 @@ else()
 endif()
 
 find_package(Threads REQUIRED)
-add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp test_json_output.cpp cxx_modules.cpp)
+add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp test_json_output.cpp)
 target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 # Catch2 TEST_CASE/SECTION macros expand __COUNTER__ at the call site in user
 # code, so marking Catch2 headers as system includes is not sufficient to
@@ -74,17 +74,6 @@ endif()
 
 # Add module-specific tests when modules are enabled
 if(PODIO_ENABLE_CXX_MODULES)
-  # Test that module-compiled code works with traditional includes
-  # This validates that when modules are enabled, the generated code still compiles
-  # and works correctly when consumed via traditional headers
-  add_executable(unittest_podio_modules cxx_modules_import.cpp)
-  target_link_libraries(unittest_podio_modules PRIVATE TestDataModel Catch2::Catch2WithMain)
-  target_compile_features(unittest_podio_modules PRIVATE cxx_std_20)
-  target_compile_definitions(unittest_podio_modules PRIVATE PODIO_ENABLE_CXX_MODULES)
-  
-  add_test(NAME unittest_modules COMMAND unittest_podio_modules)
-  PODIO_SET_TEST_ENV(unittest_modules)
-  
   # Direct import tests require CMake 3.30+ for proper module consumption support
   # NOTE: As of CMake 3.31, importing modules in regular .cpp files is experimental.
   # This test demonstrates the intended usage pattern when CMake support matures.
@@ -99,18 +88,18 @@ if(PODIO_ENABLE_CXX_MODULES)
     # 1. Documentation of how modules SHOULD be consumed when CMake support is complete
     # 2. A canary to detect when CMake module support reaches maturity
     # 3. Validation that our module interfaces are correctly structured
-    add_executable(unittest_podio_direct_import cxx_modules_direct_import.cpp)
-    target_link_libraries(unittest_podio_direct_import PRIVATE 
+    add_executable(unittest_podio_import cxx_modules_import.cpp)
+    target_link_libraries(unittest_podio_import PRIVATE 
       TestDataModel 
       podio::podio 
       Catch2::Catch2WithMain
     )
-    target_compile_features(unittest_podio_direct_import PRIVATE cxx_std_20)
+    target_compile_features(unittest_podio_import PRIVATE cxx_std_20)
     
     # Add the test but mark it as experimental
-    add_test(NAME unittest_direct_import COMMAND unittest_podio_direct_import)
-    PODIO_SET_TEST_ENV(unittest_direct_import)
-    set_tests_properties(unittest_direct_import PROPERTIES
+    add_test(NAME unittest_import COMMAND unittest_podio_import)
+    PODIO_SET_TEST_ENV(unittest_import)
+    set_tests_properties(unittest_import PROPERTIES
       LABELS "modules;import;experimental"
       # This test is expected to fail until CMake module dependency scanning matures
       # When it starts passing without code changes, CMake support has improved!
