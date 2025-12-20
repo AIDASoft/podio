@@ -29,12 +29,6 @@ endif()
 PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
 PODIO_ADD_SIO_IO_BLOCKS(TestDataModel "${headers}" "${sources}")
 
-# Test C++20 module support (if enabled)
-if(PODIO_ENABLE_CXX_MODULES)
-  message(STATUS "Adding test module podio.core to podio library")
-  PODIO_ADD_MODULE_INTERFACE(podio podio.core ${CMAKE_CURRENT_SOURCE_DIR}/podio_core_module.ixx)
-endif()
-
 # Build the extension data model and link it against the upstream model
 PODIO_GENERATE_DATAMODEL(extension_model datalayout_extension.yaml ext_headers ext_sources
   UPSTREAM_EDM datamodel:datalayout.yaml
