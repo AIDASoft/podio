@@ -259,6 +259,36 @@ Currently, podio uses traditional `#include <vector>` etc. rather than `import s
 
 **Future**: Will migrate to standard library modules when widely supported.
 
+### Direct Module Consumption in .cpp Files
+
+As of CMake 3.31, consuming C++20 modules via `import` statements in regular `.cpp` files is experimental and has limitations:
+
+- **CMake 3.28+**: Added `CXX_MODULE` file sets for producing modules
+- **CMake 3.30+**: Improved dependency scanning for consuming modules in .cpp files  
+- **CMake 3.31+**: Better support, but still experimental for some use cases
+
+**Current status**: Direct `import` in regular `.cpp` files may not work reliably due to dependency scanning limitations. The recommended approach is to link against module-enabled libraries and use traditional `#include` statements, which works perfectly and still benefits from faster compilation.
+
+**Recommended patterns**:
+```cpp
+// Pattern 1: Use headers even when modules are enabled (most compatible)
+#include <podio/ObjectID.h>
+#include <datamodel/ExampleHitCollection.h>
+
+// Pattern 2: Use import in module interface files (.ixx)  
+// (fully supported in CMake 3.29+)
+export module mymodule;
+import podio.core;
+import datamodel.datamodel;
+
+// Pattern 3: Direct import in .cpp files (experimental, requires CMake 3.30+)
+import podio.core;  // May not work without additional CMake configuration
+import datamodel.datamodel;
+```
+
+**When will direct imports work reliably?**  
+Monitor CMake releases for improvements to dependency scanning. Podio includes experimental tests that will start passing when CMake support matures.
+
 ## Migration Guide
 
 ### For Existing Projects
