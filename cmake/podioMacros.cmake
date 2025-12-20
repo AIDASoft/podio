@@ -224,7 +224,7 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
     if(DEFINED module_files AND module_files)
       message(STATUS "Adding C++20 module interface to ${lib_name}")
       target_sources(${lib_name}
-        PRIVATE
+        PUBLIC
           FILE_SET CXX_MODULES
           BASE_DIRS ${ARG_OUTPUT_FOLDER}
           FILES ${module_files}

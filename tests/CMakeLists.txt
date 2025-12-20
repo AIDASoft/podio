@@ -98,6 +98,27 @@ add_subdirectory(schema_evolution)
 # Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")
 
+# C++ modules integration test
+if(PODIO_ENABLE_CXX_MODULES)
+  # Test that generated module interfaces are valid
+  add_test(NAME modules_generation_check
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/test_module_generation.py ${PROJECT_BINARY_DIR}
+  )
+  
+  # Integration test for using modules in downstream projects
+  add_test(NAME modules_integration
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/test_modules_integration.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  set_property(TEST modules_integration
+    PROPERTY ENVIRONMENT
+      "PODIO_ENABLE_CXX_MODULES=ON"
+      "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+      "PODIO_BUILD_BASE=${PROJECT_BINARY_DIR}"
+      "PODIO_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}"
+  )
+endif()
+
 if (ENABLE_JULIA)
   message(STATUS "Julia Datamodel generation is enabled.")
   PODIO_GENERATE_DATAMODEL(datamodeljulia datalayout.yaml headers sources
