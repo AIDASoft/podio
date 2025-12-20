@@ -7,14 +7,16 @@
 // - Ninja or VS generator (Unix Makefiles doesn't support modules)
 // - GCC 14+ or Clang 18+ with -fmodules-ts support
 //
-// STATUS: As of CMake 3.31, consuming modules via 'import' in regular .cpp files
-// works when dependency scanning correctly identifies the module dependencies.
-// This requires proper build system configuration and may still have edge cases.
+// CURRENT STATUS (Dec 2024):
+// This test is DISABLED due to known issues with GCC 15 and Clang 18:
+// - Standard library modules expose TU-local entities causing compilation errors
+// - Module dependency scanning in CMake 3.31 doesn't fully handle std imports
+// - These are upstream compiler/stdlib issues, not podio-specific
 //
-// The goal of this test is to demonstrate the INTENDED usage pattern when
-// CMake module support becomes fully mature. For now, using traditional headers
-// alongside generated modules (as demonstrated in cxx_modules_import.cpp) is
-// the recommended approach.
+// FUTURE: This test demonstrates the INTENDED usage pattern when C++20 module
+// support matures. It will be enabled once compilers provide stable standard
+// library modules without TU-local entity issues. Until then, use traditional
+// headers alongside generated modules for maximum compatibility.
 
 import podio.core;
 import datamodel.datamodel;
