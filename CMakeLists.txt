@@ -126,6 +126,9 @@ podio_python_setup()
 #--- enable podio macros--------------------------------------------------------
 include(cmake/podioMacros.cmake)
 
+#--- enable C++20 module support (if requested) --------------------------------
+include(cmake/podioModules.cmake)
+
 # optionally build with SIO -------------------------------------------------
 if(ENABLE_SIO)
   find_package( SIO REQUIRED)
