@@ -86,6 +86,12 @@ if (ROOT_VERSION VERSION_LESS 6.36)
   target_compile_definitions(podio PUBLIC PODIO_ROOT_OLDER_6_36=1)
 endif()
 
+# Add C++20 module support (if enabled)
+if(PODIO_ENABLE_CXX_MODULES)
+  message(STATUS "Adding podio.core module interface to podio library")
+  PODIO_ADD_MODULE_INTERFACE(podio podio.core ${CMAKE_CURRENT_SOURCE_DIR}/podio_core_module.ixx)
+endif()
+
 
 # --- Root I/O functionality and corresponding dictionary
 SET(root_sources
@@ -203,10 +209,12 @@ endif()
 if (NOT ENABLE_DATASOURCE)
   install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO ${INSTALL_LIBRARIES}
     EXPORT podioTargets
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 else()
   install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO podioDataSource podioDataSourceDict ${INSTALL_LIBRARIES}
     EXPORT podioTargets
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
 
