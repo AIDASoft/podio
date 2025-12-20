@@ -36,10 +36,25 @@ if(NOT Catch2_FOUND)
 endif()
 
 find_package(Threads REQUIRED)
-add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp)
+add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp cxx_modules.cpp)
 target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 if (ENABLE_SIO)
   target_link_libraries(unittest_podio PRIVATE podio::podioSioIO)
+endif()
+
+# Add module-specific tests when modules are enabled
+if(PODIO_ENABLE_CXX_MODULES)
+  add_executable(unittest_podio_modules cxx_modules_import.cpp)
+  target_link_libraries(unittest_podio_modules PRIVATE TestDataModel Catch2::Catch2WithMain)
+  
+  # This test imports modules, so it needs C++20
+  target_compile_features(unittest_podio_modules PRIVATE cxx_std_20)
+  
+  # Define the macro so the tests are compiled
+  target_compile_definitions(unittest_podio_modules PRIVATE PODIO_ENABLE_CXX_MODULES)
+  
+  add_test(NAME unittest_modules COMMAND unittest_podio_modules)
+  PODIO_SET_TEST_ENV(unittest_modules)
 endif()
 
 # The unittests can easily be filtered and they are labelled so we can put together a
