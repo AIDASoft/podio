@@ -43,7 +43,7 @@ options:
   -c CATEGORY, --category CATEGORY
                         Which Frame category to dump
   -e ENTRIES, --entries ENTRIES
-                        Which entries to print. A single number, comma-separated list of numbers or "first:last" for an inclusive range of entries. Defaults to the first entry.
+                        Which entries to print. A single number, comma-separated list of numbers or "first:last" for an inclusive range of entries. Defaults to the first entry. Use -1 to print all available entries.
   -d, --detailed        Dump the full contents, not just the collection info
   -s, --size-stats      Show size statistics per collection for the whole file (if available for the file format)
   --dump-edm DUMP_EDM   Dump the specified EDM definition from the file in yaml format
@@ -69,6 +69,12 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
     fmt::println(stderr, "error: argument -e/--entries: '{}' cannot be parsed into a list of entries", evtRange);
     std::exit(1);
   };
+
+  // We handle this later and for now just emplace a tombstone value that is
+  // easy to recognize
+  if (evtRange == "-1") {
+    return {static_cast<size_t>(-1)};
+  }
 
   // Split by ',' to see if we have to handle multiple events
   auto splitRange = podio::utils::splitString(evtRange, ',');
@@ -100,6 +106,16 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
 
   parseError();
   return {};
+}
+
+std::vector<size_t> fullEntryList(const ParsedArgs& args, const podio::Reader& reader) {
+  if (args.events.size() == 1 && args.events[0] == static_cast<std::size_t>(-1)) {
+    const auto nEntries = reader.getEntries(args.category);
+    std::vector<size_t> allEntries(nEntries);
+    std::iota(allEntries.begin(), allEntries.end(), 0);
+    return allEntries;
+  }
+  return args.events;
 }
 
 ParsedArgs parseArgs(std::vector<std::string> argv) {
@@ -276,7 +292,7 @@ int main(int argc, char* argv[]) {
     stats = reader.getSizeStats(args.category);
   }
 
-  for (const auto event : args.events) {
+  for (const auto event : fullEntryList(args, reader)) {
     try {
       const auto& frame = reader.readFrame(args.category, event);
       printFrame(frame, args.category, event, args.detailed, stats);

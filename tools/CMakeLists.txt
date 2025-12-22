@@ -88,6 +88,7 @@ if(BUILD_TESTING)
   CREATE_DUMP_TEST(podio-dump-help _dummy_target_ --help)
   CREATE_DUMP_TEST(podio-dump-root "podio_write_root_fixture" ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
   CREATE_DUMP_TEST(podio-dump-detailed-root "podio_write_root_fixture" --detailed --category other_events --entries 2:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
+  CREATE_DUMP_TEST(podio-dump-all-events "podio_write_root_fixture" ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root --entries -1)
 
   CREATE_LEGACY_DUMP_TEST("root" v00-16-06 v00-16-06-example.root)
   CREATE_LEGACY_DUMP_TEST("root-detailed" v00-16-06 v00-16-06-example.root --detailed --entries 2:3)

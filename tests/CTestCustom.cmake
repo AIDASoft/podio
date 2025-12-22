@@ -158,6 +158,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       podio-dump-root
       podio-dump-detailed-root
+      podio-dump-all-events
 
       write_interface_root
       read_interface_root
