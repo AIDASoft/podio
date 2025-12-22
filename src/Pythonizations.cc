@@ -1,6 +1,7 @@
 #include "podio/detail/Pythonizations.h"
 
 #include <stdexcept>
+#include <cstring>
 
 namespace podio::detail::pythonizations {
 
