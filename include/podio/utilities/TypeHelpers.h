@@ -59,7 +59,7 @@ namespace detail {
   /// variable template for determining whether type T is in a tuple with types
   /// Ts
   template <typename T, typename Tuple>
-  static constexpr bool isInTuple = TypeInTupleHelper<T, Tuple>::value;
+  inline constexpr bool isInTuple = TypeInTupleHelper<T, Tuple>::value;
 
   /// Helper struct to turn a tuple of types into a tuple of a template of types, e.g.
   ///
@@ -92,7 +92,7 @@ namespace detail {
   /// variable template for determining whether the type T is in the tuple of all
   /// types or in the tuple of all vector of the passed types
   template <typename T, typename Tuple>
-  static constexpr bool isAnyOrVectorOf = isInTuple<T, TupleCatType<Tuple, TupleOfVector<Tuple>>>;
+  inline constexpr bool isAnyOrVectorOf = isInTuple<T, TupleCatType<Tuple, TupleOfVector<Tuple>>>;
 
   /// Helper struct to extract the type from a std::vector or return the
   /// original type if it is not a vector. Works only for "simple" types and does
@@ -119,7 +119,7 @@ namespace detail {
 
   /// Alias template for deciding whether the passed type T is a vector or not
   template <typename T>
-  static constexpr bool isVector = IsVectorHelper<T>::value;
+  inline constexpr bool isVector = IsVectorHelper<T>::value;
 
   /// Helper struct to detect whether a type is a std::map or std::unordered_map
   template <typename T>
@@ -134,7 +134,7 @@ namespace detail {
   /// Alias template for deciding whether the passed type T is a map or
   /// unordered_map
   template <typename T>
-  static constexpr bool isMap = IsMapHelper<T>::value;
+  inline constexpr bool isMap = IsMapHelper<T>::value;
 
   /// Helper struct to homogenize the (type) access for things that behave like
   /// maps, e.g. vectors of pairs (and obviously maps).
@@ -179,12 +179,12 @@ namespace detail {
   /// Variable template for determining whether type T is a podio generated
   /// mutable handle class
   template <typename T>
-  constexpr static bool isMutableHandleType = det::is_detected_v<hasObject_t, std::remove_reference_t<T>>;
+  inline constexpr bool isMutableHandleType = det::is_detected_v<hasObject_t, std::remove_reference_t<T>>;
 
   /// Variable template for determining whether type T is a podio generated
   /// default handle class
   template <typename T>
-  constexpr static bool isDefaultHandleType = det::is_detected_v<hasMutable_t, std::remove_reference_t<T>>;
+  inline constexpr bool isDefaultHandleType = det::is_detected_v<hasMutable_t, std::remove_reference_t<T>>;
 
   /// Variable template for obtaining the default handle type from any podio
   /// generated handle type.
@@ -218,7 +218,7 @@ namespace detail {
   ///
   /// @note: This simply checks whether T has an interfaced_types type member.
   template <typename T>
-  constexpr static bool isInterfaceType = det::is_detected_v<hasInterface_t, std::remove_reference_t<T>>;
+  inline constexpr bool isInterfaceType = det::is_detected_v<hasInterface_t, std::remove_reference_t<T>>;
 
   /// Helper struct to make the detection whether type U can be used to
   /// initialize the interface type T in a SFINAE friendly way
@@ -238,7 +238,7 @@ namespace detail {
   /// Variable template for checking whether the passed type T is an interface
   /// and can be initialized from type U
   template <typename T, typename U>
-  constexpr static bool isInterfaceInitializableFrom = InterfaceInitializerHelper<T, U>::value;
+  inline constexpr bool isInterfaceInitializableFrom = InterfaceInitializerHelper<T, U>::value;
 
 } // namespace detail
 

@@ -28,7 +28,7 @@ using SupportedGenericDataTypes = std::tuple<int, float, std::string, double>;
 
 /// Static bool for determining if a type T is a supported GenericParameters type
 template <typename T>
-static constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, SupportedGenericDataTypes>;
+inline constexpr bool isSupportedGenericDataType = detail::isAnyOrVectorOf<T, SupportedGenericDataTypes>;
 
 /// Concept to be used for templates that should only be present for actually supported data types
 template <typename T>

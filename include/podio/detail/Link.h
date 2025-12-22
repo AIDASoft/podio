@@ -46,12 +46,12 @@ class LinkT {
   /// Variable template to for determining whether T is either FromT or ToT.
   /// Mainly defined for convenience
   template <typename T>
-  static constexpr bool isFromOrToT = detail::isInTuple<T, std::tuple<FromT, ToT>>;
+  inline constexpr static bool isFromOrToT = detail::isInTuple<T, std::tuple<FromT, ToT>>;
 
   /// Variable template to for determining whether T is either FromT or ToT or
   /// any of their mutable versions.
   template <typename T>
-  static constexpr bool isMutableFromOrToT =
+  inline constexpr static bool isMutableFromOrToT =
       detail::isInTuple<T,
                         std::tuple<FromT, ToT, detail::GetMutableHandleType<FromT>, detail::GetMutableHandleType<ToT>>>;
 

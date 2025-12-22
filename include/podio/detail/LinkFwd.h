@@ -12,10 +12,10 @@
 namespace podio {
 namespace detail {
 
-  constexpr std::string_view link_coll_name_prefix = "podio::LinkCollection<";
-  constexpr std::string_view link_name_prefix = "podio::Link<";
-  constexpr std::string_view link_name_infix = ",";
-  constexpr std::string_view link_name_suffix = ">";
+  inline constexpr std::string_view link_coll_name_prefix = "podio::LinkCollection<";
+  inline constexpr std::string_view link_name_prefix = "podio::Link<";
+  inline constexpr std::string_view link_name_infix = ",";
+  inline constexpr std::string_view link_name_suffix = ">";
 
   /// Get an SIO friendly type name for a LinkCollection (necessary for
   /// registration in the SIOBlockFactory)
