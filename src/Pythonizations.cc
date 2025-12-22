@@ -29,7 +29,7 @@ PyObject* subscript(PyObject* self, PyObject* index) {
 
 // Helper to register the subscript pythonization callback as `__getitem__` method
 void pythonize_subscript(PyObject* klass, const std::string& name) {
-  static PyMethodDef ml = {"subscipt_pythonization", subscript, METH_VARARGS, R"(
+  static PyMethodDef ml = {"subscript_pythonization", subscript, METH_VARARGS, R"(
         Raise an `IndexError` exception if an index is invalid.
         The `__getitem__` will return immutable datatype objects instead of the mutable ones.
   )"};
