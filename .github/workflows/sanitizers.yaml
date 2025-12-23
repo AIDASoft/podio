@@ -41,23 +41,15 @@ jobs:
           ccache-key: ccache-sanitizers-el9-${{ matrix.compiler }}-${{ matrix.sanitizer }}
           run: |
             echo "::group::Run CMake"
-            mkdir -p build
-            cd build
-            cmake -DCMAKE_BUILD_TYPE=Debug \
+            cmake -B build S . \
+              --preset ci-build \
+              -DCMAKE_BUILD_TYPE=Debug \
               -DUSE_SANITIZER=${{ matrix.sanitizer }} \
-              -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.compiler }} == gcc15 ]] && echo "23" || echo "20") \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-              -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
-              -DENABLE_SIO=ON \
-              -DENABLE_JULIA=OFF \
-              -DENABLE_RNTUPLE=ON \
-              -DENABLE_DATASOURCE=ON \
-              -DPODIO_ENABLE_SCHEMA_EVOLUTION_TESTS=ON \
-              -G Ninja ..
+              -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.compiler }} == gcc15 ]] && echo "23" || echo "20")
             echo "::endgroup::"
             echo "::group::Build"
-            ninja -k0
+            cmake --build build -- -k0
             echo "::endgroup::"
             echo "::group::Run tests"
-            ctest --output-on-failure --schedule-random -j$(nproc)
+            ctest --test-dir build --output-on-failure --schedule-random -j$(nproc)
             echo "::endgroup::"

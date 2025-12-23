@@ -31,10 +31,9 @@ jobs:
           python3 -m pip install -r doc/requirements.txt
           export PYTHONPATH=$VIRTUAL_ENV/lib/python3.$(python3 -c 'import sys; print(f"{sys.version_info[1]}")')/site-packages:$PYTHONPATH
           echo -e "::endgroup::\n::group::Build podio"
-          cmake -B build . --install-prefix=$(pwd)/install \
-                -GNinja -DENABLE_SIO=ON -DENABLE_RNTUPLE=ON \
-                -DENABLE_DATASOURCE=ON -DBUILD_TESTING=OFF \
-                -DCMAKE_CXX_STANDARD=20
+          cmake -S . --install-prefix=$(pwd)/install \
+                --preset full-build \
+                -DBUILD_TESTING=OFF
           cmake --build build --target install
           source ./init.sh && source ./env.sh
           echo -e "::endgroup::\n::group::build doc"
