@@ -12,7 +12,7 @@ namespace detail {
   struct MarkOwnedTag {};
 } // namespace detail
 
-constexpr static auto MarkOwned [[maybe_unused]] = detail::MarkOwnedTag{};
+inline constexpr auto MarkOwned [[maybe_unused]] = detail::MarkOwnedTag{};
 
 /// "Semi-smart" pointer class for pointers that at some point during their
 /// lifetime might hand over management to another entity. E.g. Objects that

@@ -35,10 +35,10 @@ namespace detail::links {
 
 /// Tag variable to select the lookup of *From* objects have links with a *To*
 /// object in podio::LinkNavigator::getLinked
-static constexpr detail::links::ReturnFromTag ReturnFrom;
+inline constexpr detail::links::ReturnFromTag ReturnFrom;
 /// Tag variable to select the lookup of *To* objects that have links with a
 /// *From* object in podio::LinkNavigator::getLinked
-static constexpr detail::links::ReturnToTag ReturnTo;
+inline constexpr detail::links::ReturnToTag ReturnTo;
 
 /// A helper class to more easily handle one-to-many links.
 ///
