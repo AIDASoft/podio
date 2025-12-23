@@ -27,7 +27,7 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
-  target_include_directories(${libname} SYSTEM PUBLIC
+  target_include_directories(${libname} SYSTEM PRIVATE
     ${Python3_INCLUDE_DIRS}
   )
 
