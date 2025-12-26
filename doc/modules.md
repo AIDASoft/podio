@@ -6,7 +6,7 @@ Podio provides optional support for C++20 modules, offering significant compilat
 
 C++20 modules provide a modern alternative to header files that can dramatically improve compilation times. Podio generates two types of modules:
 
-1. **podio.core** - A module interface for podio's ROOT-independent core functionality
+1. **podio.core** - A module interface for podio's I/O-independent core functionality
 2. **datamodel modules** - Auto-generated module interfaces for each datamodel (e.g., `edm4hep.datamodel`)
 
 Module support is entirely optional and controlled by the `PODIO_ENABLE_CPP_MODULES` CMake option (default: `OFF`).
