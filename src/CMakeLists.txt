@@ -79,7 +79,13 @@ SET(core_headers
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
-target_compile_options(podio PRIVATE -pthread)
+
+# podio uses std::mutex and other threading primitives, so we need threading support
+# Use PUBLIC to ensure consumers (including module importers) get the same threading configuration
+# This is critical for C++ modules which require matching compiler configurations
+find_package(Threads REQUIRED)
+target_link_libraries(podio PUBLIC Threads::Threads)
+
 target_link_libraries(podio PRIVATE Python3::Python)
 # For Frame.h
 if (ROOT_VERSION VERSION_LESS 6.36)
