@@ -57,20 +57,20 @@ cat > test_traditional.cpp << 'EOF'
 
 int main() {
   podio::ObjectID id{42, 1};
-  
+
   if (id.index != 42 || id.collectionID != 1) {
     std::cerr << "ObjectID test failed!" << std::endl;
     return 1;
   }
-  
+
   podio::CollectionIDTable table;
   auto collID = table.add("test_collection");
-  
+
   if (!table.collectionID("test_collection").has_value()) {
     std::cerr << "CollectionIDTable test failed!" << std::endl;
     return 1;
   }
-  
+
   std::cout << "Traditional includes test passed!" << std::endl;
   std::cout << "This confirms that podio libraries built with modules enabled" << std::endl;
   std::cout << "can still be consumed via traditional header includes." << std::endl;

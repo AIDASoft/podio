@@ -58,7 +58,7 @@ if(PODIO_ENABLE_CXX_MODULES)
     message(STATUS "CMake ${CMAKE_VERSION} - module import test available but expected to fail")
     message(STATUS "  Note: Direct 'import' in .cpp files blocked by compiler/stdlib issues")
     message(STATUS "  This test will be enabled once GCC/Clang stdlib modules are stable")
-    
+
     # This test serves as:
     # 1. Documentation of how modules SHOULD be consumed when support is complete
     # 2. A canary to detect when module support reaches maturity
@@ -68,19 +68,19 @@ if(PODIO_ENABLE_CXX_MODULES)
     # Uncomment when GCC/Clang provide stable standard library module support
     #
     # add_executable(unittest_podio_import cxx_modules_import.cpp)
-    # target_link_libraries(unittest_podio_import PRIVATE 
-    #   TestDataModel 
-    #   podio::podio 
+    # target_link_libraries(unittest_podio_import PRIVATE
+    #   TestDataModel
+    #   podio::podio
     #   Catch2::Catch2WithMain
     # )
     # target_compile_features(unittest_podio_import PRIVATE cxx_std_20)
-    # 
+    #
     # # Enable module scanning for this file
     # set_source_files_properties(cxx_modules_import.cpp PROPERTIES
     #   LANGUAGE CXX
     #   CXX_SCAN_FOR_MODULES ON
     # )
-    # 
+    #
     # add_test(NAME unittest_import COMMAND unittest_podio_import)
     # PODIO_SET_TEST_ENV(unittest_import)
     # set_tests_properties(unittest_import PROPERTIES

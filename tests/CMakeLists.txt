@@ -127,7 +127,7 @@ if(PODIO_ENABLE_CXX_MODULES)
   add_test(NAME modules_generation_check
     COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/test_module_generation.py ${PROJECT_BINARY_DIR}
   )
-  
+
   # Integration test for using modules in downstream projects
   add_test(NAME modules_integration
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/test_modules_integration.sh

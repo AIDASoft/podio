@@ -264,7 +264,7 @@ Currently, podio uses traditional `#include <vector>` etc. rather than `import s
 As of CMake 3.31, consuming C++20 modules via `import` statements in regular `.cpp` files is experimental and has limitations:
 
 - **CMake 3.28+**: Added `CXX_MODULE` file sets for producing modules
-- **CMake 3.30+**: Improved dependency scanning for consuming modules in .cpp files  
+- **CMake 3.30+**: Improved dependency scanning for consuming modules in .cpp files
 - **CMake 3.31+**: Better support, but still experimental for some use cases
 
 **Current status**: Direct `import` in regular `.cpp` files may not work reliably due to dependency scanning limitations. The recommended approach is to link against module-enabled libraries and use traditional `#include` statements, which works perfectly and still benefits from faster compilation.
@@ -275,7 +275,7 @@ As of CMake 3.31, consuming C++20 modules via `import` statements in regular `.c
 #include <podio/ObjectID.h>
 #include <datamodel/ExampleHitCollection.h>
 
-// Pattern 2: Use import in module interface files (.ixx)  
+// Pattern 2: Use import in module interface files (.ixx)
 // (fully supported in CMake 3.29+)
 export module mymodule;
 import podio.core;
@@ -286,7 +286,7 @@ import podio.core;  // May not work without additional CMake configuration
 import datamodel.datamodel;
 ```
 
-**When will direct imports work reliably?**  
+**When will direct imports work reliably?**
 Monitor CMake releases for improvements to dependency scanning. Podio includes experimental tests that will start passing when CMake support matures.
 
 ## Migration Guide
@@ -318,7 +318,7 @@ Podio guarantees:
 All podio tests pass with modules enabled:
 - Unit tests
 - Integration tests
-- Schema evolution tests  
+- Schema evolution tests
 - Python binding tests
 
 CI includes module testing on GCC 15 builds to ensure ongoing compatibility.
@@ -327,22 +327,22 @@ CI includes module testing on GCC 15 builds to ensure ongoing compatibility.
 
 ### "Ninja generator required for modules"
 
-**Cause**: Attempted to use modules with Unix Makefiles generator  
+**Cause**: Attempted to use modules with Unix Makefiles generator
 **Solution**: Use `-GNinja` when configuring CMake
 
 ### "CMake 3.29 or later required for modules"
 
-**Cause**: CMake version too old  
+**Cause**: CMake version too old
 **Solution**: Upgrade CMake or disable modules with `-DPODIO_ENABLE_CPP_MODULES=OFF`
 
 ### "Module file not found"
 
-**Cause**: Module interface not installed or not in include path  
+**Cause**: Module interface not installed or not in include path
 **Solution**: Ensure podio was built with modules enabled and properly installed
 
 ### Compilation errors with ROOT headers in modules
 
-**Cause**: Attempting to include ROOT headers in module interface  
+**Cause**: Attempting to include ROOT headers in module interface
 **Solution**: Keep ROOT includes as traditional `#include` outside module interfaces
 
 ## Future Directions
@@ -383,22 +383,22 @@ int main() {
   // Use module-imported types for data structures
   edm4hep::MCParticleCollection particles;
   podio::GenericParameters params;
-  
+
   // Use traditional header for ROOT I/O
   podio::ROOTReader reader;
   reader.openFile("events.root");
-  
+
   // Read and process
   for (unsigned i = 0; i < reader.getEntries("events"); ++i) {
     auto frame = reader.readEntry("events", i);
     auto& mcparticles = frame.get<edm4hep::MCParticleCollection>("MCParticles");
-    
+
     for (const auto& particle : mcparticles) {
-      std::cout << "PDG: " << particle.getPDG() 
+      std::cout << "PDG: " << particle.getPDG()
                 << " Energy: " << particle.getEnergy() << "\n";
     }
   }
-  
+
   return 0;
 }
 ```
