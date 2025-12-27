@@ -98,6 +98,50 @@ add_subdirectory(schema_evolution)
 # Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")
 
+# C++ modules simple import test (no Catch2 dependency)
+if(PODIO_ENABLE_CXX_MODULES)
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.30)
+    message(STATUS "Adding simple C++20 module import test")
+
+    add_executable(test_module_import test_module_import.cpp)
+    target_link_libraries(test_module_import PRIVATE TestDataModel podio)
+    target_compile_features(test_module_import PRIVATE cxx_std_20)
+
+    # Enable module scanning for this file
+    set_source_files_properties(test_module_import.cpp PROPERTIES
+      LANGUAGE CXX
+      CXX_SCAN_FOR_MODULES ON
+    )
+
+    add_test(NAME module_import COMMAND test_module_import)
+    PODIO_SET_TEST_ENV(module_import)
+    set_tests_properties(module_import PROPERTIES
+      LABELS "modules;import;basic"
+    )
+  endif()
+endif()
+
+# C++ modules integration test
+if(PODIO_ENABLE_CXX_MODULES)
+  # Test that generated module interfaces are valid
+  add_test(NAME modules_generation_check
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/test_module_generation.py ${PROJECT_BINARY_DIR}
+  )
+
+  # Integration test for using modules in downstream projects
+  add_test(NAME modules_integration
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/test_modules_integration.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  set_property(TEST modules_integration
+    PROPERTY ENVIRONMENT
+      "PODIO_ENABLE_CXX_MODULES=ON"
+      "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+      "PODIO_BUILD_BASE=${PROJECT_BINARY_DIR}"
+      "PODIO_INSTALL_DIR=${CMAKE_INSTALL_PREFIX}"
+  )
+endif()
+
 if (ENABLE_JULIA)
   message(STATUS "Julia Datamodel generation is enabled.")
   PODIO_GENERATE_DATAMODEL(datamodeljulia datalayout.yaml headers sources

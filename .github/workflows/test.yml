@@ -43,6 +43,7 @@ jobs:
             -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DCMAKE_INSTALL_PREFIX=../install \
             -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
+            -DPODIO_ENABLE_CPP_MODULES=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "ON" || echo "OFF") \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
             -DUSE_EXTERNAL_CATCH2=AUTO \
