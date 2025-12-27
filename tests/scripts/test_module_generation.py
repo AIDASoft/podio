@@ -5,7 +5,6 @@ and contain the expected exports.
 """
 
 import sys
-import os
 import re
 from pathlib import Path
 
@@ -41,6 +40,14 @@ def check_module_interface(module_file):
 
 
 def main():
+    """Run module generation validation tests.
+
+    Checks that all generated C++ module interface files (.ixx) exist and
+    have the expected structure (module fragment, export declarations, etc.).
+
+    Returns:
+        0 on success, 1 on failure
+    """
     if len(sys.argv) < 2:
         print("Usage: test_module_generation.py <build_dir>")
         return 1
@@ -74,9 +81,9 @@ def main():
     if all_passed:
         print("All module interface checks passed!")
         return 0
-    else:
-        print("Some module interface checks failed!")
-        return 1
+
+    print("Some module interface checks failed!")
+    return 1
 
 
 if __name__ == "__main__":
