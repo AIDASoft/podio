@@ -147,6 +147,28 @@ class DataType:
     def __repr__(self):
         return f"DataType: {self.__str__()}"
 
+    def qualified_for_modules(self, prefix="", suffix=""):
+        """Return the qualified name for C++ using declarations in modules.
+        
+        Args:
+            prefix: Optional prefix to add before the type name (e.g., "Mutable")
+            suffix: Optional suffix to add after the type name (e.g., "Collection")
+        
+        Returns:
+            For namespaced types: 'namespace::PrefixTypeSuffix' (no leading ::)
+            For global types: '::PrefixTypeSuffix' (with leading ::)
+        
+        Examples:
+            DataType("ExampleHit").qualified_for_modules()  # Returns "::ExampleHit"
+            DataType("ExampleHit").qualified_for_modules(prefix="Mutable")  # Returns "::MutableExampleHit"
+            DataType("ex42::Type").qualified_for_modules(suffix="Collection")  # Returns "ex42::TypeCollection"
+        """
+        type_name = f"{prefix}{self.bare_type}{suffix}"
+        if self.namespace:
+            return f"{self.namespace}::{type_name}"
+        else:
+            return f"::{type_name}"
+
     def _to_json(self):
         """Return a string representation that can be parsed again"""
         return self.full_type

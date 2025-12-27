@@ -33,27 +33,24 @@ module;
 
 // Include all component headers
 {% for comp in components %}
-#include "{{ incfolder }}{{ comp.bare }}.h"
+#include "{{ incfolder }}{{ comp.bare_type }}.h"
 {% endfor %}
 
 // Include all datatype headers (Object, MutableObject, Collection, etc.)
 {% for dt in datatypes %}
-#include "{{ incfolder }}{{ dt.bare }}.h"
-#include "{{ incfolder }}Mutable{{ dt.bare }}.h"
-#include "{{ incfolder }}{{ dt.bare }}Obj.h"
-#include "{{ incfolder }}{{ dt.bare }}Data.h"
-#include "{{ incfolder }}{{ dt.bare }}Collection.h"
-#include "{{ incfolder }}{{ dt.bare }}CollectionData.h"
+#include "{{ incfolder }}{{ dt.bare_type }}.h"
+#include "{{ incfolder }}Mutable{{ dt.bare_type }}.h"
+#include "{{ incfolder }}{{ dt.bare_type }}Collection.h"
 {% endfor %}
 
 // Include all interface headers
 {% for iface in interfaces %}
-#include "{{ incfolder }}{{ iface.bare }}.h"
+#include "{{ incfolder }}{{ iface.bare_type }}.h"
 {% endfor %}
 
 // Include all link headers
 {% for link in links %}
-#include "{{ incfolder }}{{ link.bare }}Collection.h"
+#include "{{ incfolder }}{{ link.bare_type }}Collection.h"
 {% endfor %}
 
 export module {{ package_name }}.datamodel;
@@ -70,11 +67,7 @@ export namespace podio {
 {% if components %}
 export namespace {{ package_name }} {
 {% for comp in components %}
-{% if comp.ns %}
-  using {{ comp.ns }}::{{ comp.bare }};
-{% else %}
-  using ::{{ comp.bare }};
-{% endif %}
+  using {{ comp.qualified_for_modules() }};
 {% endfor %}
 }
 {% endif %}
@@ -82,24 +75,14 @@ export namespace {{ package_name }} {
 // Export all datatypes (Object, MutableObject, Collection)
 {% for dt in datatypes %}
 export namespace {{ package_name }} {
-  // {{ dt.full }} datatype
-{% if dt.ns %}
-  using {{ dt.ns }}::{{ dt.bare }};
-  using {{ dt.ns }}::Mutable{{ dt.bare }};
-  using {{ dt.ns }}::{{ dt.bare }}Collection;
-  using {{ dt.ns }}::{{ dt.bare }}CollectionIterator;
-  using {{ dt.ns }}::{{ dt.bare }}MutableCollectionIterator;  // Note: pattern is {Type}MutableCollectionIterator
-  // Note: {{ dt.bare }}Obj, {{ dt.bare }}Data, and {{ dt.bare }}CollectionData are internal implementation
+  // {{ dt.full_type }} datatype
+  using {{ dt.qualified_for_modules() }};
+  using {{ dt.qualified_for_modules(prefix="Mutable") }};
+  using {{ dt.qualified_for_modules(suffix="Collection") }};
+  using {{ dt.qualified_for_modules(suffix="CollectionIterator") }};
+  using {{ dt.qualified_for_modules(suffix="MutableCollectionIterator") }};  // Note: pattern is {Type}MutableCollectionIterator
+  // Note: {{ dt.bare_type }}Obj, {{ dt.bare_type }}Data, and {{ dt.bare_type }}CollectionData are internal implementation
   // details and are not exported. They are only accessible through the public handle and collection APIs.
-{% else %}
-  using ::{{ dt.bare }};
-  using ::Mutable{{ dt.bare }};
-  using ::{{ dt.bare }}Collection;
-  using ::{{ dt.bare }}CollectionIterator;
-  using ::{{ dt.bare }}MutableCollectionIterator;  // Note: pattern is {Type}MutableCollectionIterator
-  // Note: {{ dt.bare }}Obj, {{ dt.bare }}Data, and {{ dt.bare }}CollectionData are internal implementation
-  // details and are not exported. They are only accessible through the public handle and collection APIs.
-{% endif %}
 }
 {% endfor %}
 
@@ -107,11 +90,7 @@ export namespace {{ package_name }} {
 {% if interfaces %}
 export namespace {{ package_name }} {
 {% for iface in interfaces %}
-{% if iface.ns %}
-  using {{ iface.ns }}::{{ iface.bare }};
-{% else %}
-  using ::{{ iface.bare }};
-{% endif %}
+  using {{ iface.qualified_for_modules() }};
 {% endfor %}
 }
 {% endif %}
@@ -120,11 +99,7 @@ export namespace {{ package_name }} {
 {% if links %}
 export namespace {{ package_name }} {
 {% for link in links %}
-{% if link.ns %}
-  using {{ link.ns }}::{{ link.bare }}Collection;
-{% else %}
-  using ::{{ link.bare }}Collection;
-{% endif %}
+  using {{ link.qualified_for_modules(suffix="Collection") }};
 {% endfor %}
 }
 {% endif %}
