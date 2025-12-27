@@ -149,15 +149,15 @@ class DataType:
 
     def qualified_for_modules(self, prefix="", suffix=""):
         """Return the qualified name for C++ using declarations in modules.
-        
+
         Args:
             prefix: Optional prefix to add before the type name (e.g., "Mutable")
             suffix: Optional suffix to add after the type name (e.g., "Collection")
-        
+
         Returns:
             For namespaced types: 'namespace::PrefixTypeSuffix' (no leading ::)
             For global types: '::PrefixTypeSuffix' (with leading ::)
-        
+
         Examples:
             DataType("ExampleHit").qualified_for_modules()  # Returns "::ExampleHit"
             DataType("ExampleHit").qualified_for_modules(prefix="Mutable")  # Returns "::MutableExampleHit"
