@@ -159,15 +159,20 @@ class DataType:
             For global types: '::PrefixTypeSuffix' (with leading ::)
 
         Examples:
-            DataType("ExampleHit").qualified_for_modules()  # Returns "::ExampleHit"
-            DataType("ExampleHit").qualified_for_modules(prefix="Mutable")  # Returns "::MutableExampleHit"
-            DataType("ex42::Type").qualified_for_modules(suffix="Collection")  # Returns "ex42::TypeCollection"
+            DataType("ExampleHit").qualified_for_modules()
+            # Returns "::ExampleHit"
+            
+            DataType("ExampleHit").qualified_for_modules(prefix="Mutable")
+            # Returns "::MutableExampleHit"
+            
+            DataType("ex42::Type").qualified_for_modules(suffix="Collection")
+            # Returns "ex42::TypeCollection"
         """
         type_name = f"{prefix}{self.bare_type}{suffix}"
         if self.namespace:
             return f"{self.namespace}::{type_name}"
-        else:
-            return f"::{type_name}"
+
+        return f"::{type_name}"
 
     def _to_json(self):
         """Return a string representation that can be parsed again"""
