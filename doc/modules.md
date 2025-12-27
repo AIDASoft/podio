@@ -37,19 +37,12 @@ The build system will verify all requirements and warn if modules cannot be enab
 
 ### In Downstream Projects
 
-Downstream projects can detect and use podio modules:
+Downstream projects can link to podio in the usual way; if podio was built with `PODIO_ENABLE_CPP_MODULES=ON` and your toolchain supports modules, the installed module interfaces will be used transparently:
 
 ```cmake
 find_package(podio REQUIRED)
 
-if(podio_MODULES_AVAILABLE)
-  # Use modules
-  target_link_libraries(myapp PRIVATE podio::podio)
-  # Module files will be automatically found
-else()
-  # Fall back to headers
-  target_include_directories(myapp PRIVATE ${podio_INCLUDE_DIRS})
-endif()
+target_link_libraries(myapp PRIVATE podio::podio)
 ```
 
 ## Using Modules in Code
