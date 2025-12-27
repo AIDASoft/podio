@@ -37,39 +37,39 @@ export module podio.core;
 
 // Export podio core interfaces and types
 export namespace podio {
-  // Core collection interfaces
-  using podio::CollectionBase;
-  using podio::CollectionIDTable;
-  using podio::CollectionReadBuffers;
-  using podio::CollectionWriteBuffers;
-  using podio::ICollectionProvider;
-  using podio::UserDataCollection;
+// Core collection interfaces
+using podio::CollectionBase;
+using podio::CollectionIDTable;
+using podio::CollectionReadBuffers;
+using podio::CollectionWriteBuffers;
+using podio::ICollectionProvider;
+using podio::UserDataCollection;
 
-  // Object identification
-  using podio::ObjectID;
+// Object identification
+using podio::ObjectID;
 
-  // Data model registry
-  using podio::DatamodelRegistry;
-  using podio::RelationNameMapping;
-  using podio::RelationNames;
+// Data model registry
+using podio::DatamodelRegistry;
+using podio::RelationNameMapping;
+using podio::RelationNames;
 
-  // Generic parameters for metadata
-  using podio::GenericParameters;
+// Generic parameters for metadata
+using podio::GenericParameters;
 
-  // Relations and navigation
-  using podio::Link;
-  using podio::LinkCollectionIterator;
-  using podio::LinkNavigator;
-  using podio::RelationRange;
+// Relations and navigation
+using podio::Link;
+using podio::LinkCollectionIterator;
+using podio::LinkNavigator;
+using podio::RelationRange;
 
-  // Schema evolution
-  using podio::Backend;
-  using podio::SchemaEvolution;
-  using podio::SchemaVersionT;
+// Schema evolution
+using podio::Backend;
+using podio::SchemaEvolution;
+using podio::SchemaVersionT;
 
-  // Utility functions
-  namespace utils {
-    using podio::utils::expand_glob;
-    using podio::utils::is_glob_pattern;
-  }
-}
+// Utility functions
+namespace utils {
+  using podio::utils::expand_glob;
+  using podio::utils::is_glob_pattern;
+} // namespace utils
+} // namespace podio

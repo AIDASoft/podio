@@ -12,8 +12,8 @@
 import podio.core;
 import datamodel.datamodel;
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 int main() {
   int failures = 0;
