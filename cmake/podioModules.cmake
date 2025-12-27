@@ -64,7 +64,7 @@ function(PODIO_ADD_MODULE_INTERFACE target module_name module_file)
 
   message(STATUS "Adding C++20 module '${module_name}' to target '${target}'")
 
-  # Add the module file to the target as a CXX_MODULES file set  
+  # Add the module file to the target as a CXX_MODULES file set
   # Use PUBLIC so the module gets installed and can be used by downstream projects
   target_sources(${target}
     PUBLIC
