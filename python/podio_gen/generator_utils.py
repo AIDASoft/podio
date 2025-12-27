@@ -161,10 +161,10 @@ class DataType:
         Examples:
             DataType("ExampleHit").qualified_for_modules()
             # Returns "::ExampleHit"
-            
+
             DataType("ExampleHit").qualified_for_modules(prefix="Mutable")
             # Returns "::MutableExampleHit"
-            
+
             DataType("ex42::Type").qualified_for_modules(suffix="Collection")
             # Returns "ex42::TypeCollection"
         """
