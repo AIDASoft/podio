@@ -35,7 +35,7 @@ jobs:
             -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror "\
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DPODIO_ENABLE_SCHEMA_EVOLUTION_TESTS=ON \
-            -DPODIO_ENABLE_CXX_MODULES=ON \
+            -DPODIO_ENABLE_CXX_MODULES=OFF \
             -DUSE_EXTERNAL_CATCH2=OFF
           ln -s $(pwd)/compile_commands.json ../
           cd ..
