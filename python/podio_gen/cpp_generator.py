@@ -622,22 +622,6 @@ have resolvable schema evolution incompatibilities:"
             ),
         )
 
-    @staticmethod
-    def _build_type_info(full_name):
-        """Extract namespace and bare type from a full type name.
-        
-        Args:
-            full_name: Fully qualified type name (e.g., 'nsp::EnergyInNamespace' or 'ExampleHit')
-            
-        Returns:
-            Dictionary with 'full', 'ns', and 'bare' keys
-        """
-        if "::" in full_name:
-            ns, bare = full_name.rsplit("::", 1)
-        else:
-            ns, bare = "", full_name
-        return {"full": full_name, "ns": ns, "bare": bare}
-
     def _write_datamodel_module(self):
         """Write a C++20 module interface file that exports all datamodel types"""
         if not self.enable_modules:
@@ -647,10 +631,10 @@ have resolvable schema evolution incompatibilities:"
             print(f"Generating C++20 module interface for {self.package_name}")
 
         # Prepare structured type information with namespace details
-        datatypes = [self._build_type_info(name) for name in self.datamodel.datatypes.keys()]
-        components = [self._build_type_info(name) for name in self.datamodel.components.keys()]
-        interfaces = [self._build_type_info(name) for name in self.datamodel.interfaces.keys()]
-        links = [self._build_type_info(name) for name in self.datamodel.links.keys()]
+        datatypes = [DataType(name) for name in self.datamodel.datatypes.keys()]
+        components = [DataType(name) for name in self.datamodel.components.keys()]
+        interfaces = [DataType(name) for name in self.datamodel.interfaces.keys()]
+        links = [DataType(name) for name in self.datamodel.links.keys()]
 
         context = {
             "package_name": self.package_name,
