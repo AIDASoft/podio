@@ -9,7 +9,7 @@ C++20 modules provide a modern alternative to header files that can dramatically
 1. **podio.core** - A module interface for podio's I/O-independent core functionality
 2. **datamodel modules** - Auto-generated module interfaces for each datamodel (e.g., `edm4hep.datamodel`)
 
-Module support is entirely optional and controlled by the `PODIO_ENABLE_CPP_MODULES` CMake option (default: `OFF`).
+Module support is entirely optional and controlled by the `PODIO_ENABLE_CXX_MODULES` CMake option (default: `OFF`).
 
 ## Requirements
 
@@ -29,7 +29,7 @@ If these requirements are not met, the build system will automatically disable m
 Enable module generation when configuring podio:
 
 ```bash
-cmake -GNinja -DPODIO_ENABLE_CPP_MODULES=ON -DCMAKE_CXX_STANDARD=20 <source-dir>
+cmake -GNinja -DPODIO_ENABLE_CXX_MODULES=ON -DCMAKE_CXX_STANDARD=20 <source-dir>
 ninja
 ```
 
@@ -294,7 +294,7 @@ Monitor CMake releases for improvements to dependency scanning. Podio includes e
 ### For Existing Projects
 
 1. **Update build requirements**: Ensure CMake 3.29+, Ninja, GCC 14+
-2. **Enable modules**: Add `-DPODIO_ENABLE_CPP_MODULES=ON` to CMake configuration
+2. **Enable modules**: Add `-DPODIO_ENABLE_CXX_MODULES=ON` to CMake configuration
 3. **Test compilation**: Verify build succeeds
 4. **Gradual adoption**: Start using `import` in new code
 5. **Measure benefits**: Benchmark compilation time improvements
@@ -333,7 +333,7 @@ CI includes module testing on GCC 15 builds to ensure ongoing compatibility.
 ### "CMake 3.29 or later required for modules"
 
 **Cause**: CMake version too old
-**Solution**: Upgrade CMake or disable modules with `-DPODIO_ENABLE_CPP_MODULES=OFF`
+**Solution**: Upgrade CMake or disable modules with `-DPODIO_ENABLE_CXX_MODULES=OFF`
 
 ### "Module file not found"
 
