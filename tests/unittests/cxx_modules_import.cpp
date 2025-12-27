@@ -142,4 +142,3 @@ TEST_CASE("Integration between podio.core and datamodel imports", "[modules][imp
   podio::ObjectID id{0, 0};
   REQUIRE(id.index == 0);
 }
-
