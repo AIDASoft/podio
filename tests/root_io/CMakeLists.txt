@@ -10,6 +10,7 @@ set(root_dependent_tests
   read_interface_root.cpp
   read_glob.cpp
   selected_colls_roundtrip_root.cpp
+  write_empty_collections_root.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -60,6 +61,10 @@ set_tests_properties(
 add_test(NAME read_python_multiple COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_multiple.py)
 PODIO_SET_TEST_ENV(read_python_multiple)
 set_tests_properties(read_python_multiple PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)
+
+add_test(NAME write_python_empty_colls_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_empty_collections.py empty_colls_frame_with_py.root)
+PODIO_SET_TEST_ENV(write_python_empty_colls_root)
+set_tests_properties(write_python_empty_colls_root PROPERTIES FIXTURES_SETUP podio_write_python_empty_colls_root_fixture)
 
 if(ENABLE_RNTUPLE)
   set_tests_properties(
