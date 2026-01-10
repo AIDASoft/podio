@@ -95,6 +95,18 @@ public:
   UserDataCollection& operator=(UserDataCollection&&) = default;
   ~UserDataCollection() override = default;
 
+  /// Construct a UserDataCollection from a range of values
+  ///
+  /// @param range A range of values that can convert to BasicType
+  ///
+  /// @returns a UserDataCollection populated with the values from the input
+  ///          range
+  static UserDataCollection from(detail::RangeConvertibleTo<BasicType> auto&& range) {
+    UserDataCollection coll;
+    coll._vec = range | detail::to_vector<BasicType>;
+    return coll;
+  }
+
   /// The schema version of UserDataCollections
   static constexpr SchemaVersionT schemaVersion = 1;
 
