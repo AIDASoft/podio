@@ -15,6 +15,24 @@ from podio_gen.generator_utils import DataType
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PYTHONBASE_DIR = os.path.abspath(THIS_DIR + "/../")
 TEMPLATE_DIR = os.path.join(PYTHONBASE_DIR, "templates")
+CACHE_DIR = os.path.join(os.environ.get("TMPDIR", "/tmp"), "podio", "jinja2_cache")
+
+
+def _get_bytecode_cache():
+    """Get a bytecode cache for Jinja2 templates.
+
+    Uses a file-based cache in a cache directory.
+    This persists compiled templates across Python processes, providing
+    significant speedup for subsequent code generation runs.
+    """
+
+    try:
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        return jinja2.FileSystemBytecodeCache(CACHE_DIR)
+    except OSError:
+        # Fall back to no caching if we can't create the directory
+        print(f"Warning: Could not create cache directory {CACHE_DIR}. ")
+        return None
 
 
 def write_file_if_changed(filename, content, force_write=False):
@@ -142,6 +160,7 @@ class ClassGeneratorBaseMixin:
             keep_trailing_newline=True,
             lstrip_blocks=True,
             trim_blocks=True,
+            bytecode_cache=_get_bytecode_cache(),
         )
 
         self.get_syntax = self.datamodel.options["getSyntax"]
