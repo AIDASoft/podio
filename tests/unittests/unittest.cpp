@@ -428,6 +428,21 @@ TEST_CASE("UserDataCollection access", "[basics]") {
   REQUIRE(std::as_const(coll)[0] == 44);
 }
 
+TEST_CASE("UserDataCollection construct from range", "[basics]") {
+  auto coll = podio::UserDataCollection<int32_t>::from(std::vector{1, 2, 3, 42});
+  using Catch::Matchers::Equals;
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{1, 2, 3, 42}));
+
+  // We can also use an array with a mis-matched type here as long as the
+  // conversion is OK.
+  coll = podio::UserDataCollection<int32_t>::from(std::array{1.2, 3.4, 4.5});
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{1, 3, 4}));
+
+  // We can also use a UserDataCollection to initialize another one
+  auto coll2 = podio::UserDataCollection<float>::from(coll);
+  REQUIRE_THAT(coll2.vec(), Equals(std::vector{1.0f, 3.0f, 4.0f}));
+}
+
 /*
 TEST_CASE("Arrays") {
   auto obj = ExampleWithArray();

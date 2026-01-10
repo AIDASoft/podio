@@ -1,6 +1,7 @@
 #ifndef PODIO_UTILITIES_TYPEHELPERS_H
 #define PODIO_UTILITIES_TYPEHELPERS_H
 
+#include <algorithm>
 #include <concepts>
 #include <iterator>
 #include <map>
@@ -239,6 +240,57 @@ namespace detail {
   /// and can be initialized from type U
   template <typename T, typename U>
   inline constexpr bool isInterfaceInitializableFrom = InterfaceInitializerHelper<T, U>::value;
+
+  /// A simple check for whether a range R is exactly a range over type T
+  template <typename R, typename T>
+  concept RangeOf = std::ranges::input_range<R> && std::same_as<std::ranges::range_value_t<R>, T>;
+
+  /// A simple check for wheter a range R is a range of a type that can convert to type T
+  template <typename R, typename T>
+  concept RangeConvertibleTo = std::ranges::input_range<R> && std::convertible_to<std::ranges::range_value_t<R>, T>;
+
+#if defined(__cpp_lib_ranges_to_container)
+  template <typename T>
+  auto to_vector() {
+    return std::ranges::to<std::vector<T>>();
+  }
+
+  template <typename T, std::ranges::input_range R>
+  auto to_vector(R&& r) {
+    return std::ranges::to<std::vector<T>>(std::forward<R>(r));
+  }
+#else
+  // Implement a small poly-fill that does the trick
+  template <typename C>
+  struct to_impl {
+    template <std::ranges::input_range R>
+    auto operator|(R&& range) const {
+      using RangeType = std::ranges::range_reference_t<R>;
+      using ValueType = typename C::value_type;
+      static_assert(std::convertible_to<RangeType, ValueType>,
+                    "Input range elements must be convertible to the container value type");
+
+      C container;
+      if constexpr (requires(C& c, std::size_t n) { c.reserve(n); } && std::ranges::sized_range<R>) {
+        container.reserve(range.size());
+      }
+      std::ranges::copy(range, std::back_inserter(container));
+      return container;
+    }
+
+    auto operator()() const {
+      return *this;
+    }
+  };
+
+  template <std::ranges::input_range R, typename C>
+  auto operator|(R&& range, const to_impl<C>& adapter) {
+    return adapter.operator|(std::forward<R>(range));
+  }
+
+  template <typename T>
+  inline constexpr to_impl<std::vector<T>> to_vector{};
+#endif
 
 } // namespace detail
 
