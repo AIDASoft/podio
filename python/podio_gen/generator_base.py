@@ -15,7 +15,7 @@ from podio_gen.generator_utils import DataType
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PYTHONBASE_DIR = os.path.abspath(THIS_DIR + "/../")
 TEMPLATE_DIR = os.path.join(PYTHONBASE_DIR, "templates")
-CACHE_DIR = os.path.join("/tmp", "podio", "jinja2_cache")
+CACHE_DIR = os.path.join(os.environ.get("TMPDIR, "/tmp"), "podio", "jinja2_cache")
 
 
 def _get_bytecode_cache():
