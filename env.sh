@@ -25,7 +25,7 @@ elif [[ "$unamestr" = 'Darwin' ]]; then
     fi
 fi
 
-python_stem=python3.$(python -c 'import sys; print(sys.version_info[1])')/site-packages
+python_stem=python3.$(python -c 'import sys; print(str(sys.version_info[1]) + sys.abiflags )')/site-packages
 if [ -d $PODIO/lib64/${python_stem} ]; then
   if ! echo $PYTHONPATH | grep -o $PODIO/lib64/${python_stem} > /dev/null 2>&1; then
     export PYTHONPATH=$PODIO/lib64/${python_stem}:$PYTHONPATH
