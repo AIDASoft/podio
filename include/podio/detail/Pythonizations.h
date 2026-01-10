@@ -2,8 +2,9 @@
 #define PODIO_DETAIL_PYTHONIZATIONS_H
 
 #define PY_SSIZE_T_CLEAN
-#include <Python.h>
 #include <string>
+
+typedef struct _object PyObject;
 
 namespace podio::detail::pythonizations {
 

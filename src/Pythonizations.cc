@@ -3,6 +3,8 @@
 #include <cstring>
 #include <stdexcept>
 
+#include <Python.h>
+
 namespace podio::detail::pythonizations {
 
 // Callback function for the subscript pythonization
