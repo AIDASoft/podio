@@ -1136,10 +1136,10 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   auto gp = podio::GenericParameters{};
 
   gp.set("anInt", 42);
-  REQUIRE(*gp.get<int>("anInt") == 42);
+  REQUIRE(*gp.get<int>("anInt") == 42); // NOLINT
   // Make sure that resetting a value with the same key works
   gp.set("anInt", -42);
-  REQUIRE(*gp.get<int>("anInt") == -42);
+  REQUIRE(*gp.get<int>("anInt") == -42); // NOLINT
 
   // Make sure that passing a string literal is converted to a string on the fly
   gp.set("aString", "const char initialized");
@@ -1223,11 +1223,11 @@ TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
 
   SECTION("Copy constructor") {
     auto copiedParams = originalParams;
-    REQUIRE(*copiedParams.get<int>("int") == 42);
-    REQUIRE(copiedParams.get<std::vector<int>>("ints").value()[1] == 2);
-    REQUIRE(*copiedParams.get<float>("float") == 3.14f);
-    REQUIRE(*copiedParams.get<double>("double") == 2 * 3.14);
-    REQUIRE(copiedParams.get<std::vector<std::string>>("strings").value()[0] == "one");
+    REQUIRE(*copiedParams.get<int>("int") == 42);                                       // NOLINT
+    REQUIRE(copiedParams.get<std::vector<int>>("ints").value()[1] == 2);                // NOLINT
+    REQUIRE(*copiedParams.get<float>("float") == 3.14f);                                // NOLINT
+    REQUIRE(*copiedParams.get<double>("double") == 2 * 3.14);                           // NOLINT
+    REQUIRE(copiedParams.get<std::vector<std::string>>("strings").value()[0] == "one"); // NOLINT
 
     // Make sure these are truly independent copies now
     copiedParams.set("anotherDouble", 1.2345);
