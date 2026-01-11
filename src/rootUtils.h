@@ -321,15 +321,17 @@ inline bool checkConsistentColls(const std::vector<root_utils::CollectionWriteIn
   }
 
   for (const auto& id : candidateColls) {
-    std::ranges::binary_search(
-        collInfo, id,
-        [](const auto& lhs, const auto& rhs) {
-          return lhs.size() == rhs.size() &&
-              std::lexicographical_compare(
-                     lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
-                     [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
-        },
-        &root_utils::CollectionWriteInfo::name);
+    if (!std::ranges::binary_search(
+            collInfo, id,
+            [](const auto& lhs, const auto& rhs) {
+              return lhs.size() == rhs.size() &&
+                  std::lexicographical_compare(
+                         lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
+                         [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
+            },
+            &root_utils::CollectionWriteInfo::name)) {
+      return false;
+    }
   }
 
   return true;
