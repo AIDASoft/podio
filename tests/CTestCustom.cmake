@@ -67,6 +67,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     write_python_frame_root
     read_python_frame_root
 
+    write_python_empty_colls_root
+
     param_reading_rdataframe
 
     read_python_multiple
@@ -155,6 +157,7 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_frame_root_multiple
       read_and_write_frame_root
       selected_colls_roundtrip_root
+      write_empty_collections_root
 
       podio-dump-root
       podio-dump-detailed-root
