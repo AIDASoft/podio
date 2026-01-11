@@ -39,7 +39,7 @@ Reader makeReader(const std::vector<std::string>& filenames) {
   }
 
   if (suffix == "root") {
-    TFile* file = TFile::Open(filenames[0].c_str());
+    std::unique_ptr<TFile> file(TFile::Open(filenames[0].c_str()));
     bool hasRNTuple = false;
 
     if (!file) {
