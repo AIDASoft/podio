@@ -641,6 +641,30 @@ TEST_CASE("Link JSON conversion", "[links][json]") {
 
 #endif
 
+TEST_CASE("LinkCollection construction from range", "[links][basics]") {
+  std::vector<TestMutL> links(11);
+  auto linkColl = TestLColl::from(links);
+  REQUIRE_FALSE(linkColl.isSubsetCollection());
+  REQUIRE(linkColl.size() == links.size());
+  for (size_t i = 0; i < links.size(); ++i) {
+    REQUIRE(linkColl[i] == links[i]);
+  }
+
+  const auto anotherLinkColl = TestLColl::from(std::as_const(linkColl));
+  REQUIRE(anotherLinkColl.isSubsetCollection());
+  REQUIRE(anotherLinkColl.size() == linkColl.size());
+  for (size_t i = 0; i < linkColl.size(); ++i) {
+    REQUIRE(anotherLinkColl[i] == linkColl[i]);
+  }
+
+  // Cannot construct a collection from unowned immutable handles
+  std::array<TestL, 11> immutableLinks{};
+  REQUIRE_THROWS_AS(TestLColl::from(immutableLinks), std::invalid_argument);
+  // Cannot construct a collection from a range of mutalbe handles that are
+  // already owned
+  REQUIRE_THROWS_AS(TestLColl::from(links), std::invalid_argument);
+}
+
 TEST_CASE("LinkNavigator basics", "[links]") {
   TestLColl coll{};
   std::vector<ExampleHit> hits(11);
