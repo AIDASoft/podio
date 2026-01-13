@@ -95,6 +95,11 @@ public:
     return result;
   }
 
+  std::vector<WeightedObject<FromT>> getLinked(const ToT::mutable_type& object,
+                                               podio::detail::links::ReturnFromTag) const {
+    return getLinked(ToT(object), podio::ReturnFrom);
+  }
+
   /// Get all the *From* objects and weights that have links with the passed
   /// object
   ///
@@ -109,6 +114,13 @@ public:
   template <typename ToU = ToT>
   std::enable_if_t<!std::is_same_v<FromT, ToU>, std::vector<WeightedObject<FromT>>> getLinked(const ToT& object) const {
     return getLinked(object, podio::ReturnFrom);
+  }
+
+  /// Overload for cppyy that makes things work with mutable handles
+  template <typename ToU = ToT>
+  std::enable_if_t<!std::is_same_v<FromT, ToU>, std::vector<WeightedObject<FromT>>>
+  getLinked(const ToT::mutable_type& object) const {
+    return getLinked(ToT(object), podio::ReturnFrom);
   }
 
   /// Get all the *To* objects and weights that have links with the passed
@@ -137,6 +149,11 @@ public:
     return result;
   }
 
+  std::vector<WeightedObject<ToT>> getLinked(const FromT::mutable_type& object,
+                                             podio::detail::links::ReturnToTag) const {
+    return getLinked(FromT(object), podio::ReturnTo);
+  }
+
   /// Get all the *To* objects and weights that have links with the passed
   /// object
   ///
@@ -151,6 +168,13 @@ public:
   template <typename FromU = FromT>
   std::enable_if_t<!std::is_same_v<FromU, ToT>, std::vector<WeightedObject<ToT>>> getLinked(const FromT& object) const {
     return getLinked(object, podio::ReturnTo);
+  }
+
+  /// Overload for cppyy that makes things work with mutable handles
+  template <typename FromU = FromT>
+  std::enable_if_t<!std::is_same_v<FromU, ToT>, std::vector<WeightedObject<ToT>>>
+  getLinked(const FromT::mutable_type& object) const {
+    return getLinked(FromT(object), podio::ReturnTo);
   }
 
 private:
