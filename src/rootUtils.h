@@ -332,11 +332,10 @@ inline bool checkConsistentColls(const std::vector<root_utils::CollectionWriteIn
         [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
   };
 
-  std::ranges::sort(sortedCollNames, [&comp](const auto& lhs, const auto& rhs) { return comp(lhs, rhs); });
+  std::ranges::sort(sortedCollNames, comp);
 
   for (const auto& name : candidateColls) {
-    if (!std::ranges::binary_search(sortedCollNames, name,
-                                    [&comp](const auto& lhs, const auto& rhs) { return comp(lhs, rhs); })) {
+    if (!std::ranges::binary_search(sortedCollNames, name, comp)) {
       return false;
     }
   }
