@@ -15,7 +15,7 @@ set_tests_properties(schema_evol:code_gen:datatypes_new_member:read_garbage
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/datatypes_new_member
       ENVIRONMENT "${test_env};ROOT_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests"
       PASS_REGULAR_EXPRESSION "Bad data;Segmentation fault"
-      FIXTURES_REQUIRED datatypes_new_member_w
+      FIXTURES_REQUIRED datatypes_new_member_w_old
 )
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change)
 ADD_SCHEMA_EVOLUTION_TEST(components_rename_member WITH_EVOLUTION)
