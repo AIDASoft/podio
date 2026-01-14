@@ -62,7 +62,6 @@ public:
   {{ class.bare_type }}Collection({{ class.bare_type }}Collection&&) = default;
   {{ class.bare_type }}Collection& operator=({{ class.bare_type }}Collection&&) = default;
 
-//  {{ class.bare_type }}Collection({{ class.bare_type }}Vector* data, uint32_t collectionID);
   ~{{ class.bare_type }}Collection() override;
 
   constexpr static std::string_view typeName = "{{ (class | string ).strip(':') + "Collection" }}";
