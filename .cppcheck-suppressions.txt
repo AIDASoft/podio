@@ -14,3 +14,4 @@ useStlAlgorithm:*Reader.cc
 useStlAlgorithm:LinkCollectionImpl.h
 useStlAlgorithm:podio-dump-tool.cpp
 useStlAlgorithm:SIOFrameData.cc
+useStlAlgorithm:rootUtils.h

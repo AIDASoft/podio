@@ -26,6 +26,8 @@
 #include "podio/podioVersion.h"
 #include "podio/utilities/TypeHelpers.h"
 
+#include "../../src/rootUtils.h"
+
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0
 #endif
@@ -1518,6 +1520,19 @@ TEST_CASE("ROOTWriter consistent frame contents", "[ASAN-FAIL][UBSAN-FAIL][THREA
 
 TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
   runCheckConsistencyTest<podio::ROOTWriter>("unittests_frame_check_consistency.root");
+}
+
+TEST_CASE("checkConsistentColls detects missing collection", "[basics][root]") {
+  std::vector<podio::root_utils::CollectionWriteInfo> collInfo{};
+  collInfo.emplace_back(0, "T1", false, 0, "clusters", "storage");
+  collInfo.emplace_back(1, "T2", false, 0, "hits", "storage");
+  collInfo.emplace_back(2, "T3", false, 0, "new", "storage");
+
+  REQUIRE(::podio::root_utils::checkConsistentColls(collInfo, {"clusters", "hits", "new"}));
+  const std::vector<std::string> candsWithMissing{"clusters", "hits"};
+  REQUIRE_FALSE(::podio::root_utils::checkConsistentColls(collInfo, candsWithMissing));
+  const std::vector<std::string> candsWithAdditional{"clusters", "hits", "new", "superfluous"};
+  REQUIRE_FALSE(::podio::root_utils::checkConsistentColls(collInfo, candsWithAdditional));
 }
 
 #if PODIO_ENABLE_RNTUPLE

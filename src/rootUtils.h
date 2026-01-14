@@ -320,18 +320,25 @@ inline bool checkConsistentColls(const std::vector<root_utils::CollectionWriteIn
     return false;
   }
 
-  for (const auto& id : candidateColls) {
-    std::ranges::binary_search(
-        collInfo, id,
-        [](const auto& lhs, const auto& rhs) {
-          return lhs.size() == rhs.size() &&
-              std::lexicographical_compare(
-                     lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
-                     [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
-        },
-        &root_utils::CollectionWriteInfo::name);
+  std::vector<std::string_view> sortedCollNames{};
+  sortedCollNames.reserve(collInfo.size());
+  for (const auto& elem : collInfo) {
+    sortedCollNames.emplace_back(elem.name);
   }
 
+  const auto comp = [](const auto& lhs, const auto& rhs) {
+    return std::lexicographical_compare(
+        lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
+        [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
+  };
+
+  std::ranges::sort(sortedCollNames, comp);
+
+  for (const auto& name : candidateColls) {
+    if (!std::ranges::binary_search(sortedCollNames, name, comp)) {
+      return false;
+    }
+  }
   return true;
 }
 
