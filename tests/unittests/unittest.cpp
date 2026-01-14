@@ -666,6 +666,33 @@ TEST_CASE("Collection size and empty", "[basics][collections]") {
   REQUIRE(coll.size() == 2u);
 }
 
+TEST_CASE("Collection construction from range", "[basics][collections]") {
+  std::vector<MutableExampleCluster> clusters(10);
+  auto clusterColl = ExampleClusterCollection::from(clusters);
+  REQUIRE_FALSE(clusterColl.isSubsetCollection());
+  REQUIRE(clusterColl.size() == clusters.size());
+  for (size_t i = 0; i < clusters.size(); ++i) {
+    REQUIRE(clusterColl[i] == clusters[i]);
+  }
+
+  const auto otherClusterColl = ExampleClusterCollection::from(std::as_const(clusterColl));
+  REQUIRE(otherClusterColl.isSubsetCollection());
+  REQUIRE(otherClusterColl.size() == clusterColl.size());
+  for (size_t i = 0; i < clusters.size(); ++i) {
+    REQUIRE(otherClusterColl[i] == clusterColl[i]);
+  }
+
+  // Cannot construct a collection from a range of unowned immutable handles
+  REQUIRE_THROWS_AS(ExampleClusterCollection::from(std::vector<ExampleCluster>(10)), std::invalid_argument);
+
+  for (const auto& cluster : clusterColl) {
+    REQUIRE(cluster.id().index != podio::ObjectID::untracked);
+  }
+  // Cannot construct a collection from a range of mutable handles that are
+  // already owned
+  REQUIRE_THROWS_AS(ExampleClusterCollection::from(clusters), std::invalid_argument);
+}
+
 TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleClusterCollection>()[0]),
                                 ExampleCluster>); // const collections should only have indexed access to mutable

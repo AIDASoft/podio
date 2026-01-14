@@ -16,6 +16,7 @@
 #include "podio/ICollectionProvider.h"
 #include "podio/CollectionBase.h"
 #include "podio/detail/Pythonizations.h"
+#include "podio/utilities/TypeHelpers.h"
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json_fwd.hpp"
@@ -63,6 +64,11 @@ public:
   {{ class.bare_type }}Collection& operator=({{ class.bare_type }}Collection&&) = default;
 
   ~{{ class.bare_type }}Collection() override;
+
+  /// Construct a {{ class.bare_type }} collection from a range of mutable or
+  /// immutable handles
+  template<podio::detail::RangeConvertibleTo<value_type> R>
+  static {{ class.bare_type }}Collection from(R&& range);
 
   constexpr static std::string_view typeName = "{{ (class | string ).strip(':') + "Collection" }}";
   constexpr static std::string_view valueTypeName = "{{ (class | string ).strip(':') }}";
@@ -235,6 +241,21 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
 {% endif %}
   return Mutable{{ class.bare_type }}(podio::utils::MaybeSharedPtr(obj));
 }
+
+template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::value_type> R>
+{{ class.bare_type }}Collection {{ class.bare_type }}Collection::from(R&& range) {
+  {{ class.bare_type }}Collection coll;
+  if constexpr (podio::detail::RangeOf<R, value_type>) {
+    coll.setSubsetCollection();
+  }
+
+  for (auto elem : range) {
+    coll.push_back(elem);
+  }
+
+  return coll;
+}
+
 
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collection);
