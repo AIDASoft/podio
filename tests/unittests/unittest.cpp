@@ -1528,9 +1528,11 @@ TEST_CASE("checkConsistentColls detects missing collection", "[basics][root]") {
   collInfo.emplace_back(1, "T2", false, 0, "hits", "storage");
   collInfo.emplace_back(2, "T3", false, 0, "new", "storage");
 
-  const std::vector<std::string> cands{"clusters", "hits", "missing"};
-  REQUIRE_FALSE(::podio::root_utils::checkConsistentColls(collInfo, cands));
   REQUIRE(::podio::root_utils::checkConsistentColls(collInfo, {"clusters", "hits", "new"}));
+  const std::vector<std::string> candsWithMissing{"clusters", "hits", "missing"};
+  REQUIRE_FALSE(::podio::root_utils::checkConsistentColls(collInfo, candsWithMissing));
+  const std::vector<std::string> candsWithAdditional{"clusters", "hits", "new", "superfluous"};
+  REQUIRE_FALSE(::podio::root_utils::checkConsistentColls(collInfo, candsWithAdditional));
 }
 
 #if PODIO_ENABLE_RNTUPLE
