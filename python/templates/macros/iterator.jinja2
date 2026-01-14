@@ -3,7 +3,7 @@
 {% set ptr_init = 'podio::utils::MaybeSharedPtr<' + class.bare_type +'Obj>{nullptr}' %}
 class {{ iterator_type }} {
 public:
-  using value_type = {{ class.bare_type }};
+  using value_type = {{ prefix }}{{ class.bare_type }};
   using difference_type = ptrdiff_t;
   using reference = {{ prefix }}{{ class.bare_type }};
   using pointer = {{ prefix }}{{ class.bare_type }}*;

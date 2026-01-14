@@ -309,7 +309,7 @@ TEST_CASE("Collection container types", "[collection][container][types][std]") {
   DOCUMENTED_STATIC_FAILURE(std::is_convertible_v<CollectionType::iterator, CollectionType::const_iterator>);
   STATIC_REQUIRE(traits::has_value_type_v<CollectionType::iterator>);
   STATIC_REQUIRE(
-      std::is_same_v<CollectionType::value_type, std::iterator_traits<CollectionType::iterator>::value_type>);
+      std::is_same_v<CollectionType::mutable_type, std::iterator_traits<CollectionType::iterator>::value_type>);
 
   // const_iterator
   STATIC_REQUIRE(traits::has_const_iterator_v<CollectionType>);
@@ -749,7 +749,7 @@ TEST_CASE("Collection and unsupported iterator concepts", "[collection][containe
   DOCUMENTED_STATIC_FAILURE(std::output_iterator<const_iterator, CollectionType::mutable_type>);
   // std::contiguous_iterator
   DOCUMENTED_STATIC_FAILURE(std::is_lvalue_reference_v<iterator::reference>);
-  DOCUMENTED_STATIC_FAILURE(std::same_as<iterator::value_type, std::remove_cvref_t<iterator::reference>>);
+  STATIC_REQUIRE(std::same_as<iterator::value_type, std::remove_cvref_t<iterator::reference>>);
   DOCUMENTED_STATIC_FAILURE(std::contiguous_iterator<iterator>);
   DOCUMENTED_STATIC_FAILURE(std::is_lvalue_reference_v<const_iterator::reference>);
   STATIC_REQUIRE(std::same_as<const_iterator::value_type, std::remove_cvref_t<const_iterator::reference>>);

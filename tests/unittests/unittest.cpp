@@ -638,6 +638,8 @@ TEST_CASE("UserInitialization", "[basics][code-gen]") {
 TEST_CASE("Collection concepts", "[collections][concepts]") {
   STATIC_REQUIRE(podio::CollectionType<ExampleClusterCollection>);
   STATIC_REQUIRE(podio::CollectionType<ExampleHitCollection>);
+  STATIC_REQUIRE(std::is_same_v<std::ranges::range_value_t<ExampleClusterCollection>, MutableExampleCluster>);
+  STATIC_REQUIRE(std::is_same_v<std::ranges::range_value_t<const ExampleClusterCollection>, ExampleCluster>);
 }
 
 TEST_CASE("Collection size and empty", "[basics][collections]") {
