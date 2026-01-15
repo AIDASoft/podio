@@ -1,3 +1,135 @@
+# v01-07
+
+* 2026-01-14 Juan Miguel Carceller ([PR#921](https://github.com/AIDASoft/podio/pull/921))
+  - Fix the name of the fixture for the read_garbage test
+
+* 2026-01-14 Juan Miguel Carceller ([PR#916](https://github.com/AIDASoft/podio/pull/916))
+  - Fix multiple issues in `checkConsistentColls` and add a test.
+
+* 2026-01-12 Juan Miguel Carceller ([PR#917](https://github.com/AIDASoft/podio/pull/917))
+  - Make sure a file is closed after opening it by using an `std::unique_ptr` to make sure the TFile is deleted.
+
+* 2026-01-12 Juan Miguel Carceller ([PR#915](https://github.com/AIDASoft/podio/pull/915))
+  - Remove the llvm-header-guard check for clang-tidy, seems to be buggy with LLVM 21.
+
+* 2026-01-12 Juan Miguel Carceller ([PR#897](https://github.com/AIDASoft/podio/pull/897))
+  - Make the python writers have the same behavior as the C++ writers to decide what to do when no collections are passed
+
+* 2026-01-10 Juan Miguel Carceller ([PR#913](https://github.com/AIDASoft/podio/pull/913))
+  - Use a cache for compiled jinja templates to reduce template compilation time.
+
+* 2026-01-10 Wouter Deconinck ([PR#911](https://github.com/AIDASoft/podio/pull/911))
+  - fix: install into free-threaded python3.14t/site-packages prefixes
+
+* 2026-01-10 Juan Miguel Carceller ([PR#910](https://github.com/AIDASoft/podio/pull/910))
+  - Forward-declare PyObject not to have to include Python.h
+
+* 2025-12-23 Wouter Deconinck ([PR#909](https://github.com/AIDASoft/podio/pull/909))
+  - Move static constexpr to inline constexpr to avoid exposed TU-local entities
+
+* 2025-12-22 Wouter Deconinck ([PR#908](https://github.com/AIDASoft/podio/pull/908))
+  - Move Pythonizations detail implementations to separate source file
+
+* 2025-12-22 Thomas Madlener ([PR#906](https://github.com/AIDASoft/podio/pull/906))
+  - `podio-dump`: Make `-e`/`--entries` accept `-1` to dump all of the entries of a given category
+
+* 2025-12-18 Thomas Madlener ([PR#904](https://github.com/AIDASoft/podio/pull/904))
+  - Create a per ref concurrency group for doc building
+
+* 2025-12-18 Thomas Madlener ([PR#902](https://github.com/AIDASoft/podio/pull/902))
+  - Add a cmake option (`PODIO_ENABLE_SCHEMA_EVOLUTION_TESTS`) to toggle the schema evolution tests that involve code generation as these more than double the time it takes to run `cmake`.
+
+* 2025-12-18 Aimilianos Koulouris ([PR#901](https://github.com/AIDASoft/podio/pull/901))
+  - podio-merge-files: add progress bar and time measurement per step; add short option for output files argument
+
+* 2025-12-17 Thomas Madlener ([PR#903](https://github.com/AIDASoft/podio/pull/903))
+  - Move black to earlier in the pre-commit config
+
+* 2025-12-08 Juan Miguel Carceller ([PR#896](https://github.com/AIDASoft/podio/pull/896))
+  - Fix rpaths in podio, not set correctly because ${LIBDIR} is empty
+  - Remove the linker flags that force to use `RPATH` instead of the more modern and recommended `RUNPATH` (the difference being `RPATH` is searched before `LD_LIBRARY_PATH` and `RUNPATH` is searched after `LD_LIBRARY_PATH`).
+
+* 2025-12-08 Thomas Madlener ([PR#890](https://github.com/AIDASoft/podio/pull/890))
+  - Do not read `ExtraCode` for old schemas when doing schema evolution
+
+* 2025-12-08 Thomas Madlener ([PR#889](https://github.com/AIDASoft/podio/pull/889))
+  - Make schema evolution code generation handle dropped components
+
+* 2025-12-05 Thomas Madlener ([PR#898](https://github.com/AIDASoft/podio/pull/898))
+  - Update documentation requirements and make doc building run on pull requests
+
+* 2025-12-04 Juan Miguel Carceller ([PR#895](https://github.com/AIDASoft/podio/pull/895))
+  - Fix warnings, tabs, anchors in the documentation
+
+* 2025-12-04 Thomas Madlener ([PR#828](https://github.com/AIDASoft/podio/pull/828))
+  - Allow to pass multiple old datamodel schemas to `podio_class_generator.py`
+
+* 2025-12-02 Thomas Madlener ([PR#894](https://github.com/AIDASoft/podio/pull/894))
+  - Make sure to generate the Collection headers to the front of the list of header file that is passed to root dictionary generation.
+
+* 2025-12-01 Juan Miguel Carceller ([PR#893](https://github.com/AIDASoft/podio/pull/893))
+  - Add a --gdb switch to the podio-dump wrapper to simplify debugging with `podio-dump`
+
+* 2025-12-01 Thomas Madlener ([PR#845](https://github.com/AIDASoft/podio/pull/845))
+  - Change the grammar of the schema evolution files to be more descriptive and also can handle multiple schema evolutions
+  - **This is a breaking change for code generation if you are using multiple schema and need manual intervention**
+
+* 2025-11-28 Juan Miguel Carceller ([PR#885](https://github.com/AIDASoft/podio/pull/885))
+  - Add some documentation about subset collections
+
+* 2025-11-27 Thomas Madlener ([PR#888](https://github.com/AIDASoft/podio/pull/888))
+  - Fix misleading warning about a *potential rename* when adding and dropping unrelated members to a datatype
+
+* 2025-11-27 Thomas Madlener ([PR#887](https://github.com/AIDASoft/podio/pull/887))
+  - Make the test that checks if renaming members works more comprehensive
+
+* 2025-11-27 Thomas Madlener ([PR#886](https://github.com/AIDASoft/podio/pull/886))
+  - Make sure that array members are generated correctly in older versions of the `Data` PODs
+
+* 2025-11-25 Juan Miguel Carceller ([PR#882](https://github.com/AIDASoft/podio/pull/882))
+  - Fix memory leak in the TTree Reader.
+  - Run several tests that use TTrees with the sanitizers
+
+* 2025-11-24 Mateusz Jakub Fila ([PR#881](https://github.com/AIDASoft/podio/pull/881))
+  - Rename `podio_test_hashes` to `podio-test-hashes` and move to tools directory
+
+* 2025-11-21 Juan Miguel Carceller ([PR#878](https://github.com/AIDASoft/podio/pull/878))
+  - Add a column in the output of `podio-dump` with information about the total size that a collection takes on disk and compression, only for TTrees. The compression factor here is `sum of total bytes for all branches / sum of compressed bytes for all branches` for a given collection.
+
+* 2025-11-20 Thomas Madlener ([PR#880](https://github.com/AIDASoft/podio/pull/880))
+  - Make sure that the `DataSource` does not read unnecessary collections if the collections have been limited.
+
+* 2025-11-20 Thomas Madlener ([PR#868](https://github.com/AIDASoft/podio/pull/868))
+  - Make `Frame::get<T>` throw on non-existing collections instead of silently returning an empty collection. **Note that this is a behavioral change with respect to previous versions of podio for non-existing collections.**
+
+* 2025-11-18 Thomas Madlener ([PR#863](https://github.com/AIDASoft/podio/pull/863))
+  - Make the readers skip unreadable collections instead of either crashing badly or returning entirely empty FrameData if a single collection cannot be read.
+
+* 2025-11-11 Thomas Madlener ([PR#872](https://github.com/AIDASoft/podio/pull/872))
+  - Add a CI workflow that builds all the way to EDM4eic
+
+* 2025-11-10 Juan Miguel Carceller ([PR#877](https://github.com/AIDASoft/podio/pull/877))
+  - Do not allocate dynamically in the ROOTReader when it's not necessary, make the TFile be part of the ROOTReader instead of storing a smart pointer. Don't create a TTree with `new` that never gets destroyed.
+
+* 2025-11-05 Thomas Madlener ([PR#876](https://github.com/AIDASoft/podio/pull/876))
+  - Remove unreachable code from `Frame::put` methods and clarify docs that it might throw `std::invalid_argument`
+
+* 2025-11-05 Thomas Madlener ([PR#875](https://github.com/AIDASoft/podio/pull/875))
+  - Remove an unnecessary (and wrong) `hasID` check in the `podio::DataSource`.
+
+* 2025-11-05 Thomas Madlener ([PR#874](https://github.com/AIDASoft/podio/pull/874))
+  - Use an actually existing member function in documentation of interfaces
+
+* 2025-11-05 Juan Miguel Carceller ([PR#873](https://github.com/AIDASoft/podio/pull/873))
+  - Do not use ulimit in schema evolution tests, since https://github.com/AIDASoft/podio/pull/846 should catch some cases
+  - Remove the unused option `PODIO_NO_MEMLIMIT_SCHEMA_EVOL_TESTS`
+
+* 2025-11-04 Juan Miguel Carceller ([PR#870](https://github.com/AIDASoft/podio/pull/870))
+  - Pass a unique_ptr to the frame constructor in Python, making the constructor from any data `FrameData&&` not needed.
+
+* 2025-10-30 Juan Miguel Carceller ([PR#871](https://github.com/AIDASoft/podio/pull/871))
+  - Remove value for a header guard not to confuse `clang-format`
+
 # v01-06
 
 * 2025-10-21 Juan Miguel Carceller ([PR#867](https://github.com/AIDASoft/podio/pull/867))
