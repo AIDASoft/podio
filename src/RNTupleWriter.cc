@@ -215,10 +215,10 @@ RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& coll
   model->AddField(RFieldBase::Create(root_utils::doubleKeyName, "std::vector<std::string>").Unwrap());
   model->AddField(RFieldBase::Create(root_utils::stringKeyName, "std::vector<std::string>").Unwrap());
 
-  model->AddField(RFieldBase::Create(root_utils::intValueName, "std::vector<std::vector<int>").Unwrap());
-  model->AddField(RFieldBase::Create(root_utils::floatValueName, "std::vector<std::vector<float>").Unwrap());
-  model->AddField(RFieldBase::Create(root_utils::doubleValueName, "std::vector<std::vector<double>").Unwrap());
-  model->AddField(RFieldBase::Create(root_utils::stringValueName, "std::vector<std::vector<std::string>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::intValueName, "std::vector<std::vector<int>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::floatValueName, "std::vector<std::vector<float>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::doubleValueName, "std::vector<std::vector<double>>").Unwrap());
+  model->AddField(RFieldBase::Create(root_utils::stringValueName, "std::vector<std::vector<std::string>>").Unwrap());
 
   model->Freeze();
   return model;
