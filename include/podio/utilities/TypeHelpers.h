@@ -303,6 +303,9 @@ concept CollectionType = !std::is_abstract_v<T> && std::derived_from<T, Collecti
                             typename T::mutable_type>;
       requires std::same_as<std::remove_cvref_t<decltype(ct.at(std::declval<typename T::size_type>()))>,
                             typename T::value_type>;
+      requires std::same_as<typename T::value_type, typename std::iterator_traits<typename T::iterator>::value_type>;
+      requires std::same_as<typename T::value_type,
+                            typename std::iterator_traits<typename T::const_iterator>::value_type>;
     };
 
 namespace utils {
