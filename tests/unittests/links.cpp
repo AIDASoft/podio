@@ -301,6 +301,8 @@ TEST_CASE("Links templated accessors", "[links]") {
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 TEST_CASE("LinkCollection collection concept", "[links][concepts]") {
   STATIC_REQUIRE(podio::CollectionType<TestLColl>);
+  STATIC_REQUIRE(std::is_same_v<std::ranges::range_value_t<TestLColl>, TestL>);
+  STATIC_REQUIRE(std::is_same_v<std::ranges::range_value_t<const TestLColl>, TestL>);
 }
 
 TEST_CASE("LinkCollection constness", "[links][static-checks][const-correctness]") {

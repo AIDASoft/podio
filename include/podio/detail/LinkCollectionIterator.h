@@ -12,7 +12,9 @@ class LinkCollectionIteratorT {
   using LinkObjT = LinkObj<FromT, ToT>;
 
 public:
-  using value_type = LinkType;
+  // For consistency with generated collections we make the value_type an
+  // immutable handle always
+  using value_type = LinkT<FromT, ToT, false>;
   using difference_type = ptrdiff_t;
   using reference = LinkType;
   using pointer = LinkType*;
