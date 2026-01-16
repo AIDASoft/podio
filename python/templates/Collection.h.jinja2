@@ -249,8 +249,8 @@ template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::valu
     coll.setSubsetCollection();
   }
 
-  for (auto elem : range) {
-    coll.push_back(elem);
+  for (auto&& elem : range) {
+    coll.push_back(std::forward<decltype(elem)>(elem));
   }
 
   return coll;

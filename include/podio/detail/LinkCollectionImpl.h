@@ -103,8 +103,8 @@ public:
     // value_type. See, e.g.: https://godbolt.org/z/seqdh79rr
     // Additionally, we want no reference in the loop variable to make sure we
     // get the correct handle type depending on the range we pass in
-    for (auto elem : range) {
-      coll.push_back(elem);
+    for (auto&& elem : range) {
+      coll.push_back(std::forward<decltype(elem)>(elem));
     }
 
     return coll;
