@@ -245,7 +245,7 @@ namespace detail {
   template <typename R, typename T>
   concept RangeOf = std::ranges::input_range<R> && std::same_as<std::ranges::range_value_t<R>, T>;
 
-  /// A simple check for wheter a range R is a range of a type that can convert to type T
+  /// A simple check for whether a range R is a range of a type that can convert to type T
   template <typename R, typename T>
   concept RangeConvertibleTo = std::ranges::input_range<R> && std::convertible_to<std::ranges::range_value_t<R>, T>;
 
