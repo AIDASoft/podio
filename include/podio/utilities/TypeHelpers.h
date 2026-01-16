@@ -250,46 +250,21 @@ namespace detail {
   concept RangeConvertibleTo = std::ranges::input_range<R> && std::convertible_to<std::ranges::range_value_t<R>, T>;
 
 #if defined(__cpp_lib_ranges_to_container)
-  template <typename T>
-  auto to_vector() {
-    return std::ranges::to<std::vector<T>>();
-  }
-
   template <typename T, std::ranges::input_range R>
   auto to_vector(R&& r) {
     return std::ranges::to<std::vector<T>>(std::forward<R>(r));
   }
 #else
-  // Implement a small poly-fill that does the trick
-  template <typename C>
-  struct to_impl {
-    template <std::ranges::input_range R>
-    auto operator|(R&& range) const {
-      using RangeType = std::ranges::range_reference_t<R>;
-      using ValueType = typename C::value_type;
-      static_assert(std::convertible_to<RangeType, ValueType>,
-                    "Input range elements must be convertible to the container value type");
-
-      C container;
-      if constexpr (requires(C& c, std::size_t n) { c.reserve(n); } && std::ranges::sized_range<R>) {
-        container.reserve(range.size());
-      }
-      std::ranges::copy(range, std::back_inserter(container));
-      return container;
+  // Implement a very simple polyfill to maintain compatibility with c++20
+  template <typename T, std::ranges::input_range R>
+  auto to_vector(R&& range) {
+    std::vector<T> container;
+    if constexpr (std::ranges::sized_range<R>) {
+      container.reserve(std::ranges::size(range));
     }
-
-    auto operator()() const {
-      return *this;
-    }
-  };
-
-  template <std::ranges::input_range R, typename C>
-  auto operator|(R&& range, const to_impl<C>& adapter) {
-    return adapter.operator|(std::forward<R>(range));
+    std::ranges::copy(range, std::back_inserter(container));
+    return container;
   }
-
-  template <typename T>
-  inline constexpr to_impl<std::vector<T>> to_vector{};
 #endif
 
 } // namespace detail
