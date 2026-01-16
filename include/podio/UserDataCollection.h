@@ -101,9 +101,10 @@ public:
   ///
   /// @returns a UserDataCollection populated with the values from the input
   ///          range
-  static UserDataCollection from(detail::RangeConvertibleTo<BasicType> auto&& range) {
+  template <detail::RangeConvertibleTo<BasicType> R>
+  static UserDataCollection from(R&& range) {
     UserDataCollection coll;
-    coll._vec = range | detail::to_vector<BasicType>;
+    coll._vec = detail::to_vector<BasicType>(std::forward<R>(range));
     return coll;
   }
 
