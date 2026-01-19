@@ -155,7 +155,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   message(STATUS "Creating '${datamodel}' datamodel")
   # we need to bootstrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${Python_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG}  ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG} ${VERSION_ARG} ${OLD_DESCRIPTION_ARG}
+    COMMAND ${Python3_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG}  ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG} ${VERSION_ARG} ${OLD_DESCRIPTION_ARG}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE podio_generate_command_retval
     )
