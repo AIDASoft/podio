@@ -1,0 +1,111 @@
+{% import "macros/utils.jinja2" as utils %}
+// SPDX-License-Identifier: Apache-2.0
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+//
+// C++20 Module Interface for {{ package_name }} datamodel
+// This module exports all generated datatypes, collections, and components
+
+module;
+
+// Global module fragment - include all necessary headers
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <vector>
+
+// Podio core headers (module-safe - no ROOT dependencies)
+#include "podio/CollectionBase.h"
+#include "podio/ICollectionProvider.h"
+#include "podio/SchemaEvolution.h"
+#include "podio/CollectionBuffers.h"
+#include "podio/utilities/MaybeSharedPtr.h"
+#include "podio/detail/OrderKey.h"
+
+#if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
+#include "nlohmann/json_fwd.hpp"
+#endif
+
+// Include all component headers
+{% for comp in components %}
+#include "{{ incfolder }}{{ comp.bare_type }}.h"
+{% endfor %}
+
+// Include all datatype headers (Object, MutableObject, Collection, etc.)
+{% for dt in datatypes %}
+#include "{{ incfolder }}{{ dt.bare_type }}.h"
+#include "{{ incfolder }}Mutable{{ dt.bare_type }}.h"
+#include "{{ incfolder }}{{ dt.bare_type }}Collection.h"
+{% endfor %}
+
+// Include all interface headers
+{% for iface in interfaces %}
+#include "{{ incfolder }}{{ iface.bare_type }}.h"
+{% endfor %}
+
+// Include all link headers
+{% for link in links %}
+#include "{{ incfolder }}{{ link.bare_type }}Collection.h"
+{% endfor %}
+
+export module {{ package_name }}.datamodel;
+
+// Re-export podio core types that are used in the datamodel
+export namespace podio {
+  using podio::CollectionBase;
+  using podio::ICollectionProvider;
+  using podio::SchemaEvolution;
+  using podio::SchemaVersionT;
+}
+
+// Export all components
+{% if components %}
+export namespace {{ package_name }} {
+{% for comp in components %}
+  using {{ comp.qualified_for_modules() }};
+{% endfor %}
+}
+{% endif %}
+
+// Export all datatypes (Object, MutableObject, Collection)
+{% for dt in datatypes %}
+export namespace {{ package_name }} {
+  // {{ dt.full_type }} datatype
+  using {{ dt.qualified_for_modules() }};
+  using {{ dt.qualified_for_modules(prefix="Mutable") }};
+  using {{ dt.qualified_for_modules(suffix="Collection") }};
+  using {{ dt.qualified_for_modules(suffix="CollectionIterator") }};
+  using {{ dt.qualified_for_modules(suffix="MutableCollectionIterator") }};  // Note: pattern is {Type}MutableCollectionIterator
+  // Note: {{ dt.bare_type }}Obj, {{ dt.bare_type }}Data, and {{ dt.bare_type }}CollectionData are internal implementation
+  // details and are not exported. They are only accessible through the public handle and collection APIs.
+}
+{% endfor %}
+
+// Export all interfaces
+{% if interfaces %}
+export namespace {{ package_name }} {
+{% for iface in interfaces %}
+  using {{ iface.qualified_for_modules() }};
+{% endfor %}
+}
+{% endif %}
+
+// Export all link collections
+{% if links %}
+export namespace {{ package_name }} {
+{% for link in links %}
+  using {{ link.qualified_for_modules(suffix="Collection") }};
+{% endfor %}
+}
+{% endif %}
+
+// Export type lists for introspection
+export namespace {{ package_name }} {
+  // Note: TypeList definitions are in {{ package_name }}.h header
+  // They cannot be directly exported from modules due to template complexities
+}
