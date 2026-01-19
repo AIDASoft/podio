@@ -1,10 +1,11 @@
+// NOTE: Python.h must be included before any standard headers and should be preceded by PY_SSIZE_T_CLEAN definition
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
 #include "podio/detail/Pythonizations.h"
 
 #include <cstring>
 #include <stdexcept>
-
-#include <Python.h>
-
 namespace podio::detail::pythonizations {
 
 // Callback function for the subscript pythonization

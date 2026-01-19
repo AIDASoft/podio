@@ -1,7 +1,6 @@
 #ifndef PODIO_DETAIL_PYTHONIZATIONS_H
 #define PODIO_DETAIL_PYTHONIZATIONS_H
 
-#define PY_SSIZE_T_CLEAN
 #include <string>
 
 typedef struct _object PyObject;
