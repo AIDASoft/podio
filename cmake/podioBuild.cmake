@@ -183,7 +183,7 @@ endmacro(ADD_CLANG_TIDY)
 # necessary to expose
 macro(podio_python_setup)
 #Check if Python version detected matches the version used to build ROOT
-SET(Python_FIND_FRAMEWORK LAST)
+SET(Python3_FIND_FRAMEWORK LAST)
 IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
   # some cmake versions don't include python patch level in PYTHON_VERSION
   IF(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0 AND CMAKE_VERSION VERSION_LESS_EQUAL 3.17.2)
