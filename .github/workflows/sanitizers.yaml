@@ -41,7 +41,7 @@ jobs:
           ccache-key: ccache-sanitizers-el9-${{ matrix.compiler }}-${{ matrix.sanitizer }}
           run: |
             echo "::group::Run CMake"
-            cmake -B build S . \
+            cmake -B build -S . \
               --preset ci-build \
               -DCMAKE_BUILD_TYPE=Debug \
               -DUSE_SANITIZER=${{ matrix.sanitizer }} \
