@@ -62,7 +62,8 @@
             "execution": {
                 "stopOnFailure": false,
                 "scheduleRandom": true,
-                "timeout": 600
+                "timeout": 600,
+                "jobs": 0
             },
             "output": {
                 "outputOnFailure": true
