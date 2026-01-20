@@ -25,19 +25,11 @@ jobs:
           git config --global --add safe.directory $(pwd)
           echo "::endgroup::"
           echo "::group::Run CMake"
-          mkdir build
-          cd build
-          cmake .. -DENABLE_SIO=ON \
+          cmake -B build -S . \
+            --preset ci-build \
             -DENABLE_JULIA=ON \
-            -DENABLE_RNTUPLE=ON \
-            -DENABLE_DATASOURCE=ON \
-            -DCMAKE_CXX_STANDARD=20 \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror "\
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DPODIO_ENABLE_SCHEMA_EVOLUTION_TESTS=ON \
             -DUSE_EXTERNAL_CATCH2=OFF
-          ln -s $(pwd)/compile_commands.json ../
-          cd ..
+          ln -s build/compile_commands.json compile_commands.json
           echo "::endgroup::"
           echo "::group::Run pre-commit"
           pre-commit run --show-diff-on-failure \

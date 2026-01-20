@@ -1,0 +1,74 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "common",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CXX_STANDARD": "20",
+                "CMAKE_CXX_FLAGS": " -fdiagnostics-color=always ",
+                "PODIO_USE_CLANG_FORMAT": "OFF",
+                "PODIO_SET_RPATH": "ON",
+                "PODIO_ENABLE_SCHEMA_EVOLUTION_TESTS": "OFF"
+            }
+        },
+        {
+            "name": "base-build",
+            "displayName": "Base Build including RNTuple backend and DataSource",
+            "inherits": "common",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "BUILD_TESTING": "ON",
+                "ENABLE_RNTUPLE": "ON",
+                "ENABLE_DATASOURCE": "ON",
+                "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
+            }
+        },
+        {
+            "name": "full-build",
+            "displayName": "Full build including schema evolution tests and SIO",
+            "inherits": "base-build",
+            "cacheVariables": {
+                "ENABLE_SIO": "ON",
+                "PODIO_ENABLE_SCHEMA_EVOLUTION_TESTS": "ON"
+            }
+        },
+        {
+            "name": "ci-build",
+            "displayName": "Full build with warnings as errors",
+            "inherits": "full-build",
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": " -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations",
+                "PODIO_USE_CLANG_FORMAT": "AUTO"
+            }
+        }
+    ],
+
+    "buildPresets": [
+        {
+            "name": "ci-build",
+            "displayName": "Building like on CI",
+            "configurePreset": "ci-build",
+            "nativeToolOptions": ["-k0"]
+        }
+    ],
+
+    "testPresets": [
+        {
+            "name": "ci-build",
+            "displayName": "Testing like on CI",
+            "configurePreset": "ci-build",
+            "execution": {
+                "stopOnFailure": false,
+                "scheduleRandom": true,
+                "timeout": 600
+            },
+            "output": {
+                "outputOnFailure": true
+            }
+
+        }
+    ]
+}
