@@ -48,7 +48,7 @@ jobs:
               -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.compiler }} == gcc15 ]] && echo "23" || echo "20")
             echo "::endgroup::"
             echo "::group::Build"
-            cmake --build build -- -k0
+            cmake --build --preset ci-build
             echo "::endgroup::"
             echo "::group::Run tests"
             ctest --test-dir build --output-on-failure --schedule-random -j$(nproc)
