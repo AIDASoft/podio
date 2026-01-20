@@ -57,7 +57,7 @@ jobs:
             cmake --build --preset ci-build
             echo "::endgroup::"
             echo "::group::Test and install podio"
-            ctest --preset ci-build
+            ctest --preset ci-build --parallel
             cmake --build --preset ci-build --target install
             cd $STARTDIR/podio
             source init.sh && source env.sh
