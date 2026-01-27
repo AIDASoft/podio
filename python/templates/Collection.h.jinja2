@@ -64,6 +64,10 @@ public:
   {{ class.bare_type }}Collection& operator=({{ class.bare_type }}Collection&&) = default;
 
   ~{{ class.bare_type }}Collection() override;
+#if defined(__cpp_lib_containers_ranges)
+  template<podio::detail::RangeConvertibleTo<value_type> R>
+  {{ class.bare_type }}Collection(std::from_range_t, R&& range);
+#endif
 
   /// Construct a {{ class.bare_type }} collection from a range of mutable or
   /// immutable handles
@@ -241,6 +245,19 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
 {% endif %}
   return Mutable{{ class.bare_type }}(podio::utils::MaybeSharedPtr(obj));
 }
+
+
+#if defined(__cpp_lib_containers_ranges)
+template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::value_type> R>
+{{ class.bare_type}}Collection::{{ class.bare_type }}Collection(std::from_range_t, R&& range)
+  : {{ class.bare_type }}Collection() {
+  setSubsetCollection(podio::detail::RangeOf<R, value_type>);
+
+  for (auto&& elem : range) {
+    push_back(std::forward<decltype(elem)>(elem));
+  }
+}
+#endif
 
 template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::value_type> R>
 {{ class.bare_type }}Collection {{ class.bare_type }}Collection::from(R&& range) {

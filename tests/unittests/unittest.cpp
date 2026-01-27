@@ -707,6 +707,27 @@ TEST_CASE("Collection construction from range", "[basics][collections]") {
   REQUIRE_THROWS_AS(ExampleClusterCollection::from(clusters), std::invalid_argument);
 }
 
+#if defined(__cpp_lib_containers_ranges)
+TEST_CASE("Collection construction via ranges::to", "[basics][collections]") {
+  using namespace std::views;
+  auto clusterColl = iota(0, 5) | transform([](const auto v) { return MutableExampleCluster(v); }) |
+      std::ranges::to<ExampleClusterCollection>();
+  REQUIRE_FALSE(clusterColl.isSubsetCollection());
+  REQUIRE(clusterColl.size() == 5);
+  for (size_t i = 0; i < clusterColl.size(); ++i) {
+    REQUIRE(clusterColl[i].energy() == i);
+  }
+
+  using namespace std::ranges::views;
+  const auto otherClusterColl = clusterColl | take(2) | std::ranges::to<ExampleClusterCollection>();
+  REQUIRE(otherClusterColl.isSubsetCollection());
+  REQUIRE(otherClusterColl.size() == 2);
+  for (size_t i = 0; i < otherClusterColl.size(); ++i) {
+    REQUIRE(otherClusterColl[i] == clusterColl[i]);
+  }
+}
+#endif
+
 TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleClusterCollection>()[0]),
                                 ExampleCluster>); // const collections should only have indexed access to mutable
