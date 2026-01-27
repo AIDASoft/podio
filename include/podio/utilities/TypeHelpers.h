@@ -1,6 +1,7 @@
 #ifndef PODIO_UTILITIES_TYPEHELPERS_H
 #define PODIO_UTILITIES_TYPEHELPERS_H
 
+#include <algorithm>
 #include <concepts>
 #include <iterator>
 #include <map>
@@ -239,6 +240,32 @@ namespace detail {
   /// and can be initialized from type U
   template <typename T, typename U>
   inline constexpr bool isInterfaceInitializableFrom = InterfaceInitializerHelper<T, U>::value;
+
+  /// A simple check for whether a range R is exactly a range over type T
+  template <typename R, typename T>
+  concept RangeOf = std::ranges::input_range<R> && std::same_as<std::ranges::range_value_t<R>, T>;
+
+  /// A simple check for whether a range R is a range of a type that can convert to type T
+  template <typename R, typename T>
+  concept RangeConvertibleTo = std::ranges::input_range<R> && std::convertible_to<std::ranges::range_value_t<R>, T>;
+
+#if defined(__cpp_lib_ranges_to_container)
+  template <typename T, std::ranges::input_range R>
+  auto to_vector(R&& r) {
+    return std::ranges::to<std::vector<T>>(std::forward<R>(r));
+  }
+#else
+  // Implement a very simple polyfill to maintain compatibility with c++20
+  template <typename T, std::ranges::input_range R>
+  auto to_vector(R&& range) {
+    std::vector<T> container;
+    if constexpr (std::ranges::sized_range<R>) {
+      container.reserve(std::ranges::size(range));
+    }
+    std::ranges::copy(range, std::back_inserter(container));
+    return container;
+  }
+#endif
 
 } // namespace detail
 

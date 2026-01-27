@@ -428,6 +428,35 @@ TEST_CASE("UserDataCollection access", "[basics]") {
   REQUIRE(std::as_const(coll)[0] == 44);
 }
 
+TEST_CASE("UserDataCollection construct from range", "[basics]") {
+  auto coll = podio::UserDataCollection<int32_t>::from(std::vector{1, 2, 3, 42});
+  using Catch::Matchers::Equals;
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{1, 2, 3, 42}));
+
+  // We can also use an array with a mis-matched type here as long as the
+  // conversion is OK.
+  coll = podio::UserDataCollection<int32_t>::from(std::array{1.2, 3.4, 4.5});
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{1, 3, 4}));
+
+  // We can also use a UserDataCollection to initialize another one
+  auto coll2 = podio::UserDataCollection<float>::from(coll);
+  REQUIRE_THAT(coll2.vec(), Equals(std::vector{1.0f, 3.0f, 4.0f}));
+}
+
+#if defined(__cpp_lib_containers_ranges)
+TEST_CASE("UserDataCollection construct from ranges::to", "[basics]") {
+  using namespace std::views;
+  using Catch::Matchers::Equals;
+  auto coll = iota(1, 10) | std::ranges::to<podio::UserDataCollection<int>>();
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9}));
+
+  // Ensure that we can convert with mis-matched types
+  coll = iota(1, 10) | transform([](const auto v) { return v * 2.1; }) |
+      std::ranges::to<podio::UserDataCollection<int32_t>>();
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{2, 4, 6, 8, 10, 12, 14, 16, 18}));
+}
+#endif
+
 /*
 TEST_CASE("Arrays") {
   auto obj = ExampleWithArray();
@@ -650,6 +679,54 @@ TEST_CASE("Collection size and empty", "[basics][collections]") {
   coll.create();
   REQUIRE(coll.size() == 2u);
 }
+
+TEST_CASE("Collection construction from range", "[basics][collections]") {
+  std::vector<MutableExampleCluster> clusters(10);
+  auto clusterColl = ExampleClusterCollection::from(clusters);
+  REQUIRE_FALSE(clusterColl.isSubsetCollection());
+  REQUIRE(clusterColl.size() == clusters.size());
+  for (size_t i = 0; i < clusters.size(); ++i) {
+    REQUIRE(clusterColl[i] == clusters[i]);
+  }
+
+  const auto otherClusterColl = ExampleClusterCollection::from(std::as_const(clusterColl));
+  REQUIRE(otherClusterColl.isSubsetCollection());
+  REQUIRE(otherClusterColl.size() == clusterColl.size());
+  for (size_t i = 0; i < clusters.size(); ++i) {
+    REQUIRE(otherClusterColl[i] == clusterColl[i]);
+  }
+
+  // Cannot construct a collection from a range of unowned immutable handles
+  REQUIRE_THROWS_AS(ExampleClusterCollection::from(std::vector<ExampleCluster>(10)), std::invalid_argument);
+
+  for (const auto& cluster : clusterColl) {
+    REQUIRE(cluster.id().index != podio::ObjectID::untracked);
+  }
+  // Cannot construct a collection from a range of mutable handles that are
+  // already owned
+  REQUIRE_THROWS_AS(ExampleClusterCollection::from(clusters), std::invalid_argument);
+}
+
+#if defined(__cpp_lib_containers_ranges)
+TEST_CASE("Collection construction via ranges::to", "[basics][collections]") {
+  using namespace std::views;
+  auto clusterColl = iota(0, 5) | transform([](const auto v) { return MutableExampleCluster(v); }) |
+      std::ranges::to<ExampleClusterCollection>();
+  REQUIRE_FALSE(clusterColl.isSubsetCollection());
+  REQUIRE(clusterColl.size() == 5);
+  for (size_t i = 0; i < clusterColl.size(); ++i) {
+    REQUIRE(clusterColl[i].energy() == i);
+  }
+
+  using namespace std::ranges::views;
+  const auto otherClusterColl = clusterColl | take(2) | std::ranges::to<ExampleClusterCollection>();
+  REQUIRE(otherClusterColl.isSubsetCollection());
+  REQUIRE(otherClusterColl.size() == 2);
+  for (size_t i = 0; i < otherClusterColl.size(); ++i) {
+    REQUIRE(otherClusterColl[i] == clusterColl[i]);
+  }
+}
+#endif
 
 TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleClusterCollection>()[0]),
