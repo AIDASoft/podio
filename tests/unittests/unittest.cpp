@@ -443,6 +443,20 @@ TEST_CASE("UserDataCollection construct from range", "[basics]") {
   REQUIRE_THAT(coll2.vec(), Equals(std::vector{1.0f, 3.0f, 4.0f}));
 }
 
+#if defined(__cpp_lib_containers_ranges)
+TEST_CASE("UserDataCollection construct from ranges::to", "[basics]") {
+  using namespace std::views;
+  using Catch::Matchers::Equals;
+  auto coll = iota(1, 10) | std::ranges::to<podio::UserDataCollection<int>>();
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9}));
+
+  // Ensure that we can convert with mis-matched types
+  coll = iota(1, 10) | transform([](const auto v) { return v * 2.1; }) |
+      std::ranges::to<podio::UserDataCollection<int32_t>>();
+  REQUIRE_THAT(coll.vec(), Equals(std::vector{2, 4, 6, 8, 10, 12, 14, 16, 18}));
+}
+#endif
+
 /*
 TEST_CASE("Arrays") {
   auto obj = ExampleWithArray();
