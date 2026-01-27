@@ -70,6 +70,20 @@ public:
   LinkCollection& operator=(const LinkCollection&) = delete;
   LinkCollection(LinkCollection&&) = default;
   LinkCollection& operator=(LinkCollection&&) = default;
+#if defined(__cpp_lib_containers_ranges)
+  /// Constructor from range in order to enable the use of std::ranges::to see
+  /// @ref from.
+  template <detail::RangeConvertibleTo<value_type> R>
+  LinkCollection(std::from_range_t, R&& range) : LinkCollection() {
+    if constexpr (detail::RangeOf<R, value_type>) {
+      setSubsetCollection();
+    }
+
+    for (auto&& elem : range) {
+      push_back(std::forward<decltype(elem)>(elem));
+    }
+  }
+#endif
 
   ~LinkCollection() override {
     // Need to tell the storage how to clean up

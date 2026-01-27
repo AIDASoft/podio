@@ -665,6 +665,26 @@ TEST_CASE("LinkCollection construction from range", "[links][basics]") {
   REQUIRE_THROWS_AS(TestLColl::from(links), std::invalid_argument);
 }
 
+#if defined(__cpp_lib_containers_ranges)
+TEST_CASE("LinkCollection construction from ranges::to", "[links][range]") {
+  using namespace std::views;
+  const auto linkColl = iota(0, 5) | transform([](auto const v) { return TestMutL(v); }) | std::ranges::to<TestLColl>();
+  REQUIRE(linkColl.size() == 5);
+  REQUIRE_FALSE(linkColl.isSubsetCollection());
+  for (size_t i = 1; i < linkColl.size(); ++i) {
+    REQUIRE(linkColl[i].getWeight() == i);
+  }
+
+  using namespace std::ranges::views;
+  const auto immutableLinkColl = std::as_const(linkColl) | take(3) | std::ranges::to<TestLColl>();
+  REQUIRE(immutableLinkColl.size() == 3);
+  REQUIRE(immutableLinkColl.isSubsetCollection());
+  for (size_t i = 0; i < immutableLinkColl.size(); ++i) {
+    REQUIRE(immutableLinkColl[i] == linkColl[i]);
+  }
+}
+#endif
+
 TEST_CASE("LinkNavigator basics", "[links]") {
   TestLColl coll{};
   std::vector<ExampleHit> hits(11);
