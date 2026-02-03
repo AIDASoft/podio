@@ -91,18 +91,37 @@ and `env.sh`.
 
 ## Compiling
 
-If you are using the easy setup from `init.sh` then create separate build
-and install areas, and trigger the build:
+Podio uses CMake presets to simplify the build process. The following presets are available:
 
-    mkdir build
-    mkdir install
-    cd build
-    cmake -DCMAKE_INSTALL_PREFIX=../install ..
-    make -j 4 install
+- `base-build`: Base build with RNTuple backend and DataSource support
+- `full-build`: Full build including SIO and schema evolution tests
+- `ci-build`: Full build with warnings as errors (used for continuous integration)
 
-To see a list of options, do this in the build-directory:
+### Basic build
 
-    cmake -LH ..
+To build podio with the base configuration:
+
+    cmake --preset base-build -DCMAKE_INSTALL_PREFIX=install
+    cmake --build build -j 4
+    cmake --install build
+
+### Full build
+
+For a complete build with all features:
+
+    cmake --preset full-build -DCMAKE_INSTALL_PREFIX=install
+    cmake --build build -j 4
+    cmake --install build
+
+### Custom configuration
+
+To see available CMake options:
+
+    cmake --preset base-build -LH
+
+You can override preset options by adding `-D` flags:
+
+    cmake --preset base-build -DCMAKE_INSTALL_PREFIX=install -DENABLE_SIO=ON
 
 ## Running tests
 
