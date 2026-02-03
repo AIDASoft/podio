@@ -130,6 +130,13 @@ normal (owned) collection or a subset collection based on the element type:
 - **Ranges of mutable handles** → Creates a normal collection that owns the objects
 - **Ranges of immutable handles** → Creates a subset collection (non-owning view)
 
+::::{warning}
+Depending on the ownership of the handles in the input range it is possible that
+this constructor throws as it uses `push_back` internally. Concretely, mutable
+handles must not be owned by another collection already and immutable handles
+must be owned by another collection already.
+::::
+
 ### Range Pipeline Integration (C++23)
 
 When compiled with C++23 ranges support, collections support the standard
